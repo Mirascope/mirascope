@@ -16,39 +16,7 @@ from google.genai.types import (
 from ...base import BaseMessageParam
 from ...base._utils import get_audio_type, get_image_type
 from ...base._utils._parse_content_template import _load_media
-
-
-def _check_image_media_type(media_type: str) -> None:
-    """Raises a `ValueError` if the image media type is not supported."""
-    if media_type not in [
-        "image/jpeg",
-        "image/png",
-        "image/webp",
-        "image/heic",
-        "image/heif",
-    ]:
-        raise ValueError(
-            f"Unsupported image media type: {media_type}. "
-            "Google currently only supports JPEG, PNG, WebP, HEIC, "
-            "and HEIF images."
-        )
-
-
-def _check_audio_media_type(media_type: str) -> None:
-    """Raises a `ValueError` if the audio media type is not supported."""
-    if media_type not in [
-        "audio/wav",
-        "audio/mp3",
-        "audio/aiff",
-        "audio/aac",
-        "audio/ogg",
-        "audio/flac",
-    ]:
-        raise ValueError(
-            f"Unsupported audio media type: {media_type}. "
-            "Google currently only supports WAV, MP3, AIFF, AAC, OGG, "
-            "and FLAC audio file types."
-        )
+from ._validate_media_type import _check_audio_media_type, _check_image_media_type
 
 
 def _over_file_size_limit(size: int) -> bool:
@@ -115,7 +83,7 @@ async def _convert_message_params_async(
                         )
                     else:
                         downloaded_image = _load_media(part.url)
-                        media_type = get_image_type(downloaded_image)
+                        media_type = f"image/{get_image_type(downloaded_image)}"
                         _check_image_media_type(media_type)
                         blob_dict = BlobDict(
                             data=downloaded_image, mime_type=media_type
@@ -155,7 +123,7 @@ async def _convert_message_params_async(
                         )
                     else:
                         downloaded_audio = _load_media(part.url)
-                        media_type = get_audio_type(downloaded_audio)
+                        media_type = f"audio/{get_audio_type(downloaded_audio)}"
                         _check_audio_media_type(media_type)
                         blob_dict = BlobDict(
                             data=downloaded_audio, mime_type=media_type
@@ -214,4 +182,5 @@ def convert_message_params(
             )
             return future.result()
     except RuntimeError:
-        return asyncio.run(_convert_message_params_async(message_params, client))
+        ...
+    return asyncio.run(_convert_message_params_async(message_params, client))

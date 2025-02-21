@@ -20,8 +20,6 @@ from mirascope.core.base import (
 )
 from mirascope.core.google._utils._message_param_converter import (
     GoogleMessageParamConverter,
-    _to_document_part,
-    _to_image_part,
 )
 
 
@@ -87,7 +85,7 @@ def test_google_convert_parts_unsupported_image():
     part = PartDict(inline_data=BlobDict(mime_type="image/tiff", data=b"fake"))
     with pytest.raises(
         ValueError,
-        match="Unsupported inline_data mime type: image/tiff. Cannot convert to BaseMessageParam.",
+        match="Unsupported image media type: image/tiff. Google currently only supports JPEG, PNG, WebP, HEIC, and HEIF images.",
     ):
         GoogleMessageParamConverter.from_provider(
             [{"role": "assistant", "parts": [part]}]
@@ -129,22 +127,6 @@ def test_google_convert_no_supported_content():
         GoogleMessageParamConverter.from_provider(
             [{"role": "assistant", "parts": [part]}]
         )
-
-
-def test_to_image_part_unsupported_image():
-    with pytest.raises(
-        ValueError,
-        match="Unsupported image media type: application/json. Expected one of: image/jpeg, image/png, image/gif, image/webp.",
-    ):
-        _to_image_part(mime_type="application/json", data=b"{}")
-
-
-def test_to_document_part_unsupported_document():
-    with pytest.raises(
-        ValueError,
-        match="Unsupported document media type: application/json. Only application/pdf is supported.",
-    ):
-        _to_document_part(mime_type="application/json", data=b"{}")
 
 
 @patch(
