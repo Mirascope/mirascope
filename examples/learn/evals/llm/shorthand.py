@@ -1,6 +1,6 @@
 import inspect
 
-from mirascope.core import azure
+from mirascope import llm
 from pydantic import BaseModel, Field
 
 
@@ -9,7 +9,7 @@ class Eval(BaseModel):
     score: float = Field(..., description="A score between [0, 5]")
 
 
-@azure.call(model="gpt-4o-mini", response_model=Eval)
+@llm.call(provider="openai", model="gpt-4o-mini", response_model=Eval)
 def evaluate_toxicity(text: str) -> str:
     return inspect.cleandoc(
         f"""

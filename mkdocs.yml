@@ -87,6 +87,7 @@ extra:
     - learn/agents/state_management
     - learn/agents/streaming
     - learn/agents/tools
+    - learn/evals/llm
     - learn/json_mode/basic_usage
     - learn/json_mode/error_handling
     - learn/output_parsers/additional_examples

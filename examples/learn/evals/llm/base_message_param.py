@@ -1,6 +1,6 @@
 import inspect
 
-from mirascope.core import BaseMessageParam, litellm
+from mirascope import BaseMessageParam, llm
 from pydantic import BaseModel, Field
 
 
@@ -9,7 +9,7 @@ class Eval(BaseModel):
     score: float = Field(..., description="A score between [0, 5]")
 
 
-@litellm.call(model="gpt-4o-mini", response_model=Eval)
+@llm.call(provider="openai", model="gpt-4o-mini", response_model=Eval)
 def evaluate_toxicity(text: str) -> list[BaseMessageParam]:
     return [
         BaseMessageParam(

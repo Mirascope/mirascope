@@ -1,6 +1,6 @@
 import inspect
 
-from mirascope.core import BaseMessageParam, cohere
+from mirascope import Messages, llm
 from pydantic import BaseModel, Field
 
 
@@ -9,13 +9,11 @@ class Eval(BaseModel):
     score: float = Field(..., description="A score between [0, 5]")
 
 
-@cohere.call("command-r-plus", response_model=Eval)
-def evaluate_toxicity(text: str) -> list[BaseMessageParam]:
-    return [
-        BaseMessageParam(
-            role="user",
-            content=inspect.cleandoc(
-                f"""
+@llm.call(provider="openai", model="gpt-4o-mini", response_model=Eval)
+def evaluate_toxicity(text: str) -> Messages.Type:
+    return Messages.User(
+        inspect.cleandoc(
+            f"""
             Text is toxic if it contains content that is:
             - Harmful, offensive, disrespectful, or promotes negativity
             - Aggressive, demeaning, bigoted, or excessively critical
@@ -34,9 +32,8 @@ def evaluate_toxicity(text: str) -> list[BaseMessageParam]:
 
             Text to evaluate: {text}
             """
-            ),
         )
-    ]
+    )
 
 
 # Toxic Example
