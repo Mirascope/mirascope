@@ -5,12 +5,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
 from enum import Enum
 from functools import wraps
-from typing import (
-    Any,
-    ParamSpec,
-    TypeVar,
-    cast,
-)
+from typing import Any, ParamSpec, TypeVar, cast, get_args
 
 from pydantic import BaseModel
 
@@ -31,6 +26,7 @@ from ._protocols import (
     AsyncLLMFunctionDecorator,
     CallDecorator,
     LLMFunctionDecorator,
+    LocalProvider,
     Provider,
     SyncLLMFunctionDecorator,
 )
@@ -52,7 +48,31 @@ _BaseStreamT = TypeVar("_BaseStreamT", covariant=True)
 _ResultT = TypeVar("_ResultT")
 
 
-def _get_provider_call(provider: str) -> Callable:
+def _get_local_provider_call(
+    provider: LocalProvider,
+    client: Any | None,  # noqa: ANN401
+) -> tuple[Callable, Any | None]:
+    if provider == "ollama":
+        from mirascope.core.openai import openai_call
+
+        if client:
+            return openai_call, client
+        from openai import OpenAI
+
+        client = OpenAI(api_key="ollama", base_url="http://localhost:11434/v1")
+        return openai_call, client
+    else:  # provider == "vllm"
+        from mirascope.core.openai import openai_call
+
+        if client:
+            return openai_call, client
+        from openai import OpenAI
+
+        client = OpenAI(api_key="ollama", base_url="http://localhost:8000/v1")
+        return openai_call, client
+
+
+def _get_provider_call(provider: Provider) -> Callable:
     """Returns the provider-specific call decorator based on the provider name."""
     if provider == "anthropic":
         from mirascope.core.anthropic import anthropic_call
@@ -98,6 +118,10 @@ def _get_provider_call(provider: str) -> Callable:
         from mirascope.core.vertex import vertex_call
 
         return vertex_call
+    elif provider == "xai":
+        from mirascope.core.xai import xai_call
+
+        return xai_call
     raise ValueError(f"Unsupported provider: {provider}")
 
 
@@ -125,7 +149,7 @@ def _wrap_result(
 
 
 def _call(
-    provider: Provider,
+    provider: Provider | LocalProvider,
     model: str,
     *,
     stream: bool | StreamConfig = False,
@@ -171,7 +195,22 @@ def _call(
     ]
 ):
     """Decorator for defining a function that calls a language model."""
-    provider_call = _get_provider_call(provider)
+    if provider in get_args(LocalProvider):
+        provider_call, client = _get_local_provider_call(
+            cast(LocalProvider, provider), client
+        )
+    else:
+        provider_call = _get_provider_call(cast(Provider, provider))
+    _original_args = {
+        "model": model,
+        "stream": stream,
+        "tools": tools,
+        "response_model": response_model,
+        "output_parser": output_parser,
+        "json_mode": json_mode,
+        "client": client,
+        "call_params": call_params,
+    }
 
     def wrapper(
         fn: Callable[_P, _R | Awaitable[_R]],
@@ -179,16 +218,6 @@ def _call(
         _P,
         CallResponse | Stream | Awaitable[CallResponse | Stream],
     ]:
-        _original_args = {
-            "model": model,
-            "stream": stream,
-            "tools": tools,
-            "response_model": response_model,
-            "output_parser": output_parser,
-            "json_mode": json_mode,
-            "client": client,
-            "call_params": call_params,
-        }
         decorated = provider_call(**_original_args)(fn)
 
         if fn_is_async(decorated):
@@ -219,32 +248,6 @@ def _call(
             inner._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
             return inner
 
-        # @wraps(decorated)
-        # def inner(
-        #     *args: _P.args, **kwargs: _P.kwargs
-        # ) -> CallResponse | Stream | Awaitable[CallResponse | Stream]:
-        #     result = decorated(*args, **kwargs)
-        #     if fn_is_async(decorated):
-
-        #         async def async_wrapper() -> CallResponse | Stream:
-        #             final = await result
-        #             return _wrap_result(final)
-
-        #         return async_wrapper()
-        #     else:
-
-        #         def sync_wrapper() -> CallResponse | Stream:
-        #             final = result
-        #             return _wrap_result(final)
-
-        #         return sync_wrapper()
-
-        # inner._original_args = _original_args  # pyright: ignore [reportAttributeAccessIssue]
-        # inner._original_provider_call = provider_call  # pyright: ignore [reportAttributeAccessIssue]
-        # inner._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
-        # inner._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
-        # return inner
-
     return wrapper  # pyright: ignore [reportReturnType]
 
 
@@ -274,7 +277,8 @@ print(response.content)
 ```
 
 Args:
-    provider (str): The LLM provider to use (e.g., "openai", "anthropic").
+    provider (Provider | LocalProvider): The LLM provider to use
+        (e.g., "openai", "anthropic").
     model (str): The model to use for the specified provider (e.g., "gpt-4o-mini").
     stream (bool): Whether to stream the response from the API call.  
     tools (list[BaseTool | Callable]): The tools available for the LLM to use.

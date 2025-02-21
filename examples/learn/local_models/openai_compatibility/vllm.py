@@ -1,8 +1,14 @@
-from mirascope import llm
+from mirascope.core import openai
+from openai import OpenAI
 from pydantic import BaseModel
 
+custom_client = OpenAI(
+    base_url="http://localhost:8000/v1",  # your vLLM endpoint
+    api_key="vllm",  # required by openai, but unused
+)
 
-@llm.call("ollama", "llama3.2")
+
+@openai.call("llama3.2", client=custom_client)
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
@@ -17,7 +23,7 @@ class Book(BaseModel):
     author: str
 
 
-@llm.call("ollama", "llama3.2", response_model=Book)
+@openai.call("llama3.2", response_model=Book, client=custom_client)
 def extract_book(text: str) -> str:
     return f"Extract {text}"
 

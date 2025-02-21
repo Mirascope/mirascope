@@ -18,12 +18,13 @@ PROVIDER_INFO: dict[Provider, ProviderInfo] = {
     "anthropic": ProviderInfo(
         provider="anthropic", title="Anthropic", model="claude-3-5-sonnet-latest"
     ),
-    "mistral": ProviderInfo(
-        provider="mistral", title="Mistral", model="mistral-large-latest"
-    ),
     "google": ProviderInfo(provider="google", title="Google", model="gemini-2.0-flash"),
     "groq": ProviderInfo(
         provider="groq", title="Groq", model="llama-3.1-70b-versatile"
+    ),
+    "xai": ProviderInfo(provider="xai", title="xAI", model="grok-3"),
+    "mistral": ProviderInfo(
+        provider="mistral", title="Mistral", model="mistral-large-latest"
     ),
     "cohere": ProviderInfo(provider="cohere", title="Cohere", model="command-r-plus"),
     "litellm": ProviderInfo(provider="litellm", title="LiteLLM", model="gpt-4o-mini"),

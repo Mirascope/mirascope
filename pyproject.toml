@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.18.4"
+version = "1.19.0"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -85,6 +85,7 @@ realtime = [
     "websockets>=13.1,<14",
 ]
 mcp = ["mcp>=1.0.0"]
+xai = ["openai>=1.6.0,<2"]
 
 [tool.uv]
 dev-dependencies = [
