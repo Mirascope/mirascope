@@ -33,7 +33,6 @@ warnings.warn(
 )
 
 __all__ = [
-    "call",
     "VertexCallParams",
     "VertexCallResponse",
     "VertexCallResponseChunk",
@@ -41,5 +40,6 @@ __all__ = [
     "VertexMessageParam",
     "VertexStream",
     "VertexTool",
+    "call",
     "vertex_call",
 ]

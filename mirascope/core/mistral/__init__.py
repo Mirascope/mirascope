@@ -24,13 +24,13 @@ MistralMessageParam: TypeAlias = (
 )
 
 __all__ = [
-    "call",
-    "MistralDynamicConfig",
     "MistralCallParams",
     "MistralCallResponse",
     "MistralCallResponseChunk",
+    "MistralDynamicConfig",
     "MistralMessageParam",
     "MistralStream",
     "MistralTool",
+    "call",
     "mistral_call",
 ]

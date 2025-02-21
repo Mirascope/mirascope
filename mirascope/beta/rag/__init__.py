@@ -13,12 +13,12 @@ from .base import (
 
 __all__ = [
     "BaseChunker",
-    "TextChunker",
     "BaseEmbedder",
     "BaseEmbeddingParams",
     "BaseEmbeddingResponse",
     "BaseQueryResults",
-    "BaseVectorStoreParams",
     "BaseVectorStore",
+    "BaseVectorStoreParams",
     "Document",
+    "TextChunker",
 ]
