@@ -256,7 +256,7 @@ def test_image_url_conversion_with_format_invalid(
 )
 @patch(
     "mirascope.core.vertex._utils._convert_message_params.get_audio_type",
-    return_value="audio/mp3",
+    return_value="mp3",
 )
 @patch("mirascope.core.vertex._utils._convert_message_params.Part.from_uri")
 def test_audio_url_conversion_valid(
@@ -302,7 +302,7 @@ def test_audio_url_conversion_valid(
 )
 @patch(
     "mirascope.core.vertex._utils._convert_message_params.get_audio_type",
-    return_value="audio/invalid",
+    return_value="invalid",
 )
 def test_audio_url_conversion_invalid(mock_get_audio_type, mock_load_media) -> None:
     """Tests conversion of an audio_url part with an unsupported audio type."""
