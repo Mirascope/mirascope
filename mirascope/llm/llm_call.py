@@ -61,7 +61,7 @@ def _get_local_provider_call(
 
         client = OpenAI(api_key="ollama", base_url="http://localhost:11434/v1")
         return openai_call, client
-    elif provider == "vllm":
+    else:  # provider == "vllm"
         from mirascope.core.openai import openai_call
 
         if client:
@@ -70,7 +70,6 @@ def _get_local_provider_call(
 
         client = OpenAI(api_key="ollama", base_url="http://localhost:8000/v1")
         return openai_call, client
-    raise ValueError(f"Unsupported local provider: {provider}")
 
 
 def _get_provider_call(provider: Provider) -> Callable:

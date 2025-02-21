@@ -3,6 +3,7 @@ from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
+from openai import OpenAI
 from pydantic import computed_field
 
 from mirascope.core.base import (
@@ -15,7 +16,12 @@ from mirascope.core.base import (
 )
 from mirascope.core.base.types import FinishReason
 from mirascope.llm.call_response import CallResponse
-from mirascope.llm.llm_call import _get_provider_call, _wrap_result, call
+from mirascope.llm.llm_call import (
+    _get_local_provider_call,
+    _get_provider_call,
+    _wrap_result,
+    call,
+)
 from mirascope.llm.stream import Stream
 
 
@@ -208,6 +214,34 @@ def test_get_provider_call_vertex():
         assert func == "vertex_mock"
 
 
+def test_get_local_provider_call_ollama():
+    with patch("mirascope.core.openai.openai_call", new="openai_ollama_mock"):
+        func, client = _get_local_provider_call("ollama", None)
+        assert func == "openai_ollama_mock"
+        assert (
+            isinstance(client, OpenAI)
+            and client.api_key == "ollama"
+            and str(client.base_url) == "http://localhost:11434/v1/"
+        )
+        mock_client = Mock()
+        _, client = _get_local_provider_call("ollama", mock_client)
+        assert client == mock_client
+
+
+def test_get_local_provider_call_vllm():
+    with patch("mirascope.core.openai.openai_call", new="openai_vllm_mock"):
+        func, client = _get_local_provider_call("vllm", None)
+        assert func == "openai_vllm_mock"
+        assert (
+            isinstance(client, OpenAI)
+            and client.api_key == "ollama"
+            and str(client.base_url) == "http://localhost:8000/v1/"
+        )
+        mock_client = Mock()
+        _, client = _get_local_provider_call("vllm", mock_client)
+        assert client == mock_client
+
+
 def test_call_decorator_sync():
     def dummy_provider_call(
         model,
@@ -252,6 +286,18 @@ def test_call_decorator_sync():
         # finish_reasons is ["stop"] due to our override
         assert res.finish_reasons == ["stop"]
 
+    with patch(
+        "mirascope.llm.llm_call._get_local_provider_call",
+        return_value=(dummy_provider_call, None),
+    ):
+
+        @call(provider="ollama", model="gpt-4o-mini")
+        def dummy_function(): ...
+
+        res = dummy_function()
+        assert isinstance(res, CallResponse)
+        assert res.finish_reasons == ["stop"]
+
 
 @pytest.mark.asyncio
 async def test_call_decorator_async():
@@ -292,6 +338,18 @@ async def test_call_decorator_async():
     ):
 
         @call(provider="openai", model="gpt-4o-mini")
+        async def dummy_async_function(): ...
+
+        res = await dummy_async_function()
+        assert isinstance(res, CallResponse)
+        assert res.finish_reasons == ["stop"]
+
+    with patch(
+        "mirascope.llm.llm_call._get_local_provider_call",
+        return_value=(dummy_async_provider_call, None),
+    ):
+
+        @call(provider="ollama", model="gpt-4o-mini")
         async def dummy_async_function(): ...
 
         res = await dummy_async_function()
