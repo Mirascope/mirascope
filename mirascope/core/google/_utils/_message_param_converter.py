@@ -54,18 +54,16 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                 if part.text:
                     content_list.append(TextPart(type="text", text=part.text))
 
-                elif (
-                    (blob := part.inline_data)
-                    and (mime_type := blob.mime_type)
-                    and (data := blob.data)
-                ):
+                elif blob := part.inline_data:
+                    mime_type = blob.mime_type or ""
+                    data = blob.data or b""
                     if mime_type.startswith("image/"):
                         _check_image_media_type(mime_type)
                         content_list.append(
                             ImagePart(
                                 type="image",
-                                media_type=blob.mime_type,
-                                image=blob.data,
+                                media_type=mime_type,
+                                image=data,
                                 detail=None,
                             )
                         )
@@ -74,8 +72,8 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                         content_list.append(
                             AudioPart(
                                 type="audio",
-                                media_type=blob.mime_type,
-                                audio=blob.data,
+                                media_type=mime_type,
+                                audio=data,
                             )
                         )
                     elif mime_type == "application/pdf":

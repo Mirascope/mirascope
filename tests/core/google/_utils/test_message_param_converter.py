@@ -141,6 +141,24 @@ def test_to_provider(mock_client_class):
     mock_client_class.assert_called_once_with()
 
 
+def test_inline_data_audio():
+    part = PartDict(
+        inline_data=BlobDict(mime_type="audio/mp3", data=b"fake audio data")
+    )
+    results = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    assert result.content[0].model_dump() == {
+        "type": "audio",
+        "media_type": "audio/mp3",
+        "audio": b"fake audio data",
+    }
+
+
 def test_inline_data_application_pdf():
     part = PartDict(
         inline_data=BlobDict(mime_type="application/pdf", data=b"%PDF-1.4...")
@@ -155,6 +173,19 @@ def test_inline_data_application_pdf():
     assert isinstance(result.content[0], DocumentPart)
     assert result.content[0].media_type == "application/pdf"
     assert result.content[0].document == b"%PDF-1.4..."
+
+
+def test_inline_data_unknown_mime_type():
+    part = PartDict(
+        inline_data=BlobDict(mime_type="application/zip", data=b"fake zip data")
+    )
+    with pytest.raises(
+        ValueError,
+        match="Unsupported inline_data mime type: application/zip. Cannot convert to BaseMessageParam.",
+    ):
+        GoogleMessageParamConverter.from_provider(
+            [{"role": "assistant", "parts": [part]}]
+        )
 
 
 def test_function_response():
