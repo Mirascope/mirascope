@@ -114,6 +114,12 @@ class VertexCallResponse(
 
     @computed_field
     @property
+    def cached_tokens(self) -> int:
+        """Returns the number of cached tokens."""
+        return 0
+
+    @computed_field
+    @property
     def output_tokens(self) -> int:
         """Returns the number of output tokens."""
         return self.usage.candidates_token_count
@@ -122,7 +128,9 @@ class VertexCallResponse(
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property

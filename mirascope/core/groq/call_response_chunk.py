@@ -82,6 +82,11 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishRea
         return None
 
     @property
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return 0
+
+    @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         if self.usage:

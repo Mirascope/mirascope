@@ -89,6 +89,11 @@ class GoogleCallResponseChunk(
         return self.usage.prompt_token_count if self.usage else None
 
     @property
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return self.usage.cached_content_token_count if self.usage else None
+
+    @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.candidates_token_count if self.usage else None

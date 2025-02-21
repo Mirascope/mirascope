@@ -69,11 +69,13 @@ class GoogleCallResponse(
 
     _provider = "google"
 
+    @computed_field
     @property
     def content(self) -> str:
         """Returns the contained string content for the 0th choice."""
         return self.response.candidates[0].content.parts[0].text  # pyright: ignore [reportOptionalSubscript, reportReturnType, reportOptionalMemberAccess, reportOptionalIterable]
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
@@ -84,6 +86,7 @@ class GoogleCallResponse(
             if candidate and candidate.finish_reason is not None
         ]
 
+    @computed_field
     @property
     def model(self) -> str:
         """Returns the model name.
@@ -95,6 +98,7 @@ class GoogleCallResponse(
             self.response.model_version if self.response.model_version else self._model
         )
 
+    @computed_field
     @property
     def id(self) -> str | None:
         """Returns the id of the response.
@@ -111,6 +115,7 @@ class GoogleCallResponse(
         """
         return self.response.usage_metadata
 
+    @computed_field
     @property
     def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
@@ -120,6 +125,17 @@ class GoogleCallResponse(
             else None
         )
 
+    @computed_field
+    @property
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return (
+            self.response.usage_metadata.cached_content_token_count
+            if self.response.usage_metadata
+            else None
+        )
+
+    @computed_field
     @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
@@ -129,10 +145,13 @@ class GoogleCallResponse(
             else None
         )
 
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property

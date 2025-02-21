@@ -43,13 +43,16 @@ FinishReason: TypeAlias = Literal["stop", "length", "tool_calls", "content_filte
 
 
 class Usage(BaseModel):
-    input_tokens: int = 0
+    input_tokens: int
     """Number of tokens in the prompt."""
 
-    output_tokens: int = 0
+    cached_tokens: int
+    """Number of tokens used that were previously cached (and thus cheaper)."""
+
+    output_tokens: int
     """Number of tokens in the generated output."""
 
-    total_tokens: int = 0
+    total_tokens: int
     """Total number of tokens used in the request (prompt + completion)."""
 
 

@@ -3,6 +3,7 @@
 
 def calculate_cost(
     input_tokens: int | float | None,
+    cached_tokens: int | float | None,
     output_tokens: int | float | None,
     model: str = "command-r-plus",
 ) -> float | None:
@@ -10,9 +11,9 @@ def calculate_cost(
 
     https://cohere.com/pricing
 
-    Model              Input               Output
-    command-r          $0.5 / 1M tokens	   $1.5 / 1M tokens
-    command-r-plus     $3 / 1M tokens	   $15 / 1M tokens
+    Model              Input               Cached     Output
+    command-r          $0.5 / 1M tokens	              $1.5 / 1M tokens
+    command-r-plus     $3 / 1M tokens	              $15 / 1M tokens
     """
     pricing = {
         "command-r": {

@@ -66,7 +66,7 @@ def test_bedrock_stream_cost(mock_calculate_cost):
     stream.input_tokens = 10
     stream.output_tokens = 20
     assert stream.cost == 0.1
-    mock_calculate_cost.assert_called_once_with(10, 20, "anthropic.claude-v2")
+    mock_calculate_cost.assert_called_once_with(10, None, 20, "anthropic.claude-v2")
 
 
 def test_bedrock_stream_construct_message_param():

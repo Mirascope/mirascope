@@ -64,6 +64,9 @@ class DummyProviderResponse(
     def input_tokens(self) -> int | float | None: ...
 
     @property
+    def cached_tokens(self) -> int | float | None: ...
+
+    @property
     def output_tokens(self) -> int | float | None: ...
 
     @property
@@ -124,6 +127,9 @@ class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
 
     @property
     def input_tokens(self) -> int | float | None: ...
+
+    @property
+    def cached_tokens(self) -> int | float | None: ...
 
     @property
     def output_tokens(self) -> int | float | None: ...

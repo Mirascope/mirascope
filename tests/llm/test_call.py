@@ -42,6 +42,9 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
     def input_tokens(self): ...
 
     @property
+    def cached_tokens(self): ...
+
+    @property
     def output_tokens(self): ...
 
     @property

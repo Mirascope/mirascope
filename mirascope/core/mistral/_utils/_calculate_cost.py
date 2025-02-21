@@ -3,6 +3,7 @@
 
 def calculate_cost(
     input_tokens: int | float | None,
+    cached_tokens: int | float | None,
     output_tokens: int | float | None,
     model: str = "open-mistral-7b",
 ) -> float | None:
@@ -10,15 +11,15 @@ def calculate_cost(
 
     https://mistral.ai/technology/#pricing
 
-    Model                     Input               Output
-    open-mistral-nemo         $0.3/1M tokens	  $0.3/1M tokens
-    mistral-large-latest      $3/1M tokens	      $9/1M tokens
-    codestral-2405            $1/1M tokens	      $3/1M tokens
-    open-mistral-7b	          $0.25/1M tokens	  $0.25/1M tokens
-    open-mixtral-8x7b	      $0.7/1M tokens	  $0.7/1M tokens
-    open-mixtral-8x22b	      $2/1M tokens	      $6/1M tokens
-    mistral-small-latest	  $2/1M tokens	      $6/1M tokens
-    mistral-medium-latest     $2.75/1M tokens	  $8.1/1M tokens
+    Model                     Input               Cached     Output
+    open-mistral-nemo         $0.3/1M tokens	             $0.3/1M tokens
+    mistral-large-latest      $3/1M tokens	                 $9/1M tokens
+    codestral-2405            $1/1M tokens	                 $3/1M tokens
+    open-mistral-7b	          $0.25/1M tokens	             $0.25/1M tokens
+    open-mixtral-8x7b	      $0.7/1M tokens	             $0.7/1M tokens
+    open-mixtral-8x22b	      $2/1M tokens	                 $6/1M tokens
+    mistral-small-latest	  $2/1M tokens	                 $6/1M tokens
+    mistral-medium-latest     $2.75/1M tokens	             $8.1/1M tokens
     """
     pricing = {
         "open-mistral-nemo": {"prompt": 0.000_000_3, "completion": 0.000_000_3},

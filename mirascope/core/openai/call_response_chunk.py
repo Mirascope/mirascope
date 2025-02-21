@@ -79,6 +79,18 @@ class OpenAICallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishR
             return self.chunk.usage
         return None
 
+    @computed_field
+    @property
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return (
+            details.cached_tokens
+            if hasattr(self.chunk, "usage")
+            and self.usage
+            and (details := getattr(self.usage, "prompt_tokens_details", None))
+            else None
+        )
+
     @property
     def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
