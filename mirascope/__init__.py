@@ -7,11 +7,20 @@ with suppress(ImportError):
     from . import core as core
 
 from .core import (
+    AudioPart,
+    AudioURLPart,
     BaseDynamicConfig,
     BaseMessageParam,
     BaseTool,
     BaseToolKit,
+    CacheControlPart,
+    DocumentPart,
+    ImagePart,
+    ImageURLPart,
     Messages,
+    TextPart,
+    ToolCallPart,
+    ToolResultPart,
     prompt_template,
 )
 
@@ -34,4 +43,13 @@ __all__ = [
     "retries",
     "Messages",
     "__version__",
+    "AudioPart",
+    "AudioURLPart",
+    "CacheControlPart",
+    "DocumentPart",
+    "ImagePart",
+    "ImageURLPart",
+    "TextPart",
+    "ToolCallPart",
+    "ToolResultPart",
 ]
