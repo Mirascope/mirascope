@@ -97,6 +97,42 @@ def substitute_llm_call_decorator(content: str, provider: Provider) -> str:
     return new_content
 
 
+def substitute_llm_override(content: str, provider: Provider) -> str:
+    """Substitute provider and model into llm.override function."""
+    replacement_provider = "openai" if provider == "anthropic" else "anthropic"
+    subs = PROVIDER_INFO[replacement_provider]
+
+    # Use regex with re.DOTALL to match across lines
+    override_pattern = r"llm\.override\((.*?)\)"
+
+    def replace_override(match: re.Match) -> str:
+        override_args = match.group(1)
+
+        # Check if we found the expected parameters
+        if 'provider="anthropic"' not in override_args:
+            raise ValueError(
+                f"Could not find provider='anthropic' in override: {override_args}"
+            )
+        if 'model="claude-3-5-sonnet-latest"' not in override_args:
+            raise ValueError(
+                f"Could not find model='claude-3-5-sonnet-latest' in override: {override_args}"
+            )
+
+        # Make substitutions, preserving whitespace
+        updated_args = override_args.replace(
+            'provider="anthropic"', f'provider="{subs.provider}"'
+        ).replace('model="claude-3-5-sonnet-latest"', f'model="{subs.model}"')
+
+        return f"llm.override({updated_args})"
+
+    # Perform substitution with re.DOTALL flag
+    new_content, _ = re.subn(
+        override_pattern, replace_override, content, flags=re.DOTALL
+    )
+
+    return new_content
+
+
 def substitute_provider_specific_content(content: str, provider: Provider) -> str:
     """Apply all provider-specific substitutions."""
     if provider not in PROVIDER_INFO:
@@ -105,6 +141,7 @@ def substitute_provider_specific_content(content: str, provider: Provider) -> st
     content = substitute_llm_call_decorator(content, provider)
     content = substitute_provider_import(content, provider)
     content = substitute_provider_type(content, provider)
+    content = substitute_llm_override(content, provider)
     return content
 
 
@@ -138,6 +175,7 @@ def generate_provider_examples(
             for base_file in source_dir.glob("*.py"):
                 content = base_file.read_text()
                 output = substitute_provider_specific_content(content, provider_name)
+
                 out_file = output_dir / base_file.name
                 out_file.write_text(output)
 

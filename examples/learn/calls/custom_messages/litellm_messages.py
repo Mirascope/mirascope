@@ -6,5 +6,5 @@ def recommend_book(genre: str) -> litellm.LiteLLMDynamicConfig:
     return {"messages": [{"role": "user", "content": f"Recommend a {genre} book"}]}
 
 
-response = recommend_book("fantasy")
+response: litellm.LiteLLMCallResponse = recommend_book("fantasy")
 print(response.content)

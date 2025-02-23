@@ -1,9 +1,10 @@
-from mirascope.core import Messages, bedrock
 import boto3
+
+from mirascope.core import Messages, bedrock
 
 
 @bedrock.call(
-    "anthropic.claude-3-haiku-20240307-v1:0",
+    "amazon.nova-lite-v1:0",
 )
 def recommend_book(genre: str) -> bedrock.BedrockDynamicConfig:
     return {

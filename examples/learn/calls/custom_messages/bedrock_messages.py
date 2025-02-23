@@ -1,7 +1,7 @@
 from mirascope.core import bedrock
 
 
-@bedrock.call("claude-3-5-sonnet-20240620")
+@bedrock.call("amazon.nova-lite-v1:0")
 def recommend_book(genre: str) -> bedrock.BedrockDynamicConfig:
     return {
         "messages": [
@@ -10,5 +10,5 @@ def recommend_book(genre: str) -> bedrock.BedrockDynamicConfig:
     }
 
 
-response = recommend_book("fantasy")
+response: bedrock.BedrockCallResponse = recommend_book("fantasy")
 print(response.content)

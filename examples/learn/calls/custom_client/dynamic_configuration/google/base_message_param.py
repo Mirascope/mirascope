@@ -1,8 +1,9 @@
 from google.genai import Client
+
 from mirascope.core import BaseMessageParam, google
 
 
-@google.call("gemini-1.5-flash")
+@google.call("gemini-2.0-flash")
 def recommend_book(genre: str) -> google.GoogleDynamicConfig:
     return {
         "messages": [

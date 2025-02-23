@@ -11,6 +11,7 @@ from docs.generate_provider_examples import (
     generate_provider_examples,
     get_supported_providers,
     substitute_llm_call_decorator,
+    substitute_llm_override,
     substitute_provider_import,
     substitute_provider_specific_content,
     substitute_provider_type,
@@ -124,6 +125,61 @@ def test_substitute_provider_import_multi_import():
     assert result == expected
 
 
+def test_substitute_llm_override():
+    content = inspect.cleandoc("""
+    llm.override(
+        recommend_book,
+        provider="anthropic",
+        model="claude-3-5-sonnet-latest",
+        call_params={"temperature": 0.7},
+    )("fantasy")
+    """)
+    expected_anthropic = inspect.cleandoc("""
+    llm.override(
+        recommend_book,
+        provider="openai",
+        model="gpt-4o-mini",
+        call_params={"temperature": 0.7},
+    )("fantasy")
+    """)
+    expected_google = inspect.cleandoc("""
+    llm.override(
+        recommend_book,
+        provider="anthropic",
+        model="claude-3-5-sonnet-latest",
+        call_params={"temperature": 0.7},
+    )("fantasy")
+    """)
+    assert substitute_llm_override(content, "anthropic") == expected_anthropic
+    assert substitute_llm_override(content, "google") == expected_google
+    assert substitute_llm_override(content, "openai") == content
+
+
+def test_substitute_llm_override_exceptions():
+    bad_provider = inspect.cleandoc("""
+    llm.override(
+        recommend_book,
+        provider="gemini",
+        model="claude-3-5-sonnet-latest",
+        call_params={"temperature": 0.7},
+    )("fantasy")
+    """)
+    bad_model = inspect.cleandoc("""
+    llm.override(
+        recommend_book,
+        provider="anthropic",
+        model="claude-3-5-haiku-latest",
+        call_params={"temperature": 0.7},
+    )("fantasy")
+    """)
+    with pytest.raises(ValueError, match="Could not find provider='anthropic"):
+        substitute_llm_override(bad_provider, "openai")
+    with pytest.raises(
+        ValueError, match="Could not find model='claude-3-5-sonnet-latest'"
+    ):
+        substitute_llm_override(bad_model, "openai")
+
+
 def test_substitute_provider_type():
     content = inspect.cleandoc("""
         cast(openai.OpenAICallResponse, response)
@@ -197,6 +253,57 @@ def test_substitute_provider_specific_content():
         """)
     assert substitute_provider_specific_content(content, "anthropic") == expected
     assert substitute_provider_specific_content(content, "openai") == content
+
+
+def test_full_substitute_with_override():
+    content = inspect.cleandoc("""
+        from mirascope import llm
+        from mirascope.core import prompt_template
+
+
+        @llm.call(provider="openai", model="gpt-4o-mini")
+        @prompt_template("Recommend a {genre} book")
+        def recommend_book(genre: str): ...
+
+
+        response = recommend_book("fantasy")
+        print(response.content)
+
+        override_response = llm.override(
+            recommend_book,
+            provider="anthropic",
+            model="claude-3-5-sonnet-latest",
+            call_params={"temperature": 0.7},
+        )("fantasy")
+
+        print(override_response.content)
+        """)
+    expected = inspect.cleandoc("""
+        from mirascope import llm
+        from mirascope.core import prompt_template
+
+
+        @llm.call(provider="anthropic", model="claude-3-5-sonnet-latest")
+        @prompt_template("Recommend a {genre} book")
+        def recommend_book(genre: str): ...
+
+
+        response = recommend_book("fantasy")
+        print(response.content)
+
+        override_response = llm.override(
+            recommend_book,
+            provider="openai",
+            model="gpt-4o-mini",
+            call_params={"temperature": 0.7},
+        )("fantasy")
+
+        print(override_response.content)
+        """)
+    result_anthropic = substitute_provider_specific_content(content, "anthropic")
+    result_openai = substitute_provider_specific_content(content, "openai")
+    assert result_anthropic == expected
+    assert result_openai == content
 
 
 def test_substitute_fails_invalid_provider():

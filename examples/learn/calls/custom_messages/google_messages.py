@@ -1,10 +1,10 @@
-from mirascope.core import gemini
+from mirascope.core import Messages, google
 
 
-@gemini.call("gemini-1.5-flash")
-def recommend_book(genre: str) -> gemini.GeminiDynamicConfig:
-    return {"messages": [{"role": "user", "parts": [f"Recommend a {genre} book"]}]}
+@google.call("gemini-2.0-flash")
+def recommend_book(genre: str) -> google.GoogleDynamicConfig:
+    return {"messages": [Messages.User(f"Recommend a {genre} book")]}
 
 
-response = recommend_book("fantasy")
+response: google.GoogleCallResponse = recommend_book("fantasy")
 print(response.content)

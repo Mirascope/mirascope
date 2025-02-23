@@ -1,9 +1,8 @@
-from mirascope.core import bedrock, prompt_template
 import boto3
 
+from mirascope.core import bedrock, prompt_template
 
-@bedrock.call(
-    "anthropic.claude-3-haiku-20240307-v1:0", client=boto3.client("bedrock-runtime")
-)
+
+@bedrock.call("amazon.nova-lite-v1:0", client=boto3.client("bedrock-runtime"))
 @prompt_template("Recommend a {genre} book")
 def recommend_book(genre: str): ...

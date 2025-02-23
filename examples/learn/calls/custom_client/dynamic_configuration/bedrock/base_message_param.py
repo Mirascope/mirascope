@@ -1,8 +1,9 @@
-from mirascope.core import BaseMessageParam, bedrock
 import boto3
 
+from mirascope.core import BaseMessageParam, bedrock
 
-@bedrock.call("anthropic.claude-3-haiku-20240307-v1:0")
+
+@bedrock.call("amazon.nova-lite-v1:0")
 def recommend_book(genre: str) -> bedrock.BedrockDynamicConfig:
     return {
         "messages": [

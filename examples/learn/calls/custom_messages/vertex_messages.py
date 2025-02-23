@@ -2,7 +2,7 @@ from mirascope.core import vertex
 from vertexai.generative_models import Content, Part
 
 
-@vertex.call("gemini-1.5-flash")
+@vertex.call("gemini-2.0-flash")
 def recommend_book(genre: str) -> vertex.VertexDynamicConfig:
     return {
         "messages": [
@@ -11,5 +11,5 @@ def recommend_book(genre: str) -> vertex.VertexDynamicConfig:
     }
 
 
-response = recommend_book("fantasy")
+response: vertex.VertexCallResponse = recommend_book("fantasy")
 print(response.content)

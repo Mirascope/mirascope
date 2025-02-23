@@ -7,5 +7,5 @@ def recommend_book(genre: str) -> mistral.MistralDynamicConfig:
     return {"messages": [UserMessage(role="user", content=f"Recommend a {genre} book")]}
 
 
-response = recommend_book("fantasy")
+response: mistral.MistralCallResponse = recommend_book("fantasy")
 print(response.content)
