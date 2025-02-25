@@ -3,4 +3,4 @@
 from .types import WeaviateParams, WeaviateSettings
 from .vectorstores import WeaviateVectorStore
 
-__all__ = ["WeaviateSettings", "WeaviateParams", "WeaviateVectorStore"]
+__all__ = ["WeaviateParams", "WeaviateSettings", "WeaviateVectorStore"]

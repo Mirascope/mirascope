@@ -2,7 +2,10 @@
 
 
 def calculate_cost(
-    input_tokens: int | float | None, output_tokens: int | float | None, model: str
+    input_tokens: int | float | None,
+    cached_tokens: int | float | None,
+    output_tokens: int | float | None,
+    model: str,
 ) -> float | None:
     """Calculate the cost of a completion using the Bedrock API."""
     # NOTE: We are currently investigating a dynamic approach to determine costs

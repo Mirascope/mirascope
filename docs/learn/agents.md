@@ -57,7 +57,7 @@ Let's take a look at a basic chatbot (not an agent) that uses a class to maintai
             {% else %}
             ```python hl_lines="6 12 24-27"
             {% endif %}
-            --8<-- "examples/learn/agents/state_management/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/agents/state_management/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
     {% endfor %}
@@ -70,17 +70,15 @@ In this example we:
 
 A chatbot with memory, while more advanced, is still not an agent.
 
-??? tip "Provider-agnostic agent"
+??? tip "Provider-Agnostic Agent"
 
     {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
     === "{{ method_title }}"
 
         {% if method == "string_template" %}
-        ```python hl_lines="15-16 28-35"
-        {% elif method == "base_message_param" %}
-        ```python hl_lines="9-10 21-28"
+        ```python hl_lines="20-21 28"
         {% else %}
-        ```python hl_lines="15-16 27-34"
+        ```python hl_lines="18-19 26"
         {% endif %}
         --8<-- "examples/learn/agents/state_management/provider_agnostic/{{ method }}.py"
         ```
@@ -102,11 +100,11 @@ Let's take a look at a basic example where the `Librarian` can access the books 
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="14-17 19-21 32 39-45"
+            ```python hl_lines="19-23 25-27 38 45-51"
             {% else %}
             ```python hl_lines="14-17 19-21 30 37-43"
             {% endif %}
-            --8<-- "examples/learn/agents/tools/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/agents/tools/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
     {% endfor %}
@@ -139,11 +137,11 @@ One common and easy way to help guide LLM agents is to give the agent the abilit
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="8-14 25"
+            ```python hl_lines="14-20 31"
             {% else %}
             ```python hl_lines="8-14 23"
             {% endif %}
-            --8<-- "examples/learn/agents/human_in_the_loop/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/agents/human_in_the_loop/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
     {% endfor %}
@@ -163,11 +161,11 @@ Streaming can help to provide an even more real-time experience:
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="23 31 37-48"
+            ```python hl_lines="29 37 43-54"
             {% else %}
             ```python hl_lines="23 24 35-46"
             {% endif %}
-            --8<-- "examples/learn/agents/streaming/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/agents/streaming/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
     {% endfor %}

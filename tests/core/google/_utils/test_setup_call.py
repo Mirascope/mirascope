@@ -1,5 +1,6 @@
 """Tests the `google._utils.setup_call` module."""
 
+from collections.abc import Callable
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -8,6 +9,7 @@ from google.genai.types import (
     FunctionCallingConfigMode,
     GenerateContentConfig,
     Part,
+    Tool,
 )
 from pydantic import BaseModel
 
@@ -105,7 +107,7 @@ def test_setup_call_json_mode(
         },
         {"role": "user", "parts": [{"type": "text", "text": "test"}]},
     ]
-    tools = [MagicMock()]
+    tools: list[Tool | Callable] = [MagicMock(spec=Tool)]
     mock_base_setup_call.return_value[-1]["tools"] = tools
     mock_base_setup_call.return_value[-1]["config"] = generation_config_type(
         candidate_count=1,
@@ -167,7 +169,7 @@ def test_setup_call_json_mode(
         response_schema=None,
         routing_config=None,
         safety_settings=None,
-        tools=tools,  # pyright: ignore [reportArgumentType]
+        tools=tools,
         tool_config=None,
         cached_content=None,
         response_modalities=None,

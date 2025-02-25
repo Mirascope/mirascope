@@ -10,6 +10,7 @@ from mirascope.core.base import (
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseMessageParam,
+    BaseStream,
     BaseTool,
 )
 from mirascope.core.base.types import CostMetadata, FinishReason, Usage
@@ -63,6 +64,9 @@ class DummyProviderResponse(
     def input_tokens(self) -> int | float | None: ...
 
     @property
+    def cached_tokens(self) -> int | float | None: ...
+
+    @property
     def output_tokens(self) -> int | float | None: ...
 
     @property
@@ -72,11 +76,9 @@ class DummyProviderResponse(
     @cached_property
     def message_param(self) -> DummyMessageParam: ...
 
-    @computed_field
     @cached_property
     def tools(self) -> list[DummyTool] | None: ...
 
-    @computed_field
     @cached_property
     def tool(self) -> DummyTool | None: ...
 
@@ -116,27 +118,25 @@ class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
     def content(self) -> str: ...
 
     @property
-    def finish_reasons(self) -> list[FinishReason] | None:
-        return None
+    def finish_reasons(self) -> list[FinishReason] | None: ...
 
     @property
-    def model(self) -> str | None:
-        return None
+    def model(self) -> str | None: ...
 
     @property
-    def id(self) -> str | None:
-        return None
+    def id(self) -> str | None: ...
 
     @property
     def usage(self) -> Any: ...
 
     @property
-    def input_tokens(self) -> int | float | None:
-        return None
+    def input_tokens(self) -> int | float | None: ...
 
     @property
-    def output_tokens(self) -> int | float | None:
-        return None
+    def cached_tokens(self) -> int | float | None: ...
+
+    @property
+    def output_tokens(self) -> int | float | None: ...
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None: ...
@@ -175,12 +175,13 @@ async def test_stream():
         type(mock_chunk).content = PropertyMock(return_value="fake chunk content")  # pyright: ignore [reportAttributeAccessIssue]
         yield (mock_chunk, DummyTool())
 
-    async def async_gen():
+    async def async_gen(self):
         mock_chunk = DummyProviderChunk(chunk=Mock())
         type(mock_chunk).content = PropertyMock(return_value="fake chunk content")  # pyright: ignore [reportAttributeAccessIssue]
         yield (mock_chunk, DummyTool())
 
-    mock_stream = MagicMock()
+    mock_stream = MagicMock(spec=BaseStream)
+    mock_stream.model = "test_model"
     mock_stream.cost = 0.02
 
     mock_stream.construct_call_response.return_value = DummyProviderResponse(
@@ -196,25 +197,24 @@ async def test_stream():
         end_time=0,
     )
 
-    mock_stream.stream = sync_gen()
-
     dummy_stream_instance = DummyStream(stream=mock_stream)
 
+    mock_stream.__iter__.return_value = sync_gen()
     for chunk, tool in dummy_stream_instance:
         assert isinstance(chunk, CallResponseChunk)
         assert isinstance(tool, Tool)
 
-    mock_stream.stream = async_gen()
-    dummy_stream_instance.stream = async_gen()
+    mock_stream.__aiter__ = async_gen
+    # dummy_stream_instance.stream = async_gen()
     async for chunk, tool in dummy_stream_instance:
         assert isinstance(chunk, CallResponseChunk)
         assert isinstance(tool, Tool)
 
+    assert dummy_stream_instance.model == "test_model"
     assert dummy_stream_instance.cost == 0.02
 
-    call_response_instance = dummy_stream_instance.common_construct_call_response()
+    call_response_instance = dummy_stream_instance.construct_call_response()
     assert isinstance(call_response_instance, CallResponse)
-    ...
 
 
 @pytest.fixture
@@ -236,25 +236,32 @@ def dummy_stream_instance() -> DummyStream:
         start_time=0,
         end_time=0,
     )
+    mock_stream._construct_message_param.return_value = DummyMessageParam(
+        role="assistant", content="test content"
+    )
 
-    mock_stream.stream = sync_gen()
-
+    mock_stream.__iter__ = sync_gen()
     dummy_stream = DummyStream(stream=mock_stream)
-
-    dummy_stream._response = MagicMock()  # pyright: ignore [reportAttributeAccessIssue
 
     return dummy_stream
 
 
-@pytest.mark.asyncio
-async def test_construct_call_response(dummy_stream_instance: DummyStream):
+def test_construct_message_param(dummy_stream_instance: DummyStream):
+    tool_calls = [MagicMock()]
+    content = "test content"
+    message_param = dummy_stream_instance._construct_message_param(tool_calls, content)  # pyright: ignore [reportArgumentType]
+    assert isinstance(message_param, DummyMessageParam), (
+        "Should return a DummyMessageParam instance"
+    )
+
+
+def test_construct_call_response(dummy_stream_instance: DummyStream):
     call_resp = dummy_stream_instance.construct_call_response()  # pyright: ignore [reportAbstractUsage]
     assert isinstance(call_resp, CallResponse), "Should return a CallResponse instance"
 
 
-@pytest.mark.asyncio
-async def test_common_tool_message_params(dummy_stream_instance: DummyStream):
+def test_tool_message_params(dummy_stream_instance: DummyStream):
     tools_and_outputs = [(DummyTool(), "test output")]
-    result = dummy_stream_instance.common_tool_message_params(tools_and_outputs)  # pyright: ignore [reportArgumentType]
+    result = dummy_stream_instance.tool_message_params(tools_and_outputs)  # pyright: ignore [reportArgumentType]
 
-    assert isinstance(result, list), "common_tool_message_params should return a list"
+    assert isinstance(result, list), "tool_message_params should return a list"

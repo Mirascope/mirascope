@@ -3,6 +3,7 @@
 
 def calculate_cost(
     input_tokens: int | float | None,
+    cached_tokens: int | float | None,
     output_tokens: int | float | None,
     model: str = "mixtral-8x7b-32768",
 ) -> float | None:
@@ -10,17 +11,17 @@ def calculate_cost(
 
     https://wow.groq.com/
 
-    Model                                  Input               Output
-    llama-3.1-405b-reasoning               N/A                 N/A
-    llama-3.1-70b-versatile                N/A                 N/A
-    llama-3.1-8b-instant                   N/A                 N/A
-    llama3-groq-70b-8192-tool-use-preview  $0.89 / 1M tokens   $0.89 / 1M tokens
-    llama3-groq-8b-8192-tool-use-preview   $0.19 / 1M tokens   $0.19 / 1M tokens
-    llama3-70b-8192                        $0.59 / 1M tokens   $0.79 / 1M tokens
-    llama3-8b-8192                         $0.05 / 1M tokens   $0.08 / 1M tokens
-    mixtral-8x7b-32768                     $0.27 / 1M tokens   $0.27 / 1M tokens
-    gemma-7b-it                            $0.07 / 1M tokens   $0.07 / 1M tokens
-    gemma2-9b-it                           $0.20 / 1M tokens   $0.20 / 1M tokens
+    Model                                  Input                Cached     Output
+    llama-3.1-405b-reasoning               N/A                             N/A
+    llama-3.1-70b-versatile                N/A                             N/A
+    llama-3.1-8b-instant                   N/A                             N/A
+    llama3-groq-70b-8192-tool-use-preview  $0.89 / 1M tokens               $0.89 / 1M tokens
+    llama3-groq-8b-8192-tool-use-preview   $0.19 / 1M tokens               $0.19 / 1M tokens
+    llama3-70b-8192                        $0.59 / 1M tokens               $0.79 / 1M tokens
+    llama3-8b-8192                         $0.05 / 1M tokens               $0.08 / 1M tokens
+    mixtral-8x7b-32768                     $0.27 / 1M tokens               $0.27 / 1M tokens
+    gemma-7b-it                            $0.07 / 1M tokens               $0.07 / 1M tokens
+    gemma2-9b-it                           $0.20 / 1M tokens               $0.20 / 1M tokens
     """
     pricing = {
         "llama3-groq-70b-8192-tool-use-preview": {

@@ -20,8 +20,6 @@ from mirascope.core.base import (
 )
 from mirascope.core.google._utils._message_param_converter import (
     GoogleMessageParamConverter,
-    _to_document_part,
-    _to_image_part,
 )
 
 
@@ -73,13 +71,10 @@ def test_google_convert_parts_document():
     part = PartDict(
         file_data=FileDataDict(mime_type="application/pdf", file_uri="%PDF-1.4...")
     )
-    with pytest.raises(
-        ValueError,
-        match="Unsupported file_data mime type: application/pdf. Cannot convert to BaseMessageParam.",
-    ):
-        GoogleMessageParamConverter.from_provider(
-            [{"role": "assistant", "parts": [part]}]
-        )
+    converted_message = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )[0]
+    assert isinstance(converted_message.content[0], ImageURLPart)
 
 
 def test_google_convert_parts_unsupported_image():
@@ -90,7 +85,7 @@ def test_google_convert_parts_unsupported_image():
     part = PartDict(inline_data=BlobDict(mime_type="image/tiff", data=b"fake"))
     with pytest.raises(
         ValueError,
-        match="Unsupported inline_data mime type: image/tiff. Cannot convert to BaseMessageParam.",
+        match="Unsupported image media type: image/tiff. Google currently only supports JPEG, PNG, WebP, HEIC, and HEIF images.",
     ):
         GoogleMessageParamConverter.from_provider(
             [{"role": "assistant", "parts": [part]}]
@@ -134,22 +129,6 @@ def test_google_convert_no_supported_content():
         )
 
 
-def test_to_image_part_unsupported_image():
-    with pytest.raises(
-        ValueError,
-        match="Unsupported image media type: application/json. Expected one of: image/jpeg, image/png, image/gif, image/webp.",
-    ):
-        _to_image_part(mime_type="application/json", data=b"{}")
-
-
-def test_to_document_part_unsupported_document():
-    with pytest.raises(
-        ValueError,
-        match="Unsupported document media type: application/json. Only application/pdf is supported.",
-    ):
-        _to_document_part(mime_type="application/json", data=b"{}")
-
-
 @patch(
     "mirascope.core.google._utils._message_param_converter.Client",
     new_callable=MagicMock,
@@ -160,6 +139,24 @@ def test_to_provider(mock_client_class):
     )
     assert results == [{"parts": [{"text": "Hello"}], "role": "model"}]
     mock_client_class.assert_called_once_with()
+
+
+def test_inline_data_audio():
+    part = PartDict(
+        inline_data=BlobDict(mime_type="audio/mp3", data=b"fake audio data")
+    )
+    results = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    assert result.content[0].model_dump() == {
+        "type": "audio",
+        "media_type": "audio/mp3",
+        "audio": b"fake audio data",
+    }
 
 
 def test_inline_data_application_pdf():
@@ -176,6 +173,19 @@ def test_inline_data_application_pdf():
     assert isinstance(result.content[0], DocumentPart)
     assert result.content[0].media_type == "application/pdf"
     assert result.content[0].document == b"%PDF-1.4..."
+
+
+def test_inline_data_unknown_mime_type():
+    part = PartDict(
+        inline_data=BlobDict(mime_type="application/zip", data=b"fake zip data")
+    )
+    with pytest.raises(
+        ValueError,
+        match="Unsupported inline_data mime type: application/zip. Cannot convert to BaseMessageParam.",
+    ):
+        GoogleMessageParamConverter.from_provider(
+            [{"role": "assistant", "parts": [part]}]
+        )
 
 
 def test_function_response():
@@ -238,18 +248,14 @@ def test_google_convert_parts_file_data_audio():
     assert result.content[0].url == "http://example.com/audio"
 
 
-def test_google_convert_parts_file_data_unsupported():
-    """
-    When a part has file_data with an unsupported mime type, the converter should raise ValueError.
-    """
+def test_google_convert_parts_file_data_unknown_mime_type():
+    """When a part has file_data with an unknown mime type, it should use ImageURLPart."""
     file_data = FileDataDict(
-        mime_type="application/zip", file_uri="http://example.com/zip"
+        mime_type="application/zip",
+        file_uri="http://generativelanguage.googleapis.com/files/zip",
     )
     part = PartDict(file_data=file_data)
-    with pytest.raises(
-        ValueError,
-        match="Unsupported file_data mime type: application/zip. Cannot convert to BaseMessageParam.",
-    ):
-        GoogleMessageParamConverter.from_provider(
-            [{"role": "assistant", "parts": [part]}]
-        )
+    converted_message = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )[0]
+    assert isinstance(converted_message.content[0], ImageURLPart)

@@ -15,16 +15,19 @@ JSON Mode is a feature in Mirascope that allows you to request structured JSON o
 
 ??? warning "Not all providers have an official JSON Mode"
 
-    For providers with explicit support, Mirascope uses the native JSON Mode feature of the API. For providers without explicit support (Anthropic and Cohere), Mirascope implements a pseudo JSON Mode by instructing the model in the prompt to output JSON.
+    For providers with explicit support, Mirascope uses the native JSON Mode feature of the API. For providers without explicit support (e.g. Anthropic), Mirascope implements a pseudo JSON Mode by instructing the model in the prompt to output JSON.
 
     | Provider  | Support Type | Implementation      |
     |-----------|--------------|---------------------|
-    | OpenAI    | Explicit     | Native API feature  |
     | Anthropic | Pseudo       | Prompt engineering  |
-    | Mistral   | Explicit     | Native API feature  |
-    | Gemini    | Explicit     | Native API feature  |
-    | Groq      | Explicit     | Native API feature  |
+    | Azure     | Explicit     | Native API feature  |
+    | Bedrock   | Pseudo       | Prompt engineering  |
     | Cohere    | Pseudo       | Prompt engineering  |
+    | Google    | Explicit     | Native API feature  |
+    | Groq      | Explicit     | Native API feature  |
+    | LiteLLM   | Explicit     | Native API feature  |
+    | Mistral   | Explicit     | Native API feature  |
+    | OpenAI    | Explicit     | Native API feature  |
 
     If you'd prefer not to have any internal updates made to your prompt, you can always set JSON mode yourself through `call_params` rather than using the `json_mode` argument, which provides provider-agnostic support but is certainly not required to use JSON mode.
 
@@ -47,7 +50,7 @@ Let's take a look at a basic example using JSON Mode:
             {% else %}
             ```python hl_lines="6 8 13"
             {% endif %}
-            --8<-- "examples/learn/json_mode/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/json_mode/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -76,7 +79,7 @@ While JSON Mode can signifanctly improve the structure of model outputs, it's im
             {% else %}
             ```python hl_lines="11 14"
             {% endif %}
-            --8<-- "examples/learn/json_mode/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/json_mode/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 

@@ -36,17 +36,19 @@ class ToolConfig(TypedDict, total=False):
 class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
     _openai_strict: ClassVar[bool] = False
 
-    def _remove_title(self, obj: Any) -> Any:  # noqa: ANN401
+    def _remove_title(self, key: str | None, obj: Any) -> Any:  # noqa: ANN401
         if isinstance(obj, dict):
             if self._openai_strict and "type" in obj and obj["type"] == "object":
                 obj["additionalProperties"] = False
             if "type" in obj or "$ref" in obj or "properties" in obj:
-                obj.pop("title", None)
+                title = obj.pop("title", None)
+                if key and title and key.lower() != title.lower():
+                    obj["title"] = title
 
             for key, value in list(obj.items()):
-                obj[key] = self._remove_title(value)
+                obj[key] = self._remove_title(key, value)
         elif isinstance(obj, list):
-            return [self._remove_title(item) for item in obj]
+            return [self._remove_title(None, item) for item in obj]
 
         return obj
 
@@ -56,7 +58,7 @@ class GenerateJsonSchemaNoTitles(GenerateJsonSchema):
         json_schema = super().generate(schema, mode=mode)
         json_schema.pop("title", None)
         json_schema.pop("description", None)
-        json_schema = self._remove_title(json_schema)
+        json_schema = self._remove_title(None, json_schema)
         return json_schema
 
 

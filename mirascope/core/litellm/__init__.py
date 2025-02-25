@@ -16,7 +16,6 @@ LiteLLMMessageParam: TypeAlias = OpenAIMessageParam
 
 __all__ = [
     "AsyncLiteLLMDynamicConfig",
-    "call",
     "LiteLLMCallParams",
     "LiteLLMCallResponse",
     "LiteLLMCallResponseChunk",
@@ -24,5 +23,6 @@ __all__ = [
     "LiteLLMMessageParam",
     "LiteLLMStream",
     "LiteLLMTool",
+    "call",
     "litellm_call",
 ]

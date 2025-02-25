@@ -1,7 +1,7 @@
 """This module contains the setup_call function for OpenAI tools."""
 
 from collections.abc import Awaitable, Callable
-from typing import Any, cast, overload
+from typing import Any, TypeAlias, cast, overload
 
 from litellm import acompletion, completion
 from openai import OpenAI
@@ -21,12 +21,16 @@ from ...openai import (
 from ...openai._call_kwargs import OpenAICallKwargs
 from ...openai._utils import setup_call as setup_call_openai
 
+# Note: MyPy doesn't like `client: ...` so we use these aliases instead.
+_AsyncLiteLLMClient: TypeAlias = Any
+_SyncLiteLLMClient: TypeAlias = Any
+
 
 @overload
 def setup_call(
     *,
     model: str,
-    client: ...,
+    client: _AsyncLiteLLMClient | None,
     fn: Callable[..., Awaitable[AsyncOpenAIDynamicConfig]],
     fn_args: dict[str, Any],
     dynamic_config: AsyncOpenAIDynamicConfig,
@@ -48,7 +52,7 @@ def setup_call(
 def setup_call(
     *,
     model: str,
-    client: ...,
+    client: _SyncLiteLLMClient | None,
     fn: Callable[..., OpenAIDynamicConfig],
     fn_args: dict[str, Any],
     dynamic_config: OpenAIDynamicConfig,

@@ -244,7 +244,7 @@ def test_image_url_with_non_http(mock_load_media: MagicMock) -> None:
 )
 @patch(
     "mirascope.core.gemini._utils._convert_message_params.get_audio_type",
-    return_value="audio/wav",
+    return_value="wav",
 )
 def test_audio_url_with_http_valid(
     mock_get_audio_type: MagicMock, mock_load_media: MagicMock
@@ -268,7 +268,7 @@ def test_audio_url_with_http_valid(
 )
 @patch(
     "mirascope.core.gemini._utils._convert_message_params.get_audio_type",
-    return_value="audio/unknown",
+    return_value="unknown",
 )
 def test_audio_url_with_http_invalid(
     mock_get_audio_type: MagicMock, mock_load_media: MagicMock

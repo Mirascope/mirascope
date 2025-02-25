@@ -11,12 +11,12 @@ from .vectorstores import BaseVectorStore
 
 __all__ = [
     "BaseChunker",
-    "TextChunker",
     "BaseEmbedder",
     "BaseEmbeddingParams",
     "BaseEmbeddingResponse",
     "BaseQueryResults",
-    "BaseVectorStoreParams",
     "BaseVectorStore",
+    "BaseVectorStoreParams",
     "Document",
+    "TextChunker",
 ]

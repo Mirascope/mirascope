@@ -124,6 +124,12 @@ class GeminiCallResponse(
 
     @computed_field
     @property
+    def cached_tokens(self) -> None:
+        """Returns the number of cached tokens."""
+        return None
+
+    @computed_field
+    @property
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
         return None
@@ -132,7 +138,9 @@ class GeminiCallResponse(
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property
@@ -140,7 +148,6 @@ class GeminiCallResponse(
         """Returns the models's response as a message parameter."""
         return {"role": "model", "parts": self.response.parts}  # pyright: ignore [reportReturnType]
 
-    @computed_field
     @cached_property
     def tools(self) -> list[GeminiTool] | None:
         """Returns the list of tools for the 0th candidate's 0th content part."""
@@ -157,7 +164,6 @@ class GeminiCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> GeminiTool | None:
         """Returns the 0th tool for the 0th candidate's 0th content part.

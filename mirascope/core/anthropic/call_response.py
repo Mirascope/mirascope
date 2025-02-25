@@ -103,6 +103,12 @@ class AnthropicCallResponse(
 
     @computed_field
     @property
+    def cached_tokens(self) -> int:
+        """Returns the number of cached tokens."""
+        return getattr(self.usage, "cache_read_input_tokens", 0)
+
+    @computed_field
+    @property
     def output_tokens(self) -> int:
         """Returns the number of output tokens."""
         return self.usage.output_tokens
@@ -111,7 +117,9 @@ class AnthropicCallResponse(
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property
@@ -119,7 +127,6 @@ class AnthropicCallResponse(
         """Returns the assistants's response as a message parameter."""
         return MessageParam(**self.response.model_dump(include={"content", "role"}))
 
-    @computed_field
     @cached_property
     def tools(self) -> list[AnthropicTool] | None:
         """Returns any available tool calls as their `AnthropicTool` definition.
@@ -141,7 +148,6 @@ class AnthropicCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> AnthropicTool | None:
         """Returns the 0th tool for the 0th choice message.

@@ -28,13 +28,13 @@ warnings.warn(
 )
 
 __all__ = [
-    "call",
-    "GeminiDynamicConfig",
     "GeminiCallParams",
     "GeminiCallResponse",
     "GeminiCallResponseChunk",
+    "GeminiDynamicConfig",
     "GeminiMessageParam",
     "GeminiStream",
     "GeminiTool",
+    "call",
     "gemini_call",
 ]

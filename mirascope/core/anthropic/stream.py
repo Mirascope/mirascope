@@ -68,7 +68,9 @@ class AnthropicStream(
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     def _construct_message_param(
         self, tool_calls: list[ToolUseBlock] | None = None, content: str | None = None

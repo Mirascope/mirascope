@@ -129,7 +129,7 @@ class LLMFunctionDecorator(
 
 class AsyncCreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         *,
         stream: Literal[False] = False,
@@ -153,7 +153,7 @@ class AsyncCreateFn(Protocol[_ResponseT, _ResponseChunkT]):
 
 class CreateFn(Protocol[_ResponseT, _ResponseChunkT]):
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         *,
         stream: Literal[False] = False,
@@ -371,6 +371,7 @@ class CalculateCost(Protocol):
     def __call__(
         self,
         input_tokens: int | float | None,
+        cached_tokens: int | float | None,
         output_tokens: int | float | None,
         model: str,
     ) -> float | None: ...  # pragma: no cover
@@ -390,7 +391,7 @@ class CallDecorator(
     ],
 ):
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         model: str,
         *,
@@ -409,7 +410,7 @@ class CallDecorator(
     ]: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         model: str,
         *,
@@ -437,7 +438,7 @@ class CallDecorator(
     ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _BaseCallResponseT]: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         model: str,
         *,
@@ -576,7 +577,7 @@ class CallDecorator(
     ) -> NoReturn: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         model: str,
         *,
@@ -664,7 +665,7 @@ class CallDecorator(
     ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _ParsedOutputT]: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         model: str,
         *,
@@ -774,7 +775,7 @@ class CallDecorator(
     ####
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
         model: str,
         *,

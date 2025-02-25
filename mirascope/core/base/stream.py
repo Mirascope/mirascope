@@ -93,6 +93,7 @@ class BaseStream(
     user_message_param: _UserMessageParamT | None = None
     message_param: _AssistantMessageParamT
     input_tokens: int | float | None = None
+    cached_tokens: int | float | None = None
     output_tokens: int | float | None = None
     id: str | None = None
     finish_reasons: list[_FinishReason] | None = None
@@ -139,9 +140,9 @@ class BaseStream(
         self,
     ) -> Generator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None, None]:
         """Iterator over the stream and stores useful information."""
-        assert isinstance(
-            self.stream, Generator
-        ), "Stream must be a generator for __iter__"
+        assert isinstance(self.stream, Generator), (
+            "Stream must be a generator for __iter__"
+        )
         self.content, tool_calls = "", []
         self.start_time = datetime.datetime.now().timestamp() * 1000
         for chunk, tool in self.stream:
@@ -162,12 +163,12 @@ class BaseStream(
         """Iterates over the stream and stores useful information."""
         self.content = ""
 
-        async def generator() -> (
-            AsyncGenerator[tuple[_BaseCallResponseChunkT, _BaseToolT | None], None]
-        ):
-            assert isinstance(
-                self.stream, AsyncGenerator
-            ), "Stream must be an async generator for __aiter__"
+        async def generator() -> AsyncGenerator[
+            tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
+        ]:
+            assert isinstance(self.stream, AsyncGenerator), (
+                "Stream must be an async generator for __aiter__"
+            )
             tool_calls = []
             async for chunk, tool in self.stream:
                 self._update_properties(chunk)
@@ -190,6 +191,12 @@ class BaseStream(
                 chunk.input_tokens
                 if not self.input_tokens
                 else self.input_tokens + chunk.input_tokens
+            )
+        if chunk.cached_tokens is not None:
+            self.cached_tokens = (
+                chunk.cached_tokens
+                if not self.cached_tokens
+                else self.cached_tokens + chunk.cached_tokens
             )
         if chunk.output_tokens is not None:
             self.output_tokens = (
@@ -397,11 +404,9 @@ def stream_factory(  # noqa: ANN201
                     stream=True,
                 )
 
-                async def generator() -> (
-                    AsyncGenerator[
-                        tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
-                    ]
-                ):
+                async def generator() -> AsyncGenerator[
+                    tuple[_BaseCallResponseChunkT, _BaseToolT | None], None
+                ]:
                     async for chunk, tool in handle_stream_async(
                         await create(stream=True, **call_kwargs),
                         tool_types,
@@ -446,13 +451,11 @@ def stream_factory(  # noqa: ANN201
                     stream=True,
                 )
 
-                def generator() -> (
-                    Generator[
-                        tuple[_BaseCallResponseChunkT, _BaseToolT | None],
-                        None,
-                        None,
-                    ]
-                ):
+                def generator() -> Generator[
+                    tuple[_BaseCallResponseChunkT, _BaseToolT | None],
+                    None,
+                    None,
+                ]:
                     yield from handle_stream(
                         create(stream=True, **call_kwargs),
                         tool_types,

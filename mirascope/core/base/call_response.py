@@ -7,7 +7,7 @@ import json
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import cached_property, wraps
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from pydantic import (
     BaseModel,
@@ -24,7 +24,7 @@ from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
-from .types import CostMetadata, FinishReason, Provider, Usage
+from .types import CostMetadata, FinishReason, JsonableType, Usage
 
 if TYPE_CHECKING:
     from ...llm.tool import Tool
@@ -35,36 +35,26 @@ _BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ToolSchemaT = TypeVar("_ToolSchemaT")
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", bound=BaseDynamicConfig)
 _MessageParamT = TypeVar("_MessageParamT", bound=Any)
+_ToolMessageParamT = TypeVar("_ToolMessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 _UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound="BaseCallResponse")
 
 
-JsonableType: TypeAlias = (
-    str
-    | int
-    | float
-    | bool
-    | bytes
-    | list["JsonableType"]
-    | set["JsonableType"]
-    | tuple["JsonableType", ...]
-    | dict[str, "JsonableType"]
-    | BaseModel
-)
-
-
 def transform_tool_outputs(
-    fn: Callable[[type[_BaseCallResponseT], list[tuple[_BaseToolT, str]]], list[Any]],
+    fn: Callable[
+        [type[_BaseCallResponseT], list[tuple[_BaseToolT, str]]],
+        list[_ToolMessageParamT],
+    ],
 ) -> Callable[
     [type[_BaseCallResponseT], list[tuple[_BaseToolT, JsonableType]]],
-    list[Any],
+    list[_ToolMessageParamT],
 ]:
     @wraps(fn)
     def wrapper(
         cls: type[_BaseCallResponseT],
         tools_and_outputs: list[tuple[_BaseToolT, JsonableType]],
-    ) -> list[Any]:
+    ) -> list[_ToolMessageParamT]:
         def recursive_serializer(value: JsonableType) -> BaseType:
             if isinstance(value, str):
                 return value
@@ -215,6 +205,16 @@ class BaseCallResponse(
     @computed_field
     @property
     @abstractmethod
+    def cached_tokens(self) -> int | float | None:
+        """Should return the number of cached tokens.
+
+        If there is no cached_tokens, this method must return None.
+        """
+        ...
+
+    @computed_field
+    @property
+    @abstractmethod
     def output_tokens(self) -> int | float | None:
         """Should return the number of output tokens.
 
@@ -261,12 +261,9 @@ class BaseCallResponse(
     def provider(self) -> Provider | None:
         """Get the provider used for this API call.
 
-        This is an abstract property that should be implemented by subclasses.
-
-        Returns:
-            The provider name
+        If there is no cost, this method must return None.
         """
-        raise NotImplementedError("Subclasses must implement provider property")
+        ...
 
     @computed_field
     @cached_property
@@ -275,14 +272,12 @@ class BaseCallResponse(
         """Returns the assistant's response as a message parameter."""
         ...
 
-    @computed_field
     @cached_property
     @abstractmethod
     def tools(self) -> list[_BaseToolT] | None:
         """Returns the tools for the 0th choice message."""
         ...
 
-    @computed_field
     @cached_property
     @abstractmethod
     def tool(self) -> _BaseToolT | None:
@@ -333,4 +328,6 @@ class BaseCallResponse(
     @property
     def common_usage(self) -> Usage | None:
         """Provider-agnostic usage info."""
-        return get_common_usage(self.input_tokens, self.output_tokens)
+        return get_common_usage(
+            self.input_tokens, self.cached_tokens, self.output_tokens
+        )

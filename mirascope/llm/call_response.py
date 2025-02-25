@@ -13,6 +13,7 @@ from mirascope.core.base import (
     BaseCallResponse,
     BaseMessageParam,
     BaseTool,
+    Usage,
     transform_tool_outputs,
 )
 from mirascope.core.base.message_param import ToolResultPart
@@ -22,14 +23,11 @@ from mirascope.llm.tool import Tool
 
 _ResponseT = TypeVar("_ResponseT")
 
-_ToolMessageParamT = TypeVar("_ToolMessageParamT")
-_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
-
 
 class CallResponse(
     BaseCallResponse[
         _ResponseT,
-        _BaseToolT,
+        Tool,
         Any,
         BaseDynamicConfig[Any, Any, Any],
         BaseMessageParam,
@@ -44,11 +42,11 @@ class CallResponse(
     We rely on _response having `common_` methods or properties for normalization.
     """
 
-    _response: BaseCallResponse[_ResponseT, _BaseToolT, Any, Any, Any, Any, Any]
+    _response: BaseCallResponse[_ResponseT, Tool, Any, Any, Any, Any, Any]
 
     def __init__(
         self,
-        response: BaseCallResponse[_ResponseT, _BaseToolT, Any, Any, Any, Any, Any],
+        response: BaseCallResponse[_ResponseT, Tool, Any, Any, Any, Any, Any],
     ) -> None:
         super().__init__(
             **{
@@ -65,7 +63,13 @@ class CallResponse(
     def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
         special_names = {
             "_response",
+            "finish_reasons",
+            "usage",
+            "message_param",
             "user_message_param",
+            "tools",
+            "tool",
+            "tool_message_params",
             "__dict__",
             "__class__",
             "model_fields",
@@ -97,17 +101,20 @@ class CallResponse(
     def finish_reasons(self) -> list[FinishReason] | None:  # pyright: ignore [reportIncompatibleMethodOverride]
         return self._response.common_finish_reasons
 
+    @property
+    def usage(self) -> Usage | None:
+        """Returns the usage of the chat completion."""
+        return self._response.common_usage
+
     @computed_field
     @cached_property
     def message_param(self) -> BaseMessageParam:
         return self._response.common_message_param  # pyright: ignore [reportReturnType]
 
-    @computed_field
     @cached_property
     def tools(self) -> list[Tool] | None:  # pyright: ignore [reportIncompatibleVariableOverride]
         return self._response.common_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> Tool | None:  # pyright: ignore [reportIncompatibleVariableOverride]
         tools = self._response.common_tools
@@ -118,7 +125,7 @@ class CallResponse(
     @classmethod
     @transform_tool_outputs
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[BaseTool, str]]
+        cls, tools_and_outputs: list[tuple[Tool, str]]
     ) -> list[BaseMessageParam]:
         """Returns the tool message parameters for tool call results.
 

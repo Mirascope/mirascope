@@ -6,7 +6,10 @@ usage docs: learn/streams.md#handling-streamed-responses
 from typing import cast
 
 from google.genai.types import FinishReason as GoogleFinishReason
-from google.genai.types import GenerateContentResponse
+from google.genai.types import (
+    GenerateContentResponse,
+    GenerateContentResponseUsageMetadata,
+)
 
 from mirascope.core.base.types import FinishReason
 
@@ -57,12 +60,12 @@ class GoogleCallResponseChunk(
         ]
 
     @property
-    def model(self) -> None:
+    def model(self) -> str | None:
         """Returns the model name.
 
         google.generativeai does not return model, so we return None
         """
-        return None
+        return self.chunk.model_version
 
     @property
     def id(self) -> str | None:
@@ -73,22 +76,27 @@ class GoogleCallResponseChunk(
         return None
 
     @property
-    def usage(self) -> None:
+    def usage(self) -> GenerateContentResponseUsageMetadata | None:
         """Returns the usage of the chat completion.
 
         google.generativeai does not have Usage, so we return None
         """
-        return None
+        return self.chunk.usage_metadata
 
     @property
-    def input_tokens(self) -> None:
+    def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
-        return None
+        return self.usage.prompt_token_count if self.usage else None
 
     @property
-    def output_tokens(self) -> None:
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return self.usage.cached_content_token_count if self.usage else None
+
+    @property
+    def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
-        return None
+        return self.usage.candidates_token_count if self.usage else None
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:

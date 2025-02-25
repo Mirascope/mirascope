@@ -1,4 +1,4 @@
-from mirascope.core import BaseMessageParam, Messages, prompt_template
+from mirascope import BaseMessageParam, Messages, prompt_template
 
 
 @prompt_template(

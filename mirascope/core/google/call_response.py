@@ -11,6 +11,7 @@ from google.genai.types import (
     ContentListUnionDict,
     FunctionResponseDict,
     GenerateContentResponse,
+    GenerateContentResponseUsageMetadata,
     PartDict,
     # Import manually SchemaDict to avoid Pydantic error
     SchemaDict,  # noqa: F401
@@ -68,11 +69,13 @@ class GoogleCallResponse(
 
     _provider = "google"
 
+    @computed_field
     @property
     def content(self) -> str:
         """Returns the contained string content for the 0th choice."""
         return self.response.candidates[0].content.parts[0].text  # pyright: ignore [reportOptionalSubscript, reportReturnType, reportOptionalMemberAccess, reportOptionalIterable]
 
+    @computed_field
     @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
@@ -83,6 +86,7 @@ class GoogleCallResponse(
             if candidate and candidate.finish_reason is not None
         ]
 
+    @computed_field
     @property
     def model(self) -> str:
         """Returns the model name.
@@ -90,8 +94,11 @@ class GoogleCallResponse(
         google.generativeai does not return model, so we return the model provided by
         the user.
         """
-        return self._model
+        return (
+            self.response.model_version if self.response.model_version else self._model
+        )
 
+    @computed_field
     @property
     def id(self) -> str | None:
         """Returns the id of the response.
@@ -101,27 +108,50 @@ class GoogleCallResponse(
         return None
 
     @property
-    def usage(self) -> None:
+    def usage(self) -> GenerateContentResponseUsageMetadata | None:
         """Returns the usage of the chat completion.
 
         google.generativeai does not have Usage, so we return None
         """
-        return None
+        return self.response.usage_metadata
 
+    @computed_field
     @property
-    def input_tokens(self) -> None:
+    def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
-        return None
+        return (
+            self.response.usage_metadata.prompt_token_count
+            if self.response.usage_metadata
+            else None
+        )
 
+    @computed_field
     @property
-    def output_tokens(self) -> None:
-        """Returns the number of output tokens."""
-        return None
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return (
+            self.response.usage_metadata.cached_content_token_count
+            if self.response.usage_metadata
+            else None
+        )
 
+    @computed_field
+    @property
+    def output_tokens(self) -> int | None:
+        """Returns the number of output tokens."""
+        return (
+            self.response.usage_metadata.candidates_token_count
+            if self.response.usage_metadata
+            else None
+        )
+
+    @computed_field
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property
@@ -129,7 +159,6 @@ class GoogleCallResponse(
         """Returns the models's response as a message parameter."""
         return {"role": "model", "parts": self.response.candidates[0].content.parts}  # pyright: ignore [reportReturnType, reportOptionalSubscript, reportOptionalMemberAccess]
 
-    @computed_field
     @cached_property
     def tools(self) -> list[GoogleTool] | None:
         """Returns the list of tools for the 0th candidate's 0th content part."""
@@ -146,7 +175,6 @@ class GoogleCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> GoogleTool | None:
         """Returns the 0th tool for the 0th candidate's 0th content part.

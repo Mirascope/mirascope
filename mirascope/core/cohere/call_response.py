@@ -107,6 +107,12 @@ class CohereCallResponse(
 
     @computed_field
     @property
+    def cached_tokens(self) -> float | None:
+        """Returns the number of cached tokens."""
+        return None
+
+    @computed_field
+    @property
     def output_tokens(self) -> float | None:
         """Returns the number of output tokens."""
         if self.usage:
@@ -117,7 +123,9 @@ class CohereCallResponse(
     @property
     def cost(self) -> float | None:
         """Returns the cost of the response."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property
@@ -129,7 +137,6 @@ class CohereCallResponse(
             role="assistant",  # pyright: ignore [reportCallIssue]
         )
 
-    @computed_field
     @cached_property
     def tools(self) -> list[CohereTool] | None:
         """Returns the tools for the 0th choice message.
@@ -147,7 +154,6 @@ class CohereCallResponse(
                     break
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> CohereTool | None:
         """Returns the 0th tool for the 0th choice message.

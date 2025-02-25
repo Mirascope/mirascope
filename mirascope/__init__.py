@@ -7,11 +7,20 @@ with suppress(ImportError):
     from . import core as core
 
 from .core import (
+    AudioPart,
+    AudioURLPart,
     BaseDynamicConfig,
     BaseMessageParam,
     BaseTool,
     BaseToolKit,
+    CacheControlPart,
+    DocumentPart,
+    ImagePart,
+    ImageURLPart,
     Messages,
+    TextPart,
+    ToolCallPart,
+    ToolResultPart,
     prompt_template,
 )
 
@@ -24,13 +33,23 @@ with suppress(ImportError):
 __version__ = importlib.metadata.version("mirascope")
 
 __all__ = [
+    "AudioPart",
+    "AudioURLPart",
     "BaseDynamicConfig",
     "BaseMessageParam",
     "BaseTool",
     "BaseToolKit",
+    "CacheControlPart",
+    "DocumentPart",
+    "ImagePart",
+    "ImageURLPart",
+    "Messages",
+    "TextPart",
+    "ToolCallPart",
+    "ToolResultPart",
+    "__version__",
     "core",
     "integrations",
     "prompt_template",
     "retries",
-    "__version__",
 ]

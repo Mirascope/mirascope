@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 
-from mirascope.core import anthropic, prompt_template
+from mirascope import llm, prompt_template
 from pydantic import BaseModel
 
 
@@ -11,7 +11,7 @@ class Book(BaseModel):
     summary: str
 
 
-def parse_book_xml(response: anthropic.AnthropicCallResponse) -> Book | None:
+def parse_book_xml(response: llm.CallResponse) -> Book | None:
     try:
         root = ET.fromstring(response.content)
         if (node := root.find("title")) is None or not (title := node.text):
@@ -28,7 +28,7 @@ def parse_book_xml(response: anthropic.AnthropicCallResponse) -> Book | None:
         return None
 
 
-@anthropic.call(model="claude-3-5-sonnet-20240620", output_parser=parse_book_xml)
+@llm.call(provider="openai", model="gpt-4o-mini", output_parser=parse_book_xml)
 @prompt_template(
     """
     Recommend a {genre} book. Provide the information in the following XML format:

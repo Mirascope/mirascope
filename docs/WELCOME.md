@@ -39,8 +39,8 @@ Install Mirascope, specifying the provider(s) you intend to use, and set your AP
         {% else %}export CO_API_KEY=XXXXX
         {% endif %}
         {% elif provider == "LiteLLM" %}
-        {% if os == "Windows" %}set OPENAI_API_KEY=XXXXX  # set keys for providers you will use
-        {% else %}export OPENAI_API_KEY=XXXXX  # set keys for providers you will use
+        {% if os == "Windows" %}set OPENAI_API_KEY=XXXXX 
+        {% else %}export OPENAI_API_KEY=XXXXX 
         {% endif %}
         {% elif provider == "Azure AI" %}
         {% if os == "Windows" %}set AZURE_INFERENCE_ENDPOINT=XXXXX
@@ -72,9 +72,9 @@ Make your first call to an LLM to extract the title and author of a book from th
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
-            ```python hl_lines="10 12 17"
-            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:3:7"
-            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:10:21"
+            ```python hl_lines="10 15 17"
+            --8<-- "build/snippets/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:3:7"
+            --8<-- "build/snippets/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:10:21"
             ```
         {% endfor %}
 
@@ -102,7 +102,7 @@ Make your first call to an LLM to extract the title and author of a book from th
         {% else %}
         ```python hl_lines="18-39 44"
         {% endif %}
-        --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/official_sdk.py"
+        --8<-- "examples/learn/response_models/basic_usage/official_sdk/{{ provider | provider_dir }}_sdk.py"
         ```
 
     {% endfor %}

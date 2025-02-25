@@ -53,7 +53,7 @@ def get_async_create_fn(
     async_generator_func: _AsyncGeneratorFunc[_StreamedResponse] | None = None,
 ) -> AsyncCreateFn[_NonStreamedResponse, _StreamedResponse]:
     @overload
-    def create_or_stream(
+    def create_or_stream(  # pyright: ignore[reportOverlappingOverload]
         *,
         stream: Literal[True] | StreamConfig = True,
         **kwargs: Any,  # noqa: ANN401
@@ -100,7 +100,7 @@ def get_create_fn(
     sync_generator_func: _SyncGeneratorFunc[_StreamedResponse] | None = None,
 ) -> CreateFn[_NonStreamedResponse, _StreamedResponse]:
     @overload
-    def create_or_stream(
+    def create_or_stream(  # pyright: ignore[reportOverlappingOverload]
         *,
         stream: Literal[True] | StreamConfig = True,
         **kwargs: Any,  # noqa: ANN401

@@ -106,6 +106,12 @@ class AzureCallResponse(
 
     @computed_field
     @property
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return None
+
+    @computed_field
+    @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens if self.usage else None
@@ -114,7 +120,9 @@ class AzureCallResponse(
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property
@@ -125,7 +133,6 @@ class AzureCallResponse(
             content=message_param.content, tool_calls=message_param.tool_calls
         )
 
-    @computed_field
     @cached_property
     def tools(self) -> list[AzureTool] | None:
         """Returns any available tool calls as their `AzureTool` definition.
@@ -149,7 +156,6 @@ class AzureCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> AzureTool | None:
         """Returns the 0th tool for the 0th choice message.

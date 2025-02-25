@@ -101,6 +101,13 @@ class AnthropicCallResponseChunk(
         return None
 
     @property
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        if (usage := self.usage) and isinstance(usage, Usage):
+            return getattr(usage, "cache_read_input_tokens", 0)
+        return None
+
+    @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         if self.usage:

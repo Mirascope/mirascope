@@ -33,7 +33,7 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         === "{{ provider }}"
 
             ```python hl_lines="12 19"
-            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:3:21"
+            --8<-- "build/snippets/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:3:21"
             ```
         {% endfor %}
 
@@ -48,8 +48,8 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         ```python hl_lines="19-38 43"
         {% elif provider == "Mistral" %}
         ```python hl_lines="21-46 51"
-        {% elif provider == "Gemini" %}
-        ```python hl_lines="19-57 62"
+        {% elif provider == "Google" %}
+        ```python hl_lines="21-60 65"
         {% elif provider == "Cohere" %}
         ```python hl_lines="19-36 41"
         {% elif provider == "LiteLLM" %}
@@ -58,10 +58,12 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         ```python hl_lines="26-46 51"
         {% elif provider == "Vertex AI" %}
         ```python hl_lines="23-62 67"
+        {% elif provider == "Bedrock" %}
+        ```python hl_lines="16-48 53"
         {% else %}
         ```python hl_lines="18-39 44"
         {% endif %}
-        --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/official_sdk.py"
+        --8<-- "examples/learn/response_models/basic_usage/official_sdk/{{ provider | provider_dir }}_sdk.py"
         ```
 
     {% endfor %}
@@ -87,7 +89,7 @@ Every `response_model` that uses a Pydantic `BaseModel` will automatically have 
         === "{{ provider }}"
 
             ```python hl_lines="1 23-25"
-            --8<-- "examples/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/response_models/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -106,7 +108,7 @@ For cases where you want to extract just a single built-in type, Mirascope provi
         === "{{ provider }}"
 
             ```python hl_lines="4 16"
-            --8<-- "examples/learn/response_models/builtin_types/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/response_models/builtin_types/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -152,7 +154,7 @@ Let's take a look at an example where we want to validate that all fields are up
         === "{{ provider }}"
 
             ```python hl_lines="1 4 7-9 15-16 24 28"
-            --8<-- "examples/learn/response_models/validation/{{ provider | provider_dir }}/{{ method }}.py::36"
+            --8<-- "build/snippets/learn/response_models/validation/{{ provider | provider_dir }}/{{ method }}.py::36"
             ```
         {% endfor %}
 
@@ -175,8 +177,8 @@ In case of a `ValidationError`, you can access the original response for debuggi
         === "{{ provider }}"
 
             ```python hl_lines="28-31"
-            --8<-- "examples/learn/response_models/validation/{{ provider | provider_dir }}/{{ method }}.py::28"
-            --8<-- "examples/learn/response_models/validation/{{ provider | provider_dir }}/{{ method }}.py:37:39"
+            --8<-- "build/snippets/learn/response_models/validation/{{ provider | provider_dir }}/{{ method }}.py::28"
+            --8<-- "build/snippets/learn/response_models/validation/{{ provider | provider_dir }}/{{ method }}.py:37:39"
             ```
         {% endfor %}
 
@@ -195,12 +197,8 @@ By default, `response_model` uses [Tools](./tools.md) under the hood. You can in
 
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
-            {% if provider == "Bedrock" %}
-            ```python hl_lines="13"
-            {% else %}
             ```python hl_lines="12"
-            {% endif %}
-            --8<-- "examples/learn/response_models/json_mode/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/response_models/json_mode/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -220,7 +218,7 @@ We take advantage of Pydantic's [`Field`](https://docs.pydantic.dev/latest/conce
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
-            {% if provider in ["Gemini", "Vertex AI"] %}
+            {% if provider in ["Google", "Vertex AI"] %}
             ```python
             {% elif method == "messages" %}
             ```python hl_lines="6-7 11-13 27"
@@ -229,7 +227,7 @@ We take advantage of Pydantic's [`Field`](https://docs.pydantic.dev/latest/conce
             {% else %}
             ```python hl_lines="6-7 11-13 25"
             {% endif %}
-            --8<-- "examples/learn/response_models/few_shot_examples/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/response_models/few_shot_examples/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -251,7 +249,7 @@ If you set `stream=True` when `response_model` is set, your LLM call will return
             {% else %}
             ```python hl_lines="10 16-17"
             {% endif %}
-            --8<-- "examples/learn/response_models/streaming/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/response_models/streaming/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -274,11 +272,11 @@ Fields annotated with `FromCallArgs` will be populated with the corresponding ar
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="14 26"
+            ```python hl_lines="15 27"
             {% else %}
-            ```python hl_lines="14 25"
+            ```python hl_lines="15 26"
             {% endif %}
-            --8<-- "examples/learn/response_models/from_call_args/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/response_models/from_call_args/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 

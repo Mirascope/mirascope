@@ -126,7 +126,7 @@ def test_google_call_response_with_tools() -> None:
                     "function_response": {
                         "name": "FormatBook",
                         "response": {
-                            "result": "The Name of the " "Wind by Patrick " "Rothfuss"
+                            "result": "The Name of the Wind by Patrick Rothfuss"
                         },
                     }
                 }

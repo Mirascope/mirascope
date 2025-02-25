@@ -1,6 +1,6 @@
 import inspect
 
-from mirascope.core import BaseMessageParam, anthropic, openai, prompt_template
+from mirascope import BaseMessageParam, llm, prompt_template
 from pydantic import BaseModel, Field
 
 
@@ -40,8 +40,10 @@ def evaluate_toxicity(text: str) -> list[BaseMessageParam]:
 
 
 judges = [
-    openai.call("gpt-4o-mini", response_model=Eval),
-    anthropic.call("claude-3-5-sonnet-20240620", response_model=Eval),
+    llm.call(provider="openai", model="gpt-4o-mini", response_model=Eval),
+    llm.call(
+        provider="anthropic", model="claude-3-5-sonnet-latest", response_model=Eval
+    ),
 ]
 
 evaluations: list[Eval] = [

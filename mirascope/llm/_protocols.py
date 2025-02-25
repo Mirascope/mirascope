@@ -73,6 +73,12 @@ Provider: TypeAlias = Literal[
     "mistral",
     "openai",
     "vertex",
+    "xai",
+]
+
+LocalProvider: TypeAlias = Literal[
+    "ollama",
+    "vllm",
 ]
 
 
@@ -90,9 +96,9 @@ class _CallDecorator(
     ],
 ):
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -110,9 +116,9 @@ class _CallDecorator(
     ]: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -127,7 +133,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -140,9 +146,9 @@ class _CallDecorator(
     ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _BaseCallResponseT]: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -159,7 +165,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -174,7 +180,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -189,7 +195,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -207,7 +213,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -224,7 +230,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -239,7 +245,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -254,7 +260,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -272,7 +278,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig = True,
@@ -288,9 +294,9 @@ class _CallDecorator(
     ) -> NoReturn: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -307,7 +313,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -322,7 +328,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -337,7 +343,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -354,7 +360,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -369,7 +375,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[False] = False,
@@ -382,9 +388,9 @@ class _CallDecorator(
     ) -> SyncLLMFunctionDecorator[_BaseDynamicConfigT, _ParsedOutputT]: ...
 
     @overload
-    def __call__(
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig,
@@ -404,7 +410,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig,
@@ -421,7 +427,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig,
@@ -436,7 +442,7 @@ class _CallDecorator(
     @overload
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: Literal[True] | StreamConfig,
@@ -456,7 +462,7 @@ class _CallDecorator(
 
     def __call__(
         self,
-        provider: Provider,
+        provider: Provider | LocalProvider,
         model: str,
         *,
         stream: bool | StreamConfig = False,

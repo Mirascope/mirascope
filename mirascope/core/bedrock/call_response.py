@@ -129,6 +129,11 @@ class BedrockCallResponse(
         """Returns the number of input tokens."""
         return self.usage["inputTokens"] if self.usage else None
 
+    @property
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return None
+
     @computed_field
     @property
     def output_tokens(self) -> int | None:
@@ -139,7 +144,9 @@ class BedrockCallResponse(
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property
@@ -150,7 +157,6 @@ class BedrockCallResponse(
             return AssistantMessageTypeDef(role="assistant", content=[])
         return AssistantMessageTypeDef(role="assistant", content=message["content"])
 
-    @computed_field
     @cached_property
     def tools(self) -> list[BedrockTool] | None:
         """Returns any available tool calls as their `BedrockTool` definition.
@@ -180,7 +186,6 @@ class BedrockCallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> BedrockTool | None:
         """Returns the 0th tool for the 0th choice message.

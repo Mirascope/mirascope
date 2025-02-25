@@ -120,6 +120,17 @@ class OpenAICallResponse(
 
     @computed_field
     @property
+    def cached_tokens(self) -> int | None:
+        """Returns the number of cached tokens."""
+        return (
+            details.cached_tokens
+            if self.usage
+            and (details := getattr(self.usage, "prompt_tokens_details", None))
+            else None
+        )
+
+    @computed_field
+    @property
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens if self.usage else None
@@ -128,7 +139,9 @@ class OpenAICallResponse(
     @property
     def cost(self) -> float | None:
         """Returns the cost of the call."""
-        return calculate_cost(self.input_tokens, self.output_tokens, self.model)
+        return calculate_cost(
+            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
+        )
 
     @computed_field
     @cached_property
@@ -141,7 +154,6 @@ class OpenAICallResponse(
             message_param["audio"] = {"id": audio.id}
         return ChatCompletionAssistantMessageParam(**message_param)
 
-    @computed_field
     @cached_property
     def tools(self) -> list[OpenAITool] | None:
         """Returns any available tool calls as their `OpenAITool` definition.
@@ -169,7 +181,6 @@ class OpenAICallResponse(
 
         return extracted_tools
 
-    @computed_field
     @cached_property
     def tool(self) -> OpenAITool | None:
         """Returns the 0th tool for the 0th choice message.
