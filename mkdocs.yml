@@ -88,6 +88,11 @@ extra:
     - learn/agents/state_management
     - learn/agents/streaming
     - learn/agents/tools
+    - learn/calls/basic_usage
+    - learn/calls/call_params
+    - learn/calls/dynamic_configuration
+    - learn/calls/error_handling
+    - learn/calls/overrides
     - learn/evals/llm
     - learn/json_mode/basic_usage
     - learn/json_mode/error_handling

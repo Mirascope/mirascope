@@ -15,19 +15,15 @@ When working with Large Language Model (LLM) APIs in Mirascope, a "call" refers 
 
 The `call` decorator is a core feature of the Mirascope library, designed to simplify and streamline interactions with various LLM providers. This powerful tool allows you to transform prompt templates written as Python functions into LLM API calls with minimal boilerplate code while providing type safety and consistency across different providers.
 
-We currently support [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Gemini](https://gemini.google.com), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Vertex AI](https://cloud.google.com/vertex-ai)
+We currently support [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Google (Gemini/Vertex)](https://ai.google.dev/), [Groq](https://groq.com/), [xAI](https://x.ai/api), [Mistral](https://mistral.ai/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Amazon Bedrock](https://aws.amazon.com/bedrock/).
 
 If there are any providers we don't yet support that you'd like to see supported, let us know!
 
 ??? api "API Documentation"
 
-    {% for provider in supported_llm_providers %}
-    [`mirascope.core.{{ provider | provider_dir }}.call`](../api/core/{{ provider | provider_dir}}/call.md)
-    {% endfor %}
+    [`mirascope.llm.call`](../api/llm/call.md)
 
 ## Basic Usage and Syntax
-
-### Provider-Specific Usage
 
 Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
@@ -44,7 +40,7 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
             {% else %}
             ```python hl_lines="4 6"
             {% endif %}
-            --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/calls/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -57,7 +53,7 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
         {% if provider == "Anthropic" %}
         ```python hl_lines="7-13"
-        {% elif provider in ["Gemini", "Vertex AI"] %}
+        {% elif provider in ["Google", "Vertex AI"] %}
         ```python hl_lines="7-10"
         {% elif provider == "LiteLLM" %}
         ```python hl_lines="5-9"
@@ -65,6 +61,8 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         ```python hl_lines="11-18"
         {% elif provider == "Mistral" %}
         ```python hl_lines="10-15"
+        {% elif provider == "Bedrock" %}
+        ```python hl_lines="7-18"
         {% else %}
         ```python hl_lines="7-11"
         {% endif %}
@@ -75,17 +73,20 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
 Notice how Mirascope makes calls more readable by reducing boilerplate and standardizing interactions with LLM providers.
 
-In these above Mirascope examples, we are directly tying the prompt to a specific provider and call setting (provider-specific prompt engineering). In these cases, the `@prompt_template` decorator becomes optional unless you're using string templates.
+The `llm.call` decorator accepts `provider` and `model` arguments and returns a provider-agnostic `CallResponse` instance that provides a consistent interface regardless of the underlying provider. You can find more information on `CallResponse` in the [section below](#handling-responses) on handling responses.
 
-### Provider-Agnostic Usage
+Note the `@prompt_template` decorator is optional unless you're using string templates.
 
-Mirascope provides a unified interface through the `llm.call` decorator that enables writing provider-agnostic code that works across all supported providers. This approach allows you to:
+### Runtime Provider Overrides
 
-1. Write code once that works with any provider
-2. Switch providers at runtime
-3. Work with standardized response types
+You can override provider settings at runtime using `llm.override`. This takes a function decorated with `llm.call` and lets you specify:
 
-Here's an example showing both basic usage and runtime provider override:
+- `provider`: Change the provider being called 
+- `model`: Use a different model
+- `call_params`: Override call parameters like temperature
+- `client`: Use a different client instance
+
+When overriding with a specific `provider`, you must specify the `model` parameter.
 
 !!! mira ""
 
@@ -100,36 +101,12 @@ Here's an example showing both basic usage and runtime provider override:
             {% else %}
             ```python hl_lines="5-7 13-18"
             {% endif %}
-            --8<-- "examples/learn/calls/provider_agnostic/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/calls/overrides/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
 
     {% endfor %}
-
-The `llm.call` decorator accepts a `provider` and `model` arguments and returns a provider-agnostic `CallResponse` instance that provides a consistent interface regardless of the underlying provider. You can find more information on `CallResponse` in the [section below](#handling-responses) on handling responses.
-
-You can override provider settings at runtime using `llm.override`. This takes a function decorated with `llm.call` and lets you specify:
-
-- `provider`: Change the provider being called 
-- `model`: Use a different model
-- `call_params`: Override call parameters like temperature
-- `client`: Use a different client instance
-
-When overriding with a specific `provider`, you must specify the `model` parameter.
-
-The provider-agnostic `CallResponse` instance maintains all the same methods and properties as provider-specific responses, but ensures consistent return types across providers:
-
-- All message parameters (e.g. `message_param`, `user_message_param`) return provider-agnostic `BaseMessageParam` instances
-- Finish reasons and other provider-specific fields are normalized to consistent Mirascope types 
-- The original provider response remains accessible through the `response` property
-
-This approach is particularly useful when:
-
-- Building applications that need to work with multiple providers
-- Implementing provider fallbacks or switching
-- Writing reusable code that isn't tied to a specific provider
-- Testing different providers or models with the same code
 
 ## Handling Responses
 
@@ -169,39 +146,6 @@ There are also two common methods:
 - `__str__`: Returns the `content` property of the response for easy printing.
 - `tool_message_params`: Creates message parameters for tool call results. Check out the [`Tools`](./tools.md) documentation for more information.
 
-### Provider-Specific Response Details
-
-??? api "API Documentation"
-
-    {% for provider in supported_llm_providers %}
-    {% if provider == "LiteLLM" %}
-    [`mirascope.core.litellm.call_response`](../api/core/openai/call_response.md)
-    {% else %}
-    [`mirascope.core.{{ provider | provider_dir }}.call_response`](../api/core/{{ provider | provider_dir }}/call_response.md)
-    {% endif %}
-    {% endfor %}
-
-While Mirascope provides a consistent interface, you can also always access the full, provider-specific response object if needed. This is available through the `response` property of the `BaseCallResponse` object.
-
-!!! mira ""
-
-    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
-    === "{{ method_title }}"
-        {% for provider in supported_llm_providers %}
-        === "{{ provider }}"
-
-            ```python hl_lines="10"
-            --8<-- "examples/learn/calls/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::9"
-            original_response = response.response
-            ```
-
-        {% endfor %}
-    {% endfor %}
-
-!!! note "Reasoning For Provider-Specific `BaseCallResponse` Objects"
-
-    The reason that we have provider-specific response objects (e.g. `OpenAICallResponse`) is to provide proper type hints and safety when accessing the original response.
-
 ## Multi-Modal Outputs
 
 While most LLM providers focus on text outputs, some providers support additional output modalities like audio. The availability of multi-modal outputs varies among providers:
@@ -233,8 +177,11 @@ For providers that support audio outputs, you can receive both text and audio re
     === "{{ method_title }}"
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
-
+            {% if provider == "OpenAI" %}
             ```python hl_lines="13 14 23 25"
+            {% else %}
+            ```python
+            {% endif %}
             --8<-- "examples/learn/calls/multi_modal_outputs/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
@@ -263,7 +210,7 @@ When using models that support audio outputs, you'll have access to:
 
 ## Common Parameters Across Providers
 
-While each LLM provider has its own specific parameters, there are several common parameters that you'll find across all providers when using the `call` decorator. These parameters allow you to control various aspects of the LLM call:
+There are several common parameters that you'll find across all providers when using the `call` decorator. These parameters allow you to control various aspects of the LLM call:
 
 - `model`: The only required parameter for all providers, which may be passed in as a standard argument (whereas all others are optional and must be provided as keyword arguments). It specifies which language model to use for the generation. Each provider has its own set of available models.
 - `stream`: A boolean that determines whether the response should be streamed or returned as a complete response. We cover this in more detail in the [`Streams`](./streams.md) documentation.
@@ -272,25 +219,11 @@ While each LLM provider has its own specific parameters, there are several commo
 - `json_mode`: A boolean that deterines whether to use JSON mode or not. We cover this in more detail in the [`JSON Mode`](./json_mode.md) documentation.
 - `tools`: A list of tools that the model may request to use in its response. We cover this in more detail in the [`Tools`](./tools.md) documentation.
 - `client`: A custom client to use when making the call to the LLM. We cover this in more detail in the [`Custom Client`](#custom-client) section below.
-- `call_params`: The provider-specific parameters to use when making the call to that provider's API. We cover this in more detail in the [`Provider-Specific Parameters`](#provider-specific-parameters) section below.
+- `call_params`: The provider-specific parameters to use when making the call to that provider's API. We cover this in more detail in the [`Provider-Specific Usage`](#provider-specific-usage) section below.
 
 These common parameters provide a consistent way to control the behavior of LLM calls across different providers. Keep in mind that while these parameters are widely supported, there might be slight variations in how they're implemented or their exact effects across different providers (and the documentation should cover any such differences).
 
-## Provider-Specific Parameters
-
-??? api "API Documentation"
-
-    {% for provider in supported_llm_providers %}
-    {% if provider == "LiteLLM" %}
-    [`mirascope.core.litellm.call_params`](../api/core/openai/call_params.md)
-    {% else %}
-    [`mirascope.core.{{ provider | provider_dir }}.call_params`](../api/core/{{ provider | provider_dir }}/call_params.md)
-    {% endif %}
-    {% endfor %}
-
-While Mirascope provides a consistent interface across different LLM providers, each provider has its own set of specific parameters that can be used to further configure the behavior of the model. These parameters are passed to the `call` decorator through the `call_params` argument.
-
-For all providers, we have only included additional call parameters that are not already covered as shared arguments to the `call` decorator (e.g. `model`). We have also opted to exclude currently deprecated parameters entirely. However, since `call_params` is just a `TypedDict`, you can always include any additional keys at the expense of type errors (and potentially unknown behavior).
+Since `call_params` is just a `TypedDict`, you can always include any additional keys at the expense of type errors (and potentially unknown behavior). This presents one way to pass provider-specific parameters (or deprecated parameters) while still using the general interface.
 
 !!! mira ""
 
@@ -306,7 +239,7 @@ For all providers, we have only included additional call parameters that are not
             {% else %}
             ```python hl_lines="4"
             {% endif %}
-            --8<-- "examples/learn/calls/call_params/{{ provider | provider_dir }}/{{ method }}.py::9"
+            --8<-- "build/snippets/learn/calls/call_params/{{ provider | provider_dir }}/{{ method }}.py::9"
             ```
 
         {% endfor %}
@@ -335,7 +268,7 @@ In all cases, you will need to return your prompt messages through the `messages
             {% else %}
             ```python hl_lines="7 8"
             {% endif %}
-            --8<-- "examples/learn/calls/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/calls/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -358,33 +291,78 @@ In all cases, you will need to return your prompt messages through the `messages
             {% else %}
             ```python hl_lines="7 9"
             {% endif %}
-            --8<-- "examples/learn/calls/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/calls/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
     {% endfor %}
 
-## Custom Messages
+## Provider-Specific Usage
 
-You can also always return the original message types for any provider. To do so, simply return the provider-specific dynamic config:
+??? api "API Documentation"
+
+    {% for provider in supported_llm_providers %}
+    === "{{ provider }}"
+        [`mirascope.core.{{ provider | provider_dir }}.call`](../api/core/{{ provider | provider_dir}}/call.md)
+        {% if provider == "LiteLLM" %}
+        [`mirascope.core.litellm.call_params`](../api/core/openai/call_params.md)
+        {% else %}
+        [`mirascope.core.{{ provider | provider_dir }}.call_params`](../api/core/{{ provider | provider_dir }}/call_params.md)
+        {% endif %}
+        {% if provider == "LiteLLM" %}
+        [`mirascope.core.litellm.call_response`](../api/core/openai/call_response.md)
+        {% else %}
+        [`mirascope.core.{{ provider | provider_dir }}.call_response`](../api/core/{{ provider | provider_dir }}/call_response.md)
+        {% endif %}
+    {% endfor %}
+
+While Mirascope provides a consistent interface across different LLM providers, you can also use provider-specific modules with refined typing for an individual provider.
+
+When using the provider modules, you'll receive a provider-specific `BaseCallResponse` object, which may have extra properties. Regardless, you can always access the full, provider-specific response object as `response.response`.
+
+!!! mira ""
+
+    {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
+    === "{{ method_title }}"
+
+        {% for provider in supported_llm_providers %}
+        === "{{ provider }}"
+
+            ```python hl_lines="4-6 12-17"
+            --8<-- "examples/learn/calls/provider_specific/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            ```
+
+        {% endfor %}
+
+    {% endfor %}
+
+!!! note "Reasoning For Provider-Specific `BaseCallResponse` Objects"
+
+    The reason that we have provider-specific response objects (e.g. `OpenAICallResponse`) is to provide proper type hints and safety when accessing the original response.
+
+### Custom Messages
+
+When using provider-specific calls, you can also always return the original message types for that provider. To do so, simply return the provider-specific dynamic config:
 
 !!! mira ""
 
     {% for provider in supported_llm_providers %}
     === "{{ provider }}"
 
-        {% if provider == "Vertex AI" %}
-        ```python hl_lines="8-10"
+        {% if provider == "Bedrock" %}
+        ```python hl_lines="7-9"
         {% elif provider in ["Mistral", "Cohere", "Azure AI"] %}
-        ```python hl_lines="7"
+        ```python hl_lines="2 7"
         {% else %}
         ```python hl_lines="6"
         {% endif %}
-        --8<-- "examples/learn/calls/custom_messages/{{ provider | provider_dir }}_messages.py"
+        --8<-- "examples/learn/calls/provider_specific/custom_messages/{{ provider | provider_dir }}_messages.py"
         ```
     {% endfor %}
 
-## Custom Client
+Support for provider-specific messages ensures that you can still access newly released provider-specific features that Mirascope may not yet support natively.
+
+### Custom Client
 
 Mirascope allows you to use custom clients when making calls to LLM providers. This feature is particularly useful when you need to use specific client configurations, handle authentication in a custom way, or work with self-hosted models.
 
@@ -401,25 +379,24 @@ You can pass a client to the `call` decorator using the `client` parameter:
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Vertex AI"] %}
+            {% elif provider == "OpenAI" %}
             ```python hl_lines="2 5"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 8-11"
             {% elif provider == "Bedrock" %}
             ```python hl_lines="1 6"
             {% elif provider == "Mistral" %}
-            ```python hl_lines="4 8"
+            ```python hl_lines="4 9"
             {% elif provider == "Google" %}
             ```python hl_lines="1 7"
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}
-            --8<-- "examples/learn/calls/custom_client/decorator/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/calls/provider_specific/custom_client/decorator/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
     {% endfor %}
-
 
 __Dynamic Configuration:__
 
@@ -437,16 +414,16 @@ You can also configure the client dynamically at runtime through the dynamic con
             ```python
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 12-14"
-            {% elif provider == "Bedrock" %}
-            ```python hl_lines="1 11"
             {% elif provider == "Mistral" %}
             ```python hl_lines="4 13"
             {% elif provider == "Google" %}
             ```python hl_lines="1 11-13"
-            {% else %}
+            {% elif provider in ["OpenAI", "xAI"] %}
             ```python hl_lines="2 11"
+            {% else %}
+            ```python hl_lines="1 11"
             {% endif %}
-            --8<-- "examples/learn/calls/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/calls/provider_specific/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
@@ -457,17 +434,17 @@ You can also configure the client dynamically at runtime through the dynamic con
             {% if provider == "LiteLLM" %}
             ```python
             {% elif provider == "Azure AI" %}
-            ```python hl_lines="1-2 10-11"
-            {% elif provider == "Bedrock" %}
-            ```python hl_lines="1 11"
+            ```python hl_lines="1-2 10-12"
             {% elif provider == "Mistral" %}
             ```python hl_lines="4 11"    
             {% elif provider == "Google" %}
-            ```python hl_lines="1 9-11"        
+            ```python hl_lines="1 9-11" 
+            {% elif provider in ["OpenAI", "xAI"] %}
+            ```python hl_lines="2 9"       
             {% else %}
-            ```python hl_lines="2 9"
+            ```python hl_lines="1 9"
             {% endif %}
-            --8<-- "examples/learn/calls/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "examples/learn/calls/provider_specific/custom_client/dynamic_configuration/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
@@ -488,24 +465,14 @@ When making LLM calls, it's important to handle potential errors. Mirascope pres
     === "{{ method_title }}"
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
-
-            {% if provider in ["Gemini", "Azure AI", "Vertex AI"] %}
-            ```python hl_lines="9 12"
-            {% elif provider == "Mistral" %}
-            ```python hl_lines="2 10 13 16"
-            {% elif provider == "OpenAI" %}
-            ```python hl_lines="2 10 13"
-            {% else %}
             ```python hl_lines="1 10 13"
-            {% endif %}
-            --8<-- "examples/learn/calls/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/calls/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
     {% endfor %}
 
-By catching provider-specific errors, you can implement appropriate error handling and fallback strategies in your application. You can of course always catch the base Exception instead of provider-specific exceptions (which we needed to do in some of our examples due to not being able to find the right exceptions to catch for those providers...).
-
+These examples catch the base Exception class; however, you can (and should) catch provider-specific exceptions instead when using provider-specific modules.
 
 ## Next Steps
 
