@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
+
+from mirascope.core.base.types import CostMetadata
 
 Provider = Literal[
     "anthropic",
@@ -23,10 +25,10 @@ Provider = Literal[
 def calculate_cost(
     provider: Provider,
     model: str,
-    input_tokens: int | float | None,
+    input_tokens: int | float,
     output_tokens: int | float | None = None,
     cached_tokens: int | float | None = None,
-    **kwargs: Any,  # noqa: ANN401
+    metadata: CostMetadata | None = None,
 ) -> float | None:
     """Calculate the cost for an LLM API call.
 
@@ -39,14 +41,20 @@ def calculate_cost(
         input_tokens: Number of input/prompt tokens
         output_tokens: Number of output/completion tokens (if applicable)
         cached_tokens: Number of tokens served from cache (may be priced differently)
-        **kwargs: Additional provider-specific parameters
+        metadata: Additional metadata required for cost calculation
 
     Returns:
         The calculated cost in USD or None if unable to calculate
     """
+    # Set default values
     if cached_tokens is None:
         cached_tokens = 0
 
+    # Initialize empty metadata if none provided
+    if metadata is None:
+        metadata = CostMetadata()
+
+    # Route to provider-specific implementations
     if provider == "openai":
         from ._openai_calculate_cost import calculate_cost as openai_calculate_cost
 
@@ -99,9 +107,12 @@ def calculate_cost(
     elif provider == "vertex":
         from ._vertex_calculate_cost import calculate_cost as vertex_calculate_cost
 
-        context_length = kwargs.get("context_length", 0)
         return vertex_calculate_cost(
-            input_tokens, cached_tokens, output_tokens, model, context_length
+            input_tokens,
+            cached_tokens,
+            output_tokens,
+            model,
+            context_length=metadata.context_length,
         )
 
     elif provider == "xai":

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal, TypeAlias
 
-from pydantic import BaseModel
-from typing_extensions import TypedDict
+from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
     from PIL import Image
@@ -86,14 +85,61 @@ Provider: TypeAlias = Literal[
 ]
 
 
-class CostMetadata(TypedDict, total=False):
-    """Metadata related to cost calculation for LLM API calls."""
+class CostMetadata(BaseModel):
+    """Metadata required for accurate LLM API cost calculation across all providers."""
 
-    streaming_mode: bool | None  # Whether streaming API was used
-    cached_response: bool | None  # Whether response was from cache
-    image_count: int | None  # Number of images in the request
-    audio_duration: float | None  # Duration of audio in seconds
-    context_length: int | None  # Total context window length
-    realtime_mode: bool | None  # Whether realtime processing was used
-    region: str | None  # Cloud region for request
-    tier: str | None  # Service tier (e.g. standard, enterprise)
+    # Common fields
+    streaming_mode: bool | None = Field(
+        None, description="Whether streaming API was used"
+    )
+    cached_response: bool | None = Field(
+        None, description="Whether response was served from cache"
+    )
+    context_length: int | None = Field(
+        None, description="Total context window length in tokens"
+    )
+    realtime_mode: bool | None = Field(
+        None, description="Whether realtime processing was used"
+    )
+    region: str | None = Field(
+        None, description="Cloud region for request (affects pricing in some providers)"
+    )
+    tier: str | None = Field(
+        None, description="Service tier (e.g. standard, enterprise)"
+    )
+
+    # Media-related fields
+    image_count: int | None = Field(None, description="Number of images in the request")
+    audio_duration: float | None = Field(
+        None, description="Duration of audio in seconds"
+    )
+
+    # OpenAI-specific fields
+    vision_tokens: int | None = Field(
+        None, description="[OpenAI] Number of vision tokens in the request"
+    )
+    audio_tokens: int | None = Field(
+        None, description="[OpenAI] Number of audio tokens in the request"
+    )
+    realtime_tokens: int | None = Field(
+        None, description="[OpenAI] Number of realtime tokens in the request"
+    )
+
+    # Anthropic-specific fields
+    cache_write: bool | None = Field(
+        None, description="[Anthropic] Whether cache write occurred"
+    )
+    tool_use_tokens: int | None = Field(
+        None, description="[Anthropic] Tokens used for tool calls"
+    )
+
+    # Vertex/Google-specific fields
+    character_count: int | None = Field(
+        None,
+        description="[Vertex/Google] Character count for character-based pricing models",
+    )
+
+    # Gemini-specific fields
+    long_context_premium: bool | None = Field(
+        None, description="[Gemini] Whether long context premium pricing applies"
+    )
