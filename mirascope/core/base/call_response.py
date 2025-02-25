@@ -24,7 +24,7 @@ from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
-from .types import CostMetadata, FinishReason, JsonableType, Usage
+from .types import CostMetadata, FinishReason, JsonableType, Provider, Usage
 
 if TYPE_CHECKING:
     from ...llm.tool import Tool
