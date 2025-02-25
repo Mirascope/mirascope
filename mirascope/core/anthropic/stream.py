@@ -17,6 +17,7 @@ from anthropic.types.tool_use_block_param import ToolUseBlockParam
 from pydantic import BaseModel
 
 from ..base.stream import BaseStream
+from ..base.types import CostMetadata
 from ._utils import calculate_cost
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
@@ -145,3 +146,7 @@ class AnthropicStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

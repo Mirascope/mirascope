@@ -24,7 +24,7 @@ from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
-from .types import FinishReason, Usage
+from .types import CostMetadata, FinishReason, Provider, Usage
 
 if TYPE_CHECKING:
     from ...llm.tool import Tool
@@ -225,12 +225,48 @@ class BaseCallResponse(
     @computed_field
     @property
     @abstractmethod
-    def cost(self) -> float | None:
-        """Should return the cost of the response in dollars.
+    def cost_metadata(self) -> CostMetadata:
+        """Get metadata required for cost calculation.
 
-        If there is no cost, this method must return None.
+        Returns:
+            A dictionary of metadata relevant to cost calculation
         """
-        ...
+        raise NotImplementedError("Subclasses must implement cost_metadata property")
+
+    @computed_field
+    @property
+    def cost(self) -> float | None:
+        """Calculate the cost of this API call."""
+        from mirascope.llm.costs import calculate_cost
+
+        provider = self.provider
+        if not provider:
+            return None
+        model = self.model
+        if not model:
+            return None
+        usage = self.usage
+        if not usage:
+            return None
+
+        return calculate_cost(
+            provider=provider,
+            model=model,
+            prompt_tokens=usage.prompt_tokens,
+            completion_tokens=usage.completion_tokens,
+            **self.cost_metadata,
+        )
+
+    @property
+    def provider(self) -> Provider | None:
+        """Get the provider used for this API call.
+
+        This is an abstract property that should be implemented by subclasses.
+
+        Returns:
+            The provider name
+        """
+        raise NotImplementedError("Subclasses must implement provider property")
 
     @computed_field
     @cached_property

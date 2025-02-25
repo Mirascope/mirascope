@@ -19,6 +19,7 @@ from google.genai.types import (
 )
 
 from ..base.stream import BaseStream
+from ..base.types import CostMetadata
 from ._utils import calculate_cost
 from .call_params import GoogleCallParams
 from .call_response import GoogleCallResponse
@@ -126,3 +127,7 @@ class GoogleStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

@@ -15,7 +15,7 @@ from mirascope.core.base import (
 )
 from mirascope.core.base.call_response import JsonableType
 from mirascope.core.base.stream import BaseStream
-from mirascope.core.base.types import FinishReason
+from mirascope.core.base.types import CostMetadata, FinishReason
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.call_response_chunk import CallResponseChunk
 from mirascope.llm.tool import Tool
@@ -166,3 +166,7 @@ class Stream(
                 message parameters should be constructed.
         """
         return CallResponse.tool_message_params(tools_and_outputs)
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return self._stream.cost_metadata

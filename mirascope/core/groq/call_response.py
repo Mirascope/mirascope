@@ -19,7 +19,7 @@ from pydantic import SerializeAsAny, computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
-from ..base.types import FinishReason
+from ..base.types import CostMetadata, FinishReason
 from ._utils import calculate_cost
 from ._utils._message_param_converter import GroqMessageParamConverter
 from .call_params import GroqCallParams
@@ -189,3 +189,7 @@ class GroqCallResponse(
         if not self.user_message_param:
             return None
         return GroqMessageParamConverter.from_provider([self.user_message_param])[0]
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

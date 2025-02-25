@@ -35,6 +35,7 @@ from .messages import Messages
 from .metadata import Metadata
 from .prompt import prompt_template
 from .tool import BaseTool
+from .types import CostMetadata
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
@@ -205,9 +206,32 @@ class BaseStream(
 
     @property
     @abstractmethod
-    def cost(self) -> float | None:
-        """Returns the cost of the stream."""
+    def cost_metadata(self) -> CostMetadata:
+        """Returns metadata needed for cost calculation."""
         ...
+
+    @property
+    def cost(self) -> float | None:
+        """Calculate the cost of this API call."""
+        from mirascope.llm.costs import calculate_cost
+
+        provider = self.provider
+        if not provider:
+            return None
+        model = self.model
+        if not model:
+            return None
+        usage = self.usage
+        if not usage:
+            return None
+
+        return calculate_cost(
+            provider=provider,
+            model=model,
+            prompt_tokens=usage.prompt_tokens,
+            completion_tokens=usage.completion_tokens,
+            **self.cost_metadata,
+        )
 
     @abstractmethod
     def _construct_message_param(

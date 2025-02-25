@@ -13,7 +13,7 @@ from mirascope.core.base import (
     BaseTool,
     Metadata,
 )
-from mirascope.core.base.types import FinishReason
+from mirascope.core.base.types import CostMetadata, FinishReason
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.tool import Tool
 
@@ -112,6 +112,10 @@ class DummyProviderCallResponse(
     def common_construct_message_param(
         self, tool_calls: list[Any] | None, content: str | None
     ): ...
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}
 
 
 @pytest.fixture

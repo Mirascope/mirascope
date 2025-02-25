@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from pydantic import BaseModel
+from typing_extensions import TypedDict
 
 if TYPE_CHECKING:
     from PIL import Image
@@ -51,3 +52,31 @@ class Usage(BaseModel):
 
     total_tokens: int = 0
     """Total number of tokens used in the request (prompt + completion)."""
+
+
+Provider: TypeAlias = Literal[
+    "anthropic",
+    "azure",
+    "bedrock",
+    "cohere",
+    "gemini",
+    "google",
+    "groq",
+    "litellm",
+    "mistral",
+    "openai",
+    "vertex",
+]
+
+
+class CostMetadata(TypedDict, total=False):
+    """Metadata related to cost calculation for LLM API calls."""
+
+    streaming_mode: bool | None  # Whether streaming API was used
+    cached_response: bool | None  # Whether response was from cache
+    image_count: int | None  # Number of images in the request
+    audio_duration: float | None  # Duration of audio in seconds
+    context_length: int | None  # Total context window length
+    realtime_mode: bool | None  # Whether realtime processing was used
+    region: str | None  # Cloud region for request
+    tier: str | None  # Service tier (e.g. standard, enterprise)

@@ -21,6 +21,7 @@ from openai.types.chat.chat_completion_message_tool_call_param import Function
 from openai.types.completion_usage import CompletionUsage
 
 from ..base.stream import BaseStream
+from ..base.types import CostMetadata
 from ._utils import calculate_cost
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
@@ -184,3 +185,7 @@ class OpenAIStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

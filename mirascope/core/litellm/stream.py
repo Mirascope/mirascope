@@ -8,6 +8,7 @@ from collections.abc import AsyncGenerator, Generator
 from litellm import Choices, Message
 from litellm.types.utils import ModelResponse
 
+from ..base.types import CostMetadata
 from ..openai import OpenAIStream, OpenAITool
 from .call_response import LiteLLMCallResponse
 from .call_response_chunk import LiteLLMCallResponseChunk
@@ -76,3 +77,7 @@ class LiteLLMStream(OpenAIStream):
         )
         response._model = self.model
         return response
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

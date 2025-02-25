@@ -16,6 +16,7 @@ from pydantic import SerializeAsAny, computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs, types
+from ..base.types import CostMetadata
 from ._utils import calculate_cost
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
@@ -196,3 +197,7 @@ class AnthropicCallResponse(
         return AnthropicMessageParamConverter.from_provider(
             [(self.user_message_param)]
         )[0]
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

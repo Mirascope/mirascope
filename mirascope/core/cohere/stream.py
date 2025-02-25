@@ -14,6 +14,7 @@ from cohere.types import (
 )
 
 from ..base.stream import BaseStream
+from ..base.types import CostMetadata
 from ._utils import calculate_cost
 from .call_params import CohereCallParams
 from .call_response import CohereCallResponse
@@ -112,3 +113,7 @@ class CohereStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

@@ -17,6 +17,7 @@ from mistralai.models import (
 )
 
 from ..base.stream import BaseStream
+from ..base.types import CostMetadata
 from ._utils import calculate_cost
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
@@ -119,3 +120,7 @@ class MistralStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

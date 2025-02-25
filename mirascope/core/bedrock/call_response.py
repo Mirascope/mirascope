@@ -19,7 +19,7 @@ from ..base import (
     BaseCallResponse,
     transform_tool_outputs,
 )
-from ..base.types import FinishReason
+from ..base.types import CostMetadata, FinishReason
 from ._call_kwargs import BedrockCallKwargs
 from ._types import (
     AssistantMessageTypeDef,
@@ -240,3 +240,7 @@ class BedrockCallResponse(
         if not self.user_message_param:
             return None
         return BedrockMessageParamConverter.from_provider([self.user_message_param])[0]  # pyright: ignore [reportArgumentType]
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

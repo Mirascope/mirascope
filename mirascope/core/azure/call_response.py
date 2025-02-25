@@ -19,7 +19,7 @@ from pydantic import SerializeAsAny, SkipValidation, computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
-from ..base.types import FinishReason
+from ..base.types import CostMetadata, FinishReason
 from ._utils import calculate_cost
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
@@ -207,3 +207,7 @@ class AzureCallResponse(
         if not self.user_message_param:
             return None
         return AzureMessageParamConverter.from_provider([self.user_message_param])[0]
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

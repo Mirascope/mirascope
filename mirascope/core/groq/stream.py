@@ -17,6 +17,7 @@ from groq.types.chat.chat_completion_message import ChatCompletionMessage
 from groq.types.completion_usage import CompletionUsage
 
 from ..base.stream import BaseStream
+from ..base.types import CostMetadata
 from ._utils import calculate_cost
 from .call_params import GroqCallParams
 from .call_response import GroqCallResponse
@@ -134,3 +135,7 @@ class GroqStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

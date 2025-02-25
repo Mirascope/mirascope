@@ -12,7 +12,7 @@ from mirascope.core.base import (
     BaseMessageParam,
     BaseTool,
 )
-from mirascope.core.base.types import FinishReason, Usage
+from mirascope.core.base.types import CostMetadata, FinishReason, Usage
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.call_response_chunk import CallResponseChunk
 from mirascope.llm.stream import Stream
@@ -106,6 +106,10 @@ class DummyProviderResponse(
         self, tool_calls: list[Any] | None, content: str | None
     ) -> DummyMessageParam: ...
 
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}
+
 
 class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
     @property
@@ -140,6 +144,10 @@ class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
     @property
     def common_usage(self) -> Usage: ...
 
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}
+
 
 class DummyStream(
     Stream[
@@ -154,7 +162,10 @@ class DummyStream(
         Any,
         DummyCallParams,
     ]
-): ...
+):
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}
 
 
 @pytest.mark.asyncio

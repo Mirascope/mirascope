@@ -20,6 +20,7 @@ from types_aiobotocore_bedrock_runtime.type_defs import (
 )
 
 from ..base.stream import BaseStream
+from ..base.types import CostMetadata
 from ._types import (
     AssistantMessageTypeDef,
     InternalBedrockMessageParam,
@@ -154,3 +155,7 @@ class BedrockStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}

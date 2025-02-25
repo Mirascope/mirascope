@@ -22,6 +22,7 @@ from google.generativeai.types import (
 from google.generativeai.types.content_types import PartType
 
 from ..base.stream import BaseStream
+from ..base.types import CostMetadata
 from ._utils import calculate_cost
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
@@ -119,3 +120,7 @@ class GeminiStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return {}
