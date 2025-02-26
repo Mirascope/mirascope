@@ -1,6 +1,6 @@
-"""Tests the `mistral._utils.calculate_cost` function."""
+"""Tests the `_mistral_calculate_cost` function."""
 
-from mirascope.core.mistral._utils._calculate_cost import calculate_cost
+from mirascope.llm.costs._mistral_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

@@ -1,6 +1,6 @@
-"""Tests the `gemini._utils.calculate_cost` function."""
+"""Tests the `_gemini_calculate_cost` function."""
 
-from mirascope.core.gemini._utils._calculate_cost import calculate_cost
+from mirascope.llm.costs._gemini_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

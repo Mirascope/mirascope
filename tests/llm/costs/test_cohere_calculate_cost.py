@@ -1,6 +1,6 @@
 """Tests the `cohere._utils.calculate_cost` function."""
 
-from mirascope.core.cohere._utils._calculate_cost import calculate_cost
+from mirascope.llm.costs._cohere_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

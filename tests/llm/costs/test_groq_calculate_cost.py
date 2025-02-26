@@ -1,6 +1,6 @@
-"""Tests the `groq._utils.calculate_cost` function."""
+"""Tests the `_groq_calculate_cost` function."""
 
-from mirascope.core.groq._utils._calculate_cost import calculate_cost
+from mirascope.llm.costs._groq_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

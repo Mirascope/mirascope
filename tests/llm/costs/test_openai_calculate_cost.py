@@ -1,6 +1,6 @@
-"""Tests the `openai._utils.calculate_cost` function."""
+"""Tests the `_openai_calculate_cost` function."""
 
-from mirascope.core.openai._utils._calculate_cost import calculate_cost
+from mirascope.llm.costs._openai_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

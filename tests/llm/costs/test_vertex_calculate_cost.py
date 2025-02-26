@@ -1,8 +1,8 @@
-"""Tests the `vertex._utils.calculate_cost` function."""
+"""Tests the `_vertex_calculate_costt` function."""
 
 import pytest
 
-from mirascope.core.vertex._utils._calculate_cost import calculate_cost
+from mirascope.llm.costs._vertex_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

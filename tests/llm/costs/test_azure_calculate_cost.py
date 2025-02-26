@@ -1,6 +1,6 @@
-"""Tests the `azure._utils.calculate_cost` function."""
+"""Tests the `_azure_calculate_cost` function."""
 
-from mirascope.core.azure._utils._calculate_cost import calculate_cost
+from mirascope.llm.costs._azure_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:
