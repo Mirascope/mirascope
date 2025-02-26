@@ -11,7 +11,7 @@ from typing import Any, Generic, TypeVar
 from pydantic import BaseModel, ConfigDict
 
 from mirascope.core.base._utils import get_common_usage
-from mirascope.core.base.types import FinishReason, Usage
+from mirascope.core.base.types import CostMetadata, FinishReason, Usage
 
 _ChunkT = TypeVar("_ChunkT", bound=Any)
 _FinishReasonT = TypeVar("_FinishReasonT", bound=Any)
@@ -99,6 +99,16 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
         """Should return the number of output tokens.
 
         If there is no output_tokens, this method must return None.
+        """
+        ...
+
+    @property
+    @abstractmethod
+    def cost_metadata(self) -> CostMetadata:
+        """Get metadata required for cost calculation.
+
+        Returns:
+            A CostMetadata object with information relevant to cost calculation
         """
         ...
 

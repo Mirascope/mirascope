@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Generic, TypeVar
 
 from mirascope.core.base.call_response_chunk import BaseCallResponseChunk
-from mirascope.core.base.types import FinishReason, Usage
+from mirascope.core.base.types import CostMetadata, FinishReason, Usage
 from mirascope.llm._response_metaclass import _ResponseMetaclass
 
 _ChunkT = TypeVar("_ChunkT")
@@ -40,6 +40,9 @@ class CallResponseChunk(
             "__pydantic_private__",
             "__class_getitem__",
             "_properties",
+            "cost_metadata",
+            "finish_reasons",
+            "usage",
         } | set(object.__getattribute__(self, "_properties"))
 
         if name in special_names:
@@ -58,3 +61,9 @@ class CallResponseChunk(
     @property
     def usage(self) -> Usage | None:
         return self._response.common_usage
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Get metadata required for cost calculation."""
+
+        return self._response.cost_metadata

@@ -16,6 +16,7 @@ from anthropic.types import (
 )
 
 from ..base import BaseCallResponseChunk, types
+from ..base.types import CostMetadata
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -113,6 +114,11 @@ class AnthropicCallResponseChunk(
         if self.usage:
             return self.usage.output_tokens
         return None
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Returns the cost metadata."""
+        return CostMetadata()
 
     @property
     def common_finish_reasons(self) -> list[types.FinishReason] | None:

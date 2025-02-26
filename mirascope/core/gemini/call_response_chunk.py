@@ -7,7 +7,7 @@ from google.ai.generativelanguage import Candidate
 from google.generativeai.types import GenerateContentResponse
 
 from ..base import BaseCallResponseChunk
-from ..base.types import FinishReason
+from ..base.types import CostMetadata, FinishReason
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -87,6 +87,11 @@ class GeminiCallResponseChunk(
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
         return None
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Returns the cost metadata."""
+        return CostMetadata()
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:

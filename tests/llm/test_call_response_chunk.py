@@ -1,7 +1,7 @@
 from typing import Any, cast
 
 from mirascope.core.base import BaseCallResponseChunk
-from mirascope.core.base.types import FinishReason, Usage
+from mirascope.core.base.types import CostMetadata, FinishReason, Usage
 from mirascope.llm.call_response_chunk import CallResponseChunk
 
 
@@ -51,6 +51,10 @@ class DummyCallResponseChunk(BaseCallResponseChunk[Any, str]):
             total_tokens=input_tokens + output_tokens,
         )
 
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return CostMetadata()
+
 
 def test_call_response_chunk():
     chunk_response_instance = DummyCallResponseChunk(chunk={})
@@ -60,3 +64,4 @@ def test_call_response_chunk():
     assert call_response_chunk_instance.content == "chunk_content"
     assert call_response_chunk_instance.common_usage is not None
     assert call_response_chunk_instance.common_usage.total_tokens == 5
+    assert call_response_chunk_instance.cost_metadata == CostMetadata()
