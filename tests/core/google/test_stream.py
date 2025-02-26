@@ -14,6 +14,7 @@ from google.genai.types import (
     FinishReason as GoogleFinishReason,
 )
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.google.call_response import GoogleCallResponse
 from mirascope.core.google.call_response_chunk import GoogleCallResponseChunk
 from mirascope.core.google.stream import GoogleStream
@@ -66,6 +67,7 @@ def test_google_stream() -> None:
     for _ in stream:
         pass
     assert stream.cost is None
+    assert stream.cost_metadata == CostMetadata()
     assert stream.message_param == {
         "role": "model",
         "parts": [{"text": "The author is Patrick Rothfuss"}],

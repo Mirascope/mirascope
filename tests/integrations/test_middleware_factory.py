@@ -195,6 +195,7 @@ async def test_middleware_factory_stream_async() -> None:
     for result_chunk, stream_chunk in zip(result_chunks, stream_chunks, strict=False):
         assert result_chunk == stream_chunk[0].content
     assert my_stream.cost == result.cost
+    assert my_stream.cost_metadata == result.cost_metadata
 
 
 def test_middleware_factory_base_model_sync() -> None:

@@ -11,6 +11,7 @@ from google.generativeai.types import (  # type: ignore
     GenerateContentResponse as GenerateContentResponseType,
 )
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.gemini.call_response import GeminiCallResponse
 from mirascope.core.gemini.call_response_chunk import GeminiCallResponseChunk
 from mirascope.core.gemini.stream import GeminiStream
@@ -69,6 +70,7 @@ def test_gemini_stream() -> None:
     for _ in stream:
         pass
     assert stream.cost is None
+    assert stream.cost_metadata == CostMetadata()
     assert stream.message_param == {
         "role": "model",
         "parts": [{"text": "The author is Patrick Rothfuss"}],

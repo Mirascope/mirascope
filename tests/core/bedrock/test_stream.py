@@ -9,6 +9,7 @@ from mypy_boto3_bedrock_runtime.type_defs import (
     ToolTypeDef,
 )
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.bedrock.call_params import BedrockCallParams
 from mirascope.core.bedrock.call_response import BedrockCallResponse
 from mirascope.core.bedrock.call_response_chunk import BedrockCallResponseChunk
@@ -45,6 +46,7 @@ def test_bedrock_stream_init():
         "RetryAttempts": 0,
     }
     assert stream.cost is None
+    assert stream.cost_metadata == CostMetadata()
 
 
 def test_bedrock_stream_construct_message_param():
