@@ -102,6 +102,7 @@ class Stream(
         special_names = {
             "_stream",
             "cost",
+            "cost_metadata",
             "_construct_message_param",
             "construct_call_response",
             "tool_message_params",
