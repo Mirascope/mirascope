@@ -118,8 +118,7 @@ class DummyProviderCallResponse(
     ): ...
 
     @property
-    def cost_metadata(self) -> CostMetadata:
-        return CostMetadata()
+    def cost_metadata(self) -> CostMetadata: ...
 
 
 @pytest.fixture

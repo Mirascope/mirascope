@@ -93,8 +93,7 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
     ): ...
 
     @property
-    def cost_metadata(self) -> CostMetadata:
-        return CostMetadata()
+    def cost_metadata(self) -> CostMetadata: ...
 
 
 class ConcreteStream(BaseStream):
@@ -106,8 +105,7 @@ class ConcreteStream(BaseStream):
     def cost(self): ...
 
     @property
-    def cost_metadata(self) -> CostMetadata:
-        return CostMetadata()
+    def cost_metadata(self) -> CostMetadata: ...
 
 
 def test_wrap_result():

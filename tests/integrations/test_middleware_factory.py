@@ -400,8 +400,7 @@ def test_middleware_factory_stream_sync_exception() -> None:
                 return iterator()
 
             @property
-            def cost_metadata(self) -> CostMetadata:
-                return CostMetadata()
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -458,8 +457,7 @@ async def test_middleware_factory_stream_async_exception() -> None:
                 return iterator()
 
             @property
-            def cost_metadata(self) -> CostMetadata:
-                return CostMetadata()
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -515,8 +513,7 @@ def test_middleware_factory_stream_sync_exception_no_handler() -> None:
                 return iterator()
 
             @property
-            def cost_metadata(self) -> CostMetadata:
-                return CostMetadata()
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -563,8 +560,7 @@ async def test_middleware_factory_stream_async_exception_no_handler() -> None:
                 return iterator()
 
             @property
-            def cost_metadata(self) -> CostMetadata:
-                return CostMetadata()
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -775,8 +771,7 @@ async def test_middleware_factory_stream_async_with_error() -> None:
                 return iterator()
 
             @property
-            def cost_metadata(self) -> CostMetadata:
-                return CostMetadata()
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -838,8 +833,7 @@ async def test_middleware_factory_stream_async_error_handling_fails() -> None:
                 return iterator()
 
             @property
-            def cost_metadata(self) -> CostMetadata:
-                return CostMetadata()
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -1080,8 +1074,7 @@ async def test_middleware_factory_stream_error_handler_exception_async() -> None
                 return iterator()
 
             @property
-            def cost_metadata(self) -> CostMetadata:
-                return CostMetadata()
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -1199,8 +1192,7 @@ def test_middleware_factory_stream_error_handler_exception() -> None:
                 return iterator()
 
             @property
-            def cost_metadata(self) -> CostMetadata:
-                return CostMetadata()
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
