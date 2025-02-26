@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypeAlias
+from typing import TYPE_CHECKING, Annotated, Literal, TypeAlias
 
 from pydantic import BaseModel, Field
 
@@ -89,57 +89,88 @@ class CostMetadata(BaseModel):
     """Metadata required for accurate LLM API cost calculation across all providers."""
 
     # Common fields
-    streaming_mode: bool | None = Field(
-        None, description="Whether streaming API was used"
-    )
-    cached_response: bool | None = Field(
-        None, description="Whether response was served from cache"
-    )
-    context_length: int | None = Field(
-        None, description="Total context window length in tokens"
-    )
-    realtime_mode: bool | None = Field(
-        None, description="Whether realtime processing was used"
-    )
-    region: str | None = Field(
-        None, description="Cloud region for request (affects pricing in some providers)"
-    )
-    tier: str | None = Field(
-        None, description="Service tier (e.g. standard, enterprise)"
-    )
+    streaming_mode: Annotated[
+        bool | None,
+        Field(default=None, description="Whether streaming API was used"),
+    ] = None
+    cached_response: Annotated[
+        bool | None,
+        Field(default=None, description="Whether response was served from cache"),
+    ] = None
+    context_length: Annotated[
+        int | None,
+        Field(default=None, description="Total context window length in tokens"),
+    ] = None
+    realtime_mode: Annotated[
+        bool | None,
+        Field(default=None, description="Whether realtime processing was used"),
+    ] = None
+    region: Annotated[
+        str | None,
+        Field(
+            default=None,
+            description="Cloud region for request (affects pricing in some providers)",
+        ),
+    ] = None
+    tier: Annotated[
+        str | None,
+        Field(default=None, description="Service tier (e.g. standard, enterprise)"),
+    ] = None
 
     # Media-related fields
-    image_count: int | None = Field(None, description="Number of images in the request")
-    audio_duration: float | None = Field(
-        None, description="Duration of audio in seconds"
-    )
+    image_count: Annotated[
+        int | None,
+        Field(default=None, description="Number of images in the request"),
+    ] = None
+    audio_duration: Annotated[
+        float | None, Field(default=None, description="Duration of audio in seconds")
+    ] = None
 
     # OpenAI-specific fields
-    vision_tokens: int | None = Field(
-        None, description="[OpenAI] Number of vision tokens in the request"
-    )
-    audio_tokens: int | None = Field(
-        None, description="[OpenAI] Number of audio tokens in the request"
-    )
-    realtime_tokens: int | None = Field(
-        None, description="[OpenAI] Number of realtime tokens in the request"
-    )
+    vision_tokens: Annotated[
+        int | None,
+        Field(
+            default=None, description="[OpenAI] Number of vision tokens in the request"
+        ),
+    ] = None
+    audio_tokens: Annotated[
+        int | None,
+        Field(
+            default=None, description="[OpenAI] Number of audio tokens in the request"
+        ),
+    ] = None
+    realtime_tokens: Annotated[
+        int | None,
+        Field(
+            default=None,
+            description="[OpenAI] Number of realtime tokens in the request",
+        ),
+    ] = None
 
     # Anthropic-specific fields
-    cache_write: bool | None = Field(
-        None, description="[Anthropic] Whether cache write occurred"
-    )
-    tool_use_tokens: int | None = Field(
-        None, description="[Anthropic] Tokens used for tool calls"
-    )
+    cache_write: Annotated[
+        bool | None,
+        Field(default=None, description="[Anthropic] Whether cache write occurred"),
+    ] = None
+    tool_use_tokens: Annotated[
+        int | None,
+        Field(default=None, description="[Anthropic] Tokens used for tool calls"),
+    ] = None
 
     # Vertex/Google-specific fields
-    character_count: int | None = Field(
-        None,
-        description="[Vertex/Google] Character count for character-based pricing models",
-    )
+    character_count: Annotated[
+        int | None,
+        Field(
+            default=None,
+            description="[Vertex/Google] Character count for character-based pricing models",
+        ),
+    ] = None
 
     # Gemini-specific fields
-    long_context_premium: bool | None = Field(
-        None, description="[Gemini] Whether long context premium pricing applies"
-    )
+    long_context_premium: Annotated[
+        bool | None,
+        Field(
+            default=None,
+            description="[Gemini] Whether long context premium pricing applies",
+        ),
+    ] = None

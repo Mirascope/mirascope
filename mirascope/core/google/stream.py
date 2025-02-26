@@ -140,4 +140,4 @@ class GoogleStream(
 
     @property
     def cost_metadata(self) -> CostMetadata:
-        return {}
+        return CostMetadata()

@@ -110,7 +110,7 @@ class DummyProviderResponse(
 
     @property
     def cost_metadata(self) -> CostMetadata:
-        return {}
+        return CostMetadata()
 
 
 class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
@@ -146,7 +146,7 @@ class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
 
     @property
     def cost_metadata(self) -> CostMetadata:
-        return {}
+        return CostMetadata()
 
 
 class DummyStream(
@@ -165,7 +165,7 @@ class DummyStream(
 ):
     @property
     def cost_metadata(self) -> CostMetadata:
-        return {}
+        return CostMetadata()
 
 
 @pytest.mark.asyncio
