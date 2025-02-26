@@ -239,10 +239,6 @@ class BaseCallResponse(
         """Calculate the cost of this API call using the unified calculate_cost function."""
         from mirascope.llm.costs import calculate_cost
 
-        provider = self.provider
-        if not provider:
-            return None
-
         model = self.model
         if not model:
             return None
@@ -251,7 +247,7 @@ class BaseCallResponse(
             return None
 
         return calculate_cost(
-            provider=provider,
+            provider=self.provider,
             model=model,
             input_tokens=self.input_tokens,
             output_tokens=self.output_tokens,
@@ -260,12 +256,9 @@ class BaseCallResponse(
         )
 
     @property
-    def provider(self) -> Provider | None:
+    def provider(self) -> Provider:
         """Get the provider used for this API call."""
-        provider_name = getattr(self, "_provider", None)
-        if not provider_name or provider_name == "NO PROVIDER":
-            return None
-        return cast(Provider, provider_name)
+        return cast(Provider, self._provider)
 
     @computed_field
     @cached_property

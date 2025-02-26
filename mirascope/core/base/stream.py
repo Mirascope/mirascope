@@ -226,20 +226,12 @@ class BaseStream(
         """Calculate the cost of this streaming API call."""
         from mirascope.llm.costs import calculate_cost
 
-        provider = self.provider
-        if not provider:
-            return None
-
-        model = self.model
-        if not model:
-            return None
-
         if self.input_tokens is None or self.output_tokens is None:
             return None
 
         return calculate_cost(
-            provider=provider,
-            model=model,
+            provider=self.provider,
+            model=self.model,
             input_tokens=self.input_tokens,
             output_tokens=self.output_tokens,
             cached_tokens=self.cached_tokens,
