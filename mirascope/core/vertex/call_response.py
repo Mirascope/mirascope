@@ -12,7 +12,6 @@ from vertexai.generative_models import Content, GenerationResponse, Part, Tool
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
 from ..base.types import CostMetadata, FinishReason
-from ._utils import calculate_cost
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -125,14 +124,6 @@ class VertexCallResponse(
         return self.usage.candidates_token_count
 
     @computed_field
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
-
-    @computed_field
     @cached_property
     def message_param(self) -> Content:
         """Returns the models's response as a message parameter."""
@@ -208,4 +199,4 @@ class VertexCallResponse(
 
     @property
     def cost_metadata(self) -> CostMetadata:
-        return {}
+        return CostMetadata()

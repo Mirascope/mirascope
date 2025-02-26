@@ -18,7 +18,6 @@ from pydantic import BaseModel
 
 from ..base.stream import BaseStream
 from ..base.types import CostMetadata
-from ._utils import calculate_cost
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
@@ -64,13 +63,6 @@ class AnthropicStream(
     """
 
     _provider = "anthropic"
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
 
     def _construct_message_param(
         self, tool_calls: list[ToolUseBlock] | None = None, content: str | None = None

@@ -35,7 +35,7 @@ from .messages import Messages
 from .metadata import Metadata
 from .prompt import prompt_template
 from .tool import BaseTool
-from .types import CostMetadata
+from .types import CostMetadata, Provider
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
@@ -210,6 +210,10 @@ class BaseStream(
             self.id = chunk.id
         if chunk.finish_reasons is not None:
             self.finish_reasons = chunk.finish_reasons
+
+    @property
+    def provider(self) -> Provider:
+        return cast(Provider, self._provider)
 
     @property
     @abstractmethod

@@ -18,7 +18,6 @@ from mistralai.models import (
 
 from ..base.stream import BaseStream
 from ..base.types import CostMetadata
-from ._utils import calculate_cost
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk
@@ -62,13 +61,6 @@ class MistralStream(
     """
 
     _provider = "mistral"
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
 
     def _construct_message_param(
         self, tool_calls: list | None = None, content: str | None = None

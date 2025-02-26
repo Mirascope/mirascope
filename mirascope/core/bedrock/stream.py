@@ -29,9 +29,6 @@ from ._types import (
     ToolUseBlockMessageTypeDef,
     UserMessageTypeDef,
 )
-from ._utils import (
-    calculate_cost,
-)
 from .call_params import BedrockCallParams
 from .call_response import BedrockCallResponse
 from .call_response_chunk import BedrockCallResponseChunk
@@ -91,13 +88,6 @@ class BedrockStream(
         self._response_metadata: (
             ResponseMetadataTypeDef | AsyncResponseMetadataTypeDef
         ) = _DEFAULT_RESPONSE_METADATA
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
 
     def _construct_message_param(
         self,

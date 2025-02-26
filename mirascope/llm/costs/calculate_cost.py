@@ -112,7 +112,7 @@ def calculate_cost(
             cached_tokens,
             output_tokens,
             model,
-            context_length=metadata.context_length,
+            context_length=metadata.context_length or 0,
         )
 
     elif provider == "xai":

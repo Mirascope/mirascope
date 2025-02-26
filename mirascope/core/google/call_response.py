@@ -22,7 +22,6 @@ from pydantic import computed_field
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
 from ..base.types import CostMetadata, FinishReason
-from ._utils import calculate_cost
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -143,14 +142,6 @@ class GoogleCallResponse(
             self.response.usage_metadata.candidates_token_count
             if self.response.usage_metadata
             else None
-        )
-
-    @computed_field
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
         )
 
     @computed_field

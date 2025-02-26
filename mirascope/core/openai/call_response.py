@@ -24,7 +24,6 @@ from ..base import (
     transform_tool_outputs,
 )
 from ..base.types import CostMetadata, FinishReason
-from ._utils import calculate_cost
 from ._utils._message_param_converter import OpenAIMessageParamConverter
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
@@ -134,14 +133,6 @@ class OpenAICallResponse(
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens if self.usage else None
-
-    @computed_field
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
 
     @computed_field
     @cached_property

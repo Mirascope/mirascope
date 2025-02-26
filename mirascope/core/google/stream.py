@@ -21,7 +21,6 @@ from google.genai.types import (
 
 from ..base.stream import BaseStream
 from ..base.types import CostMetadata
-from ._utils import calculate_cost
 from .call_params import GoogleCallParams
 from .call_response import GoogleCallResponse
 from .call_response_chunk import GoogleCallResponseChunk
@@ -64,13 +63,6 @@ class GoogleStream(
     """
 
     _provider = "google"
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
 
     def _construct_message_param(
         self, tool_calls: list[FunctionCall] | None = None, content: str | None = None
