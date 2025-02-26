@@ -977,8 +977,7 @@ def test_stream_without_error_handler() -> None:
                 return iterator()
 
             @property
-            def cost_metadata(self) -> CostMetadata:
-                return CostMetadata()
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]

@@ -109,8 +109,7 @@ class DummyProviderResponse(
     ) -> DummyMessageParam: ...
 
     @property
-    def cost_metadata(self) -> CostMetadata:
-        return CostMetadata()
+    def cost_metadata(self) -> CostMetadata: ...
 
 
 class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
@@ -161,9 +160,7 @@ class DummyStream(
         Any,
         DummyCallParams,
     ]
-):
-    @property
-    def cost_metadata(self) -> CostMetadata: ...
+): ...
 
 
 @pytest.mark.asyncio
@@ -181,6 +178,7 @@ async def test_stream():
     mock_stream = MagicMock(spec=BaseStream)
     mock_stream.model = "test_model"
     mock_stream.cost = 0.02
+    mock_stream.cost_metadata = CostMetadata(streaming_mode=True)
 
     mock_stream.construct_call_response.return_value = DummyProviderResponse(
         metadata={},
@@ -210,6 +208,7 @@ async def test_stream():
 
     assert dummy_stream_instance.model == "test_model"
     assert dummy_stream_instance.cost == 0.02
+    assert dummy_stream_instance.cost_metadata == CostMetadata(streaming_mode=True)
 
     call_response_instance = dummy_stream_instance.construct_call_response()
     assert isinstance(call_response_instance, CallResponse)
