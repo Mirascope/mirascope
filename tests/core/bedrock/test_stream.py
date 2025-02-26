@@ -44,6 +44,7 @@ def test_bedrock_stream_init():
         "HTTPHeaders": {},
         "RetryAttempts": 0,
     }
+    assert stream.cost is None
 
 
 def test_bedrock_stream_construct_message_param():

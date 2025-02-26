@@ -2,6 +2,7 @@
 
 from litellm.types.utils import ModelResponse
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.litellm.call_response import LiteLLMCallResponse
 
 
@@ -26,3 +27,4 @@ def test_litellm_call_response_cost() -> None:
     )
 
     assert call_response.cost == 1.8e-5
+    assert call_response.cost_metadata == CostMetadata()

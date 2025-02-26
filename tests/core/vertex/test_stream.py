@@ -11,6 +11,7 @@ from vertexai.generative_models import (
     GenerationResponse as GenerateContentResponse,
 )
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.vertex.call_response import VertexCallResponse
 from mirascope.core.vertex.call_response_chunk import VertexCallResponseChunk
 from mirascope.core.vertex.stream import VertexStream
@@ -77,6 +78,7 @@ def test_vertex_stream() -> None:
     assert stream.message_param.role == "model"
     assert len(stream.message_param.parts) == 1
     assert stream.message_param.parts[0].text == "The author is Patrick Rothfuss"
+    assert stream.cost_metadata == CostMetadata()
 
 
 def test_construct_call_response() -> None:
