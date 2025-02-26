@@ -10,6 +10,7 @@ from vertexai.generative_models import (
     GenerationResponse as GenerateContentResponse,
 )
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.vertex.call_response_chunk import VertexCallResponseChunk
 
 
@@ -39,3 +40,4 @@ def test_vertex_call_response_chunk() -> None:
     assert call_response_chunk.input_tokens is None
     assert call_response_chunk.output_tokens is None
     assert call_response_chunk.common_finish_reasons == ["stop"]
+    assert call_response_chunk.cost_metadata == CostMetadata()
