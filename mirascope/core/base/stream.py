@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
 from functools import wraps
 from typing import (
+    TYPE_CHECKING,
     Any,
     ClassVar,
     Generic,
@@ -35,7 +36,10 @@ from .messages import Messages
 from .metadata import Metadata
 from .prompt import prompt_template
 from .tool import BaseTool
-from .types import CostMetadata, Provider
+from .types import CostMetadata
+
+if TYPE_CHECKING:
+    from ...llm import Provider
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
@@ -212,7 +216,9 @@ class BaseStream(
             self.finish_reasons = chunk.finish_reasons
 
     @property
-    def provider(self) -> Provider:
+    def provider(self) -> "Provider":
+        from ...llm import Provider
+
         return cast(Provider, self._provider)
 
     @property

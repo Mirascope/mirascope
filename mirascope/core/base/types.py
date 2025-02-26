@@ -70,21 +70,6 @@ JsonableType: TypeAlias = (
 )
 
 
-Provider: TypeAlias = Literal[
-    "anthropic",
-    "azure",
-    "bedrock",
-    "cohere",
-    "gemini",
-    "google",
-    "groq",
-    "litellm",
-    "mistral",
-    "openai",
-    "vertex",
-]
-
-
 class CostMetadata(BaseModel):
     """Metadata required for accurate LLM API cost calculation across all providers."""
 

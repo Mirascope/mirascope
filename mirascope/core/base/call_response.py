@@ -24,9 +24,10 @@ from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
-from .types import CostMetadata, FinishReason, JsonableType, Provider, Usage
+from .types import CostMetadata, FinishReason, JsonableType, Usage
 
 if TYPE_CHECKING:
+    from ...llm import Provider
     from ...llm.tool import Tool
     from .. import BaseMessageParam
 
@@ -258,6 +259,8 @@ class BaseCallResponse(
     @property
     def provider(self) -> Provider:
         """Get the provider used for this API call."""
+        from ...llm import Provider
+
         return cast(Provider, self._provider)
 
     @computed_field
