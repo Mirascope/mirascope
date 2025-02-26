@@ -204,6 +204,8 @@ class AnthropicCallResponse(
             [(self.user_message_param)]
         )[0]
 
+    @computed_field
     @property
     def cost_metadata(self) -> CostMetadata:
-        return {}
+        """Get metadata required for cost calculation."""
+        return CostMetadata()

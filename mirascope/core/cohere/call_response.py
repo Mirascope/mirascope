@@ -207,5 +207,4 @@ class CohereCallResponse(
     @property
     def cost_metadata(self) -> CostMetadata:
         """Get metadata required for cost calculation."""
-        metadata: CostMetadata = {}
-        return metadata
+        return CostMetadata()

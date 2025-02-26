@@ -160,4 +160,5 @@ class BedrockStream(
 
     @property
     def cost_metadata(self) -> CostMetadata:
-        return {}
+        """Get metadata required for cost calculation."""
+        return CostMetadata()

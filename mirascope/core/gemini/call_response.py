@@ -218,8 +218,4 @@ class GeminiCallResponse(
     @property
     def cost_metadata(self) -> CostMetadata:
         """Get metadata required for cost calculation."""
-        metadata: CostMetadata = {}
-        # 長いコンテキストかどうかを判断
-        if hasattr(self, "context_length") and self.context_length:
-            metadata["context_length"] = self.context_length
-        return metadata
+        return CostMetadata()
