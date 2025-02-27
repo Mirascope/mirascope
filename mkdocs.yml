@@ -105,6 +105,8 @@ extra:
     - learn/response_models/json_mode
     - learn/response_models/streaming
     - learn/response_models/validation
+    - learn/streams/basic_usage
+    - learn/streams/error_handling
     - learn/tools/basic_usage/base_tool
     - learn/tools/basic_usage/function
     - learn/tools/few_shot_examples/base_tool

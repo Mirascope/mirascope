@@ -1,9 +1,9 @@
-from mirascope.core import BaseMessageParam, cohere
+from mirascope import llm
 
 
-@cohere.call("command-r-plus", stream=True)
-def recommend_book(genre: str) -> list[BaseMessageParam]:
-    return [BaseMessageParam(role="user", content=f"Recommend a {genre} book")]
+@llm.call(provider="openai", model="gpt-4o-mini", stream=True)
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book"
 
 
 stream = recommend_book("fantasy")
