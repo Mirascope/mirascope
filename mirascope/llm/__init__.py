@@ -1,4 +1,4 @@
-from ..core.base.types import LocalProvider, Provider
+from ..core import LocalProvider, Provider
 from .call_response import CallResponse
 from .llm_call import call
 from .llm_override import override

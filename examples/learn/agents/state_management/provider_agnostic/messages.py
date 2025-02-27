@@ -1,4 +1,3 @@
-import mirascope.core.base.types
 from mirascope import BaseMessageParam, Messages, llm
 from pydantic import BaseModel
 
@@ -16,7 +15,7 @@ class Librarian(BaseModel):
 
     def run(
         self,
-        provider: mirascope.core.base.types.Provider,
+        provider: llm.Provider,
         model: str,
     ) -> None:
         while True:
