@@ -5,22 +5,22 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Literal, ParamSpec, TypeVar, overload
 
-from mirascope.core.base import CommonCallParams
-from mirascope.core.base.types import Provider
-from mirascope.llm.llm_call import _call
+from ..core.base import CommonCallParams
+from ..core.base.types import Provider
+from .llm_call import _call
 
 if TYPE_CHECKING:
-    from mirascope.core.anthropic import AnthropicCallParams
-    from mirascope.core.azure import AzureCallParams
-    from mirascope.core.bedrock import BedrockCallParams
-    from mirascope.core.cohere import CohereCallParams
-    from mirascope.core.gemini import GeminiCallParams
-    from mirascope.core.google import GoogleCallParams
-    from mirascope.core.groq import GroqCallParams
-    from mirascope.core.litellm import LiteLLMCallParams
-    from mirascope.core.mistral import MistralCallParams
-    from mirascope.core.openai import OpenAICallParams
-    from mirascope.core.vertex import VertexCallParams
+    from ..core.anthropic import AnthropicCallParams
+    from ..core.azure import AzureCallParams
+    from ..core.bedrock import BedrockCallParams
+    from ..core.cohere import CohereCallParams
+    from ..core.gemini import GeminiCallParams
+    from ..core.google import GoogleCallParams
+    from ..core.groq import GroqCallParams
+    from ..core.litellm import LiteLLMCallParams
+    from ..core.mistral import MistralCallParams
+    from ..core.openai import OpenAICallParams
+    from ..core.vertex import VertexCallParams
 else:
     AnthropicCallParams = AzureCallParams = BedrockCallParams = CohereCallParams = (
         GeminiCallParams

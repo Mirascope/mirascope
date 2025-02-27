@@ -19,23 +19,23 @@ from typing import (
 
 from pydantic import BaseModel
 
-from mirascope.core import BaseDynamicConfig, BaseTool
-from mirascope.core.base import (
+from ..core import BaseDynamicConfig, BaseTool
+from ..core.base import (
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseType,
     CommonCallParams,
 )
-from mirascope.core.base._utils._protocols import (
+from ..core.base._utils._protocols import (
     AsyncLLMFunctionDecorator,
     LLMFunctionDecorator,
     SyncLLMFunctionDecorator,
 )
-from mirascope.core.base.stream_config import StreamConfig
-from mirascope.core.base.types import LocalProvider, Provider
-from mirascope.llm.call_response import CallResponse
-from mirascope.llm.call_response_chunk import CallResponseChunk
-from mirascope.llm.stream import Stream
+from ..core.base.stream_config import StreamConfig
+from ..core.base.types import LocalProvider, Provider
+from .call_response import CallResponse
+from .call_response_chunk import CallResponseChunk
+from .stream import Stream
 
 _BaseStreamT = TypeVar("_BaseStreamT", covariant=True)
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType | Enum)

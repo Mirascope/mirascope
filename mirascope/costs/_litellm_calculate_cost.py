@@ -2,7 +2,7 @@
 
 from litellm.cost_calculator import completion_cost
 
-from mirascope.core.base.types import CostMetadata
+from ..core.base.types import CostMetadata
 
 
 def calculate_cost(

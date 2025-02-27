@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import Any, Generic, TypeVar
 
-from mirascope.core.base.call_response_chunk import BaseCallResponseChunk
-from mirascope.core.base.types import CostMetadata, FinishReason, Usage
-from mirascope.llm._response_metaclass import _ResponseMetaclass
+from ..core.base.call_response_chunk import BaseCallResponseChunk
+from ..core.base.types import CostMetadata, FinishReason, Usage
+from ._response_metaclass import _ResponseMetaclass
 
 _ChunkT = TypeVar("_ChunkT")
 

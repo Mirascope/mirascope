@@ -1,6 +1,6 @@
 """Calculate the cost of a completion using the Groq API."""
 
-from mirascope.core.base.types import CostMetadata
+from ..core.base.types import CostMetadata
 
 
 def calculate_cost(
