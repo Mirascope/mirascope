@@ -164,7 +164,7 @@ class CostMetadata(BaseModel):
     ] = None
 
     # LiteLLM-specific fields
-    response: Annotated[
+    litellm_response: Annotated[
         LitellmModelResponse | None,
         Field(default=None, description="[Litellm] Response from API"),
     ] = None

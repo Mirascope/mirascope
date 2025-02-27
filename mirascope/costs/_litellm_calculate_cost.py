@@ -10,4 +10,4 @@ def calculate_cost(
     model: str,
 ) -> float | None:
     """Calculate the cost of a Litellm call."""
-    return completion_cost(metadata.response)
+    return completion_cost(metadata.litellm_response)

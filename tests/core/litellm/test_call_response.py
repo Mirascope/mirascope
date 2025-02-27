@@ -27,4 +27,4 @@ def test_litellm_call_response_cost() -> None:
     )
 
     assert call_response.cost == 1.8e-5
-    assert call_response.cost_metadata == CostMetadata(response=response)  # pyright: ignore [reportArgumentType]
+    assert call_response.cost_metadata == CostMetadata(litellm_response=response)  # pyright: ignore [reportArgumentType]
