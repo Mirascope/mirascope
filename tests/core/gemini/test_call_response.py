@@ -13,6 +13,7 @@ from google.generativeai.types import (  # type: ignore
 )
 
 from mirascope.core import BaseMessageParam
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.gemini.call_response import GeminiCallResponse
 from mirascope.core.gemini.tool import GeminiTool
 
@@ -58,6 +59,8 @@ def test_gemini_call_response() -> None:
     assert call_response.input_tokens is None
     assert call_response.output_tokens is None
     assert call_response.cost is None
+    assert call_response.cost_metadata == CostMetadata()
+    assert call_response.cached_tokens is None
     assert call_response.message_param == {
         "role": "model",
         "parts": [Part(text="The author is Patrick Rothfuss")],

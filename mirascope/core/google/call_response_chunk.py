@@ -11,7 +11,7 @@ from google.genai.types import (
     GenerateContentResponseUsageMetadata,
 )
 
-from mirascope.core.base.types import FinishReason
+from mirascope.core.base.types import CostMetadata, FinishReason
 
 from ..base import BaseCallResponseChunk
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
@@ -97,6 +97,11 @@ class GoogleCallResponseChunk(
     def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
         return self.usage.candidates_token_count if self.usage else None
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Returns the cost metadata."""
+        return super().cost_metadata
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:

@@ -9,27 +9,25 @@ from typing import Any, ParamSpec, TypeVar, cast, get_args
 
 from pydantic import BaseModel
 
-from mirascope.core import BaseTool
-from mirascope.core.base import (
+from ..core import BaseTool
+from ..core.base import (
     BaseCallResponse,
     BaseCallResponseChunk,
     BaseStream,
     BaseType,
     CommonCallParams,
 )
-from mirascope.core.base._utils import fn_is_async
-from mirascope.llm.call_response import CallResponse
-from mirascope.llm.stream import Stream
-
+from ..core.base._utils import fn_is_async
 from ..core.base.stream_config import StreamConfig
+from ..core.base.types import LocalProvider, Provider
 from ._protocols import (
     AsyncLLMFunctionDecorator,
     CallDecorator,
     LLMFunctionDecorator,
-    LocalProvider,
-    Provider,
     SyncLLMFunctionDecorator,
 )
+from .call_response import CallResponse
+from .stream import Stream
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
@@ -53,7 +51,7 @@ def _get_local_provider_call(
     client: Any | None,  # noqa: ANN401
 ) -> tuple[Callable, Any | None]:
     if provider == "ollama":
-        from mirascope.core.openai import openai_call
+        from ..core.openai import openai_call
 
         if client:
             return openai_call, client
@@ -62,7 +60,7 @@ def _get_local_provider_call(
         client = OpenAI(api_key="ollama", base_url="http://localhost:11434/v1")
         return openai_call, client
     else:  # provider == "vllm"
-        from mirascope.core.openai import openai_call
+        from ..core.openai import openai_call
 
         if client:
             return openai_call, client
@@ -75,51 +73,51 @@ def _get_local_provider_call(
 def _get_provider_call(provider: Provider) -> Callable:
     """Returns the provider-specific call decorator based on the provider name."""
     if provider == "anthropic":
-        from mirascope.core.anthropic import anthropic_call
+        from ..core.anthropic import anthropic_call
 
         return anthropic_call
     elif provider == "azure":
-        from mirascope.core.azure import azure_call
+        from ..core.azure import azure_call
 
         return azure_call
     elif provider == "bedrock":
-        from mirascope.core.bedrock import bedrock_call
+        from ..core.bedrock import bedrock_call
 
         return bedrock_call
     elif provider == "cohere":
-        from mirascope.core.cohere import cohere_call
+        from ..core.cohere import cohere_call
 
         return cohere_call
     elif provider == "gemini":
-        from mirascope.core.gemini import gemini_call
+        from ..core.gemini import gemini_call
 
         return gemini_call
     elif provider == "google":
-        from mirascope.core.google import google_call
+        from ..core.google import google_call
 
         return google_call
     elif provider == "groq":
-        from mirascope.core.groq import groq_call
+        from ..core.groq import groq_call
 
         return groq_call
     elif provider == "litellm":
-        from mirascope.core.litellm import litellm_call
+        from ..core.litellm import litellm_call
 
         return litellm_call
     elif provider == "mistral":
-        from mirascope.core.mistral import mistral_call
+        from ..core.mistral import mistral_call
 
         return mistral_call
     elif provider == "openai":
-        from mirascope.core.openai import openai_call
+        from ..core.openai import openai_call
 
         return openai_call
     elif provider == "vertex":
-        from mirascope.core.vertex import vertex_call
+        from ..core.vertex import vertex_call
 
         return vertex_call
     elif provider == "xai":
-        from mirascope.core.xai import xai_call
+        from ..core.xai import xai_call
 
         return xai_call
     raise ValueError(f"Unsupported provider: {provider}")
@@ -264,7 +262,7 @@ template.
 Example:
 
 ```python
-from mirascope.llm import call
+from ..llm import call
 
 
 @call(provider="openai", model="gpt-4o-mini")

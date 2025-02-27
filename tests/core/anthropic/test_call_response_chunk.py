@@ -10,6 +10,7 @@ from anthropic.types import (
 )
 
 from mirascope.core.anthropic.call_response_chunk import AnthropicCallResponseChunk
+from mirascope.core.base.types import CostMetadata
 
 
 def test_anthropic_call_response_chunk() -> None:
@@ -51,3 +52,4 @@ def test_anthropic_call_response_chunk() -> None:
     assert call_response_chunk_1.input_tokens is None
     assert call_response_chunk_1.output_tokens is None
     assert call_response_chunk_1.common_finish_reasons is None
+    assert call_response_chunk_1.cost_metadata == CostMetadata()

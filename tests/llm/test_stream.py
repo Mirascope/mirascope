@@ -13,7 +13,7 @@ from mirascope.core.base import (
     BaseStream,
     BaseTool,
 )
-from mirascope.core.base.types import FinishReason, Usage
+from mirascope.core.base.types import CostMetadata, FinishReason, Usage
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.call_response_chunk import CallResponseChunk
 from mirascope.llm.stream import Stream
@@ -108,6 +108,9 @@ class DummyProviderResponse(
         self, tool_calls: list[Any] | None, content: str | None
     ) -> DummyMessageParam: ...
 
+    @property
+    def cost_metadata(self) -> CostMetadata: ...
+
 
 class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
     @property
@@ -139,6 +142,9 @@ class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
 
     @property
     def common_usage(self) -> Usage: ...
+
+    @property
+    def cost_metadata(self) -> CostMetadata: ...
 
 
 class DummyStream(
@@ -172,6 +178,7 @@ async def test_stream():
     mock_stream = MagicMock(spec=BaseStream)
     mock_stream.model = "test_model"
     mock_stream.cost = 0.02
+    mock_stream.cost_metadata = CostMetadata(streaming_mode=True)
 
     mock_stream.construct_call_response.return_value = DummyProviderResponse(
         metadata={},
@@ -201,6 +208,7 @@ async def test_stream():
 
     assert dummy_stream_instance.model == "test_model"
     assert dummy_stream_instance.cost == 0.02
+    assert dummy_stream_instance.cost_metadata == CostMetadata(streaming_mode=True)
 
     call_response_instance = dummy_stream_instance.construct_call_response()
     assert isinstance(call_response_instance, CallResponse)

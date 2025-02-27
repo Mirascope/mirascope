@@ -14,6 +14,7 @@ from typing import (
     overload,
 )
 
+from ..costs import calculate_cost
 from ._utils import (
     HandleStream,
     HandleStreamAsync,
@@ -35,6 +36,7 @@ from .messages import Messages
 from .metadata import Metadata
 from .prompt import prompt_template
 from .tool import BaseTool
+from .types import CostMetadata, Provider
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
@@ -211,10 +213,30 @@ class BaseStream(
             self.finish_reasons = chunk.finish_reasons
 
     @property
-    @abstractmethod
+    def provider(self) -> Provider:
+        return cast(Provider, self._provider)
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Returns metadata needed for cost calculation."""
+        return CostMetadata(
+            input_tokens=self.input_tokens,
+            output_tokens=self.output_tokens,
+            cached_tokens=self.cached_tokens,
+        )
+
+    @property
     def cost(self) -> float | None:
-        """Returns the cost of the stream."""
-        ...
+        """Calculate the cost of this streaming API call."""
+
+        if self.input_tokens is None or self.output_tokens is None:
+            return None
+
+        return calculate_cost(
+            provider=self.provider,
+            model=self.model,
+            metadata=self.cost_metadata,
+        )
 
     @abstractmethod
     def _construct_message_param(

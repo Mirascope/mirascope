@@ -7,7 +7,7 @@ import json
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import cached_property, wraps
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar, cast
 
 from pydantic import (
     BaseModel,
@@ -18,13 +18,14 @@ from pydantic import (
     field_serializer,
 )
 
+from ..costs import calculate_cost
 from ._utils import BaseType, get_common_usage
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
-from .types import FinishReason, JsonableType, Usage
+from .types import CostMetadata, FinishReason, JsonableType, Provider, Usage
 
 if TYPE_CHECKING:
     from ...llm.tool import Tool
@@ -225,12 +226,41 @@ class BaseCallResponse(
     @computed_field
     @property
     @abstractmethod
-    def cost(self) -> float | None:
-        """Should return the cost of the response in dollars.
+    def cost_metadata(self) -> CostMetadata:
+        """Get metadata required for cost calculation.
 
-        If there is no cost, this method must return None.
+        Returns:
+            Metadata relevant to cost calculation
         """
-        ...
+
+        return CostMetadata(
+            input_tokens=self.input_tokens,
+            output_tokens=self.output_tokens,
+            cached_tokens=self.cached_tokens,
+        )
+
+    @computed_field
+    @property
+    def cost(self) -> float | None:
+        """Calculate the cost of this API call using the unified calculate_cost function."""
+
+        model = self.model
+        if not model:
+            return None
+
+        if self.input_tokens is None or self.output_tokens is None:
+            return None
+
+        return calculate_cost(
+            provider=self.provider,
+            model=model,
+            metadata=self.cost_metadata,
+        )
+
+    @property
+    def provider(self) -> Provider:
+        """Get the provider used for this API call."""
+        return cast(Provider, self._provider)
 
     @computed_field
     @cached_property

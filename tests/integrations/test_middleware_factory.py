@@ -9,6 +9,7 @@ from mirascope.core.base.stream import (
     BaseStream,
 )
 from mirascope.core.base.structured_stream import BaseStructuredStream
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.bedrock import AssistantMessageTypeDef
 from mirascope.integrations._middleware_factory import (
     default_context_manager,
@@ -194,6 +195,7 @@ async def test_middleware_factory_stream_async() -> None:
     for result_chunk, stream_chunk in zip(result_chunks, stream_chunks, strict=False):
         assert result_chunk == stream_chunk[0].content
     assert my_stream.cost == result.cost
+    assert my_stream.cost_metadata == result.cost_metadata
 
 
 def test_middleware_factory_base_model_sync() -> None:
@@ -398,6 +400,9 @@ def test_middleware_factory_stream_sync_exception() -> None:
             def __iter__(self):
                 return iterator()
 
+            @property
+            def cost_metadata(self) -> CostMetadata: ...
+
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
@@ -452,6 +457,9 @@ async def test_middleware_factory_stream_async_exception() -> None:
             def __aiter__(self):
                 return iterator()
 
+            @property
+            def cost_metadata(self) -> CostMetadata: ...
+
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
@@ -505,6 +513,9 @@ def test_middleware_factory_stream_sync_exception_no_handler() -> None:
             def __iter__(self):
                 return iterator()
 
+            @property
+            def cost_metadata(self) -> CostMetadata: ...
+
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
@@ -548,6 +559,9 @@ async def test_middleware_factory_stream_async_exception_no_handler() -> None:
 
             def __aiter__(self):
                 return iterator()
+
+            @property
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -757,6 +771,9 @@ async def test_middleware_factory_stream_async_with_error() -> None:
             def __aiter__(self):
                 return iterator()
 
+            @property
+            def cost_metadata(self) -> CostMetadata: ...
+
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
@@ -815,6 +832,9 @@ async def test_middleware_factory_stream_async_error_handling_fails() -> None:
 
             def __aiter__(self):
                 return iterator()
+
+            @property
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -956,6 +976,9 @@ def test_stream_without_error_handler() -> None:
             def __iter__(self):
                 return iterator()
 
+            @property
+            def cost_metadata(self) -> CostMetadata: ...
+
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
             metadata={},
@@ -1049,6 +1072,9 @@ async def test_middleware_factory_stream_error_handler_exception_async() -> None
 
             def __aiter__(self):
                 return iterator()
+
+            @property
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]
@@ -1164,6 +1190,9 @@ def test_middleware_factory_stream_error_handler_exception() -> None:
 
             def __iter__(self):
                 return iterator()
+
+            @property
+            def cost_metadata(self) -> CostMetadata: ...
 
         return MyStream(
             stream=None,  # pyright: ignore [reportArgumentType]

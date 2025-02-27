@@ -6,8 +6,8 @@ import jiter
 from pydantic.json_schema import SkipJsonSchema
 from typing_extensions import NotRequired, TypedDict
 
-from mirascope.core import BaseTool
-from mirascope.core.base import GenerateJsonSchemaNoTitles, ToolConfig
+from ....core import BaseTool
+from ....core.base import GenerateJsonSchemaNoTitles, ToolConfig
 
 
 class OpenAIRealtimeToolConfig(ToolConfig, total=False):

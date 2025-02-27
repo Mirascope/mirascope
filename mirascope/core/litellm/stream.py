@@ -6,8 +6,10 @@ usage docs: learn/streams.md
 from collections.abc import AsyncGenerator, Generator
 
 from litellm import Choices, Message
+from litellm.cost_calculator import completion_cost
 from litellm.types.utils import ModelResponse
 
+from ..base.types import CostMetadata
 from ..openai import OpenAIStream, OpenAITool
 from .call_response import LiteLLMCallResponse
 from .call_response_chunk import LiteLLMCallResponseChunk
@@ -34,35 +36,41 @@ class LiteLLMStream(OpenAIStream):
         return super().__aiter__()  # pyright: ignore [reportReturnType] # pragma: no cover
 
     @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
+    def cost_metadata(self) -> CostMetadata:
+        """Returns metadata needed for cost calculation."""
         response = self.construct_call_response()
-        return response.cost
+        return CostMetadata(
+            cost=response.cost,
+        )
 
     def construct_call_response(self) -> LiteLLMCallResponse:
         openai_call_response = super().construct_call_response()
         openai_response = openai_call_response.response
+        model_response = ModelResponse(
+            id=openai_response.id,
+            choices=[
+                Choices(
+                    finish_reason=choice.finish_reason,
+                    index=choice.index,
+                    message=Message(**choice.message.model_dump()),
+                    logprobs=choice.logprobs,
+                )
+                for choice in openai_response.choices
+            ],
+            created=openai_response.created,
+            model=openai_response.model,
+            object=openai_response.object,
+            system_fingerprint=openai_response.system_fingerprint,
+            usage=openai_response.usage.model_dump() if openai_response.usage else None,
+        )
+        model_response._hidden_params["response_cost"] = completion_cost(
+            model=self.model,
+            messages=openai_call_response.messages,
+            completion=openai_call_response.content,
+        )
         response = LiteLLMCallResponse(
             metadata=openai_call_response.metadata,
-            response=ModelResponse(
-                id=openai_response.id,
-                choices=[
-                    Choices(
-                        finish_reason=choice.finish_reason,
-                        index=choice.index,
-                        message=Message(**choice.message.model_dump()),
-                        logprobs=choice.logprobs,
-                    )
-                    for choice in openai_response.choices
-                ],
-                created=openai_response.created,
-                model=openai_response.model,
-                object=openai_response.object,
-                system_fingerprint=openai_response.system_fingerprint,
-                usage=openai_response.usage.model_dump()
-                if openai_response.usage
-                else None,
-            ),  # pyright: ignore [reportArgumentType]
+            response=model_response,  # pyright: ignore [reportArgumentType]
             tool_types=openai_call_response.tool_types,
             prompt_template=openai_call_response.prompt_template,
             fn_args=openai_call_response.fn_args,

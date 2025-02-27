@@ -7,8 +7,8 @@ from typing import Any, TypeVar
 
 from pydantic import computed_field
 
-from mirascope.core import BaseDynamicConfig
-from mirascope.core.base import (
+from ..core import BaseDynamicConfig
+from ..core.base import (
     BaseCallParams,
     BaseCallResponse,
     BaseMessageParam,
@@ -16,10 +16,10 @@ from mirascope.core.base import (
     Usage,
     transform_tool_outputs,
 )
-from mirascope.core.base.message_param import ToolResultPart
-from mirascope.core.base.types import FinishReason
-from mirascope.llm._response_metaclass import _ResponseMetaclass
-from mirascope.llm.tool import Tool
+from ..core.base.message_param import ToolResultPart
+from ..core.base.types import FinishReason
+from ._response_metaclass import _ResponseMetaclass
+from .tool import Tool
 
 _ResponseT = TypeVar("_ResponseT")
 

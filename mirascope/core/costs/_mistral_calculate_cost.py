@@ -1,10 +1,10 @@
 """Calculate the cost of a completion using the Mistral API."""
 
+from ..base.types import CostMetadata
+
 
 def calculate_cost(
-    input_tokens: int | float | None,
-    cached_tokens: int | float | None,
-    output_tokens: int | float | None,
+    metadata: CostMetadata,
     model: str = "open-mistral-7b",
 ) -> float | None:
     """Calculate the cost of a completion using the Mistral API.
@@ -33,7 +33,7 @@ def calculate_cost(
         "mistral-medium-latest": {"prompt": 0.000_002_75, "completion": 0.000_008_1},
     }
 
-    if input_tokens is None or output_tokens is None:
+    if metadata.input_tokens is None or metadata.output_tokens is None:
         return None
 
     try:
@@ -41,8 +41,8 @@ def calculate_cost(
     except KeyError:
         return None
 
-    prompt_cost = input_tokens * model_pricing["prompt"]
-    completion_cost = output_tokens * model_pricing["completion"]
+    prompt_cost = metadata.input_tokens * model_pricing["prompt"]
+    completion_cost = metadata.output_tokens * model_pricing["completion"]
     total_cost = prompt_cost + completion_cost
 
     return total_cost

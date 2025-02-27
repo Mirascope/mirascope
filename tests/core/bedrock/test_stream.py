@@ -1,7 +1,6 @@
 """Tests the `bedrock.stream` module."""
 
 from collections.abc import Generator
-from unittest.mock import patch
 
 import pytest
 from mypy_boto3_bedrock_runtime.type_defs import (
@@ -10,6 +9,7 @@ from mypy_boto3_bedrock_runtime.type_defs import (
     ToolTypeDef,
 )
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.bedrock.call_params import BedrockCallParams
 from mirascope.core.bedrock.call_response import BedrockCallResponse
 from mirascope.core.bedrock.call_response_chunk import BedrockCallResponseChunk
@@ -45,28 +45,8 @@ def test_bedrock_stream_init():
         "HTTPHeaders": {},
         "RetryAttempts": 0,
     }
-
-
-@patch("mirascope.core.bedrock.stream.calculate_cost")
-def test_bedrock_stream_cost(mock_calculate_cost):
-    mock_calculate_cost.return_value = 0.1
-    stream = BedrockStream(
-        stream=iter([]),
-        metadata={},
-        tool_types=None,
-        call_response_type=BedrockCallResponse,
-        model="anthropic.claude-v2",
-        prompt_template="",
-        fn_args={},
-        dynamic_config=None,
-        messages=[],
-        call_params=BedrockCallParams(),
-        call_kwargs={},
-    )
-    stream.input_tokens = 10
-    stream.output_tokens = 20
-    assert stream.cost == 0.1
-    mock_calculate_cost.assert_called_once_with(10, None, 20, "anthropic.claude-v2")
+    assert stream.cost is None
+    assert stream.cost_metadata == CostMetadata()
 
 
 def test_bedrock_stream_construct_message_param():

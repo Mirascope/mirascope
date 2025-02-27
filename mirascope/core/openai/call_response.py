@@ -23,8 +23,7 @@ from ..base import (
     BaseCallResponse,
     transform_tool_outputs,
 )
-from ..base.types import FinishReason
-from ._utils import calculate_cost
+from ..base.types import CostMetadata, FinishReason
 from ._utils._message_param_converter import OpenAIMessageParamConverter
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
@@ -136,14 +135,6 @@ class OpenAICallResponse(
         return self.usage.completion_tokens if self.usage else None
 
     @computed_field
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
-
-    @computed_field
     @cached_property
     def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
         """Returns the assistants's response as a message parameter."""
@@ -248,3 +239,7 @@ class OpenAICallResponse(
         if not self.user_message_param:
             return None
         return OpenAIMessageParamConverter.from_provider([self.user_message_param])[0]
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return super().cost_metadata

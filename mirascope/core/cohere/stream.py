@@ -14,7 +14,7 @@ from cohere.types import (
 )
 
 from ..base.stream import BaseStream
-from ._utils import calculate_cost
+from ..base.types import CostMetadata
 from .call_params import CohereCallParams
 from .call_response import CohereCallResponse
 from .call_response_chunk import CohereCallResponseChunk
@@ -58,13 +58,6 @@ class CohereStream(
     """
 
     _provider = "cohere"
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
 
     def _construct_message_param(
         self, tool_calls: list[ToolCall] | None = None, content: str | None = None
@@ -114,3 +107,7 @@ class CohereStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return super().cost_metadata

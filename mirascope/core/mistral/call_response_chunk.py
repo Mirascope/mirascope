@@ -8,6 +8,7 @@ from typing import cast
 from mistralai.models import CompletionChunk, FinishReason, UsageInfo
 
 from ..base import BaseCallResponseChunk, types
+from ..base.types import CostMetadata
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -91,6 +92,11 @@ class MistralCallResponseChunk(BaseCallResponseChunk[CompletionChunk, FinishReas
         if self.usage:
             return self.usage.completion_tokens
         return None
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Returns the cost metadata."""
+        return super().cost_metadata
 
     @property
     def common_finish_reasons(self) -> list[types.FinishReason] | None:

@@ -1,10 +1,10 @@
 """Calculate the cost of a completion using the OpenAI API."""
 
+from ..base.types import CostMetadata
+
 
 def calculate_cost(
-    input_tokens: int | float | None,
-    cached_tokens: int | float | None,
-    output_tokens: int | float | None,
+    metadata: CostMetadata,
     model: str = "gpt-3.5-turbo-16k",
 ) -> float | None:
     """Calculate the cost of a completion using the OpenAI API.
@@ -227,20 +227,20 @@ def calculate_cost(
             "completion": 0,
         },
     }
-    if input_tokens is None or output_tokens is None:
+    if metadata.input_tokens is None or metadata.output_tokens is None:
         return None
 
-    if cached_tokens is None:
-        cached_tokens = 0
+    if metadata.cached_tokens is None:
+        metadata.cached_tokens = 0
 
     try:
         model_pricing = pricing[model]
     except KeyError:
         return None
 
-    prompt_cost = input_tokens * model_pricing["prompt"]
-    cached_cost = cached_tokens * model_pricing["cached"]
-    completion_cost = output_tokens * model_pricing["completion"]
+    prompt_cost = metadata.input_tokens * model_pricing["prompt"]
+    cached_cost = metadata.cached_tokens * model_pricing["cached"]
+    completion_cost = metadata.output_tokens * model_pricing["completion"]
     total_cost = prompt_cost + cached_cost + completion_cost
 
     return total_cost
