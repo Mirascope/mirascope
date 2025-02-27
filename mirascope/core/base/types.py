@@ -69,19 +69,12 @@ JsonableType: TypeAlias = (
     | BaseModel
 )
 
-try:
-    from litellm import (
-        ModelResponse as LitellmModelResponse,  # pyright: ignore [reportPrivateImportUsage, reportAssignmentType]
-    )
-except ImportError:  # pragma: no cover
-
-    class LitellmModelResponse: ...
-
 
 class CostMetadata(BaseModel):
     """Metadata required for accurate LLM API cost calculation across all providers."""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
     # Common fields
     input_tokens: Annotated[
         int | float | None,
@@ -163,10 +156,10 @@ class CostMetadata(BaseModel):
         Field(default=None, description="[Anthropic] Tokens used for tool calls"),
     ] = None
 
-    # LiteLLM-specific fields
-    litellm_response: Annotated[
-        LitellmModelResponse | None,
-        Field(default=None, description="[Litellm] Response from API"),
+    # If the provider happens to provide the cost, we should just use that.
+    cost: Annotated[
+        float | None,
+        Field(default=None, description="Cost provided by the API response"),
     ] = None
 
 

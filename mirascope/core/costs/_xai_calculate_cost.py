@@ -1,6 +1,6 @@
 """Calculate the cost of a Grok API call."""
 
-from ..core.base.types import CostMetadata
+from ..base.types import CostMetadata
 
 
 def calculate_cost(

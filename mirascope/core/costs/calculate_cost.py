@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..core.base.types import CostMetadata, Provider
+from ..base.types import CostMetadata, Provider
 from ._anthropic_calculate_cost import (
     calculate_cost as anthropic_calculate_cost,
 )
@@ -75,10 +75,7 @@ def calculate_cost(
         return mistral_calculate_cost(metadata, model)
 
     elif provider == "vertex":
-        return vertex_calculate_cost(
-            metadata,
-            model,
-        )
+        return vertex_calculate_cost(metadata, model)
 
     elif provider == "xai":
         return xai_calculate_cost(metadata, model)

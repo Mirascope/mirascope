@@ -14,7 +14,7 @@ from typing import (
     overload,
 )
 
-from ...costs import calculate_cost
+from ..costs import calculate_cost
 from ._utils import (
     HandleStream,
     HandleStreamAsync,

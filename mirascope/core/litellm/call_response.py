@@ -21,4 +21,4 @@ class LiteLLMCallResponse(OpenAICallResponse):
     @computed_field
     @property
     def cost_metadata(self) -> CostMetadata:
-        return CostMetadata(litellm_response=self.response)  # pyright: ignore [reportArgumentType]
+        return CostMetadata(cost=self.response._hidden_params["response_cost"])  # pyright: ignore [reportAttributeAccessIssue]

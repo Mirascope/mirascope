@@ -1,7 +1,7 @@
 """Tests the `_xai_calculate_cost` function."""
 
 from mirascope.core.base.types import CostMetadata
-from mirascope.costs._xai_calculate_cost import calculate_cost
+from mirascope.core.costs._xai_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

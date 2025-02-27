@@ -1,8 +1,6 @@
 """Calculate the cost of a Litellm call."""
 
-from litellm.cost_calculator import completion_cost
-
-from ..core.base.types import CostMetadata
+from ..base.types import CostMetadata
 
 
 def calculate_cost(
@@ -10,4 +8,4 @@ def calculate_cost(
     model: str,
 ) -> float | None:
     """Calculate the cost of a Litellm call."""
-    return completion_cost(metadata.litellm_response)
+    return metadata.cost

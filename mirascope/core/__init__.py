@@ -2,7 +2,7 @@
 
 from contextlib import suppress
 
-from . import base
+from . import base, costs
 from .base import (
     AudioPart,
     AudioURLPart,
@@ -30,6 +30,7 @@ from .base import (
     prompt_template,
     toolkit_tool,
 )
+from .costs import calculate_cost
 
 with suppress(ImportError):
     from . import anthropic as anthropic
@@ -87,7 +88,9 @@ __all__ = [
     "anthropic",
     "azure",
     "base",
+    "calculate_cost",
     "cohere",
+    "costs",
     "gemini",
     "google",
     "groq",

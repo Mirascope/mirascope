@@ -51,6 +51,6 @@ def test_litellm_stream_cost() -> None:
     for _ in stream:
         pass
 
-    assert stream.cost == 1.8e-5
-    assert stream.cost_metadata == CostMetadata(input_tokens=1, output_tokens=1)
+    assert stream.cost == 3.9e-05
+    assert stream.cost_metadata == CostMetadata(cost=3.9e-05)
     assert stream.model == "claude-3-5-sonnet-20240620"

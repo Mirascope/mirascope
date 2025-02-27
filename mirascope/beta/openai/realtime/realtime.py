@@ -5,6 +5,7 @@ import base64
 import inspect
 import json
 import os
+from collections import defaultdict
 from collections.abc import Callable
 from functools import lru_cache
 from io import BytesIO
@@ -17,23 +18,21 @@ from typing import (
 )
 
 import websockets
-from black.trans import defaultdict
 from pydantic import BaseModel
 from pydub import AudioSegment
 from typing_extensions import NotRequired, overload
 from websockets.asyncio.client import ClientConnection, connect
 
-from mirascope.beta.openai.realtime._utils._audio import (
+from ....core import BaseTool
+from ....core.base._utils import (
+    convert_base_model_to_base_tool,
+    convert_function_to_base_tool,
+)
+from ._utils._audio import (
     async_audio_input_audio_buffer_append_event,
     async_audio_to_item_create_event,
     audio_chunk_to_audio_segment,
 )
-from mirascope.core import BaseTool
-from mirascope.core.base._utils import (
-    convert_base_model_to_base_tool,
-    convert_function_to_base_tool,
-)
-
 from ._utils._protocols import FunctionCallHandlerFunc, ReceiverFunc, SenderFunc
 from .tool import FunctionCallArguments, OpenAIRealtimeTool, RealtimeToolParam
 

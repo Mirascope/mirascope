@@ -11,6 +11,7 @@ def test_litellm_call_response_cost() -> None:
         model="claude-3-5-sonnet-20240620",
         usage={"completion_tokens": 1, "prompt_tokens": 1, "total_tokens": 2},
     )
+    response._hidden_params["response_cost"] = 1.8e-5
     call_response = LiteLLMCallResponse(
         metadata={},
         response=response,  # pyright: ignore [reportArgumentType]
@@ -27,4 +28,4 @@ def test_litellm_call_response_cost() -> None:
     )
 
     assert call_response.cost == 1.8e-5
-    assert call_response.cost_metadata == CostMetadata(litellm_response=response)  # pyright: ignore [reportArgumentType]
+    assert call_response.cost_metadata == CostMetadata(cost=1.8e-5)
