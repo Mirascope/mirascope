@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Annotated, Literal, TypeAlias
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 if TYPE_CHECKING:
     from PIL import Image
@@ -69,10 +69,19 @@ JsonableType: TypeAlias = (
     | BaseModel
 )
 
+try:
+    from litellm import (
+        ModelResponse as LitellmModelResponse,  # pyright: ignore [reportPrivateImportUsage, reportAssignmentType]
+    )
+except ImportError:
+
+    class LitellmModelResponse: ...
+
 
 class CostMetadata(BaseModel):
     """Metadata required for accurate LLM API cost calculation across all providers."""
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     # Common fields
     input_tokens: Annotated[
         int | float | None,
@@ -152,6 +161,12 @@ class CostMetadata(BaseModel):
     tool_use_tokens: Annotated[
         int | None,
         Field(default=None, description="[Anthropic] Tokens used for tool calls"),
+    ] = None
+
+    # LiteLLM-specific fields
+    response: Annotated[
+        LitellmModelResponse | None,
+        Field(default=None, description="[Litellm] Response from API"),
     ] = None
 
 

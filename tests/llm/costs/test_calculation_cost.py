@@ -20,13 +20,6 @@ def test_calculate_cost_with_none_metadata(monkeypatch):
     assert result == 50.0
 
 
-def test_calculate_cost_litellm():
-    """Test that provider 'litellm' returns None (unsupported for cost calculation)."""
-    metadata = CostMetadata(input_tokens=10, output_tokens=5, cached_tokens=0)
-    result = calculate_cost("litellm", "any_model", metadata)
-    assert result is None
-
-
 def test_calculate_cost_unknown_provider():
     """Test that an unsupported provider raises a ValueError."""
     metadata = CostMetadata(input_tokens=1, output_tokens=1, cached_tokens=0)
@@ -48,6 +41,7 @@ def test_calculate_cost_unknown_provider():
         ("mistral", "mistral_calculate_cost", 25.0),
         ("vertex", "vertex_calculate_cost", 30.0),
         ("xai", "xai_calculate_cost", 35.0),
+        ("litellm", "litellm_calculate_cost", 35.0),
     ],
 )
 def test_calculate_cost_providers(

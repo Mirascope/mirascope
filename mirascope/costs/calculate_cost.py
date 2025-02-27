@@ -12,6 +12,7 @@ from ._cohere_calculate_cost import calculate_cost as cohere_calculate_cost
 from ._gemini_calculate_cost import calculate_cost as gemini_calculate_cost
 from ._google_calculate_cost import calculate_cost as google_calculate_cost
 from ._groq_calculate_cost import calculate_cost as groq_calculate_cost
+from ._litellm_calculate_cost import calculate_cost as litellm_calculate_cost
 from ._mistral_calculate_cost import calculate_cost as mistral_calculate_cost
 from ._openai_calculate_cost import calculate_cost as openai_calculate_cost
 from ._vertex_calculate_cost import calculate_cost as vertex_calculate_cost
@@ -83,7 +84,6 @@ def calculate_cost(
         return xai_calculate_cost(metadata, model)
 
     elif provider == "litellm":
-        # LiteLLM currently does not support cost calculation
-        return None
+        return litellm_calculate_cost(metadata, model)
     else:
         raise ValueError(f"Unsupported provider: {provider}")
