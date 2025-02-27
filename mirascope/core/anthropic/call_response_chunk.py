@@ -118,7 +118,11 @@ class AnthropicCallResponseChunk(
     @property
     def cost_metadata(self) -> CostMetadata:
         """Returns the cost metadata."""
-        return CostMetadata(input_tokens=self.input_tokens, output_tokens=self.output_tokens, cached_tokens=self.cached_tokens)
+        return CostMetadata(
+            input_tokens=self.input_tokens,
+            output_tokens=self.output_tokens,
+            cached_tokens=self.cached_tokens,
+        )
 
     @property
     def common_finish_reasons(self) -> list[types.FinishReason] | None:

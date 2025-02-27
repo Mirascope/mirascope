@@ -110,7 +110,11 @@ class BaseCallResponseChunk(BaseModel, Generic[_ChunkT, _FinishReasonT], ABC):
         Returns:
             A CostMetadata object with information relevant to cost calculation
         """
-        return CostMetadata(input_tokens=self.input_tokens, output_tokens=self.output_tokens, cached_tokens=self.cached_tokens)
+        return CostMetadata(
+            input_tokens=self.input_tokens,
+            output_tokens=self.output_tokens,
+            cached_tokens=self.cached_tokens,
+        )
 
     @property
     @abstractmethod

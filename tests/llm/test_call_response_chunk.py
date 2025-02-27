@@ -64,4 +64,8 @@ def test_call_response_chunk():
     assert call_response_chunk_instance.content == "chunk_content"
     assert call_response_chunk_instance.common_usage is not None
     assert call_response_chunk_instance.common_usage.total_tokens == 5
-    assert call_response_chunk_instance.cost_metadata == CostMetadata(input_tokens=2, output_tokens=3, cached_tokens=1,)
+    assert call_response_chunk_instance.cost_metadata == CostMetadata(
+        input_tokens=2,
+        output_tokens=3,
+        cached_tokens=1,
+    )

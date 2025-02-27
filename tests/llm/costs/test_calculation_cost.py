@@ -1,10 +1,11 @@
 """Integration tests for cost calculation with mock implementations."""
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
+
 from mirascope.core.base.types import CostMetadata
 from mirascope.llm.costs import calculate_cost
-
 
 # Import the main function to test
 
