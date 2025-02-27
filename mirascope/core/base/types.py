@@ -73,7 +73,7 @@ try:
     from litellm import (
         ModelResponse as LitellmModelResponse,  # pyright: ignore [reportPrivateImportUsage, reportAssignmentType]
     )
-except ImportError:
+except ImportError:  # pragma: no cover
 
     class LitellmModelResponse: ...
 
