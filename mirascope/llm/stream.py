@@ -102,7 +102,6 @@ class Stream(
         special_names = {
             "_stream",
             "cost",
-            "cost_metadata",
             "_construct_message_param",
             "construct_call_response",
             "tool_message_params",
@@ -180,6 +179,3 @@ class Stream(
         """
         return CallResponse.tool_message_params(tools_and_outputs)
 
-    @property
-    def cost_metadata(self) -> CostMetadata:
-        return self._stream.cost_metadata

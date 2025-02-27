@@ -199,4 +199,4 @@ class AnthropicCallResponse(
     @property
     def cost_metadata(self) -> CostMetadata:
         """Get metadata required for cost calculation."""
-        return CostMetadata()
+        return super().cost_metadata

@@ -2,32 +2,27 @@
 
 from __future__ import annotations
 
-from typing import Literal
-
 from mirascope.core.base.types import CostMetadata
+from mirascope.llm import Provider
 
-Provider = Literal[
-    "anthropic",
-    "azure",
-    "bedrock",
-    "cohere",
-    "gemini",
-    "google",
-    "groq",
-    "litellm",
-    "mistral",
-    "openai",
-    "vertex",
-    "xai",
-]
+from ._anthropic_calculate_cost import (
+    calculate_cost as anthropic_calculate_cost,
+)
+from ._azure_calculate_cost import calculate_cost as azure_calculate_cost
+from ._bedrock_calculate_cost import calculate_cost as bedrock_calculate_cost
+from ._cohere_calculate_cost import calculate_cost as cohere_calculate_cost
+from ._gemini_calculate_cost import calculate_cost as gemini_calculate_cost
+from ._google_calculate_cost import calculate_cost as google_calculate_cost
+from ._groq_calculate_cost import calculate_cost as groq_calculate_cost
+from ._mistral_calculate_cost import calculate_cost as mistral_calculate_cost
+from ._openai_calculate_cost import calculate_cost as openai_calculate_cost
+from ._vertex_calculate_cost import calculate_cost as vertex_calculate_cost
+from ._xai_calculate_cost import calculate_cost as xai_calculate_cost
 
 
 def calculate_cost(
     provider: Provider,
     model: str,
-    input_tokens: int | float,
-    output_tokens: int | float | None = None,
-    cached_tokens: int | float | None = None,
     metadata: CostMetadata | None = None,
 ) -> float | None:
     """Calculate the cost for an LLM API call.
@@ -38,87 +33,56 @@ def calculate_cost(
     Args:
         provider: The LLM provider (e.g., "openai", "anthropic")
         model: The model name (e.g., "gpt-4", "claude-3-opus")
-        input_tokens: Number of input/prompt tokens
-        output_tokens: Number of output/completion tokens (if applicable)
-        cached_tokens: Number of tokens served from cache (may be priced differently)
         metadata: Additional metadata required for cost calculation
 
     Returns:
         The calculated cost in USD or None if unable to calculate
     """
-    # Set default values
-    if cached_tokens is None:
-        cached_tokens = 0
 
     # Initialize empty metadata if none provided
     if metadata is None:
         metadata = CostMetadata()
 
+    # Set default values
+    if metadata.cached_tokens is None:
+        metadata.cached_tokens = 0
+
     # Route to provider-specific implementations
     if provider == "openai":
-        from ._openai_calculate_cost import calculate_cost as openai_calculate_cost
-
-        return openai_calculate_cost(input_tokens, cached_tokens, output_tokens, model)
+        return openai_calculate_cost(metadata, model)
 
     elif provider == "anthropic":
-        from ._anthropic_calculate_cost import (
-            calculate_cost as anthropic_calculate_cost,
-        )
-
-        return anthropic_calculate_cost(
-            input_tokens, cached_tokens, output_tokens, model
-        )
+        return anthropic_calculate_cost(metadata, model)
 
     elif provider == "azure":
-        from ._azure_calculate_cost import calculate_cost as azure_calculate_cost
-
-        return azure_calculate_cost(input_tokens, cached_tokens, output_tokens, model)
+        return azure_calculate_cost(metadata, model)
 
     elif provider == "bedrock":
-        from ._bedrock_calculate_cost import calculate_cost as bedrock_calculate_cost
-
-        return bedrock_calculate_cost(input_tokens, cached_tokens, output_tokens, model)
+        return bedrock_calculate_cost(metadata, model)
 
     elif provider == "cohere":
-        from ._cohere_calculate_cost import calculate_cost as cohere_calculate_cost
-
-        return cohere_calculate_cost(input_tokens, cached_tokens, output_tokens, model)
+        return cohere_calculate_cost(metadata, model)
 
     elif provider == "gemini":
-        from ._gemini_calculate_cost import calculate_cost as gemini_calculate_cost
-
-        return gemini_calculate_cost(input_tokens, cached_tokens, output_tokens, model)
+        return gemini_calculate_cost(metadata, model)
 
     elif provider == "google":
-        from ._google_calculate_cost import calculate_cost as google_calculate_cost
-
-        return google_calculate_cost(input_tokens, cached_tokens, output_tokens, model)
+        return google_calculate_cost(metadata, model)
 
     elif provider == "groq":
-        from ._groq_calculate_cost import calculate_cost as groq_calculate_cost
-
-        return groq_calculate_cost(input_tokens, cached_tokens, output_tokens, model)
+        return groq_calculate_cost(metadata, model)
 
     elif provider == "mistral":
-        from ._mistral_calculate_cost import calculate_cost as mistral_calculate_cost
-
-        return mistral_calculate_cost(input_tokens, cached_tokens, output_tokens, model)
+        return mistral_calculate_cost(metadata, model)
 
     elif provider == "vertex":
-        from ._vertex_calculate_cost import calculate_cost as vertex_calculate_cost
-
         return vertex_calculate_cost(
-            input_tokens,
-            cached_tokens,
-            output_tokens,
+            metadata,
             model,
-            context_length=metadata.context_length or 0,
         )
 
     elif provider == "xai":
-        from ._xai_calculate_cost import calculate_cost as xai_calculate_cost
-
-        return xai_calculate_cost(input_tokens, cached_tokens, output_tokens, model)
+        return xai_calculate_cost(metadata, model)
 
     elif provider == "litellm":
         # LiteLLM currently does not support cost calculation

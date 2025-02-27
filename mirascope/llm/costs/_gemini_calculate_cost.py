@@ -1,10 +1,10 @@
 """Calculate the cost of a Gemini API call."""
 
+from mirascope.core.base.types import CostMetadata
+
 
 def calculate_cost(
-    input_tokens: int | float | None,
-    cached_tokens: int | float | None,
-    output_tokens: int | float | None,
+    metadata: CostMetadata,
     model: str,
 ) -> float | None:
     """Calculate the cost of a Gemini API call.
@@ -44,7 +44,7 @@ def calculate_cost(
         },
     }
 
-    if input_tokens is None or output_tokens is None:
+    if metadata.input_tokens is None or metadata.output_tokens is None:
         return None
 
     try:
@@ -53,15 +53,15 @@ def calculate_cost(
         return None
 
     # Determine if we're using long context pricing
-    use_long_context = input_tokens > 128_000
+    use_long_context = metadata.input_tokens > 128_000
 
     prompt_price = model_pricing["prompt_long" if use_long_context else "prompt_short"]
     completion_price = model_pricing[
         "completion_long" if use_long_context else "completion_short"
     ]
 
-    prompt_cost = input_tokens * prompt_price
-    completion_cost = output_tokens * completion_price
+    prompt_cost = metadata.input_tokens * prompt_price
+    completion_cost = metadata.output_tokens * completion_price
     total_cost = prompt_cost + completion_cost
 
     return total_cost

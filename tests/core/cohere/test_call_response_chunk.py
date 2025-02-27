@@ -46,4 +46,4 @@ def test_cohere_call_response_chunk() -> None:
     assert call_response_chunk_finish.output_tokens == 1
     assert call_response_chunk_finish.finish_reasons == ["COMPLETE"]
     assert call_response_chunk_finish.common_finish_reasons == ["stop"]
-    assert call_response_chunk_finish.cost_metadata == CostMetadata()
+    assert call_response_chunk_finish.cost_metadata == CostMetadata(input_tokens=1.0, output_tokens=1.0)

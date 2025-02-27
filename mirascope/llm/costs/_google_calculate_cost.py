@@ -1,10 +1,10 @@
 """Calculate the cost of a Gemini API call."""
 
+from mirascope.core.base.types import CostMetadata
+
 
 def calculate_cost(
-    input_tokens: int | float | None,
-    cached_tokens: int | float | None,
-    output_tokens: int | float | None,
+    metadata: CostMetadata,
     model: str,
 ) -> float | None:
     """Calculate the cost of a Google API call.
@@ -36,9 +36,7 @@ def calculate_cost(
     gemini-1.0-pro                        $0.50            $1.50            $0.50            $1.50            $0.00
 
     Args:
-        input_tokens: Number of input tokens
-        cached_tokens: Number of cached tokens
-        output_tokens: Number of output tokens
+        metadata: Additional metadata required for cost calculation
         model: Model name to use for pricing calculation
 
     Returns:
@@ -187,11 +185,11 @@ def calculate_cost(
         },
     }
 
-    if input_tokens is None or output_tokens is None:
+    if metadata.input_tokens is None or metadata.output_tokens is None:
         return None
 
-    if cached_tokens is None:
-        cached_tokens = 0
+    if metadata.cached_tokens is None:
+        metadata.cached_tokens = 0
 
     try:
         model_pricing = pricing[model]
@@ -199,7 +197,7 @@ def calculate_cost(
         return None
 
     # Determine if we're using long context pricing
-    use_long_context = input_tokens > 128_000
+    use_long_context = metadata.input_tokens > 128_000
 
     prompt_price = model_pricing["prompt_long" if use_long_context else "prompt_short"]
     cached_price = model_pricing["cached"]
@@ -207,9 +205,9 @@ def calculate_cost(
         "completion_long" if use_long_context else "completion_short"
     ]
 
-    prompt_cost = input_tokens * prompt_price
-    cached_cost = cached_tokens * cached_price
-    completion_cost = output_tokens * completion_price
+    prompt_cost = metadata.input_tokens * prompt_price
+    cached_cost = metadata.cached_tokens * cached_price
+    completion_cost = metadata.output_tokens * completion_price
     total_cost = prompt_cost + cached_cost + completion_cost
 
     return total_cost

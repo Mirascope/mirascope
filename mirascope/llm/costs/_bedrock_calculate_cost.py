@@ -1,10 +1,10 @@
 """Calculate the cost of a completion using the Bedrock API."""
 
+from mirascope.core.base.types import CostMetadata
+
 
 def calculate_cost(
-    input_tokens: int | float | None,
-    cached_tokens: int | float | None,
-    output_tokens: int | float | None,
+    metadata: CostMetadata,
     model: str,
 ) -> float | None:
     """Calculate the cost of a completion using the Bedrock API."""

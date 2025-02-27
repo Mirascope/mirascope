@@ -1,12 +1,11 @@
 """Calculate the cost of a completion using the Vertex AI Gemini API, considering context window size."""
 
+from mirascope.core.base.types import CostMetadata
+
 
 def calculate_cost(
-    input_chars: int | float | None,
-    cached_chars: int | float | None,
-    output_chars: int | float | None,
+    metadata: CostMetadata,
     model: str = "gemini-1.5-pro",
-    context_length: int = 0,
 ) -> float | None:
     """Calculate the cost of a completion using the Vertex AI Gemini API.
 
@@ -19,6 +18,8 @@ def calculate_cost(
 
     Note: Prices are per 1k characters. Gemini 1.0 Pro only supports up to 32K context window.
     """
+
+    context_length = metadata.context_length or 0
     pricing = {
         "gemini-1.5-flash": {
             "prompt_short": 0.000_018_75,
@@ -40,7 +41,7 @@ def calculate_cost(
         },
     }
 
-    if input_chars is None or output_chars is None:
+    if metadata.input_tokens is None or metadata.output_tokens is None:
         return None
 
     try:
@@ -59,8 +60,8 @@ def calculate_cost(
         "completion_long" if use_long_context else "completion_short"
     ]
 
-    prompt_cost = (input_chars / 1000) * prompt_price
-    completion_cost = (output_chars / 1000) * completion_price
+    prompt_cost = (metadata.input_tokens / 1000) * prompt_price
+    completion_cost = (metadata.output_tokens / 1000) * completion_price
     total_cost = prompt_cost + completion_cost
 
     return total_cost

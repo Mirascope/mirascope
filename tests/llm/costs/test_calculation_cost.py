@@ -1,166 +1,160 @@
-"""Tests for the unified cost calculation function."""
-
-from unittest.mock import patch
+"""Integration tests for cost calculation with mock implementations."""
 
 import pytest
-
+from unittest.mock import MagicMock
 from mirascope.core.base.types import CostMetadata
-from mirascope.llm.costs.calculate_cost import calculate_cost
+from mirascope.llm.costs import calculate_cost
 
 
-# Test for each provider implementation
-@pytest.mark.parametrize(
-    "provider,mock_path,mock_function_name",
-    [
-        ("openai", "mirascope.llm.costs._openai_calculate_cost", "calculate_cost"),
-        (
-            "anthropic",
-            "mirascope.llm.costs._anthropic_calculate_cost",
-            "calculate_cost",
-        ),
-        ("azure", "mirascope.llm.costs._azure_calculate_cost", "calculate_cost"),
-        ("bedrock", "mirascope.llm.costs._bedrock_calculate_cost", "calculate_cost"),
-        ("cohere", "mirascope.llm.costs._cohere_calculate_cost", "calculate_cost"),
-        ("gemini", "mirascope.llm.costs._gemini_calculate_cost", "calculate_cost"),
-        ("google", "mirascope.llm.costs._google_calculate_cost", "calculate_cost"),
-        ("groq", "mirascope.llm.costs._groq_calculate_cost", "calculate_cost"),
-        ("mistral", "mirascope.llm.costs._mistral_calculate_cost", "calculate_cost"),
-        ("xai", "mirascope.llm.costs._xai_calculate_cost", "calculate_cost"),
-    ],
-)
-def test_calculate_cost_routes_to_provider(provider, mock_path, mock_function_name):
-    """Test that calculate_cost correctly routes to provider-specific implementation."""
-    input_tokens = 1000
-    output_tokens = 500
-    cached_tokens = 200
-    model = "test-model"
-    expected_cost = 0.123
+# Import the main function to test
 
-    with patch(f"{mock_path}.{mock_function_name}") as mock_provider_calculate_cost:
-        mock_provider_calculate_cost.return_value = expected_cost
 
+@pytest.fixture
+def setup_mock_implementations(monkeypatch):
+    """Set up mock implementations for all provider-specific cost calculation functions."""
+    # Create mock objects for each provider function
+    mock_providers = {
+        "_openai_calculate_cost": MagicMock(return_value=0.05),
+        "_anthropic_calculate_cost": MagicMock(return_value=0.06),
+        "_azure_calculate_cost": MagicMock(return_value=0.04),
+        "_bedrock_calculate_cost": MagicMock(return_value=0.07),
+        "_cohere_calculate_cost": MagicMock(return_value=0.03),
+        "_gemini_calculate_cost": MagicMock(return_value=0.08),
+        "_google_calculate_cost": MagicMock(return_value=0.09),
+        "_groq_calculate_cost": MagicMock(return_value=0.02),
+        "_mistral_calculate_cost": MagicMock(return_value=0.01),
+        "_vertex_calculate_cost": MagicMock(return_value=0.10),
+        "_xai_calculate_cost": MagicMock(return_value=0.11),
+    }
+
+    # Patch each provider-specific function
+    for func_name, mock_func in mock_providers.items():
+        monkeypatch.setattr(f"cost_utils.{func_name}", mock_func)
+
+    # Return the mock objects for use in tests
+    return mock_providers
+
+
+def test_all_providers_with_mocks(setup_mock_implementations):
+    """Test all supported providers with mock implementations."""
+    # List of all supported providers
+    providers = [
+        "openai",
+        "anthropic",
+        "azure",
+        "bedrock",
+        "cohere",
+        "gemini",
+        "google",
+        "groq",
+        "mistral",
+        "vertex",
+        "xai",
+    ]
+
+    # Expected values (matching the mock return values)
+    expected_values = {
+        "openai": 0.05,
+        "anthropic": 0.06,
+        "azure": 0.04,
+        "bedrock": 0.07,
+        "cohere": 0.03,
+        "gemini": 0.08,
+        "google": 0.09,
+        "groq": 0.02,
+        "mistral": 0.01,
+        "vertex": 0.10,
+        "xai": 0.11,
+    }
+
+    # Test metadata
+    metadata = CostMetadata(input_tokens=100, output_tokens=50, cached_tokens=10)
+
+    # Test each provider
+    for provider in providers:
         result = calculate_cost(
-            provider=provider,
-            model=model,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            cached_tokens=cached_tokens,
+            provider=provider, model="test-model", metadata=metadata
         )
+        assert result == expected_values[provider], f"Failed for provider {provider}"
 
-        mock_provider_calculate_cost.assert_called_once_with(
-            input_tokens, cached_tokens, output_tokens, model
-        )
-        assert result == expected_cost
-
-
-def test_calculate_cost_vertex_with_context_length():
-    """Test that vertex calculate_cost receives context_length parameter."""
-    input_tokens = 1000
-    output_tokens = 500
-    cached_tokens = 200
-    model = "test-model"
-    expected_cost = 0.456
-    context_length = 8192
-    metadata = CostMetadata(context_length=context_length)
-
-    with patch(
-        "mirascope.llm.costs._vertex_calculate_cost.calculate_cost"
-    ) as mock_vertex:
-        mock_vertex.return_value = expected_cost
-
-        result = calculate_cost(
-            provider="vertex",
-            model=model,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            cached_tokens=cached_tokens,
-            metadata=metadata,
-        )
-
-        mock_vertex.assert_called_once_with(
-            input_tokens,
-            cached_tokens,
-            output_tokens,
-            model,
-            context_length=context_length,
-        )
-        assert result == expected_cost
+        # Verify the corresponding mock was called with the correct parameters
+        provider_func = setup_mock_implementations[f"_{provider}_calculate_cost"]
+        provider_func.assert_called_with(metadata, "test-model")
 
 
-def test_calculate_cost_default_values():
-    """Test that calculate_cost handles default values correctly."""
-    input_tokens = 1000
-    output_tokens = 500
-    model = "test-model"
-    expected_cost = 0.789
+def test_metadata_modification(setup_mock_implementations):
+    """Test that the calculate_cost function properly initializes metadata."""
+    # Get one of the mock implementations
+    mock_openai = setup_mock_implementations["_openai_calculate_cost"]
 
-    # Act & Assert - Test with cached_tokens=None
-    with patch(
-        "mirascope.llm.costs._openai_calculate_cost.calculate_cost"
-    ) as mock_openai:
-        mock_openai.return_value = expected_cost
+    # Test with empty metadata
+    metadata = CostMetadata()
+    calculate_cost(provider="openai", model="test-model", metadata=metadata)
 
-        result = calculate_cost(
-            provider="openai",
-            model=model,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            cached_tokens=None,
-        )
+    # Verify that cached_tokens was initialized to 0
+    assert metadata.cached_tokens == 0
 
-        mock_openai.assert_called_once_with(input_tokens, 0, output_tokens, model)
-        assert result == expected_cost
+    # Reset the mock
+    mock_openai.reset_mock()
 
+    # Test with None metadata
+    calculate_cost(provider="openai", model="test-model", metadata=None)
 
-# Test metadata default handling
-def test_calculate_cost_default_metadata():
-    """Test that calculate_cost creates empty metadata when None provided."""
-    input_tokens = 1000
-    output_tokens = 500
-    cached_tokens = 200
-    model = "test-model"
-    expected_cost = 0.321
+    # Get the metadata that was passed to the mock
+    called_metadata = mock_openai.call_args[0][0]
 
-    with patch(
-        "mirascope.llm.costs._openai_calculate_cost.calculate_cost"
-    ) as mock_openai:
-        mock_openai.return_value = expected_cost
-
-        result = calculate_cost(
-            provider="openai",
-            model=model,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            cached_tokens=cached_tokens,
-            metadata=None,  # Testing default handling
-        )
-
-        mock_openai.assert_called_once_with(
-            input_tokens, cached_tokens, output_tokens, model
-        )
-        assert result == expected_cost
+    # Verify that a new metadata object was created with cached_tokens set to 0
+    assert isinstance(called_metadata, CostMetadata)
+    assert called_metadata.cached_tokens == 0
 
 
-def test_calculate_cost_litellm():
-    """Test that calculate_cost returns None for LiteLLM provider."""
-    result = calculate_cost(
-        provider="litellm",
-        model="some-model",
-        input_tokens=1000,
-        output_tokens=500,
-    )
+def test_custom_mock_behavior(monkeypatch):
+    """Test with custom mock behavior for a specific provider."""
 
+    # Create a mock with custom behavior that depends on the model
+    def mock_anthropic_calc(metadata, model):
+        if model == "claude-3-opus":
+            return 0.12
+        elif model == "claude-3-sonnet":
+            return 0.08
+        else:
+            return 0.04
+
+    # Patch the anthropic calculate_cost function
+    monkeypatch.setattr("cost_utils._anthropic_calculate_cost", mock_anthropic_calc)
+
+    # Test metadata
+    metadata = CostMetadata(input_tokens=100, output_tokens=50, cached_tokens=10)
+
+    # Test with different models
+    assert calculate_cost("anthropic", "claude-3-opus", metadata) == 0.12
+    assert calculate_cost("anthropic", "claude-3-sonnet", metadata) == 0.08
+    assert calculate_cost("anthropic", "claude-3-haiku", metadata) == 0.04
+
+
+def test_mock_error_handling(monkeypatch):
+    """Test error handling with mock implementations."""
+
+    # Create a mock that raises an exception
+    def mock_openai_error(metadata, model):
+        raise ValueError("API error simulation")
+
+    # Patch the openai calculate_cost function
+    monkeypatch.setattr("cost_utils._openai_calculate_cost", mock_openai_error)
+
+    # Verify that the exception is propagated
+    with pytest.raises(ValueError, match="API error simulation"):
+        calculate_cost("openai", "gpt-4", CostMetadata())
+
+
+def test_litellm_mock_invariant(setup_mock_implementations):
+    """Test that LiteLLM always returns None regardless of mocks."""
+    # Even with all the mocks set up, litellm should still return None
+    metadata = CostMetadata(input_tokens=100, output_tokens=50, cached_tokens=10)
+
+    result = calculate_cost(provider="litellm", model="any-model", metadata=metadata)
     assert result is None
 
-
-def test_calculate_cost_unsupported_provider():
-    """Test that calculate_cost raises ValueError for unsupported providers."""
-    with pytest.raises(ValueError) as excinfo:
-        calculate_cost(
-            provider="unknown_provider",  # type: ignore
-            model="some-model",
-            input_tokens=1000,
-            output_tokens=500,
-        )
-
-    assert "Unsupported provider" in str(excinfo.value)
+    # Verify that none of the mocks were called
+    for mock_func in setup_mock_implementations.values():
+        mock_func.assert_not_called()

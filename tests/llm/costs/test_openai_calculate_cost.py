@@ -1,10 +1,10 @@
 """Tests the `_openai_calculate_cost` function."""
-
+from mirascope.core.base.types import CostMetadata
 from mirascope.llm.costs._openai_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:
     """Tests the `calculate_cost` function."""
-    assert calculate_cost(None, None, None, model="gpt-4o-mini") is None
-    assert calculate_cost(1, None, 1, model="unknown") is None
-    assert calculate_cost(1, None, 1, model="gpt-4o-mini") == 0.00000075
+    assert calculate_cost(CostMetadata(), model="gpt-4o-mini") is None
+    assert calculate_cost(CostMetadata(input_tokens=1, output_tokens=1), model="unknown") is None
+    assert calculate_cost(CostMetadata(input_tokens=1, output_tokens=1), model="gpt-4o-mini") == 0.00000075

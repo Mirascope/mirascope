@@ -1,10 +1,10 @@
 """Calculate the cost of a Grok API call."""
 
+from mirascope.core.base.types import CostMetadata
+
 
 def calculate_cost(
-    input_tokens: int | float | None,
-    cached_tokens: int | float | None,
-    output_tokens: int | float | None,
+    metadata: CostMetadata,
     model: str,
 ) -> float | None:
     """Calculate the cost of an xAI Grok API call.
@@ -81,11 +81,11 @@ def calculate_cost(
         },
     }
 
-    if input_tokens is None or output_tokens is None:
+    if metadata.input_tokens is None or metadata.output_tokens is None:
         return None
 
-    if cached_tokens is None:
-        cached_tokens = 0
+    if metadata.cached_tokens is None:
+        metadata.cached_tokens = 0
 
     try:
         model_pricing = pricing[model]
@@ -96,9 +96,9 @@ def calculate_cost(
     cached_price = model_pricing["cached"]
     completion_price = model_pricing["completion"]
 
-    prompt_cost = input_tokens * prompt_price
-    cached_cost = cached_tokens * cached_price
-    completion_cost = output_tokens * completion_price
+    prompt_cost = metadata.input_tokens * prompt_price
+    cached_cost = metadata.cached_tokens * cached_price
+    completion_cost = metadata.output_tokens * completion_price
     total_cost = prompt_cost + cached_cost + completion_cost
 
     return total_cost

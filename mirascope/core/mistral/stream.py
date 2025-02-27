@@ -117,4 +117,4 @@ class MistralStream(
 
     @property
     def cost_metadata(self) -> CostMetadata:
-        return CostMetadata()
+        return super().cost_metadata

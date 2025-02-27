@@ -74,6 +74,18 @@ class CostMetadata(BaseModel):
     """Metadata required for accurate LLM API cost calculation across all providers."""
 
     # Common fields
+    input_tokens: Annotated[
+        int | float | None,
+        Field(default=None, description="Input tokens"),
+    ] = None
+    output_tokens: Annotated[
+        int | float | None,
+        Field(default=None, description="Output tokens"),
+    ] = None
+    cached_tokens: Annotated[
+        int | float | None,
+        Field(default=None, description="Cached tokens"),
+    ] = None
     streaming_mode: Annotated[
         bool | None,
         Field(default=None, description="Whether streaming API was used"),
@@ -140,22 +152,4 @@ class CostMetadata(BaseModel):
     tool_use_tokens: Annotated[
         int | None,
         Field(default=None, description="[Anthropic] Tokens used for tool calls"),
-    ] = None
-
-    # Vertex/Google-specific fields
-    character_count: Annotated[
-        int | None,
-        Field(
-            default=None,
-            description="[Vertex/Google] Character count for character-based pricing models",
-        ),
-    ] = None
-
-    # Gemini-specific fields
-    long_context_premium: Annotated[
-        bool | None,
-        Field(
-            default=None,
-            description="[Gemini] Whether long context premium pricing applies",
-        ),
     ] = None

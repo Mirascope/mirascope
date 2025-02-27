@@ -27,7 +27,6 @@ from .tool import BaseTool
 from .types import CostMetadata, FinishReason, JsonableType, Usage
 
 if TYPE_CHECKING:
-    from ...llm import Provider
     from ...llm.tool import Tool
     from .. import BaseMessageParam
 
@@ -230,9 +229,14 @@ class BaseCallResponse(
         """Get metadata required for cost calculation.
 
         Returns:
-            A dictionary of metadata relevant to cost calculation
+            Metadata relevant to cost calculation
         """
-        raise NotImplementedError("Subclasses must implement cost_metadata property")
+
+        return CostMetadata(
+            input_tokens=self.input_tokens,
+            output_tokens=self.output_tokens,
+            cached_tokens=self.cached_tokens,
+        )
 
     @computed_field
     @property
@@ -247,21 +251,18 @@ class BaseCallResponse(
         if self.input_tokens is None or self.output_tokens is None:
             return None
 
+        from ...llm import Provider
+
         return calculate_cost(
-            provider=self.provider,
+            provider=cast(Provider, self.provider),
             model=model,
-            input_tokens=self.input_tokens,
-            output_tokens=self.output_tokens,
-            cached_tokens=self.cached_tokens,
             metadata=self.cost_metadata,
         )
 
     @property
-    def provider(self) -> Provider:
+    def provider(self) -> str:
         """Get the provider used for this API call."""
-        from ...llm import Provider
-
-        return cast(Provider, self._provider)
+        return self._provider
 
     @computed_field
     @cached_property

@@ -97,7 +97,7 @@ class AzureCallResponseChunk(
     @property
     def cost_metadata(self) -> CostMetadata:
         """Returns the cost metadata."""
-        return CostMetadata()
+        return super().cost_metadata
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:

@@ -48,7 +48,7 @@ def test_azure_call_response_chunk() -> None:
     assert call_response_chunk.input_tokens == 1
     assert call_response_chunk.output_tokens == 1
     assert call_response_chunk.common_finish_reasons == ["stop"]
-    assert call_response_chunk.cost_metadata == CostMetadata()
+    assert call_response_chunk.cost_metadata == CostMetadata(input_tokens=1, output_tokens=1, cached_tokens=0,)
 
 
 def test_azure_call_response_chunk_no_choices_or_usage() -> None:

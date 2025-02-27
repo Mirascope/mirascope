@@ -42,4 +42,4 @@ def test_xai_call_response_cost() -> None:
     )
 
     assert call_response.cost == 1.4e-5
-    assert call_response.cost_metadata == CostMetadata()
+    assert call_response.cost_metadata == CostMetadata(input_tokens=1, output_tokens=1)

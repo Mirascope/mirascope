@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
 from functools import wraps
 from typing import (
-    TYPE_CHECKING,
     Any,
     ClassVar,
     Generic,
@@ -37,9 +36,6 @@ from .metadata import Metadata
 from .prompt import prompt_template
 from .tool import BaseTool
 from .types import CostMetadata
-
-if TYPE_CHECKING:
-    from ...llm import Provider
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
@@ -216,16 +212,17 @@ class BaseStream(
             self.finish_reasons = chunk.finish_reasons
 
     @property
-    def provider(self) -> "Provider":
-        from ...llm import Provider
-
-        return cast(Provider, self._provider)
+    def provider(self) -> str:
+        return self._provider
 
     @property
-    @abstractmethod
     def cost_metadata(self) -> CostMetadata:
         """Returns metadata needed for cost calculation."""
-        ...
+        return CostMetadata(
+            input_tokens=self.input_tokens,
+            output_tokens=self.output_tokens,
+            cached_tokens=self.cached_tokens,
+        )
 
     @property
     def cost(self) -> float | None:
@@ -235,12 +232,11 @@ class BaseStream(
         if self.input_tokens is None or self.output_tokens is None:
             return None
 
+        from ...llm import Provider
+
         return calculate_cost(
-            provider=self.provider,
+            provider=cast(Provider, self.provider),
             model=self.model,
-            input_tokens=self.input_tokens,
-            output_tokens=self.output_tokens,
-            cached_tokens=self.cached_tokens,
             metadata=self.cost_metadata,
         )
 
