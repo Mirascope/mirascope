@@ -10,6 +10,7 @@ from google.genai.types import (
     FinishReason as GoogleFinishReason,
 )
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.google.call_response_chunk import GoogleCallResponseChunk
 
 
@@ -36,3 +37,4 @@ def test_google_call_response_chunk() -> None:
     assert call_response_chunk.input_tokens is None
     assert call_response_chunk.output_tokens is None
     assert call_response_chunk.common_finish_reasons == ["stop"]
+    assert call_response_chunk.cost_metadata == CostMetadata()

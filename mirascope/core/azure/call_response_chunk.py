@@ -13,7 +13,7 @@ from azure.ai.inference.models import (
 from pydantic import SkipValidation
 
 from ..base import BaseCallResponseChunk
-from ..base.types import FinishReason
+from ..base.types import CostMetadata, FinishReason
 
 
 class AzureCallResponseChunk(
@@ -93,6 +93,11 @@ class AzureCallResponseChunk(
     def output_tokens(self) -> int:
         """Returns the number of output tokens."""
         return self.usage.completion_tokens
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Returns the cost metadata."""
+        return super().cost_metadata
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypeAlias
+from typing import TYPE_CHECKING, Annotated, Literal, TypeAlias
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 if TYPE_CHECKING:
     from PIL import Image
@@ -68,3 +68,116 @@ JsonableType: TypeAlias = (
     | dict[str, "JsonableType"]
     | BaseModel
 )
+
+
+class CostMetadata(BaseModel):
+    """Metadata required for accurate LLM API cost calculation across all providers."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    # Common fields
+    input_tokens: Annotated[
+        int | float | None,
+        Field(default=None, description="Input tokens"),
+    ] = None
+    output_tokens: Annotated[
+        int | float | None,
+        Field(default=None, description="Output tokens"),
+    ] = None
+    cached_tokens: Annotated[
+        int | float | None,
+        Field(default=None, description="Cached tokens"),
+    ] = None
+    streaming_mode: Annotated[
+        bool | None,
+        Field(default=None, description="Whether streaming API was used"),
+    ] = None
+    cached_response: Annotated[
+        bool | None,
+        Field(default=None, description="Whether response was served from cache"),
+    ] = None
+    context_length: Annotated[
+        int | None,
+        Field(default=None, description="Total context window length in tokens"),
+    ] = None
+    realtime_mode: Annotated[
+        bool | None,
+        Field(default=None, description="Whether realtime processing was used"),
+    ] = None
+    region: Annotated[
+        str | None,
+        Field(
+            default=None,
+            description="Cloud region for request (affects pricing in some providers)",
+        ),
+    ] = None
+    tier: Annotated[
+        str | None,
+        Field(default=None, description="Service tier (e.g. standard, enterprise)"),
+    ] = None
+
+    # Media-related fields
+    image_count: Annotated[
+        int | None,
+        Field(default=None, description="Number of images in the request"),
+    ] = None
+    audio_duration: Annotated[
+        float | None, Field(default=None, description="Duration of audio in seconds")
+    ] = None
+
+    # OpenAI-specific fields
+    vision_tokens: Annotated[
+        int | None,
+        Field(
+            default=None, description="[OpenAI] Number of vision tokens in the request"
+        ),
+    ] = None
+    audio_tokens: Annotated[
+        int | None,
+        Field(
+            default=None, description="[OpenAI] Number of audio tokens in the request"
+        ),
+    ] = None
+    realtime_tokens: Annotated[
+        int | None,
+        Field(
+            default=None,
+            description="[OpenAI] Number of realtime tokens in the request",
+        ),
+    ] = None
+
+    # Anthropic-specific fields
+    cache_write: Annotated[
+        bool | None,
+        Field(default=None, description="[Anthropic] Whether cache write occurred"),
+    ] = None
+    tool_use_tokens: Annotated[
+        int | None,
+        Field(default=None, description="[Anthropic] Tokens used for tool calls"),
+    ] = None
+
+    # If the provider happens to provide the cost, we should just use that.
+    cost: Annotated[
+        float | None,
+        Field(default=None, description="Cost provided by the API response"),
+    ] = None
+
+
+Provider: TypeAlias = Literal[
+    "anthropic",
+    "azure",
+    "bedrock",
+    "cohere",
+    "gemini",
+    "google",
+    "groq",
+    "litellm",
+    "mistral",
+    "openai",
+    "vertex",
+    "xai",
+]
+LocalProvider: TypeAlias = Literal[
+    "ollama",
+    "vllm",
+]

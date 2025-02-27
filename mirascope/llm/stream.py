@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import AsyncGenerator, Generator
 from typing import Any, Generic, TypeVar
 
-from mirascope.core.base import (
+from ..core.base import (
     BaseCallParams,
     BaseCallResponse,
     BaseCallResponseChunk,
@@ -13,12 +13,12 @@ from mirascope.core.base import (
     BaseMessageParam,
     BaseTool,
 )
-from mirascope.core.base.call_response import JsonableType
-from mirascope.core.base.stream import BaseStream
-from mirascope.core.base.types import FinishReason
-from mirascope.llm.call_response import CallResponse
-from mirascope.llm.call_response_chunk import CallResponseChunk
-from mirascope.llm.tool import Tool
+from ..core.base.call_response import JsonableType
+from ..core.base.stream import BaseStream
+from ..core.base.types import FinishReason
+from ..llm.call_response import CallResponse
+from ..llm.call_response_chunk import CallResponseChunk
+from .tool import Tool
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(

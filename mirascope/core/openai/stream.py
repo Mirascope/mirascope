@@ -21,7 +21,7 @@ from openai.types.chat.chat_completion_message_tool_call_param import Function
 from openai.types.completion_usage import CompletionUsage
 
 from ..base.stream import BaseStream
-from ._utils import calculate_cost
+from ..base.types import CostMetadata
 from .call_params import OpenAICallParams
 from .call_response import OpenAICallResponse
 from .call_response_chunk import OpenAICallResponseChunk
@@ -101,13 +101,6 @@ class OpenAIStream(
 
         return generator()
 
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
-
     def _construct_message_param(
         self,
         tool_calls: list[ChatCompletionMessageToolCall] | None = None,
@@ -186,3 +179,7 @@ class OpenAIStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return super().cost_metadata

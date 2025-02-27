@@ -5,6 +5,7 @@ from openai.types.chat.chat_completion_chunk import Choice as ChunkChoice
 from openai.types.chat.chat_completion_chunk import ChoiceDelta
 from openai.types.completion_usage import CompletionUsage
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.litellm.call_response import LiteLLMCallResponse
 from mirascope.core.litellm.call_response_chunk import LiteLLMCallResponseChunk
 from mirascope.core.litellm.stream import LiteLLMStream
@@ -50,5 +51,6 @@ def test_litellm_stream_cost() -> None:
     for _ in stream:
         pass
 
-    assert stream.cost == 1.8e-5
+    assert stream.cost == 3.9e-05
+    assert stream.cost_metadata == CostMetadata(cost=3.9e-05)
     assert stream.model == "claude-3-5-sonnet-20240620"

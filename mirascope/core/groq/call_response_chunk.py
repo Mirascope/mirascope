@@ -10,6 +10,7 @@ from groq.types.chat.chat_completion import Choice
 from groq.types.completion_usage import CompletionUsage
 
 from ..base import BaseCallResponseChunk
+from ..base.types import CostMetadata
 
 FinishReason = Choice.__annotations__["finish_reason"]
 
@@ -92,6 +93,11 @@ class GroqCallResponseChunk(BaseCallResponseChunk[ChatCompletionChunk, FinishRea
         if self.usage:
             return self.usage.completion_tokens
         return None
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Returns the cost metadata."""
+        return super().cost_metadata
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:

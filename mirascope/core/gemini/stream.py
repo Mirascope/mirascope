@@ -22,7 +22,7 @@ from google.generativeai.types import (
 from google.generativeai.types.content_types import PartType
 
 from ..base.stream import BaseStream
-from ._utils import calculate_cost
+from ..base.types import CostMetadata
 from .call_params import GeminiCallParams
 from .call_response import GeminiCallResponse
 from .call_response_chunk import GeminiCallResponseChunk
@@ -65,13 +65,6 @@ class GeminiStream(
     """
 
     _provider = "gemini"
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
 
     def _construct_message_param(
         self, tool_calls: list[FunctionCall] | None = None, content: str | None = None
@@ -121,3 +114,7 @@ class GeminiStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return super().cost_metadata

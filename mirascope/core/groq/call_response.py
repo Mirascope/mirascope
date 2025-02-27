@@ -19,8 +19,7 @@ from pydantic import SerializeAsAny, computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
-from ..base.types import FinishReason
-from ._utils import calculate_cost
+from ..base.types import CostMetadata, FinishReason
 from ._utils._message_param_converter import GroqMessageParamConverter
 from .call_params import GroqCallParams
 from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
@@ -111,14 +110,6 @@ class GroqCallResponse(
         return self.usage.completion_tokens if self.usage else None
 
     @computed_field
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
-
-    @computed_field
     @cached_property
     def message_param(self) -> SerializeAsAny[ChatCompletionAssistantMessageParam]:
         """Returns the assistants's response as a message parameter."""
@@ -195,3 +186,7 @@ class GroqCallResponse(
         if not self.user_message_param:
             return None
         return GroqMessageParamConverter.from_provider([self.user_message_param])[0]
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        return super().cost_metadata

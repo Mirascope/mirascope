@@ -9,6 +9,7 @@ from mistralai.models import (
     UsageInfo,
 )
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.mistral.call_response_chunk import MistralCallResponseChunk
 
 
@@ -44,6 +45,11 @@ def test_mistral_call_response_chunk() -> None:
     assert call_response_chunk.input_tokens == 1
     assert call_response_chunk.output_tokens == 1
     assert call_response_chunk.common_finish_reasons == ["stop"]
+    assert call_response_chunk.cost_metadata == CostMetadata(
+        input_tokens=1,
+        output_tokens=1,
+        cached_tokens=0,
+    )
 
 
 def test_mistral_call_response_chunk_no_choices_or_usage() -> None:

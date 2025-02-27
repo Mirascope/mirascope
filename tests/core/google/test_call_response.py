@@ -10,6 +10,7 @@ from google.genai.types import (
 from google.genai.types import FinishReason as GoogleFinishReason
 
 from mirascope.core import BaseMessageParam
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.google.call_response import GoogleCallResponse
 from mirascope.core.google.tool import GoogleTool
 
@@ -54,6 +55,8 @@ def test_google_call_response() -> None:
     assert call_response.input_tokens is None
     assert call_response.output_tokens is None
     assert call_response.cost is None
+    assert call_response.cost_metadata == CostMetadata()
+    assert call_response.cached_tokens is None
     assert call_response.message_param == {
         "role": "model",
         "parts": [Part(text="The author is Patrick Rothfuss")],

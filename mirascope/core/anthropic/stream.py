@@ -17,7 +17,7 @@ from anthropic.types.tool_use_block_param import ToolUseBlockParam
 from pydantic import BaseModel
 
 from ..base.stream import BaseStream
-from ._utils import calculate_cost
+from ..base.types import CostMetadata
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
@@ -63,13 +63,6 @@ class AnthropicStream(
     """
 
     _provider = "anthropic"
-
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
 
     def _construct_message_param(
         self, tool_calls: list[ToolUseBlock] | None = None, content: str | None = None
@@ -147,3 +140,8 @@ class AnthropicStream(
             start_time=self.start_time,
             end_time=self.end_time,
         )
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Get metadata required for cost calculation."""
+        return super().cost_metadata

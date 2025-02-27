@@ -14,7 +14,7 @@ from mirascope.core.base import (
     BaseTool,
     Metadata,
 )
-from mirascope.core.base.types import FinishReason
+from mirascope.core.base.types import CostMetadata, FinishReason
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.llm_call import (
     _get_local_provider_call,
@@ -92,6 +92,9 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
         self, tool_calls: list | None, content: str | None
     ): ...
 
+    @property
+    def cost_metadata(self) -> CostMetadata: ...
+
 
 class ConcreteStream(BaseStream):
     def _construct_message_param(self, *args, **kwargs): ...
@@ -100,6 +103,9 @@ class ConcreteStream(BaseStream):
 
     @property
     def cost(self): ...
+
+    @property
+    def cost_metadata(self) -> CostMetadata: ...
 
 
 def test_wrap_result():

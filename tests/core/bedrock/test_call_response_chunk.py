@@ -2,6 +2,7 @@
 
 from mypy_boto3_bedrock_runtime.type_defs import TokenUsageTypeDef
 
+from mirascope.core.base.types import CostMetadata
 from mirascope.core.bedrock._types import StreamOutputChunk
 from mirascope.core.bedrock.call_response_chunk import BedrockCallResponseChunk
 
@@ -43,6 +44,7 @@ def test_bedrock_call_response_chunk() -> None:
     assert call_response_chunk_0.usage is None
     assert call_response_chunk_0.input_tokens is None
     assert call_response_chunk_0.output_tokens is None
+    assert call_response_chunk_0.cost_metadata == CostMetadata()
 
     # Test chunk 1 (content delta)
     assert call_response_chunk_1.content == "content"
@@ -52,6 +54,7 @@ def test_bedrock_call_response_chunk() -> None:
     assert call_response_chunk_1.usage is None
     assert call_response_chunk_1.input_tokens is None
     assert call_response_chunk_1.output_tokens is None
+    assert call_response_chunk_1.cost_metadata == CostMetadata()
 
     # Test chunk 2 (message stop)
     assert call_response_chunk_2.content == ""
@@ -62,3 +65,6 @@ def test_bedrock_call_response_chunk() -> None:
     assert call_response_chunk_2.input_tokens == 1
     assert call_response_chunk_2.output_tokens == 1
     assert call_response_chunk_2.common_finish_reasons == ["stop"]
+    assert call_response_chunk_2.cost_metadata == CostMetadata(
+        input_tokens=1, output_tokens=1
+    )

@@ -3,9 +3,9 @@
 usage docs: learn/calls.md#handling-responses
 """
 
-from litellm.cost_calculator import completion_cost
 from pydantic import computed_field
 
+from ..base.types import CostMetadata
 from ..openai import OpenAICallResponse
 
 
@@ -20,6 +20,5 @@ class LiteLLMCallResponse(OpenAICallResponse):
 
     @computed_field
     @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return completion_cost(self.response)
+    def cost_metadata(self) -> CostMetadata:
+        return CostMetadata(cost=self.response._hidden_params["response_cost"])  # pyright: ignore [reportAttributeAccessIssue]

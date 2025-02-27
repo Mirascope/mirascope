@@ -19,8 +19,7 @@ from pydantic import computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
-from ..base.types import FinishReason
-from ._utils import calculate_cost
+from ..base.types import CostMetadata, FinishReason
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -120,14 +119,6 @@ class MistralCallResponse(
         return self.usage.completion_tokens
 
     @computed_field
-    @property
-    def cost(self) -> float | None:
-        """Returns the cost of the call."""
-        return calculate_cost(
-            self.input_tokens, self.cached_tokens, self.output_tokens, self.model
-        )
-
-    @computed_field
     @cached_property
     def message_param(self) -> AssistantMessage:
         """Returns the assistants's response as a message parameter."""
@@ -200,3 +191,9 @@ class MistralCallResponse(
         if not self.user_message_param:
             return None
         return MistralMessageParamConverter.from_provider([self.user_message_param])[0]
+
+    @computed_field
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Get metadata required for cost calculation."""
+        return super().cost_metadata

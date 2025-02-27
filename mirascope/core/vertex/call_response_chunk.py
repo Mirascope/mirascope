@@ -6,6 +6,7 @@ usage docs: learn/streams.md#handling-streamed-responses
 from vertexai.generative_models import FinishReason, GenerationResponse
 
 from ..base import BaseCallResponseChunk, types
+from ..base.types import CostMetadata
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -85,6 +86,11 @@ class VertexCallResponseChunk(
     def output_tokens(self) -> None:
         """Returns the number of output tokens."""
         return None
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Returns the cost metadata."""
+        return super().cost_metadata
 
     @property
     def common_finish_reasons(self) -> list[types.FinishReason] | None:

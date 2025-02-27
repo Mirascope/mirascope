@@ -6,7 +6,7 @@ from typing import Any, TypeVar
 
 from pydantic._internal._model_construction import ModelMetaclass
 
-from mirascope.core.base.tool import BaseTool
+from ..core.base.tool import BaseTool
 
 _ToolResponseT = TypeVar("_ToolResponseT", bound=BaseTool)
 

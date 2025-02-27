@@ -13,6 +13,7 @@ from cohere.types import (
 from pydantic import SkipValidation
 
 from ..base import BaseCallResponseChunk, types
+from ..base.types import CostMetadata
 from ._types import (
     StreamEndStreamedChatResponse,
     StreamStartStreamedChatResponse,
@@ -111,6 +112,11 @@ class CohereCallResponseChunk(
         if self.usage:
             return self.usage.output_tokens
         return None
+
+    @property
+    def cost_metadata(self) -> CostMetadata:
+        """Returns the cost metadata."""
+        return super().cost_metadata
 
     @property
     def common_finish_reasons(self) -> list[types.FinishReason] | None:

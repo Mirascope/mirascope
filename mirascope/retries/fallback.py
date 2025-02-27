@@ -8,7 +8,7 @@ from typing_extensions import NotRequired, Required, TypedDict
 
 from .. import llm
 from ..core.base import CommonCallParams
-from ..llm._protocols import Provider
+from ..core.base.types import Provider
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
