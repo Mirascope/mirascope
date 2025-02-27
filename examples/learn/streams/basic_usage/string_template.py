@@ -1,9 +1,9 @@
-from mirascope.core import google
+from mirascope import llm, prompt_template
 
 
-@google.call("gemini-1.5-flash", stream=True)
-def recommend_book(genre: str) -> str:
-    return f"Recommend a {genre} book"
+@llm.call(provider="openai", model="gpt-4o-mini", stream=True)
+@prompt_template("Recommend a {genre} book")
+def recommend_book(genre: str): ...
 
 
 stream = recommend_book("fantasy")

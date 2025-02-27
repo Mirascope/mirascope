@@ -1,7 +1,7 @@
-from mirascope.core import BaseMessageParam, litellm
+from mirascope import BaseMessageParam, llm
 
 
-@litellm.call("gpt-4o-mini", stream=True)
+@llm.call(provider="openai", model="gpt-4o-mini", stream=True)
 def recommend_book(genre: str) -> list[BaseMessageParam]:
     return [BaseMessageParam(role="user", content=f"Recommend a {genre} book")]
 

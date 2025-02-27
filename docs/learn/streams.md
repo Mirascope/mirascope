@@ -68,7 +68,7 @@ To use streaming, simply set the `stream` parameter to `True` in your [`call`](c
         === "{{ provider }}"
 
             ```python hl_lines="4 9-11"
-            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::11"
+            --8<-- "build/snippets/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::11"
             ```
 
         {% endfor %}
@@ -130,7 +130,7 @@ Once exhausted, all `BaseStream` objects share the [same common properties and m
         === "{{ provider }}"
 
             ```python hl_lines="13"
-            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::13"
+            --8<-- "build/snippets/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::13"
             ```
 
         {% endfor %}
@@ -148,7 +148,7 @@ You can access the additional missing properties by using the method `construct_
         === "{{ provider }}"
 
             ```python hl_lines="15-16"
-            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
@@ -172,9 +172,9 @@ While Mirascope provides a consistent interface, you can always access the full,
         === "{{ provider }}"
 
             ```python hl_lines="11"
-            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::10"
+            --8<-- "build/snippets/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py::10"
                 print(f"Original chunk: {chunk.chunk}")
-            --8<-- "examples/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:11:11"
+            --8<-- "build/snippets/learn/streams/basic_usage/{{ provider | provider_dir }}/{{ method }}.py:11:11"
             ```
 
         {% endfor %}
@@ -215,7 +215,11 @@ For providers that support audio outputs, you can stream both text and audio res
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
+            {% if provider == "OpenAI" %}
             ```python hl_lines="17 18 20 31-34"
+            {% else %}
+            ```python
+            {% endif %}
             --8<-- "examples/learn/streams/multi_modal_outputs/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
@@ -266,14 +270,16 @@ Error handling in streams is similar to standard non-streaming calls. However, i
             {% else %}
             ```python hl_lines="1 10 13"
             {% endif %}
-            --8<-- "examples/learn/streams/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/streams/error_handling/{{ provider | provider_dir }}/{{ method }}.py"
             ```
 
         {% endfor %}
 
     {% endfor %}
 
-In these examples, we wrap the iteration loop in a try/except block to catch any errors that might occur during streaming.
+In these examples we show provider-specific error handling, though you can also catch generic exceptions.
+
+Note how we wrap the iteration loop in a try/except block to catch any errors that might occur during streaming.
 
 !!! warning "When Errors Occur"
 

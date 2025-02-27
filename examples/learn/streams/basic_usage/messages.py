@@ -1,9 +1,9 @@
-from mirascope.core import bedrock, prompt_template
+from mirascope import Messages, llm
 
 
-@bedrock.call("anthropic.claude-3-haiku-20240307-v1:0", stream=True)
-@prompt_template("Recommend a {genre} book")
-def recommend_book(genre: str): ...
+@llm.call(provider="openai", model="gpt-4o-mini", stream=True)
+def recommend_book(genre: str) -> Messages.Type:
+    return Messages.User(f"Recommend a {genre} book")
 
 
 stream = recommend_book("fantasy")
