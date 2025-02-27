@@ -213,8 +213,8 @@ class BaseStream(
             self.finish_reasons = chunk.finish_reasons
 
     @property
-    def provider(self) -> str:
-        return self._provider
+    def provider(self) -> Provider:
+        return cast(Provider, self._provider)
 
     @property
     def cost_metadata(self) -> CostMetadata:
@@ -233,7 +233,7 @@ class BaseStream(
             return None
 
         return calculate_cost(
-            provider=cast(Provider, self.provider),
+            provider=self.provider,
             model=self.model,
             metadata=self.cost_metadata,
         )

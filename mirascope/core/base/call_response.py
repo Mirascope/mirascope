@@ -252,15 +252,15 @@ class BaseCallResponse(
             return None
 
         return calculate_cost(
-            provider=cast(Provider, self.provider),
+            provider=self.provider,
             model=model,
             metadata=self.cost_metadata,
         )
 
     @property
-    def provider(self) -> str:
+    def provider(self) -> Provider:
         """Get the provider used for this API call."""
-        return self._provider
+        return cast(Provider, self._provider)
 
     @computed_field
     @cached_property
