@@ -1,7 +1,7 @@
 import pytest
 
 from mirascope.core.base.types import CostMetadata
-from mirascope.llm.costs import calculate_cost
+from mirascope.costs import calculate_cost
 
 
 def test_calculate_cost_with_none_metadata(monkeypatch):

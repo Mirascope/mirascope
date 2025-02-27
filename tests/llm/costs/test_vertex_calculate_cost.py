@@ -3,7 +3,7 @@
 import pytest
 
 from mirascope.core.base.types import CostMetadata
-from mirascope.llm.costs._vertex_calculate_cost import calculate_cost
+from mirascope.costs._vertex_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

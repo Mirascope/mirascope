@@ -22,12 +22,11 @@ from mirascope.llm.call_response import CallResponse
 from mirascope.llm.stream import Stream
 
 from ..core.base.stream_config import StreamConfig
+from ..core.base.types import LocalProvider, Provider
 from ._protocols import (
     AsyncLLMFunctionDecorator,
     CallDecorator,
     LLMFunctionDecorator,
-    LocalProvider,
-    Provider,
     SyncLLMFunctionDecorator,
 )
 

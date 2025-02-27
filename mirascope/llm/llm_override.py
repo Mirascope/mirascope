@@ -6,7 +6,7 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Literal, ParamSpec, TypeVar, overload
 
 from mirascope.core.base import CommonCallParams
-from mirascope.llm._protocols import Provider
+from mirascope.core.base.types import Provider
 from mirascope.llm.llm_call import _call
 
 if TYPE_CHECKING:

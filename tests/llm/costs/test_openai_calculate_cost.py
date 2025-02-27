@@ -1,7 +1,7 @@
 """Tests the `_openai_calculate_cost` function."""
 
 from mirascope.core.base.types import CostMetadata
-from mirascope.llm.costs._openai_calculate_cost import calculate_cost
+from mirascope.costs._openai_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

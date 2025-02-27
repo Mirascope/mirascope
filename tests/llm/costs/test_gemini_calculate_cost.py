@@ -1,7 +1,7 @@
 """Tests the `_gemini_calculate_cost` function."""
 
 from mirascope.core.base.types import CostMetadata
-from mirascope.llm.costs._gemini_calculate_cost import calculate_cost
+from mirascope.costs._gemini_calculate_cost import calculate_cost
 
 
 def test_calculate_cost() -> None:

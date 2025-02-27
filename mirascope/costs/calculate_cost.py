@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from mirascope.core.base.types import CostMetadata
-from mirascope.llm import Provider
-
+from ..core.base.types import CostMetadata, Provider
 from ._anthropic_calculate_cost import (
     calculate_cost as anthropic_calculate_cost,
 )

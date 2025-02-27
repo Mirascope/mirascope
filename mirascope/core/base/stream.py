@@ -14,6 +14,7 @@ from typing import (
     overload,
 )
 
+from ...costs import calculate_cost
 from ._utils import (
     HandleStream,
     HandleStreamAsync,
@@ -35,7 +36,7 @@ from .messages import Messages
 from .metadata import Metadata
 from .prompt import prompt_template
 from .tool import BaseTool
-from .types import CostMetadata
+from .types import CostMetadata, Provider
 
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound=BaseCallResponse)
 _BaseCallResponseChunkT = TypeVar(
@@ -227,12 +228,9 @@ class BaseStream(
     @property
     def cost(self) -> float | None:
         """Calculate the cost of this streaming API call."""
-        from mirascope.llm.costs import calculate_cost
 
         if self.input_tokens is None or self.output_tokens is None:
             return None
-
-        from ...llm import Provider
 
         return calculate_cost(
             provider=cast(Provider, self.provider),

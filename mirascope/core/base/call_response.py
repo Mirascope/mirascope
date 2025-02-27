@@ -18,13 +18,14 @@ from pydantic import (
     field_serializer,
 )
 
+from ...costs import calculate_cost
 from ._utils import BaseType, get_common_usage
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
 from .metadata import Metadata
 from .tool import BaseTool
-from .types import CostMetadata, FinishReason, JsonableType, Usage
+from .types import CostMetadata, FinishReason, JsonableType, Provider, Usage
 
 if TYPE_CHECKING:
     from ...llm.tool import Tool
@@ -242,7 +243,6 @@ class BaseCallResponse(
     @property
     def cost(self) -> float | None:
         """Calculate the cost of this API call using the unified calculate_cost function."""
-        from mirascope.llm.costs import calculate_cost
 
         model = self.model
         if not model:
@@ -250,8 +250,6 @@ class BaseCallResponse(
 
         if self.input_tokens is None or self.output_tokens is None:
             return None
-
-        from ...llm import Provider
 
         return calculate_cost(
             provider=cast(Provider, self.provider),

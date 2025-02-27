@@ -153,3 +153,23 @@ class CostMetadata(BaseModel):
         int | None,
         Field(default=None, description="[Anthropic] Tokens used for tool calls"),
     ] = None
+
+
+Provider: TypeAlias = Literal[
+    "anthropic",
+    "azure",
+    "bedrock",
+    "cohere",
+    "gemini",
+    "google",
+    "groq",
+    "litellm",
+    "mistral",
+    "openai",
+    "vertex",
+    "xai",
+]
+LocalProvider: TypeAlias = Literal[
+    "ollama",
+    "vllm",
+]

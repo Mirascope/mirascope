@@ -32,6 +32,7 @@ from mirascope.core.base._utils._protocols import (
     SyncLLMFunctionDecorator,
 )
 from mirascope.core.base.stream_config import StreamConfig
+from mirascope.core.base.types import LocalProvider, Provider
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.call_response_chunk import CallResponseChunk
 from mirascope.llm.stream import Stream
@@ -59,27 +60,6 @@ _BaseCallResponseT = TypeVar(
 _BaseCallResponseChunkT = TypeVar(
     "_BaseCallResponseChunkT", bound=BaseCallResponseChunk, covariant=True
 )
-
-
-Provider: TypeAlias = Literal[
-    "anthropic",
-    "azure",
-    "bedrock",
-    "cohere",
-    "gemini",
-    "google",
-    "groq",
-    "litellm",
-    "mistral",
-    "openai",
-    "vertex",
-    "xai",
-]
-
-LocalProvider: TypeAlias = Literal[
-    "ollama",
-    "vllm",
-]
 
 
 class _CallDecorator(
