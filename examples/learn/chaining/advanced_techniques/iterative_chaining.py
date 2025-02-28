@@ -1,4 +1,4 @@
-from mirascope.core import openai, prompt_template
+from mirascope import llm, prompt_template
 from pydantic import BaseModel, Field
 
 
@@ -12,12 +12,12 @@ class SummaryFeedback(BaseModel):
     )
 
 
-@openai.call(model="gpt-4o")
+@llm.call(provider="openai", model="gpt-4o")
 def summarizer(original_text: str) -> str:
     return f"Summarize the following text into one sentence: {original_text}"
 
 
-@openai.call(model="gpt-4o", response_model=SummaryFeedback)
+@llm.call(provider="openai", model="gpt-4o", response_model=SummaryFeedback)
 @prompt_template(
     """
     Original Text: {original_text}
