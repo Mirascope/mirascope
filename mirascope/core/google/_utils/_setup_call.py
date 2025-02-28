@@ -176,5 +176,24 @@ def setup_call(
             client.models.generate_content, client.models.generate_content_stream
         )
     )
+    if client.vertexai:
+        if isinstance(dynamic_config, dict):
+            metadata = dynamic_config.get("metadata", {})
+            tags = metadata.get("tags", set())
+            tags.add("use_vertex_ai")
+            metadata["tags"] = tags
+            dynamic_config["metadata"] = metadata
+        else:
+            metadata = getattr(fn, "_metadata", {})
+            tags = metadata.get("tags", set())
+            tags.add("use_vertex_ai")
+            metadata["tags"] = tags
+            fn._metadata = metadata
 
-    return create, prompt_template, messages, tool_types, call_kwargs
+    return (
+        create,
+        prompt_template,
+        messages,
+        tool_types,
+        call_kwargs,
+    )

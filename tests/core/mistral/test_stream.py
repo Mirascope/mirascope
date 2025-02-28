@@ -113,7 +113,7 @@ def test_mistral_stream() -> None:
     assert stream.cost is None
     for _ in stream:
         pass
-    assert stream.cost == 1.2e-5
+    assert stream.cost == 8e-06
 
     format_book = FormatBook.from_tool_call(
         ToolCall(

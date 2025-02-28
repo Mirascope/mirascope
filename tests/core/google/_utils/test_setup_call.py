@@ -220,3 +220,92 @@ def test_setup_call_extract(
     assert config.tool_config.function_calling_config == FunctionCallingConfig(
         mode=FunctionCallingConfigMode.ANY, allowed_function_names=["test"]
     )
+
+
+@patch(
+    "mirascope.core.google._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
+def test_setup_call_vertexai_dynamic_config_dict(
+    mock_client_class, mock_utils, mock_convert_message_params
+):
+    dynamic_config = {"metadata": {"tags": set()}}
+    fn = MagicMock()
+    base_setup = MagicMock(
+        return_value=(
+            "template",
+            [{"role": "user", "parts": [{"text": "msg"}]}],
+            None,
+            {},
+        )
+    )
+    mock_utils.setup_call = base_setup
+    mock_convert_message_params.return_value = [
+        {"role": "user", "parts": [{"text": "msg"}]}
+    ]
+    mock_client = MagicMock()
+    mock_client_class.return_value = mock_client
+    mock_client.vertexai = True
+    _, _, _, _, _ = setup_call(  # pyright: ignore [reportCallIssue]
+        model="google-1.5-flash",
+        client=None,
+        fn=fn,
+        fn_args={},
+        dynamic_config=dynamic_config,  # pyright: ignore [reportArgumentType]
+        tools=None,
+        json_mode=False,
+        call_params={},
+        response_model=None,
+        stream=False,
+    )
+    assert "metadata" in dynamic_config
+    assert "tags" in dynamic_config["metadata"]
+    assert "use_vertex_ai" in dynamic_config["metadata"]["tags"]
+
+
+@patch(
+    "mirascope.core.google._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
+def test_setup_call_vertexai_dynamic_config_non_dict(
+    mock_client_class, mock_utils, mock_convert_message_params
+):
+    dynamic_config = None
+    fn = MagicMock()
+    if hasattr(fn, "_metadata"):
+        del fn._metadata
+    base_setup = MagicMock(
+        return_value=(
+            "template",
+            [{"role": "user", "parts": [{"text": "msg"}]}],
+            None,
+            {},
+        )
+    )
+    mock_utils.setup_call = base_setup
+    mock_convert_message_params.return_value = [
+        {"role": "user", "parts": [{"text": "msg"}]}
+    ]
+    mock_client = MagicMock()
+    mock_client_class.return_value = mock_client
+    mock_client.vertexai = True
+    _, _, _, _, _ = setup_call(
+        model="google-1.5-flash",
+        client=None,
+        fn=fn,
+        fn_args={},
+        dynamic_config=dynamic_config,
+        tools=None,
+        json_mode=False,
+        call_params={},
+        response_model=None,
+        stream=False,
+    )
+    assert hasattr(fn, "_metadata")
+    metadata = fn._metadata
+    assert "tags" in metadata
+    assert "use_vertex_ai" in metadata["tags"]
