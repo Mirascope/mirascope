@@ -1,0 +1,57 @@
+/* Color Palette */
+:root {
+  --md-primary-fg-color:        #6366f1;
+  --md-primary-fg-color--light: #6366f1;
+  --md-primary-fg-color--dark:  #6366f1;
+}
+
+/* 
+ * Original credit for this admonition implementation goes to the team at Pydantic
+ * https://github.com/pydantic/pydantic/blob/main/docs/extra/tweaks.css
+*/
+
+/* API documentation link admonition */
+
+:root {
+    --md-admonition-icon--api: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 7H5a2 2 0 0 0-2 2v8h2v-4h2v4h2V9a2 2 0 0 0-2-2m0 4H5V9h2m7-2h-4v10h2v-4h2a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2m0 4h-2V9h2m6 0v6h1v2h-4v-2h1V9h-1V7h4v2Z"/></svg>')
+  }
+  .md-typeset .admonition.api, .md-typeset details.api {
+    border-color: #448aff;
+  }
+  .md-typeset .api > .admonition-title, .md-typeset .api > summary {
+    background-color: #448aff1a;
+  }
+  .md-typeset .api > .admonition-title::before, .md-typeset .api > summary::before {
+    background-color: #448aff;
+    -webkit-mask-image: var(--md-admonition-icon--api);
+            mask-image: var(--md-admonition-icon--api);
+  }
+
+/* Mirascope admonition */
+:root {
+    --md-admonition-icon--mira: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="176.128 190.464 630.784 569.344"><path d="M789.346 331.099C783.454 304.347 763.289 291.648 738.971 283.908C736.574 283.139 734.085 282.7 731.597 282.316C710.553 279.168 693.664 268.775 678.531 253.898C643.325 219.278 570.992 222.846 544.185 271.922C532.364 293.551 514.816 308.574 493.608 319.864C418.402 359.901 350.717 410.459 288.118 467.879C254.083 499.096 223.36 533.552 202.207 574.979C170.167 637.779 210.13 712.619 280.122 718.621C300.634 720.378 421.22 720.909 534.871 721C558.805 721.018 574.084 695.053 562.026 674.376C561.934 674.229 561.861 674.083 561.77 673.937C549.912 653.735 534.542 635.51 516.518 620.323C498.494 605.117 477.835 592.967 455.621 584.622C433.425 576.26 409.71 571.777 385.831 571.32C384.184 571.283 382.885 569.947 382.922 568.3C382.94 566.69 384.257 565.409 385.831 565.391C410.369 564.97 435.072 568.685 458.494 576.535C481.916 584.366 504.038 596.279 523.599 611.594C543.16 626.91 560.178 645.593 573.59 666.691C576.811 671.741 579.812 676.919 582.593 682.208C595.256 706.306 620.654 721 647.863 720.982C695.476 720.927 731.981 720.854 744.039 720.835C762.942 720.799 771.139 707.313 763.015 690.076C749.84 662.116 727.296 647.441 696.592 645.849C681.404 645.062 671.779 637.962 665.759 624.22C635.439 555.107 654.945 482.463 717.214 433.771C733.554 420.999 750.444 408.885 766.199 395.418C785.869 378.656 795.073 357.028 789.346 331.099ZM633.316 366.927C613.023 366.689 598.385 352.618 598.22 333.167C598.055 313.661 614.249 297.888 634.158 298.162C653.554 298.418 668.687 313.972 668.449 333.405C668.229 352.947 653.334 367.165 633.316 366.927Z"/></svg>')
+  }
+  .md-typeset .admonition.mira, .md-typeset details.mira {
+    border-color: #6366f1;
+  }
+  .md-typeset .mira > .admonition-title, .md-typeset .mira > summary {
+    background-color: #6366f11a;
+  }
+  .md-typeset .mira > .admonition-title:before, .md-typeset .mira > summary::before {
+    background-color: #6366f1;
+    -webkit-mask-image: var(--md-admonition-icon--mira);
+            mask-image: var(--md-admonition-icon--mira);
+  }
+
+.jp-InputPrompt, .jp-OutputPrompt {
+  display: none !important;
+}
+
+/* Target Jupyter-rendered admonitions */
+.jp-RenderedHTMLCommon .admonition p.admonition-title {
+  margin-bottom: 1em;  /* Adjust this value as needed */
+}
+
+.jp-RenderedHTMLCommon .admonition p:not(.admonition-title) {
+  margin-top: 1em;  /* Adjust this value as needed */
+}
