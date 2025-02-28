@@ -1,6 +1,6 @@
 from enum import Enum
 
-from mirascope.core import openai, prompt_template
+from mirascope import BaseDynamicConfig, llm, prompt_template
 
 
 class Sentiment(str, Enum):
@@ -8,12 +8,12 @@ class Sentiment(str, Enum):
     NEGATIVE = "negative"
 
 
-@openai.call(model="gpt-4o", response_model=Sentiment)
+@llm.call(provider="openai", model="gpt-4o", response_model=Sentiment)
 def sentiment_classifier(review: str) -> str:
     return f"Is the following review positive or negative? {review}"
 
 
-@openai.call("gpt-4o-mini")
+@llm.call(provider="openai", model="gpt-4o-mini")
 @prompt_template(
     """
     SYSTEM:
@@ -24,7 +24,7 @@ def sentiment_classifier(review: str) -> str:
     USER: Write a response for the following review: {review}
     """
 )
-def review_responder(review: str) -> openai.OpenAIDynamicConfig:
+def review_responder(review: str) -> BaseDynamicConfig:
     sentiment = sentiment_classifier(review=review)
     conditional_review_prompt = (
         "thank you response for the review."

@@ -1,10 +1,10 @@
 import asyncio
 
-from mirascope.core import openai, prompt_template
+from mirascope import BaseDynamicConfig, llm, prompt_template
 from pydantic import BaseModel
 
 
-@openai.call(model="gpt-4o-mini")
+@llm.call(provider="openai", model="gpt-4o-mini")
 @prompt_template(
     """
     Please identify a chef who is well known for cooking with {ingredient}.
@@ -18,7 +18,7 @@ class IngredientsList(BaseModel):
     ingredients: list[str]
 
 
-@openai.call(model="gpt-4o-mini", response_model=IngredientsList)
+@llm.call(provider="openai", model="gpt-4o-mini", response_model=IngredientsList)
 @prompt_template(
     """
     Given a base ingredient {ingredient}, return a list of complementary ingredients.
@@ -28,7 +28,7 @@ class IngredientsList(BaseModel):
 async def ingredients_identifier(ingredient: str): ...
 
 
-@openai.call(model="gpt-4o-mini")
+@llm.call(provider="openai", model="gpt-4o-mini")
 @prompt_template(
     """
     SYSTEM:
@@ -39,7 +39,7 @@ async def ingredients_identifier(ingredient: str): ...
     {ingredients}
     """
 )
-async def recipe_recommender(ingredient: str) -> openai.OpenAIDynamicConfig:
+async def recipe_recommender(ingredient: str) -> BaseDynamicConfig:
     chef, ingredients = await asyncio.gather(
         chef_selector(ingredient), ingredients_identifier(ingredient)
     )
