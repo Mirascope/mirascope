@@ -85,8 +85,9 @@ def on_pre_build(config, **kwargs):
     """
 
     try:
+        example_dirs = config["extra"]["provider_example_dirs"]
         generate_provider_examples(
-            config=config,
+            example_dirs=example_dirs,
             examples_root=Path("examples"),
             snippets_dir=Path("build/snippets"),
         )

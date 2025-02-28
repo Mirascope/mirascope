@@ -479,8 +479,8 @@ Example using DuckDuckGoSearch:
 
 !!! mira ""
 
-    {% for tool_method, tool_method_title in [["basic_usage", "Basic Usage"], ["custom_config", "Custom Config"]] %}
-    === "{{ tool_method_title }}"
+    {% for pre_made_tool_method, pre_made_tool_method_title in [["basic_usage", "Basic Usage"], ["custom_config", "Custom Config"]] %}
+    === "{{ pre_made_tool_method_title }}"
 
         {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
         === "{{ method_title }}"
@@ -488,12 +488,12 @@ Example using DuckDuckGoSearch:
             {% for provider in supported_llm_providers %}
             === "{{ provider }}"
 
-                {% if tool_method == "basic_usage" %}
+                {% if pre_made_tool_method == "basic_usage" %}
                 ```python hl_lines="2 5"
                 {% else %}
                 ```python hl_lines="2 4-5 8"
                 {% endif %}
-                --8<-- "build/snippets/learn/tools/pre_made_tools/{{ tool_method }}/{{ provider | provider_dir }}/{{ method }}.py"
+                --8<-- "build/snippets/learn/tools/pre_made_tools/{{ pre_made_tool_method }}/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
 

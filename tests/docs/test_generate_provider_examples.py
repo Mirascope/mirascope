@@ -356,10 +356,11 @@ def test_generate_provider_example():
         examples_root = Path("examples")
         example = "learn/response_models/basic_usage"
         assert (examples_root / example / "shorthand.py").exists()
-        config = {"extra": {"provider_example_dirs": [example]}}
         snippets_dir = temp_path / "build/snippets"
         generate_provider_examples(
-            config=config, examples_root=examples_root, snippets_dir=snippets_dir
+            example_dirs=[example],
+            examples_root=examples_root,
+            snippets_dir=snippets_dir,
         )
 
         anthropic_example = snippets_dir / example / "anthropic" / "shorthand.py"
@@ -378,13 +379,14 @@ def test_generate_provider_example_removes_existing_files():
         examples_root = Path("../examples")
         example = "learn/response_models/basic_usage"
 
-        config = {"extra": {"provider_example_dirs": [example]}}
         snippets_dir = temp_path / "build/snippets"
         errata = snippets_dir / "learn/response_models/basic_usage/anthropic/errata.py"
         errata.parent.mkdir(parents=True, exist_ok=True)
         errata.touch()
         generate_provider_examples(
-            config=config, examples_root=examples_root, snippets_dir=snippets_dir
+            example_dirs=[example],
+            examples_root=examples_root,
+            snippets_dir=snippets_dir,
         )
 
         assert not errata.exists()
@@ -410,10 +412,11 @@ def test_generate_provider_example_overrides():
         # anthropic also has a special sdk file
         (example_dir / "anthropic" / "special_sdk.py").write_text("# Special Sauce")
 
-        config = {"extra": {"provider_example_dirs": [example]}}
         snippets_dir = temp_path / "build/snippets"
         generate_provider_examples(
-            config=config, examples_root=examples_root, snippets_dir=snippets_dir
+            example_dirs=[example],
+            examples_root=examples_root,
+            snippets_dir=snippets_dir,
         )
 
         snippet_example = snippets_dir / example
