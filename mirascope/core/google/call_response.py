@@ -21,7 +21,7 @@ from pydantic import computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
-from ..base.types import CostMetadata, FinishReason
+from ..base.types import CostMetadata, FinishReason, GoogleMetadata
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
@@ -222,5 +222,8 @@ class GoogleCallResponse(
 
     @property
     def cost_metadata(self) -> CostMetadata:
-        # TODO: Add VertxAI flag to the cost metadata
-        return super().cost_metadata
+        cost_metadata = super().cost_metadata
+        cost_metadata.google = GoogleMetadata(
+            use_vertex_ai="use_vertex_ai" in self.metadata.get("tags", [])
+        )
+        return cost_metadata
