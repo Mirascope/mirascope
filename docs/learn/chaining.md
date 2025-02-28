@@ -79,27 +79,23 @@ We recommend using nested chains for better observability when using tracing too
 
     !!! mira ""
 
-        {% for method_not_shorthand, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
-        {% if method_not_shorthand != "shorthand" %}
+        {% for method, method_title in zip(prompt_writing_methods, prompt_writing_method_titles) %}
         === "{{ method_title }}"
 
             {% for provider in supported_llm_providers %}
             === "{{ provider }}"
 
-                {% if method_not_shorthand == "string_template" %}
+                {% if method == "string_template" %}
                 ```python hl_lines="12 18-19"
-                {% elif method_not_shorthand == "base_message_param" %}
+                {% elif method == "base_message_param" %}
                 ```python hl_lines="19 26-27"
                 {% else %}
                 ```python hl_lines="16 23-24"
                 {% endif %}
-                --8<-- "build/snippets/learn/chaining/computed_fields/{{ provider | provider_dir }}/{{ method_not_shorthand }}.py"
+                --8<-- "build/snippets/learn/chaining/computed_fields/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
-        {% endif %}
         {% endfor %}
-
-    Since specifying computed fields requires returning additional fields, they are not supported in the shorthand API style.
 
 ## Advanced Chaining Techniques
 

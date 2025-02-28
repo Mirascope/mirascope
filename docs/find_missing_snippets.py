@@ -40,13 +40,6 @@ FILE_SPECIFIC_SUBSTITUTIONS: dict[str, Substitutions] = {
         "{{ audio_pkg }}": ["pydub", "wave"],
         "{{ filename }}": ["lists", "texts", "parts"],
     },
-    "docs/learn/chaining.md": {
-        "{{ method_not_shorthand }}": [
-            "messages",
-            "string_template",
-            "base_message_param",
-        ],
-    },
 }
 
 
