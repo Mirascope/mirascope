@@ -30,7 +30,14 @@ from .stream import BaseStream
 from .structured_stream import BaseStructuredStream
 from .tool import BaseTool, GenerateJsonSchemaNoTitles, ToolConfig
 from .toolkit import BaseToolKit, toolkit_tool
-from .types import AudioSegment, JsonableType, LocalProvider, Provider, Usage
+from .types import (
+    AudioSegment,
+    CostMetadata,
+    JsonableType,
+    LocalProvider,
+    Provider,
+    Usage,
+)
 
 __all__ = [
     "AudioPart",
@@ -50,6 +57,7 @@ __all__ = [
     "BaseType",
     "CacheControlPart",
     "CommonCallParams",
+    "CostMetadata",
     "DocumentPart",
     "FromCallArgs",
     "GenerateJsonSchemaNoTitles",
