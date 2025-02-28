@@ -9,7 +9,7 @@ HIGH_DETAIL_BASE_TOKENS = 85
 TILE_SIZE = 512
 
 
-def calculate_image_tokens(metadata: CostMetadata) -> int | None:
+def _calculate_image_tokens(metadata: CostMetadata) -> int | None:
     """Calculate tokens used by images based on their size and detail level.
 
     https://platform.openai.com/docs/guides/vision
@@ -368,7 +368,7 @@ def calculate_cost(
     except KeyError:
         return None
 
-    image_tokens = calculate_image_tokens(metadata) or 0
+    image_tokens = _calculate_image_tokens(metadata) or 0
 
     input_tokens = (metadata.input_tokens or 0) + image_tokens
 
