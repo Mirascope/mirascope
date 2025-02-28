@@ -12,40 +12,57 @@ def calculate_cost(
     https://openai.com/pricing
 
     Model                                     Input               Cached               Output
-    gpt-4o                                    $2.50  / 1M tokens  $1.25 / 1M tokens   $10.00 / 1M tokens
-    gpt-4o-2024-11-20                         $2.50  / 1M tokens  $1.25 / 1M tokens   $10.00 / 1M tokens
-    gpt-4o-2024-08-06                         $2.50  / 1M tokens  $1.25 / 1M tokens   $10.00 / 1M tokens
-    gpt-4o-2024-05-13                         $5.00  / 1M tokens  $2.50 / 1M tokens   $15.00 / 1M tokens
-    gpt-4o-audio-preview                      $2.50  / 1M tokens  $1.25 / 1M tokens   $10.00 / 1M tokens
-    gpt-4o-audio-preview-2024-12-17           $2.50  / 1M tokens  $1.25 / 1M tokens   $10.00 / 1M tokens
-    gpt-4o-audio-preview-2024-10-01           $2.50  / 1M tokens  $1.25 / 1M tokens   $10.00 / 1M tokens
-    gpt-4o-realtime-preview                   $5.00  / 1M tokens  $2.50 / 1M tokens   $20.00 / 1M tokens
-    gpt-4o-realtime-preview-2024-12-17        $5.00  / 1M tokens  $2.50 / 1M tokens   $20.00 / 1M tokens
-    gpt-4o-realtime-preview-2024-10-01        $5.00  / 1M tokens  $2.50 / 1M tokens   $20.00 / 1M tokens
-    gpt-4o-mini                               $0.15  / 1M tokens  $0.08 / 1M tokens   $0.60  / 1M tokens
-    gpt-4o-mini-2024-07-18                    $0.15  / 1M tokens  $0.08 / 1M tokens   $0.60  / 1M tokens
-    gpt-4o-mini-audio-preview                 $0.15  / 1M tokens  $0.08 / 1M tokens   $0.60  / 1M tokens
-    gpt-4o-mini-audio-preview-2024-12-17      $0.15  / 1M tokens  $0.08 / 1M tokens   $0.60  / 1M tokens
-    gpt-4o-mini-realtime-preview              $0.60  / 1M tokens  $0.30 / 1M tokens   $2.40  / 1M tokens
-    gpt-4o-mini-realtime-preview-2024-12-17   $0.60  / 1M tokens  $0.30 / 1M tokens   $2.40  / 1M tokens
-    o1                                        $15.00 / 1M tokens  $7.50 / 1M tokens   $60.00 / 1M tokens
-    o1-2024-12-17                             $15.00 / 1M tokens  $7.50 / 1M tokens   $60.00 / 1M tokens
-    o1-preview-2024-09-12                     $15.00 / 1M tokens  $7.50 / 1M tokens   $60.00 / 1M tokens
-    o3-mini                                   $1.10  / 1M tokens  $0.55 / 1M tokens   $4.40  / 1M tokens
-    o3-mini-2025-01-31                        $1.10  / 1M tokens  $0.55 / 1M tokens   $4.40  / 1M tokens
-    o1-mini                                   $1.10  / 1M tokens  $0.55 / 1M tokens   $4.40  / 1M tokens
-    o1-mini-2024-09-12                        $1.10  / 1M tokens  $0.55 / 1M tokens   $4.40  / 1M tokens
-    gpt-4-turbo                               $10.00 / 1M tokens                      $30.00 / 1M tokens
-    gpt-4-turbo-2024-04-09                    $10.00 / 1M tokens                      $30.00 / 1M tokens
-    gpt-3.5-turbo-0125	                      $0.50  / 1M tokens	                  $1.50  / 1M tokens
-    gpt-3.5-turbo-1106	                      $1.00  / 1M tokens	                  $2.00  / 1M tokens
-    gpt-4-1106-preview	                      $10.00 / 1M tokens                      $30.00 / 1M tokens
-    gpt-4	                                  $30.00 / 1M tokens                      $60.00 / 1M tokens
-    text-embedding-3-small	                  $0.02  / 1M tokens
-    text-embedding-3-large	                  $0.13  / 1M tokens
-    text-embedding-ada-0002	                  $0.10  / 1M tokens
+    gpt-4.5-preview                           $75.00 / 1M tokens  $37.50 / 1M tokens   $150.00 / 1M tokens
+    gpt-4.5-preview-2025-02-27                $75.00 / 1M tokens  $37.50 / 1M tokens   $150.00 / 1M tokens
+    gpt-4o                                    $2.50  / 1M tokens  $1.25 / 1M tokens    $10.00 / 1M tokens
+    gpt-4o-2024-11-20                         $2.50  / 1M tokens  $1.25 / 1M tokens    $10.00 / 1M tokens
+    gpt-4o-2024-08-06                         $2.50  / 1M tokens  $1.25 / 1M tokens    $10.00 / 1M tokens
+    gpt-4o-2024-05-13                         $5.00  / 1M tokens                       $15.00 / 1M tokens
+    gpt-4o-audio-preview                      $2.50  / 1M tokens  $1.25 / 1M tokens    $10.00 / 1M tokens
+    gpt-4o-audio-preview-2024-12-17           $2.50  / 1M tokens  $1.25 / 1M tokens    $10.00 / 1M tokens
+    gpt-4o-audio-preview-2024-10-01           $2.50  / 1M tokens  $1.25 / 1M tokens    $10.00 / 1M tokens
+    gpt-4o-realtime-preview                   $5.00  / 1M tokens  $2.50 / 1M tokens    $20.00 / 1M tokens
+    gpt-4o-realtime-preview-2024-12-17        $5.00  / 1M tokens  $2.50 / 1M tokens    $20.00 / 1M tokens
+    gpt-4o-realtime-preview-2024-10-01        $5.00  / 1M tokens  $2.50 / 1M tokens    $20.00 / 1M tokens
+    gpt-4o-mini                               $0.150 / 1M tokens  $0.075 / 1M tokens   $0.600 / 1M tokens
+    gpt-4o-mini-2024-07-18                    $0.150 / 1M tokens  $0.075 / 1M tokens   $0.600 / 1M tokens
+    gpt-4o-mini-audio-preview                 $0.150 / 1M tokens  $0.075 / 1M tokens   $0.600 / 1M tokens
+    gpt-4o-mini-audio-preview-2024-12-17      $0.150 / 1M tokens  $0.075 / 1M tokens   $0.600 / 1M tokens
+    gpt-4o-mini-realtime-preview              $0.60  / 1M tokens  $0.30 / 1M tokens    $2.40  / 1M tokens
+    gpt-4o-mini-realtime-preview-2024-12-17   $0.60  / 1M tokens  $0.30 / 1M tokens    $2.40  / 1M tokens
+    o1                                        $15.00 / 1M tokens  $7.50 / 1M tokens    $60.00 / 1M tokens
+    o1-2024-12-17                             $15.00 / 1M tokens  $7.50 / 1M tokens    $60.00 / 1M tokens
+    o1-preview                                $15.00 / 1M tokens  $7.50 / 1M tokens    $60.00 / 1M tokens
+    o1-preview-2024-09-12                     $15.00 / 1M tokens  $7.50 / 1M tokens    $60.00 / 1M tokens
+    o3-mini                                   $1.10  / 1M tokens  $0.55 / 1M tokens    $4.40  / 1M tokens
+    o3-mini-2025-01-31                        $1.10  / 1M tokens  $0.55 / 1M tokens    $4.40  / 1M tokens
+    o1-mini                                   $1.10  / 1M tokens  $0.55 / 1M tokens    $4.40  / 1M tokens
+    o1-mini-2024-09-12                        $1.10  / 1M tokens  $0.55 / 1M tokens    $4.40  / 1M tokens
+    chatgpt-4o-latest                         $5.00  / 1M tokens                       $15.00 / 1M tokens
+    gpt-4-turbo                               $10.00 / 1M tokens                       $30.00 / 1M tokens
+    gpt-4-turbo-2024-04-09                    $10.00 / 1M tokens                       $30.00 / 1M tokens
+    gpt-3.5-turbo-0125                        $0.50  / 1M tokens                       $1.50  / 1M tokens
+    gpt-3.5-turbo-1106                        $1.00  / 1M tokens                       $2.00  / 1M tokens
+    gpt-4-0125-preview                        $10.00 / 1M tokens                       $30.00 / 1M tokens
+    gpt-4-1106-preview                        $10.00 / 1M tokens                       $30.00 / 1M tokens
+    gpt-4-vision-preview                      $10.00 / 1M tokens                       $30.00 / 1M tokens
+    gpt-4                                     $30.00 / 1M tokens                       $60.00 / 1M tokens
+    gpt-4-32k                                 $60.00 / 1M tokens                       $120.00 / 1M tokens
+    text-embedding-3-small                    $0.02  / 1M tokens
+    text-embedding-3-large                    $0.13  / 1M tokens
+    text-embedding-ada-002                    $0.10  / 1M tokens
     """
     pricing = {
+        "gpt-4.5-preview": {
+            "prompt": 0.000_075,
+            "cached": 0.000_037_5,
+            "completion": 0.000_15,
+        },
+        "gpt-4.5-preview-2025-02-27": {
+            "prompt": 0.000_075,
+            "cached": 0.000_037_5,
+            "completion": 0.000_15,
+        },
         "gpt-4o": {
             "prompt": 0.000_002_5,
             "cached": 0.000_001_25,
@@ -98,22 +115,22 @@ def calculate_cost(
         },
         "gpt-4o-mini": {
             "prompt": 0.000_000_15,
-            "cached": 0.000_000_08,
+            "cached": 0.000_000_075,
             "completion": 0.000_000_6,
         },
         "gpt-4o-mini-2024-07-18": {
             "prompt": 0.000_000_15,
-            "cached": 0.000_000_08,
+            "cached": 0.000_000_075,
             "completion": 0.000_000_6,
         },
         "gpt-4o-mini-audio-preview": {
             "prompt": 0.000_000_15,
-            "cached": 0.000_000_08,
+            "cached": 0.000_000_075,
             "completion": 0.000_000_6,
         },
         "gpt-4o-mini-audio-preview-2024-12-17": {
             "prompt": 0.000_000_15,
-            "cached": 0.000_000_08,
+            "cached": 0.000_000_075,
             "completion": 0.000_000_6,
         },
         "gpt-4o-mini-realtime-preview": {
@@ -132,6 +149,11 @@ def calculate_cost(
             "completion": 0.000_06,
         },
         "o1-2024-12-17": {
+            "prompt": 0.000_015,
+            "cached": 0.000_007_5,
+            "completion": 0.000_06,
+        },
+        "o1-preview": {
             "prompt": 0.000_015,
             "cached": 0.000_007_5,
             "completion": 0.000_06,
@@ -161,6 +183,11 @@ def calculate_cost(
             "cached": 0.000_000_55,
             "completion": 0.000_004_4,
         },
+        "chatgpt-4o-latest": {
+            "prompt": 0.000_005,
+            "cached": 0,
+            "completion": 0.000_015,
+        },
         "gpt-4-turbo": {
             "prompt": 0.000_01,
             "cached": 0,
@@ -181,15 +208,30 @@ def calculate_cost(
             "cached": 0,
             "completion": 0.000_002,
         },
+        "gpt-4-0125-preview": {
+            "prompt": 0.000_01,
+            "cached": 0,
+            "completion": 0.000_03,
+        },
         "gpt-4-1106-preview": {
             "prompt": 0.000_01,
             "cached": 0,
             "completion": 0.000_03,
         },
-        "gpt-4": {
-            "prompt": 0.000_003,
+        "gpt-4-vision-preview": {
+            "prompt": 0.000_01,
             "cached": 0,
-            "completion": 0.000_006,
+            "completion": 0.000_03,
+        },
+        "gpt-4": {
+            "prompt": 0.000_03,
+            "cached": 0,
+            "completion": 0.000_06,
+        },
+        "gpt-4-32k": {
+            "prompt": 0.000_06,
+            "cached": 0,
+            "completion": 0.000_12,
         },
         "gpt-3.5-turbo-4k": {
             "prompt": 0.000_015,
@@ -202,14 +244,9 @@ def calculate_cost(
             "completion": 0.000_004,
         },
         "gpt-4-8k": {
-            "prompt": 0.000_003,
+            "prompt": 0.000_03,
             "cached": 0,
-            "completion": 0.000_006,
-        },
-        "gpt-4-32k": {
-            "prompt": 0.000_006,
-            "cached": 0,
-            "completion": 0.000_012,
+            "completion": 0.000_06,
         },
         "text-embedding-3-small": {
             "prompt": 0.000_000_02,
