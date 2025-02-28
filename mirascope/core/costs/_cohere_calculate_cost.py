@@ -12,8 +12,8 @@ def calculate_cost(
     https://cohere.com/pricing
 
     Model              Input               Cached     Output
-    command-r          $0.15 / 1M tokens	          $0.6 / 1M tokens
-    command-r-plus     $2.5 / 1M tokens	              $10 / 1M tokens
+    command-r          $0.15 / 1M tokens              $0.6 / 1M tokens
+    command-r-plus     $2.5 / 1M tokens               $10 / 1M tokens
     """
     pricing = {
         "command-r": {
