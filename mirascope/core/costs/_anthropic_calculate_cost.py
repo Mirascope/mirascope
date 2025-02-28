@@ -15,6 +15,7 @@ def calculate_cost(
     claude-3-5-haiku                           $0.80  / 1M tokens    $0.08  / 1M tokens    $4.00  / 1M tokens
     claude-3-5-haiku-20241022                  $0.80  / 1M tokens    $0.08  / 1M tokens    $4.00  / 1M tokens
     claude-3-7-sonnet                          $3.00  / 1M tokens    $0.30  / 1M tokens    $15.00 / 1M tokens
+    claude-3-7-sonnet-20250219                 $3.00  / 1M tokens    $0.30  / 1M tokens    $15.00 / 1M tokens
     claude-3-5-sonnet                          $3.00  / 1M tokens    $0.30  / 1M tokens    $15.00 / 1M tokens
     claude-3-5-sonnet-20241022                 $3.00  / 1M tokens    $0.30  / 1M tokens    $15.00 / 1M tokens
     claude-3-5-sonnet-20240620                 $3.00  / 1M tokens    $0.30  / 1M tokens    $15.00 / 1M tokens
@@ -41,7 +42,7 @@ def calculate_cost(
     """
     pricing = {
         # Anthropic models
-        "claude-3-5-haiku": {
+        "claude-3-5-haiku-latest": {
             "prompt": 0.000_000_8,
             "completion": 0.000_004,
             "cached": 0.000_000_08,
@@ -51,12 +52,17 @@ def calculate_cost(
             "completion": 0.000_004,
             "cached": 0.000_000_08,
         },
-        "claude-3-7-sonnet": {
+        "claude-3-7-sonnet-latest": {
             "prompt": 0.000_003,
             "completion": 0.000_015,
             "cached": 0.000_000_3,
         },
-        "claude-3-5-sonnet": {
+        "claude-3-7-sonnet-20250219": {
+            "prompt": 0.000_003,
+            "completion": 0.000_015,
+            "cached": 0.000_000_3,
+        },
+        "claude-3-5-sonnet-latest": {
             "prompt": 0.000_003,
             "completion": 0.000_015,
             "cached": 0.000_000_3,
@@ -71,7 +77,7 @@ def calculate_cost(
             "completion": 0.000_015,
             "cached": 0.000_000_3,
         },
-        "claude-3-haiku": {
+        "claude-3-haiku-latest": {
             "prompt": 0.000_000_8,
             "completion": 0.000_004,
             "cached": 0.000_000_08,
@@ -81,7 +87,7 @@ def calculate_cost(
             "completion": 0.000_004,
             "cached": 0.000_000_08,
         },
-        "claude-3-sonnet": {
+        "claude-3-sonnet-latest": {
             "prompt": 0.000_003,
             "completion": 0.000_015,
             "cached": 0.000_000_3,
@@ -91,7 +97,7 @@ def calculate_cost(
             "completion": 0.000_015,
             "cached": 0.000_000_3,
         },
-        "claude-3-opus": {
+        "claude-3-opus-latest": {
             "prompt": 0.000_015,
             "completion": 0.000_075,
             "cached": 0.000_001_5,
@@ -117,6 +123,11 @@ def calculate_cost(
             "cached": 0,
         },
         # Bedrock models
+        "anthropic.claude-3-7-sonnet-20250219-v1:0": {
+            "prompt": 0.000_003,
+            "completion": 0.000_015,
+            "cached": 0.000_000_3,
+        },
         "anthropic.claude-3-5-sonnet-20241022-v2:0": {
             "prompt": 0.000_003,
             "completion": 0.000_015,
@@ -148,6 +159,11 @@ def calculate_cost(
             "cached": 0.000_001_5,
         },
         # Vertex AI models
+        "claude-3-7-sonnet@20250219": {
+            "prompt": 0.000_003,
+            "completion": 0.000_015,
+            "cached": 0.000_000_3,
+        },
         "claude-3-5-sonnet@20241022": {
             "prompt": 0.000_003,
             "completion": 0.000_015,
