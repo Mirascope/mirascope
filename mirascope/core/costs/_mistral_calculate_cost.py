@@ -59,34 +59,6 @@ def calculate_cost(
     completion_cost = metadata.output_tokens * model_pricing["completion"]
     total_cost = prompt_cost + completion_cost
 
-    # Calculate cost for images if present
-    image_cost = 0.0
-    if metadata.images:
-        for image in metadata.images:
-            # Use precalculated tokens if available
-            if image.tokens is not None:
-                image_tokens = image.tokens
-            else:
-                # For Mistral: Per their documentation, each image is divided into 16x16 pixel batches
-                # Images larger than 1024x1024 are downscaled while maintaining aspect ratio
-
-                # Apply downscaling if necessary
-                width, height = image.width, image.height
-                if width > 1024 or height > 1024:
-                    if width > height:
-                        height = int((height / width) * 1024)
-                        width = 1024
-                    else:
-                        width = int((width / height) * 1024)
-                        height = 1024
-
-                # Calculate tokens: (width/16) * (height/16)
-                image_tokens = (width / 16) * (height / 16)
-
-            # Images are charged at the prompt token rate
-            image_cost += image_tokens * model_pricing["prompt"]
-
-    # Add image cost to total
-    total_cost += image_cost
+    # Image tokens is included in the cost
 
     return total_cost
