@@ -6,7 +6,13 @@ from anthropic.types import MessageParam
 
 from mirascope.core import BaseMessageParam
 from mirascope.core.anthropic._utils import convert_message_params
-from mirascope.core.base import ImagePart, TextPart, ToolCallPart, ToolResultPart
+from mirascope.core.base import (
+    ImagePart,
+    ImageURLPart,
+    TextPart,
+    ToolCallPart,
+    ToolResultPart,
+)
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
@@ -53,41 +59,52 @@ class AnthropicMessageParamConverter(BaseMessageParamConverter):
 
                 elif block["type"] == "image":
                     source = block.get("source")
-                    if not source or source.get("type") != "base64":
+                    source_type = source.get("type") if source else None
+                    if not source or source_type not in ["base64", "url"]:
                         raise ValueError(
-                            "ImageBlockParam must have a 'source' with type='base64'."
+                            "ImageBlockParam must have a 'source' with type='base64' or type='url'."
                         )
-                    image_data = source.get("data")
-                    media_type = source.get("media_type")
-                    if not image_data or not media_type:
-                        raise ValueError(
-                            "ImageBlockParam source must have 'data' and 'media_type'."
+                    if source_type == "url":
+                        url = source.get("url")
+                        if not url:
+                            raise ValueError(
+                                "ImageBlockParam source with type='url' must have a 'url'."
+                            )
+                        converted_content.append(
+                            ImageURLPart(type="image_url", url=url, detail=None)
                         )
-                    if media_type not in [
-                        "image/jpeg",
-                        "image/png",
-                        "image/gif",
-                        "image/webp",
-                    ]:
-                        raise ValueError(
-                            f"Unsupported image media type: {media_type}. "
-                            "BaseMessageParam currently only supports JPEG, PNG, GIF, and WebP images."
-                        )
-                    if isinstance(image_data, str):
-                        decoded_image_data = base64.b64decode(image_data)
-                    elif isinstance(image_data, PathLike):
-                        with open(image_data, "rb") as image_data:
-                            decoded_image_data = image_data.read()
                     else:
-                        decoded_image_data = image_data.read()
-                    converted_content.append(
-                        ImagePart(
-                            type="image",
-                            media_type=media_type,
-                            image=decoded_image_data,
-                            detail=None,
+                        image_data = source.get("data")
+                        media_type = source.get("media_type")
+                        if not image_data or not media_type:
+                            raise ValueError(
+                                "ImageBlockParam source with type='base64' must have 'data' and 'media_type'."
+                            )
+                        if media_type not in [
+                            "image/jpeg",
+                            "image/png",
+                            "image/gif",
+                            "image/webp",
+                        ]:
+                            raise ValueError(
+                                f"Unsupported image media type: {media_type}. "
+                                "BaseMessageParam currently only supports JPEG, PNG, GIF, and WebP images."
+                            )
+                        if isinstance(image_data, str):
+                            decoded_image_data = base64.b64decode(image_data)
+                        elif isinstance(image_data, PathLike):
+                            with open(image_data, "rb") as image_data:
+                                decoded_image_data = image_data.read()
+                        else:
+                            decoded_image_data = image_data.read()
+                        converted_content.append(
+                            ImagePart(
+                                type="image",
+                                media_type=media_type,
+                                image=decoded_image_data,
+                                detail=None,
+                            )
                         )
-                    )
 
                 elif block["type"] == "tool_use":
                     if converted_content:

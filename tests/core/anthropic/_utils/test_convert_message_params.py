@@ -1,8 +1,5 @@
 """Tests the `anthropic._utils.convert_message_params` function."""
 
-import base64
-from unittest.mock import patch
-
 import pytest
 from anthropic.types import MessageParam
 
@@ -22,15 +19,7 @@ from mirascope.core.base import (
 )
 
 
-@patch(
-    "mirascope.core.anthropic._utils._convert_message_params._load_media",
-    return_value=b"imagedata",
-)
-@patch(
-    "mirascope.core.anthropic._utils._convert_message_params.get_image_type",
-    return_value="png",
-)
-def test_convert_message_params(mock_get_image_type, mock_load_media) -> None:
+def test_convert_message_params() -> None:
     """Tests the `convert_message_params` function."""
 
     message_params: list[BaseMessageParam | MessageParam] = [
@@ -96,18 +85,14 @@ def test_convert_message_params(mock_get_image_type, mock_load_media) -> None:
                 {
                     "type": "image",
                     "source": {
-                        "data": base64.b64encode(b"imagedata").decode("utf-8"),
-                        "media_type": "image/png",
-                        "type": "base64",
+                        "url": "http://example.com/image",
+                        "type": "url",
                     },
                 },
             ],
             "role": "user",
         },
     ]
-
-    mock_load_media.assert_called_once_with("http://example.com/image")
-    mock_get_image_type.assert_called_once_with(b"imagedata")
 
     with pytest.raises(
         ValueError,
