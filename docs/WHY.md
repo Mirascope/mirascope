@@ -135,7 +135,7 @@ Mirascope's functional approach promotes modularity and reusability. You can eas
             {% else %}
             ```python hl_lines="5 10 14-15"
             {% endif %}
-            --8<-- "examples/learn/chaining/function_chaining/{{ provider | provider_dir }}/shorthand.py"
+            --8<-- "build/snippets/learn/chaining/function_chaining/{{ provider | provider_dir }}/shorthand.py"
             ```
         {% endfor %}
 
@@ -151,7 +151,7 @@ Mirascope's functional approach promotes modularity and reusability. You can eas
             {% else %}
             ```python hl_lines="5 11-12 15"
             {% endif %}
-            --8<-- "examples/learn/chaining/nested_chains/{{ provider | provider_dir }}/shorthand.py"
+            --8<-- "build/snippets/learn/chaining/nested_chains/{{ provider | provider_dir }}/shorthand.py"
             ```
         {% endfor %}
 

@@ -93,6 +93,9 @@ extra:
     - learn/calls/dynamic_configuration
     - learn/calls/error_handling
     - learn/calls/overrides
+    - learn/chaining/computed_fields
+    - learn/chaining/function_chaining
+    - learn/chaining/nested_chains
     - learn/evals/llm
     - learn/json_mode/basic_usage
     - learn/json_mode/error_handling
