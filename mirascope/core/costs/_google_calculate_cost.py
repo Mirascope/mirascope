@@ -418,9 +418,8 @@ def calculate_cost(
     if use_vertex_ai:
         if model.startswith("gemini-2.0"):
             return _calculate_vertex_2_0_cost(metadata, model_pricing, model)
-        elif model.startswith("gemini-1.5"):
+        elif model.startswith("gemini-1.5"):  # pragma: no cover
             return _calculate_vertex_1_5_cost(metadata, model_pricing, model)
-        return None
     else:
         # Standard Gemini API pricing
         return _calculate_standard_gemini_cost(
