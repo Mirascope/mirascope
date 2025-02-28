@@ -191,20 +191,8 @@ def calculate_cost(
     cached_cost = metadata.cached_tokens * model_pricing["cached"]
     completion_cost = metadata.output_tokens * model_pricing["completion"]
 
-    # Calculate cost for images if present
+    # Image tokens are in response tokens
     # https://docs.anthropic.com/en/docs/build-with-claude/vision#calculate-image-costs
-    image_cost = 0.0
-    if metadata.images:
-        for image in metadata.images:
-            # Use precalculated tokens if available
-            if image.tokens is not None:
-                image_tokens = image.tokens
-            else:
-                # Calculate image tokens using formula: (width * height) / 750
-                image_tokens = (image.width * image.height) / 750
-
-            # Images are charged at the prompt token rate
-            image_cost += image_tokens * model_pricing["prompt"]
 
     # Calculate cost for PDF documents if present
     # https://docs.anthropic.com/en/docs/build-with-claude/pdf-support#estimate-your-costs
