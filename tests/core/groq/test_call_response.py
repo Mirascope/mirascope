@@ -10,6 +10,7 @@ from groq.types.chat.chat_completion_message_tool_call import (
 from groq.types.completion_usage import CompletionUsage
 
 from mirascope.core import BaseMessageParam
+from mirascope.core.base.types import ImageMetadata
 from mirascope.core.groq.call_response import GroqCallResponse
 from mirascope.core.groq.tool import GroqTool
 
@@ -135,4 +136,57 @@ def test_groq_call_response_with_tools() -> None:
             tool_call_id=tool_call.id,
             name="FormatBook",  # type: ignore
         )
+    ]
+
+
+def test_cost_metadata_images() -> None:
+    """Test the cost_metadata property to ensure image metadata is computed correctly."""
+    choices = [
+        Choice(
+            finish_reason="stop",
+            index=0,
+            message=ChatCompletionMessage(content="dummy", role="assistant"),
+        )
+    ]
+    completion = ChatCompletion(
+        id="dummy_id",
+        choices=choices,
+        created=0,
+        model="dummy_model",
+        object="chat.completion",
+    )
+    messages = [
+        {"content": [{"type": "image_url", "url": "http://example.com/img1.jpg"}]},
+        {"content": [{"type": "image_url"}]},
+        {"content": "not a list"},  # Should be skipped because content is not a list
+        {
+            "no_content": [{"type": "image_url", "url": "http://example.com/img2.jpg"}]
+        },  # Skipped because no "content" key
+        {
+            "content": [
+                {"type": "other"},
+                {"type": "image_url", "url": "http://example.com/img3.jpg"},
+            ]
+        },
+    ]
+    call_response = GroqCallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=messages,
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+    cost_md = call_response.cost_metadata
+    assert hasattr(cost_md, "images")
+    assert cost_md.images == [
+        ImageMetadata(width=0, height=0),
+        ImageMetadata(width=0, height=0),
+        ImageMetadata(width=0, height=0),
     ]
