@@ -389,7 +389,7 @@ def calculate_cost(
                     model_pricing = audio_pricing.get(model)
                     if model_pricing and "voice_generation" in model_pricing:
                         # Calculate cost based on audio output duration in seconds
-                        audio_output_cost = (
+                        audio_output_cost += (
                             audio_output_duration * model_pricing["voice_generation"]
                         )
                 except (KeyError, TypeError):
@@ -416,10 +416,9 @@ def calculate_cost(
                     model_pricing = audio_pricing.get(model)
                     if model_pricing and "input_minute" in model_pricing:
                         # Calculate cost based on audio input duration
-                        audio_input_cost = (
+                        audio_input_cost += (
                             minutes * model_pricing["input_minute"] / 1_000_000
                         )
-                        continue
                 except (KeyError, TypeError):
                     pass
             if audio_input_item.tokens:
@@ -478,6 +477,7 @@ def calculate_cost(
             + completion_cost
             + realtime_cost
             + audio_output_cost
+            + audio_input_cost
         )
 
     # Apply batch discounts if applicable
