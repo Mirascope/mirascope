@@ -129,6 +129,11 @@ class ImageMetadata(BaseModel):
         Field(default=None, description="Precalculated token count for this image"),
     ] = None
 
+    detail: Annotated[
+        str | None,
+        Field(default=None, description="Detail level of the image"),
+    ] = None
+
 
 class GoogleMetadata(BaseModel):
     """Google API specific metadata for cost calculation"""
@@ -296,12 +301,6 @@ class CostMetadata(BaseModel):
         Field(
             default=None,
             description="Google/Gemini-specific metadata for cost calculation",
-        ),
-    ] = None
-    vision_tokens: Annotated[
-        int | None,
-        Field(
-            default=None, description="[OpenAI] Number of vision tokens in the request"
         ),
     ] = None
     realtime_tokens: Annotated[

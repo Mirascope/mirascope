@@ -83,8 +83,8 @@ def convert_message_params(
                     audio = _load_media(part.url)
                     audio_type = get_audio_type(audio)
                     if audio_type not in [
-                        "audio/wav",
-                        "audio/mp3",
+                        "wav",
+                        "mp3",
                     ]:
                         raise ValueError(
                             f"Unsupported audio media type: {audio_type}. "

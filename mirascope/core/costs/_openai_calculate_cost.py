@@ -32,10 +32,12 @@ def calculate_image_tokens(metadata: CostMetadata) -> int | None:
             total_image_tokens += img.tokens
             continue
 
-        # Get detail level from vision_tokens field if available
-        # Default to high detail if not specified (conservative estimate)
-        detail = "high" if metadata.vision_tokens is None else "low"
-
+        if img.detail is not None and img.detail != "auto":
+            detail = img.detail
+        else:
+            # Default to high detail for auto
+            # We can't determine detail level from image alone
+            detail = "high"
         if detail == "low":
             # Low detail is a fixed cost regardless of size
             total_image_tokens += LOW_DETAIL_IMAGE_TOKENS
@@ -348,91 +350,13 @@ def calculate_cost(
     }
 
     # Audio pricing for audio models (per-minute rates in dollars)
-    audio_pricing = {
-        # Audio input/output pricing
-        "gpt-4o-audio-preview": {
-            "input_minute": 40.0,  # $40.00 per 1M tokens
-            "output_minute": 80.0,  # $80.00 per 1M tokens
-            "voice_generation": 0.015,  # $0.015 per second
-        },
-        "gpt-4o-audio-preview-2024-12-17": {
-            "input_minute": 40.0,
-            "output_minute": 80.0,
-            "voice_generation": 0.015,
-        },
-        "gpt-4o-audio-preview-2024-10-01": {
-            "input_minute": 100.0,  # $100.00 per 1M tokens
-            "output_minute": 200.0,  # $200.00 per 1M tokens
-            "voice_generation": 0.015,
-        },
-        "gpt-4o-mini-audio-preview": {
-            "input_minute": 10.0,  # $10.00 per 1M tokens
-            "output_minute": 20.0,  # $20.00 per 1M tokens
-            "voice_generation": 0.005,  # $0.005 per second
-        },
-        "gpt-4o-mini-audio-preview-2024-12-17": {
-            "input_minute": 10.0,
-            "output_minute": 20.0,
-            "voice_generation": 0.005,
-        },
-    }
 
     if metadata.cost is not None:
         return metadata.cost
 
-    audio_output_cost = 0.0
-
-    if audio_output := metadata.audio_output:
-        for audio_output_item in audio_output:
-            if audio_output_duration := audio_output_item.duration_seconds:
-                try:
-                    model_pricing = audio_pricing.get(model)
-                    if model_pricing and "voice_generation" in model_pricing:
-                        # Calculate cost based on audio output duration in seconds
-                        audio_output_cost += (
-                            audio_output_duration * model_pricing["voice_generation"]
-                        )
-                except (KeyError, TypeError):
-                    pass
-            if audio_output_item.tokens:
-                try:
-                    model_pricing = audio_pricing.get(model)
-                    if model_pricing and "output_minute" in model_pricing:
-                        # Calculate cost based on output tokens
-                        audio_output_cost += (
-                            audio_output_item.tokens
-                            / 1_000_000
-                            * model_pricing["output_minute"]
-                        )
-                except (KeyError, TypeError):
-                    pass
-    audio_input_cost = 0.0
-    if audio_input := metadata.audio:
-        # Calculate input costs based on audio duration
-        for audio_input_item in audio_input:
-            if duration_seconds := audio_input_item.duration_seconds:
-                minutes = duration_seconds / 60
-                try:
-                    model_pricing = audio_pricing.get(model)
-                    if model_pricing and "input_minute" in model_pricing:
-                        # Calculate cost based on audio input duration
-                        audio_input_cost += (
-                            minutes * model_pricing["input_minute"] / 1_000_000
-                        )
-                except (KeyError, TypeError):
-                    pass
-            if audio_input_item.tokens:
-                try:
-                    model_pricing = audio_pricing.get(model)
-                    if model_pricing and "input_minute" in model_pricing:
-                        # Calculate cost based on output tokens
-                        audio_input_cost += (
-                            audio_input_item.tokens
-                            / 1_000_000
-                            * model_pricing["input_minute"]
-                        )
-                except (KeyError, TypeError):
-                    pass
+    # Audio input/output costs
+    # ChatCompletion.usage has brake down of audio input and output.
+    # The total cost already includes the audio input/output cost.
 
     # Initialize cached tokens if not provided
     if metadata.cached_tokens is None:
@@ -444,23 +368,9 @@ def calculate_cost(
     except KeyError:
         return None
 
-    # Process image tokens for vision-capable models
-    image_tokens = 0
-    if any(name in model.lower() for name in ["gpt-4o", "gpt-4-vision", "o1"]):
-        # Calculate image tokens based on the images in metadata
-        image_tokens = calculate_image_tokens(metadata) or 0
-
-        # Add directly provided vision tokens if available
-        if metadata.vision_tokens is not None:
-            image_tokens = metadata.vision_tokens
+    image_tokens = calculate_image_tokens(metadata) or 0
 
     input_tokens = (metadata.input_tokens or 0) + image_tokens
-
-    # Calculate realtime tokens cost if applicable
-    realtime_cost = 0
-    if metadata.realtime_mode and metadata.realtime_tokens:
-        # Realtime tokens are priced at the "prompt" rate but may vary by model
-        realtime_cost = metadata.realtime_tokens * model_pricing["prompt"]
 
     # Calculate costs for each component
     prompt_cost = input_tokens * model_pricing["prompt"]
@@ -471,14 +381,7 @@ def calculate_cost(
     if "embedding" in model:
         total_cost = prompt_cost
     else:
-        total_cost = (
-            prompt_cost
-            + cached_cost
-            + completion_cost
-            + realtime_cost
-            + audio_output_cost
-            + audio_input_cost
-        )
+        total_cost = prompt_cost + cached_cost + completion_cost
 
     # Apply batch discounts if applicable
     if metadata.batch_mode:
@@ -508,13 +411,6 @@ def calculate_cost(
         if "embedding" in model:
             total_cost = prompt_cost
         else:
-            total_cost = (
-                prompt_cost
-                + cached_cost
-                + completion_cost
-                + realtime_cost
-                + audio_output_cost
-                + audio_input_cost
-            )
+            total_cost = prompt_cost + cached_cost + completion_cost
 
     return total_cost

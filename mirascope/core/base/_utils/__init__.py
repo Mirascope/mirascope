@@ -14,6 +14,7 @@ from ._get_create_fn_or_async_create_fn import get_async_create_fn, get_create_f
 from ._get_document_type import get_document_type
 from ._get_dynamic_configuration import get_dynamic_configuration
 from ._get_fn_args import get_fn_args
+from ._get_image_dimensions import get_image_dimensions
 from ._get_image_type import get_image_type
 from ._get_metadata import get_metadata
 from ._get_possible_user_message_param import get_possible_user_message_param
@@ -68,6 +69,7 @@ __all__ = [
     "get_document_type",
     "get_dynamic_configuration",
     "get_fn_args",
+    "get_image_dimensions",
     "get_image_type",
     "get_metadata",
     "get_possible_user_message_param",

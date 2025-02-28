@@ -23,7 +23,11 @@ from ..base import (
     BaseCallResponse,
     transform_tool_outputs,
 )
-from ..base.types import CostMetadata, FinishReason
+from ..base._utils._get_image_dimensions import get_image_dimensions, _get_image_dimensions
+from ..base.types import (
+    CostMetadata,
+    FinishReason,
+)
 from ._utils._message_param_converter import OpenAIMessageParamConverter
 from .call_params import OpenAICallParams
 from .dynamic_config import OpenAIDynamicConfig
@@ -242,4 +246,21 @@ class OpenAICallResponse(
 
     @property
     def cost_metadata(self) -> CostMetadata:
-        return super().cost_metadata
+        cost_metadata = super().cost_metadata
+        for message in self.messages:
+            if message.get("role") != "user":
+                continue
+            for part in message["content"]:
+                if not (part.get("type") == "image_url" and "image_url" in part):
+                    continue
+                url = part["image_url"].get("url", "")
+                detail = part["image_url"].get("detail", "auto")
+
+                dimensions = get_image_dimensions(url)
+                if not dimensions:
+                    continue
+                dimensions.detail = detail
+                if cost_metadata.images is None:
+                    cost_metadata.images = []
+                cost_metadata.images.append(dimensions)
+        return cost_metadata
