@@ -40,7 +40,7 @@ Mirascope is designed to be Pythonic. Since calls are defined as functions, chai
             {% else %}
             ```python hl_lines="5 10 14-15"
             {% endif %}
-            --8<-- "examples/learn/chaining/function_chaining/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/chaining/function_chaining/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
     {% endfor %}
@@ -66,7 +66,7 @@ In some cases you'll want to prompt engineer an entire chain rather than just ch
             {% else %}
             ```python hl_lines="5 11-12 15"
             {% endif %}
-            --8<-- "examples/learn/chaining/nested_chains/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/chaining/nested_chains/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
     {% endfor %}
@@ -75,7 +75,7 @@ We recommend using nested chains for better observability when using tracing too
 
 ??? tip "Improved tracing through computed fields"
 
-    If you use computed fields in your nested chains, you can always access the computed field in the response. This provides improved tracing for your chains from a single call:
+    If you use computed fields in your nested chains, you can always access the computed field in the response. This provides improved tracing for your chains from a single call. 
 
     !!! mira ""
 
@@ -92,7 +92,7 @@ We recommend using nested chains for better observability when using tracing too
                 {% else %}
                 ```python hl_lines="16 23-24"
                 {% endif %}
-                --8<-- "examples/learn/chaining/computed_fields/{{ provider | provider_dir }}/{{ method }}.py"
+                --8<-- "build/snippets/learn/chaining/computed_fields/{{ provider | provider_dir }}/{{ method }}.py"
                 ```
             {% endfor %}
         {% endfor %}
