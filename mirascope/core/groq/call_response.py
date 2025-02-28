@@ -19,7 +19,7 @@ from pydantic import SerializeAsAny, computed_field
 
 from .. import BaseMessageParam
 from ..base import BaseCallResponse, transform_tool_outputs
-from ..base.types import CostMetadata, FinishReason
+from ..base.types import CostMetadata, FinishReason, ImageMetadata
 from ._utils._message_param_converter import GroqMessageParamConverter
 from .call_params import GroqCallParams
 from .dynamic_config import AsyncGroqDynamicConfig, GroqDynamicConfig
@@ -189,4 +189,21 @@ class GroqCallResponse(
 
     @property
     def cost_metadata(self) -> CostMetadata:
-        return super().cost_metadata
+        cost_metadata = super().cost_metadata
+        image_metadata = []
+
+        for message in self.messages:
+            if "content" not in message:
+                continue
+            content = message["content"]
+
+            if not isinstance(content, list):
+                continue
+            for part in content:
+                # Check if this part is an image_url
+                if isinstance(part, dict) and part.get("type") == "image_url":
+                    # Only count the image if it has a URL
+                    image_metadata.append(ImageMetadata(width=0, height=0))
+
+        cost_metadata.images = image_metadata
+        return cost_metadata

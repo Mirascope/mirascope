@@ -261,10 +261,6 @@ class CostMetadata(BaseModel):
         list[ImageMetadata] | None,
         Field(default=None, description="List of images with their metadata"),
     ] = None
-    image_count: Annotated[
-        int | None,
-        Field(default=None, description="Number of images in the request"),
-    ] = None
     videos: Annotated[
         list[VideoMetadata] | None,
         Field(default=None, description="List of videos with their metadata"),
