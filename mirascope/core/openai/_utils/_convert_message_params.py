@@ -87,13 +87,13 @@ def convert_message_params(
                         "mp3",
                     ]:
                         raise ValueError(
-                            f"Unsupported audio media type: {audio_type}. "
+                            f"Unsupported audio media type: audio/{audio_type}. "
                             "OpenAI currently only supports WAV and MP3 audio file types."
                         )
                     converted_content.append(
                         {
                             "input_audio": {
-                                "format": audio_type.split("/")[-1],
+                                "format": audio_type,
                                 "data": base64.b64encode(audio).decode("utf-8"),
                             },
                             "type": "input_audio",

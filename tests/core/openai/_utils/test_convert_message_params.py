@@ -181,7 +181,7 @@ def test_audio_url_valid(mock_get_audio_type, mock_load_media) -> None:
 )
 @patch(
     "mirascope.core.openai._utils._convert_message_params.get_audio_type",
-    return_value="audio/aiff",
+    return_value="aiff",
 )
 def test_audio_url_invalid(mock_get_audio_type, mock_load_media) -> None:
     """Tests conversion of an audio_url part with an unsupported audio type."""
