@@ -194,61 +194,10 @@ def calculate_cost(
     # Image tokens are in response tokens
     # https://docs.anthropic.com/en/docs/build-with-claude/vision#calculate-image-costs
 
-    # Calculate cost for PDF documents if present
+    # PDF documents  tokens are in response tokens
     # https://docs.anthropic.com/en/docs/build-with-claude/pdf-support#estimate-your-costs
-    pdf_cost = 0.0
-    if metadata.pdf:
-        # PDF text tokens (typically 1,500-3,000 tokens per page)
-        if metadata.pdf.text_tokens is not None:
-            pdf_text_cost = metadata.pdf.text_tokens * model_pricing["prompt"]
-            # Apply caching discount if PDF was cached
-            if metadata.pdf.cached:
-                pdf_text_cost = metadata.pdf.text_tokens * model_pricing["cached"]
-            pdf_cost += pdf_text_cost
-        elif metadata.pdf.page_count is not None:
-            # Estimate using average of 2,250 tokens per page if exact token count not provided
-            estimated_pdf_text_tokens = metadata.pdf.page_count * 2250
-            pdf_text_cost = estimated_pdf_text_tokens * model_pricing["prompt"]
-            # Apply caching discount if PDF was cached
-            if metadata.pdf.cached:
-                pdf_text_cost = estimated_pdf_text_tokens * model_pricing["cached"]
-            pdf_cost += pdf_text_cost
-
-        # PDF images (one per page)
-        if metadata.pdf.images:
-            for pdf_image in metadata.pdf.images:
-                # Use precalculated tokens if available
-                if pdf_image.tokens is not None:
-                    image_tokens = pdf_image.tokens
-                else:
-                    # Calculate tokens for each PDF page image
-                    image_tokens = (pdf_image.width * pdf_image.height) / 750
-
-                # Images are charged at prompt token rate
-                pdf_image_cost = image_tokens * model_pricing["prompt"]
-                # Apply caching discount if PDF was cached
-                if metadata.pdf.cached:
-                    pdf_image_cost = image_tokens * model_pricing["cached"]
-                pdf_cost += pdf_image_cost
-        elif metadata.pdf.page_count is not None:
-            # If no specific image dimensions provided, estimate based on a standard PDF page size
-            # Using a conservative estimate for a typical PDF page (1092x1400 pixels)
-            estimated_tokens_per_page = (1092 * 1400) / 750
-            pdf_image_cost = (
-                metadata.pdf.page_count
-                * estimated_tokens_per_page
-                * model_pricing["prompt"]
-            )
-            # Apply caching discount if PDF was cached
-            if metadata.pdf.cached:
-                pdf_image_cost = (
-                    metadata.pdf.page_count
-                    * estimated_tokens_per_page
-                    * model_pricing["cached"]
-                )
-            pdf_cost += pdf_image_cost
 
     # Sum all costs
-    total_cost = prompt_cost + cached_cost + completion_cost + image_cost + pdf_cost
+    total_cost = prompt_cost + cached_cost + completion_cost
 
     return total_cost
