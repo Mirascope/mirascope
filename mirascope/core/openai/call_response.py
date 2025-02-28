@@ -252,7 +252,9 @@ class OpenAICallResponse(
         for message in self.messages:
             if message.get("role") != "user":
                 continue
-            for part in message["content"]:
+            for part in message.get("content") or []:
+                if not isinstance(part, dict):
+                    continue
                 if not (part.get("type") == "image_url" and "image_url" in part):
                     continue
                 url = part["image_url"].get("url", "")
