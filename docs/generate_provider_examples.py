@@ -153,7 +153,7 @@ def get_supported_providers() -> list[ProviderInfo]:
 
 
 def generate_provider_examples(
-    *, config: dict, examples_root: Path, snippets_dir: Path
+    *, example_dirs: list[str], examples_root: Path, snippets_dir: Path
 ) -> None:
     """Generate provider-specific examples for python files in configured paths."""
     # Clear/create snippets directory
@@ -163,7 +163,6 @@ def generate_provider_examples(
     snippets_dir.mkdir(exist_ok=True, parents=True)
     supported_providers = get_supported_providers()
 
-    example_dirs = config["extra"]["provider_example_dirs"]
     for example_dir in example_dirs:
         source_dir = examples_root / example_dir
 
