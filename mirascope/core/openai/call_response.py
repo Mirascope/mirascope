@@ -23,7 +23,9 @@ from ..base import (
     BaseCallResponse,
     transform_tool_outputs,
 )
-from ..base._utils._get_image_dimensions import get_image_dimensions, _get_image_dimensions
+from ..base._utils._get_image_dimensions import (
+    get_image_dimensions,
+)
 from ..base.types import (
     CostMetadata,
     FinishReason,

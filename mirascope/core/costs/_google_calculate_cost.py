@@ -1,6 +1,6 @@
 """Calculate the cost of a Gemini API call."""
 
-from ..base.types import AudioMetadata, CostMetadata, ImageMetadata, VideoMetadata
+from ..base.types import CostMetadata
 
 # Standard Gemini API pricing table
 GEMINI_API_PRICING: dict[str, dict[str, float]] = {
@@ -200,62 +200,6 @@ VERTEX_AI_PRICING: dict[str, dict[str, float]] = {
 }
 
 
-def _calculate_image_tokens(image: ImageMetadata) -> float:
-    """Calculate tokens for an image."""
-    if image.tokens is not None:
-        return image.tokens
-
-    # Default estimate: For a 1024x1024 image, approximately 1290 tokens
-    width, height = min(image.width, 1024), min(image.height, 1024)
-    return (width * height) / 813  # Approximation
-
-
-def _calculate_video_tokens(video: VideoMetadata) -> float:
-    """Calculate tokens for a video."""
-    if video.tokens is not None:
-        return video.tokens
-
-    # 258 tokens per second at 1fps
-    video_tokens = video.duration_seconds * 258
-
-    # If video has audio, add tokens for audio too
-    if video.with_audio:
-        video_tokens += video.duration_seconds * 25  # 25 tokens per second for audio
-
-    return video_tokens
-
-
-def _calculate_audio_tokens(audio: AudioMetadata) -> float:
-    """Calculate tokens for an audio clip."""
-    if audio.tokens is not None:
-        return audio.tokens
-
-    # 25 tokens per second for audio
-    return audio.duration_seconds * 25
-
-
-def _calculate_media_tokens(metadata: CostMetadata) -> float:
-    """Calculate tokens for all media (images, videos, audio)."""
-    total_tokens = 0
-
-    # Image tokens
-    if metadata.images:
-        for image in metadata.images:
-            total_tokens += _calculate_image_tokens(image)
-
-    # Video tokens
-    if metadata.videos:
-        for video in metadata.videos:
-            total_tokens += _calculate_video_tokens(video)
-
-    # Audio tokens
-    if metadata.audio:
-        for audio in metadata.audio:
-            total_tokens += _calculate_audio_tokens(audio)
-
-    return total_tokens
-
-
 def _calculate_context_cache_cost(
     metadata: CostMetadata,
     model_pricing: dict[str, float],
@@ -326,33 +270,6 @@ def _calculate_vertex_2_0_cost(
     completion_cost = (metadata.output_tokens or 0) * model_pricing["output"]
     cached_cost = (metadata.cached_tokens or 0) * model_pricing.get("cached", 0)
 
-    # Image costs
-    image_cost = 0.0
-    if metadata.images:
-        for image in metadata.images:
-            image_tokens = _calculate_image_tokens(image)
-            image_cost += image_tokens * model_pricing["image_input"]
-
-    # Video costs
-    video_cost = 0.0
-    if metadata.videos:
-        for video in metadata.videos:
-            video_tokens = _calculate_video_tokens(video)
-            # Separate audio from video tokens since they're priced differently
-            if video.with_audio:
-                audio_tokens = video.duration_seconds * 25
-                video_tokens -= audio_tokens
-                video_cost += audio_tokens * model_pricing["audio_input"]
-
-            video_cost += video_tokens * model_pricing["video_input"]
-
-    # Audio costs
-    audio_cost = 0.0
-    if metadata.audio:
-        for audio in metadata.audio:
-            audio_tokens = _calculate_audio_tokens(audio)
-            audio_cost += audio_tokens * model_pricing["audio_input"]
-
     # Context cache costs
     context_cache_cost = _calculate_context_cache_cost(
         metadata, model_pricing, model, use_vertex_ai=True
@@ -365,9 +282,6 @@ def _calculate_vertex_2_0_cost(
     if metadata.batch_mode:
         prompt_cost *= 0.5
         completion_cost *= 0.5
-        image_cost *= 0.5
-        video_cost *= 0.5
-        audio_cost *= 0.5
         context_cache_cost *= 0.5
         # Note: We don't discount grounding costs
 
@@ -375,9 +289,6 @@ def _calculate_vertex_2_0_cost(
         prompt_cost
         + completion_cost
         + cached_cost
-        + image_cost
-        + video_cost
-        + audio_cost
         + context_cache_cost
         + grounding_cost
     )
@@ -397,27 +308,6 @@ def _calculate_vertex_1_5_cost(
     output_chars = (metadata.output_tokens or 0) * 4  # Approximation
     output_cost = (output_chars / 1000) * model_pricing["output"]
 
-    # Image costs - per image rather than by tokens
-    image_cost = 0.0
-    if metadata.images:
-        image_cost = len(metadata.images) * model_pricing["image_input"]
-
-    # Video costs - per second
-    video_cost = 0.0
-    if metadata.videos:
-        for video in metadata.videos:
-            video_cost += video.duration_seconds * model_pricing["video_input"]
-
-            # If video has audio, add audio cost
-            if video.with_audio:
-                video_cost += video.duration_seconds * model_pricing["audio_input"]
-
-    # Audio costs - per second
-    audio_cost = 0.0
-    if metadata.audio:
-        for audio in metadata.audio:
-            audio_cost += audio.duration_seconds * model_pricing["audio_input"]
-
     # Context cache costs
     context_cache_cost = _calculate_context_cache_cost(
         metadata, model_pricing, model, use_vertex_ai=True
@@ -430,21 +320,10 @@ def _calculate_vertex_1_5_cost(
     if metadata.batch_mode:
         text_cost *= 0.5
         output_cost *= 0.5
-        image_cost *= 0.5
-        video_cost *= 0.5
-        audio_cost *= 0.5
         context_cache_cost *= 0.5
         # Note: We don't discount grounding costs
 
-    total_cost = (
-        text_cost
-        + output_cost
-        + image_cost
-        + video_cost
-        + audio_cost
-        + context_cache_cost
-        + grounding_cost
-    )
+    total_cost = text_cost + output_cost + context_cache_cost + grounding_cost
 
     return total_cost
 
@@ -468,9 +347,7 @@ def _calculate_standard_gemini_cost(
     cached_cost = (metadata.cached_tokens or 0) * cached_price
     completion_cost = (metadata.output_tokens or 0) * completion_price
 
-    # Media token costs
-    media_tokens = _calculate_media_tokens(metadata)
-    media_cost = media_tokens * prompt_price
+    # Media token costs is included in the prompt/completion cost
 
     # Context cache costs
     context_cache_cost = _calculate_context_cache_cost(
@@ -484,7 +361,6 @@ def _calculate_standard_gemini_cost(
         prompt_cost
         + cached_cost
         + completion_cost
-        + media_cost
         + context_cache_cost
         + grounding_cost
     )
