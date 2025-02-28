@@ -2,6 +2,81 @@
 
 from ..base.types import CostMetadata
 
+# Constants for image token calculation
+LOW_DETAIL_IMAGE_TOKENS = 85
+HIGH_DETAIL_TILE_TOKENS = 170
+HIGH_DETAIL_BASE_TOKENS = 85
+TILE_SIZE = 512
+
+
+def calculate_image_tokens(metadata: CostMetadata) -> int | None:
+    """Calculate tokens used by images based on their size and detail level.
+
+    https://platform.openai.com/docs/guides/vision
+    Following OpenAI's pricing structure:
+    - Low detail: 85 tokens per image
+    - High detail: 85 tokens base + 170 tokens per 512px tile
+      (after scaling to fit within 2048x2048 and making shortest side 768px)
+    """
+    if not metadata.images or not metadata.images:
+        return 0
+
+    total_image_tokens = 0
+
+    for img in metadata.images:
+        if not img.width or not img.height:
+            continue
+
+        # If image already has precalculated tokens, use those
+        if img.tokens is not None:
+            total_image_tokens += img.tokens
+            continue
+
+        # Get detail level from vision_tokens field if available
+        # Default to high detail if not specified (conservative estimate)
+        detail = "high" if metadata.vision_tokens is None else "low"
+
+        if detail == "low":
+            # Low detail is a fixed cost regardless of size
+            total_image_tokens += LOW_DETAIL_IMAGE_TOKENS
+        else:
+            # High detail calculation
+
+            # Scale to fit within 2048x2048 square
+            width, height = img.width, img.height
+            if width > 2048 or height > 2048:
+                aspect_ratio = width / height
+                if width > height:
+                    width = 2048
+                    height = int(width / aspect_ratio)
+                else:
+                    height = 2048
+                    width = int(height * aspect_ratio)
+
+            # Scale so shortest side is 768px
+            if min(width, height) > 768:
+                if width < height:
+                    scale_factor = 768 / width
+                    width = 768
+                    height = int(height * scale_factor)
+                else:
+                    scale_factor = 768 / height
+                    height = 768
+                    width = int(width * scale_factor)
+
+            # Calculate number of 512px tiles needed
+            tiles_x = (width + TILE_SIZE - 1) // TILE_SIZE
+            tiles_y = (height + TILE_SIZE - 1) // TILE_SIZE
+            num_tiles = tiles_x * tiles_y
+
+            # Calculate token cost
+            image_tokens = (
+                HIGH_DETAIL_TILE_TOKENS * num_tiles
+            ) + HIGH_DETAIL_BASE_TOKENS
+            total_image_tokens += image_tokens
+
+    return total_image_tokens
+
 
 def calculate_cost(
     metadata: CostMetadata,
@@ -57,6 +132,8 @@ def calculate_cost(
             "prompt": 0.000_075,
             "cached": 0.000_037_5,
             "completion": 0.000_15,
+            "batch_prompt": 0.000_037_5,
+            "batch_completion": 0.000_075,
         },
         "gpt-4.5-preview-2025-02-27": {
             "prompt": 0.000_075,
@@ -67,6 +144,8 @@ def calculate_cost(
             "prompt": 0.000_002_5,
             "cached": 0.000_001_25,
             "completion": 0.000_01,
+            "batch_prompt": 0.000_001_25,
+            "batch_completion": 0.000_005,
         },
         "gpt-4o-2024-11-20": {
             "prompt": 0.000_002_5,
@@ -252,32 +331,190 @@ def calculate_cost(
             "prompt": 0.000_000_02,
             "cached": 0,
             "completion": 0,
+            "batch_prompt": 0.000_000_01,
         },
         "text-embedding-ada-002": {
             "prompt": 0.000_000_1,
             "cached": 0,
             "completion": 0,
+            "batch_prompt": 0.000_000_05,
         },
         "text-embedding-3-large": {
             "prompt": 0.000_000_13,
             "cached": 0,
             "completion": 0,
+            "batch_prompt": 0.000_000_065,
         },
     }
-    if metadata.input_tokens is None or metadata.output_tokens is None:
-        return None
 
+    # Audio pricing for audio models (per-minute rates in dollars)
+    audio_pricing = {
+        # Audio input/output pricing
+        "gpt-4o-audio-preview": {
+            "input_minute": 40.0,  # $40.00 per 1M tokens
+            "output_minute": 80.0,  # $80.00 per 1M tokens
+            "voice_generation": 0.015,  # $0.015 per second
+        },
+        "gpt-4o-audio-preview-2024-12-17": {
+            "input_minute": 40.0,
+            "output_minute": 80.0,
+            "voice_generation": 0.015,
+        },
+        "gpt-4o-audio-preview-2024-10-01": {
+            "input_minute": 100.0,  # $100.00 per 1M tokens
+            "output_minute": 200.0,  # $200.00 per 1M tokens
+            "voice_generation": 0.015,
+        },
+        "gpt-4o-mini-audio-preview": {
+            "input_minute": 10.0,  # $10.00 per 1M tokens
+            "output_minute": 20.0,  # $20.00 per 1M tokens
+            "voice_generation": 0.005,  # $0.005 per second
+        },
+        "gpt-4o-mini-audio-preview-2024-12-17": {
+            "input_minute": 10.0,
+            "output_minute": 20.0,
+            "voice_generation": 0.005,
+        },
+    }
+
+    if metadata.cost is not None:
+        return metadata.cost
+
+    audio_output_cost = 0.0
+
+    if audio_output := metadata.audio_output:
+        for audio_output_item in audio_output:
+            if audio_output_duration := audio_output_item.duration_seconds:
+                try:
+                    model_pricing = audio_pricing.get(model)
+                    if model_pricing and "voice_generation" in model_pricing:
+                        # Calculate cost based on audio output duration in seconds
+                        audio_output_cost = (
+                            audio_output_duration * model_pricing["voice_generation"]
+                        )
+                except (KeyError, TypeError):
+                    pass
+            if audio_output_item.tokens:
+                try:
+                    model_pricing = audio_pricing.get(model)
+                    if model_pricing and "output_minute" in model_pricing:
+                        # Calculate cost based on output tokens
+                        audio_output_cost += (
+                            audio_output_item.tokens
+                            / 1_000_000
+                            * model_pricing["output_minute"]
+                        )
+                except (KeyError, TypeError):
+                    pass
+    audio_input_cost = 0.0
+    if audio_input := metadata.audio:
+        # Calculate input costs based on audio duration
+        for audio_input_item in audio_input:
+            if duration_seconds := audio_input_item.duration_seconds:
+                minutes = duration_seconds / 60
+                try:
+                    model_pricing = audio_pricing.get(model)
+                    if model_pricing and "input_minute" in model_pricing:
+                        # Calculate cost based on audio input duration
+                        audio_input_cost = (
+                            minutes * model_pricing["input_minute"] / 1_000_000
+                        )
+                        continue
+                except (KeyError, TypeError):
+                    pass
+            if audio_input_item.tokens:
+                try:
+                    model_pricing = audio_pricing.get(model)
+                    if model_pricing and "input_minute" in model_pricing:
+                        # Calculate cost based on output tokens
+                        audio_input_cost += (
+                            audio_input_item.tokens
+                            / 1_000_000
+                            * model_pricing["input_minute"]
+                        )
+                except (KeyError, TypeError):
+                    pass
+
+    # Initialize cached tokens if not provided
     if metadata.cached_tokens is None:
         metadata.cached_tokens = 0
 
+    # Try to get model pricing
     try:
         model_pricing = pricing[model]
     except KeyError:
         return None
 
-    prompt_cost = metadata.input_tokens * model_pricing["prompt"]
+    # Process image tokens for vision-capable models
+    image_tokens = 0
+    if any(name in model.lower() for name in ["gpt-4o", "gpt-4-vision", "o1"]):
+        # Calculate image tokens based on the images in metadata
+        image_tokens = calculate_image_tokens(metadata) or 0
+
+        # Add directly provided vision tokens if available
+        if metadata.vision_tokens is not None:
+            image_tokens = metadata.vision_tokens
+
+    input_tokens = (metadata.input_tokens or 0) + image_tokens
+
+    # Calculate realtime tokens cost if applicable
+    realtime_cost = 0
+    if metadata.realtime_mode and metadata.realtime_tokens:
+        # Realtime tokens are priced at the "prompt" rate but may vary by model
+        realtime_cost = metadata.realtime_tokens * model_pricing["prompt"]
+
+    # Calculate costs for each component
+    prompt_cost = input_tokens * model_pricing["prompt"]
     cached_cost = metadata.cached_tokens * model_pricing["cached"]
-    completion_cost = metadata.output_tokens * model_pricing["completion"]
-    total_cost = prompt_cost + cached_cost + completion_cost
+    completion_cost = (metadata.output_tokens or 0) * model_pricing["completion"]
+
+    # Special handling for embedding models (only input tokens matter)
+    if "embedding" in model:
+        total_cost = prompt_cost
+    else:
+        total_cost = (
+            prompt_cost
+            + cached_cost
+            + completion_cost
+            + realtime_cost
+            + audio_output_cost
+        )
+
+    # Apply batch discounts if applicable
+    if metadata.batch_mode:
+        # Based on the OpenAI pricing table, batch mode typically provides
+        # approximately 50% discount for both input and output tokens
+        if "embedding" in model.lower():
+            # Embedding models have specific batch pricing
+            if model == "text-embedding-3-small":
+                prompt_cost = (
+                    input_tokens * 0.000_000_01
+                )  # $0.01 per 1M tokens in batch mode
+            elif model == "text-embedding-3-large":
+                prompt_cost = (
+                    input_tokens * 0.000_000_065
+                )  # $0.065 per 1M tokens in batch mode
+            elif model == "text-embedding-ada-002":
+                prompt_cost = (
+                    input_tokens * 0.000_000_05
+                )  # $0.05 per 1M tokens in batch mode
+        else:
+            # For LLM models, typically 50% discount
+            prompt_cost *= 0.5
+            cached_cost *= 0.5
+            completion_cost *= 0.5
+
+        # Recalculate total cost with batch pricing
+        if "embedding" in model:
+            total_cost = prompt_cost
+        else:
+            total_cost = (
+                prompt_cost
+                + cached_cost
+                + completion_cost
+                + realtime_cost
+                + audio_output_cost
+                + audio_input_cost
+            )
 
     return total_cost

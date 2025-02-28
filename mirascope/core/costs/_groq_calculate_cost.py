@@ -29,6 +29,8 @@ def calculate_cost(
     deepseek-r1-distill-llama-70b-specdec  $0.75 / 1M tokens      $0.99 / 1M tokens
     llama-3.2-1b-preview                   $0.04 / 1M tokens      $0.04 / 1M tokens
     llama-3.2-3b-preview                   $0.06 / 1M tokens      $0.06 / 1M tokens
+    llama-3.2-11b-vision-preview           $0.18 / 1M tokens      $0.18 / 1M tokens
+    llama-3.2-90b-vision-preview           $0.90 / 1M tokens      $0.90 / 1M tokens
     """
     pricing = {
         "llama-3.3-70b-versatile": {
@@ -107,6 +109,15 @@ def calculate_cost(
             "prompt": 0.000_000_06,
             "completion": 0.000_000_06,
         },
+        # Vision models
+        "llama-3.2-11b-vision-preview": {
+            "prompt": 0.000_000_18,
+            "completion": 0.000_000_18,
+        },
+        "llama-3.2-90b-vision-preview": {
+            "prompt": 0.000_000_90,
+            "completion": 0.000_000_90,
+        },
     }
 
     if metadata.input_tokens is None or metadata.output_tokens is None:
@@ -117,8 +128,29 @@ def calculate_cost(
     except KeyError:
         return None
 
+    # Calculate cost for text tokens
     prompt_cost = metadata.input_tokens * model_pricing["prompt"]
     completion_cost = metadata.output_tokens * model_pricing["completion"]
     total_cost = prompt_cost + completion_cost
+
+    # Calculate cost for images if present
+    # Groq bills 6,400 tokens per image for vision models
+    # https://groq.com/pricing/
+    image_cost = 0.0
+    if metadata.images and "vision" in model:
+        # For Groq vision models, each image is billed at 6,400 tokens
+        tokens_per_image = 6400
+
+        # Count the number of images
+        image_count = len(metadata.images)
+
+        # Calculate total image tokens
+        total_image_tokens = image_count * tokens_per_image
+
+        # Images are charged at the prompt token rate
+        image_cost = total_image_tokens * model_pricing["prompt"]
+
+    # Add image cost to total
+    total_cost += image_cost
 
     return total_cost
