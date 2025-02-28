@@ -9,7 +9,13 @@ from mirascope.core import BaseMessageParam
 from mirascope.core.anthropic._utils._message_param_converter import (
     AnthropicMessageParamConverter,
 )
-from mirascope.core.base import ImagePart, TextPart, ToolCallPart, ToolResultPart
+from mirascope.core.base import (
+    ImagePart,
+    ImageURLPart,
+    TextPart,
+    ToolCallPart,
+    ToolResultPart,
+)
 
 
 def test_content_is_string():
@@ -90,48 +96,56 @@ def test_text_block_valid():
 
 
 def test_image_block_no_source():
-    """
-    If image type is present but no `source`, raise ValueError.
-    """
+    """If image type is present but no `source`, raise ValueError."""
     message_param = {"role": "assistant", "content": [{"type": "image"}]}
     with pytest.raises(
-        ValueError, match="ImageBlockParam must have a 'source' with type='base64'."
+        ValueError,
+        match="ImageBlockParam must have a 'source' with type='base64' or type='url'.",
     ):
         AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
-def test_image_block_source_not_base64():
-    """
-    If an image block's source does not have type='base64', raise ValueError.
-    """
+def test_image_block_source_not_base64_or_url():
+    """If an image block's source does not have type='base64', raise ValueError."""
     message_param = {
         "role": "assistant",
         "content": [{"type": "image", "source": {"type": "file"}}],
     }
     with pytest.raises(
-        ValueError, match="ImageBlockParam must have a 'source' with type='base64'."
+        ValueError,
+        match="ImageBlockParam must have a 'source' with type='base64' or type='url'.",
     ):
         AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
 def test_image_block_missing_data_or_media_type():
-    """
-    If an image block is missing `data` or `media_type`, raise ValueError.
-    """
+    """If an image block is missing `data` or `media_type`, raise ValueError."""
     message_param = {
         "role": "assistant",
         "content": [{"type": "image", "source": {"type": "base64"}}],
     }
     with pytest.raises(
-        ValueError, match="ImageBlockParam source must have 'data' and 'media_type'."
+        ValueError,
+        match="ImageBlockParam source with type='base64' must have 'data' and 'media_type'.",
+    ):
+        AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
+
+
+def test_image_block_missing_url():
+    """If an image block is missing `url`, raise ValueError."""
+    message_param = {
+        "role": "assistant",
+        "content": [{"type": "image", "source": {"type": "url"}}],
+    }
+    with pytest.raises(
+        ValueError,
+        match="ImageBlockParam source with type='url' must have a 'url'.",
     ):
         AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
 def test_image_block_unsupported_media_type():
-    """
-    If an image block's media_type is not recognized, raise ValueError.
-    """
+    """If an image block's media_type is not recognized, raise ValueError."""
     message_param = {
         "role": "assistant",
         "content": [
@@ -151,10 +165,30 @@ def test_image_block_unsupported_media_type():
         AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
+def test_image_block_url():
+    """If the image source is a url, convert into an `ImageURLPart`."""
+    message_param = {
+        "role": "assistant",
+        "content": [
+            {
+                "type": "image",
+                "source": {
+                    "type": "url",
+                    "url": "http://example.com/image",
+                },
+            }
+        ],
+    }
+    results = AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
+    assert len(results) == 1
+
+    result = results[0]
+    assert isinstance(result.content[0], ImageURLPart)
+    assert result.content[0].url == "http://example.com/image"
+
+
 def test_image_block_base64_str():
-    """
-    If the image source data is a base64-encoded string, decode it into image bytes.
-    """
+    """If the image source data is a base64-encoded string, decode it into image bytes."""
     img_data = b"fakeimage"
     b64_data = base64.b64encode(img_data).decode("utf-8")
     message_param = {
@@ -180,9 +214,7 @@ def test_image_block_base64_str():
 
 
 def test_image_block_pathlike():
-    """
-    If the image source data is a PathLike object, open the file and read the data.
-    """
+    """If the image source data is a PathLike object, open the file and read the data."""
     mock_file_data = b"pathlike image data"
     with patch("builtins.open", mock_open(read_data=mock_file_data)):
 
@@ -212,9 +244,7 @@ def test_image_block_pathlike():
 
 
 def test_image_block_filelike():
-    """
-    If the image source data is a file-like object, read() its data as bytes.
-    """
+    """If the image source data is a file-like object, read() its data as bytes."""
     filelike_data = b"filelike image data"
     filelike = BytesIO(filelike_data)
     message_param = {
@@ -240,9 +270,7 @@ def test_image_block_filelike():
 
 
 def test_tool_use_block():
-    """
-    The converter sets role="assistant" for tool blocks, so we adjust the test accordingly.
-    """
+    """The converter sets role="assistant" for tool blocks, so we adjust the test accordingly."""
     message_param = {
         "role": "assistant",
         "content": [
@@ -268,18 +296,14 @@ def test_tool_use_block():
 
 
 def test_unsupported_block_type():
-    """
-    If a block has an unrecognized "type", raise ValueError.
-    """
+    """If a block has an unrecognized "type", raise ValueError."""
     message_param = {"role": "assistant", "content": [{"type": "unsupported"}]}
     with pytest.raises(ValueError, match="Unsupported block type 'unsupported'."):
         AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
 
 
 def test_mixed_content_tool_calls():
-    """
-    If content has both text blocks and tool_use blocks, the code currently sets the final role to "assistant".
-    """
+    """If content has both text blocks and tool_use blocks, the code currently sets the final role to "assistant"."""
     message_param = {
         "role": "assistant",
         "content": [
@@ -310,15 +334,14 @@ def test_mixed_content_tool_calls():
 
 
 def test_empty_content_list():
-    """
-    If content is an empty list, the code yields zero results. We fix the test to expect len=0.
-    """
+    """If content is an empty list, the code yields zero results. We fix the test to expect len=0."""
     message_param = {"role": "assistant", "content": []}
     results = AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     assert len(results) == 0
 
 
 def test_to_provider():
+    """The converter should convert a list of BaseMessageParam to a list of dicts."""
     results = AnthropicMessageParamConverter.to_provider(
         [BaseMessageParam(role="assistant", content="Hello")]
     )
@@ -326,6 +349,7 @@ def test_to_provider():
 
 
 def test_tool_result():
+    """The converter should convert a tool result block to a ToolResultPart."""
     message_param = {
         "role": "user",
         "content": [
@@ -349,6 +373,7 @@ def test_tool_result():
 
 
 def test_tool_result_with_text():
+    """The converter should convert a tool result block with text content to a ToolResultPart."""
     message_param = {
         "role": "user",
         "content": [
