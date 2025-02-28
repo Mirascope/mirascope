@@ -1,6 +1,7 @@
 """Tests the `openai.call_response` module."""
 
 import base64
+from unittest.mock import patch
 
 import pytest
 from openai.types.chat import (
@@ -18,6 +19,7 @@ from openai.types.chat.chat_completion_message_tool_call import (
 from openai.types.completion_usage import CompletionUsage
 
 from mirascope.core import BaseMessageParam
+from mirascope.core.base.types import ImageMetadata
 from mirascope.core.openai.call_response import OpenAICallResponse
 from mirascope.core.openai.tool import OpenAITool
 
@@ -248,3 +250,103 @@ def test_openai_call_response_without_audio() -> None:
         "role": "assistant",
         "tool_calls": None,
     }
+
+
+def test_openai_cost_metadata() -> None:
+    """Test the cost_metadata property to ensure image metadata is computed correctly."""
+    choices = [
+        Choice(
+            finish_reason="stop",
+            index=0,
+            message=ChatCompletionMessage(content="dummy", role="assistant"),
+        )
+    ]
+    completion = ChatCompletion(
+        id="dummy_id",
+        choices=choices,
+        created=0,
+        model="dummy_model",
+        object="chat.completion",
+    )
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": "http://test.com/good_image.jpg",
+                        "detail": "auto",
+                    },
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": "http://test.com/image.jpg",
+                        "detail": "custom",
+                    },
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": "http://test.com/bad_image.jpg",
+                        "detail": "ignored",
+                    },
+                },
+                "non dict element",
+                {
+                    "type": "other",
+                    "image_url": {
+                        "url": "http://test.com/image.jpg",
+                        "detail": "custom",
+                    },
+                },
+            ],
+        },
+        {
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": "http://test.com/image.jpg",
+                        "detail": "custom",
+                    },
+                }
+            ],
+        },
+    ]
+    call_response = OpenAICallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=messages,  # pyright: ignore [reportArgumentType]
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    fake_dimensions = ImageMetadata(width=100, height=200)
+
+    def fake_get_image_dimensions(url: str) -> ImageMetadata | None:
+        if url in ["http://test.com/image.jpg", "http://test.com/good_image.jpg"]:
+            return fake_dimensions
+        return None
+
+    with patch(
+        "mirascope.core.openai.call_response.get_image_dimensions",
+        side_effect=fake_get_image_dimensions,
+    ):
+        cost_md = call_response.cost_metadata
+
+    assert cost_md.images is not None
+    assert len(cost_md.images) == 2
+    image_meta = cost_md.images[0]
+    assert image_meta.width == 100
+    assert image_meta.height == 200
+    assert getattr(image_meta, "detail", None) == "custom"
