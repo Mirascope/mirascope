@@ -56,7 +56,7 @@ def test_mistral_call_response() -> None:
     assert call_response.usage == usage
     assert call_response.input_tokens == 1
     assert call_response.output_tokens == 1
-    assert call_response.cost == 1.2e-5
+    assert call_response.cost == 8e-06
     assert call_response.message_param == AssistantMessage(content="content")
     assert call_response.tools is None
     assert call_response.tool is None

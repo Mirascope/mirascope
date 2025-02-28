@@ -222,4 +222,5 @@ class GoogleCallResponse(
 
     @property
     def cost_metadata(self) -> CostMetadata:
+        # TODO: Add VertxAI flag to the cost metadata
         return super().cost_metadata

@@ -15,5 +15,5 @@ def test_calculate_cost() -> None:
         calculate_cost(
             CostMetadata(input_tokens=1, output_tokens=1), model="mistral-large-latest"
         )
-        == 1.2e-5
+        == 8e-06
     )
