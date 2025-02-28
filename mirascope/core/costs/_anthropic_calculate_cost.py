@@ -14,6 +14,7 @@ def calculate_cost(
     Model                                      Input                 Cached                Output
     claude-3-5-haiku                           $0.80  / 1M tokens    $0.08  / 1M tokens    $4.00  / 1M tokens
     claude-3-5-haiku-20241022                  $0.80  / 1M tokens    $0.08  / 1M tokens    $4.00  / 1M tokens
+    claude-3-7-sonnet                          $3.00  / 1M tokens    $0.30  / 1M tokens    $15.00 / 1M tokens
     claude-3-5-sonnet                          $3.00  / 1M tokens    $0.30  / 1M tokens    $15.00 / 1M tokens
     claude-3-5-sonnet-20241022                 $3.00  / 1M tokens    $0.30  / 1M tokens    $15.00 / 1M tokens
     claude-3-5-sonnet-20240620                 $3.00  / 1M tokens    $0.30  / 1M tokens    $15.00 / 1M tokens
@@ -49,6 +50,11 @@ def calculate_cost(
             "prompt": 0.000_000_8,
             "completion": 0.000_004,
             "cached": 0.000_000_08,
+        },
+        "claude-3-7-sonnet": {
+            "prompt": 0.000_003,
+            "completion": 0.000_015,
+            "cached": 0.000_000_3,
         },
         "claude-3-5-sonnet": {
             "prompt": 0.000_003,
