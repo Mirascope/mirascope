@@ -420,6 +420,7 @@ def calculate_cost(
             return _calculate_vertex_2_0_cost(metadata, model_pricing, model)
         elif model.startswith("gemini-1.5"):
             return _calculate_vertex_1_5_cost(metadata, model_pricing, model)
+        return None
     else:
         # Standard Gemini API pricing
         return _calculate_standard_gemini_cost(
