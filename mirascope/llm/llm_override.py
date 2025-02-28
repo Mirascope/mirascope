@@ -6,7 +6,7 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Literal, ParamSpec, TypeVar, overload
 
 from ..core.base import CommonCallParams
-from ..core.base.types import Provider
+from ..core.base.types import LocalProvider, Provider
 from .llm_call import _call
 
 if TYPE_CHECKING:
@@ -42,6 +42,8 @@ def override(
     call_params: CommonCallParams | AnthropicCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -51,6 +53,8 @@ def override(
     call_params: CommonCallParams | AzureCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -60,6 +64,8 @@ def override(
     call_params: CommonCallParams | BedrockCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -69,6 +75,8 @@ def override(
     call_params: CommonCallParams | CohereCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -78,6 +86,8 @@ def override(
     call_params: CommonCallParams | GeminiCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -98,6 +108,8 @@ def override(
     call_params: CommonCallParams | GroqCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -107,6 +119,8 @@ def override(
     call_params: CommonCallParams | MistralCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -116,6 +130,8 @@ def override(
     call_params: CommonCallParams | OpenAICallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -125,6 +141,8 @@ def override(
     call_params: CommonCallParams | LiteLLMCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -134,6 +152,8 @@ def override(
     call_params: CommonCallParams | VertexCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -143,6 +163,8 @@ def override(
     call_params: CommonCallParams | None = None,
     client: Any = None,  # noqa: ANN401
 ) -> Callable[_P, _R]: ...
+
+
 @overload
 def override(
     provider_agnostic_call: Callable[_P, _R],
@@ -157,7 +179,7 @@ def override(
 def override(
     provider_agnostic_call: Callable[_P, _R],
     *,
-    provider: Provider | None = None,
+    provider: Provider | LocalProvider | None = None,
     model: str | None = None,
     call_params: CommonCallParams
     | AnthropicCallParams
@@ -185,20 +207,27 @@ def override(
     Returns:
         The overridden function.
     """
-    _original_args = provider_agnostic_call._original_args  # pyright: ignore [reportFunctionMemberAccess]
-    if provider is not None and not model and call_params is None and client is None:
+    if (provider and not model) or (model and not provider):
         raise ValueError(
-            "If provider is specified, model or call_params must also be specified."
+            "Provider and model must both be overridden if either is overridden."
         )
 
+    original_provider = provider_agnostic_call._original_provider  # pyright: ignore [reportFunctionMemberAccess]
+    original_args = provider_agnostic_call._original_args  # pyright: ignore [reportFunctionMemberAccess]
+
+    # Note: if switching providers, we will always use `client` since `original_client`
+    # would be from a different provider and fail.
+    if provider and provider == original_provider:
+        client = client or original_args["client"]
+
     return _call(  # pyright: ignore [reportReturnType]
-        provider=provider or provider_agnostic_call._original_provider,  # pyright: ignore [reportFunctionMemberAccess]
-        model=model or _original_args["model"],
-        stream=_original_args["stream"],
-        tools=_original_args["tools"],
-        response_model=_original_args["response_model"],
-        output_parser=_original_args["output_parser"],
-        json_mode=_original_args["json_mode"],
-        client=client or _original_args["client"],
-        call_params=call_params or _original_args["call_params"],
+        provider=provider or original_provider,
+        model=model or original_args["model"],
+        stream=original_args["stream"],
+        tools=original_args["tools"],
+        response_model=original_args["response_model"],
+        output_parser=original_args["output_parser"],
+        json_mode=original_args["json_mode"],
+        client=client,
+        call_params=call_params or original_args["call_params"],
     )(provider_agnostic_call._original_fn)  # pyright: ignore [reportFunctionMemberAccess]

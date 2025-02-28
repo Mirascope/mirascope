@@ -74,7 +74,10 @@ def dummy_provider_agnostic_call():
 
 
 def test_override_error_if_only_provider(dummy_provider_agnostic_call):
-    with pytest.raises(ValueError, match="must also be specified"):
+    with pytest.raises(
+        ValueError,
+        match="Provider and model must both be overridden if either is overridden.",
+    ):
         override(  # pyright: ignore [reportCallIssue]
             provider_agnostic_call=dummy_provider_agnostic_call,
             provider="anthropic",
@@ -103,7 +106,7 @@ def test_override_with_callparams_override(dummy_provider_agnostic_call):
         override(  # pyright: ignore [reportCallIssue]
             provider_agnostic_call=dummy_provider_agnostic_call,
             provider="openai",
-            model=None,  # pyright: ignore [reportArgumentType]
+            model="gpt-4o-mini",  # pyright: ignore [reportArgumentType]
             call_params=new_call_params,
         )
         mock_call.assert_called_once()
