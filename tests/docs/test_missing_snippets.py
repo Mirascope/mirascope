@@ -18,6 +18,6 @@ def test_no_missing_snippets():
             google_missing_snippets += 1
             continue
         missing_snippets.append(snippet)  # pragma: no cover
-    assert xai_missing_snippets == 65
+    assert xai_missing_snippets == 49
     assert google_missing_snippets == 16
     assert len(missing_snippets) == 0

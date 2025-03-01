@@ -88,6 +88,10 @@ extra:
     - learn/agents/state_management
     - learn/agents/streaming
     - learn/agents/tools
+    - learn/async/basic_usage
+    - learn/async/parallel
+    - learn/async/streams
+    - learn/async/tools
     - learn/calls/basic_usage
     - learn/calls/call_params
     - learn/calls/dynamic_configuration
