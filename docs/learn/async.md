@@ -64,7 +64,7 @@ To use async in Mirascope, simply define the function as async and use the `awai
             {% else %}
             ```python hl_lines="7 12"
             {% endif %}
-            --8<-- "examples/learn/async/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/async/basic_usage/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -93,7 +93,7 @@ One of the main benefits of asynchronous programming is the ability to run multi
             {% else %}
             ```python hl_lines="7 13-14"
             {% endif %}
-            --8<-- "examples/learn/async/parallel/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/async/parallel/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -124,7 +124,7 @@ Streaming with async works similarly to synchronous streaming, but you use `asyn
             {% else %}
             ```python hl_lines="6 7 12-13"
             {% endif %}
-            --8<-- "examples/learn/async/streams/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/async/streams/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -153,7 +153,7 @@ When using tools asynchronously, you can make the `call` method of a tool async:
             {% else %}
             ```python hl_lines="10 16 17 24-25"
             {% endif %}
-            --8<-- "examples/learn/async/tools/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/async/tools/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
