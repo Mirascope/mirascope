@@ -26,7 +26,7 @@ from tenacity import (
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=4, max=10),
 )
-@llm.call("openai", "gpt-4o-minis")
+@llm.call("openai", "gpt-4o-mini")
 def answer_question(question: str) -> str:
     return f"Answer this question: {question}"
 

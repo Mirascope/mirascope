@@ -30,7 +30,7 @@ Let's take a look at a basic Mirascope call that retries with exponential back-o
         === "{{ provider }}"
 
             ```python hl_lines="2 5-8"
-            --8<-- "examples/learn/retries/calls/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/retries/calls/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -55,7 +55,7 @@ Instead, you need to wrap your call and add retries to this wrapper:
         === "{{ provider }}"
 
             ```python hl_lines="10-14"
-            --8<-- "examples/learn/retries/streams/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/retries/streams/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -76,7 +76,7 @@ You need to handle retries in this case the same way as streams:
         === "{{ provider }}"
 
             ```python hl_lines="19-23"
-            --8<-- "examples/learn/retries/tools/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/retries/tools/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
@@ -99,13 +99,13 @@ To make it easier to make such updates, Mirascope provides a `collect_errors` ha
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="4 14 27 42"
+            ```python hl_lines="4 14 26 41"
             {% elif method == "shorthand" %}
-            ```python hl_lines="4 14 19 33"
+            ```python hl_lines="4 14 18 32"
             {% else %}
-            ```python hl_lines="4 14 20 37"
+            ```python hl_lines="4 14 19 36" 
             {% endif %}
-            --8<-- "examples/learn/retries/error_reinsertion/{{ provider | provider_dir }}/{{ method }}.py"
+            --8<-- "build/snippets/learn/retries/error_reinsertion/{{ provider | provider_dir }}/{{ method }}.py"
             ```
         {% endfor %}
 
