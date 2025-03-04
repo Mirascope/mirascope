@@ -28,6 +28,8 @@ In this article, we show you different ways to evaluate prompts and share practi
 
 Further down, we also share best practices for prompt evaluation and example evaluations using [Mirascope](https://github.com/mirascope/mirascope), our lightweight toolkit for building with LLMs.
 
+<!-- more -->
+
 ## Prompt Evaluation Metrics
 
 Below are some measurable criteria for prompt evaluation:

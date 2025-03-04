@@ -35,6 +35,8 @@ Mirascope works together with [Lilypad](https://lilypad.so/docs), our open sourc
 
 Below, we dive into techniques for chaining and discuss what to look for in an LLM chaining framework.
 
+<!-- more -->
+
 ## Prompt Chaining Techniques
 
 Chaining prompts together has advantages over using lone prompts, especially since it provides more context and depth to inputs.
