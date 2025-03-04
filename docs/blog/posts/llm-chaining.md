@@ -14,7 +14,7 @@ slug: llm-chaining
 
 LLM chaining is a technique in artificial intelligence for connecting multiple LLMs or their outputs to other applications, tools, and services to get the best responses or to do complex tasks.
 
-Chaining lets applications do things like work with multiple files, refine content iteratively, and improve responses. It also overcomes some inherent limitations of LLMs themselves:
+Chaining lets applications do things like work with multiple files, refine content iteratively, and improve responses. **It also overcomes some inherent limitations of LLMs themselves**:
 
 * They generally only accept up to a certain amount of information in one prompt (despite “context windows” getting larger all the time), and so connecting an LLM with a service to divide up long documents and feed these via several calls to the model can be very useful.  
 * They only remember what’s been said in a given conversation but not outside of it, unless you store the memory or state externally.  
@@ -27,9 +27,9 @@ This is why LLM chains are useful: they let you build sophisticated applications
 * Language model output processing, such as parsing, validating, and formatting.  
 * Data retrieval from external data sources, such as fetching relevant embeddings from a vector database to enhance contextual understanding in [LangChain RAG](https://mirascope.com/blog/langchain-rag/) applications.
 
-Putting together an LLM chain isn’t always straightforward, which is why orchestration frameworks like LangChain and LlamaIndex exist, but these have their own inefficiencies that we’ll discuss later on.
+**But putting together an LLM chain isn’t always straightforward**, which is why orchestration frameworks like LangChain and LlamaIndex exist, though these have their own inefficiencies that we’ll discuss later on.
 
-It’s for that reason that we designed [Mirascope](https://github.com/mirascope/mirascope), our user-friendly, pythonic toolkit, to overcome shortcomings of modern frameworks.
+It’s for that reason we designed [Mirascope](https://github.com/mirascope/mirascope), our developer-friendly, pythonic toolkit, to overcome shortcomings of modern frameworks.
 
 Mirascope works together with [Lilypad](https://lilypad.so/docs), our open source prompt observability platform that allows software developers to version, trace, and optimize language model calls, treating these as non-deterministic functions.
 
