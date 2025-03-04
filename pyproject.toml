@@ -208,7 +208,7 @@ venv = ".venv"
 
 [tool.codespell]
 skip = [".git", "*.lock", "./docs/blog/posts/llm-prompt.md"]
-ignore-words-list = 'EHR,reworkd,ROUGE'
+ignore-words-list = 'EHR,reworkd,ROUGE,rouge,Rouge'
 ignore-regex = 'and buyed some milk'
 
 [tool.coverage.run]
