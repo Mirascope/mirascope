@@ -56,7 +56,7 @@ Depending on the use case, teams may also consider fine-tuning a model to furthe
 
 ### In Software Development and Testing
 
-Uber created [DragonCrawl](https://www.uber.com/en-GB/blog/generative-ai-for-high-quality-mobile-testing/), an LLM\-powered application that autonomously tests mobile apps by taking action based on what it sees on the screen.
+Uber created [DragonCrawl](https://www.uber.com/en-GB/blog/generative-ai-for-high-quality-mobile-testing/), an LLM-powered application that autonomously tests mobile apps by taking action based on what it sees on the screen.
 
 So it uses the Uber app like a traveler would, interacting with various screen elements to book rides. It can cope with unexpected occurrences like a button appearing in a new place (as a result of an app update or an A/B test), and adjust its testing accordingly.
 
@@ -323,9 +323,7 @@ It also automates response parsing and its interface lets you hot switch model p
 
 An example of this is shown below. To switch from OpenAI to Anthropic, you can use `llm_override` to override provider settings at runtime to specify a different model.
 
-\`\`\`python hl\_lines="4 12-17"
-
-```py
+```python hl_lines="4 12-17"
 from mirascope import llm
 
 
