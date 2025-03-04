@@ -82,7 +82,7 @@ Each prompt variation is automatically versioned and iterated upon based on real
 
 When evaluating prompts, you’d normally have a clear evaluation criteria such as bias, toxicity, or factual accuracy. While this is good practice, we generally don’t recommend treating them as separate categories for every prompt. Instead, consider using a single LLM-based judge that provides a simple pass/fail rating, where a “pass” means the output meets your standards and a “fail” indicates it needs improvement.
 
-Along with the label, our LLM-judge explains its reasoning based on your evaluation criteria, giving you insight into why a response passed or failed (more on this [below](#annotation-tasks)). We’re working on additional tooling to more easily support this flow.
+Along with the label, our LLM-judge explains its reasoning based on your evaluation criteria, giving you insight into why a response passed or failed (more on this [below](#annotation-tasks). We’re working on additional tooling to more easily support this flow.
 
 By analyzing these explanations, you can detect patterns such as bias issues consistently appearing in failed outputs without needing separate evaluations for each category, which may be unnecessary.
 
@@ -212,7 +212,7 @@ As we see above, Response A in both cases is more informative, structured, and s
 
 It provides clear explanations and supporting details (e.g., mentioning chronic diseases or endorphins). In contrast, Response B is vague and lacks depth — in which case, an evaluator would likely select Response A as the better answer.
 
-#### Annotation Tasks {#annotation-tasks}
+#### Annotation Tasks
 
 In annotation tasks, reviewers can mark grammatical errors, awkward phrasing, or inaccuracies in the content.
 
@@ -424,7 +424,7 @@ Keep in mind that since the variant selection, response time, and satisfaction s
 
 Basically, it allows us to simulate an A/B test-like environment where we can observe how different prompts perform under varying conditions.
 
-### Context-Specific Metrics  {#context-specific-metrics}
+### Context-Specific Metrics
 
 Context-specific metrics are tailored evaluation criteria used to assess prompts based on the unique requirements of a particular use case. Unlike general metrics like relevance or clarity, these are designed to measure the effectiveness of a response within a specific domain.  
 
