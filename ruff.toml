@@ -1,0 +1,2 @@
+[lint.isort]
+known-third-party = ['mirascope']
