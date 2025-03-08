@@ -37,6 +37,9 @@ from .call_response import CallResponse
 from .call_response_chunk import CallResponseChunk
 from .stream import Stream
 
+_P = ParamSpec("_P")
+_R = TypeVar("_R", contravariant=True)
+
 _BaseStreamT = TypeVar("_BaseStreamT", covariant=True)
 _ResponseModelT = TypeVar("_ResponseModelT", bound=BaseModel | BaseType | Enum)
 _SameSyncAndAsyncClientT = TypeVar("_SameSyncAndAsyncClientT", contravariant=True)
@@ -45,15 +48,7 @@ _AsyncBaseClientT = TypeVar("_AsyncBaseClientT", contravariant=True)
 _BaseCallParamsT = TypeVar("_BaseCallParamsT", contravariant=True)
 _AsyncBaseDynamicConfigT = TypeVar("_AsyncBaseDynamicConfigT", contravariant=True)
 _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
-_ResponseT = TypeVar("_ResponseT", covariant=True)
-_AsyncResponseT = TypeVar("_AsyncResponseT", covariant=True)
-_ResponseChunkT = TypeVar("_ResponseChunkT", covariant=True)
-_AsyncResponseChunkT = TypeVar("_AsyncResponseChunkT", covariant=True)
-_InvariantResponseChunkT = TypeVar("_InvariantResponseChunkT", contravariant=True)
-_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
-_P = ParamSpec("_P")
-_R = TypeVar("_R", contravariant=True)
 _BaseCallResponseT = TypeVar(
     "_BaseCallResponseT", bound=BaseCallResponse, covariant=True
 )

@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -7,8 +7,7 @@ from mirascope.core.base import (
     CommonCallParams,
 )
 from mirascope.core.openai import OpenAICallParams
-from mirascope.llm.llm_call import call
-from mirascope.llm.llm_override import override
+from mirascope.llm._override import override
 
 
 class ConcreteMockResponse(BaseCallResponse):
@@ -65,65 +64,60 @@ class ConcreteMockResponse(BaseCallResponse):
     def common_construct_message_param(self, tool_calls, content): ...
 
 
-@pytest.fixture
-def dummy_provider_agnostic_call():
-    @call(provider="openai", model="gpt-4o-mini")
-    def dummy_sync_function(book: str) -> str: ...
-
-    return dummy_sync_function
-
-
-def test_override_error_if_only_provider(dummy_provider_agnostic_call):
+def test_override_error_if_only_provider():
     with pytest.raises(
         ValueError,
         match="Provider and model must both be overridden if either is overridden.",
     ):
         override(  # pyright: ignore [reportCallIssue]
-            provider_agnostic_call=dummy_provider_agnostic_call,
+            provider_agnostic_call=MagicMock(),
             provider="anthropic",
             model=None,  # pyright: ignore [reportArgumentType]
             call_params=None,
         )
 
 
-def test_override_with_model(dummy_provider_agnostic_call):
-    with patch("mirascope.llm.llm_override._call") as mock_call:
-        override(
-            provider_agnostic_call=dummy_provider_agnostic_call,
+def test_override_with_model():
+    with patch("mirascope.llm._override._context") as mock_context:
+        fn = override(
+            provider_agnostic_call=MagicMock(),
             provider="openai",
             model="overridden-model",
             call_params=CommonCallParams(),
         )
-        mock_call.assert_called_once()
-        _, kwargs = mock_call.call_args
+        fn()
+        mock_context.assert_called_once()
+        _, kwargs = mock_context.call_args
         assert kwargs["provider"] == "openai"
         assert kwargs["model"] == "overridden-model"
 
 
-def test_override_with_callparams_override(dummy_provider_agnostic_call):
+def test_override_with_callparams_override():
     new_call_params = OpenAICallParams(temperature=0.7, max_tokens=1111)
-    with patch("mirascope.llm.llm_override._call") as mock_call:
-        override(  # pyright: ignore [reportCallIssue]
-            provider_agnostic_call=dummy_provider_agnostic_call,
+    with patch("mirascope.llm._override._context") as mock_context:
+        fn = override(  # pyright: ignore [reportCallIssue]
+            provider_agnostic_call=MagicMock(),
             provider="openai",
             model="gpt-4o-mini",  # pyright: ignore [reportArgumentType]
             call_params=new_call_params,
         )
-        mock_call.assert_called_once()
-        _, kwargs = mock_call.call_args
+        fn()
+        mock_context.assert_called_once()
+        _, kwargs = mock_context.call_args
         assert kwargs["call_params"] is new_call_params
 
 
-def test_override_with_client(dummy_provider_agnostic_call):
+def test_override_with_client():
     new_client = object()
-    with patch("mirascope.llm.llm_override._call") as mock_call:
-        override(
-            provider_agnostic_call=dummy_provider_agnostic_call,
+    with patch("mirascope.llm._override._context") as mock_context:
+        fn = override(
+            provider_agnostic_call=MagicMock(),
             provider="openai",
             model="overridden-model",
             call_params=CommonCallParams(),
             client=new_client,
         )
-        mock_call.assert_called_once()
-        _, kwargs = mock_call.call_args
+        fn()
+        mock_context.assert_called_once()
+        _, kwargs = mock_context.call_args
         assert kwargs["client"] is new_client

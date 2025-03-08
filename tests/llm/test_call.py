@@ -16,13 +16,13 @@ from mirascope.core.base import (
 )
 from mirascope.core.base._utils import BaseMessageParamConverter
 from mirascope.core.base.types import CostMetadata, FinishReason
-from mirascope.llm.call_response import CallResponse
-from mirascope.llm.llm_call import (
+from mirascope.llm._call import (
     _get_local_provider_call,
     _get_provider_call,
     _wrap_result,
     call,
 )
+from mirascope.llm.call_response import CallResponse
 from mirascope.llm.stream import Stream
 
 
@@ -290,7 +290,7 @@ def test_call_decorator_sync():
         return wrapper
 
     with patch(
-        "mirascope.llm.llm_call._get_provider_call", return_value=dummy_provider_call
+        "mirascope.llm._call._get_provider_call", return_value=dummy_provider_call
     ):
 
         @call(provider="openai", model="gpt-4o-mini")
@@ -302,7 +302,7 @@ def test_call_decorator_sync():
         assert res.finish_reasons == ["stop"]
 
     with patch(
-        "mirascope.llm.llm_call._get_local_provider_call",
+        "mirascope.llm._call._get_local_provider_call",
         return_value=(dummy_provider_call, None),
     ):
 
@@ -348,7 +348,7 @@ async def test_call_decorator_async():
         return wrapper
 
     with patch(
-        "mirascope.llm.llm_call._get_provider_call",
+        "mirascope.llm._call._get_provider_call",
         return_value=dummy_async_provider_call,
     ):
 
@@ -360,7 +360,7 @@ async def test_call_decorator_async():
         assert res.finish_reasons == ["stop"]
 
     with patch(
-        "mirascope.llm.llm_call._get_local_provider_call",
+        "mirascope.llm._call._get_local_provider_call",
         return_value=(dummy_async_provider_call, None),
     ):
 

@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Literal, ParamSpec, TypeVar, overload
+from collections.abc import Awaitable, Callable
+from functools import wraps
+from typing import TYPE_CHECKING, Any, Literal, ParamSpec, TypeVar, cast, overload
 
 from ..core.base import CommonCallParams
+from ..core.base._utils import fn_is_async
 from ..core.base.types import LocalProvider, Provider
-from .llm_call import _call
+from ._context import _context, _context_async
 
 if TYPE_CHECKING:
     from ..core.anthropic import AnthropicCallParams
@@ -197,6 +199,24 @@ def override(
 ) -> Callable[_P, _R]:
     """Overrides the provider-specific call with the specified provider.
 
+    This function creates a new function that wraps the original function
+    and temporarily sets a context with the specified overrides when called.
+
+    Example:
+        ```python
+        @llm.call(provider="openai", model="gpt-4o-mini")
+        def recommend_book(genre: str) -> str:
+            return f"Recommend a {genre} book"
+
+        # Override the model for all calls to the function
+        recommend_claude_book = override(
+            recommend_book,
+            provider="anthropic",
+            model="claude-3-5-sonnet-20240620"
+        )
+        response = recommend_claude_book("fantasy")  # Uses claude-3-5-sonnet
+        ```
+
     Args:
         provider_agnostic_call: The provider-agnostic call to override.
         provider: The provider to override with.
@@ -212,22 +232,32 @@ def override(
             "Provider and model must both be overridden if either is overridden."
         )
 
-    original_provider = provider_agnostic_call._original_provider  # pyright: ignore [reportFunctionMemberAccess]
-    original_args = provider_agnostic_call._original_args  # pyright: ignore [reportFunctionMemberAccess]
+    # Check if the original function is async and create the appropriate wrapper
+    if fn_is_async(provider_agnostic_call):
 
-    # Note: if switching providers, we will always use `client` since `original_client`
-    # would be from a different provider and fail.
-    if provider and provider == original_provider:
-        client = client or original_args["client"]
+        @wraps(provider_agnostic_call)
+        async def async_wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
+            async with _context_async(
+                provider=provider,
+                model=model,
+                client=client,
+                call_params=call_params,
+            ):  # pyright: ignore [reportGeneralTypeIssues]
+                return await cast(Callable[..., Awaitable[_R]], provider_agnostic_call)(
+                    *args, **kwargs
+                )
 
-    return _call(  # pyright: ignore [reportReturnType]
-        provider=provider or original_provider,
-        model=model or original_args["model"],
-        stream=original_args["stream"],
-        tools=original_args["tools"],
-        response_model=original_args["response_model"],
-        output_parser=original_args["output_parser"],
-        json_mode=original_args["json_mode"],
-        client=client,
-        call_params=call_params or original_args["call_params"],
-    )(provider_agnostic_call._original_fn)  # pyright: ignore [reportFunctionMemberAccess]
+        return async_wrapper
+    else:
+
+        @wraps(provider_agnostic_call)
+        def wrapper(*args: _P.args, **kwargs: _P.kwargs) -> _R:
+            with _context(
+                provider=provider,
+                model=model,
+                client=client,
+                call_params=call_params,
+            ):  # pyright: ignore [reportGeneralTypeIssues]
+                return provider_agnostic_call(*args, **kwargs)
+
+        return wrapper
