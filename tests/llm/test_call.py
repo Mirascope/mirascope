@@ -14,6 +14,7 @@ from mirascope.core.base import (
     BaseTool,
     Metadata,
 )
+from mirascope.core.base._utils import BaseMessageParamConverter
 from mirascope.core.base.types import CostMetadata, FinishReason
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.llm_call import (
@@ -28,7 +29,9 @@ from mirascope.llm.stream import Stream
 class DummyCallParams(BaseCallParams): ...
 
 
-class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any]):
+class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any, Any]):
+    _message_converter: type = BaseMessageParamConverter
+
     @property
     def content(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 

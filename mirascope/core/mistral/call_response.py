@@ -38,6 +38,7 @@ class MistralCallResponse(
         AssistantMessage | SystemMessage | ToolMessage | UserMessage,
         MistralCallParams,
         UserMessage,
+        MistralMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the Mistral `ChatCompletion` response.
@@ -61,6 +62,10 @@ class MistralCallResponse(
     print(response.content)
     ```
     """
+
+    _message_converter: type[MistralMessageParamConverter] = (
+        MistralMessageParamConverter
+    )
 
     _provider = "mistral"
 

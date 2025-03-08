@@ -13,6 +13,7 @@ from mirascope.core.base import (
     BaseStream,
     BaseTool,
 )
+from mirascope.core.base._utils import BaseMessageParamConverter
 from mirascope.core.base.types import CostMetadata, FinishReason, Usage
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.call_response_chunk import CallResponseChunk
@@ -42,9 +43,18 @@ class DummyTool(BaseTool):
 
 class DummyProviderResponse(
     BaseCallResponse[
-        Any, DummyTool, Any, Any, DummyMessageParam, DummyCallParams, DummyMessageParam
+        Any,
+        DummyTool,
+        Any,
+        Any,
+        DummyMessageParam,
+        DummyCallParams,
+        DummyMessageParam,
+        Any,
     ]
 ):
+    _message_converter: type = BaseMessageParamConverter
+
     @property
     def content(self) -> str: ...
 

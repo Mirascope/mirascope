@@ -19,7 +19,7 @@ from pydantic import (
 )
 
 from ..costs import calculate_cost
-from ._utils import BaseType, get_common_usage
+from ._utils import BaseMessageParamConverter, BaseType, get_common_usage
 from .call_kwargs import BaseCallKwargs
 from .call_params import BaseCallParams
 from .dynamic_config import BaseDynamicConfig
@@ -40,6 +40,9 @@ _ToolMessageParamT = TypeVar("_ToolMessageParamT", bound=Any)
 _CallParamsT = TypeVar("_CallParamsT", bound=BaseCallParams)
 _UserMessageParamT = TypeVar("_UserMessageParamT", bound=Any)
 _BaseCallResponseT = TypeVar("_BaseCallResponseT", bound="BaseCallResponse")
+_BaseMessageParamConverterT = TypeVar(
+    "_BaseMessageParamConverterT", bound=BaseMessageParamConverter
+)
 
 
 def transform_tool_outputs(
@@ -97,6 +100,7 @@ class BaseCallResponse(
         _MessageParamT,
         _CallParamsT,
         _UserMessageParamT,
+        _BaseMessageParamConverterT,
     ],
     ABC,
 ):
@@ -131,6 +135,7 @@ class BaseCallResponse(
     start_time: float
     end_time: float
 
+    _message_converter: type[_BaseMessageParamConverterT]
     _provider: ClassVar[str] = "NO PROVIDER"
     _model: str = "NO MODEL"
 
@@ -312,6 +317,11 @@ class BaseCallResponse(
     def common_user_message_param(self) -> BaseMessageParam | None:
         """Provider-agnostic user message param."""
         ...
+
+    @property
+    def common_messages(self) -> list[BaseMessageParam]:
+        """Provider-agnostic list of messages."""
+        return self._message_converter.from_provider(self.messages)
 
     @property
     def common_tools(self) -> list[Tool] | None:

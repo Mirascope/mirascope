@@ -51,6 +51,7 @@ class BedrockCallResponse(
         InternalBedrockMessageParam,
         BedrockCallParams,
         UserMessageTypeDef,
+        BedrockMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the Bedrock `ChatCompletion` response.
@@ -78,6 +79,9 @@ class BedrockCallResponse(
     """
 
     response: SkipValidation[SyncConverseResponseTypeDef | AsyncConverseResponseTypeDef]
+    _message_converter: type[BedrockMessageParamConverter] = (
+        BedrockMessageParamConverter
+    )
 
     _provider = "bedrock"
 

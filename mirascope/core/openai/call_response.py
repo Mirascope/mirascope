@@ -58,6 +58,7 @@ class OpenAICallResponse(
         ChatCompletionMessageParam,
         OpenAICallParams,
         ChatCompletionUserMessageParam,
+        OpenAIMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the OpenAI `ChatCompletion` response.
@@ -84,6 +85,7 @@ class OpenAICallResponse(
     """
 
     response: SkipValidation[ChatCompletion]
+    _message_converter: type[OpenAIMessageParamConverter] = OpenAIMessageParamConverter
 
     _provider = "openai"
 

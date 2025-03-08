@@ -35,6 +35,7 @@ class CohereCallResponse(
         SkipValidation[ChatMessage],
         CohereCallParams,
         SkipValidation[ChatMessage],
+        CohereMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the Cohere `ChatCompletion` response.
@@ -59,6 +60,8 @@ class CohereCallResponse(
     print(response.content)
     ```
     """
+
+    _message_converter: type[CohereMessageParamConverter] = CohereMessageParamConverter
 
     _provider = "cohere"
 
