@@ -219,7 +219,7 @@ The `ask_alan_turing` function:
 
 We add two Mirascope decorators to turn the function into an LLM API call:
 
-* The `openai.call` decorator makes calls more readable by turning any Python function into an LLM call and is provider agnostic: we could’ve instead written, e.g., `anthropic.call`, `gemini.call`, `vertex.call` or any of a number of others, with minimal code adjustments.
+* The `openai.call` decorator makes calls more readable by turning any Python function into an LLM call and is provider agnostic: we could’ve instead written, e.g., `anthropic.call`, `google.call` or any of a number of others, with minimal code adjustments.
 * Mirascope’s `prompt_template` decorator enables defining the prompt as a template that instructs the model to respond as if it’s Alan Turing and injects a list of the retrieved excerpts.
 
 Both of these decorators, when added to any function, illustrate the best practice of colocation of prompts and calls, which makes the code eminently more readable as the logic for preparing input data, [building prompts](https://mirascope.com/blog/llm-prompt/), and LLM invocation is centralized in a single place.

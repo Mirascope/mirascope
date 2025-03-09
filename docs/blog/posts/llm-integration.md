@@ -319,7 +319,7 @@ Mirascope’s call decorator — e.g., `@llm.call()` — simplifies model invoca
 
 When used with `@prompt_template()`, the call decorator injects function arguments into the formatted prompt, removing the need for manually formatting or passing inputs into the LLM call.
 
-It also automates response parsing and its interface lets you hot switch model providers when needed — our growing list includes OpenAI, Anthropic, Mistral, Gemini, Groq, Cohere, LiteLLM, Azure AI, Vertex AI, and Bedrock.
+It also automates response parsing and its interface lets you hot switch model providers when needed — our growing list includes OpenAI, Anthropic, Mistral, Google Gemini, Groq, Cohere, LiteLLM, Azure AI, and Bedrock.
 
 An example of this is shown below. To switch from OpenAI to Anthropic, you can use `llm_override` to override provider settings at runtime to specify a different model.
 
