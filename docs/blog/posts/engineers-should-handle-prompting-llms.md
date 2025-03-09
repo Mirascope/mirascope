@@ -397,12 +397,11 @@ Beyond OpenAI, Mirascope supports currently these [other LLM providers](https://
 
 - Anthropic
 - Mistral
-- Gemini
+- Google
 - Groq
 - Cohere
 - LiteLLM
 - Azure AI
-- Vertex AI
 - AWS Bedrock
 
 We've made sure that every example in our documentation shows how to use each provider for easy copy-paste to try it out yourself.

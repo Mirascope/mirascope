@@ -209,12 +209,11 @@ Mirascope also supports interactions with other LLMs besides OpenAI to refine th
 - OpenAI
 - Anthropic
 - Mistral
-- Gemini
+- Google Gemini
 - Groq
 - Cohere
 - LiteLLM
 - Azure AI
-- Vertex AI
 - Bedrock
 
 Mirascope provides wrappers to integrate with a number of popular libraries in the machine learning and LLM space, such as Logfire, Langfuse, Open Telemetry, and Tenacity.

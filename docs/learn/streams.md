@@ -190,17 +190,16 @@ While Mirascope provides a consistent interface, you can always access the full,
 
 While most LLM providers focus on text streaming, some providers support streaming additional output modalities like audio. The availability of multi-modal streaming varies among providers:
 
-| Provider    | Text | Audio | Image |
-|------------|------|-------|-------|
-| OpenAI     | ✓    | ✓     | -     |
-| Anthropic  | ✓    | -     | -     |
-| Mistral    | ✓    | -     | -     |
-| Gemini     | ✓    | -     | -     |
-| Groq       | ✓    | -     | -     |
-| Cohere     | ✓    | -     | -     |
-| LiteLLM    | ✓    | -     | -     |
-| Azure AI   | ✓    | -     | -     |
-| Vertex AI  | ✓    | -     | -     |
+| Provider      | Text | Audio | Image |
+|---------------|------|-------|-------|
+| OpenAI        | ✓    | ✓     | -     |
+| Anthropic     | ✓    | -     | -     |
+| Mistral       | ✓    | -     | -     |
+| Google Gemini | ✓    | -     | -     |
+| Groq          | ✓    | -     | -     |
+| Cohere        | ✓    | -     | -     |
+| LiteLLM       | ✓    | -     | -     |
+| Azure AI      | ✓    | -     | -     |
 
 Legend: ✓ (Supported), - (Not Supported)
 
@@ -261,7 +260,7 @@ Error handling in streams is similar to standard non-streaming calls. However, i
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
-            {% if provider in ["Gemini", "Azure AI", "Vertex AI"] %}
+            {% if provider in ["Google", "Azure AI"] %}
             ```python hl_lines="9 12"
             {% elif provider == "Mistral" %}
             ```python hl_lines="2 10 13 16"

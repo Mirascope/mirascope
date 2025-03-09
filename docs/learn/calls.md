@@ -53,7 +53,7 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
         {% if provider == "Anthropic" %}
         ```python hl_lines="7-13"
-        {% elif provider in ["Google", "Vertex AI"] %}
+        {% elif provider in ["Google"] %}
         ```python hl_lines="7-10"
         {% elif provider == "LiteLLM" %}
         ```python hl_lines="5-9"
@@ -155,12 +155,11 @@ While most LLM providers focus on text outputs, some providers support additiona
 | OpenAI     | ✓    | ✓     | -     |
 | Anthropic  | ✓    | -     | -     |
 | Mistral    | ✓    | -     | -     |
-| Gemini     | ✓    | -     | -     |
+| Google Gemini     | ✓    | -     | -     |
 | Groq       | ✓    | -     | -     |
 | Cohere     | ✓    | -     | -     |
 | LiteLLM    | ✓    | -     | -     |
 | Azure AI   | ✓    | -     | -     |
-| Vertex AI  | ✓    | -     | -     |
 
 Legend: ✓ (Supported), - (Not Supported)
 
@@ -232,10 +231,8 @@ Since `call_params` is just a `TypedDict`, you can always include any additional
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
-            {% if provider == "Gemini" %}
+            {% if provider == "Google" %}
             ```python hl_lines="1 7"
-            {% elif provider == "Vertex AI" %}
-            ```python hl_lines="2 7"
             {% else %}
             ```python hl_lines="4"
             {% endif %}

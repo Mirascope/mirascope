@@ -56,8 +56,6 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
         ```python hl_lines="16-37 42"
         {% elif provider == "Azure AI" %}
         ```python hl_lines="26-46 51"
-        {% elif provider == "Vertex AI" %}
-        ```python hl_lines="23-62 67"
         {% elif provider == "Bedrock" %}
         ```python hl_lines="16-48 53"
         {% else %}
@@ -218,7 +216,7 @@ We take advantage of Pydantic's [`Field`](https://docs.pydantic.dev/latest/conce
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
 
-            {% if provider in ["Google", "Vertex AI"] %}
+            {% if provider in ["Google"] %}
             ```python
             {% elif method == "messages" %}
             ```python hl_lines="6-7 11-13 27"

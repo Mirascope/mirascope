@@ -176,7 +176,7 @@ __Decorator Parameter:__
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Vertex AI"] %}
+            {% elif provider in ["OpenAI"] %}
             ```python hl_lines="2 5"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 8-10"
@@ -205,7 +205,7 @@ __Dynamic Configuration:__
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Vertex AI"] %}
+            {% elif provider in ["OpenAI"] %}
             ```python hl_lines="2 11"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 12-14"
@@ -226,7 +226,7 @@ __Dynamic Configuration:__
 
             {% if provider == "LiteLLM" %}
             ```python
-            {% elif provider in ["OpenAI", "Vertex AI"] %}
+            {% elif provider in ["OpenAI"] %}
             ```python hl_lines="2 9"
             {% elif provider == "Azure AI" %}
             ```python hl_lines="1-2 10-12"
