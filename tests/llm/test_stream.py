@@ -157,20 +157,7 @@ class DummyProviderChunk(BaseCallResponseChunk[Any, FinishReason]):
     def cost_metadata(self) -> CostMetadata: ...
 
 
-class DummyStream(
-    Stream[
-        DummyProviderResponse,
-        DummyProviderChunk,
-        DummyMessageParam,
-        DummyMessageParam,
-        DummyMessageParam,
-        DummyMessageParam,
-        DummyTool,
-        Any,
-        Any,
-        DummyCallParams,
-    ]
-): ...
+class DummyStream(Stream): ...
 
 
 @pytest.mark.asyncio

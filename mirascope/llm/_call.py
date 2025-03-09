@@ -20,7 +20,7 @@ from ..core.base import (
 from ..core.base._utils import fn_is_async
 from ..core.base.stream_config import StreamConfig
 from ..core.base.types import LocalProvider, Provider
-from ._context import CallArgs, _apply_context_overrides_to_call_args
+from ._context import CallArgs, apply_context_overrides_to_call_args
 from ._protocols import (
     AsyncLLMFunctionDecorator,
     CallDecorator,
@@ -211,16 +211,31 @@ def _call(
         fn: Callable[_P, _R | Awaitable[_R]],
     ) -> Callable[
         _P,
-        CallResponse | Stream | Awaitable[CallResponse | Stream],
+        CallResponse
+        | Stream
+        | _ResponseModelT
+        | _ParsedOutputT
+        | (_ResponseModelT | CallResponse)
+        | Awaitable[CallResponse]
+        | Awaitable[Stream]
+        | Awaitable[_ResponseModelT]
+        | Awaitable[_ParsedOutputT]
+        | Awaitable[(_ResponseModelT | CallResponse)],
     ]:
         if fn_is_async(fn):
 
             @wraps(fn)
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
-            ) -> CallResponse | Stream:
+            ) -> (
+                CallResponse
+                | Stream
+                | _ResponseModelT
+                | _ParsedOutputT
+                | (_ResponseModelT | CallResponse)
+            ):
                 # Apply any context overrides to the original call args
-                effective_call_args = _apply_context_overrides_to_call_args(
+                effective_call_args = apply_context_overrides_to_call_args(
                     original_call_args
                 )
 
@@ -258,9 +273,17 @@ def _call(
         else:
 
             @wraps(fn)
-            def inner(*args: _P.args, **kwargs: _P.kwargs) -> CallResponse | Stream:
+            def inner(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> (
+                CallResponse
+                | Stream
+                | _ResponseModelT
+                | _ParsedOutputT
+                | (_ResponseModelT | CallResponse)
+            ):
                 # Apply any context overrides to the original call args
-                effective_call_args = _apply_context_overrides_to_call_args(
+                effective_call_args = apply_context_overrides_to_call_args(
                     original_call_args
                 )
 

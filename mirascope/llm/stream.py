@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import AsyncGenerator, Generator
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar
 
 from ..core.base import (
     BaseCallParams,
@@ -37,44 +37,32 @@ _FinishReasonT = TypeVar("_FinishReasonT")
 
 class Stream(
     BaseStream[
-        _BaseCallResponseT,
-        _BaseCallResponseChunkT,
-        _UserMessageParamT,
-        _AssistantMessageParamT,
-        _ToolMessageParamT,
-        _MessageParamT,
-        _BaseToolT,
-        _ToolSchemaT,
-        _BaseDynamicConfigT,
-        _BaseCallParamsT,
+        BaseCallResponse,
+        BaseCallResponseChunk,
+        BaseMessageParam,
+        BaseMessageParam,
+        BaseMessageParam,
+        BaseMessageParam,
+        BaseTool,
+        Any,
+        BaseDynamicConfig,
+        BaseCallParams,
         FinishReason,
-    ],
-    Generic[
-        _BaseCallResponseT,
-        _BaseCallResponseChunkT,
-        _UserMessageParamT,
-        _AssistantMessageParamT,
-        _ToolMessageParamT,
-        _MessageParamT,
-        _BaseToolT,
-        _ToolSchemaT,
-        _BaseDynamicConfigT,
-        _BaseCallParamsT,
     ],
 ):
     """A non-pydantic class that inherits from BaseStream."""
 
     _stream: BaseStream[
-        _BaseCallResponseT,
-        _BaseCallResponseChunkT,
-        _UserMessageParamT,
-        _AssistantMessageParamT,
-        _ToolMessageParamT,
-        _MessageParamT,
-        _BaseToolT,
-        _ToolSchemaT,
-        _BaseDynamicConfigT,
-        _BaseCallParamsT,
+        BaseCallResponse,
+        BaseCallResponseChunk,
+        BaseMessageParam,
+        BaseMessageParam,
+        BaseMessageParam,
+        BaseMessageParam,
+        BaseTool,
+        Any,
+        BaseDynamicConfig,
+        BaseCallParams,
         FinishReason,
     ]
 
@@ -82,16 +70,16 @@ class Stream(
         self,
         *,
         stream: BaseStream[
-            _BaseCallResponseT,
-            _BaseCallResponseChunkT,
-            _UserMessageParamT,
-            _AssistantMessageParamT,
-            _ToolMessageParamT,
-            _MessageParamT,
-            _BaseToolT,
-            _ToolSchemaT,
-            _BaseDynamicConfigT,
-            _BaseCallParamsT,
+            BaseCallResponse,
+            BaseCallResponseChunk,
+            BaseMessageParam,
+            BaseMessageParam,
+            BaseMessageParam,
+            BaseMessageParam,
+            BaseTool,
+            Any,
+            BaseDynamicConfig,
+            BaseCallParams,
             FinishReason,
         ],
     ) -> None:
@@ -121,9 +109,7 @@ class Stream(
     def __iter__(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
     ) -> Generator[
-        tuple[
-            CallResponseChunk[_BaseCallResponseChunkT], Tool[_ToolMessageParamT] | None
-        ],
+        tuple[CallResponseChunk, Tool[_ToolMessageParamT] | None],
         None,
         None,
     ]:
@@ -137,9 +123,7 @@ class Stream(
     async def __aiter__(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
     ) -> AsyncGenerator[
-        tuple[
-            CallResponseChunk[_BaseCallResponseChunkT], Tool[_ToolMessageParamT] | None
-        ],
+        tuple[CallResponseChunk, Tool[_ToolMessageParamT] | None],
         None,
     ]:
         """Iterates over the stream and stores useful information."""
@@ -155,17 +139,15 @@ class Stream(
 
     def _construct_message_param(
         self, tool_calls: list[Any] | None = None, content: str | None = None
-    ) -> _AssistantMessageParamT:
+    ) -> BaseMessageParam:
         return self._stream._construct_message_param(
             tool_calls=tool_calls, content=content
         )
 
     def construct_call_response(  # pyright: ignore [reportIncompatibleMethodOverride]
         self,
-    ) -> CallResponse[_BaseCallResponseT]:
-        return CallResponse[_BaseCallResponseT](
-            response=self._stream.construct_call_response()
-        )  # pyright: ignore [reportAbstractUsage]
+    ) -> CallResponse:
+        return CallResponse(response=self._stream.construct_call_response())  # pyright: ignore [reportAbstractUsage]
 
     @classmethod
     def tool_message_params(  # pyright: ignore [reportIncompatibleMethodOverride]

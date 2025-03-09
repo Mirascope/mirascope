@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import Any, TypeVar
+from typing import Any
 
 from pydantic import computed_field
 
@@ -22,12 +22,10 @@ from ..core.base.types import FinishReason
 from ._response_metaclass import _ResponseMetaclass
 from .tool import Tool
 
-_ResponseT = TypeVar("_ResponseT")
-
 
 class CallResponse(
     BaseCallResponse[
-        _ResponseT,
+        Any,
         Tool,
         Any,
         BaseDynamicConfig[Any, Any, Any],
@@ -44,11 +42,11 @@ class CallResponse(
     We rely on _response having `common_` methods or properties for normalization.
     """
 
-    _response: BaseCallResponse[_ResponseT, Tool, Any, Any, Any, Any, Any, Any]
+    _response: BaseCallResponse[Any, Tool, Any, Any, Any, Any, Any, Any]
 
     def __init__(
         self,
-        response: BaseCallResponse[_ResponseT, Tool, Any, Any, Any, Any, Any, Any],
+        response: BaseCallResponse[Any, Tool, Any, Any, Any, Any, Any, Any],
     ) -> None:
         super().__init__(
             **{
