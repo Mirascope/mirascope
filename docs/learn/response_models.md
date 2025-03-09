@@ -122,20 +122,20 @@ Note that we have no way of attaching `BaseCallResponse` to built-in types, so u
 
 While Mirascope provides a consistent interface, type support varies among providers:
 
-|     Type      | Anthropic | Cohere | Gemini | Groq | Mistral | OpenAI |
-|---------------|-----------|--------|--------|------|---------|--------|
-|     str       |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|     int       |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|    float      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|     bool      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|     bytes     |✓✓|✓✓|-✓|✓✓|✓✓|✓✓|
-|     list      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|     set       |✓✓|✓✓|--|✓✓|✓✓|✓✓|
-|     tuple     |✓✓|✓✓|-✓|✓✓|✓✓|-✓|
-|     dict      |✓✓|✓✓|✓✓|✓✓|✓✓|-✓|
-|  Literal/Enum |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
-|   BaseModel   |✓✓|-✓|✓✓|✓✓|✓✓|✓✓|
-| Nested ($def) |✓✓|--|--|✓✓|✓✓|✓✓|
+|     Type      | OpenAI | Anthropic | Google | Groq | xAI | Mistral | Cohere |
+|---------------|--------|-----------|--------|------|-----|---------|--------|
+|     str       |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|     int       |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|    float      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|     bool      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|     bytes     |✓✓|✓✓|-✓|✓✓|✓✓|✓✓|✓✓|
+|     list      |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|     set       |✓✓|✓✓|--|✓✓|✓✓|✓✓|✓✓|
+|     tuple     |-✓|✓✓|-✓|✓✓|-✓|✓✓|✓✓|
+|     dict      |-✓|✓✓|✓✓|✓✓|-✓|✓✓|✓✓|
+|  Literal/Enum |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
+|   BaseModel   |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|-✓|
+| Nested ($def) |✓✓|✓✓|-✓|✓✓|✓✓|✓✓|--|
 
 ✓✓ : Fully Supported, -✓: Only JSON Mode Support, -- : Not supported
 
