@@ -375,9 +375,7 @@ Just like with [Response Models](./response_models.md#few-shot-examples), you ca
 
             {% for provider in supported_llm_providers %}
             === "{{ provider }}"
-                {% if provider == "Google" %}
-                ```python
-                {% elif tool_method == "function" %}
+                {% if tool_method == "function" %}
                 ```python hl_lines="14 20-21"
                 {% else %}
                 ```python hl_lines="11 15"

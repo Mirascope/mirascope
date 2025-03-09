@@ -397,7 +397,7 @@ Beyond OpenAI, Mirascope supports currently these [other LLM providers](https://
 
 - Anthropic
 - Mistral
-- Google
+- Google Gemini
 - Groq
 - Cohere
 - LiteLLM

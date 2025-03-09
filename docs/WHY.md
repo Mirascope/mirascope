@@ -96,7 +96,7 @@ Let's compare structured outputs using Mirascope vs. the official SDKs:
         {% elif provider == "Mistral" %}
         ```python hl_lines="21-46 51"
         {% elif provider == "Google" %}
-        ```python hl_lines="19-57 62"
+        ```python hl_lines="20-60 65"
         {% elif provider == "Cohere" %}
         ```python hl_lines="19-36 41"
         {% elif provider == "LiteLLM" %}

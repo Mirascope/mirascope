@@ -215,10 +215,7 @@ We take advantage of Pydantic's [`Field`](https://docs.pydantic.dev/latest/conce
 
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
-
-            {% if provider in ["Google"] %}
-            ```python
-            {% elif method == "messages" %}
+            {% if method == "messages" %}
             ```python hl_lines="6-7 11-13 27"
             {% elif method == "base_message_param" %}
             ```python hl_lines="6-7 11-13 30"
