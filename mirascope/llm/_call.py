@@ -50,24 +50,36 @@ _ResultT = TypeVar("_ResultT")
 def _get_local_provider_call(
     provider: LocalProvider,
     client: Any | None,  # noqa: ANN401
+    is_async: bool,
 ) -> tuple[Callable, Any | None]:
     if provider == "ollama":
         from ..core.openai import openai_call
 
         if client:
             return openai_call, client
-        from openai import OpenAI
+        if is_async:
+            from openai import AsyncOpenAI
 
-        client = OpenAI(api_key="ollama", base_url="http://localhost:11434/v1")
+            client = AsyncOpenAI(api_key="ollama", base_url="http://localhost:11434/v1")
+        else:
+            from openai import OpenAI
+
+            client = OpenAI(api_key="ollama", base_url="http://localhost:11434/v1")
         return openai_call, client
     else:  # provider == "vllm"
         from ..core.openai import openai_call
 
         if client:
             return openai_call, client
-        from openai import OpenAI
 
-        client = OpenAI(api_key="ollama", base_url="http://localhost:8000/v1")
+        if is_async:
+            from openai import AsyncOpenAI
+
+            client = AsyncOpenAI(api_key="ollama", base_url="http://localhost:8000/v1")
+        else:
+            from openai import OpenAI
+
+            client = OpenAI(api_key="ollama", base_url="http://localhost:8000/v1")
         return openai_call, client
 
 
@@ -245,7 +257,9 @@ def _call(
 
                 if effective_provider in get_args(LocalProvider):
                     provider_call, effective_client = _get_local_provider_call(
-                        cast(LocalProvider, effective_provider), effective_client
+                        cast(LocalProvider, effective_provider),
+                        effective_client,
+                        True,
                     )
                     effective_call_args["client"] = effective_client
                 else:
@@ -293,7 +307,9 @@ def _call(
 
                 if effective_provider in get_args(LocalProvider):
                     provider_call, effective_client = _get_local_provider_call(
-                        cast(LocalProvider, effective_provider), effective_client
+                        cast(LocalProvider, effective_provider),
+                        effective_client,
+                        False,
                     )
                     effective_call_args["client"] = effective_client
                 else:
