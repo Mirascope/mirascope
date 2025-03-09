@@ -3,7 +3,7 @@ from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 from pydantic import computed_field
 
 from mirascope.core.base import (
@@ -231,29 +231,43 @@ def test_get_provider_call_xai():
 
 def test_get_local_provider_call_ollama():
     with patch("mirascope.core.openai.openai_call", new="openai_ollama_mock"):
-        func, client = _get_local_provider_call("ollama", None)
+        func, client = _get_local_provider_call("ollama", None, False)
         assert func == "openai_ollama_mock"
         assert (
             isinstance(client, OpenAI)
             and client.api_key == "ollama"
             and str(client.base_url) == "http://localhost:11434/v1/"
         )
+        func, client = _get_local_provider_call("ollama", None, True)
+        assert func == "openai_ollama_mock"
+        assert (
+            isinstance(client, AsyncOpenAI)
+            and client.api_key == "ollama"
+            and str(client.base_url) == "http://localhost:11434/v1/"
+        )
         mock_client = Mock()
-        _, client = _get_local_provider_call("ollama", mock_client)
+        _, client = _get_local_provider_call("ollama", mock_client, False)
         assert client == mock_client
 
 
 def test_get_local_provider_call_vllm():
     with patch("mirascope.core.openai.openai_call", new="openai_vllm_mock"):
-        func, client = _get_local_provider_call("vllm", None)
+        func, client = _get_local_provider_call("vllm", None, False)
         assert func == "openai_vllm_mock"
         assert (
             isinstance(client, OpenAI)
             and client.api_key == "ollama"
             and str(client.base_url) == "http://localhost:8000/v1/"
         )
+        func, client = _get_local_provider_call("vllm", None, True)
+        assert func == "openai_vllm_mock"
+        assert (
+            isinstance(client, AsyncOpenAI)
+            and client.api_key == "ollama"
+            and str(client.base_url) == "http://localhost:8000/v1/"
+        )
         mock_client = Mock()
-        _, client = _get_local_provider_call("vllm", mock_client)
+        _, client = _get_local_provider_call("vllm", mock_client, False)
         assert client == mock_client
 
 
