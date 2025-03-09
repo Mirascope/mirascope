@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.20.1"
+version = "1.21.0"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -91,7 +91,7 @@ xai = ["openai>=1.6.0,<2"]
 dev-dependencies = [
     "ruff>=0.9.7",
     "pytest>=8.3.2",
-    "pyright>=1.1.394",
+    "pyright>=1.1.396",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
     "pre-commit>=3.8.0",

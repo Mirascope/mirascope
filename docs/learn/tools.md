@@ -159,25 +159,24 @@ The `BaseTool` instances have a `tool_call` property for accessing the original 
         
     {% endfor %}
 
-
 ## Supported Field Types
 
 While Mirascope provides a consistent interface, type support varies among providers:
 
-| Type          | Anthropic | Cohere | Gemini | Groq | Mistral | OpenAI |
-|---------------|-----------|--------|--------|------|---------|--------|
-| str           | ✓         | ✓      | ✓      | ✓    | ✓       | ✓      |
-| int           | ✓         | ✓      | ✓      | ✓    | ✓       | ✓      |
-| float         | ✓         | ✓      | ✓      | ✓    | ✓       | ✓      |
-| bool          | ✓         | ✓      | ✓      | ✓    | ✓       | ✓      |
-| bytes         | ✓         | ✓      | -      | ✓    | ✓       | ✓      |
-| list          | ✓         | ✓      | ✓      | ✓    | ✓       | ✓      |
-| set           | ✓         | ✓      | -      | ✓    | ✓       | ✓      |
-| tuple         | ✓         | ✓      | -      | ✓    | ✓       | -      |
-| dict          | ✓         | ✓      | ✓      | ✓    | ✓       | -      |
-| Literal/Enum  | ✓         | ✓      | ✓      | ✓    | ✓       | ✓      |
-| BaseModel     | ✓         | -      | ✓      | ✓    | ✓       | ✓      |
-| Nested ($def) | ✓         | -      | -      | ✓    | ✓       | ✓      |
+|     Type      | OpenAI | Anthropic | Google | Groq | xAI | Mistral | Cohere |
+|---------------|--------|-----------|--------|------|-----|---------|--------|
+|     str       | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|     int       | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|    float      | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|     bool      | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|     bytes     | ✓      | ✓         | -      | ✓    | ✓   | ✓       | ✓      |
+|     list      | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|     set       | ✓      | ✓         | -      | ✓    | ✓   | ✓       | ✓      |
+|     tuple     | -      | ✓         | -      | ✓    | -   | ✓       | ✓      |
+|     dict      | -      | ✓         | ✓      | ✓    | -   | ✓       | ✓      |
+|  Literal/Enum | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|   BaseModel   | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | -      |
+| Nested ($def) | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | -      |
 
 Legend: ✓ (Supported), - (Not Supported)
 

@@ -3,7 +3,6 @@
 from enum import Enum
 from typing import Literal
 
-import pytest
 from google.genai.types import (  # type: ignore
     FunctionCall,
     FunctionDeclaration,
@@ -53,97 +52,20 @@ def test_google_tool() -> None:
                 description="Returns the title and author nicely formatted.",
                 name="FormatBook",
                 parameters=Schema(
-                    min_items=None,
-                    example=None,
-                    property_ordering=None,
-                    pattern=None,
-                    minimum=None,
-                    default=None,
-                    max_length=None,
-                    title=None,
-                    min_length=None,
-                    min_properties=None,
-                    max_items=None,
-                    maximum=None,
-                    nullable=None,
-                    max_properties=None,
                     type=Type.OBJECT,
-                    description=None,
-                    enum=None,
-                    format=None,
                     properties={
-                        "title": Schema(
-                            min_items=None,
-                            example=None,
-                            property_ordering=None,
-                            pattern=None,
-                            minimum=None,
-                            default=None,
-                            max_length=None,
-                            title=None,
-                            min_length=None,
-                            min_properties=None,
-                            max_items=None,
-                            maximum=None,
-                            nullable=None,
-                            max_properties=None,
-                            type=Type.STRING,
-                            description=None,
-                            enum=None,
-                            format=None,
-                            required=None,
-                        ),
-                        "author": Schema(
-                            min_items=None,
-                            example=None,
-                            property_ordering=None,
-                            pattern=None,
-                            minimum=None,
-                            default=None,
-                            max_length=None,
-                            title=None,
-                            min_length=None,
-                            min_properties=None,
-                            max_items=None,
-                            maximum=None,
-                            nullable=None,
-                            max_properties=None,
-                            type=Type.STRING,
-                            description=None,
-                            enum=None,
-                            format=None,
-                            required=None,
-                        ),
+                        "title": Schema(type=Type.STRING),
+                        "author": Schema(type=Type.STRING),
                         "genre": Schema(
-                            min_items=None,
-                            example=None,
-                            property_ordering=None,
-                            pattern=None,
-                            minimum=None,
-                            default=None,
-                            max_length=None,
-                            title=None,
-                            min_length=None,
-                            min_properties=None,
-                            max_items=None,
-                            maximum=None,
-                            nullable=None,
-                            max_properties=None,
                             type=Type.STRING,
-                            description=None,
                             enum=["fantasy", "scifi"],
                             format="enum",
-                            required=None,
                         ),
                     },
                     required=["title", "author", "genre"],
                 ),
             )
         ],
-        retrieval=None,
-        google_search=None,
-        google_search_retrieval=None,
-        code_execution=None,
     )
 
 
@@ -154,11 +76,23 @@ def test_google_tool_no_nesting() -> None:
         A = "a"
 
     class Nested(GoogleTool):
+        """Nested tool."""
+
         nested: Def
 
-    with pytest.raises(
-        ValueError,
-        match="Unfortunately Google's Google API cannot handle nested structures "
-        "with \\$defs.",
-    ):
-        Nested.tool_schema()
+    assert Nested.tool_schema() == Tool(
+        function_declarations=[
+            FunctionDeclaration(
+                response=None,
+                description="Nested tool.",
+                name="Nested",
+                parameters=Schema(
+                    type=Type.OBJECT,
+                    properties={
+                        "nested": Schema(type=Type.STRING, enum=["a"], format="enum")
+                    },
+                    required=["nested"],
+                ),
+            )
+        ]
+    )

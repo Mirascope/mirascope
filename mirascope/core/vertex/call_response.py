@@ -30,6 +30,7 @@ class VertexCallResponse(
         Content,
         VertexCallParams,
         Content,
+        VertexMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the Vertex AI `GenerateContentResponse`.
@@ -54,6 +55,8 @@ class VertexCallResponse(
     print(response.content)
     ```
     """
+
+    _message_converter: type[VertexMessageParamConverter] = VertexMessageParamConverter
 
     _provider = "vertex"
 

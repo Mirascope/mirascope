@@ -20,6 +20,7 @@ from ..core.base import (
 from ..core.base._utils import fn_is_async
 from ..core.base.stream_config import StreamConfig
 from ..core.base.types import LocalProvider, Provider
+from ._context import CallArgs, apply_context_overrides_to_call_args
 from ._protocols import (
     AsyncLLMFunctionDecorator,
     CallDecorator,
@@ -193,13 +194,9 @@ def _call(
     ]
 ):
     """Decorator for defining a function that calls a language model."""
-    if provider in get_args(LocalProvider):
-        provider_call, client = _get_local_provider_call(
-            cast(LocalProvider, provider), client
-        )
-    else:
-        provider_call = _get_provider_call(cast(Provider, provider))
-    _original_args = {
+    # Store original call args that will be used for each function call
+    original_call_args: CallArgs = {
+        "provider": provider,
         "model": model,
         "stream": stream,
         "tools": tools,
@@ -214,36 +211,112 @@ def _call(
         fn: Callable[_P, _R | Awaitable[_R]],
     ) -> Callable[
         _P,
-        CallResponse | Stream | Awaitable[CallResponse | Stream],
+        CallResponse
+        | Stream
+        | _ResponseModelT
+        | _ParsedOutputT
+        | (_ResponseModelT | CallResponse)
+        | Awaitable[CallResponse]
+        | Awaitable[Stream]
+        | Awaitable[_ResponseModelT]
+        | Awaitable[_ParsedOutputT]
+        | Awaitable[(_ResponseModelT | CallResponse)],
     ]:
-        decorated = provider_call(**_original_args)(fn)
+        if fn_is_async(fn):
 
-        if fn_is_async(decorated):
-
-            @wraps(decorated)
+            @wraps(fn)
             async def inner_async(
                 *args: _P.args, **kwargs: _P.kwargs
-            ) -> CallResponse | Stream:
+            ) -> (
+                CallResponse
+                | Stream
+                | _ResponseModelT
+                | _ParsedOutputT
+                | (_ResponseModelT | CallResponse)
+            ):
+                # Apply any context overrides to the original call args
+                effective_call_args = apply_context_overrides_to_call_args(
+                    original_call_args
+                )
+
+                # Get the appropriate provider call function with the possibly overridden provider
+                effective_provider = effective_call_args["provider"]
+                effective_client = effective_call_args["client"]
+
+                if effective_provider in get_args(LocalProvider):
+                    provider_call, effective_client = _get_local_provider_call(
+                        cast(LocalProvider, effective_provider), effective_client
+                    )
+                    effective_call_args["client"] = effective_client
+                else:
+                    provider_call = _get_provider_call(
+                        cast(Provider, effective_provider)
+                    )
+
+                # Use the provider-specific call function with overridden args
+                call_kwargs = dict(effective_call_args)
+                del call_kwargs[
+                    "provider"
+                ]  # Remove provider as it's not a parameter to provider_call
+
+                # Get decorated function using provider_call
+                decorated = provider_call(**call_kwargs)(fn)
+
+                # Call the decorated function and wrap the result
                 result = await decorated(*args, **kwargs)
                 return _wrap_result(result)
 
-            inner_async._original_args = _original_args  # pyright: ignore [reportAttributeAccessIssue]
-            inner_async._original_provider_call = provider_call  # pyright: ignore [reportAttributeAccessIssue]
+            inner_async._original_call_args = original_call_args  # pyright: ignore [reportAttributeAccessIssue]
             inner_async._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
-            inner_async._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
 
             return inner_async
         else:
 
-            @wraps(decorated)
-            def inner(*args: _P.args, **kwargs: _P.kwargs) -> CallResponse | Stream:
+            @wraps(fn)
+            def inner(
+                *args: _P.args, **kwargs: _P.kwargs
+            ) -> (
+                CallResponse
+                | Stream
+                | _ResponseModelT
+                | _ParsedOutputT
+                | (_ResponseModelT | CallResponse)
+            ):
+                # Apply any context overrides to the original call args
+                effective_call_args = apply_context_overrides_to_call_args(
+                    original_call_args
+                )
+
+                # Get the appropriate provider call function with the possibly overridden provider
+                effective_provider = effective_call_args["provider"]
+                effective_client = effective_call_args["client"]
+
+                if effective_provider in get_args(LocalProvider):
+                    provider_call, effective_client = _get_local_provider_call(
+                        cast(LocalProvider, effective_provider), effective_client
+                    )
+                    effective_call_args["client"] = effective_client
+                else:
+                    provider_call = _get_provider_call(
+                        cast(Provider, effective_provider)
+                    )
+
+                # Use the provider-specific call function with overridden args
+                call_kwargs = dict(effective_call_args)
+                del call_kwargs[
+                    "provider"
+                ]  # Remove provider as it's not a parameter to provider_call
+
+                # Get decorated function using provider_call
+                decorated = provider_call(**call_kwargs)(fn)
+
+                # Call the decorated function and wrap the result
                 result = decorated(*args, **kwargs)
                 return _wrap_result(result)
 
-            inner._original_args = _original_args  # pyright: ignore [reportAttributeAccessIssue]
-            inner._original_provider_call = provider_call  # pyright: ignore [reportAttributeAccessIssue]
+            inner._original_call_args = original_call_args  # pyright: ignore [reportAttributeAccessIssue]
             inner._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
-            inner._original_provider = provider  # pyright: ignore [reportAttributeAccessIssue]
+
             return inner
 
     return wrapper  # pyright: ignore [reportReturnType]

@@ -2,25 +2,22 @@
 
 from __future__ import annotations
 
-from typing import Any, Generic, TypeVar
+from typing import Any
 
 from ..core.base.call_response_chunk import BaseCallResponseChunk
 from ..core.base.types import CostMetadata, FinishReason, Usage
 from ._response_metaclass import _ResponseMetaclass
 
-_ChunkT = TypeVar("_ChunkT")
-
 
 class CallResponseChunk(
-    BaseCallResponseChunk[_ChunkT, FinishReason],
-    Generic[_ChunkT],
+    BaseCallResponseChunk[Any, FinishReason],
     metaclass=_ResponseMetaclass,
 ):
-    _response: BaseCallResponseChunk[_ChunkT, Any]
+    _response: BaseCallResponseChunk[Any, Any]
 
     def __init__(
         self,
-        response: BaseCallResponseChunk[_ChunkT, Any],
+        response: BaseCallResponseChunk[Any, Any],
     ) -> None:
         super().__init__(
             **{field: getattr(response, field) for field in response.model_fields}

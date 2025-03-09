@@ -187,7 +187,7 @@ def create_factory(  # noqa: ANN202
                 start_time = datetime.datetime.now().timestamp() * 1000
                 response = await create(stream=False, **call_kwargs)
                 end_time = datetime.datetime.now().timestamp() * 1000
-                output = TCallResponse(
+                output = TCallResponse(  # pyright: ignore [reportCallIssue]
                     metadata=get_metadata(fn, dynamic_config),
                     response=response,
                     tool_types=tool_types,  # pyright: ignore [reportArgumentType]
@@ -231,7 +231,7 @@ def create_factory(  # noqa: ANN202
                 start_time = datetime.datetime.now().timestamp() * 1000
                 response = create(stream=False, **call_kwargs)
                 end_time = datetime.datetime.now().timestamp() * 1000
-                output = TCallResponse(
+                output = TCallResponse(  # pyright: ignore [reportCallIssue]
                     metadata=get_metadata(fn, dynamic_config),
                     response=response,
                     tool_types=tool_types,  # pyright: ignore [reportArgumentType]

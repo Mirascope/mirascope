@@ -70,17 +70,48 @@ class GoogleTool(BaseTool):
             fn["parameters"] = model_schema
 
         if "parameters" in fn:
+            # Resolve $defs and $ref
             if "$defs" in fn["parameters"]:
-                raise ValueError(
-                    "Unfortunately Google's Google API cannot handle nested structures "
-                    "with $defs."
-                )
+                defs = fn["parameters"].pop("$defs")
+
+                def resolve_refs(schema: dict[str, Any]) -> dict[str, Any]:
+                    """Recursively resolve $ref references using the $defs dictionary."""
+                    # If this is a reference, resolve it
+                    if "$ref" in schema:
+                        ref = schema["$ref"]
+                        if ref.startswith("#/$defs/"):
+                            ref_key = ref.replace("#/$defs/", "")
+                            if ref_key in defs:
+                                # Merge the definition with the current schema (excluding $ref)
+                                resolved = {
+                                    **{k: v for k, v in schema.items() if k != "$ref"},
+                                    **resolve_refs(defs[ref_key]),
+                                }
+                                return resolved
+
+                    # Process all other keys recursively
+                    result = {}
+                    for key, value in schema.items():
+                        if isinstance(value, dict):
+                            result[key] = resolve_refs(value)
+                        elif isinstance(value, list):
+                            result[key] = [
+                                resolve_refs(item) if isinstance(item, dict) else item
+                                for item in value
+                            ]
+                        else:
+                            result[key] = value
+                    return result
+
+                # Resolve all references in the parameters
+                fn["parameters"] = resolve_refs(fn["parameters"])
 
             def handle_enum_schema(prop_schema: dict[str, Any]) -> dict[str, Any]:
                 if "enum" in prop_schema:
                     prop_schema["format"] = "enum"
                 return prop_schema
 
+            # Process properties after resolving references
             fn["parameters"]["properties"] = {
                 prop: {
                     key: value

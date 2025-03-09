@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import Any, TypeVar
+from typing import Any
 
 from pydantic import computed_field
 
@@ -16,23 +16,23 @@ from ..core.base import (
     Usage,
     transform_tool_outputs,
 )
+from ..core.base._utils import BaseMessageParamConverter
 from ..core.base.message_param import ToolResultPart
 from ..core.base.types import FinishReason
 from ._response_metaclass import _ResponseMetaclass
 from .tool import Tool
 
-_ResponseT = TypeVar("_ResponseT")
-
 
 class CallResponse(
     BaseCallResponse[
-        _ResponseT,
+        Any,
         Tool,
         Any,
         BaseDynamicConfig[Any, Any, Any],
         BaseMessageParam,
         BaseCallParams,
         BaseMessageParam,
+        BaseMessageParamConverter,
     ],
     metaclass=_ResponseMetaclass,
 ):
@@ -42,11 +42,11 @@ class CallResponse(
     We rely on _response having `common_` methods or properties for normalization.
     """
 
-    _response: BaseCallResponse[_ResponseT, Tool, Any, Any, Any, Any, Any]
+    _response: BaseCallResponse[Any, Tool, Any, Any, Any, Any, Any, Any]
 
     def __init__(
         self,
-        response: BaseCallResponse[_ResponseT, Tool, Any, Any, Any, Any, Any],
+        response: BaseCallResponse[Any, Tool, Any, Any, Any, Any, Any, Any],
     ) -> None:
         super().__init__(
             **{
@@ -59,6 +59,7 @@ class CallResponse(
         object.__setattr__(
             self, "user_message_param", response.common_user_message_param
         )
+        object.__setattr__(self, "messages", response.common_messages)
 
     def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
         special_names = {
@@ -67,6 +68,7 @@ class CallResponse(
             "usage",
             "message_param",
             "user_message_param",
+            "messages",
             "tools",
             "tool",
             "tool_message_params",

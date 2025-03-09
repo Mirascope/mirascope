@@ -38,6 +38,7 @@ class AzureCallResponse(
         ChatRequestMessage,
         AzureCallParams,
         UserMessage,
+        AzureMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the Azure `ChatCompletion` response.
@@ -64,6 +65,7 @@ class AzureCallResponse(
     """
 
     response: SkipValidation[ChatCompletions]
+    _message_converter: type[AzureMessageParamConverter] = AzureMessageParamConverter
 
     _provider = "azure"
 

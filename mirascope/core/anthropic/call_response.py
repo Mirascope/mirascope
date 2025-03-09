@@ -20,9 +20,7 @@ from ..base.types import CostMetadata
 from ._utils._convert_finish_reason_to_common_finish_reasons import (
     _convert_finish_reasons_to_common_finish_reasons,
 )
-from ._utils._message_param_converter import (
-    AnthropicMessageParamConverter,
-)
+from ._utils._message_param_converter import AnthropicMessageParamConverter
 from .call_params import AnthropicCallParams
 from .dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from .tool import AnthropicTool
@@ -37,6 +35,7 @@ class AnthropicCallResponse(
         MessageParam,
         AnthropicCallParams,
         MessageParam,
+        AnthropicMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the Anthropic `Message` response.
@@ -61,6 +60,10 @@ class AnthropicCallResponse(
     print(response.content)
     ```
     """
+
+    _message_converter: type[AnthropicMessageParamConverter] = (
+        AnthropicMessageParamConverter
+    )
 
     _provider = "anthropic"
 

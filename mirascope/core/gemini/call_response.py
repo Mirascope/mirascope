@@ -36,6 +36,7 @@ class GeminiCallResponse(
         ContentsType,
         GeminiCallParams,
         ContentDict,
+        GeminiMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the Gemini API response.
@@ -61,6 +62,8 @@ class GeminiCallResponse(
     print(response.content)
     ```
     """
+
+    _message_converter: type[GeminiMessageParamConverter] = GeminiMessageParamConverter
 
     _provider = "gemini"
 

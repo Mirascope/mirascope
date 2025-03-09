@@ -228,7 +228,7 @@ Legend: ✓ (Supported), - (Not Supported)
 
 ??? info "Additional String Template Document Functionality"
 
-    When using string templates, you can also specify `:documents` to inject multiple audio inputs through a single template variable.
+    When using string templates, you can also specify `:documents` to inject multiple document inputs through a single template variable.
 
     The `:document` and `:documents` tags support the `bytes | str` and `list[bytes] | list[str]` types, respectively. When passing in a `str`, the string template assumes it indicates a url or local filepath and will attempt to load the bytes from the source.
 

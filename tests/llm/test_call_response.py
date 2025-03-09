@@ -15,6 +15,7 @@ from mirascope.core.base import (
     ToolResultPart,
     Usage,
 )
+from mirascope.core.base._utils import BaseMessageParamConverter
 from mirascope.core.base.types import CostMetadata, FinishReason
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.tool import Tool
@@ -48,8 +49,11 @@ class DummyProviderCallResponse(
         DummyMessageParam,
         DummyCallParams,
         DummyMessageParam,
+        Any,
     ]
 ):
+    _message_converter: type = BaseMessageParamConverter
+
     @property
     def content(self) -> str:
         return "dummy_content"

@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from mirascope.core import BaseMessageParam
+from mirascope.core.base.message_param import BaseMessageParam
 
 
 class BaseMessageParamConverter(ABC):

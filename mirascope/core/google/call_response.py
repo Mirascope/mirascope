@@ -40,6 +40,7 @@ class GoogleCallResponse(
         ContentListUnion | ContentListUnionDict,
         GoogleCallParams,
         ContentDict,
+        GoogleMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the Google API response.
@@ -65,6 +66,8 @@ class GoogleCallResponse(
     print(response.content)
     ```
     """
+
+    _message_converter: type[GoogleMessageParamConverter] = GoogleMessageParamConverter
 
     _provider = "google"
 

@@ -12,7 +12,9 @@ def is_upper(v: str) -> str:
 
 
 @retry(stop=stop_after_attempt(3), after=collect_errors(ValidationError))
-@llm.call(provider="openai", model="gpt-4o-mini",
+@llm.call(
+    provider="openai",
+    model="gpt-4o-mini",
     response_model=Annotated[str, AfterValidator(is_upper)],  # pyright: ignore [reportArgumentType, reportCallIssue]
 )
 def identify_author(book: str, *, errors: list[ValidationError] | None = None) -> str:

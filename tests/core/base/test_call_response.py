@@ -8,13 +8,28 @@ from unittest.mock import MagicMock, patch
 import pytest
 from pydantic import BaseModel
 
+from mirascope.core.base._utils import BaseMessageParamConverter
 from mirascope.core.base.call_response import BaseCallResponse, transform_tool_outputs
+from mirascope.core.base.message_param import BaseMessageParam
 
 
 def test_base_call_response() -> None:
     """Tests the `BaseCallResponse` class."""
 
+    class MyMessageParamConverter(BaseMessageParamConverter):
+        @staticmethod
+        def from_provider(message_params: list[dict]) -> list[BaseMessageParam]:
+            """Converts provider-specific messages -> Base message params."""
+            return [
+                BaseMessageParam(
+                    role=message_param["role"], content=message_param["content"]
+                )
+                for message_param in message_params
+            ]
+
     class MyCallResponse(BaseCallResponse):
+        _message_converter: type[MyMessageParamConverter] = MyMessageParamConverter
+
         @property
         def content(self) -> str:
             return "content"
@@ -27,7 +42,7 @@ def test_base_call_response() -> None:
         prompt_template="",
         fn_args={},
         dynamic_config=None,
-        messages=[],
+        messages=[{"role": "user", "content": "content"}],
         call_params={},
         call_kwargs={},
         user_message_param=None,
@@ -42,6 +57,9 @@ def test_base_call_response() -> None:
     ]
     assert call_response.common_tools is None
     assert call_response.common_usage is None
+    assert call_response.common_messages == [
+        BaseMessageParam(role="user", content="content")
+    ]
 
 
 def test_base_call_response_without_model() -> None:

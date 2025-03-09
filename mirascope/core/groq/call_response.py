@@ -35,6 +35,7 @@ class GroqCallResponse(
         ChatCompletionMessageParam,
         GroqCallParams,
         ChatCompletionUserMessageParam,
+        GroqMessageParamConverter,
     ]
 ):
     """A convenience wrapper around the Groq `ChatCompletion` response.
@@ -58,6 +59,8 @@ class GroqCallResponse(
     print(response.content)
     ```
     """
+
+    _message_converter: type[GroqMessageParamConverter] = GroqMessageParamConverter
 
     _provider = "groq"
 
