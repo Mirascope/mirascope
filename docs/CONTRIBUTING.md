@@ -155,6 +155,15 @@ A few key things to note:
 2. The API reference is generated automatically, but things like new modules still need to be included in the `docs/api` structure for generation to work.
 3. The `docs/tutorials` are written as Jupyter notebooks that get converted into markdown. This conversion will happen on every save when running the server locally, which can make writing docs slow. We recommend setting `strict: false` and commenting out the `mkdocs-jupyter` plugin in `mkdocs.yml` to skip the conversion.
 
+!!! tip "MacOS Users Will Need `cairo`
+
+    If you're developing using MacOS, you'll need to follow these steps:
+
+    1. `brew install cairo`
+    2. `export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/opt/homebrew/lib/pkgconfig:$PKG_CONFIG_PATH"`
+    3. `export DYLD_LIBRARY_PATH="/usr/local/lib:/opt/homebrew/lib:$DYLD_LIBRARY_PATH"`
+    4. `source ~/.bash_profile`
+
 ## Testing
 
 All changes to the codebase must be properly unit tested. If a change requires updating an existing unit test, make sure to think through if the change is breaking.
