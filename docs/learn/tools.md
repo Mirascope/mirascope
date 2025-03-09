@@ -176,7 +176,7 @@ While Mirascope provides a consistent interface, type support varies among provi
 |     dict      | -      | ✓         | ✓      | ✓    | -   | ✓       | ✓      |
 |  Literal/Enum | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
 |   BaseModel   | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | -      |
-| Nested ($def) | ✓      | ✓         | -      | ✓    | ✓   | ✓       | -      |
+| Nested ($def) | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | -      |
 
 Legend: ✓ (Supported), - (Not Supported)
 

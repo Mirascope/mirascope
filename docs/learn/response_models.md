@@ -135,7 +135,7 @@ While Mirascope provides a consistent interface, type support varies among provi
 |     dict      |-✓|✓✓|✓✓|✓✓|-✓|✓✓|✓✓|
 |  Literal/Enum |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|
 |   BaseModel   |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|-✓|
-| Nested ($def) |✓✓|✓✓|-✓|✓✓|✓✓|✓✓|--|
+| Nested ($def) |✓✓|✓✓|✓✓|✓✓|✓✓|✓✓|--|
 
 ✓✓ : Fully Supported, -✓: Only JSON Mode Support, -- : Not supported
 

@@ -1,6 +1,5 @@
 """Tests for the _context.py module."""
 
-from enum import Enum
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -22,13 +21,6 @@ class MockTool(BaseTool):
 
     name: str = "mock_tool"
     description: str = "Mock tool for testing"
-
-
-class MockEnum(Enum):
-    """Mock enum for testing."""
-
-    ONE = 1
-    TWO = 2
 
 
 class MockResponseModel(BaseModel):
