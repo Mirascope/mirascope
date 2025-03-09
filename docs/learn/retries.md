@@ -99,11 +99,11 @@ To make it easier to make such updates, Mirascope provides a `collect_errors` ha
         === "{{ provider }}"
 
             {% if method == "string_template" %}
-            ```python hl_lines="4 14 26 41"
+            ```python hl_lines="4 14 28 43"
             {% elif method == "shorthand" %}
-            ```python hl_lines="4 14 18 32"
+            ```python hl_lines="4 14 20 34"
             {% else %}
-            ```python hl_lines="4 14 19 36" 
+            ```python hl_lines="4 14 21 38" 
             {% endif %}
             --8<-- "build/snippets/learn/retries/error_reinsertion/{{ provider | provider_dir }}/{{ method }}.py"
             ```
