@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine, Generator
 from functools import wraps
 from typing import Any, ParamSpec, cast, overload
@@ -223,12 +224,23 @@ def setup_call(
 
     call_kwargs |= cast(BedrockCallKwargs, {"modelId": model, "messages": messages})
 
+    env_vars = {}
+    if access_key_id := os.getenv("AWS_ACCESS_KEY_ID"):
+        env_vars["aws_access_key_id"] = access_key_id
+    if secret_access_key := os.getenv("AWS_SECRET_ACCESS_KEY"):
+        env_vars["aws_secret_access_key"] = secret_access_key
+    if session_token := os.getenv("AWS_SESSION_TOKEN"):
+        env_vars["aws_session_token"] = session_token
+    if region_name := os.getenv("AWS_REGION_NAME"):
+        env_vars["region_name"] = region_name
+    if profile_name := os.getenv("AWS_PROFILE"):
+        env_vars["profile_name"] = profile_name
     if client is None:
         if fn_is_async(fn):
-            session = get_session()
+            session = get_session(env_vars=env_vars)
             _client = _AsyncBedrockRuntimeWrappedClient(session, model)
         else:
-            session = Session()
+            session = Session(**env_vars)
             _client = session.client("bedrock-runtime")
     else:
         _client = client
