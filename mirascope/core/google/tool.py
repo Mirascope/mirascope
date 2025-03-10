@@ -70,41 +70,50 @@ class GoogleTool(BaseTool):
             fn["parameters"] = model_schema
 
         if "parameters" in fn:
-            # Resolve $defs and $ref
+            # Define a function to handle both ref resolution and examples conversion
+            def resolve_refs_and_fix_examples(
+                schema: dict[str, Any], defs: dict[str, Any] | None = None
+            ) -> dict[str, Any]:
+                """Recursively resolve $ref references and fix examples/example fields."""
+                # If this is a reference, resolve it
+                if "$ref" in schema:
+                    ref = schema["$ref"]
+                    if ref.startswith("#/$defs/") and defs:
+                        ref_key = ref.replace("#/$defs/", "")
+                        if ref_key in defs:
+                            # Merge the definition with the current schema (excluding $ref)
+                            resolved = {
+                                **{k: v for k, v in schema.items() if k != "$ref"},
+                                **resolve_refs_and_fix_examples(defs[ref_key], defs),
+                            }
+                            return resolved
+
+                # Handle examples -> example conversion
+                result = {}
+                for key, value in schema.items():
+                    # Convert "examples" to "example" for Google Schema
+                    if key == "examples":
+                        result["example"] = value
+                    elif isinstance(value, dict):
+                        result[key] = resolve_refs_and_fix_examples(value, defs)
+                    elif isinstance(value, list):
+                        result[key] = [
+                            resolve_refs_and_fix_examples(item, defs)
+                            if isinstance(item, dict)
+                            else item
+                            for item in value
+                        ]
+                    else:
+                        result[key] = value
+                return result
+
+            # Extract $defs if they exist
+            defs = {}
             if "$defs" in fn["parameters"]:
                 defs = fn["parameters"].pop("$defs")
 
-                def resolve_refs(schema: dict[str, Any]) -> dict[str, Any]:
-                    """Recursively resolve $ref references using the $defs dictionary."""
-                    # If this is a reference, resolve it
-                    if "$ref" in schema:
-                        ref = schema["$ref"]
-                        if ref.startswith("#/$defs/"):
-                            ref_key = ref.replace("#/$defs/", "")
-                            if ref_key in defs:
-                                # Merge the definition with the current schema (excluding $ref)
-                                resolved = {
-                                    **{k: v for k, v in schema.items() if k != "$ref"},
-                                    **resolve_refs(defs[ref_key]),
-                                }
-                                return resolved
-
-                    # Process all other keys recursively
-                    result = {}
-                    for key, value in schema.items():
-                        if isinstance(value, dict):
-                            result[key] = resolve_refs(value)
-                        elif isinstance(value, list):
-                            result[key] = [
-                                resolve_refs(item) if isinstance(item, dict) else item
-                                for item in value
-                            ]
-                        else:
-                            result[key] = value
-                    return result
-
-                # Resolve all references in the parameters
-                fn["parameters"] = resolve_refs(fn["parameters"])
+            # Resolve all references in the parameters and fix examples
+            fn["parameters"] = resolve_refs_and_fix_examples(fn["parameters"], defs)
 
             def handle_enum_schema(prop_schema: dict[str, Any]) -> dict[str, Any]:
                 if "enum" in prop_schema:
@@ -112,6 +121,7 @@ class GoogleTool(BaseTool):
                 return prop_schema
 
             # Process properties after resolving references
+            # We're already handling examples -> example conversion recursively above
             fn["parameters"]["properties"] = {
                 prop: {
                     key: value
@@ -120,6 +130,7 @@ class GoogleTool(BaseTool):
                 }
                 for prop, prop_schema in fn["parameters"]["properties"].items()
             }
+
         return Tool(function_declarations=[FunctionDeclaration(**fn)])
 
     @classmethod
