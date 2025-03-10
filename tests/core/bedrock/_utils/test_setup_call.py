@@ -493,3 +493,80 @@ async def test_async_bedrock_runtime_wrapped_client_converse_stream():
     mock_client.converse_stream.assert_called_once_with(param2="value2")
 
     mock_session.create_client.assert_called_once_with("bedrock-runtime")
+
+
+@patch("mirascope.core.bedrock._utils._setup_call.Session")
+@patch("mirascope.core.bedrock._utils._setup_call.get_session")
+@patch("mirascope.core.bedrock._utils._setup_call._utils", new_callable=MagicMock)
+def test_setup_call_env_vars(
+    mock_utils: MagicMock,
+    mock_get_session: MagicMock,
+    mock_session_class: MagicMock,
+    mock_base_setup_call: MagicMock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that environment variables are properly passed to Session and get_session."""
+    mock_utils.setup_call = mock_base_setup_call
+    mock_base_setup_call.return_value[1] = [
+        {"role": "user", "content": [{"text": "user test"}]},
+    ]
+    mock_base_setup_call.return_value[3] = {}
+
+    # Set environment variables
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "test_access_key")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "test_secret_key")
+    monkeypatch.setenv("AWS_SESSION_TOKEN", "test_session_token")
+    monkeypatch.setenv("AWS_REGION_NAME", "us-west-2")
+    monkeypatch.setenv("AWS_PROFILE", "test_profile")
+
+    # Test sync client creation with env vars
+    setup_call(
+        model="anthropic.claude-v2",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params={},
+        response_model=None,
+        stream=False,
+    )
+
+    # Verify Session was called with expected env vars
+    mock_session_class.assert_called_once_with(
+        aws_access_key_id="test_access_key",
+        aws_secret_access_key="test_secret_key",
+        aws_session_token="test_session_token",
+        region_name="us-west-2",
+        profile_name="test_profile",
+    )
+
+    # Test async client creation with env vars
+    async def async_fn(): ...
+
+    mock_session_class.reset_mock()
+
+    setup_call(
+        model="anthropic.claude-v2",
+        client=None,
+        fn=async_fn,
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params={},
+        response_model=None,
+        stream=False,
+    )
+
+    # Verify get_session was called with expected env vars
+    mock_get_session.assert_called_with(
+        env_vars={
+            "aws_access_key_id": "test_access_key",
+            "aws_secret_access_key": "test_secret_key",
+            "aws_session_token": "test_session_token",
+            "region_name": "us-west-2",
+            "profile_name": "test_profile",
+        }
+    )
