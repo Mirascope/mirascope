@@ -114,10 +114,10 @@ def _context(
     client: Any | None = None,  # noqa: ANN401
     call_params: CommonCallParams | Any | None = None,  # noqa: ANN401
 ) -> LLMContext:
-    """Context manager for synchronous LLM API calls.
+    """Context manager for LLM API calls.
 
     This is an internal method that allows both setting and structural overrides
-    for synchronous functions.
+    for LLM functions.
 
     Unfortunately we have not yet identified a way to properly type hint this because
     providing no structural overrides means the return type is that of the original
@@ -138,7 +138,7 @@ def _context(
         client: The client to use for the LLM API call.
         call_params: The call parameters for the LLM API call.
 
-    Yields:
+    Returns:
         The context object that can be used to apply the context to a function.
     """
     old_context: LLMContext | None = getattr(_current_context_local, "context", None)
@@ -171,16 +171,19 @@ def _context(
         )
 
 
-def apply_context_overrides_to_call_args(call_args: CallArgs) -> CallArgs:
+def apply_context_overrides_to_call_args(
+    call_args: CallArgs, context_override: LLMContext | None = None
+) -> CallArgs:
     """Apply any active context overrides to the call arguments.
 
     Args:
         call_args: The original call arguments.
+        context_override: Optional explicit context to use instead of the current thread context.
 
     Returns:
         The call arguments with any context overrides applied.
     """
-    context = get_current_context()
+    context = context_override or get_current_context()
     if not context:
         return call_args
 

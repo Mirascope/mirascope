@@ -22,6 +22,7 @@ from mirascope.llm._call import (
     _wrap_result,
     call,
 )
+from mirascope.llm._context import context
 from mirascope.llm.call_response import CallResponse
 from mirascope.llm.stream import Stream
 
@@ -384,3 +385,156 @@ async def test_call_decorator_async():
         res = await dummy_local_async_function()
         assert isinstance(res, CallResponse)
         assert res.finish_reasons == ["stop"]
+
+
+@pytest.mark.asyncio
+async def test_context_in_async_function():
+    """Test that context is properly applied in async functions."""
+    # Create a mock provider call that captures the effective call args
+    captured_args = {}
+
+    def dummy_async_provider_call(
+        model,
+        stream,
+        tools,
+        response_model,
+        output_parser,
+        json_mode,
+        call_params,
+        client,
+    ):
+        def wrapper(fn):
+            async def inner(*args, **kwargs):
+                # Store the args that were passed to the provider call
+                nonlocal captured_args
+                captured_args = {
+                    "model": model,
+                    "stream": stream,
+                    "tools": tools,
+                    "response_model": response_model,
+                    "output_parser": output_parser,
+                    "json_mode": json_mode,
+                    "call_params": call_params,
+                    "client": client,
+                }
+
+                return ConcreteResponse(
+                    metadata=Metadata(),
+                    response={},
+                    tool_types=None,
+                    prompt_template=None,
+                    fn_args={},
+                    dynamic_config={},
+                    messages=[],
+                    call_params=DummyCallParams(),
+                    call_kwargs=BaseCallKwargs(),
+                    user_message_param=None,
+                    start_time=0,
+                    end_time=0,
+                )
+
+            return inner
+
+        return wrapper
+
+    with patch(
+        "mirascope.llm._call._get_provider_call",
+        return_value=dummy_async_provider_call,
+    ):
+        # Create a function with the openai provider
+        @call(provider="openai", model="gpt-4o-mini")
+        async def dummy_async_function():
+            pass  # pragma: no cover
+
+        # Call the function with a context that overrides the model
+        with context(provider="openai", model="gpt-4o"):
+            await dummy_async_function()
+
+        # Check that the context override was applied
+        assert captured_args["model"] == "gpt-4o", (
+            "Context model override was not applied in async function"
+        )
+
+
+@pytest.mark.asyncio
+async def test_context_in_async_function_with_gather():
+    """Test that context is properly applied in async functions when using asyncio.gather."""
+    # Create a mock provider call that captures the effective call args for each call
+    captured_args_list = []
+
+    def dummy_async_provider_call(
+        model,
+        stream,
+        tools,
+        response_model,
+        output_parser,
+        json_mode,
+        call_params,
+        client,
+    ):
+        def wrapper(fn):
+            async def inner(*args, **kwargs):
+                # Store the args that were passed to the provider call
+                captured_args = {
+                    "model": model,
+                    "stream": stream,
+                    "tools": tools,
+                    "response_model": response_model,
+                    "output_parser": output_parser,
+                    "json_mode": json_mode,
+                    "call_params": call_params,
+                    "client": client,
+                }
+                captured_args_list.append(captured_args)
+
+                return ConcreteResponse(
+                    metadata=Metadata(),
+                    response={},
+                    tool_types=None,
+                    prompt_template=None,
+                    fn_args={},
+                    dynamic_config={},
+                    messages=[],
+                    call_params=DummyCallParams(),
+                    call_kwargs=BaseCallKwargs(),
+                    user_message_param=None,
+                    start_time=0,
+                    end_time=0,
+                )
+
+            return inner
+
+        return wrapper
+
+    with patch(
+        "mirascope.llm._call._get_provider_call",
+        return_value=dummy_async_provider_call,
+    ):
+        # Create a function with the openai provider
+        @call(provider="openai", model="gpt-4o-mini")
+        async def dummy_async_function():
+            pass  # pragma: no cover
+
+        # Create futures first, then await them together
+        import asyncio
+
+        # Create the first future with default provider/model
+        future1 = dummy_async_function()
+
+        # Create the second future with a different context
+        with context(provider="anthropic", model="claude-3-5-sonnet"):
+            future2 = dummy_async_function()
+
+        # Await both futures together
+        await asyncio.gather(future1, future2)
+
+        # Check that we have two captured args
+        assert len(captured_args_list) == 2
+
+        # The first should use the original model
+        assert captured_args_list[0]["model"] == "gpt-4o-mini"
+
+        # The second should use the context-overridden model
+        assert captured_args_list[1]["model"] == "claude-3-5-sonnet", (
+            "Context model override was not applied when using asyncio.gather"
+        )
