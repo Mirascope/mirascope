@@ -10,6 +10,7 @@ from google.genai.types import (  # type: ignore
     Tool,
     Type,
 )
+from pydantic import Field
 
 from mirascope.core.base.tool import BaseTool
 from mirascope.core.google.tool import GoogleTool
@@ -18,9 +19,22 @@ from mirascope.core.google.tool import GoogleTool
 class FormatBook(GoogleTool):
     """Returns the title and author nicely formatted."""
 
-    title: str
+    title: str = Field(..., examples=["The Name of the Wind"])
     author: str
     genre: Literal["fantasy", "scifi"]
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "title": "The Way of Kings",
+                    "author": "Brandon Sanderson",
+                    "genre": "fantasy",
+                },
+                {"title": "Dune", "author": "Frank Herbert", "genre": "scifi"},
+            ]
+        }
+    }
 
     def call(self) -> str:
         return f"{self.title} by {self.author}"
@@ -54,7 +68,9 @@ def test_google_tool() -> None:
                 parameters=Schema(
                     type=Type.OBJECT,
                     properties={
-                        "title": Schema(type=Type.STRING),
+                        "title": Schema(
+                            type=Type.STRING, example=["The Name of the Wind"]
+                        ),
                         "author": Schema(type=Type.STRING),
                         "genre": Schema(
                             type=Type.STRING,
@@ -63,6 +79,14 @@ def test_google_tool() -> None:
                         ),
                     },
                     required=["title", "author", "genre"],
+                    example=[
+                        {
+                            "title": "The Way of Kings",
+                            "author": "Brandon Sanderson",
+                            "genre": "fantasy",
+                        },
+                        {"title": "Dune", "author": "Frank Herbert", "genre": "scifi"},
+                    ],
                 ),
             )
         ],
