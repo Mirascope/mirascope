@@ -20,7 +20,11 @@ from ..core.base import (
 from ..core.base._utils import fn_is_async
 from ..core.base.stream_config import StreamConfig
 from ..core.base.types import LocalProvider, Provider
-from ._context import CallArgs, apply_context_overrides_to_call_args
+from ._context import (
+    CallArgs,
+    apply_context_overrides_to_call_args,
+    get_current_context,
+)
 from ._protocols import (
     AsyncLLMFunctionDecorator,
     CallDecorator,
@@ -235,55 +239,66 @@ def _call(
         | Awaitable[(_ResponseModelT | CallResponse)],
     ]:
         if fn_is_async(fn):
-
+            # Create a wrapper function that captures the current context when called
             @wraps(fn)
-            async def inner_async(
+            def wrapper_with_context(
                 *args: _P.args, **kwargs: _P.kwargs
-            ) -> (
+            ) -> Awaitable[
                 CallResponse
                 | Stream
                 | _ResponseModelT
                 | _ParsedOutputT
                 | (_ResponseModelT | CallResponse)
-            ):
-                # Apply any context overrides to the original call args
-                effective_call_args = apply_context_overrides_to_call_args(
-                    original_call_args
-                )
+            ]:
+                # Capture the context at call time
+                current_context = get_current_context()
 
-                # Get the appropriate provider call function with the possibly overridden provider
-                effective_provider = effective_call_args["provider"]
-                effective_client = effective_call_args["client"]
-
-                if effective_provider in get_args(LocalProvider):
-                    provider_call, effective_client = _get_local_provider_call(
-                        cast(LocalProvider, effective_provider),
-                        effective_client,
-                        True,
-                    )
-                    effective_call_args["client"] = effective_client
-                else:
-                    provider_call = _get_provider_call(
-                        cast(Provider, effective_provider)
+                # Define an async function that uses the captured context
+                async def context_bound_inner_async() -> (
+                    CallResponse
+                    | Stream
+                    | _ResponseModelT
+                    | _ParsedOutputT
+                    | (_ResponseModelT | CallResponse)
+                ):
+                    # Apply any context overrides to the original call args
+                    effective_call_args = apply_context_overrides_to_call_args(
+                        original_call_args, context_override=current_context
                     )
 
-                # Use the provider-specific call function with overridden args
-                call_kwargs = dict(effective_call_args)
-                del call_kwargs[
-                    "provider"
-                ]  # Remove provider as it's not a parameter to provider_call
+                    # Get the appropriate provider call function with the possibly overridden provider
+                    effective_provider = effective_call_args["provider"]
+                    effective_client = effective_call_args["client"]
 
-                # Get decorated function using provider_call
-                decorated = provider_call(**call_kwargs)(fn)
+                    if effective_provider in get_args(LocalProvider):
+                        provider_call, effective_client = _get_local_provider_call(
+                            cast(LocalProvider, effective_provider),
+                            effective_client,
+                            True,
+                        )
+                        effective_call_args["client"] = effective_client
+                    else:
+                        provider_call = _get_provider_call(
+                            cast(Provider, effective_provider)
+                        )
 
-                # Call the decorated function and wrap the result
-                result = await decorated(*args, **kwargs)
-                return _wrap_result(result)
+                    # Use the provider-specific call function with overridden args
+                    call_kwargs = dict(effective_call_args)
+                    del call_kwargs["provider"]  # Not a parameter to provider_call
 
-            inner_async._original_call_args = original_call_args  # pyright: ignore [reportAttributeAccessIssue]
-            inner_async._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
+                    # Get decorated function using provider_call
+                    decorated = provider_call(**call_kwargs)(fn)
 
-            return inner_async
+                    # Call the decorated function and wrap the result
+                    result = await decorated(*args, **kwargs)
+                    return _wrap_result(result)
+
+                return context_bound_inner_async()
+
+            wrapper_with_context._original_call_args = original_call_args  # pyright: ignore [reportAttributeAccessIssue]
+            wrapper_with_context._original_fn = fn  # pyright: ignore [reportAttributeAccessIssue]
+
+            return wrapper_with_context  # pyright: ignore [reportReturnType]
         else:
 
             @wraps(fn)
