@@ -138,13 +138,13 @@ Recent advancements in Large Language Model architecture has enabled many model 
 
 While Mirascope provides a consistent interface, support varies among providers:
 
-| Type          | Anthropic | Cohere | Gemini | Groq | Mistral | OpenAI |
-|---------------|-----------|--------|--------|------|---------|--------|
-| text          | ✓         | ✓      | ✓      | ✓    | ✓       | ✓      |
-| image         | ✓         | -      | ✓      | ✓    | ✓       | ✓      |
-| audio         | -         | -      | ✓      | -    | -       | ✓      |
-| video         | -         | -      | ✓      | -    | -       | -      |
-| document      | ✓         | -      | -      | -    | -       | -      |
+| Type          | Anthropic | Cohere | Google Gemini | Groq | Mistral | OpenAI |
+|---------------|-----------|--------|---------------|------|---------|--------|
+| text          | ✓         | ✓      | ✓             | ✓    | ✓       | ✓      |
+| image         | ✓         | -      | ✓             | ✓    | ✓       | ✓      |
+| audio         | -         | -      | ✓             | -    | -       | ✓      |
+| video         | -         | -      | ✓             | -    | -       | -      |
+| document      | ✓         | -      | -             | -    | -       | -      |
 
 Legend: ✓ (Supported), - (Not Supported)
 

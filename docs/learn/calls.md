@@ -53,8 +53,8 @@ Let's take a look at a basic example using Mirascope vs. official provider SDKs:
 
         {% if provider == "Anthropic" %}
         ```python hl_lines="7-13"
-        {% elif provider in ["Google", "Vertex AI"] %}
-        ```python hl_lines="7-10"
+        {% elif provider in ["Google"] %}
+        ```python hl_lines="7-11"
         {% elif provider == "LiteLLM" %}
         ```python hl_lines="5-9"
         {% elif provider == "Azure AI" %}
@@ -150,17 +150,16 @@ There are also two common methods:
 
 While most LLM providers focus on text outputs, some providers support additional output modalities like audio. The availability of multi-modal outputs varies among providers:
 
-| Provider    | Text | Audio | Image |
-|------------|------|-------|-------|
-| OpenAI     | ✓    | ✓     | -     |
-| Anthropic  | ✓    | -     | -     |
-| Mistral    | ✓    | -     | -     |
-| Gemini     | ✓    | -     | -     |
-| Groq       | ✓    | -     | -     |
-| Cohere     | ✓    | -     | -     |
-| LiteLLM    | ✓    | -     | -     |
-| Azure AI   | ✓    | -     | -     |
-| Vertex AI  | ✓    | -     | -     |
+| Provider      | Text | Audio | Image |
+|---------------|------|-------|-------|
+| OpenAI        | ✓    | ✓     | -     |
+| Anthropic     | ✓    | -     | -     |
+| Mistral       | ✓    | -     | -     |
+| Google Gemini | ✓    | -     | -     |
+| Groq          | ✓    | -     | -     |
+| Cohere        | ✓    | -     | -     |
+| LiteLLM       | ✓    | -     | -     |
+| Azure AI      | ✓    | -     | -     |
 
 Legend: ✓ (Supported), - (Not Supported)
 
@@ -231,14 +230,7 @@ Since `call_params` is just a `TypedDict`, you can always include any additional
     === "{{ method_title }}"
         {% for provider in supported_llm_providers %}
         === "{{ provider }}"
-
-            {% if provider == "Gemini" %}
-            ```python hl_lines="1 7"
-            {% elif provider == "Vertex AI" %}
-            ```python hl_lines="2 7"
-            {% else %}
             ```python hl_lines="4"
-            {% endif %}
             --8<-- "build/snippets/learn/calls/call_params/{{ provider | provider_dir }}/{{ method }}.py::9"
             ```
 

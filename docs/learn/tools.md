@@ -98,8 +98,6 @@ Let's take a look at a basic example of each using Mirascope vs. official provid
         ```python hl_lines="6-12 19-32 34-36"
         {% elif provider == "Azure AI" %}
         ```python hl_lines="16-22 31-43 45-47"
-        {% elif provider == "Vertex AI" %}
-        ```python hl_lines="6-12 18-34 36-43"
         {% elif provider == "Mistral" %}
         ```python hl_lines="10-16 23-36 38-44"
         {% elif provider == "Bedrock" %}
@@ -377,9 +375,7 @@ Just like with [Response Models](./response_models.md#few-shot-examples), you ca
 
             {% for provider in supported_llm_providers %}
             === "{{ provider }}"
-                {% if provider == "Google" %}
-                ```python
-                {% elif tool_method == "function" %}
+                {% if tool_method == "function" %}
                 ```python hl_lines="14 20-21"
                 {% else %}
                 ```python hl_lines="11 15"

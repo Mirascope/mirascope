@@ -95,16 +95,14 @@ Let's compare structured outputs using Mirascope vs. the official SDKs:
         ```python hl_lines="19-38 43"
         {% elif provider == "Mistral" %}
         ```python hl_lines="21-46 51"
-        {% elif provider == "Gemini" %}
-        ```python hl_lines="19-57 62"
+        {% elif provider == "Google" %}
+        ```python hl_lines="20-60 65"
         {% elif provider == "Cohere" %}
         ```python hl_lines="19-36 41"
         {% elif provider == "LiteLLM" %}
         ```python hl_lines="16-37 42"
         {% elif provider == "Azure AI" %}
         ```python hl_lines="26-46 51"
-        {% elif provider == "Vertex AI" %}
-        ```python hl_lines="23-62 67"
         {% elif provider == "Bedrock" %}
         ```python hl_lines="17-48 53"
         {% else %}

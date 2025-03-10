@@ -9,7 +9,7 @@
     <a href="https://github.com/Mirascope/mirascope/blob/dev/LICENSE"><img src="https://img.shields.io/github/license/Mirascope/mirascope.svg" alt="License"/></a>
 </p>
 
-Mirascope is a powerful, flexible, and user-friendly library that simplifies the process of working with LLMs through a unified interface that works across various supported providers, including [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Gemini](https://gemini.google.com), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), [Vertex AI](https://cloud.google.com/vertex-ai), and [Bedrock](https://aws.amazon.com/bedrock/).
+Mirascope is a powerful, flexible, and user-friendly library that simplifies the process of working with LLMs through a unified interface that works across various supported providers, including [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Google (Gemini/Vertex)](https://googleapis.github.io/python-genai/), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Bedrock](https://aws.amazon.com/bedrock/).
 
 Whether you're generating text, extracting structured information, or developing complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
 
@@ -89,16 +89,14 @@ Make your first call to an LLM to extract the title and author of a book from th
         ```python hl_lines="19-38 43"
         {% elif provider == "Mistral" %}
         ```python hl_lines="21-46 51"
-        {% elif provider == "Gemini" %}
-        ```python hl_lines="19-57 62"
+        {% elif provider == "Google" %}
+        ```python hl_lines="20-60 65"
         {% elif provider == "Cohere" %}
         ```python hl_lines="19-36 41"
         {% elif provider == "LiteLLM" %}
         ```python hl_lines="16-37 42"
         {% elif provider == "Azure AI" %}
         ```python hl_lines="26-46 51"
-        {% elif provider == "Vertex AI" %}
-        ```python hl_lines="23-62 67"
         {% else %}
         ```python hl_lines="18-39 44"
         {% endif %}
