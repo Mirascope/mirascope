@@ -215,6 +215,7 @@ ignore-regex = 'and buyed some milk'
 [tool.coverage.run]
 omit = [
     "mirascope/beta/*",
+    "mirascope/experimental/*",
     "mirascope/v0/*",
     "mirascope/integrations/tenacity.py",
 ]
