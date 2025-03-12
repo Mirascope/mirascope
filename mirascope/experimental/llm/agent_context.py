@@ -2,7 +2,7 @@
 
 from typing import Any, Generic, TypeVar
 
-from ..core import BaseMessageParam
+from ...core import BaseMessageParam
 
 _DepsTypeT = TypeVar("_DepsTypeT")
 

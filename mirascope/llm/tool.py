@@ -10,7 +10,7 @@ from pydantic.json_schema import SkipJsonSchema
 
 from ..core import FromCallArgs
 from ..core.base.tool import BaseTool
-from .agent_context import AgentContext
+from ..experimental.llm.agent_context import AgentContext
 
 _P = ParamSpec("_P")
 

@@ -7,23 +7,25 @@ from typing import Any, ParamSpec, TypeVar, cast
 
 from pydantic import BaseModel
 
-from ..core.base import (
+from ...core.base import (
     BaseType,
     CommonCallParams,
     Messages,
 )
-from ..core.base._utils import fn_is_async
-from ..core.base.stream_config import StreamConfig
+from ...core.base._utils import fn_is_async
+from ...core.base.stream_config import StreamConfig
+from ...llm.call_response import CallResponse
+from ...llm.call_response_chunk import CallResponseChunk
+from ...llm.stream import Stream
+from ...llm.tool import AgentTool
 from ._protocols import (
     AgentDecorator,
     AgentFunctionDecorator,
     AsyncAgentFunctionDecorator,
     SyncAgentFunctionDecorator,
 )
-from .call_response import AgentResponse, CallResponse
-from .call_response_chunk import CallResponseChunk
-from .stream import AgentStream, Stream
-from .tool import AgentTool
+from .agent_response import AgentResponse
+from .agent_stream import AgentStream
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")

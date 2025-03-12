@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import AsyncGenerator, Generator
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar
 
 from ..core.base import (
     BaseCallParams,
@@ -17,12 +17,10 @@ from ..core.base.call_response import JsonableType
 from ..core.base.stream import BaseStream
 from ..core.base.types import FinishReason
 from ..llm.call_response_chunk import CallResponseChunk
-from .agent_context import AgentContext
 from .call_response import CallResponse
 from .tool import Tool
 
 _ToolMessageParamT = TypeVar("_ToolMessageParamT", bound=BaseMessageParam)
-_DepsT = TypeVar("_DepsT")
 
 
 class Stream(
@@ -150,16 +148,3 @@ class Stream(
                 message parameters should be constructed.
         """
         return CallResponse.tool_message_params(tools_and_outputs)
-
-
-class AgentStream(Stream, Generic[_DepsT]):
-    """A stream from an `llm.agent` call.
-
-    This class is a `Stream` with additional attributes for tracking the context.
-
-    Attributes:
-        previous_context: The context as it was at the beginning of the agent's execution.
-            This allows for comparing the state before and after execution.
-    """
-
-    previous_context: AgentContext[_DepsT]
