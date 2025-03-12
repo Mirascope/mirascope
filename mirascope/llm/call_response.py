@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 from pydantic import computed_field
 
@@ -20,7 +20,10 @@ from ..core.base._utils import BaseMessageParamConverter
 from ..core.base.message_param import ToolResultPart
 from ..core.base.types import FinishReason
 from ._response_metaclass import _ResponseMetaclass
+from .agent_context import AgentContext
 from .tool import Tool
+
+_DepsT = TypeVar("_DepsT")
 
 
 class CallResponse(
@@ -158,3 +161,20 @@ class CallResponse(
             )
             for tool, output in tools_and_outputs
         ]
+
+
+class AgentResponse(
+    CallResponse,
+    Generic[_DepsT],
+    metaclass=_ResponseMetaclass,
+):
+    """A response from an `llm.agent` call.
+
+    This class is a `CallResponse` with additional attributes for tracking the context.
+
+    Attributes:
+        previous_context: The context as it was at the beginning of the agent's execution.
+            This allows for comparing the state before and after execution.
+    """
+
+    previous_context: AgentContext[_DepsT]

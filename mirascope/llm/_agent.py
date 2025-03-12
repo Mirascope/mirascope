@@ -20,13 +20,10 @@ from ._protocols import (
     AsyncAgentFunctionDecorator,
     SyncAgentFunctionDecorator,
 )
-from .agent_context import AgentContext
-from .agent_response import AgentResponse
-from .agent_stream import AgentStream
-from .agent_tool import AgentTool
-from .call_response import CallResponse
+from .call_response import AgentResponse, CallResponse
 from .call_response_chunk import CallResponseChunk
-from .stream import Stream
+from .stream import AgentStream, Stream
+from .tool import AgentTool
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
@@ -37,7 +34,6 @@ _CallResponseT = TypeVar("_CallResponseT", covariant=True, bound=CallResponse)
 _CallResponseChunkT = TypeVar(
     "_CallResponseChunkT", covariant=True, bound=CallResponseChunk
 )
-_StreamT = TypeVar("_StreamT", bound=Stream)
 _AsyncBaseDynamicConfigT = TypeVar(
     "_AsyncBaseDynamicConfigT",
     contravariant=True,
@@ -46,16 +42,16 @@ _AsyncBaseDynamicConfigT = TypeVar(
 _BaseDynamicConfigT = TypeVar(
     "_BaseDynamicConfigT", contravariant=True, bound=Messages.Type | None
 )
-_AgentContextT = TypeVar("_AgentContextT", contravariant=True, bound=AgentContext)
+_DepsT = TypeVar("_DepsT", contravariant=True)
 
 
 def _agent(
     *,
     method: str = "simple",
-    context_type: type[_AgentContextT],
+    deps_type: type[_DepsT],
     model: str,
     stream: bool | StreamConfig = False,
-    tools: list[type[AgentTool[_AgentContextT]]] | None = None,
+    tools: list[type[AgentTool[_DepsT]]] | None = None,
     response_model: type[_ResponseModelT] | None = None,
     output_parser: Callable[[_CallResponseT], _ParsedOutputT]
     | Callable[[_CallResponseChunkT], _ParsedOutputT]
@@ -66,35 +62,35 @@ def _agent(
     call_params: CommonCallParams | Any = None,  # noqa: ANN401
 ) -> (
     AsyncAgentFunctionDecorator[
-        _AgentContextT,
+        _DepsT,
         _AsyncBaseDynamicConfigT,
-        AgentResponse[_AgentContextT]
+        AgentResponse[_DepsT]
         | _ParsedOutputT
-        | AgentStream[_AgentContextT]
+        | AgentStream[_DepsT]
         | _ResponseModelT
         | AsyncIterable[_ResponseModelT],
     ]
     | SyncAgentFunctionDecorator[
-        _AgentContextT,
+        _DepsT,
         _BaseDynamicConfigT,
-        AgentResponse[_AgentContextT]
+        AgentResponse[_DepsT]
         | _ParsedOutputT
-        | AgentStream[_AgentContextT]
+        | AgentStream[_DepsT]
         | _ResponseModelT
         | Iterable[_ResponseModelT],
     ]
     | AgentFunctionDecorator[
-        _AgentContextT,
+        _DepsT,
         _BaseDynamicConfigT,
         _AsyncBaseDynamicConfigT,
-        AgentResponse[_AgentContextT]
+        AgentResponse[_DepsT]
         | _ParsedOutputT
-        | AgentStream[_AgentContextT]
+        | AgentStream[_DepsT]
         | _ResponseModelT
         | Iterable[_ResponseModelT],
-        AgentResponse[_AgentContextT]
+        AgentResponse[_DepsT]
         | _ParsedOutputT
-        | AgentStream[_AgentContextT]
+        | AgentStream[_DepsT]
         | _ResponseModelT
         | AsyncIterable[_ResponseModelT],
     ]
@@ -113,7 +109,7 @@ def _agent(
     #     client=client,
     #     call_params=call_params,
     # )
-    # def call(*args: _P.args, context: _AgentContextT, **kwargs: _P.kwargs) -> _R: ...
+    # def call(*args: _P.args, **kwargs: _P.kwargs) -> _R: ... # context is expected as a keyword argument
 
     def wrapper(
         fn: Callable[_P, _R | Awaitable[_R]],
@@ -167,43 +163,47 @@ class Book:
     title: str
     author: str
 
-
-class LibraryContext(llm.Context):
+@dataclass
+class Library:
     all_books: list[Book]
     available_books: dict[str, bool]
 
 
-def all_books(context: LibraryContext) -> list[Book]:
+def all_books(context: llm.AgentContext[Library]) -> list[Book]:
     """Returns the titles of all books the library owns."""
     return context.books
 
 
-def book_is_available(title: str, context: LibraryContext) -> str:
+def book_is_available(title: str, context: llm.AgentContext[Library]) -> str:
     """Returns whether a book is available for borrowing."""
     return context.available_books[title]
 
 
 @llm.agent(
     method="simple",
+    deps_type=Library
     provider="openai",
     model="gpt-4o-mini",
     tools=[all_books, book_is_available],
     context_type=LibraryContext,
 )
-async def librarian(query: str) -> str:
+def librarian(context: llm.AgentContext[Library]) -> str:
     return "You are a librarian who can answer questions about books"
 
 
-context = LibraryContext(books=[
+deps = Library(all_books=[
     Book("The Name of the Wind", "Patrick Rothfuss"),
     Book("Mistborn: The Final Empire", "Brandon Sanderson"),
+    Book("The Way of Kings", "Brandon Sanderson"),
 ])
-response = librarian("What books are available?", context=context)
+response = librarian("What books are available?", deps=deps)
 print(response.content)
 ```
 
 Args:
     method (str): The agent execution method. Currently only "simple" is supported.
+    deps_type (Any): The type of the dependency object that will be stored in the
+        agent's context.
     provider (Provider | LocalProvider): The LLM provider to use
         (e.g., "openai", "anthropic").
     model (str): The model to use for the specified provider (e.g., "gpt-4o-mini").

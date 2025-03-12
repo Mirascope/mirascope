@@ -1,13 +1,16 @@
 """The `AgentContext class."""
 
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 from ..core import BaseMessageParam
 
+_DepsTypeT = TypeVar("_DepsTypeT")
 
-class AgentContext:
+
+class AgentContext(Generic[_DepsTypeT]):
     """Base class for agent context objects."""
 
+    deps: _DepsTypeT
     messages: list[BaseMessageParam] = []
 
     def __init__(self, **data: Any) -> None:  # noqa: ANN401

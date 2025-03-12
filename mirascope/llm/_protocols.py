@@ -36,12 +36,10 @@ from ..core.base._utils._protocols import (
 from ..core.base.stream_config import StreamConfig
 from ..core.base.types import LocalProvider, Provider
 from .agent_context import AgentContext
-from .agent_response import AgentResponse
-from .agent_stream import AgentStream
-from .agent_tool import AgentTool
-from .call_response import CallResponse
+from .call_response import AgentResponse, CallResponse
 from .call_response_chunk import CallResponseChunk
-from .stream import Stream
+from .stream import AgentStream, Stream
+from .tool import AgentTool
 
 _P = ParamSpec("_P")
 _CovariantR = TypeVar("_CovariantR", covariant=True)
@@ -65,10 +63,8 @@ _BaseDynamicConfigT = TypeVar("_BaseDynamicConfigT", contravariant=True)
 _AsyncAgentDynamicConfigT = TypeVar("_AsyncAgentDynamicConfigT", covariant=True)
 _AgentDynamicConfigT = TypeVar("_AgentDynamicConfigT", covariant=True)
 _ParsedOutputT = TypeVar("_ParsedOutputT")
-_ContravariantAgentContextT = TypeVar(
-    "_ContravariantAgentContextT", contravariant=True, bound=AgentContext
-)
-_InvariantAgentContextT = TypeVar("_InvariantAgentContextT", bound=AgentContext)
+_ContravariantDepsT = TypeVar("_ContravariantDepsT", contravariant=True)
+_InvariantDepsT = TypeVar("_InvariantDepsT")
 
 
 class _CallDecorator(
@@ -515,22 +511,22 @@ CallDecorator: TypeAlias = _CallDecorator[
 
 
 class AgentFunctionDynamicConfigDefinition(
-    Protocol[_P, _ContravariantAgentContextT, _AgentDynamicConfigT]
+    Protocol[_P, _InvariantDepsT, _AgentDynamicConfigT]
 ):
     def __call__(
         self,
-        context: _ContravariantAgentContextT,
+        ctx: AgentContext[_InvariantDepsT],
         *args: _P.args,
         **kwargs: _P.kwargs,
     ) -> _AgentDynamicConfigT: ...
 
 
 class AsyncAgentFunctionDynamicConfigDefinition(
-    Protocol[_P, _ContravariantAgentContextT, _AsyncAgentDynamicConfigT]
+    Protocol[_P, _InvariantDepsT, _AsyncAgentDynamicConfigT]
 ):
     def __call__(
         self,
-        context: _ContravariantAgentContextT,
+        ctx: AgentContext[_InvariantDepsT],
         *args: _P.args,
         **kwargs: _P.kwargs,
     ) -> (
@@ -539,96 +535,92 @@ class AsyncAgentFunctionDynamicConfigDefinition(
     ): ...
 
 
-class AgentFunctionMessagesDefinition(Protocol[_P, _ContravariantAgentContextT]):
+class AgentFunctionMessagesDefinition(Protocol[_P, _InvariantDepsT]):
     def __call__(
         self,
-        context: _ContravariantAgentContextT,
+        ctx: AgentContext[_InvariantDepsT],
         *args: _P.args,
         **kwargs: _P.kwargs,
     ) -> Messages.Type: ...
 
 
-class AsyncAgentFunctionMessagesDefinition(Protocol[_P, _ContravariantAgentContextT]):
+class AsyncAgentFunctionMessagesDefinition(Protocol[_P, _InvariantDepsT]):
     def __call__(
         self,
-        context: _ContravariantAgentContextT,
+        ctx: AgentContext[_InvariantDepsT],
         *args: _P.args,
         **kwargs: _P.kwargs,
     ) -> Awaitable[Messages.Type] | Coroutine[Any, Any, Messages.Type]: ...
 
 
-class AgentDecoratedFunction(Protocol[_P, _ContravariantAgentContextT, _CovariantR]):
+class AgentDecoratedFunction(Protocol[_P, _ContravariantDepsT, _CovariantR]):
     def __call__(
         self,
         query: str,
-        context: _ContravariantAgentContextT,
+        deps: _ContravariantDepsT,
         *args: _P.args,
         **kwargs: _P.kwargs,
     ) -> _CovariantR: ...
 
 
 class AsyncAgentFunctionDecorator(
-    Protocol[_InvariantAgentContextT, _AsyncBaseDynamicConfigT, _AsyncResponseT]
+    Protocol[_InvariantDepsT, _AsyncBaseDynamicConfigT, _AsyncResponseT]
 ):
     @overload
     def __call__(
         self,
         fn: AsyncAgentFunctionDynamicConfigDefinition[
-            _P, _InvariantAgentContextT, _AsyncBaseDynamicConfigT
+            _P, _InvariantDepsT, _AsyncBaseDynamicConfigT
         ],
-    ) -> AgentDecoratedFunction[
-        _P, _InvariantAgentContextT, Awaitable[_AsyncResponseT]
-    ]: ...
+    ) -> AgentDecoratedFunction[_P, _InvariantDepsT, Awaitable[_AsyncResponseT]]: ...
 
     @overload
     def __call__(
         self,
         fn: AsyncAgentFunctionMessagesDefinition,
-    ) -> AgentDecoratedFunction[
-        _P, _InvariantAgentContextT, Awaitable[_AsyncResponseT]
-    ]: ...
+    ) -> AgentDecoratedFunction[_P, _InvariantDepsT, Awaitable[_AsyncResponseT]]: ...
 
     def __call__(
         self,
         fn: AsyncAgentFunctionDynamicConfigDefinition[
-            _P, _InvariantAgentContextT, _AsyncBaseDynamicConfigT
+            _P, _InvariantDepsT, _AsyncBaseDynamicConfigT
         ]
-        | AsyncAgentFunctionMessagesDefinition[_P, _InvariantAgentContextT],
+        | AsyncAgentFunctionMessagesDefinition[_P, _InvariantDepsT],
     ) -> AgentDecoratedFunction[
-        _P, _InvariantAgentContextT, Awaitable[_AsyncResponseT]
+        _P, _InvariantDepsT, Awaitable[_AsyncResponseT]
     ]: ...  # pragma: no cover
 
 
 class SyncAgentFunctionDecorator(
-    Protocol[_InvariantAgentContextT, _BaseDynamicConfigT, _ResponseT]
+    Protocol[_InvariantDepsT, _BaseDynamicConfigT, _ResponseT]
 ):
     @overload
     def __call__(
         self,
         fn: AgentFunctionDynamicConfigDefinition[
-            _P, _InvariantAgentContextT, _BaseDynamicConfigT
+            _P, _InvariantDepsT, _BaseDynamicConfigT
         ],
-    ) -> AgentDecoratedFunction[_P, _InvariantAgentContextT, _ResponseT]: ...
+    ) -> AgentDecoratedFunction[_P, _InvariantDepsT, _ResponseT]: ...
 
     @overload
     def __call__(
-        self, fn: AgentFunctionMessagesDefinition[_P, _InvariantAgentContextT]
-    ) -> AgentDecoratedFunction[_P, _InvariantAgentContextT, _ResponseT]: ...
+        self, fn: AgentFunctionMessagesDefinition[_P, _InvariantDepsT]
+    ) -> AgentDecoratedFunction[_P, _InvariantDepsT, _ResponseT]: ...
 
     def __call__(
         self,
         fn: AgentFunctionDynamicConfigDefinition[
-            _P, _InvariantAgentContextT, _BaseDynamicConfigT
+            _P, _InvariantDepsT, _BaseDynamicConfigT
         ]
-        | AgentFunctionMessagesDefinition[_P, _InvariantAgentContextT],
+        | AgentFunctionMessagesDefinition[_P, _InvariantDepsT],
     ) -> AgentDecoratedFunction[
-        _P, _InvariantAgentContextT, _ResponseT
+        _P, _InvariantDepsT, _ResponseT
     ]: ...  # pragma: no cover
 
 
 class AgentFunctionDecorator(
     Protocol[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _BaseDynamicConfigT,
         _AsyncBaseDynamicConfigT,
         _ResponseT,
@@ -639,42 +631,40 @@ class AgentFunctionDecorator(
     def __call__(
         self,
         fn: AgentFunctionDynamicConfigDefinition[
-            _P, _InvariantAgentContextT, _BaseDynamicConfigT
+            _P, _InvariantDepsT, _BaseDynamicConfigT
         ],
-    ) -> AgentDecoratedFunction[_P, _InvariantAgentContextT, _ResponseT]: ...
+    ) -> AgentDecoratedFunction[_P, _InvariantDepsT, _ResponseT]: ...
 
     @overload
     def __call__(
         self,
         fn: AsyncAgentFunctionDynamicConfigDefinition[
-            _P, _InvariantAgentContextT, _AsyncBaseDynamicConfigT
+            _P, _InvariantDepsT, _AsyncBaseDynamicConfigT
         ],
-    ) -> AgentDecoratedFunction[_P, _InvariantAgentContextT, _ResponseT]: ...
+    ) -> AgentDecoratedFunction[_P, _InvariantDepsT, _ResponseT]: ...
 
     @overload
     def __call__(
-        self, fn: AgentFunctionMessagesDefinition[_P, _InvariantAgentContextT]
-    ) -> AgentDecoratedFunction[_P, _InvariantAgentContextT, _ResponseT]: ...
+        self, fn: AgentFunctionMessagesDefinition[_P, _InvariantDepsT]
+    ) -> AgentDecoratedFunction[_P, _InvariantDepsT, _ResponseT]: ...
 
     @overload
     def __call__(
-        self, fn: AsyncAgentFunctionMessagesDefinition[_P, _InvariantAgentContextT]
-    ) -> AgentDecoratedFunction[
-        _P, _InvariantAgentContextT, Awaitable[_AsyncResponseT]
-    ]: ...
+        self, fn: AsyncAgentFunctionMessagesDefinition[_P, _InvariantDepsT]
+    ) -> AgentDecoratedFunction[_P, _InvariantDepsT, Awaitable[_AsyncResponseT]]: ...
 
     def __call__(
         self,
         fn: AgentFunctionDynamicConfigDefinition[
-            _P, _InvariantAgentContextT, _BaseDynamicConfigT
+            _P, _InvariantDepsT, _BaseDynamicConfigT
         ]
         | AsyncAgentFunctionDynamicConfigDefinition[
-            _P, _InvariantAgentContextT, _AsyncBaseDynamicConfigT
+            _P, _InvariantDepsT, _AsyncBaseDynamicConfigT
         ]
-        | AgentFunctionMessagesDefinition[_P, _InvariantAgentContextT]
-        | AsyncAgentFunctionMessagesDefinition[_P, _InvariantAgentContextT],
+        | AgentFunctionMessagesDefinition[_P, _InvariantDepsT]
+        | AsyncAgentFunctionMessagesDefinition[_P, _InvariantDepsT],
     ) -> AgentDecoratedFunction[
-        _P, _InvariantAgentContextT, _ResponseT | Awaitable[_AsyncResponseT]
+        _P, _InvariantDepsT, _ResponseT | Awaitable[_AsyncResponseT]
     ]: ...  # pragma: no cover
 
 
@@ -696,21 +686,21 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
     ) -> AgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _BaseDynamicConfigT,
         _AsyncBaseDynamicConfigT,
-        AgentResponse[_InvariantAgentContextT],
-        AgentResponse[_InvariantAgentContextT],
+        AgentResponse[_InvariantDepsT],
+        AgentResponse[_InvariantDepsT],
     ]: ...
 
     @overload
@@ -718,19 +708,19 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
         client: _AsyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> AsyncAgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _AsyncBaseDynamicConfigT,
-        AgentResponse[_InvariantAgentContextT],
+        AgentResponse[_InvariantDepsT],
     ]: ...
 
     @overload
@@ -738,19 +728,19 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
         client: _SyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> SyncAgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _BaseDynamicConfigT,
-        AgentResponse[_InvariantAgentContextT],
+        AgentResponse[_InvariantDepsT],
     ]: ...
 
     @overload
@@ -758,17 +748,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT],
         json_mode: bool = False,
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
     ) -> AgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _BaseDynamicConfigT,
         _AsyncBaseDynamicConfigT,
         _ParsedOutputT,
@@ -780,17 +770,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT],
         json_mode: bool = False,
         client: _AsyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> AsyncAgentFunctionDecorator[
-        _InvariantAgentContextT, _AsyncBaseDynamicConfigT, _ParsedOutputT
+        _InvariantDepsT, _AsyncBaseDynamicConfigT, _ParsedOutputT
     ]: ...
 
     @overload
@@ -798,17 +788,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT],
         json_mode: bool = False,
         client: _SyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> SyncAgentFunctionDecorator[
-        _InvariantAgentContextT, _BaseDynamicConfigT, _ParsedOutputT
+        _InvariantDepsT, _BaseDynamicConfigT, _ParsedOutputT
     ]: ...
 
     @overload
@@ -816,10 +806,10 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: Callable[[_BaseCallResponseChunkT], _ParsedOutputT],
         json_mode: bool = False,
@@ -835,21 +825,21 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[True] | StreamConfig = True,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
     ) -> AgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _BaseDynamicConfigT,
         _AsyncBaseDynamicConfigT,
-        AgentStream[_InvariantAgentContextT],
-        AgentStream[_InvariantAgentContextT],
+        AgentStream[_InvariantDepsT],
+        AgentStream[_InvariantDepsT],
     ]: ...
 
     @overload
@@ -857,19 +847,19 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[True] | StreamConfig = True,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
         client: _AsyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> AsyncAgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _AsyncBaseDynamicConfigT,
-        AgentStream[_InvariantAgentContextT],
+        AgentStream[_InvariantDepsT],
     ]: ...
 
     @overload
@@ -877,19 +867,19 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[True] | StreamConfig = True,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: None = None,
         json_mode: bool = False,
         client: _SyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> SyncAgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _BaseDynamicConfigT,
-        AgentStream[_InvariantAgentContextT],
+        AgentStream[_InvariantDepsT],
     ]: ...
 
     @overload
@@ -897,10 +887,10 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[True] | StreamConfig = True,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: Callable[[_BaseCallResponseChunkT], _ParsedOutputT],
         json_mode: bool = False,
@@ -916,10 +906,10 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[True] | StreamConfig = True,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: None = None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT],
         json_mode: bool = False,
@@ -935,17 +925,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
     ) -> AgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _BaseDynamicConfigT,
         _AsyncBaseDynamicConfigT,
         _ResponseModelT,
@@ -957,17 +947,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
         client: _AsyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> AsyncAgentFunctionDecorator[
-        _InvariantAgentContextT, _AsyncBaseDynamicConfigT, _ResponseModelT
+        _InvariantDepsT, _AsyncBaseDynamicConfigT, _ResponseModelT
     ]: ...
 
     @overload
@@ -975,17 +965,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
         client: _SyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> SyncAgentFunctionDecorator[
-        _InvariantAgentContextT, _BaseDynamicConfigT, _ResponseModelT
+        _InvariantDepsT, _BaseDynamicConfigT, _ResponseModelT
     ]: ...
 
     @overload
@@ -993,17 +983,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
     ) -> AgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _BaseDynamicConfigT,
         _AsyncBaseDynamicConfigT,
         _ParsedOutputT,
@@ -1015,17 +1005,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
         client: _AsyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> AsyncAgentFunctionDecorator[
-        _InvariantAgentContextT, _AsyncBaseDynamicConfigT, _ParsedOutputT
+        _InvariantDepsT, _AsyncBaseDynamicConfigT, _ParsedOutputT
     ]: ...
 
     @overload
@@ -1033,17 +1023,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[False] = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_ResponseModelT], _ParsedOutputT],
         json_mode: bool = False,
         client: _SyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> SyncAgentFunctionDecorator[
-        _InvariantAgentContextT, _BaseDynamicConfigT, _ParsedOutputT
+        _InvariantDepsT, _BaseDynamicConfigT, _ParsedOutputT
     ]: ...
 
     @overload
@@ -1051,17 +1041,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[True] | StreamConfig = True,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
         client: _SameSyncAndAsyncClientT | None = None,
         call_params: _BaseCallParamsT | None = None,
     ) -> AgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _BaseDynamicConfigT,
         _AsyncBaseDynamicConfigT,
         Iterable[_ResponseModelT],
@@ -1073,17 +1063,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[True] | StreamConfig = True,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
         client: _AsyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> AsyncAgentFunctionDecorator[
-        _InvariantAgentContextT,
+        _InvariantDepsT,
         _AsyncBaseDynamicConfigT,
         AsyncIterable[_ResponseModelT],
     ]: ...
@@ -1093,17 +1083,17 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[True] | StreamConfig = True,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: None = None,
         json_mode: bool = False,
         client: _SyncBaseClientT = ...,
         call_params: _BaseCallParamsT | None = None,
     ) -> SyncAgentFunctionDecorator[
-        _InvariantAgentContextT, _BaseDynamicConfigT, Iterable[_ResponseModelT]
+        _InvariantDepsT, _BaseDynamicConfigT, Iterable[_ResponseModelT]
     ]: ...
 
     @overload
@@ -1111,10 +1101,10 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: Literal[True] | StreamConfig = True,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT],
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT]
         | Callable[[_BaseCallResponseChunkT], _ParsedOutputT]
@@ -1132,10 +1122,10 @@ class _AgentDecorator(
         self,
         *,
         method: str = "simple",
-        context_type: type[_InvariantAgentContextT],
+        deps_type: type[_InvariantDepsT],
         model: str,
         stream: bool | StreamConfig = False,
-        tools: list[type[AgentTool[_InvariantAgentContextT]]] | None = None,
+        tools: list[type[AgentTool[_InvariantDepsT]]] | None = None,
         response_model: type[_ResponseModelT] | None = None,
         output_parser: Callable[[_BaseCallResponseT], _ParsedOutputT]
         | Callable[[_BaseCallResponseChunkT], _ParsedOutputT]
@@ -1149,35 +1139,35 @@ class _AgentDecorator(
         call_params: _BaseCallParamsT | None = None,
     ) -> (
         AsyncAgentFunctionDecorator[
-            _InvariantAgentContextT,
+            _InvariantDepsT,
             _AsyncBaseDynamicConfigT,
-            AgentResponse[_InvariantAgentContextT]
+            AgentResponse[_InvariantDepsT]
             | _ParsedOutputT
-            | AgentStream[_InvariantAgentContextT]
+            | AgentStream[_InvariantDepsT]
             | _ResponseModelT
             | AsyncIterable[_ResponseModelT],
         ]
         | SyncAgentFunctionDecorator[
-            _InvariantAgentContextT,
+            _InvariantDepsT,
             _BaseDynamicConfigT,
-            AgentResponse[_InvariantAgentContextT]
+            AgentResponse[_InvariantDepsT]
             | _ParsedOutputT
-            | AgentStream[_InvariantAgentContextT]
+            | AgentStream[_InvariantDepsT]
             | _ResponseModelT
             | Iterable[_ResponseModelT],
         ]
         | AgentFunctionDecorator[
-            _InvariantAgentContextT,
+            _InvariantDepsT,
             _BaseDynamicConfigT,
             _AsyncBaseDynamicConfigT,
-            AgentResponse[_InvariantAgentContextT]
+            AgentResponse[_InvariantDepsT]
             | _ParsedOutputT
-            | AgentStream[_InvariantAgentContextT]
+            | AgentStream[_InvariantDepsT]
             | _ResponseModelT
             | Iterable[_ResponseModelT],
-            AgentResponse[_InvariantAgentContextT]
+            AgentResponse[_InvariantDepsT]
             | _ParsedOutputT
-            | AgentStream[_InvariantAgentContextT]
+            | AgentStream[_InvariantDepsT]
             | _ResponseModelT
             | AsyncIterable[_ResponseModelT],
         ]
