@@ -121,3 +121,59 @@ def test_override_with_client():
         mock_context.assert_called_once()
         _, kwargs = mock_context.call_args
         assert kwargs["client"] is new_client
+
+
+@pytest.mark.asyncio
+async def test_override_with_async_gather():
+    """Test that override works correctly with asyncio.gather."""
+    import asyncio
+
+    # Mock the provider_agnostic_call
+    async def mock_async_fn():
+        return MagicMock()
+
+    # Mock the _context to capture the context parameters
+    with patch("mirascope.llm._override._context") as mock_context:
+        # Set up the mock to record calls and return a context manager
+        context_manager = MagicMock()
+        context_manager.__enter__ = MagicMock(return_value=None)
+        context_manager.__exit__ = MagicMock(return_value=None)
+        mock_context.return_value = context_manager
+
+        # Create two overridden functions with different providers/models
+        openai_fn = override(
+            provider_agnostic_call=mock_async_fn,
+            provider="openai",
+            model="gpt-4o-mini",
+            call_params=None,
+        )
+
+        anthropic_fn = override(
+            provider_agnostic_call=mock_async_fn,
+            provider="anthropic",
+            model="claude-3-5-sonnet",
+            call_params=None,
+        )
+
+        # Create futures for both functions
+        openai_future = openai_fn()
+        anthropic_future = anthropic_fn()
+
+        # Await both futures together
+        await asyncio.gather(openai_future, anthropic_future)
+
+        # Check that both contexts were created with the correct parameters
+        assert mock_context.call_count == 2
+
+        # Extract the call arguments
+        call_args_list = mock_context.call_args_list
+
+        # First call should be for openai
+        _, kwargs1 = call_args_list[0]
+        assert kwargs1["provider"] == "openai"
+        assert kwargs1["model"] == "gpt-4o-mini"
+
+        # Second call should be for anthropic
+        _, kwargs2 = call_args_list[1]
+        assert kwargs2["provider"] == "anthropic"
+        assert kwargs2["model"] == "claude-3-5-sonnet"

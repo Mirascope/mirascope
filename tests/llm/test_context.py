@@ -338,3 +338,50 @@ def test_context_function_with_client_and_params():
             client=mock_client,
             call_params=call_params,
         )
+
+
+def test_apply_context_overrides_to_call_args_with_explicit_context():
+    """Test applying context overrides with an explicitly provided context."""
+    # Original call args
+    call_args: CallArgs = {
+        "provider": "openai",
+        "model": "gpt-4",
+        "stream": False,
+        "tools": None,
+        "response_model": None,
+        "output_parser": None,
+        "json_mode": False,
+        "client": None,
+        "call_params": None,
+    }
+
+    # Create an explicit context
+    explicit_context = LLMContext(
+        provider="anthropic",
+        model="claude-3-5-sonnet",
+        stream=True,
+    )
+
+    # Apply the explicit context
+    result = apply_context_overrides_to_call_args(
+        call_args, context_override=explicit_context
+    )
+
+    # Check that the explicit context was applied
+    assert result["provider"] == "anthropic"
+    assert result["model"] == "claude-3-5-sonnet"
+    assert result["stream"] is True
+
+    # Test that it takes precedence over the current context
+    with _context(
+        provider="openai",
+        model="gpt-4o",
+        stream=False,
+    ):
+        # The explicit context should be used, not the current context
+        result = apply_context_overrides_to_call_args(
+            call_args, context_override=explicit_context
+        )
+        assert result["provider"] == "anthropic"
+        assert result["model"] == "claude-3-5-sonnet"
+        assert result["stream"] is True
