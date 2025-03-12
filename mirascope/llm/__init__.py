@@ -5,10 +5,9 @@ from ._context import context
 from ._override import override
 from .call_response import CallResponse
 from .stream import Stream
-from .tool import AgentTool, Tool, tool
+from .tool import Tool
 
 __all__ = [
-    "AgentTool",
     "CallResponse",
     "CostMetadata",
     "LocalProvider",

@@ -6,7 +6,6 @@ from typing import (
     Any,
     Literal,
     NoReturn,
-    ParamSpec,
     Protocol,
     TypeAlias,
     TypeVar,
@@ -32,9 +31,6 @@ from ..core.base.types import LocalProvider, Provider
 from .call_response import CallResponse
 from .call_response_chunk import CallResponseChunk
 from .stream import Stream
-
-_P = ParamSpec("_P")
-_CovariantR = TypeVar("_CovariantR", covariant=True)
 
 _BaseCallResponseT = TypeVar(
     "_BaseCallResponseT", covariant=True, bound=BaseCallResponse

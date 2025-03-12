@@ -32,10 +32,10 @@ from ...core.base.stream_config import StreamConfig
 from ...llm.call_response import CallResponse
 from ...llm.call_response_chunk import CallResponseChunk
 from ...llm.stream import Stream
-from ...llm.tool import AgentTool
 from .agent_context import AgentContext
 from .agent_response import AgentResponse
 from .agent_stream import AgentStream
+from .agent_tool import AgentTool
 
 _P = ParamSpec("_P")
 _CovariantR = TypeVar("_CovariantR", covariant=True)

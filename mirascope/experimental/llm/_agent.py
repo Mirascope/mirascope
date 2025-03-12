@@ -17,7 +17,6 @@ from ...core.base.stream_config import StreamConfig
 from ...llm.call_response import CallResponse
 from ...llm.call_response_chunk import CallResponseChunk
 from ...llm.stream import Stream
-from ...llm.tool import AgentTool
 from ._protocols import (
     AgentDecorator,
     AgentFunctionDecorator,
@@ -26,6 +25,7 @@ from ._protocols import (
 )
 from .agent_response import AgentResponse
 from .agent_stream import AgentStream
+from .agent_tool import AgentTool
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
@@ -98,20 +98,7 @@ def _agent(
     ]
 ):
     """Decorator for defining a provider-agnostic LLM agent."""
-    # provider, model = model.split(":", 1)
-
-    # @llm.call(
-    #     provider=provider,
-    #     model=model,
-    #     stream=stream,
-    #     tools=tools,
-    #     response_model=response_model,
-    #     output_parser=output_parser,
-    #     json_mode=json_mode,
-    #     client=client,
-    #     call_params=call_params,
-    # )
-    # def call(*args: _P.args, **kwargs: _P.kwargs) -> _R: ... # context is expected as a keyword argument
+    provider, model = model.split(":", 1)
 
     def wrapper(
         fn: Callable[_P, _R | Awaitable[_R]],

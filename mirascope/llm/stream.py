@@ -16,8 +16,8 @@ from ..core.base import (
 from ..core.base.call_response import JsonableType
 from ..core.base.stream import BaseStream
 from ..core.base.types import FinishReason
-from ..llm.call_response_chunk import CallResponseChunk
 from .call_response import CallResponse
+from .call_response_chunk import CallResponseChunk
 from .tool import Tool
 
 _ToolMessageParamT = TypeVar("_ToolMessageParamT", bound=BaseMessageParam)
