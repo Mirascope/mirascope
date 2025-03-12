@@ -64,6 +64,7 @@ class CallResponse(
     def __getattribute__(self, name: str) -> Any:  # noqa: ANN401
         special_names = {
             "_response",
+            "common_messages",
             "finish_reasons",
             "usage",
             "message_param",
@@ -112,6 +113,11 @@ class CallResponse(
     @cached_property
     def message_param(self) -> BaseMessageParam:
         return self._response.common_message_param  # pyright: ignore [reportReturnType]
+
+    @computed_field
+    @cached_property
+    def common_messages(self) -> list[BaseMessageParam]:  # pyright: ignore [reportIncompatibleMethodOverride]
+        return self._response.common_messages
 
     @cached_property
     def tools(self) -> list[Tool] | None:  # pyright: ignore [reportIncompatibleVariableOverride]

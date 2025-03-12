@@ -3168,7 +3168,7 @@ wheels = [
 
 [[package]]
 name = "mirascope"
-version = "1.21.2"
+version = "1.21.4"
 source = { editable = "." }
 dependencies = [
     { name = "docstring-parser" },
