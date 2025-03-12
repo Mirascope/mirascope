@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.21.5"
+version = "1.21.6"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -162,6 +162,7 @@ target-version = "py310"
 "tests/*.py" = ["S101", "ANN"]
 "examples/*.{py,ipynb}" = ["T201", "ANN"]
 "docs/*.{py,ipynb}" = ["T201", "ANN"]
+"mirascope/experimental/*.py" = ["T201"]
 
 [tool.ruff.lint]
 select = [
@@ -214,6 +215,7 @@ ignore-regex = 'and buyed some milk'
 [tool.coverage.run]
 omit = [
     "mirascope/beta/*",
+    "mirascope/experimental/*",
     "mirascope/v0/*",
     "mirascope/integrations/tenacity.py",
 ]
