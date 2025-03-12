@@ -40,6 +40,18 @@ class DummyTool(Tool):
     field1: str = "tool_field"
 
 
+class DummyMessageParamConverter(BaseMessageParamConverter):
+    @staticmethod
+    def from_provider(message_params: list[Any]) -> list[BaseMessageParam]:
+        return [
+            BaseMessageParam(role=message_param.role, content=message_param.content)
+            for message_param in message_params
+        ]
+
+    @staticmethod
+    def to_provider(message_params: list[BaseMessageParam]) -> list[Any]: ...
+
+
 class DummyProviderCallResponse(
     BaseCallResponse[
         Any,
@@ -52,7 +64,7 @@ class DummyProviderCallResponse(
         Any,
     ]
 ):
-    _message_converter: type = BaseMessageParamConverter
+    _message_converter: type = DummyMessageParamConverter
 
     @property
     def content(self) -> str:
@@ -134,7 +146,7 @@ def dummy_call_response_instance():
         prompt_template=None,
         fn_args={},
         dynamic_config={},
-        messages=[],
+        messages=[DummyMessageParam(role="assistant", content="message")],
         call_params=DummyCallParams(),
         call_kwargs={},
         user_message_param=None,
@@ -156,6 +168,12 @@ def test_call_response(dummy_call_response_instance):
     assert dummy_call_response_instance.usage == Usage(
         input_tokens=1, cached_tokens=1, output_tokens=1, total_tokens=2
     )
+    assert dummy_call_response_instance.common_messages == [
+        BaseMessageParam(role="assistant", content="message")
+    ]
+    assert dummy_call_response_instance.messages == [
+        BaseMessageParam(role="assistant", content="message")
+    ]
 
 
 def test_call_response_attribute_fallback_on_instance(dummy_call_response_instance):
