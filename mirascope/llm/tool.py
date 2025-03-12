@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any, TypeVar
+from typing import Any
 
 from pydantic._internal._model_construction import ModelMetaclass
 
 from ..core.base.tool import BaseTool
-
-_ToolResponseT = TypeVar("_ToolResponseT", bound=BaseTool)
 
 
 class _DelegateAbstractMethodsForTool(ModelMetaclass):
@@ -22,9 +20,6 @@ class _DelegateAbstractMethodsForTool(ModelMetaclass):
         cls = super().__new__(mcls, name, bases, namespace)
         cls.__abstractmethods__ = frozenset()
         return cls
-
-
-_ToolMessageParamT = TypeVar("_ToolMessageParamT")
 
 
 class Tool(BaseTool, metaclass=_DelegateAbstractMethodsForTool):

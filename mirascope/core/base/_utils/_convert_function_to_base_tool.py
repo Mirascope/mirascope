@@ -18,6 +18,7 @@ def convert_function_to_base_tool(
     base: type[BaseToolT],
     __doc__: str | None = None,
     __namespace__: str | None = None,
+    exclude: set[str] | None = None,
 ) -> type[BaseToolT]:
     """Constructs a `BaseToolT` type from the given function.
 
@@ -28,6 +29,7 @@ def convert_function_to_base_tool(
     Args:
         fn: The function to convert.
         base: The `BaseToolT` type to which the function is converted.
+        exclude: Arguments to exclude from the constructed `BaseToolT` type.
         __doc__: The docstring to use for the constructed `BaseToolT` type.
         __namespace__: The namespace to use for the constructed `BaseToolT` type.
 
@@ -70,6 +72,8 @@ def convert_function_to_base_tool(
             has_self = True
             continue
         if parameter.name == "cls":
+            continue
+        if exclude and parameter.name in exclude:
             continue
         if parameter.annotation == inspect.Parameter.empty:
             raise ValueError("All parameters must have a type annotation.")
