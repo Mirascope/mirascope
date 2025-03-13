@@ -1,10 +1,9 @@
 import asyncio
-
 from pathlib import Path
 
+from mcp.client.stdio import StdioServerParameters
 from mirascope.core import openai
-from mirascope.mcp.client import create_mcp_client, StdioServerParameters
-
+from mirascope.mcp import MCPClient
 
 server_file = Path(__file__).parent / "server.py"
 
@@ -16,7 +15,7 @@ server_params = StdioServerParameters(
 
 
 async def main() -> None:
-    async with create_mcp_client(server_params) as client:
+    async with MCPClient(server_parameters=server_params) as client:
         prompts = await client.list_prompts()
         print(prompts[0])
         # name='recommend_book' description='Get book recommendations by genre.' arguments=[PromptArgument(name='genre', description='Genre of book to recommend (fantasy, mystery, sci-fi, etc.)', required=True)]

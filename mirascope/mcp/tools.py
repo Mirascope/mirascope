@@ -1,10 +1,15 @@
 """The `MCPTool` class for easy tool usage with MCPTool LLM calls.
 
 usage docs: learn/tools.md
+
+DEPRECATED: The MCPTool class is deprecated and will be removed in a future version.
+Mirascope will only implement the client-side of MCP in the future, allowing it to connect to any
+MCP server implementation, even if not built with Mirascope.
 """
 
 from __future__ import annotations
 
+import warnings
 from typing import Any
 
 from pydantic import BaseModel
@@ -13,6 +18,15 @@ from typing_extensions import Required, TypedDict
 
 from mirascope.core import BaseTool
 from mirascope.core.base import ToolConfig
+
+# Show deprecation warning
+warnings.warn(
+    "The MCPTool class is deprecated and will be removed in a future version. "
+    "Mirascope will only implement the client-side of MCP in the future. "
+    "We recommend using the official MCP SDK (e.g. `FastMCP`) for server-side implementations.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 class ToolParam(TypedDict, total=False):
@@ -33,6 +47,9 @@ class MCPToolToolConfig(ToolConfig, total=False):
 
 class MCPTool(BaseTool):
     """A class for defining tools for MCP LLM calls.
+
+    DEPRECATED: The MCPTool class is deprecated and will be removed in a future version.
+    Mirascope will only implement the client-side of MCP in the future.
 
     Example:
 
