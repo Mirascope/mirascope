@@ -4,7 +4,7 @@ import base64
 import string
 from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
-from typing import Any, TypeVar
+from typing import Any
 
 from anyio import create_memory_object_stream, create_task_group
 from anyio.streams.memory import MemoryObjectReceiveStream
@@ -15,28 +15,26 @@ from mcp.types import (
     PromptMessage,
     TextContent,
     TextResourceContents,
-    Tool,
 )
+from mcp.types import Tool as MCPTool
 from pydantic import BaseModel, ConfigDict, Field, create_model
 
-from mirascope.core import BaseMessageParam, BaseTool
-from mirascope.core.base import AudioPart, DocumentPart, ImagePart
-
-_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+from ..core import BaseMessageParam, BaseTool
+from ..core.base import AudioPart, DocumentPart, ImagePart
 
 
 def create_tool_call(
     name: str,
     call_tool: Callable[[str, dict | None], Awaitable[Any]],
 ) -> Callable[..., Awaitable[list[str | ImageContent | EmbeddedResource]]]:
-    """Create a tool call function for a Mirascope BaseTool.
+    """Create a tool call function for a Mirascope Tool.
 
     Args:
         name: The name of the tool
         call_tool: The function to call the tool
 
     Returns:
-        A function that can be used as the call method for a BaseTool
+        A function that can be used as the call method for a Tool
     """
 
     async def call(self: BaseTool) -> list[str | ImageContent | EmbeddedResource]:
@@ -210,15 +208,15 @@ def json_schema_to_python_type(schema: dict[str, Any], name: str = "Model") -> A
         return Any
 
 
-def create_model_from_tool(tool: Tool) -> type[BaseModel]:
+def create_tool_from_mcp_tool(tool: MCPTool) -> type[BaseTool]:
     """
-    Create a dynamic pydantic model from the given Tool instance based on its inputSchema.
+    Create a `BaseTool` type definition from the given MCP Tool instance.
 
     Args:
-        tool: Tool instance from MCP
+        tool: MCP tool instance.
 
     Returns:
-        A dynamically created Pydantic model class
+        A dynamically created `Tool` schema.
     """
     schema = tool.inputSchema
     properties = schema.get("properties", {})
@@ -237,9 +235,7 @@ def create_model_from_tool(tool: Tool) -> type[BaseModel]:
 
         fields[field_name] = (annotation, default)
 
-    return create_model(
-        snake_to_pascal(tool.name), __config__=ConfigDict(extra="allow"), **fields
-    )
+    return create_model(snake_to_pascal(tool.name), __base__=BaseTool, **fields)
 
 
 @asynccontextmanager

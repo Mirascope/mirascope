@@ -1,139 +1,54 @@
-"""MCP client implementation."""
-
-from collections.abc import Awaitable, Callable
-from types import TracebackType
+import contextlib
+from collections.abc import AsyncIterator, Awaitable, Callable
+from datetime import timedelta
 from typing import Any
 
 from mcp import ClientSession
 from mcp.client.session import ListRootsFnT, SamplingFnT
-from mcp.client.sse import sse_client
-from mcp.client.stdio import StdioServerParameters, stdio_client
-from mcp.types import BlobResourceContents, Resource
+from mcp.client.sse import sse_client as mcp_sse_client
+from mcp.client.stdio import StdioServerParameters
+from mcp.client.stdio import stdio_client as mcp_stdio_client
+from mcp.types import (
+    BlobResourceContents,
+    Resource,
+)
 from pydantic import AnyUrl
 
 from mirascope.core import BaseMessageParam, BaseTool, TextPart
 from mirascope.mcp import _utils
 
 
-class MCPClient:
-    """Client for interacting with MCP (Model Context Protocol) servers.
+class MCPClient(ClientSession):
+    """The SSE client session that connects to the MCP server.
 
-    This class provides methods to interact with MCP servers, listing and using
-    resources, prompts, and tools defined by the server.
-
-    Example:
-    ```python
-    import asyncio
-    from mirascope.mcp import MCPClient
-    from mcp.client.stdio import StdioServerParameters
-
-    async def main():
-        server_params = StdioServerParameters(
-            command="python", args=["-m", "your_mcp_server"], env=None
-        )
-
-        async with MCPClient(server_params) as client:
-            # List available tools
-            tools = await client.list_tools()
-
-            # Use a tool
-            tool_instance = tools[0](param1="value")
-            result = await tool_instance.call()
-            print(result)
-
-    asyncio.run(main())
-    ```
+    All of the results from the server are converted into Mirascope-friendly types.
     """
 
-    def __init__(
-        self,
-        server_parameters: str | StdioServerParameters | None = None,
-        list_roots_callback: ListRootsFnT | None = None,
-        sampling_callback: SamplingFnT | None = None,
-        session: ClientSession | None = None,
-        read_stream_exception_handler: Callable[[Exception], None] | None = None,
-    ) -> None:
-        """Initialize an MCPClient instance.
+    _session: ClientSession
+
+    def __init__(self, session: ClientSession) -> None:
+        """Initializes an instance of `MCPClient`.
 
         Args:
-            server_parameters: Parameters for connecting to an MCP server. Required if
-                session is not provided.
-            session: A pre-initialized ClientSession. If provided, server_parameters is ignored.
-            read_stream_exception_handler: Optional handler for stream exceptions.
+            session: The original MCP `ClientSession`.
         """
-        if session is None and server_parameters is None:
-            raise ValueError("Either session or server_parameters must be provided")
+        self._session = session
 
-        self.session: ClientSession | None = session
-        self._sampling_callback: SamplingFnT | None = sampling_callback
-        self._list_roots_callback: ListRootsFnT | None = list_roots_callback
-        self._server_parameters = server_parameters
-        self._read_stream_exception_handler = read_stream_exception_handler
-        self._read_stream = None
-        self._write_stream = None
-
-    async def __aenter__(self) -> "MCPClient":
-        """Enter the async context, establishing connection to the MCP server."""
-        if self.session is None and self._server_parameters is not None:
-            if isinstance(self._server_parameters, str):
-                async with (
-                    sse_client(url=self._server_parameters) as (read, write),
-                    ClientSession(
-                        read,
-                        write,
-                        sampling_callback=self._sampling_callback,
-                        list_roots_callback=self._list_roots_callback,
-                    ) as session,
-                ):
-                    self.session = session
-                    await self.session.initialize()
-            else:
-                self._read_stream, self._write_stream = await stdio_client(
-                    self._server_parameters
-                ).__aenter__()
-                filtered_read = await _utils.read_stream_exception_filer(
-                    self._read_stream, self._read_stream_exception_handler
-                ).__aenter__()
-                self.session = await ClientSession(
-                    filtered_read, self._write_stream
-                ).__aenter__()
-                await self.session.initialize()
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException],
-        exc_val: BaseException | None = None,
-        exc_tb: TracebackType | None = None,
-    ) -> None:
-        """Exit the async context, closing connection to the MCP server."""
-        if self.session is not None:
-            await self.session.__aexit__(exc_type, exc_val, exc_tb)
-            self.session = None
-
-        if self._read_stream is not None:
-            await self._read_stream.__aexit__(exc_type, exc_val, exc_tb)
-            self._read_stream = None
-
-        if self._write_stream is not None:
-            await self._write_stream.__aexit__(exc_type, exc_val, exc_tb)
-            self._write_stream = None
-
-    async def list_resources(self) -> list[Resource]:
+    async def list_resources(self) -> list[Resource]:  # pyright: ignore [reportIncompatibleMethodOverride]
         """List all resources available on the MCP server.
 
         Returns:
             A list of Resource objects
         """
-        if self.session is None:
+        if self._session is None:
             raise RuntimeError(
                 "Client not initialized. Use within an async context manager."
             )
 
-        result = await self.session.list_resources()
+        result = await self._session.list_resources()
         return result.resources
 
-    async def read_resource(
+    async def read_resource(  # pyright: ignore [reportIncompatibleMethodOverride]
         self, uri: str | AnyUrl
     ) -> list[TextPart | BlobResourceContents]:
         """Read a resource from the MCP server.
@@ -144,12 +59,12 @@ class MCPClient:
         Returns:
             Contents of the resource, either as string or BlobResourceContents
         """
-        if self.session is None:
+        if self._session is None:
             raise RuntimeError(
                 "Client not initialized. Use within an async context manager."
             )
 
-        result = await self.session.read_resource(
+        result = await self._session.read_resource(
             uri if isinstance(uri, AnyUrl) else AnyUrl(uri)
         )
         parsed_results: list[TextPart | BlobResourceContents] = []
@@ -160,18 +75,18 @@ class MCPClient:
                 parsed_results.append(TextPart(type="text", text=content.text))
         return parsed_results
 
-    async def list_prompts(self) -> list[Any]:
+    async def list_prompts(self) -> list[Any]:  # pyright: ignore [reportIncompatibleMethodOverride]
         """List all prompts available on the MCP server.
 
         Returns:
             A list of Prompt objects
         """
-        if self.session is None:
+        if self._session is None:
             raise RuntimeError(
                 "Client not initialized. Use within an async context manager."
             )
 
-        result = await self.session.list_prompts()
+        result = await self._session.list_prompts()
         return result.prompts
 
     async def get_prompt_template(
@@ -185,7 +100,7 @@ class MCPClient:
         Returns:
             A callable that accepts keyword arguments and returns a list of BaseMessageParam
         """
-        if self.session is None:
+        if self._session is None:
             raise RuntimeError(
                 "Client not initialized. Use within an async context manager."
             )
@@ -193,7 +108,7 @@ class MCPClient:
         # TODO: wrap this with `llm.prompt` once it's implemented so that they prompts
         # can be run super easily inside of an `llm.context` block.
         async def async_prompt(**kwargs: str) -> list[BaseMessageParam]:
-            result = await self.session.get_prompt(name, kwargs)  # type: ignore
+            result = await self._session.get_prompt(name, kwargs)  # type: ignore
 
             return [
                 _utils.convert_prompt_message_to_base_message_params(prompt_message)
@@ -202,22 +117,73 @@ class MCPClient:
 
         return async_prompt
 
-    async def list_tools(self) -> list[type[BaseTool]]:
+    async def list_tools(self) -> list[type[BaseTool]]:  # pyright: ignore [reportIncompatibleMethodOverride]
         """List all tools available on the MCP server.
 
         Returns:
             A list of dynamically created `BaseTool` types.
         """
-        if self.session is None:
+        if self._session is None:
             raise RuntimeError(
                 "Client not initialized. Use within an async context manager."
             )
 
-        list_tool_result = await self.session.list_tools()
+        list_tool_result = await self._session.list_tools()
 
         converted_tools = []
         for tool in list_tool_result.tools:
-            model = _utils.create_model_from_tool(tool)
-            model.call = _utils.create_tool_call(tool.name, self.session.call_tool)  # pyright: ignore [reportAttributeAccessIssue]
+            model = _utils.create_tool_from_mcp_tool(tool)
+            tool_call_method = _utils.create_tool_call(
+                tool.name, self._session.call_tool
+            )
+            model.call = tool_call_method  # pyright: ignore [reportAttributeAccessIssue]
             converted_tools.append(model)
         return converted_tools
+
+
+@contextlib.asynccontextmanager
+async def sse_client(
+    url: str,
+    list_roots_callback: ListRootsFnT | None = None,
+    read_timeout_seconds: timedelta | None = None,
+    sampling_callback: SamplingFnT | None = None,
+    session: ClientSession | None = None,
+) -> AsyncIterator[MCPClient]:
+    async with (
+        mcp_sse_client(url) as (read, write),
+        ClientSession(
+            read,
+            write,
+            read_timeout_seconds=read_timeout_seconds,
+            sampling_callback=sampling_callback,
+            list_roots_callback=list_roots_callback,
+        ) as session,
+    ):
+        await session.initialize()
+        yield MCPClient(session)
+
+
+@contextlib.asynccontextmanager
+async def stdio_client(
+    server_parameters: StdioServerParameters,
+    read_stream_exception_handler: Callable[[Exception], None] | None = None,
+) -> AsyncIterator[MCPClient]:
+    """
+    Create a MCPClient instance with the given server parameters and exception handler.
+
+    Args:
+        server_parameters:
+        read_stream_exception_handler:
+
+    Returns:
+
+    """
+    async with (
+        mcp_stdio_client(server_parameters) as (read, write),
+        _utils.read_stream_exception_filer(
+            read, read_stream_exception_handler
+        ) as filtered_read,
+        ClientSession(filtered_read, write) as session,
+    ):
+        await session.initialize()
+        yield MCPClient(session)

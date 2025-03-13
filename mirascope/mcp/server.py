@@ -1,9 +1,4 @@
-"""MCP server implementation.
-
-DEPRECATED: The MCP server implementation is deprecated and will be removed in a future version.
-Mirascope will only implement the client-side of MCP in the future, allowing it to connect to any
-MCP server implementation, even if not built with Mirascope.
-"""
+"""The `MCPClient` Class and context managers."""
 
 import inspect
 import warnings
@@ -40,15 +35,6 @@ from mirascope.core.base._utils._messages_decorator import (
 )
 from mirascope.core.base.prompt import PromptDecorator, prompt_template
 from mirascope.mcp.tools import MCPTool, ToolUseBlock
-
-# Show deprecation warning
-warnings.warn(
-    "The MCPServer implementation is deprecated and will be removed in a future version. "
-    "Mirascope will only implement the client-side of MCP in the future. "
-    "We recommend using the official MCP SDK (e.g. `FastMCP`) for server-side implementations.",
-    DeprecationWarning,
-    stacklevel=2,
-)
 
 _P = ParamSpec("_P")
 

@@ -1,4 +1,5 @@
 import base64
+from abc import update_abstractmethods
 from contextlib import asynccontextmanager
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -26,26 +27,26 @@ from mcp.types import (
 from pydantic import AnyUrl, BaseModel
 
 from mirascope.core import BaseTool
-from mirascope.core.base import AudioPart, DocumentPart, ImagePart
-from mirascope.mcp.client import (
-    MCPClient,
-    _convert_prompt_message_to_base_message_params,
+from mirascope.core.base import AudioPart, DocumentPart, ImagePart, TextPart
+from mirascope.mcp._utils import (
     build_object_type,
-    create_mcp_client,
-    create_model_from_tool,
+    convert_prompt_message_to_base_message_params,
+    create_tool_from_mcp_tool,
     json_schema_to_python_type,
     read_stream_exception_filer,
     snake_to_pascal,
 )
+from mirascope.mcp.client import MCPClient, sse_client, stdio_client
 
 
 @pytest.mark.asyncio
-async def test_create_mcp_client():
+async def test_stdio_client() -> None:
+    """Test stdio_client context manager."""
     send_read, receive_read = create_memory_object_stream(10)
-    send_write, receive_write = create_memory_object_stream(10)
+    send_write, _ = create_memory_object_stream(10)
 
     @asynccontextmanager
-    async def mock_stdio_client(server_params):
+    async def mock_client(server_params):
         await send_read.send(
             JSONRPCMessage(jsonrpc="2.0", method="initialized", id="init")  # pyright: ignore [reportCallIssue]
         )
@@ -53,7 +54,14 @@ async def test_create_mcp_client():
         yield receive_read, send_write
 
     class MockClientSession:
-        def __init__(self, read, write, read_timeout_seconds=None):
+        def __init__(
+            self,
+            read,
+            write,
+            read_timeout_seconds=None,
+            sampling_callback=None,
+            list_roots_callback=None,
+        ):
             self.read = read
             self.write = write
 
@@ -71,11 +79,21 @@ async def test_create_mcp_client():
             return
 
     with (
-        patch("mirascope.mcp.client.stdio_client", new=mock_stdio_client),
+        patch("mirascope.mcp.client.mcp_stdio_client", new=mock_client),
         patch("mirascope.mcp.client.ClientSession", new=MockClientSession),
     ):
         params = StdioServerParameters(command="fake_cmd", args=[], env=None)
-        async with create_mcp_client(params) as client:
+        async with stdio_client(params) as client:
+            assert isinstance(client, MCPClient)
+
+    send_read, receive_read = create_memory_object_stream(10)
+    send_write, _ = create_memory_object_stream(10)
+
+    with (
+        patch("mirascope.mcp.client.mcp_sse_client", new=mock_client),
+        patch("mirascope.mcp.client.ClientSession", new=MockClientSession),
+    ):
+        async with sse_client("http://example.com") as client:
             assert isinstance(client, MCPClient)
 
 
@@ -178,8 +196,11 @@ def test_create_model_from_tool_extra():
             "required": ["req_arr"],
         },
     )
-    Model = create_model_from_tool(tool)
-    instance = Model(req_arr=[1, 2, 3])
+
+    Model = create_tool_from_mcp_tool(tool)
+    Model.call = lambda self: None  # pyright: ignore [reportAttributeAccessIssue]
+    update_abstractmethods(Model)
+    instance = Model(req_arr=[1, 2, 3])  # pyright: ignore [reportCallIssue]
     assert instance.req_arr == [1, 2, 3]  # pyright: ignore [reportAttributeAccessIssue]
     assert instance.opt_str is None  # pyright: ignore [reportAttributeAccessIssue]
 
@@ -188,7 +209,7 @@ def test_convert_prompt_message_all_content_types():
     # Test coverage for all content branches
     # TextContent
     pm_text = PromptMessage(role="user", content=TextContent(type="text", text="hi"))
-    res_text = _convert_prompt_message_to_base_message_params(pm_text)
+    res_text = convert_prompt_message_to_base_message_params(pm_text)
     assert res_text.content == "hi"
 
     # ImageContent
@@ -197,7 +218,7 @@ def test_convert_prompt_message_all_content_types():
         role="assistant",
         content=ImageContent(type="image", data=img_data, mimeType="image/png"),
     )
-    res_img = _convert_prompt_message_to_base_message_params(pm_img)
+    res_img = convert_prompt_message_to_base_message_params(pm_img)
     assert isinstance(res_img.content[0], ImagePart)
     assert res_img.content[0].image == b"fake_img"
 
@@ -211,7 +232,7 @@ def test_convert_prompt_message_all_content_types():
             ),
         ),
     )
-    res_embed_text = _convert_prompt_message_to_base_message_params(pm_embed_text)
+    res_embed_text = convert_prompt_message_to_base_message_params(pm_embed_text)
     assert res_embed_text.content == "embedded txt"
 
     # EmbeddedResource with BlobResourceContents - image
@@ -227,7 +248,7 @@ def test_convert_prompt_message_all_content_types():
             ),
         ),
     )
-    res_embed_img = _convert_prompt_message_to_base_message_params(pm_embed_img)
+    res_embed_img = convert_prompt_message_to_base_message_params(pm_embed_img)
     assert isinstance(res_embed_img.content[0], ImagePart)
     assert res_embed_img.content[0].image == b"someimg"
 
@@ -244,7 +265,7 @@ def test_convert_prompt_message_all_content_types():
             ),
         ),
     )
-    res_embed_pdf = _convert_prompt_message_to_base_message_params(pm_embed_pdf)
+    res_embed_pdf = convert_prompt_message_to_base_message_params(pm_embed_pdf)
     assert isinstance(res_embed_pdf.content[0], DocumentPart)
     assert res_embed_pdf.content[0].document == b"%PDF-fake"
 
@@ -261,7 +282,7 @@ def test_convert_prompt_message_all_content_types():
             ),
         ),
     )
-    res_embed_audio = _convert_prompt_message_to_base_message_params(pm_embed_audio)
+    res_embed_audio = convert_prompt_message_to_base_message_params(pm_embed_audio)
     assert isinstance(res_embed_audio.content[0], AudioPart)
     assert res_embed_audio.content[0].audio == b"FAKEAUDIO"
 
@@ -280,7 +301,7 @@ def test_convert_prompt_message_all_content_types():
         validate=False,
     )
     with pytest.raises(ValueError):
-        _convert_prompt_message_to_base_message_params(pm_unsupp)
+        convert_prompt_message_to_base_message_params(pm_unsupp)
 
     # Empty mime
     unsupp_blob = base64.b64encode(b"FAKE").decode()
@@ -297,14 +318,14 @@ def test_convert_prompt_message_all_content_types():
         validate=False,
     )
     with pytest.raises(ValueError):
-        _convert_prompt_message_to_base_message_params(pm_unsupp)
+        convert_prompt_message_to_base_message_params(pm_unsupp)
 
     # Invalid role
     pm_invalid_role = PromptMessage.model_construct(
         role="other", content=TextContent(type="text", text="hi"), validate=False
     )
     with pytest.raises(ValueError):
-        _convert_prompt_message_to_base_message_params(pm_invalid_role)
+        convert_prompt_message_to_base_message_params(pm_invalid_role)
 
     # Unsupported content type
     class FakeContent(BaseModel):
@@ -314,7 +335,7 @@ def test_convert_prompt_message_all_content_types():
         role="assistant", content=FakeContent(), validate=False
     )
     with pytest.raises(ValueError):
-        _convert_prompt_message_to_base_message_params(pm_unsupported_content)
+        convert_prompt_message_to_base_message_params(pm_unsupported_content)
 
 
 @pytest.mark.asyncio
@@ -360,7 +381,7 @@ async def test_mcp_client_methods():
     # read_resource
     contents = await client.read_resource("http://example.com")
     assert contents == [
-        "Hello",
+        TextPart(type="text", text="Hello"),
         BlobResourceContents(
             uri=AnyUrl("http://example.com/"), mimeType=None, blob="RkFLRQ=="
         ),
@@ -379,9 +400,8 @@ async def test_mcp_client_methods():
     tools = await client.list_tools()
     assert len(tools) == 1
     t = tools[0]
-    assert issubclass(t, BaseModel)
+    assert issubclass(t, BaseTool)
 
-    # call tool
     base_tool = BaseTool.type_from_base_model_type(t)
     ret = await base_tool(genre="fantasy").call()  # pyright: ignore [reportCallIssue, reportAbstractUsage]
     assert ret == ["Tool result"]
@@ -416,7 +436,7 @@ async def test_mcp_client_tool_with_image():
     tools = await client.list_tools()
     tool = tools[0]
     base_tool = BaseTool.type_from_base_model_type(tool)
-    result = await base_tool().call()  # pyright: ignore [reportAbstractUsage]
+    result = await base_tool().call()  # pyright: ignore [reportAbstractUsage,reportCallIssue]
     assert len(result) == 1
     assert isinstance(result[0], ImageContent)
 

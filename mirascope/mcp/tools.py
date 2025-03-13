@@ -19,15 +19,6 @@ from typing_extensions import Required, TypedDict
 from mirascope.core import BaseTool
 from mirascope.core.base import ToolConfig
 
-# Show deprecation warning
-warnings.warn(
-    "The MCPTool class is deprecated and will be removed in a future version. "
-    "Mirascope will only implement the client-side of MCP in the future. "
-    "We recommend using the official MCP SDK (e.g. `FastMCP`) for server-side implementations.",
-    DeprecationWarning,
-    stacklevel=2,
-)
-
 
 class ToolParam(TypedDict, total=False):
     input_schema: Required[dict[str, Any]]
@@ -91,6 +82,14 @@ class MCPTool(BaseTool):
         print(tool_type.tool_schema())  # prints the MCP-specific tool schema
         ```
         """
+        # Show deprecation warning
+        warnings.warn(
+            "The MCPTool class is deprecated and will be removed in a future version. "
+            "Mirascope will only implement the client-side of MCP in the future. "
+            "We recommend using the official MCP SDK (e.g. `FastMCP`) for server-side implementations.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         kwargs = {
             "input_schema": cls.model_json_schema(),
             "name": cls._name(),
