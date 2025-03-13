@@ -34,7 +34,7 @@ class DummyTool(Tool):
     def call(self): ...
 
     @property
-    def model_fields(self):  # pyright: ignore [reportIncompatibleMethodOverride]
+    def model_fields(self):  # pyright: ignore [reportIncompatibleVariableOverride]
         return ["field1"]
 
     field1: str = "tool_field"
@@ -190,14 +190,14 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
 
         def call(self): ...
         @property
-        def model_fields(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
+        def model_fields(self): ...  # pyright: ignore [reportIncompatibleVariableOverride]
 
         field1: str = "tool_field"
 
     class ToolNoCall(Tool):
         def call(self): ...
         @property
-        def model_fields(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
+        def model_fields(self): ...  # pyright: ignore [reportIncompatibleVariableOverride]
 
         field1: str = "tool_field"
 
@@ -209,7 +209,7 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
 
         def call(self): ...
         @property
-        def model_fields(self): ...  # pyright: ignore [reportIncompatibleMethodOverride]
+        def model_fields(self): ...  # pyright: ignore [reportIncompatibleVariableOverride]
 
         field1: str = "tool_field"
 
