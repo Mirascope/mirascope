@@ -42,11 +42,6 @@ class MCPClient(ClientSession):
         Returns:
             A list of Resource objects
         """
-        if self._session is None:
-            raise RuntimeError(
-                "Client not initialized. Use within an async context manager."
-            )
-
         result = await self._session.list_resources()
         return result.resources
 
@@ -61,11 +56,6 @@ class MCPClient(ClientSession):
         Returns:
             Contents of the resource, either as string or BlobResourceContents
         """
-        if self._session is None:
-            raise RuntimeError(
-                "Client not initialized. Use within an async context manager."
-            )
-
         result = await self._session.read_resource(
             uri if isinstance(uri, AnyUrl) else AnyUrl(uri)
         )
@@ -83,11 +73,6 @@ class MCPClient(ClientSession):
         Returns:
             A list of Prompt objects
         """
-        if self._session is None:
-            raise RuntimeError(
-                "Client not initialized. Use within an async context manager."
-            )
-
         result = await self._session.list_prompts()
         return result.prompts
 
@@ -102,10 +87,6 @@ class MCPClient(ClientSession):
         Returns:
             A callable that accepts keyword arguments and returns a list of BaseMessageParam
         """
-        if self._session is None:
-            raise RuntimeError(
-                "Client not initialized. Use within an async context manager."
-            )
 
         # TODO: wrap this with `llm.prompt` once it's implemented so that they prompts
         # can be run super easily inside of an `llm.context` block.
@@ -125,11 +106,6 @@ class MCPClient(ClientSession):
         Returns:
             A list of dynamically created `BaseTool` types.
         """
-        if self._session is None:
-            raise RuntimeError(
-                "Client not initialized. Use within an async context manager."
-            )
-
         list_tool_result = await self._session.list_tools()
 
         converted_tools = []
@@ -185,7 +161,7 @@ async def stdio_client(
         _utils.read_stream_exception_filer(
             read, read_stream_exception_handler
         ) as filtered_read,
-        ClientSession(filtered_read, write) as session,
+        ClientSession(filtered_read, write) as session,  # pyright: ignore [reportArgumentType]
     ):
         await session.initialize()
         yield MCPClient(session)
