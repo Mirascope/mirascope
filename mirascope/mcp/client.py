@@ -1,3 +1,5 @@
+"""The `MCPServer` Class and context managers."""
+
 import contextlib
 from collections.abc import AsyncIterator, Awaitable, Callable
 from datetime import timedelta

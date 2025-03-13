@@ -1,4 +1,4 @@
-"""The `MCPClient` Class and context managers."""
+"""The `MCPServer` Class and context managers."""
 
 import inspect
 import warnings
