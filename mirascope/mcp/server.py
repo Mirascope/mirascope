@@ -1,6 +1,7 @@
-"""MCP server implementation."""
+"""The `MCPServer` Class and context managers."""
 
 import inspect
+import warnings
 from collections.abc import Awaitable, Callable, Iterable
 from typing import Literal, ParamSpec, cast, overload
 
@@ -117,7 +118,12 @@ def _generate_prompt_from_function(fn: Callable) -> Prompt:
 
 
 class MCPServer:
-    """MCP server implementation."""
+    """MCP server implementation.
+
+    DEPRECATED: The MCPServer implementation is deprecated and will be removed in a future version.
+    Mirascope will only implement the client-side of MCP in the future, allowing it to connect to any
+    MCP server implementation, even if not built with Mirascope.
+    """
 
     def __init__(
         self,
@@ -134,6 +140,13 @@ class MCPServer:
         ]
         | None = None,
     ) -> None:
+        warnings.warn(
+            "MCPServer is deprecated and will be removed in a future version. "
+            "Mirascope will only implement the client-side of MCP in the future. "
+            "We recommend using the official MCP SDK (e.g. `FastMCP`) for server-side implementations.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.name: str = name
         self.version: str = version
         self.server: Server = Server(name)

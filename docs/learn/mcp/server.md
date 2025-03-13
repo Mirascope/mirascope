@@ -1,10 +1,12 @@
 # MCP Server
 
-!!! mira ""
+!!! warning "This interface is deprecated!"
 
-    <div align="center">
-        If you haven't already, we recommend first reading the section on [Tools](../tools.md)
-    </div>
+    We have updated the Mirascope MCP Client module such that the `sse_client` and `stdio_client` properly handle connecting to any MCP server.
+
+    Given the introduction of `FastMCP` into the official MCP SDK, there's no reason to use this interface.
+
+    Instead, we recommend using the official SDK to build your servers (to which you can easily connect your Mirascope code now).
 
 MCP (Model Context Protocol) Server in Mirascope enables you to expose resources, tools, and prompts to LLM clients through a standardized protocol. This allows for secure and controlled interactions between host applications (like Claude Desktop) and local services.
 

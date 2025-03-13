@@ -1,305 +1,151 @@
-import base64
-import string
-from collections.abc import AsyncGenerator, Awaitable, Callable
-from contextlib import asynccontextmanager
-from typing import Any, TypeVar
+"""The `MCPServer` Class and context managers."""
 
-from anyio import create_memory_object_stream, create_task_group
-from anyio.streams.memory import MemoryObjectReceiveStream
+import contextlib
+from collections.abc import AsyncIterator, Awaitable, Callable
+from datetime import timedelta
+from typing import Any
+
 from mcp import ClientSession
-from mcp.client.stdio import StdioServerParameters, stdio_client
+from mcp.client.session import ListRootsFnT, SamplingFnT
+from mcp.client.sse import sse_client as mcp_sse_client
+from mcp.client.stdio import StdioServerParameters
+from mcp.client.stdio import stdio_client as mcp_stdio_client
 from mcp.types import (
     BlobResourceContents,
-    CallToolResult,
-    EmbeddedResource,
-    ImageContent,
-    JSONRPCMessage,
-    Prompt,
-    PromptMessage,
     Resource,
-    TextContent,
-    TextResourceContents,
-    Tool,
 )
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field, create_model
+from pydantic import AnyUrl
 
-from mirascope.core import BaseMessageParam, BaseTool
-from mirascope.core.base import AudioPart, DocumentPart, ImagePart
-
-_BaseToolT = TypeVar("_BaseToolT", bound=BaseTool)
+from mirascope.core import BaseMessageParam, BaseTool, TextPart
+from mirascope.mcp import _utils
 
 
-def _create_tool_call(
-    name: str,
-    call_tool: Callable[[str, dict | None], Awaitable[CallToolResult]],
-) -> Callable[..., Awaitable[list[str | ImageContent | EmbeddedResource]]]:
-    async def call(self: BaseTool) -> list[str | ImageContent | EmbeddedResource]:
-        result = await call_tool(name, self.args)  # pyright: ignore [reportOptionalCall]
-        if result.isError:
-            raise RuntimeError(f"MCP Server returned error: {self._name()}")
-        parsed_results = []
-        for content in result.content:
-            if isinstance(content, TextContent):
-                parsed_results.append(content.text)
-            else:
-                parsed_results.append(content)
-        return [
-            content.text if isinstance(content, TextContent) else content
-            for content in result.content
-        ]
+class MCPClient(ClientSession):
+    """The SSE client session that connects to the MCP server.
 
-    return call
-
-
-def _convert_prompt_message_to_base_message_params(
-    prompt_message: PromptMessage,
-) -> BaseMessageParam:
-    """
-    Convert a single PromptMessage back into a BaseMessageParam.
-
-    Args:
-        prompt_message: A PromptMessage instance.
-
-    Returns:
-        A BaseMessageParam instance representing the given prompt_message.
-
-    Raises:
-        ValueError: If the role is invalid or if the content type is unsupported.
+    All of the results from the server are converted into Mirascope-friendly types.
     """
 
-    # Validate role
-    if prompt_message.role not in ["user", "assistant"]:
-        raise ValueError(f"invalid role: {prompt_message.role}")
+    _session: ClientSession
 
-    content = prompt_message.content
-
-    # Handle TextContent
-    if isinstance(content, TextContent):
-        # If it's text, we can just return a single string
-        return BaseMessageParam(role=prompt_message.role, content=content.text)
-
-    # Handle ImageContent
-    elif isinstance(content, ImageContent):
-        decoded_image = base64.b64decode(content.data)
-
-        image_part = ImagePart(
-            type="image",
-            image=decoded_image,
-            media_type=content.mimeType,
-            detail=None,  # detail not provided by PromptMessage
-        )
-        return BaseMessageParam(role=prompt_message.role, content=[image_part])
-
-    elif isinstance(content, EmbeddedResource):
-        resource = content.resource
-        if isinstance(resource, TextResourceContents):
-            return BaseMessageParam(role=prompt_message.role, content=resource.text)
-        else:
-            mime_type = resource.mimeType
-            if not mime_type:
-                raise ValueError(
-                    "BlobResourceContents has no mimeType, cannot determine content type."
-                )
-
-            decoded_data = base64.b64decode(resource.blob)
-
-            if mime_type.startswith("image/"):
-                # Treat as ImagePart
-                image_part = ImagePart(
-                    type="image",
-                    image=decoded_data,
-                    media_type=mime_type,
-                    detail=None,
-                )
-                return BaseMessageParam(role=prompt_message.role, content=[image_part])
-            elif mime_type == "application/pdf":
-                doc_part = DocumentPart(
-                    type="document", media_type=mime_type, document=decoded_data
-                )
-                return BaseMessageParam(role=prompt_message.role, content=[doc_part])
-            elif mime_type.startswith("audio/"):
-                # Treat as AudioPart
-                audio_part = AudioPart(
-                    type="audio", media_type=mime_type, audio=decoded_data
-                )
-                return BaseMessageParam(role=prompt_message.role, content=[audio_part])
-            else:
-                raise ValueError(f"Unsupported mime type: {mime_type}")
-
-    else:
-        raise ValueError(f"Unsupported content type: {type(content)}")
-
-
-def snake_to_pascal(snake: str) -> str:
-    return string.capwords(snake.replace("_", " ")).replace(" ", "")
-
-
-def build_object_type(
-    properties: dict[str, Any], required: list[str], name: str
-) -> type[BaseModel]:
-    fields = {}
-    for prop_name, prop_schema in properties.items():
-        class_name = snake_to_pascal(prop_name)
-        type_ = json_schema_to_python_type(prop_schema, class_name)
-        if prop_name in required:
-            fields[prop_name] = (
-                type_,
-                Field(..., description=prop_schema.get("description")),
-            )
-        else:
-            fields[prop_name] = (
-                type_ | None,
-                Field(None, description=prop_schema.get("description")),
-            )
-
-    return create_model(name, __config__=ConfigDict(extra="allow"), **fields)
-
-
-def json_schema_to_python_type(schema: dict[str, Any], name: str = "Model") -> Any:  # noqa: ANN401
-    """
-    Recursively convert a JSON Schema snippet into a Python type annotation or a dynamically generated pydantic model.
-    """
-    json_type = schema.get("type", "any")
-
-    if json_type == "string":
-        return str
-    elif json_type == "number":
-        return float
-    elif json_type == "integer":
-        return int
-    elif json_type == "boolean":
-        return bool
-    elif json_type == "array":
-        # Recursively determine the items type for arrays
-        items_schema = schema.get("items", {})
-        items_type = json_schema_to_python_type(items_schema)
-        return list[items_type]
-    elif json_type == "object":
-        # Recursively build a dynamic model for objects
-        properties = schema.get("properties", {})
-        required = schema.get("required", [])
-        return build_object_type(properties, required, name)
-    else:
-        # Default fallback
-        return Any
-
-
-def create_model_from_tool(tool: Tool) -> type[BaseModel]:
-    """
-    Create a dynamic pydantic model from the given Tool instance based on its inputSchema.
-    """
-    schema = tool.inputSchema
-    properties = schema.get("properties", {})
-    required_fields = schema.get("required", [])
-
-    fields = {}
-    for field_name, field_schema in properties.items():
-        field_type = json_schema_to_python_type(field_schema)
-
-        if field_name in required_fields:
-            default = Field(..., description=field_schema.get("description"))
-            annotation = field_type
-        else:
-            default = Field(None, description=field_schema.get("description"))
-            annotation = field_type | None
-
-        fields[field_name] = (annotation, default)
-
-    return create_model(
-        snake_to_pascal(tool.name), __config__=ConfigDict(extra="allow"), **fields
-    )
-
-
-class MCPClient:
     def __init__(self, session: ClientSession) -> None:
-        self.session: ClientSession = session
+        """Initializes an instance of `MCPClient`.
 
-    async def list_resources(self) -> list[Resource]:
-        result = await self.session.list_resources()
+        Args:
+            session: The original MCP `ClientSession`.
+        """
+        self._session = session
+
+    async def list_resources(self) -> list[Resource]:  # pyright: ignore [reportIncompatibleMethodOverride]
+        """List all resources available on the MCP server.
+
+        Returns:
+            A list of Resource objects
+        """
+        result = await self._session.list_resources()
         return result.resources
 
-    async def read_resource(
+    async def read_resource(  # pyright: ignore [reportIncompatibleMethodOverride]
         self, uri: str | AnyUrl
-    ) -> list[str | BlobResourceContents]:
-        result = await self.session.read_resource(
+    ) -> list[TextPart | BlobResourceContents]:
+        """Read a resource from the MCP server.
+
+        Args:
+            uri: URI of the resource to read
+
+        Returns:
+            Contents of the resource, either as string or BlobResourceContents
+        """
+        result = await self._session.read_resource(
             uri if isinstance(uri, AnyUrl) else AnyUrl(uri)
         )
-        parsed_results = []
+        parsed_results: list[TextPart | BlobResourceContents] = []
         for content in result.contents:
-            if isinstance(content, TextResourceContents):
-                parsed_results.append(content.text)
-            else:
+            if isinstance(content, BlobResourceContents):
                 parsed_results.append(content)
+            else:
+                parsed_results.append(TextPart(type="text", text=content.text))
         return parsed_results
 
-    async def list_prompts(self) -> list[Prompt]:
-        result = await self.session.list_prompts()
+    async def list_prompts(self) -> list[Any]:  # pyright: ignore [reportIncompatibleMethodOverride]
+        """List all prompts available on the MCP server.
+
+        Returns:
+            A list of Prompt objects
+        """
+        result = await self._session.list_prompts()
         return result.prompts
 
     async def get_prompt_template(
         self, name: str
     ) -> Callable[..., Awaitable[list[BaseMessageParam]]]:
+        """Get a prompt template from the MCP server.
+
+        Args:
+            name: Name of the prompt template
+
+        Returns:
+            A callable that accepts keyword arguments and returns a list of BaseMessageParam
+        """
+
+        # TODO: wrap this with `llm.prompt` once it's implemented so that they prompts
+        # can be run super easily inside of an `llm.context` block.
         async def async_prompt(**kwargs: str) -> list[BaseMessageParam]:
-            result = await self.session.get_prompt(name, kwargs)
+            result = await self._session.get_prompt(name, kwargs)  # type: ignore
 
             return [
-                _convert_prompt_message_to_base_message_params(prompt_message)
+                _utils.convert_prompt_message_to_base_message_params(prompt_message)
                 for prompt_message in result.messages
             ]
 
         return async_prompt
 
-    async def list_tools(self) -> list[type[BaseModel]]:
-        list_tool_result = await self.session.list_tools()
+    async def list_tools(self) -> list[type[BaseTool]]:  # pyright: ignore [reportIncompatibleMethodOverride]
+        """List all tools available on the MCP server.
+
+        Returns:
+            A list of dynamically created `BaseTool` types.
+        """
+        list_tool_result = await self._session.list_tools()
 
         converted_tools = []
         for tool in list_tool_result.tools:
-            model = create_model_from_tool(tool)
-            model.call = _create_tool_call(tool.name, self.session.call_tool)  # pyright: ignore [reportAttributeAccessIssue]
+            model = _utils.create_tool_from_mcp_tool(tool)
+            tool_call_method = _utils.create_tool_call(
+                tool.name, self._session.call_tool
+            )
+            model.call = tool_call_method  # pyright: ignore [reportAttributeAccessIssue]
             converted_tools.append(model)
         return converted_tools
 
 
-@asynccontextmanager
-async def read_stream_exception_filer(
-    original_read: MemoryObjectReceiveStream[JSONRPCMessage | Exception],
-    exception_handler: Callable[[Exception], None] | None = None,
-) -> AsyncGenerator[MemoryObjectReceiveStream[JSONRPCMessage], None]:
-    """
-    Handle exceptions in the original stream.
-    default handler is to ignore read stream exception for invalid JSON lines and log them.
-    Args:
-        original_read: The original stream to read from.
-        exception_handler: An optional handler for exception.
-    """
-    read_stream_writer, filtered_read = create_memory_object_stream(0)
-
-    async def task() -> None:
-        try:
-            async with original_read:
-                async for msg in original_read:
-                    if isinstance(msg, Exception):
-                        if exception_handler:
-                            exception_handler(msg)
-                        continue
-                    await read_stream_writer.send(msg)
-        finally:
-            await read_stream_writer.aclose()
-
-    async with create_task_group() as tg:
-        tg.start_soon(task)
-        try:
-            yield filtered_read
-        finally:
-            await filtered_read.aclose()
-            tg.cancel_scope.cancel()
+@contextlib.asynccontextmanager
+async def sse_client(
+    url: str,
+    list_roots_callback: ListRootsFnT | None = None,
+    read_timeout_seconds: timedelta | None = None,
+    sampling_callback: SamplingFnT | None = None,
+    session: ClientSession | None = None,
+) -> AsyncIterator[MCPClient]:
+    async with (
+        mcp_sse_client(url) as (read, write),
+        ClientSession(
+            read,
+            write,
+            read_timeout_seconds=read_timeout_seconds,
+            sampling_callback=sampling_callback,
+            list_roots_callback=list_roots_callback,
+        ) as session,
+    ):
+        await session.initialize()
+        yield MCPClient(session)
 
 
-@asynccontextmanager
-async def create_mcp_client(
+@contextlib.asynccontextmanager
+async def stdio_client(
     server_parameters: StdioServerParameters,
     read_stream_exception_handler: Callable[[Exception], None] | None = None,
-) -> AsyncGenerator[MCPClient, None]:
+) -> AsyncIterator[MCPClient]:
     """
     Create a MCPClient instance with the given server parameters and exception handler.
 
@@ -311,11 +157,11 @@ async def create_mcp_client(
 
     """
     async with (
-        stdio_client(server_parameters) as (read, write),
-        read_stream_exception_filer(
+        mcp_stdio_client(server_parameters) as (read, write),
+        _utils.read_stream_exception_filer(
             read, read_stream_exception_handler
         ) as filtered_read,
-        ClientSession(filtered_read, write) as session,
+        ClientSession(filtered_read, write) as session,  # pyright: ignore [reportArgumentType]
     ):
         await session.initialize()
         yield MCPClient(session)

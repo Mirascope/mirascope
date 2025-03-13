@@ -4,6 +4,7 @@ from ._context import context
 from ._override import override
 from .call_response import CallResponse
 from .stream import Stream
+from .tool import Tool
 
 __all__ = [
     "CallResponse",
@@ -11,6 +12,7 @@ __all__ = [
     "LocalProvider",
     "Provider",
     "Stream",
+    "Tool",
     "calculate_cost",
     "call",
     "context",
