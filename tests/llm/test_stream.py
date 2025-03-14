@@ -34,7 +34,7 @@ class DummyTool(BaseTool):
     def call(self) -> str: ...
 
     @property
-    def model_fields(self) -> list[str]:  # pyright: ignore [reportIncompatibleMethodOverride]
+    def model_fields(self) -> list[str]:  # pyright: ignore [reportIncompatibleVariableOverride]
         # Return a list of field names actually used in your tool
         return ["field1"]
 
