@@ -165,7 +165,7 @@ markdown_extensions:
       permalink: true
 
 plugins:
-  - social
+  # - social
   - search
   - blog:
       post_excerpt: required
@@ -179,10 +179,10 @@ plugins:
         - Library Updates
   - macros:
       module_name: docs/macros
-  - mkdocs-jupyter:
-      execute: false
-      include_source: True
-      ignore: ["*.py"]
+  # - mkdocs-jupyter:
+  #     execute: false
+  #     include_source: True
+  #     ignore: ["*.py"]
   - mkdocstrings:
       handlers:
         python:
@@ -316,7 +316,6 @@ nav:
           - Middleware: "learn/extensions/middleware.md"
           - Custom LLM Provider: "learn/extensions/custom_provider.md"
       - MCP - Model Context Protocol:
-          - Server: "learn/mcp/server.md"
           - Client: "learn/mcp/client.md"
   - Integrations:
       - OpenTelemetry: "integrations/otel.md"
