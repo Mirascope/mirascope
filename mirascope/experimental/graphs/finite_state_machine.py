@@ -11,6 +11,7 @@ from typing_extensions import TypeVar
 
 NoneType = type(None)
 _DepsT = TypeVar("_DepsT", default=None)
+_ContextT = TypeVar("_ContextT", default="RunContext")
 
 
 class RunContext(Generic[_DepsT]):
@@ -53,12 +54,12 @@ class RunContext(Generic[_DepsT]):
 
 # Use ContextVar instead of thread-local for async compatibility
 # This automatically propagates across async boundaries
-_CONTEXT_VAR: contextvars.ContextVar[RunContext[Any] | None] = contextvars.ContextVar(
+_CONTEXT_VAR: contextvars.ContextVar[RunContext | None] = contextvars.ContextVar(
     "fsm_context", default=None
 )
 
 
-class FSMContextManager(Generic[_DepsT]):
+class FSMContextManager(Generic[_ContextT]):
     """Context manager for FSM contexts that supports both sync and async patterns.
 
     This class implements both the synchronous context manager protocol
@@ -85,10 +86,10 @@ class FSMContextManager(Generic[_DepsT]):
             the previous context when exiting.
     """
 
-    ctx: RunContext[_DepsT]
+    ctx: _ContextT
     token: contextvars.Token | None = None
 
-    def __init__(self, ctx: RunContext[_DepsT]) -> None:
+    def __init__(self, ctx: _ContextT) -> None:
         """Initialize a new FSMContextManager.
 
         Args:
@@ -96,7 +97,7 @@ class FSMContextManager(Generic[_DepsT]):
         """
         self.ctx = ctx
 
-    def __enter__(self) -> RunContext[_DepsT]:
+    def __enter__(self) -> _ContextT:
         """Enter the context manager (synchronous).
 
         Sets the RunContext as the current context and returns it.
@@ -104,7 +105,7 @@ class FSMContextManager(Generic[_DepsT]):
         Returns:
             The RunContext for use within the `with` block.
         """
-        self.token = _CONTEXT_VAR.set(self.ctx)
+        self.token = _CONTEXT_VAR.set(self.ctx)  # pyright: ignore [reportArgumentType]
         return self.ctx
 
     def __exit__(
@@ -126,7 +127,7 @@ class FSMContextManager(Generic[_DepsT]):
             _CONTEXT_VAR.reset(self.token)
             self.token = None
 
-    async def __aenter__(self) -> RunContext[_DepsT]:
+    async def __aenter__(self) -> _ContextT:
         """Enter the context manager (asynchronous).
 
         Same as __enter__ but for use with `async with`.
@@ -226,7 +227,7 @@ _P = ParamSpec("_P")
 _R = TypeVar("_R")
 
 
-class FiniteStateMachine(Generic[_DepsT]):
+class FiniteStateMachine(Generic[_ContextT, _DepsT]):
     '''Automatical Finite State Machine (FSM) compiled from the code execution graph.
 
     This class provides a global `RunContext` and a `node` decorator that gives function
@@ -410,13 +411,20 @@ class FiniteStateMachine(Generic[_DepsT]):
     We get to code. The FSM then builds itself.
     '''
 
+    _context_type: type[_ContextT]
     _deps_type: type[_DepsT]
 
-    def __init__(self, *, deps_type: type[_DepsT] = NoneType) -> None:
+    def __init__(
+        self,
+        *,
+        context_type: type[_ContextT] = RunContext,
+        deps_type: type[_DepsT] = NoneType,
+    ) -> None:
         """Initializes an instance of `FiniteStateMachine`."""
+        self._context_type = context_type
         self._deps_type = deps_type
 
-    def context(self, *, deps: _DepsT) -> FSMContextManager[_DepsT]:
+    def context(self, *, deps: _DepsT) -> FSMContextManager[_ContextT]:
         """Creates a context manager for the FSM that handles both sync and async.
 
         This method returns an instance of FSMContextManager which can be used with both
@@ -448,7 +456,7 @@ class FiniteStateMachine(Generic[_DepsT]):
         Returns:
             An FSMContextManager instance that supports both `with` and `async with`.
         """
-        ctx = RunContext(deps=deps)
+        ctx = self._context_type(deps=deps)  # pyright: ignore [reportCallIssue]
         return FSMContextManager(ctx)
 
     def node(self) -> NodeDecorator[_DepsT]:
@@ -501,11 +509,11 @@ class FiniteStateMachine(Generic[_DepsT]):
                     @wraps(fn)
                     async def inner_async() -> _R:
                         async with FSMContextManager(context):
-                            return await fn(context, *args, **kwargs)  # pyright: ignore [reportGeneralTypeIssues]
+                            return await fn(context, *args, **kwargs)  # pyright: ignore [reportArgumentType,reportGeneralTypeIssues]
 
                     return inner_async()
 
-                return fn(context, *args, **kwargs)
+                return fn(context, *args, **kwargs)  # pyright: ignore [reportArgumentType]
 
             return context_wrapper
 
@@ -530,7 +538,7 @@ class FiniteStateMachine(Generic[_DepsT]):
         Returns:
             A CompiledMachine that can be used to run the FSM.
         """
-        return CompiledMachine(fsm=self, start=start, deps=deps)
+        return CompiledMachine(fsm=self, start=start, deps=deps)  # pyright: ignore [reportArgumentType,reportReturnType]
 
 
 class CompiledMachine(Generic[_P, _R, _DepsT]):
@@ -590,7 +598,7 @@ class CompiledMachine(Generic[_P, _R, _DepsT]):
                 f"Use run_async() instead."
             )
 
-        with self.fsm.context(deps=self.deps):
+        with self.fsm.context(deps=self.deps):  # pyright: ignore [reportArgumentType]
             return self.start(*args, **kwargs)
 
     async def run_async(self, *args: _P.args, **kwargs: _P.kwargs) -> _R:
@@ -615,7 +623,7 @@ class CompiledMachine(Generic[_P, _R, _DepsT]):
                 called outside of a context manager.
             RuntimeError: If called with a sync function as the start function.
         """
-        async with self.fsm.context(deps=self.deps):
+        async with self.fsm.context(deps=self.deps):  # pyright: ignore [reportArgumentType]
             result = self.start(*args, **kwargs)
             if inspect.isawaitable(result):
                 return await result

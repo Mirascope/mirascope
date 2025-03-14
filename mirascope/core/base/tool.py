@@ -128,9 +128,7 @@ class BaseTool(BaseModel, ABC):
         ...
 
     @classmethod
-    def type_from_fn(
-        cls: type[_BaseToolT], fn: Callable, *, exclude: set[str] | None = None
-    ) -> type[_BaseToolT]:
+    def type_from_fn(cls: type[_BaseToolT], fn: Callable) -> type[_BaseToolT]:
         """Returns this tool type converted from a function.
 
         Args:

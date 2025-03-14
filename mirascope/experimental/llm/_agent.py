@@ -1,28 +1,44 @@
 """The `llm.agent` decorator."""
 
-from collections.abc import AsyncIterable, Awaitable, Callable, Iterable
+import copy
+from collections.abc import AsyncIterable, Awaitable, Callable, Iterable, Sequence
 from enum import Enum
 from functools import wraps
-from typing import Any, ParamSpec, TypeVar, cast
+from typing import Any, ParamSpec, TypeAlias, TypeVar, cast
+from wave import Wave_read
 
+from PIL import Image
 from pydantic import BaseModel
 
+from mirascope.core.base._utils._fn_is_async import fn_is_async
+
 from ...core.base import (
+    AudioPart,
+    AudioSegment,
+    AudioURLPart,
+    BaseMessageParam,
     BaseType,
+    CacheControlPart,
     CommonCallParams,
+    DocumentPart,
+    ImagePart,
+    ImageURLPart,
     Messages,
+    TextPart,
 )
-from ...core.base._utils import fn_is_async
 from ...core.base.stream_config import StreamConfig
+from ...llm import call as llm_call
 from ...llm.call_response import CallResponse
 from ...llm.call_response_chunk import CallResponseChunk
 from ...llm.stream import Stream
+from ..graphs import FiniteStateMachine
 from ._protocols import (
     AgentDecorator,
     AgentFunctionDecorator,
     AsyncAgentFunctionDecorator,
     SyncAgentFunctionDecorator,
 )
+from .agent_context import AgentContext
 from .agent_response import AgentResponse
 from .agent_stream import AgentStream
 from .agent_tool import AgentTool
@@ -45,6 +61,24 @@ _BaseDynamicConfigT = TypeVar(
     "_BaseDynamicConfigT", contravariant=True, bound=Messages.Type | None
 )
 _DepsT = TypeVar("_DepsT", contravariant=True)
+
+
+UserMessage: TypeAlias = (
+    str
+    | Sequence[
+        str
+        | TextPart
+        | CacheControlPart
+        | ImagePart
+        | ImageURLPart
+        | Image.Image
+        | AudioPart
+        | AudioURLPart
+        | AudioSegment
+        | Wave_read
+        | DocumentPart
+    ]
+)
 
 
 def _agent(
@@ -115,18 +149,77 @@ def _agent(
         | Awaitable[_ParsedOutputT]
         | Awaitable[(_ResponseModelT | CallResponse)],
     ]:
-        if fn_is_async(fn):
+        if method == "simple":
+            if fn_is_async(fn):
+                ...
+            else:
 
-            @wraps(fn)
-            async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _R: ...
+                @wraps(fn)
+                def inner(
+                    query: str, deps: _DepsT, *args: _P.args, **kwargs: _P.kwargs
+                ) -> _R:
+                    # ONLY HANDLES SYNC! NEED TO HANDLE ASYNC!
+                    machine = FiniteStateMachine(
+                        context_type=AgentContext, deps_type=deps_type
+                    )
 
-            return inner_async
+                    # ONLY HANDLES `str` INPUT! NEEDS TO HANDLE ARBITRARY INPUTS
+                    @machine.node()
+                    @llm_call(
+                        provider=provider,
+                        model=model,
+                        stream=stream,
+                        tools=tools,
+                        response_model=response_model,
+                        output_parser=output_parser,
+                        json_mode=json_mode,
+                        client=client,
+                        call_params=call_params,
+                    )
+                    def call(
+                        ctx: AgentContext[_DepsT],
+                        query: UserMessage | None,
+                    ) -> Messages.Type:
+                        system_message = fn(ctx, *args, **kwargs)
+                        messages = [
+                            system_message
+                            if isinstance(system_message, BaseMessageParam)
+                            else Messages.System(system_message),
+                            *ctx.messages,
+                        ]
+                        if query:
+                            messages.append(Messages.User(query))
+                        return messages
+
+                    @machine.node()
+                    def handle_tools(
+                        ctx: AgentContext[_DepsT], tools: list[AgentTool]
+                    ) -> None:
+                        tools_and_outputs = [(tool, tool.call()) for tool in tools]
+                        ctx.messages += CallResponse.tool_message_params(
+                            tools_and_outputs
+                        )
+
+                    @machine.node()
+                    def agent(
+                        ctx: AgentContext[_DepsT], query: UserMessage
+                    ) -> CallResponse | Stream | _ResponseModelT | _ParsedOutputT:
+                        response = call(query)
+                        if response.user_message_param:
+                            ctx.messages.append(response.user_message_param)
+                        ctx.messages.append(response.message_param)
+                        if tools := response.tools:
+                            handle_tools(tools)
+                            return call(None)
+                        return response
+
+                    with machine.context(deps=deps):
+                        return agent(query)
+
+                return inner
+
         else:
-
-            @wraps(fn)
-            def inner(*args: _P.args, **kwargs: _P.kwargs) -> _R: ...
-
-            return inner
+            raise ValueError(f"Unknown `method` specified: {method}")
 
     return wrapper  # pyright: ignore [reportReturnType]
 

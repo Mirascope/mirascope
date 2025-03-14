@@ -3,11 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Annotated, Any, Generic, ParamSpec, Protocol, TypeVar, overload
+from typing import Any, Generic, ParamSpec, Protocol, TypeVar, overload
 
-from pydantic.json_schema import SkipJsonSchema
-
-from ...core import FromCallArgs
 from ...llm.tool import Tool
 from .agent_context import AgentContext
 
@@ -25,8 +22,6 @@ class AgentTool(Tool, Generic[_DepsT]):
     We need to remove the context argument from the tool call signature so that we can
     use `tool.call()` as normal except that the context will be injected under the hood.
     """
-
-    context: Annotated[SkipJsonSchema[AgentContext[_DepsT]], FromCallArgs()]
 
 
 class AgentToolFunction(Protocol[_P, _DepsT]):
@@ -70,6 +65,6 @@ def tool(
     def agent_tool_decorator(
         fn: AgentToolFunction[_P, _DepsT],
     ) -> type[AgentTool[_DepsT]]:
-        return AgentTool[_DepsT].type_from_fn(fn, exclude={"context"})
+        return AgentTool[_DepsT].type_from_fn(fn)
 
     return agent_tool_decorator

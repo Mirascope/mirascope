@@ -18,7 +18,6 @@ def convert_function_to_base_tool(
     base: type[BaseToolT],
     __doc__: str | None = None,
     __namespace__: str | None = None,
-    exclude: set[str] | None = None,
 ) -> type[BaseToolT]:
     """Constructs a `BaseToolT` type from the given function.
 
@@ -73,8 +72,6 @@ def convert_function_to_base_tool(
             continue
         if parameter.name == "cls":
             continue
-        if exclude and parameter.name in exclude:
-            continue
         if parameter.annotation == inspect.Parameter.empty:
             raise ValueError("All parameters must have a type annotation.")
 
@@ -119,6 +116,8 @@ def convert_function_to_base_tool(
         model.model_config["json_schema_extra"] = {"examples": examples}
 
     def call(self: base) -> Any:  # pyright: ignore [reportInvalidTypeForm] # noqa: ANN401
+        print(self.model_dump())
+        print("BREAK")
         return fn(
             **(
                 ({"self": self} if has_self else {})
