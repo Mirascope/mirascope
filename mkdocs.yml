@@ -165,7 +165,7 @@ markdown_extensions:
       permalink: true
 
 plugins:
-  # - social
+  - social
   - search
   - blog:
       post_excerpt: required
@@ -179,10 +179,10 @@ plugins:
         - Library Updates
   - macros:
       module_name: docs/macros
-  # - mkdocs-jupyter:
-  #     execute: false
-  #     include_source: True
-  #     ignore: ["*.py"]
+  - mkdocs-jupyter:
+      execute: false
+      include_source: True
+      ignore: ["*.py"]
   - mkdocstrings:
       handlers:
         python:
