@@ -150,6 +150,7 @@ venv.bak/
 docs/**/*.html.md
 docs/llms.txt
 build/snippets/
+mkdocs.dev.yml
 
 # mypy
 .mypy_cache/
