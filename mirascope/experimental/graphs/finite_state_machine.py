@@ -515,6 +515,12 @@ class FiniteStateMachine(Generic[_ContextT, _DepsT]):
 
                 return fn(context, *args, **kwargs)  # pyright: ignore [reportArgumentType]
 
+            # Apply the new signature to the wrapper function
+            signature = inspect.signature(fn)
+            context_wrapper.__signature__ = signature.replace(  # type: ignore
+                parameters=list(signature.parameters.values())[1:]
+            )
+
             return context_wrapper
 
         return decorator

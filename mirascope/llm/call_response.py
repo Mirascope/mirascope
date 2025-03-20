@@ -26,7 +26,7 @@ from .tool import Tool
 class CallResponse(
     BaseCallResponse[
         Any,
-        Tool,
+        BaseTool,
         Any,
         BaseDynamicConfig[Any, Any, Any],
         BaseMessageParam,
@@ -42,11 +42,11 @@ class CallResponse(
     We rely on _response having `common_` methods or properties for normalization.
     """
 
-    _response: BaseCallResponse[Any, Tool, Any, Any, Any, Any, Any, Any]
+    _response: BaseCallResponse[Any, BaseTool, Any, Any, Any, Any, Any, Any]
 
     def __init__(
         self,
-        response: BaseCallResponse[Any, Tool, Any, Any, Any, Any, Any, Any],
+        response: BaseCallResponse[Any, BaseTool, Any, Any, Any, Any, Any, Any],
     ) -> None:
         super().__init__(
             **{
@@ -132,7 +132,7 @@ class CallResponse(
 
     @classmethod
     @transform_tool_outputs
-    def tool_message_params(
+    def tool_message_params(  # pyright: ignore [reportIncompatibleMethodOverride]
         cls, tools_and_outputs: list[tuple[Tool, str]]
     ) -> list[BaseMessageParam]:
         """Returns the tool message parameters for tool call results.

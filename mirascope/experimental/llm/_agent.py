@@ -11,6 +11,7 @@ from PIL import Image
 from pydantic import BaseModel
 
 from mirascope.core.base._utils._fn_is_async import fn_is_async
+from mirascope.experimental.graphs.finite_state_machine import NodeDecoratedFunction
 
 from ...core.base import (
     AudioPart,
@@ -31,6 +32,7 @@ from ...llm import call as llm_call
 from ...llm.call_response import CallResponse
 from ...llm.call_response_chunk import CallResponseChunk
 from ...llm.stream import Stream
+from ...llm.tool import Tool
 from ..graphs import FiniteStateMachine
 from ._protocols import (
     AgentDecorator,
@@ -41,7 +43,7 @@ from ._protocols import (
 from .agent_context import AgentContext
 from .agent_response import AgentResponse
 from .agent_stream import AgentStream
-from .agent_tool import AgentTool
+from .agent_tool import AgentToolFunction
 
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
@@ -87,7 +89,7 @@ def _agent(
     deps_type: type[_DepsT],
     model: str,
     stream: bool | StreamConfig = False,
-    tools: list[type[AgentTool[_DepsT]]] | None = None,
+    tools: list[AgentToolFunction[_DepsT]] | None = None,
     response_model: type[_ResponseModelT] | None = None,
     output_parser: Callable[[_CallResponseT], _ParsedOutputT]
     | Callable[[_CallResponseChunkT], _ParsedOutputT]
@@ -160,8 +162,15 @@ def _agent(
                 ) -> _R:
                     # ONLY HANDLES SYNC! NEED TO HANDLE ASYNC!
                     machine = FiniteStateMachine(
-                        context_type=AgentContext, deps_type=deps_type
+                        context_type=AgentContext[_DepsT], deps_type=deps_type
                     )
+
+                    wrapped_tools = [
+                        machine.node()(
+                            cast(NodeDecoratedFunction[Any, Any, _DepsT], tool)
+                        )
+                        for tool in tools or []
+                    ]
 
                     # ONLY HANDLES `str` INPUT! NEEDS TO HANDLE ARBITRARY INPUTS
                     @machine.node()
@@ -169,7 +178,7 @@ def _agent(
                         provider=provider,
                         model=model,
                         stream=stream,
-                        tools=tools,
+                        tools=wrapped_tools,
                         response_model=response_model,
                         output_parser=output_parser,
                         json_mode=json_mode,
@@ -193,7 +202,8 @@ def _agent(
 
                     @machine.node()
                     def handle_tools(
-                        ctx: AgentContext[_DepsT], tools: list[AgentTool]
+                        ctx: AgentContext[_DepsT],
+                        tools: list[Tool],
                     ) -> None:
                         tools_and_outputs = [(tool, tool.call()) for tool in tools]
                         ctx.messages += CallResponse.tool_message_params(
@@ -202,19 +212,49 @@ def _agent(
 
                     @machine.node()
                     def agent(
-                        ctx: AgentContext[_DepsT], query: UserMessage
+                        ctx: AgentContext[_DepsT], query: UserMessage | None
                     ) -> CallResponse | Stream | _ResponseModelT | _ParsedOutputT:
                         response = call(query)
-                        if response.user_message_param:
-                            ctx.messages.append(response.user_message_param)
-                        ctx.messages.append(response.message_param)
-                        if tools := response.tools:
-                            handle_tools(tools)
-                            return call(None)
+                        if isinstance(response, CallResponse):
+                            if response.user_message_param:
+                                ctx.messages.append(response.user_message_param)
+                            ctx.messages.append(response.message_param)
+                            if tools := response.tools:
+                                handle_tools(tools)
+                                return agent(None)
+                        elif isinstance(response, Stream):
+                            # TODO: Handle streaming
+                            return response
+                        elif original_response := getattr(response, "_response", None):
+                            if original_response.user_message_param:
+                                ctx.messages.append(
+                                    original_response.user_message_param
+                                )
+                            ctx.messages.append(original_response.message_param)
                         return response
 
                     with machine.context(deps=deps):
-                        return agent(query)
+                        # Get the result from running the agent
+                        result = agent(query)
+                        
+                        # Only wrap CallResponse in AgentResponse at the final return
+                        if isinstance(result, CallResponse) and not isinstance(result, AgentResponse):
+                            # Save the initial context state
+                            ctx = machine._context_type(deps=deps)
+                            
+                            # Create AgentResponse from the CallResponse
+                            agent_response = AgentResponse.__new__(AgentResponse)
+                            
+                            # Copy all attributes from the original response
+                            for attr, value in vars(result).items():
+                                setattr(agent_response, attr, value)
+                                
+                            # Set the previous context
+                            agent_response.previous_context = ctx
+                            
+                            return agent_response
+                        
+                        return result
 
                 return inner
 

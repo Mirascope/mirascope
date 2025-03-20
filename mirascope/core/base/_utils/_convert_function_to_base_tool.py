@@ -116,8 +116,6 @@ def convert_function_to_base_tool(
         model.model_config["json_schema_extra"] = {"examples": examples}
 
     def call(self: base) -> Any:  # pyright: ignore [reportInvalidTypeForm] # noqa: ANN401
-        print(self.model_dump())
-        print("BREAK")
         return fn(
             **(
                 ({"self": self} if has_self else {})
