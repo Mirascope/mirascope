@@ -23,7 +23,7 @@ from ..core.base._utils import fn_is_async
 from ..core.base.stream_config import StreamConfig
 from ..core.base.types import Provider
 from ._call import CallResponse, Stream, call
-from ._context import get_current_context
+from ._context import LLMContext, get_current_context
 from ._protocols import (
     AsyncLLMFunctionDecorator,
     LLMFunctionDecorator,
@@ -119,7 +119,7 @@ def _prompt(
                 | (_ResponseModelT | CallResponse)
             ]:
                 # Capture the context at call time, not await time
-                context = get_current_context()
+                provider, model, context = _provider_and_model_from_context()
 
                 # Define an async function that uses the captured context
                 async def context_bound_inner_async() -> (
@@ -129,24 +129,14 @@ def _prompt(
                     | _ParsedOutputT
                     | (_ResponseModelT | CallResponse)
                 ):
-                    if (
-                        context is None
-                        or context.provider is None
-                        or context.model is None
-                    ):
-                        raise ValueError(
-                            "Prompt can only be called within a llm.context with a provider and model."
-                            "Use `llm.context(provider=..., model=...)` to specify the provider and model."
-                        )
-
                     # Get provider-specific overrides from context
                     client_override = context.client or client
                     call_params_override = context.call_params or call_params
 
                     # Create a dynamically decorated version of our function
                     decorated = call(  # type: ignore[reportCallIssue]
-                        provider=cast(Provider, context.provider),
-                        model=context.model,
+                        provider=provider,
+                        model=model,
                         stream=stream,  # type: ignore[reportArgumentType]
                         tools=tools,
                         response_model=response_model,  # type: ignore[reportArgumentType]
@@ -175,20 +165,15 @@ def _prompt(
                 | _ParsedOutputT
                 | (_ResponseModelT | CallResponse)
             ):
-                context = get_current_context()
-                if context is None or context.provider is None or context.model is None:
-                    raise ValueError(
-                        "Prompt can only be called within a llm.context with a provider and model."
-                        "Use `llm.context(provider=..., model=...)` to specify the provider and model."
-                    )
+                provider, model, context = _provider_and_model_from_context()
                 # Get provider-specific overrides from context
                 client_override = context.client or client
                 call_params_override = context.call_params or call_params
 
                 # Create a dynamically decorated version of our function
                 decorated = call(  # type: ignore[reportCallIssue]
-                    provider=cast(Provider, context.provider),
-                    model=context.model,
+                    provider=provider,
+                    model=model,
                     stream=stream,  # type: ignore[reportArgumentType]
                     tools=tools,
                     response_model=response_model,  # type: ignore[reportArgumentType]
@@ -204,6 +189,16 @@ def _prompt(
             return wrapper
 
     return decorator  # type: ignore[return-value]
+
+
+def _provider_and_model_from_context() -> tuple[Provider, str, LLMContext]:
+    context = get_current_context()
+    if context is None or context.provider is None or context.model is None:
+        raise ValueError(
+            "Prompt can only be called within a llm.context with a provider and model."
+            "Use `llm.context(provider=..., model=...)` to specify the provider and model."
+        )
+    return cast(Provider, context.provider), context.model, context
 
 
 # Create a single instance to use as the decorator
