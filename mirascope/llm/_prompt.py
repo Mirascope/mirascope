@@ -119,7 +119,7 @@ def _prompt(
                 | (_ResponseModelT | CallResponse)
             ]:
                 # Capture the context at call time, not await time
-                current_context = get_current_context()
+                context = get_current_context()
 
                 # Define an async function that uses the captured context
                 async def context_bound_inner_async() -> (
@@ -129,26 +129,24 @@ def _prompt(
                     | _ParsedOutputT
                     | (_ResponseModelT | CallResponse)
                 ):
-                    if current_context is None:
+                    if (
+                        context is None
+                        or context.provider is None
+                        or context.model is None
+                    ):
                         raise ValueError(
-                            "Prompt can only be called within a llm.context"
+                            "Prompt can only be called within a llm.context with a provider and model."
+                            "Use `llm.context(provider=..., model=...)` to specify the provider and model."
                         )
 
-                    provider = current_context.provider
-                    model = current_context.model
-                    if provider is None:
-                        raise ValueError("Provider must be specified in the context")
-                    if model is None:
-                        raise ValueError("Model must be specified in the context")
-
                     # Get provider-specific overrides from context
-                    client_override = current_context.client or client
-                    call_params_override = current_context.call_params or call_params
+                    client_override = context.client or client
+                    call_params_override = context.call_params or call_params
 
                     # Create a dynamically decorated version of our function
                     decorated = call(  # type: ignore[reportCallIssue]
-                        provider=cast(Provider, provider),
-                        model=model,
+                        provider=cast(Provider, context.provider),
+                        model=context.model,
                         stream=stream,  # type: ignore[reportArgumentType]
                         tools=tools,
                         response_model=response_model,  # type: ignore[reportArgumentType]
@@ -178,24 +176,19 @@ def _prompt(
                 | (_ResponseModelT | CallResponse)
             ):
                 context = get_current_context()
-                if context is None:
-                    raise ValueError("Prompt can only be called within a llm.context")
-
-                provider = context.provider
-                model = context.model
-                if provider is None:
-                    raise ValueError("Provider must be specified in the context")
-                if model is None:
-                    raise ValueError("Model must be specified in the context")
-
+                if context is None or context.provider is None or context.model is None:
+                    raise ValueError(
+                        "Prompt can only be called within a llm.context with a provider and model."
+                        "Use `llm.context(provider=..., model=...)` to specify the provider and model."
+                    )
                 # Get provider-specific overrides from context
                 client_override = context.client or client
                 call_params_override = context.call_params or call_params
 
                 # Create a dynamically decorated version of our function
                 decorated = call(  # type: ignore[reportCallIssue]
-                    provider=cast(Provider, provider),
-                    model=model,
+                    provider=cast(Provider, context.provider),
+                    model=context.model,
                     stream=stream,  # type: ignore[reportArgumentType]
                     tools=tools,
                     response_model=response_model,  # type: ignore[reportArgumentType]

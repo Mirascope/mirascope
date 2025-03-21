@@ -34,8 +34,7 @@ def test_prompt_decorator_requires_context():
     """Test that decorated functions can only be called within a context manager."""
 
     @llm.prompt()
-    def hello_world():
-        return "Hello, world!"
+    def hello_world(): ...
 
     with pytest.raises(ValueError) as excinfo:
         hello_world()
@@ -48,8 +47,7 @@ async def test_async_prompt_decorator_requires_context():
     """Test that async decorated functions can only be called within a context manager."""
 
     @llm.prompt()
-    async def hello_world():
-        return "Hello, world!"
+    async def hello_world(): ...
 
     with pytest.raises(ValueError) as excinfo:
         await hello_world()
@@ -61,8 +59,7 @@ def test_prompt_with_context():
     """Test that we can call decorated functions within a context manager."""
 
     @llm.prompt()
-    def hello_world() -> str:
-        return "Hello, world!"
+    def hello_world(): ...
 
     # Create a mock for CallResponse
     mock_response = mock.MagicMock()
@@ -94,8 +91,7 @@ async def test_async_prompt_with_context():
     """Test that we can call async decorated functions within a context manager."""
 
     @llm.prompt()
-    async def hello_world() -> str:
-        return "Hello, world!"
+    async def hello_world(): ...
 
     # Create a mock for CallResponse
     mock_response = mock.MagicMock()
@@ -129,8 +125,7 @@ def test_prompt_with_structural_args():
         message: str
 
     @llm.prompt(response_model=Response)
-    def hello_world() -> str:
-        return "Hello, world!"
+    def hello_world(): ...
 
     # Define patched provider call
     def patched_openai_call(**kwargs):
@@ -165,8 +160,7 @@ async def test_async_prompt_with_structural_args():
         message: str
 
     @llm.prompt(response_model=Response)
-    async def hello_world() -> str:
-        return "Hello, world!"
+    async def hello_world(): ...
 
     # Define patched provider call
     def patched_openai_call(**kwargs):
@@ -197,8 +191,7 @@ def test_prompt_with_context_overrides():
     """Test that context overrides non-structural params."""
 
     @llm.prompt()
-    def hello_world() -> str:
-        return "Hello, world!"
+    def hello_world(): ...
 
     # Track which provider was used
     calls = []
@@ -256,8 +249,7 @@ async def test_async_prompt_with_context_overrides():
     """Test that context overrides non-structural params with async functions."""
 
     @llm.prompt()
-    async def hello_world() -> str:
-        return "Hello, world!"
+    async def hello_world(): ...
 
     # Track which provider was used
     calls = []
@@ -315,8 +307,7 @@ async def test_async_prompt():
     """Test that async prompts work correctly."""
 
     @llm.prompt()
-    async def hello_world() -> str:
-        return "Hello, world!"
+    async def hello_world(): ...
 
     # Create a mock response for async calls
     mock_response = mock.MagicMock()
@@ -348,8 +339,7 @@ async def test_async_prompt_with_gather():
     """Test that context is properly applied in async functions when using asyncio.gather."""
 
     @llm.prompt()
-    async def hello_world() -> str:
-        return "Hello, world!"
+    async def hello_world(): ...
 
     # Track which provider was used for each call
     calls = []
@@ -419,8 +409,7 @@ def test_prompt_with_streaming():
     """Test that streaming works correctly."""
 
     @llm.prompt(stream=True)
-    def hello_world() -> str:
-        return "Hello, world!"
+    def hello_world(): ...
 
     # Create chunks and mock stream
     chunks = [MockChunk("Hello "), MockChunk("from the AI!")]
@@ -461,8 +450,7 @@ async def test_async_prompt_with_streaming():
     """Test that streaming works correctly with async prompts."""
 
     @llm.prompt(stream=True)
-    async def hello_world() -> str:
-        return "Hello, world!"
+    async def hello_world(): ...
 
     # Create chunks and mock stream
     chunks = [MockChunk("Hello "), MockChunk("from the AI!")]
