@@ -3203,6 +3203,7 @@ gemini = [
 google = [
     { name = "google-genai" },
     { name = "pillow" },
+    { name = "proto-plus" },
 ]
 groq = [
     { name = "groq" },
@@ -3314,6 +3315,7 @@ requires-dist = [
     { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0,<2" },
     { name = "pillow", marker = "extra == 'gemini'", specifier = ">=10.4.0,<11" },
     { name = "pillow", marker = "extra == 'google'", specifier = ">=10.4.0,<11" },
+    { name = "proto-plus", marker = "extra == 'google'", specifier = ">=1.24.0" },
     { name = "pydantic", specifier = ">=2.7.4,<3.0" },
     { name = "pydub", marker = "extra == 'realtime'", specifier = ">=0.25.1,<1" },
     { name = "sounddevice", marker = "extra == 'realtime'", specifier = ">=0.5.1,<1" },
