@@ -72,6 +72,24 @@ groq = ["groq>=0.9.0,<1"]
 tenacity = ["tenacity>=8.4.2,<9"]
 hyperdx = ["hyperdx-opentelemetry>=0.1.0,<1"]
 langfuse = ["langfuse>=2.30.0,<3"]
+lilypad = [
+    "lilypad-sdk>=0.1.0a1",
+    "mirascope>=1.20.1",
+    "opentelemetry-api>=1.30.0",
+    "opentelemetry-sdk>=1.30.0",
+    "opentelemetry-instrumentation>=0.51b0",
+    "typer>=0.12.5",
+    "pydantic-settings>=2.6.1",
+    "ruff>=0.9.5",
+    "requests>=2.32.3",
+    "pillow>=10.4.0",
+    "libcst>=1.6.0",
+    "cachetools>=5.5.1",
+    "httpx>=0.24.0",
+    "typing-extensions>=4.0.0",
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+]
 litellm = ["litellm>=1.42.12,<2"]
 logfire = ["logfire>=1.0.0,<4"]
 mistral = ["mistralai>=1.0.0,<2"]
