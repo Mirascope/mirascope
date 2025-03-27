@@ -29,7 +29,7 @@ jobs:
         run: uv lock --check
 
       - name: Set Up Python Environment
-        run: uv python install 3.11
+        run: uv python install 3.10
 
       - name: Restore uv cache
         uses: actions/cache@v4
