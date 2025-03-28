@@ -128,11 +128,6 @@ def setup_call(
     list[type[GoogleTool]] | None,
     GoogleCallKwargs,
 ]:
-    # Extract and handle config parameter separately if it exists in call_params
-    config_param = None
-    if isinstance(call_params, dict) and "config" in call_params:
-        config_param = call_params.pop("config")  # type: ignore
-
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn,
         fn_args,
@@ -145,14 +140,20 @@ def setup_call(
     call_kwargs = cast(GoogleCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)
 
-    # Apply config parameter if it was provided
-    if config_param is not None:
+    # Handle CommonCallParams that were converted to generation_config
+    if "generation_config" in call_kwargs:
+        generation_config = call_kwargs.pop("generation_config")
         with _generate_content_config_context(call_kwargs) as config:
-            converted_config = _convert_config_param(config_param)
-            # Copy attributes from the converted config to the config context
-            for key, value in vars(converted_config).items():
-                if not key.startswith("_") and value is not None:
-                    setattr(config, key, value)
+            # Similar to how it's done in _convert_common_call_params.py
+            if isinstance(generation_config, dict):
+                for param_name in [
+                    "temperature",
+                    "max_output_tokens",
+                    "top_p",
+                    "stop_sequences",
+                ]:
+                    if param_name in generation_config:
+                        setattr(config, param_name, generation_config[param_name])
 
     if client is None:
         client = Client()
@@ -161,10 +162,12 @@ def setup_call(
 
     if messages[0] and messages[0].get("role") == "system":
         with _generate_content_config_context(call_kwargs) as config:
-            config.system_instruction = [
-                Part.model_validate(part)
-                for part in (messages.pop(0).get("parts") or [])
-            ]
+            system_message = messages.pop(0)
+            message_parts = system_message.get("parts", [])
+            if message_parts:
+                config.system_instruction = [
+                    Part.model_validate(part) for part in message_parts
+                ]
 
     if json_mode:
         with _generate_content_config_context(call_kwargs) as config:

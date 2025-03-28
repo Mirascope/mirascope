@@ -319,19 +319,19 @@ def test_setup_call_vertexai_dynamic_config_non_dict(
 )
 @patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
 @patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
-def test_setup_call_with_config_in_call_params(
+def test_setup_call_with_call_params(
     mock_client_class: MagicMock,
     mock_utils: MagicMock,
     mock_convert_message_params: MagicMock,
     mock_base_setup_call: MagicMock,
 ) -> None:
-    """Tests the `setup_call` function with config in call_params."""
+    """Tests the `setup_call` function with direct parameters in call_params."""
     mock_client = MagicMock()
     mock_client_class.return_value = mock_client
     mock_utils.setup_call = mock_base_setup_call
     fn = MagicMock()
 
-    call_params = cast(GoogleCallParams, {"config": {"temperature": 0.8, "top_p": 0.7}})
+    call_params = cast(GoogleCallParams, {"temperature": 0.8, "top_p": 0.7})
 
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
         model="google-1.5-flash",
@@ -346,13 +346,20 @@ def test_setup_call_with_config_in_call_params(
         stream=False,
     )
 
-    assert "config" in call_kwargs
+    # These parameters should be passed to the base setup_call
+    mock_base_setup_call.assert_called_with(
+        fn,
+        {},
+        None,
+        None,
+        GoogleTool,
+        call_params,  # Call params should be passed directly
+        convert_common_call_params,
+    )
 
-    assert getattr(call_kwargs["config"], "temperature", None) == 0.8
-    assert getattr(call_kwargs["config"], "top_p", None) == 0.7
-
-    config_obj = GenerateContentConfig(temperature=0.9, top_k=10)
-    call_params = cast(GoogleCallParams, {"config": config_obj})
+    # Now test with a GenerateContentConfig parameter
+    mock_base_setup_call.reset_mock()
+    call_params = cast(GoogleCallParams, {"temperature": 0.9, "top_k": 10})
 
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
         model="google-1.5-flash",
@@ -367,7 +374,13 @@ def test_setup_call_with_config_in_call_params(
         stream=False,
     )
 
-    assert "config" in call_kwargs
-
-    assert getattr(call_kwargs["config"], "temperature", None) == 0.9
-    assert getattr(call_kwargs["config"], "top_k", None) == 10
+    # These parameters should be passed to the base setup_call
+    mock_base_setup_call.assert_called_with(
+        fn,
+        {},
+        None,
+        None,
+        GoogleTool,
+        call_params,  # Call params should be passed directly
+        convert_common_call_params,
+    )
