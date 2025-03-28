@@ -45,15 +45,6 @@ def _get_generate_content_config(
     return config
 
 
-def _convert_config_param(
-    config_param: GenerateContentConfig | GenerateContentConfigDict,
-) -> GenerateContentConfig:
-    """Convert the config parameter to a GenerateContentConfig object."""
-    if isinstance(config_param, dict):
-        return GenerateContentConfig.model_validate(config_param)
-    return config_param
-
-
 @contextlib.contextmanager
 def _generate_content_config_context(
     call_kwargs: GoogleCallKwargs,
