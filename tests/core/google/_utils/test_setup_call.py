@@ -331,7 +331,6 @@ def test_setup_call_with_config_in_call_params(
     mock_utils.setup_call = mock_base_setup_call
     fn = MagicMock()
 
-    # Test with dictionary config
     call_params = cast(GoogleCallParams, {"config": {"temperature": 0.8, "top_p": 0.7}})
 
     create, prompt_template, messages, tool_types, call_kwargs = setup_call(
@@ -347,15 +346,11 @@ def test_setup_call_with_config_in_call_params(
         stream=False,
     )
 
-    # Verify config was properly processed
     assert "config" in call_kwargs
 
-    # During runtime this will work, but the type checker is confused about the actual type
-    # Use getattr for attribute access, which works for both objects and dicts with __getitem__
-    assert getattr(call_kwargs["config"], "temperature", None) == 0.8  # type: ignore
-    assert getattr(call_kwargs["config"], "top_p", None) == 0.7  # type: ignore
+    assert getattr(call_kwargs["config"], "temperature", None) == 0.8
+    assert getattr(call_kwargs["config"], "top_p", None) == 0.7
 
-    # Test with GenerateContentConfig object
     config_obj = GenerateContentConfig(temperature=0.9, top_k=10)
     call_params = cast(GoogleCallParams, {"config": config_obj})
 
@@ -372,9 +367,7 @@ def test_setup_call_with_config_in_call_params(
         stream=False,
     )
 
-    # Verify config object was properly processed
     assert "config" in call_kwargs
 
-    # During runtime this will work, but the type checker is confused about the actual type
-    assert getattr(call_kwargs["config"], "temperature", None) == 0.9  # type: ignore
-    assert getattr(call_kwargs["config"], "top_k", None) == 10  # type: ignore
+    assert getattr(call_kwargs["config"], "temperature", None) == 0.9
+    assert getattr(call_kwargs["config"], "top_k", None) == 10

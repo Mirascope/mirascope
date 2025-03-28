@@ -1,6 +1,5 @@
 """Tests for the Google call_params functionality."""
 
-import sys
 from unittest.mock import patch
 
 from google.genai.types import GenerateContentConfig
@@ -35,8 +34,3 @@ def test_google_call_params_object_config(mock_client):
 
     # Just verify the function is callable but don't make API calls
     assert callable(test_fn)
-
-
-if __name__ == "__main__":
-    # This block is for manual testing but won't run during pytest
-    sys.exit("This test file is not meant to be run directly")

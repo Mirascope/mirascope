@@ -45,6 +45,15 @@ def _get_generate_content_config(
     return config
 
 
+def _convert_config_param(
+    config_param: GenerateContentConfig | GenerateContentConfigDict,
+) -> GenerateContentConfig:
+    """Convert the config parameter to a GenerateContentConfig object."""
+    if isinstance(config_param, dict):
+        return GenerateContentConfig.model_validate(config_param)
+    return config_param
+
+
 @contextlib.contextmanager
 def _generate_content_config_context(
     call_kwargs: GoogleCallKwargs,
@@ -119,6 +128,11 @@ def setup_call(
     list[type[GoogleTool]] | None,
     GoogleCallKwargs,
 ]:
+    # Extract and handle config parameter separately if it exists in call_params
+    config_param = None
+    if isinstance(call_params, dict) and "config" in call_params:
+        config_param = call_params.pop("config")  # type: ignore
+
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn,
         fn_args,
@@ -131,20 +145,14 @@ def setup_call(
     call_kwargs = cast(GoogleCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)
 
-    # If there's a config in call_params, move it to call_kwargs
-    if isinstance(call_params, dict) and "config" in call_params:
-        config_from_params = call_params["config"]
+    # Apply config parameter if it was provided
+    if config_param is not None:
         with _generate_content_config_context(call_kwargs) as config:
-            if isinstance(config_from_params, dict):
-                for key, value in config_from_params.items():
+            converted_config = _convert_config_param(config_param)
+            # Copy attributes from the converted config to the config context
+            for key, value in vars(converted_config).items():
+                if not key.startswith("_") and value is not None:
                     setattr(config, key, value)
-            else:
-                # If it's already a GenerateContentConfig object
-                for key, value in config_from_params.__dict__.items():
-                    if key.startswith("_"):
-                        continue
-                    if value is not None:
-                        setattr(config, key, value)
 
     if client is None:
         client = Client()
