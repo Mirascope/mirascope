@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Any, cast
 
 from google.genai.types import (
     GenerationConfigDict,
@@ -17,16 +17,18 @@ GOOGLE_PARAM_MAPPING = {
 
 def convert_common_call_params(common_params: CommonCallParams) -> GoogleCallParams:
     """Convert CommonCallParams to Google parameters."""
-    generation_config = {}
+    generation_config: dict[str, Any] = {}
 
     for key, value in common_params.items():
         if key not in GOOGLE_PARAM_MAPPING or value is None:
             continue
 
         if key == "stop":
-            generation_config["stop_sequences"] = (
-                [value] if isinstance(value, str) else value
-            )
+            # Google API expects a list of strings for stop sequences
+            if isinstance(value, str):
+                generation_config["stop_sequences"] = [value]
+            elif isinstance(value, list):
+                generation_config["stop_sequences"] = value
         else:
             generation_config[GOOGLE_PARAM_MAPPING[key]] = value
 

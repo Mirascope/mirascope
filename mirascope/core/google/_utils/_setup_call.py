@@ -135,16 +135,10 @@ def setup_call(
     if "generation_config" in call_kwargs:
         generation_config = call_kwargs.pop("generation_config")
         with _generate_content_config_context(call_kwargs) as config:
-            # Similar to how it's done in _convert_common_call_params.py
             if isinstance(generation_config, dict):
-                for param_name in [
-                    "temperature",
-                    "max_output_tokens",
-                    "top_p",
-                    "stop_sequences",
-                ]:
-                    if param_name in generation_config:
-                        setattr(config, param_name, generation_config[param_name])
+                for key, value in generation_config.items():  # pyright: ignore [reportGeneralTypeIssues]
+                    if value is not None:
+                        setattr(config, key, value)
 
     if client is None:
         client = Client()
