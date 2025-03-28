@@ -131,6 +131,21 @@ def setup_call(
     call_kwargs = cast(GoogleCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)
 
+    # If there's a config in call_params, move it to call_kwargs
+    if isinstance(call_params, dict) and "config" in call_params:
+        config_from_params = call_params["config"]
+        with _generate_content_config_context(call_kwargs) as config:
+            if isinstance(config_from_params, dict):
+                for key, value in config_from_params.items():
+                    setattr(config, key, value)
+            else:
+                # If it's already a GenerateContentConfig object
+                for key, value in config_from_params.__dict__.items():
+                    if key.startswith("_"):
+                        continue
+                    if value is not None:
+                        setattr(config, key, value)
+
     if client is None:
         client = Client()
 
