@@ -131,15 +131,6 @@ def setup_call(
     call_kwargs = cast(GoogleCallKwargs, base_call_kwargs)
     messages = cast(list[BaseMessageParam | ContentDict], messages)
 
-    # Handle CommonCallParams that were converted to generation_config
-    if "generation_config" in call_kwargs:
-        generation_config = call_kwargs.pop("generation_config")
-        with _generate_content_config_context(call_kwargs) as config:
-            if isinstance(generation_config, dict):
-                for key, value in generation_config.items():  # pyright: ignore [reportGeneralTypeIssues]
-                    if value is not None:
-                        setattr(config, key, value)
-
     if client is None:
         client = Client()
 
