@@ -138,10 +138,12 @@ def setup_call(
 
     if messages[0] and messages[0].get("role") == "system":
         with _generate_content_config_context(call_kwargs) as config:
-            config.system_instruction = [
-                Part.model_validate(part)
-                for part in (messages.pop(0).get("parts") or [])
-            ]
+            system_message = messages.pop(0)
+            message_parts = system_message.get("parts", [])
+            if message_parts:
+                config.system_instruction = [
+                    Part.model_validate(part) for part in message_parts
+                ]
 
     if json_mode:
         with _generate_content_config_context(call_kwargs) as config:

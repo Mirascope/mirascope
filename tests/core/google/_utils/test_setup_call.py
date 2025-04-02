@@ -1,6 +1,7 @@
 """Tests the `google._utils.setup_call` module."""
 
 from collections.abc import Callable
+from typing import cast
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -17,6 +18,7 @@ from mirascope.core.google._utils._convert_common_call_params import (
     convert_common_call_params,
 )
 from mirascope.core.google._utils._setup_call import setup_call
+from mirascope.core.google.call_params import GoogleCallParams
 from mirascope.core.google.tool import GoogleTool
 
 
@@ -309,3 +311,76 @@ def test_setup_call_vertexai_dynamic_config_non_dict(
     metadata = fn._metadata
     assert "tags" in metadata
     assert "use_vertex_ai" in metadata["tags"]
+
+
+@patch(
+    "mirascope.core.google._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
+def test_setup_call_with_call_params(
+    mock_client_class: MagicMock,
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+    mock_base_setup_call: MagicMock,
+) -> None:
+    """Tests the `setup_call` function with direct parameters in call_params."""
+    mock_client = MagicMock()
+    mock_client_class.return_value = mock_client
+    mock_utils.setup_call = mock_base_setup_call
+    fn = MagicMock()
+
+    call_params = cast(GoogleCallParams, {"temperature": 0.8, "top_p": 0.7})
+
+    create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+        model="google-1.5-flash",
+        client=None,
+        fn=fn,
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params=call_params,
+        response_model=None,
+        stream=False,
+    )
+
+    # These parameters should be passed to the base setup_call
+    mock_base_setup_call.assert_called_with(
+        fn,
+        {},
+        None,
+        None,
+        GoogleTool,
+        call_params,  # Call params should be passed directly
+        convert_common_call_params,
+    )
+
+    # Now test with a GenerateContentConfig parameter
+    mock_base_setup_call.reset_mock()
+    call_params = cast(GoogleCallParams, {"temperature": 0.9, "top_k": 10})
+
+    create, prompt_template, messages, tool_types, call_kwargs = setup_call(
+        model="google-1.5-flash",
+        client=None,
+        fn=fn,
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params=call_params,
+        response_model=None,
+        stream=False,
+    )
+
+    # These parameters should be passed to the base setup_call
+    mock_base_setup_call.assert_called_with(
+        fn,
+        {},
+        None,
+        None,
+        GoogleTool,
+        call_params,  # Call params should be passed directly
+        convert_common_call_params,
+    )
