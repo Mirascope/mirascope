@@ -2,6 +2,7 @@
 
 import base64
 import json
+from collections.abc import Sequence
 from typing import Any
 from unittest.mock import MagicMock, patch
 
@@ -110,7 +111,9 @@ class NestedModel(BaseModel):
 @pytest.fixture
 def process_tools():
     @transform_tool_outputs
-    def _process_tools(cls: Any, tools_and_outputs: list[tuple[Any, str]]) -> list[str]:
+    def _process_tools(
+        cls: Any, tools_and_outputs: Sequence[tuple[Any, str]]
+    ) -> list[str]:
         return [output for _, output in tools_and_outputs]
 
     return _process_tools

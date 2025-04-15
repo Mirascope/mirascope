@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from functools import cached_property
 from typing import Any
 from unittest.mock import Mock, patch
@@ -71,7 +72,7 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any, Any])
     def tool(self) -> Any: ...
 
     @classmethod
-    def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]): ...  # pyright: ignore [reportIncompatibleMethodOverride]
+    def tool_message_params(cls, tools_and_outputs: Sequence[tuple[BaseTool, str]]): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:
@@ -150,6 +151,50 @@ def test_wrap_result():
     output = _wrap_result("parsed output")
     assert isinstance(output, str)
     assert output == "parsed output"
+
+
+def test_wrap_result_with_base_tool():
+    """Test that _wrap_result can handle a response containing a BaseTool."""
+
+    # Create a custom BaseTool for testing
+    class CustomBaseTool(BaseTool): ...
+
+    # Create a response instance
+    resp = ConcreteResponse(
+        metadata=Metadata(),
+        response={},
+        tool_types=[CustomBaseTool],  # Use the BaseTool subclass
+        prompt_template=None,
+        fn_args={},
+        dynamic_config={},
+        messages=[],
+        call_params=DummyCallParams(),
+        call_kwargs=BaseCallKwargs(),
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    result = _wrap_result(resp)
+    assert isinstance(result, CallResponse)
+
+    # Create a stream instance
+    resp = ConcreteStream(
+        stream=Mock(),
+        metadata=Metadata(),
+        tool_types=[CustomBaseTool],  # Use the BaseTool subclass
+        call_response_type=Mock(),  # pyright: ignore [reportArgumentType]
+        model=Mock(),  # pyright: ignore [reportArgumentType]
+        prompt_template=Mock(),
+        fn_args={},
+        dynamic_config={},
+        messages=[],
+        call_params=DummyCallParams(),
+        call_kwargs=BaseCallKwargs(),
+    )
+
+    result = _wrap_result(resp)
+    assert isinstance(result, Stream)
 
 
 def test_get_provider_call_unsupported():

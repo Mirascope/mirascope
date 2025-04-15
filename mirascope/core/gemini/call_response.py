@@ -3,6 +3,7 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from collections.abc import Sequence
 from functools import cached_property
 
 from google.generativeai.protos import FunctionResponse
@@ -173,12 +174,12 @@ class GeminiCallResponse(
     @classmethod
     @transform_tool_outputs
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[GeminiTool, str]]
+        cls, tools_and_outputs: Sequence[tuple[GeminiTool, str]]
     ) -> list[ContentDict]:
         """Returns the tool message parameters for tool call results.
 
         Args:
-            tools_and_outputs: The list of tools and their outputs from which the tool
+            tools_and_outputs: The sequence of tools and their outputs from which the tool
                 message parameters should be constructed.
 
         Returns:

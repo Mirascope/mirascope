@@ -5,7 +5,7 @@ from __future__ import annotations
 import base64
 import json
 from abc import ABC, abstractmethod
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from functools import cached_property, wraps
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar, cast
 
@@ -47,17 +47,17 @@ _BaseMessageParamConverterT = TypeVar(
 
 def transform_tool_outputs(
     fn: Callable[
-        [type[_BaseCallResponseT], list[tuple[_BaseToolT, str]]],
+        [type[_BaseCallResponseT], Sequence[tuple[_BaseToolT, str]]],
         list[_ToolMessageParamT],
     ],
 ) -> Callable[
-    [type[_BaseCallResponseT], list[tuple[_BaseToolT, JsonableType]]],
+    [type[_BaseCallResponseT], Sequence[tuple[_BaseToolT, JsonableType]]],
     list[_ToolMessageParamT],
 ]:
     @wraps(fn)
     def wrapper(
         cls: type[_BaseCallResponseT],
-        tools_and_outputs: list[tuple[_BaseToolT, JsonableType]],
+        tools_and_outputs: Sequence[tuple[_BaseToolT, JsonableType]],
     ) -> list[_ToolMessageParamT]:
         def recursive_serializer(value: JsonableType) -> BaseType:
             if isinstance(value, str):
@@ -290,12 +290,12 @@ class BaseCallResponse(
     @abstractmethod
     @transform_tool_outputs
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[_BaseToolT, str]]
+        cls, tools_and_outputs: Sequence[tuple[_BaseToolT, str]]
     ) -> list[Any]:
         """Returns the tool message parameters for tool call results.
 
         Args:
-            tools_and_outputs: The list of tools and their outputs from which the tool
+            tools_and_outputs: The sequence of tools and their outputs from which the tool
                 message parameters should be constructed.
         """
         ...
