@@ -97,7 +97,7 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
 
     with pytest.raises(
         ValueError,
-        match="Google currently only supports text, image, and audio parts. Part provided: cache_control",
+        match="Google currently only supports text, tool_call, tool_result, image, and audio parts. Part provided: cache_control",
     ):
         convert_message_params(
             [
