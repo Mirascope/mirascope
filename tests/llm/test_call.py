@@ -152,6 +152,50 @@ def test_wrap_result():
     assert output == "parsed output"
 
 
+def test_wrap_result_with_base_tool():
+    """Test that _wrap_result can handle a response containing a BaseTool."""
+
+    # Create a custom BaseTool for testing
+    class CustomBaseTool(BaseTool): ...
+
+    # Create a response instance
+    resp = ConcreteResponse(
+        metadata=Metadata(),
+        response={},
+        tool_types=[CustomBaseTool],  # Use the BaseTool subclass
+        prompt_template=None,
+        fn_args={},
+        dynamic_config={},
+        messages=[],
+        call_params=DummyCallParams(),
+        call_kwargs=BaseCallKwargs(),
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    result = _wrap_result(resp)
+    assert isinstance(result, CallResponse)
+
+    # Create a stream instance
+    resp = ConcreteStream(
+        stream=Mock(),
+        metadata=Metadata(),
+        tool_types=[CustomBaseTool],  # Use the BaseTool subclass
+        call_response_type=Mock(),  # pyright: ignore [reportArgumentType]
+        model=Mock(),  # pyright: ignore [reportArgumentType]
+        prompt_template=Mock(),
+        fn_args={},
+        dynamic_config={},
+        messages=[],
+        call_params=DummyCallParams(),
+        call_kwargs=BaseCallKwargs(),
+    )
+
+    result = _wrap_result(resp)
+    assert isinstance(result, Stream)
+
+
 def test_get_provider_call_unsupported():
     with pytest.raises(ValueError, match="Unsupported provider: bad_provider"):
         _get_provider_call("bad_provider")  # pyright: ignore [reportArgumentType]
