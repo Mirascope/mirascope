@@ -136,7 +136,7 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                                     type="tool_result",
                                     name=part.function_response.name,  # pyright: ignore [reportArgumentType]
                                     content=part.function_response.response[  # pyright: ignore [reportArgumentType, reportOptionalSubscript]
-                                        "result"
+                                        "content"
                                     ],
                                     id=None,
                                     is_error=False,

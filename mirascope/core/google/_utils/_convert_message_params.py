@@ -10,6 +10,8 @@ from google.genai.types import (
     BlobDict,
     ContentDict,
     FileDataDict,
+    FunctionCallDict,
+    FunctionResponseDict,
     PartDict,
 )
 
@@ -59,6 +61,24 @@ async def _convert_message_params_async(
             for index, part in enumerate(content):
                 if part.type == "text":
                     converted_content.append(PartDict(text=part.text))
+                elif part.type == "tool_call":
+                    converted_content.append(
+                        PartDict(
+                            function_call=FunctionCallDict(
+                                name=part.name, args=part.args, id=part.id
+                            )
+                        )
+                    )
+                elif part.type == "tool_result":
+                    converted_content.append(
+                        PartDict(
+                            function_response=FunctionResponseDict(
+                                name=part.name,
+                                response={"content": part.content},
+                                id=part.id,
+                            )
+                        )
+                    )
                 elif part.type == "image":
                     _check_image_media_type(part.media_type)
                     blob_dict = BlobDict(data=part.image, mime_type=part.media_type)
@@ -136,7 +156,7 @@ async def _convert_message_params_async(
                             total_payload_size -= audio_size
                 else:
                     raise ValueError(
-                        "Google currently only supports text, image, and audio parts. "
+                        "Google currently only supports text, tool_call, tool_result, image, and audio parts. "
                         f"Part provided: {part.type}"
                     )
 
