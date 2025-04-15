@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from functools import cached_property
 from typing import Any
 
@@ -133,12 +134,12 @@ class CallResponse(
     @classmethod
     @transform_tool_outputs
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[Tool, str]]
+        cls, tools_and_outputs: Sequence[tuple[BaseTool, str]]
     ) -> list[BaseMessageParam]:
         """Returns the tool message parameters for tool call results.
 
         Args:
-            tools_and_outputs: The list of tools and their outputs from which the tool
+            tools_and_outputs: The sequence of tools and their outputs from which the tool
                 message parameters should be constructed.
         """
 

@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from functools import cached_property
 from typing import Any, ClassVar, cast
 from unittest.mock import MagicMock, PropertyMock, patch
@@ -108,7 +109,7 @@ class DummyProviderCallResponse(
 
     @classmethod
     def tool_message_params(  # pyright: ignore [reportIncompatibleMethodOverride]
-        cls, tools_and_outputs: list[tuple[DummyTool, str]]
+        cls, tools_and_outputs: Sequence[tuple[DummyTool, str]]
     ) -> list[Any]: ...
 
     @property

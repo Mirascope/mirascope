@@ -3,6 +3,7 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from collections.abc import Sequence
 from functools import cached_property
 
 from google.cloud.aiplatform_v1beta1.types import GenerateContentResponse
@@ -163,12 +164,12 @@ class VertexCallResponse(
     @classmethod
     @transform_tool_outputs
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[VertexTool, str]]
+        cls, tools_and_outputs: Sequence[tuple[VertexTool, str]]
     ) -> list[Content]:
         """Returns the tool message parameters for tool call results.
 
         Args:
-            tools_and_outputs: The list of tools and their outputs from which the tool
+            tools_and_outputs: The sequence of tools and their outputs from which the tool
                 message parameters should be constructed.
 
         Returns:

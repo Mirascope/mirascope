@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from functools import cached_property
 from typing import Any
 from unittest.mock import Mock, patch
@@ -71,7 +72,7 @@ class ConcreteResponse(BaseCallResponse[Any, Any, Any, Any, Any, Any, Any, Any])
     def tool(self) -> Any: ...
 
     @classmethod
-    def tool_message_params(cls, tools_and_outputs: list[tuple[BaseTool, str]]): ...  # pyright: ignore [reportIncompatibleMethodOverride]
+    def tool_message_params(cls, tools_and_outputs: Sequence[tuple[BaseTool, str]]): ...  # pyright: ignore [reportIncompatibleMethodOverride]
 
     @property
     def common_finish_reasons(self) -> list[FinishReason] | None:

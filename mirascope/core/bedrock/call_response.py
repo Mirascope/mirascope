@@ -3,6 +3,7 @@
 usage docs: learn/calls.md#handling-responses
 """
 
+from collections.abc import Sequence
 from functools import cached_property
 from typing import cast
 
@@ -197,12 +198,12 @@ class BedrockCallResponse(
     @classmethod
     @transform_tool_outputs
     def tool_message_params(
-        cls, tools_and_outputs: list[tuple[BedrockTool, str]]
+        cls, tools_and_outputs: Sequence[tuple[BedrockTool, str]]
     ) -> list[ToolResultBlockMessageTypeDef]:
         """Returns the tool message parameters for tool call results.
 
         Args:
-            tools_and_outputs: The list of tools and their outputs from which the tool
+            tools_and_outputs: The sequence of tools and their outputs from which the tool
                 message parameters should be constructed.
 
         Returns:
