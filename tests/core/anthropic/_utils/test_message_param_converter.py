@@ -317,17 +317,15 @@ def test_mixed_content_tool_calls():
         ],
     }
     results = AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
-    assert len(results) == 2
+    assert len(results) == 1
     assert results == [
-        BaseMessageParam(
-            role="assistant", content=[TextPart(type="text", text="Hello")]
-        ),
         BaseMessageParam(
             role="assistant",
             content=[
+                TextPart(type="text", text="Hello"),
                 ToolCallPart(
                     type="tool_call", name="my_tool", args={"arg": 123}, id="tool_123"
-                )
+                ),
             ],
         ),
     ]
@@ -388,20 +386,20 @@ def test_tool_result_with_text():
         ],
     }
     results = AnthropicMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
-    assert len(results) == 2
+    assert len(results) == 1
 
     assert results == [
-        BaseMessageParam(role="user", content=[TextPart(type="text", text="Hello")]),
         BaseMessageParam(
             role="user",
             content=[
+                TextPart(type="text", text="Hello"),
                 ToolResultPart(
                     type="tool_result",
                     name="",
                     content="result",
                     id="tool_id",
                     is_error=False,
-                )
+                ),
             ],
         ),
     ]
