@@ -156,13 +156,12 @@ class GoogleCallResponse(
 
     @cached_property
     def tools(self) -> list[GoogleTool] | None:
-        """Returns the list of tools for the 0th candidate's 0th content part."""
+        """Returns the list of tools for the response."""
         if self.tool_types is None:
             return None
 
         extracted_tools = []
-        for part in self.response.candidates[0].content.parts:  # pyright: ignore [reportReturnType, reportOptionalSubscript, reportOptionalMemberAccess, reportOptionalIterable]
-            tool_call = part.function_call
+        for tool_call in self.response.function_calls or []:
             for tool_type in self.tool_types:
                 if tool_call.name == tool_type._name():  # pyright: ignore [reportOptionalMemberAccess]
                     extracted_tools.append(tool_type.from_tool_call(tool_call))  # pyright: ignore [reportArgumentType]
