@@ -14,6 +14,8 @@ from mirascope.core.base import (
     ImagePart,
     ImageURLPart,
     TextPart,
+    ToolCallPart,
+    ToolResultPart,
 )
 from mirascope.core.google._utils._convert_message_params import convert_message_params
 
@@ -668,3 +670,73 @@ async def test_convert_message_in_running_loop():
     """Tests convert_message_params in an async context."""
     result = convert_message_params([], MagicMock())
     assert result == []
+
+
+def test_tool_call_parts() -> None:
+    """Test handling of tool_call parts."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            TextPart(type="text", text="I need to search for something"),
+            ToolCallPart(
+                type="tool_call",
+                name="search",
+                args={"query": "python programming"},
+                id="tool-1234",
+            ),
+        ],
+    )
+
+    result = convert_message_params([message], MagicMock())
+
+    assert result == [
+        {
+            "parts": [
+                {"text": "I need to search for something"},
+                {
+                    "function_call": {
+                        "name": "search",
+                        "args": {"query": "python programming"},
+                        "id": "tool-1234",
+                    }
+                },
+            ],
+            "role": "user",
+        }
+    ]
+
+
+def test_tool_result_parts() -> None:
+    """Test handling of tool_result parts."""
+    message = BaseMessageParam(
+        role="assistant",
+        content=[
+            TextPart(type="text", text="Here are the search results:"),
+            ToolResultPart(
+                type="tool_result",
+                name="search",
+                content="Python is a programming language",
+                id="tool-1234",
+            ),
+        ],
+    )
+
+    result = convert_message_params([message], MagicMock())
+
+    assert result == [
+        {
+            "parts": [
+                {"text": "Here are the search results:"},
+                {
+                    "function_response": {
+                        "name": "search",
+                        "response": {
+                            "content": "Python is a programming language",
+                        },
+                        "id": "tool-1234",
+                    }
+                },
+            ],
+            "role": "model",
+        }
+    ]
