@@ -7,20 +7,33 @@ content arrays that can include text, images, audio, documents, and tool interac
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import Enum
 from typing import Literal, Protocol, TypeAlias, TypeVar, runtime_checkable
 
+
+class Jsonable(Protocol):
+    """Protocol for JSON-serializable objects.
+
+    This protocol defines the interface for objects that can be serialized to
+    JSON. It is used to annotate the `JsonableType` type alias.
+    """
+
+    def json(self) -> str:
+        """Convert the object to a JSON-serializable format."""
+        ...
+
+
 JsonableType: TypeAlias = (
     None
-    | bool
+    | str
     | int
     | float
-    | str
-    | Enum
-    | list["JsonableType"]
-    | dict[str, "JsonableType"]
+    | bool
+    | Sequence["JsonableType"]
+    | Mapping[str, "JsonableType"]
+    | Jsonable
 )
 """Simple type alias for JSON-serializable types."""
 

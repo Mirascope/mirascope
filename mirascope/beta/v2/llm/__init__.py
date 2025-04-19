@@ -1,6 +1,6 @@
 """The `llm` module for writing provider-agnostic LLM Generations."""
 
-from mirascope.beta.v2.llm.messages import (
+from mirascope.beta.v2.llm.message import (
     Audio,
     Content,
     Document,
@@ -15,6 +15,7 @@ from mirascope.beta.v2.llm.messages import (
     system,
     user,
 )
+from mirascope.beta.v2.llm.tool import Tool, ToolDef, tool
 
 __all__ = [
     "Audio",
@@ -25,9 +26,12 @@ __all__ = [
     "Role",
     "Text",
     "Thinking",
+    "Tool",
     "ToolCall",
+    "ToolDef",
     "ToolOutput",
     "assistant",
     "system",
+    "tool",
     "user",
 ]
