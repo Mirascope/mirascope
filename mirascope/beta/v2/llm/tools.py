@@ -12,7 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Generic, ParamSpec, Protocol, TypeGuard, TypeVar
 
-from .message import JsonableType
+from .messages import JsonableType
 
 __all__ = [
     "Tool",
