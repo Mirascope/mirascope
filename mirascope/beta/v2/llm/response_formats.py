@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import (
     Any,
     Generic,
@@ -24,28 +25,52 @@ T = TypeVar("T")
 CovariantT = TypeVar("CovariantT", covariant=True)
 
 
-class TextFormatDef(Protocol[CovariantT]):
-    """Protocol for defining a response format."""
+class JsonParserFn(Protocol[CovariantT]):
+    """Protocol for a JSON mode response format parser."""
 
-    # def __call__(
-    #     self,
-    #     *args: P.args,
-    #     **kwargs: P.kwargs,
-    # ) -> CovariantT: ...
+    def __call__(self, json: dict[str, Any]) -> CovariantT:
+        """Parse a JSON response into an instance of the class.
 
-    @classmethod
-    def parse(cls, text: str) -> CovariantT:
+        Args:
+            json: The JSON response from the LLM.
+
+        Returns:
+            An instance of the class `CovariantT`.
+        """
+        raise NotImplementedError()
+
+
+class ToolParserFn(Protocol[CovariantT]):
+    """Protocol for a tool mode response format parser."""
+
+    def __call__(self, args: dict[str, Any]) -> CovariantT:
+        """Parse a tool call response into an instance of the class.
+
+        Args:
+            args: The arguments generated for the tool call.
+
+        Returns:
+            An instance of the class `CovariantT`.
+        """
+        raise NotImplementedError()
+
+
+class TextParserFn(Protocol[CovariantT]):
+    """Protocol for a text mode response format parser."""
+
+    def __call__(self, text: str) -> CovariantT:
         """Parse a text response into an instance of the class.
 
         Args:
             text: The text response from the LLM.
 
         Returns:
-            An instance of the class.
+            An instance of the class `CovariantT`.
         """
         raise NotImplementedError()
 
 
+@dataclass
 class ResponseFormat(Generic[T]):
     """Class representing a structured output format for LLM responses.
 
@@ -88,18 +113,57 @@ class ResponseFormat(Generic[T]):
     schema: dict[str, Any]
     """The original class definition before being decorated."""
 
+    parser: JsonParserFn[T] | ToolParserFn[T] | TextParserFn[T]
+    """The parser for formatting the response."""
+
     mode: Literal["json", "tool", "text"]
-    """The mode that determines how the response should be formatted and parsed."""
+    """The mode of the response format, determined from the parser's signature."""
+
+    formatting_instructions: str
+    """Response formatting instructions, pulled from the parser's docstring."""
 
     strict: bool
     """Whether the response format should use strict validation when supported."""
 
-    @classmethod
-    def parse(cls, text: str) -> T:
-        """Parse a text response into an instance of the class.
 
-        For "json" and "tool" modes, this method has a default implementation.
-        For "text" mode, this method must be implemented by the decorated class.
+class JsonResponseFormatDef(Protocol[CovariantT]):
+    """Protocol for defining a JSON mode response format."""
+
+    @classmethod
+    def parse(cls, json: dict[str, Any]) -> CovariantT:
+        """Parse a JSON response into an instance of the class.
+
+        Args:
+            json: The JSON response from the LLM.
+
+        Returns:
+            An instance of the class.
+        """
+        raise NotImplementedError()
+
+
+class ToolResponseFormatDef(Protocol[CovariantT]):
+    """Protocol for defining a tool mode response format."""
+
+    @classmethod
+    def parse(cls, args: dict[str, Any]) -> CovariantT:
+        """Parse a tool call response into an instance of the class.
+
+        Args:
+            args: The arguments generated for the tool call.
+
+        Returns:
+            An instance of the class.
+        """
+        raise NotImplementedError()
+
+
+class TextResponseFormatDef(Protocol[CovariantT]):
+    """Protocol for defining a text mode response format."""
+
+    @classmethod
+    def parse(cls, text: str) -> CovariantT:
+        """Parse a text response into an instance of the class.
 
         Args:
             text: The text response from the LLM.
@@ -112,93 +176,105 @@ class ResponseFormat(Generic[T]):
 
 @overload
 def response_format(
-    *,
-    mode: Literal["text"],
-    strict: bool = False,
-) -> Callable[[type[TextFormatDef[T]]], type[ResponseFormat[T]]]:
-    """Overload for "text" mode, which requires a parse method."""
-    ...
+    __cls: type[
+        JsonResponseFormatDef[T] | ToolResponseFormatDef[T] | TextResponseFormatDef[T]
+    ],
+) -> ResponseFormat[T]:
+    """Overload for no arguments, which requires a parser classmethod."""
 
 
 @overload
 def response_format(
     *,
-    mode: Literal["json", "tool"] = "json",
+    parser: None = None,
     strict: bool = False,
-) -> Callable[[type[T]], type[ResponseFormat[T]]]:
-    """Overload for "json" and "tool" modes, which use default parsers."""
-    ...
+) -> Callable[
+    [JsonResponseFormatDef[T] | ToolResponseFormatDef[T] | TextResponseFormatDef[T]],
+    ResponseFormat[T],
+]:
+    """Overload for no default parser, which requires a parser classmethod."""
+
+
+@overload
+def response_format(
+    *,
+    parser: Literal["json", "tool"],
+    strict: bool = False,
+) -> Callable[[type[T]], ResponseFormat[T]]:
+    """Overload for setting a default parser."""
 
 
 def response_format(
+    __cls=None,
     *,
-    mode: Literal["json", "tool", "text"] = "json",
+    parser: Literal["json", "tool"] | None = None,
     strict: bool = False,
 ) -> (
-    Callable[[type[T]], type[ResponseFormat[T]]]
-    | Callable[[type[TextFormatDef[T]]], type[ResponseFormat[T]]]
+    ResponseFormat[T]
+    | Callable[
+        [
+            JsonResponseFormatDef[T]
+            | ToolResponseFormatDef[T]
+            | TextResponseFormatDef[T]
+        ],
+        ResponseFormat[T],
+    ]
+    | Callable[[type[T]], ResponseFormat[T]]
 ):
-    """Decorator that defines a structured response format for LLM outputs.
+    '''Decorator that defines a structured response format for LLM outputs.
 
     This decorator can be applied to a class to define how LLM responses should be
-    structured and parsed. The decorated class becomes a ResponseFormat that can be
+    structured and parsed. The decorated class becomes a `ResponseFormat` that can be
     used with `llm.generation` to specify the expected response structure.
 
     Args:
-        mode: The mode to use for structuring outputs:
-            - "json" (default): Use JSON mode for structured outputs
+        parser: The default parser to use, if any:
+            - "json": Use JSON mode for structured outputs
             - "tool": Use forced tool calling to structure outputs
-            - "text": Return a text string that will be parsed with parse()
-        strict: Whether to use strict validation when supported by the model.
+            - None: No default parser is applied, and a parser classmethod is required
+        strict: Whether to use strict structured outputs when supported by the model.
             Default is False.
 
     Returns:
-        A decorator function that converts the class into a ResponseFormat.
+        A decorator function that converts the class into a `ResponseFormat`.
 
     Example:
 
+        A simple `Book` response formatted using the default "json" parser:
+
         ```python
         from mirascope import llm
-        from typing import Any
 
-        # JSON mode (default)
-        @llm.response_format()
+        @llm.response_format(parser="json")
+        class Book:
+            title: str
+            author: str
+        ```
+
+    Example:
+
+        A custom text parser
+
+        ```python
+        from typing_extensions import Self
+
+        from mirascope import llm
+
+        @llm.response_format
         class Book:
             title: str
             author: str
 
-        # Tool mode with strict validation
-        @llm.response_format(mode="tool", strict=True)
-        class Weather:
-            temperature: float
-            conditions: str
-
-        # Text mode with custom parsing
-        @llm.response_format(mode="text")
-        class MovieRecommendation:
-            title: str
-            director: str
-
             @classmethod
-            def parse(cls, text: str) -> "MovieRecommendation":
-                lines = text.strip().split("\\n")
-                return cls(
-                    title=lines[0].replace("Title: ", ""),
-                    director=lines[1].replace("Director: ", "")
-                )
+            def parse(cls, text: str) -> Self:
+                """FORMATTING INSTRUCTIONS:
 
-        # Usage with a generation
-        @llm.generation(response_format=Book)
-        def recommend_book(genre: str) -> list[llm.Message]:
-            return [
-                llm.system("You are a helpful assistant."),
-                llm.user(f"Recommend a {genre} book.")
-            ]
-
-        # The response can be formatted as a Book instance
-        response = recommend_book("fantasy")
-        book = response.format()  # Returns a Book instance
-        print(f"{book.title} by {book.author}")
+                ```plaintext
+                {title} by {author}
+                ```
+                """
+                title, author = text.split(" by ")
+                return cls(title=title.strip(), author=author.strip())
         ```
-    """
+    '''
     raise NotImplementedError()

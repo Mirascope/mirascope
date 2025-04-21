@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Generic, ParamSpec, Protocol, TypeGuard, TypeVar
+from typing import Any, Generic, ParamSpec, Protocol, TypeGuard, TypeVar, overload
 
 from .messages import JsonableType
 
@@ -106,7 +106,19 @@ class ToolDef(Protocol[P, R]):
         raise NotImplementedError()
 
 
+@overload
+def tool(__fn: Callable[P, R]) -> ToolDef[P, R]:
+    """Overload for no arguments, which uses default settings."""
+
+
+@overload
 def tool(*, strict: bool = False) -> Callable[[Callable[P, R]], ToolDef[P, R]]:
+    """Overload for setting non-default arguments."""
+
+
+def tool(
+    __fn=None, *, strict: bool = False
+) -> ToolDef[P, R] | Callable[[Callable[P, R]], ToolDef[P, R]]:
     '''Decorator that turns a function into a tool definition.
 
     This decorator creates a `ToolDef` that can be used with `llm.generation`.
