@@ -7,10 +7,15 @@ content arrays that can include text, images, audio, documents, and tool interac
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal, Protocol, TypeAlias
+from typing import Literal, ParamSpec, Protocol, TypeAlias
+
+from tools import ToolDef
+from typing_extensions import NotRequired, TypedDict
+
+P = ParamSpec("P")
 
 
 class Jsonable(Protocol):
@@ -319,3 +324,35 @@ def assistant(
         A Message with the assistant role.
     """
     return Message(role=Role.ASSISTANT, content=content, name=name)
+
+
+class DynamicConfig(TypedDict):
+    """Class for specifying dynamic configuration in a prompt template method."""
+
+    computed_fields: NotRequired[dict[str, JsonableType]]
+    """The fields injected into the messages that are computed dynamically."""
+
+    tools: NotRequired[Sequence[ToolDef]]
+    """The list of dynamic tools to merge into the existing tools in the LLM call."""
+
+
+class PromptTemplate(Protocol[P]):
+    """Protocol for a prompt template function.
+
+    This protocol defines the interface for a prompt template, which is used to create
+    a list of messages based on a given input. The template can be used to generate
+    messages for different roles (system, user, assistant).
+    """
+
+    def __call__(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> list[Message] | tuple[list[Message], DynamicConfig]:
+        """Renders the list of messages (and dynamic config) given input arguments."""
+        ...
+
+
+def prompt_template(
+    template: str,
+) -> Callable[[Callable[P, None | DynamicConfig]], PromptTemplate[P]]:
+    """Prompt template decorator for writing messages as a string template."""
+    raise NotImplementedError()

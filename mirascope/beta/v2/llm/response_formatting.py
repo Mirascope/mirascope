@@ -37,7 +37,7 @@ class JsonParserFn(Protocol[CovariantT]):
         Returns:
             An instance of the class `CovariantT`.
         """
-        raise NotImplementedError()
+        ...
 
 
 class ToolParserFn(Protocol[CovariantT]):
@@ -52,7 +52,7 @@ class ToolParserFn(Protocol[CovariantT]):
         Returns:
             An instance of the class `CovariantT`.
         """
-        raise NotImplementedError()
+        ...
 
 
 class TextParserFn(Protocol[CovariantT]):
@@ -67,7 +67,7 @@ class TextParserFn(Protocol[CovariantT]):
         Returns:
             An instance of the class `CovariantT`.
         """
-        raise NotImplementedError()
+        ...
 
 
 @dataclass
@@ -139,7 +139,7 @@ class JsonResponseFormatDef(Protocol[CovariantT]):
         Returns:
             An instance of the class.
         """
-        raise NotImplementedError()
+        ...
 
 
 class ToolResponseFormatDef(Protocol[CovariantT]):
@@ -155,7 +155,7 @@ class ToolResponseFormatDef(Protocol[CovariantT]):
         Returns:
             An instance of the class.
         """
-        raise NotImplementedError()
+        ...
 
 
 class TextResponseFormatDef(Protocol[CovariantT]):
@@ -171,7 +171,7 @@ class TextResponseFormatDef(Protocol[CovariantT]):
         Returns:
             An instance of the class.
         """
-        raise NotImplementedError()
+        ...
 
 
 @overload
@@ -181,6 +181,7 @@ def response_format(
     ],
 ) -> ResponseFormat[T]:
     """Overload for no arguments, which requires a parser classmethod."""
+    ...
 
 
 @overload
@@ -193,6 +194,7 @@ def response_format(
     ResponseFormat[T],
 ]:
     """Overload for no default parser, which requires a parser classmethod."""
+    ...
 
 
 @overload
@@ -202,6 +204,7 @@ def response_format(
     strict: bool = False,
 ) -> Callable[[type[T]], ResponseFormat[T]]:
     """Overload for setting a default parser."""
+    ...
 
 
 def response_format(
