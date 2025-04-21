@@ -20,7 +20,7 @@ PROVIDER_INFO: dict[Provider, ProviderInfo] = {
     ),
     "google": ProviderInfo(provider="google", title="Google", model="gemini-2.0-flash"),
     "groq": ProviderInfo(
-        provider="groq", title="Groq", model="llama-3.1-70b-versatile"
+        provider="groq", title="Groq", model="llama-3.3-70b-versatile"
     ),
     "xai": ProviderInfo(provider="xai", title="xAI", model="grok-3"),
     "mistral": ProviderInfo(
