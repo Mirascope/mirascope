@@ -48,7 +48,9 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
         for message_param in message_params:
             if isinstance(message_param, dict):
                 message_param = Content.model_validate(message_param)
-            role: str = "assistant"
+            role = message_param.role
+            if not role or role == "model":
+                role = "assistant"
             content_list = []
             for part in message_param.parts or []:
                 if part.text:
