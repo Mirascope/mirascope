@@ -12,8 +12,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Literal, ParamSpec, Protocol, TypeAlias
 
-from tools import ToolDef
 from typing_extensions import NotRequired, TypedDict
+
+from .tools import ToolDef
 
 P = ParamSpec("P")
 
@@ -327,13 +328,27 @@ def assistant(
 
 
 class DynamicConfig(TypedDict):
-    """Class for specifying dynamic configuration in a prompt template method."""
+    """Class for specifying dynamic configuration in a prompt template method.
+
+    This class allows prompt template functions to return additional configuration
+    options that will be applied during message generation, such as computed fields
+    that should be injected into the template or tools that should be made available
+    to the LLM.
+    """
 
     computed_fields: NotRequired[dict[str, JsonableType]]
-    """The fields injected into the messages that are computed dynamically."""
+    """The fields injected into the messages that are computed dynamically.
+    
+    These fields will be available for use in the template with the {{ field_name }} syntax,
+    and will override any fields with the same name provided in the function arguments.
+    """
 
     tools: NotRequired[Sequence[ToolDef]]
-    """The list of dynamic tools to merge into the existing tools in the LLM call."""
+    """The list of dynamic tools to merge into the existing tools in the LLM call.
+    
+    These tools will be added to any tools specified in the generation decorator
+    or at generation call time.
+    """
 
 
 class PromptTemplate(Protocol[P]):
@@ -341,18 +356,63 @@ class PromptTemplate(Protocol[P]):
 
     This protocol defines the interface for a prompt template, which is used to create
     a list of messages based on a given input. The template can be used to generate
-    messages for different roles (system, user, assistant).
+    messages for different roles (system, user, assistant) by parsing a string template
+    with sections and variable placeholders.
+
+    Functions decorated with `@prompt_template` will implement this protocol.
     """
 
     def __call__(
         self, *args: P.args, **kwargs: P.kwargs
     ) -> list[Message] | tuple[list[Message], DynamicConfig]:
-        """Renders the list of messages (and dynamic config) given input arguments."""
+        """Renders the list of messages (and dynamic config) given input arguments.
+
+        Args:
+            *args: Positional arguments to pass to the template function.
+            **kwargs: Keyword arguments to pass to the template function.
+
+        Returns:
+            Either a list of messages, or a tuple containing a list of messages and
+            a DynamicConfig object with additional configuration options.
+        """
         ...
 
 
 def prompt_template(
     template: str,
 ) -> Callable[[Callable[P, None | DynamicConfig]], PromptTemplate[P]]:
-    """Prompt template decorator for writing messages as a string template."""
+    '''Prompt template decorator for writing messages as a string template.
+
+    This decorator transforms a function into a prompt template that will process
+    template placeholders and convert sections into messages. Templates can include
+    sections like [SYSTEM], [USER], [ASSISTANT] to designate role-specific content.
+
+    Args:
+        template: A string template with placeholders for variables using the
+            format `{{ variable_name }}` and optional section markers like [SYSTEM],
+            [USER], and [ASSISTANT].
+
+    Returns:
+        A decorator function that converts the decorated function into a prompt template.
+
+    Example:
+        ```python
+        from mirascope import llm
+
+        @llm.prompt_template("""
+            [SYSTEM]
+            You are a helpful assistant specializing in {{ domain }}.
+
+            [USER]
+            {{ question }}
+        """)
+        def my_prompt(domain: str, question: str) -> None:
+            # This function body can be empty or contain logic for computing
+            # dynamic fields or tools that are returned via DynamicConfig
+            pass
+
+        # Use the prompt template to generate messages
+        messages = my_prompt(domain="astronomy", question="What is a black hole?")
+        ```
+    '''
     raise NotImplementedError()
