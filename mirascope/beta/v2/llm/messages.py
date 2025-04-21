@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal, Protocol, TypeAlias, TypeVar, runtime_checkable
+from typing import Literal, Protocol, TypeAlias
 
 
 class Jsonable(Protocol):
@@ -53,42 +53,21 @@ __all__ = [
     "user",
 ]
 
-T = TypeVar("T")
-C = TypeVar("C", bound="Content")
 
-
-@runtime_checkable
-class Content(Protocol):
-    """Protocol defining the interface for message content parts.
-
-    All content types must implement this protocol. Content objects represent
-    the different types of content that can be included in a message, such as
-    text, images, audio, documents, or tool interactions.
-    """
-
-    @property
-    def type(self) -> str:
-        """The type of the content part."""
-        ...
-
-
-@dataclass
+@dataclass(kw_only=True)
 class Text:
     """Text content for a message.
 
     This is the most common content type, representing plain text in a message.
     """
 
+    type: Literal["text"] = "text"
+
     text: str
     """The text content."""
 
-    @property
-    def type(self) -> Literal["text"]:
-        """The type of the content part."""
-        return "text"
 
-
-@dataclass
+@dataclass(kw_only=True)
 class Image:
     """Image content for a message.
 
@@ -97,45 +76,79 @@ class Image:
     generating an image).
     """
 
+    type: Literal["image"] = "image"
+
     image: str | bytes
     """The image data, which can be a URL, file path, base64-encoded string, or binary data."""
 
-    mime_type: Literal["image/png", "image/jpeg", "image/gif", "image/webp"] | str
+    mime_type: Literal[
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/gif",
+        "image/heic",
+        "image/heif",
+    ]
     """The MIME type of the image, e.g., 'image/png', 'image/jpeg'."""
 
-    @property
-    def type(self) -> Literal["image"]:
-        """The type of the content part."""
-        return "image"
 
-
-@dataclass
+@dataclass(kw_only=True)
 class Audio:
     """Audio content for a message.
 
     Audio can be included in messages for voice or sound-based interactions.
     """
 
+    type: Literal["audio"] = "audio"
+
     audio: str | bytes
     """The audio data, which can be a URL, file path, base64-encoded string, or binary data."""
 
-    mime_type: (
-        Literal["audio/mp3", "audio/mpeg", "audio/wav", "audio/ogg", "audio/webm"] | str
-    )
+    mime_type: Literal[
+        "audio/wav",
+        "audio/mp3",
+        "audio/aiff",
+        "audio/aac",
+        "audio/ogg",
+        "audio/flac",
+    ]
     """The MIME type of the audio, e.g., 'audio/mp3', 'audio/wav'."""
 
-    @property
-    def type(self) -> Literal["audio"]:
-        """The type of the content part."""
-        return "audio"
+
+@dataclass(kw_only=True)
+class Video:
+    """Video content for a message.
+
+    Video can be included in messages for video-based interactions.
+    """
+
+    type: Literal["video"] = "video"
+
+    video: str | bytes
+    """The video data, which can be a URL, file path, base64-encoded string, or binary data."""
+
+    mime_type: Literal[
+        "video/mp4",
+        "video/mpeg",
+        "video/mov",
+        "video/avi",
+        "video/x-flv",
+        "video/mpg",
+        "video/webm",
+        "video/wmv",
+        "video/3gpp",
+    ]
+    """The MIME type of the video, e.g., 'video/mp4', 'video/webm'."""
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Document:
     """Document content for a message.
 
     Documents (like PDFs) can be included for the model to analyze or reference.
     """
+
+    type: Literal["document"] = "document"
 
     document: str | bytes
     """The document data, which can be a URL, file path, base64-encoded string, or binary data."""
@@ -148,19 +161,16 @@ class Document:
     )
     """The MIME type of the document, e.g., 'application/pdf'."""
 
-    @property
-    def type(self) -> Literal["document"]:
-        """The type of the content part."""
-        return "document"
 
-
-@dataclass
+@dataclass(kw_only=True)
 class ToolCall:
     """Tool call content for a message.
 
     Represents a request from the assistant to call a tool. This is part of
     an assistant message's content.
     """
+
+    type: Literal["tool_call"] = "tool_call"
 
     name: str
     """The name of the tool to call."""
@@ -171,13 +181,8 @@ class ToolCall:
     id: str
     """A unique identifier for this tool call."""
 
-    @property
-    def type(self) -> Literal["tool_call"]:
-        """The type of the content part."""
-        return "tool_call"
 
-
-@dataclass
+@dataclass(kw_only=True)
 class ToolOutput:
     """Tool output content for a message.
 
@@ -185,25 +190,24 @@ class ToolOutput:
     content, typically following a tool call from the assistant.
     """
 
+    type: Literal["tool_response"] = "tool_response"
+
     id: str
     """The ID of the tool call that this output is for."""
 
     output: JsonableType
     """The output from the tool call."""
 
-    @property
-    def type(self) -> Literal["tool_response"]:
-        """The type of the content part."""
-        return "tool_response"
 
-
-@dataclass
+@dataclass(kw_only=True)
 class Thinking:
     """Thinking content for a message.
 
     Represents the thinking or thought process of the assistant. This is part
     of an assistant message's content.
     """
+
+    type: Literal["thinking"] = "thinking"
 
     id: str
     """The ID of the thinking content."""
@@ -214,10 +218,10 @@ class Thinking:
     redacted: bool = False
     """Whether the thinking is redacted or not."""
 
-    @property
-    def type(self) -> Literal["thinking"]:
-        """The type of the content part."""
-        return "thinking"
+
+Content: TypeAlias = (
+    str | Text | Image | Audio | Video | Document | ToolCall | ToolOutput | Thinking
+)
 
 
 class Role(str, Enum):
@@ -233,7 +237,7 @@ class Role(str, Enum):
     """The assistant role, representing the AI in the conversation."""
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Message:
     """A message in an LLM interaction.
 
@@ -259,43 +263,39 @@ class Message:
     role: Role
     """The role of the message sender (system, user, or assistant)."""
 
-    content: str | Content | Sequence[str | Content]
+    content: Content | Sequence[Content]
     """The content of the message, which can be text, images, audio, etc."""
 
     name: str | None = None
     """Optional name to identify specific users or assistants in multi-party conversations."""
 
 
-def system(
-    content: str | Content | Sequence[str | Content], *, name: str | None = None
-) -> Message:
+def system(content: Content | Sequence[Content], *, name: str | None = None) -> Message:
     """Shorthand method for creating a `Message` with the system role.
 
     Args:
-        content: The content of the message, which can be a string, a Content object,
-            or a sequence of Content objects.
+        content: The content of the message, which can be a string, a Content-type
+            object, or a sequence of Content-type objects.
         name: Optional name to identify a specific system in multi-party conversations.
 
     Returns:
         A Message with the system role.
     """
-    return Message(Role.SYSTEM, content, name=name)
+    return Message(role=Role.SYSTEM, content=content, name=name)
 
 
-def user(
-    content: str | Content | Sequence[str | Content], *, name: str | None = None
-) -> Message:
+def user(content: Content | Sequence[Content], *, name: str | None = None) -> Message:
     """Shorthand method for creating a `Message` with the user role.
 
     Args:
-        content: The content of the message, which can be a string, a Content object,
-            or a sequence of Content objects.
+        content: The content of the message, which can be a string, a Content-type
+            object, or a sequence of Content-type objects.
         name: Optional name to identify a specific user in multi-party conversations.
 
     Returns:
         A Message with the user role.
     """
-    return Message(Role.USER, content, name=name)
+    return Message(role=Role.USER, content=content, name=name)
 
 
 def assistant(
@@ -304,11 +304,11 @@ def assistant(
     """Shorthand method for creating a `Message` with the assistant role.
 
     Args:
-        content: The content of the message, which can be a string, a Content object,
-            or a sequence of Content objects.
+        content: The content of the message, which can be a string, a Content-type
+            object, or a sequence of Content-type objects.
         name: Optional name to identify a specific assistant in multi-party conversations.
 
     Returns:
         A Message with the assistant role.
     """
-    return Message(Role.ASSISTANT, content, name=name)
+    return Message(role=Role.ASSISTANT, content=content, name=name)
