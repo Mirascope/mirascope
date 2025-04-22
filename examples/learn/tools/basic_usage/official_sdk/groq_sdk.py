@@ -16,7 +16,7 @@ def get_book_author(title: str) -> str:
 
 def identify_author(book: str) -> str:
     completion = client.chat.completions.create(
-        model="llama-3.1-70b-versatile",
+        model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": f"Who wrote {book}?"}],
         tools=[
             {
