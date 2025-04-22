@@ -107,48 +107,23 @@ class AnthropicMessageParamConverter(BaseMessageParamConverter):
                         )
 
                 elif block["type"] == "tool_use":
-                    if converted_content:
-                        converted.append(
-                            BaseMessageParam(
-                                role=message_param["role"], content=converted_content
-                            )
-                        )
-                        converted_content = []
-                    converted.append(
-                        BaseMessageParam(
-                            role="assistant",
-                            content=[
-                                ToolCallPart(
-                                    type="tool_call",
-                                    args=cast(dict, block["input"]),
-                                    id=block["id"],
-                                    name=block["name"],
-                                )
-                            ],
+                    converted_content.append(
+                        ToolCallPart(
+                            type="tool_call",
+                            args=cast(dict, block["input"]),
+                            id=block["id"],
+                            name=block["name"],
                         )
                     )
-
                 elif block["type"] == "tool_result":
-                    if converted_content:
-                        converted.append(
-                            BaseMessageParam(
-                                role=message_param["role"], content=converted_content
-                            )
-                        )
-                        converted_content = []
-                    converted.append(
-                        BaseMessageParam(
-                            role="user",
-                            content=[
-                                ToolResultPart(
-                                    type="tool_result",
-                                    content=block["content"]  # pyright: ignore [reportTypedDictNotRequiredAccess]
-                                    if isinstance(block["content"], str)  # pyright: ignore [reportTypedDictNotRequiredAccess]
-                                    else list(block["content"])[0]["text"],  # pyright: ignore [reportTypedDictNotRequiredAccess, reportGeneralTypeIssues]
-                                    id=block["tool_use_id"],
-                                    is_error=block.get("is_error", False),
-                                )
-                            ],
+                    converted_content.append(
+                        ToolResultPart(
+                            type="tool_result",
+                            content=block["content"]  # pyright: ignore [reportTypedDictNotRequiredAccess]
+                            if isinstance(block["content"], str)  # pyright: ignore [reportTypedDictNotRequiredAccess]
+                            else list(block["content"])[0]["text"],  # pyright: ignore [reportTypedDictNotRequiredAccess, reportGeneralTypeIssues]
+                            id=block["tool_use_id"],
+                            is_error=block.get("is_error", False),
                         )
                     )
                 else:

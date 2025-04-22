@@ -92,6 +92,11 @@ def convert_message_params(
                         f"control parts. Part provided: {part.type}"
                     )
             converted_message_params.append(
-                {"role": message_param.role, "content": converted_content}
+                {
+                    "role": "user"
+                    if message_param.role == "tool"
+                    else message_param.role,
+                    "content": converted_content,
+                }
             )
     return converted_message_params

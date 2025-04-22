@@ -184,6 +184,8 @@ __Decorator Parameter:__
             ```python hl_lines="7-10 14"
             {% elif provider == "Mistral" %}
             ```python hl_lines="4 8"
+            {% elif provider == "xAI" %}
+            ```python hl_lines="2 7"
             {% else %}
             ```python hl_lines="1 5"
             {% endif %}

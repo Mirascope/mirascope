@@ -12,7 +12,7 @@ class Book(BaseModel):
 
 
 @with_logfire()
-@groq.call("llama-3.1-70b-versatile", response_model=Book)
+@groq.call("llama-3.3-70b-versatile", response_model=Book)
 def recommend_book(genre: str) -> Messages.Type:
     return Messages.User(f"Recommend a {genre} book")
 

@@ -238,6 +238,7 @@ def _call(
         | Awaitable[_ParsedOutputT]
         | Awaitable[(_ResponseModelT | CallResponse)],
     ]:
+        fn.__mirascope_call__ = True  # pyright: ignore [reportFunctionMemberAccess]
         if fn_is_async(fn):
             # Create a wrapper function that captures the current context when called
             @wraps(fn)

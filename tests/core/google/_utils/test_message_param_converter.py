@@ -191,7 +191,7 @@ def test_inline_data_unknown_mime_type():
 def test_function_response():
     part = PartDict(
         function_response=FunctionResponseDict(
-            name="some_tool", response={"result": "value"}
+            name="some_tool", response={"content": "value"}
         )
     )
     results = GoogleMessageParamConverter.from_provider(
