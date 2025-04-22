@@ -26,6 +26,5 @@ def test_no_missing_snippets():
             if provider in str_path:
                 missing_snippets[provider].append(snippet)
                 break
-    assert all(
-        len(missing_snippets) == 0 for _, missing_snippets in missing_snippets.items()
-    )
+    for provider, snippets in missing_snippets.items():
+        assert len(snippets) == 0, f"Missing snippets for {provider}: {snippets}"
