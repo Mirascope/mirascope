@@ -20,7 +20,7 @@ PROVIDERS = [
 
 def test_no_missing_snippets():
     missing_snippets = {provider: [] for provider in PROVIDERS}
-    for snippet in all_missing_snippets(Path(".")):
+    for snippet in all_missing_snippets(Path(".")):  # pragma: no cover
         str_path = str(snippet.path)
         for provider in missing_snippets:
             if provider in str_path:
