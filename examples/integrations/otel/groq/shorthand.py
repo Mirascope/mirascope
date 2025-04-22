@@ -5,7 +5,7 @@ configure()
 
 
 @with_otel()
-@groq.call("llama-3.1-70b-versatile")
+@groq.call("llama-3.3-70b-versatile")
 def recommend_book(genre: str) -> str:
     return f"Recommend a {genre} book"
 
