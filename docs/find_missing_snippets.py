@@ -117,7 +117,7 @@ def missing_snippets_for_file(
     markdown_content = markdown_path.read_text()
     for path in substituted_snippet_paths(markdown_content, substitutions):
         if not path.exists():
-            yield Snippet(path, markdown_path)
+            yield Snippet(path, markdown_path)  # pragma: no cover
 
 
 def all_missing_snippets(root_dir: Path) -> Iterable[Snippet]:
