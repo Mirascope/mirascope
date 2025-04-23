@@ -208,17 +208,3 @@ class LLM(Model[ParamsT, ClientT], Generic[ParamsT, ClientT], ABC):
     ) -> AsyncStream | AsyncStructuredStream[T]:
         """Stream a response asynchronously using the model."""
         ...
-
-
-class EmbeddingModel(Model[ParamsT, ClientT], Generic[ParamsT, ClientT], ABC):
-    """The base interface for embedding models.
-
-    This class defines the interface for interacting with embedding models from
-    various providers. It handles the common operations like generating embeddings,
-    streaming, and async variants of these operations.
-
-    Implementations of this class for specific providers should extend it and
-    implement the abstract methods for embedding and streaming.
-    """
-
-    ...
