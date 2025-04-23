@@ -44,12 +44,12 @@ class Call(Generic[P]):
         """Generates a response using the LLM."""
         raise NotImplementedError()
 
-    def stream(self, *args: P.args, **kwargs: P.kwargs) -> Stream:
-        """Generates a streaming response using the LLM."""
-        raise NotImplementedError()
-
     async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response:
         """Generates an asynchronous response using the LLM."""
+        raise NotImplementedError()
+
+    def stream(self, *args: P.args, **kwargs: P.kwargs) -> Stream:
+        """Generates a streaming response using the LLM."""
         raise NotImplementedError()
 
     async def stream_async(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream:
@@ -67,13 +67,13 @@ class AsyncCall(Generic[P]):
         """Generates a response using the LLM asynchronously."""
         raise NotImplementedError()
 
-    async def stream(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream:
-        """Generates a streaming response using the LLM asynchronously."""
-        raise NotImplementedError()
-
     async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response:
         """Generates an asynchronous response using the LLM."""
         return await self(*args, **kwargs)
+
+    async def stream(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream:
+        """Generates a streaming response using the LLM asynchronously."""
+        raise NotImplementedError()
 
     async def stream_async(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream:
         """Generates an asynchronous streaming response using the LLM."""
@@ -91,12 +91,12 @@ class StructuredCall(Generic[P, T]):
         """Generates a structured response using the LLM."""
         raise NotImplementedError()
 
-    def stream(self, *args: P.args, **kwargs: P.kwargs) -> StructuredStream[T]:
-        """Generates a streaming structured response using the LLM."""
-        raise NotImplementedError()
-
     async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
         """Generates an asynchronous structured response using the LLM."""
+        raise NotImplementedError()
+
+    def stream(self, *args: P.args, **kwargs: P.kwargs) -> StructuredStream[T]:
+        """Generates a streaming structured response using the LLM."""
         raise NotImplementedError()
 
     async def stream_async(
@@ -117,15 +117,15 @@ class AsyncStructuredCall(Generic[P, T]):
         """Generates a structured response using the LLM asynchronously."""
         raise NotImplementedError()
 
+    async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
+        """Generates an asynchronous structured response using the LLM."""
+        return await self(*args, **kwargs)
+
     async def stream(
         self, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStructuredStream[T]:
         """Generates a streaming structured response using the LLM asynchronously."""
         raise NotImplementedError()
-
-    async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
-        """Generates an asynchronous structured response using the LLM."""
-        return await self(*args, **kwargs)
 
     async def stream_async(
         self, *args: P.args, **kwargs: P.kwargs
