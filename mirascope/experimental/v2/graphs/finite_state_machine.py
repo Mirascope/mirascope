@@ -1,19 +1,21 @@
 """The `FiniteStateMachine` Class Implementation."""
 
-import contextvars
 import inspect
-from collections.abc import Callable, Coroutine
+from collections.abc import Callable, Coroutine, Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass
 from functools import wraps
-from types import TracebackType
 from typing import Any, Generic, ParamSpec, Protocol, overload
 
 from typing_extensions import TypeVar
 
 NoneType = type(None)
-_DepsT = TypeVar("_DepsT", default=None)
+DepsT = TypeVar("DepsT", default=None)
 
 
-class RunContext(Generic[_DepsT]):
+@dataclass
+class RunContext(Generic[DepsT]):
     """The runtime context for the Finite State Machine (FSM).
 
     This class is used to store the state of the FSM and the data that is passed between
@@ -43,115 +45,13 @@ class RunContext(Generic[_DepsT]):
         error_states (...): Error states and fallback handling.
     """
 
-    deps: _DepsT
-
-    def __init__(self, deps: _DepsT, **data: dict[str, Any]) -> None:
-        self.deps = deps
-        for key, value in data.items():
-            setattr(self, key, value)
+    deps: DepsT
+    """The dependencies for the FSM."""
 
 
-# Use ContextVar instead of thread-local for async compatibility
-# This automatically propagates across async boundaries
-_CONTEXT_VAR: contextvars.ContextVar[RunContext[Any] | None] = contextvars.ContextVar(
+FSM_CONTEXT: ContextVar[RunContext[Any] | None] = ContextVar(
     "fsm_context", default=None
 )
-
-
-class FSMContextManager(Generic[_DepsT]):
-    """Context manager for FSM contexts that supports both sync and async patterns.
-
-    This class implements both the synchronous context manager protocol
-    (__enter__/__exit__) and the asynchronous context manager protocol
-    (__aenter__/__aexit__), allowing it to be used with both `with` and
-    `async with` statements.
-
-    The context manager handles setting and resetting the context variable
-    that stores the RunContext, ensuring proper propagation through async code.
-
-    NOTE: This simplified implementation has some limitations with complex nested
-    async calls across context boundaries. For nested nodes calling other nodes
-    asynchronously after a context exit, the context may not be properly preserved.
-    In these cases, using a compiled machine is recommended.
-
-    NOTE: We implement stubs using the sync case because the async case is currently
-    the same and does not require separate implementations. In the future we may update
-    this to handle more complex async cases where the context e.g. pulls from an
-    external source or something.
-
-    Attributes:
-        ctx: The RunContext that will be set as active during the context.
-        token: The token returned by _CONTEXT_VAR.set() that is used to restore
-            the previous context when exiting.
-    """
-
-    ctx: RunContext[_DepsT]
-    token: contextvars.Token | None = None
-
-    def __init__(self, ctx: RunContext[_DepsT]) -> None:
-        """Initialize a new FSMContextManager.
-
-        Args:
-            ctx: The RunContext to use during this context.
-        """
-        self.ctx = ctx
-
-    def __enter__(self) -> RunContext[_DepsT]:
-        """Enter the context manager (synchronous).
-
-        Sets the RunContext as the current context and returns it.
-
-        Returns:
-            The RunContext for use within the `with` block.
-        """
-        self.token = _CONTEXT_VAR.set(self.ctx)
-        return self.ctx
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException],
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> None:
-        """Exit the context manager (synchronous).
-
-        Restores the previous context that was active before entering.
-
-        Args:
-            exc_type: The exception type if an exception was raised in the with block.
-            exc_val: The exception value if an exception was raised in the with block.
-            exc_tb: The traceback if an exception was raised in the with block.
-        """
-        if self.token is not None:
-            _CONTEXT_VAR.reset(self.token)
-            self.token = None
-
-    async def __aenter__(self) -> RunContext[_DepsT]:
-        """Enter the context manager (asynchronous).
-
-        Same as __enter__ but for use with `async with`.
-
-        Returns:
-            The RunContext for use within the `async with` block.
-        """
-        return self.__enter__()
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException],
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> None:
-        """Exit the context manager (asynchronous).
-
-        Same as __exit__ but for use with `async with`.
-
-        Args:
-            exc_type: The exception type if an exception was raised in the with block.
-            exc_val: The exception value if an exception was raised in the with block.
-            exc_tb: The traceback if an exception was raised in the with block.
-        """
-        self.__exit__(exc_type, exc_val, exc_tb)
 
 
 class FSMContextError(Exception):
@@ -160,12 +60,12 @@ class FSMContextError(Exception):
     pass
 
 
-_NodeDecoratedFunctionP = ParamSpec("_NodeDecoratedFunctionP")
-_NodeDecoratedFunctionR = TypeVar("_NodeDecoratedFunctionR", covariant=True)
+NodeDecoratedFunctionP = ParamSpec("NodeDecoratedFunctionP")
+NodeDecoratedFunctionR = TypeVar("NodeDecoratedFunctionR", covariant=True)
 
 
 class NodeDecoratedFunction(
-    Protocol[_NodeDecoratedFunctionP, _NodeDecoratedFunctionR, _DepsT]
+    Protocol[NodeDecoratedFunctionP, NodeDecoratedFunctionR, DepsT]
 ):
     """The protocol for functions decorated with the `node` decorator.
 
@@ -178,17 +78,17 @@ class NodeDecoratedFunction(
 
     def __call__(
         self,
-        ctx: RunContext[_DepsT],
-        *args: _NodeDecoratedFunctionP.args,
-        **kwargs: _NodeDecoratedFunctionP.kwargs,
-    ) -> _NodeDecoratedFunctionR: ...
+        ctx: RunContext[DepsT],
+        *args: NodeDecoratedFunctionP.args,
+        **kwargs: NodeDecoratedFunctionP.kwargs,
+    ) -> NodeDecoratedFunctionR: ...
 
 
-_NodeDecoratorP = ParamSpec("_NodeDecoratorP")
-_NodeDecoratorR = TypeVar("_NodeDecoratorR")
+NodeDecoratorP = ParamSpec("NodeDecoratorP")
+NodeDecoratorR = TypeVar("NodeDecoratorR")
 
 
-class NodeDecorator(Protocol[_DepsT]):
+class NodeDecorator(Protocol[DepsT]):
     """The `node` decorator protocol.
 
     This protocol enables overloading the `node` function such that it can detect and
@@ -201,24 +101,24 @@ class NodeDecorator(Protocol[_DepsT]):
     def __call__(
         self,
         fn: NodeDecoratedFunction[
-            _NodeDecoratorP, Coroutine[Any, Any, _NodeDecoratorR], _DepsT
+            NodeDecoratorP, Coroutine[Any, Any, NodeDecoratorR], DepsT
         ],
-    ) -> Callable[_NodeDecoratorP, Coroutine[Any, Any, _NodeDecoratorR]]: ...
+    ) -> Callable[NodeDecoratorP, Coroutine[Any, Any, NodeDecoratorR]]: ...
 
     @overload
     def __call__(
-        self, fn: NodeDecoratedFunction[_NodeDecoratorP, _NodeDecoratorR, _DepsT]
-    ) -> Callable[_NodeDecoratorP, _NodeDecoratorR]: ...
+        self, fn: NodeDecoratedFunction[NodeDecoratorP, NodeDecoratorR, DepsT]
+    ) -> Callable[NodeDecoratorP, NodeDecoratorR]: ...
 
     def __call__(
         self,
         fn: NodeDecoratedFunction[
-            _NodeDecoratorP,
-            _NodeDecoratorR | Coroutine[Any, Any, _NodeDecoratorR],
-            _DepsT,
+            NodeDecoratorP,
+            NodeDecoratorR | Coroutine[Any, Any, NodeDecoratorR],
+            DepsT,
         ],
     ) -> Callable[
-        _NodeDecoratorP, _NodeDecoratorR | Coroutine[Any, Any, _NodeDecoratorR]
+        NodeDecoratorP, NodeDecoratorR | Coroutine[Any, Any, NodeDecoratorR]
     ]: ...
 
 
@@ -226,7 +126,8 @@ _P = ParamSpec("_P")
 _R = TypeVar("_R")
 
 
-class FiniteStateMachine(Generic[_DepsT]):
+@dataclass(kw_only=True)
+class FiniteStateMachine(Generic[DepsT]):
     '''Automatical Finite State Machine (FSM) compiled from the code execution graph.
 
     This class provides a global `RunContext` and a `node` decorator that gives function
@@ -410,13 +311,11 @@ class FiniteStateMachine(Generic[_DepsT]):
     We get to code. The FSM then builds itself.
     '''
 
-    _deps_type: type[_DepsT]
+    deps_type: type[DepsT]
+    """The type of the dependencies for the FSM."""
 
-    def __init__(self, *, deps_type: type[_DepsT] = NoneType) -> None:
-        """Initializes an instance of `FiniteStateMachine`."""
-        self._deps_type = deps_type
-
-    def context(self, *, deps: _DepsT) -> FSMContextManager[_DepsT]:
+    @contextmanager
+    def context(self, *, deps: DepsT) -> Iterator[RunContext[DepsT]]:
         """Creates a context manager for the FSM that handles both sync and async.
 
         This method returns an instance of FSMContextManager which can be used with both
@@ -425,6 +324,16 @@ class FiniteStateMachine(Generic[_DepsT]):
         context is stored using contextvars.ContextVar which properly propagates through
         async code, allowing context to be maintained across await points and between
         nodes so long as each node is called within the context.
+
+        NOTE: This simplified implementation has some limitations with complex nested
+        async calls across context boundaries. For nested nodes calling other nodes
+        asynchronously after a context exit, the context may not be properly preserved.
+        In these cases, using a compiled machine is recommended.
+
+        NOTE: We implement stubs using the sync case because the async case is currently
+        the same and does not require separate implementations. In the future we may update
+        this to handle more complex async cases where the context e.g. pulls from an
+        external source or something.
 
         Example:
 
@@ -448,10 +357,14 @@ class FiniteStateMachine(Generic[_DepsT]):
         Returns:
             An FSMContextManager instance that supports both `with` and `async with`.
         """
-        ctx = RunContext(deps=deps)
-        return FSMContextManager(ctx)
+        context = RunContext(deps=deps)
+        token = FSM_CONTEXT.set(context)
+        try:
+            yield context
+        finally:
+            FSM_CONTEXT.reset(token)
 
-    def node(self) -> NodeDecorator[_DepsT]:
+    def node(self) -> NodeDecorator[DepsT]:
         """Registers the given function as a node in the FSM.
 
         This decorator transforms a function that requires a RunContext as its first
@@ -473,22 +386,22 @@ class FiniteStateMachine(Generic[_DepsT]):
 
         @overload
         def decorator(
-            fn: NodeDecoratedFunction[_P, Coroutine[Any, Any, _R], _DepsT],
+            fn: NodeDecoratedFunction[_P, Coroutine[Any, Any, _R], DepsT],
         ) -> Callable[_P, Coroutine[Any, Any, _R]]: ...
 
         @overload
         def decorator(
-            fn: NodeDecoratedFunction[_P, _R, _DepsT],
+            fn: NodeDecoratedFunction[_P, _R, DepsT],
         ) -> Callable[_P, _R]: ...
 
         def decorator(
-            fn: NodeDecoratedFunction[_P, _R | Coroutine[Any, Any, _R], _DepsT],
+            fn: NodeDecoratedFunction[_P, _R | Coroutine[Any, Any, _R], DepsT],
         ) -> Callable[_P, _R | Coroutine[Any, Any, _R]]:
             @wraps(fn)
             def context_wrapper(
                 *args: _P.args, **kwargs: _P.kwargs
             ) -> _R | Coroutine[Any, Any, _R]:
-                context = _CONTEXT_VAR.get()
+                context = FSM_CONTEXT.get()
                 if context is None:
                     raise FSMContextError(
                         f"Node `{fn.__name__}` called outside of a context manager. "
@@ -500,8 +413,7 @@ class FiniteStateMachine(Generic[_DepsT]):
                     # context management inside so we handle contextvars correctly
                     @wraps(fn)
                     async def inner_async() -> _R:
-                        async with FSMContextManager(context):
-                            return await fn(context, *args, **kwargs)  # pyright: ignore [reportGeneralTypeIssues]
+                        return await fn(context, *args, **kwargs)  # pyright: ignore [reportGeneralTypeIssues]
 
                     return inner_async()
 
@@ -515,8 +427,8 @@ class FiniteStateMachine(Generic[_DepsT]):
         self,
         start: Callable[_P, _R],
         *,
-        deps: _DepsT = None,
-    ) -> "CompiledMachine[_P, _R, _DepsT]":
+        deps: DepsT = None,
+    ) -> "CompiledMachine[_P, _R, DepsT]":
         """Returns the compiled FSM.
 
         Compiles the FSM and returns a CompiledMachine that can be used to run the FSM.
@@ -533,7 +445,7 @@ class FiniteStateMachine(Generic[_DepsT]):
         return CompiledMachine(fsm=self, start=start, deps=deps)
 
 
-class CompiledMachine(Generic[_P, _R, _DepsT]):
+class CompiledMachine(Generic[_P, _R, DepsT]):
     """The compiled Finite State Machine (FSM).
 
     This class represents a compiled FSM that can be run with a specific start function.
@@ -546,16 +458,16 @@ class CompiledMachine(Generic[_P, _R, _DepsT]):
         deps: The dependencies for the FSM.
     """
 
-    fsm: FiniteStateMachine[_DepsT]
+    fsm: FiniteStateMachine[DepsT]
     start: Callable[_P, _R]
-    deps: _DepsT
+    deps: DepsT
 
     def __init__(
         self,
         *,
-        fsm: FiniteStateMachine[_DepsT],
+        fsm: FiniteStateMachine[DepsT],
         start: Callable[_P, _R],
-        deps: _DepsT = None,
+        deps: DepsT = None,
     ) -> None:
         """Initializes an instance of `CompiledMachine`."""
         self.fsm = fsm
@@ -615,7 +527,7 @@ class CompiledMachine(Generic[_P, _R, _DepsT]):
                 called outside of a context manager.
             RuntimeError: If called with a sync function as the start function.
         """
-        async with self.fsm.context(deps=self.deps):
+        with self.fsm.context(deps=self.deps):
             result = self.start(*args, **kwargs)
             if inspect.isawaitable(result):
                 return await result
@@ -687,13 +599,13 @@ async def main() -> None:
 
     # Example 3.5: Using asynchronous context with async functions within boundaries
     print("\nExample 3.5: Asynchronous context with async functions")
-    async with fsm.context(deps=Deps(0)):
+    with fsm.context(deps=Deps(0)):
         operations = await async_reach_zero(5, 3)
         print(f"Async operations in async context: {operations}")
 
     # Example 4: Demonstrate context preservation across await boundaries
     print("\nContext preservation example:")
-    async with fsm.context(deps=Deps(0)):
+    with fsm.context(deps=Deps(0)):
         # Create the coroutine task inside the context
         operations_task = async_reach_zero(5, 3)
         print("Task created inside context manager")
