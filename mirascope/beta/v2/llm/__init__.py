@@ -5,6 +5,7 @@ including messages, tools, response formatting, and streaming. It allows you to 
 code that works with multiple LLM providers without changing your application logic.
 """
 
+from .embeddings import Embedding, embed
 from .generations import (
     AsyncGeneration,
     AsyncStructuredGeneration,
@@ -50,6 +51,7 @@ __all__ = [
     "Content",
     "Document",
     "DynamicConfig",
+    "Embedding",
     "Generation",
     "Image",
     "Message",
@@ -71,6 +73,7 @@ __all__ = [
     "ToolOutput",
     "Video",
     "assistant",
+    "embed",
     "generate",
     "model",
     "prompt_template",

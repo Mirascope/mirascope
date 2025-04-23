@@ -254,6 +254,32 @@ def generate(
     ...
 
 
+@overload
+def generate(
+    model: REGISTERED_LLMS,
+    *,
+    tools: Sequence[ToolDef] | None = None,
+    response_format: None = None,
+    client: Client | None = None,
+    **params: Unpack[Params],
+) -> GenerationDecorator:
+    """Overload for all registered models so that autocomplete works."""
+    ...
+
+
+@overload
+def generate(
+    model: REGISTERED_LLMS,
+    *,
+    tools: Sequence[ToolDef] | None = None,
+    response_format: ResponseFormat[T],
+    client: Client | None = None,
+    **params: Unpack[Params],
+) -> StructuredGenerationDecorator[T]:
+    """Overload for all registered models so that autocomplete works."""
+    ...
+
+
 def generate(
     model: REGISTERED_LLMS,
     *,

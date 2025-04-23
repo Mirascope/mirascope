@@ -2,17 +2,15 @@
 
 from typing import Literal, TypeAlias
 
-from typing_extensions import NotRequired
-
 from .base import LLM, Client, Params
 
-ANTHROPIC_REGISTERED_LLMS: TypeAlias = Literal["anthropic:claude-3-5-sonnet"]
+ANTHROPIC_REGISTERED_LLMS: TypeAlias = Literal["anthropic:claude-3-5-sonnet-latest"]
 
 
-class AnthropicParams(Params):
+class AnthropicParams(Params, total=False):
     """The parameters for the Anthropic LLM model."""
 
-    temperature: NotRequired[float]
+    temperature: float
 
 
 class AnthropicClient(Client):

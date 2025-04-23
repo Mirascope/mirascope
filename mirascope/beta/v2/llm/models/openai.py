@@ -2,17 +2,13 @@
 
 from typing import Literal, TypeAlias
 
-from typing_extensions import NotRequired
-
-from .base import LLM, Client, Params
+from .base import LLM, Client, EmbeddingModel, Params
 
 OPENAI_REGISTERED_LLMS: TypeAlias = Literal["openai:gpt-4o-mini"]
 
 
-class OpenAIParams(Params):
+class OpenAIParams(Params, total=False):
     """The parameters for the OpenAI LLM model."""
-
-    temperature: NotRequired[float]
 
 
 class OpenAIClient(Client):
@@ -21,3 +17,17 @@ class OpenAIClient(Client):
 
 class OpenAI(LLM[OpenAIParams, OpenAIClient]):
     """The OpenAI-specific implementation of the `LLM` interface."""
+
+
+OPENAI_REGISTERED_EMBEDDING_MODELS: TypeAlias = Literal["openai:text-embedding-3-small"]
+
+
+class OpenAIEmbeddingParams(Params, total=False):
+    """The parameters for the OpenAI embedding model."""
+
+    dims: int
+    """The number of dimensions for the embedding."""
+
+
+class OpenAIEmbeddingModel(EmbeddingModel[OpenAIEmbeddingParams, OpenAIClient]):
+    """The OpenAI-specific implementation of the `EmbeddingModel` interface."""
