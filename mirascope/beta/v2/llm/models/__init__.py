@@ -2,7 +2,7 @@
 
 This module provides a unified interface for interacting with different LLM models
 through the `Model` abstract class. The `llm.model` context manager allows you to
-easily run an LLM generation with a model specified at runtime rather than definition
+easily run an LLM call with a model specified at runtime rather than definition
 time.
 """
 

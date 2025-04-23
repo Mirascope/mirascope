@@ -63,11 +63,11 @@ class LLM(Model[ParamsT, ClientT], Generic[ParamsT, ClientT], ABC):
     streaming, and async variants of these operations.
 
     Implementations of this class for specific providers should extend it and
-    implement the abstract methods for generation and streaming.
+    implement the abstract methods for calls and streaming.
     """
 
     @overload
-    def generate(
+    def call(
         self,
         *,
         messages: list[Message],
@@ -75,11 +75,11 @@ class LLM(Model[ParamsT, ClientT], Generic[ParamsT, ClientT], ABC):
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Response:
-        """Overload for generation when there's no response format specified."""
+        """Overload for call when there's no response format specified."""
         ...
 
     @overload
-    def generate(
+    def call(
         self,
         *,
         messages: list[Message],
@@ -87,11 +87,11 @@ class LLM(Model[ParamsT, ClientT], Generic[ParamsT, ClientT], ABC):
         response_format: ResponseFormat[T],
         params: ParamsT | None = None,
     ) -> Response[T]:
-        """Overload for generation when a response format is specified."""
+        """Overload for calls when a response format is specified."""
         ...
 
     @abstractmethod
-    def generate(
+    def call(
         self,
         *,
         messages: list[Message],
@@ -103,7 +103,7 @@ class LLM(Model[ParamsT, ClientT], Generic[ParamsT, ClientT], ABC):
         ...
 
     @overload
-    async def generate_async(
+    async def call_async(
         self,
         *,
         messages: list[Message],
@@ -111,11 +111,11 @@ class LLM(Model[ParamsT, ClientT], Generic[ParamsT, ClientT], ABC):
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Response:
-        """Overload for async generation when there's no response format specified."""
+        """Overload for async calls when there's no response format specified."""
         ...
 
     @overload
-    async def generate_async(
+    async def call_async(
         self,
         *,
         messages: list[Message],
@@ -123,11 +123,11 @@ class LLM(Model[ParamsT, ClientT], Generic[ParamsT, ClientT], ABC):
         response_format: ResponseFormat[T],
         params: ParamsT | None = None,
     ) -> Response[T]:
-        """Overload for async generation when a response format is specified."""
+        """Overload for async calls when a response format is specified."""
         ...
 
     @abstractmethod
-    async def generate_async(
+    async def call_async(
         self,
         *,
         messages: list[Message],

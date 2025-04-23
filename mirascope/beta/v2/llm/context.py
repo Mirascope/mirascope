@@ -1,4 +1,4 @@
-"""Context for LLM generations."""
+"""Context for LLM calls."""
 
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -16,17 +16,17 @@ DepsT = TypeVar("DepsT", default=None)
 
 @dataclass
 class Context(Generic[DepsT]):
-    """Context for LLM generations.
+    """Context for LLM calls.
 
-    This class provides a context for LLM generations, including the model,
-    parameters, and any dependencies needed for the generation.
+    This class provides a context for LLM calls, including the model,
+    parameters, and any dependencies needed for the call.
     """
 
     messages: list[Message]
     """The array of messages that have been sent so far (i.e. history)."""
 
     deps: DepsT
-    """The dependencies needed for a generation."""
+    """The dependencies needed for a call."""
 
 
 CONTEXT: ContextVar[Context | None] = ContextVar("CONTEXT", default=None)
@@ -38,7 +38,7 @@ def context(
     messages: list[Message] | None = None,
     deps: DepsT = None,
 ) -> Iterator[Context[DepsT]]:
-    """Set the context for LLM generations."""
+    """Set the context for LLM calls."""
     raise NotImplementedError()
     context = ...
     token = CONTEXT.set(context)  # need to construct context

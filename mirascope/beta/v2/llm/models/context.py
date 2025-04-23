@@ -86,9 +86,9 @@ def model(
 ) -> Iterator[Model]:
     """Set the model context with the model of the given id.
 
-    Any call to a function decorated with `@llm.generate` or `@llm.embed` will attempt
-    to use the model that's set in the model context first. If no model is set in the
-    context, the default model will be used.
+    Any call to a function decorated with `@llm.call` will attempt to use the model
+    that's set in the model context first. If no model is set in the context, the
+    default model will be used.
 
     This is useful for overriding the default model at runtime.
 
@@ -106,11 +106,11 @@ def model(
         ```python
         from mirascope import llm
 
-        @llm.generate("openai:gpt-4.1-nano")
+        @llm.call("openai:gpt-4.1-nano")
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
-        # Run the generation with a different model from the default
+        # Run the call with a different model from the default
         with llm.model("anthropic:claude-3-5-sonnet-latest"):
             response: llm.Response = answer_question("What is the capital of France?")
             print(response.content)

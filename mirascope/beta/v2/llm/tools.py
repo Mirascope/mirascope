@@ -1,8 +1,8 @@
 """Tool interface for LLM interactions.
 
-This module defines interfaces for tools that can be used by LLMs during generation.
+This module defines interfaces for tools that can be used by LLMs during a call.
 Tools are defined using the `@tool()` decorator which creates a `ToolDef`. When an
-LLM uses a tool during generation, a `Tool` instance is created with the specific
+LLM uses a tool during a call, a `Tool` instance is created with the specific
 arguments provided by the LLM.
 """
 
@@ -56,8 +56,8 @@ class ToolOutput(Generic[R]):
 class Tool(Generic[R]):
     """Tool instance with arguments provided by an LLM.
 
-    When an LLM uses a tool during generation, a Tool instance is created
-    with the specific arguments provided by the LLM.
+    When an LLM uses a tool during a call, a Tool instance is created with the specific
+    arguments provided by the LLM.
     """
 
     tool_def: ToolDef[..., R]
@@ -88,7 +88,7 @@ class Tool(Generic[R]):
 class ToolDef(Protocol[P, R]):
     """Protocol defining a tool that can be used by LLMs.
 
-    A ToolDef represents a function that can be called by an LLM during generation.
+    A ToolDef represents a function that can be called by an LLM during a call.
     It includes metadata like name, description, and parameter schema.
 
     This class is not instantiated directly but created by the `@tool()` decorator.
@@ -151,7 +151,7 @@ def tool(
 ) -> ToolDef[P, R] | Callable[[Callable[P, R]], ToolDef[P, R]]:
     '''Decorator that turns a function into a tool definition.
 
-    This decorator creates a `ToolDef` that can be used with `llm.generation`.
+    This decorator creates a `ToolDef` that can be used with `llm.call`.
     The function's name, docstring, and type hints are used to generate the
     tool's metadata.
 

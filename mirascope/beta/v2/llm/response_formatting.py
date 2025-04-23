@@ -93,17 +93,16 @@ class ResponseFormat(Generic[T]):
             title: str
             author: str
 
-        @llm.generation(response_format=Book)
+        @llm.call("openai:gpt-4o", response_format=Book)
         def recommend_book(genre: str) -> list[llm.Message]:
             return [
                 llm.system("You are a helpful assistant."),
                 llm.user(f"Recommend a {genre} book.")
             ]
 
-        with llm.model("openai:gpt-4o"):
-            response: llm.Response[Book] = recommend_book("fantasy")
-            book: Book = response.format()
-            print(f"{book.title} by {book.author}")
+        response: llm.Response[Book] = recommend_book("fantasy")
+        book: Book = response.format()
+        print(f"{book.title} by {book.author}")
         ```
     """
 
@@ -228,7 +227,7 @@ def response_format(
 
     This decorator can be applied to a class to define how LLM responses should be
     structured and parsed. The decorated class becomes a `ResponseFormat` that can be
-    used with `llm.generation` to specify the expected response structure.
+    used with `llm.call` to specify the expected response structure.
 
     Args:
         parser: The default parser to use, if any:

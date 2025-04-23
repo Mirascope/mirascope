@@ -1,4 +1,4 @@
-"""The Generations module for generating responses using LLMs."""
+"""The Calls module for generating responses using LLMs."""
 
 from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Generic, ParamSpec, Protocol, TypeVar, overload
@@ -34,11 +34,11 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-class Generation(Generic[P]):
+class Call(Generic[P]):
     """A class for generating responses using LLMs."""
 
     def __init__(self, fn: Callable[P, PromptTemplate[P]]) -> None:
-        """Initializes a `Generation` instance."""
+        """Initializes a `Call` instance."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response:
         """Generates a response using the LLM."""
@@ -57,11 +57,11 @@ class Generation(Generic[P]):
         raise NotImplementedError()
 
 
-class AsyncGeneration(Generic[P]):
+class AsyncCall(Generic[P]):
     """A class for generating responses using LLMs asynchronously."""
 
     def __init__(self, fn: Callable[P, PromptTemplate[P]]) -> None:
-        """Initializes an `AsyncGeneration` instance."""
+        """Initializes an `AsyncCall` instance."""
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response:
         """Generates a response using the LLM asynchronously."""
@@ -80,11 +80,11 @@ class AsyncGeneration(Generic[P]):
         return await self.stream(*args, **kwargs)
 
 
-class StructuredGeneration(Generic[P, T]):
+class StructuredCall(Generic[P, T]):
     """A class for generating structured responses using LLMs."""
 
     def __init__(self, fn: Callable[P, PromptTemplate[P]]) -> None:
-        """Initializes a `StructuredGeneration` instance."""
+        """Initializes a `StructuredCall` instance."""
         raise NotImplementedError()
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
@@ -106,11 +106,11 @@ class StructuredGeneration(Generic[P, T]):
         raise NotImplementedError()
 
 
-class AsyncStructuredGeneration(Generic[P, T]):
+class AsyncStructuredCall(Generic[P, T]):
     """A class for generating structured responses using LLMs asynchronously."""
 
     def __init__(self, fn: Callable[P, PromptTemplate[P]]) -> None:
-        """Initializes an `AsyncStructuredGeneration` instance."""
+        """Initializes an `AsyncStructuredCall` instance."""
         raise NotImplementedError()
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
@@ -138,19 +138,19 @@ class GenerationDecorator(Protocol):
     """A decorator for generating responses using LLMs."""
 
     @overload
-    def __call__(self, fn: AsyncPromptTemplate[P]) -> AsyncGeneration[P]:
+    def __call__(self, fn: AsyncPromptTemplate[P]) -> AsyncCall[P]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: PromptTemplate[P]) -> Generation[P]:
+    def __call__(self, fn: PromptTemplate[P]) -> Call[P]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
         self,
         fn: PromptTemplate[P] | AsyncPromptTemplate[P],
-    ) -> Generation[P] | AsyncGeneration[P]:
+    ) -> Call[P] | AsyncCall[P]:
         """Decorates a function to generate responses using LLMs."""
         raise NotImplementedError()
 
@@ -159,25 +159,25 @@ class StructuredGenerationDecorator(Protocol[T]):
     """A decorator for generating responses using LLMs."""
 
     @overload
-    def __call__(self, fn: AsyncPromptTemplate[P]) -> AsyncStructuredGeneration[P, T]:
+    def __call__(self, fn: AsyncPromptTemplate[P]) -> AsyncStructuredCall[P, T]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: PromptTemplate[P]) -> StructuredGeneration[P, T]:
+    def __call__(self, fn: PromptTemplate[P]) -> StructuredCall[P, T]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
         self,
         fn: PromptTemplate[P] | AsyncPromptTemplate[P],
-    ) -> StructuredGeneration[P, T] | AsyncStructuredGeneration[P, T]:
+    ) -> StructuredCall[P, T] | AsyncStructuredCall[P, T]:
         """Decorates a function to generate responses using LLMs."""
         raise NotImplementedError()
 
 
 @overload
-def generate(
+def call(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
     tools: Sequence[ToolDef] | None = None,
@@ -190,7 +190,7 @@ def generate(
 
 
 @overload
-def generate(
+def call(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
     tools: Sequence[ToolDef] | None = None,
@@ -203,7 +203,7 @@ def generate(
 
 
 @overload
-def generate(
+def call(
     model: GOOGLE_REGISTERED_LLMS,
     *,
     tools: Sequence[ToolDef] | None = None,
@@ -216,7 +216,7 @@ def generate(
 
 
 @overload
-def generate(
+def call(
     model: GOOGLE_REGISTERED_LLMS,
     *,
     tools: Sequence[ToolDef] | None = None,
@@ -229,7 +229,7 @@ def generate(
 
 
 @overload
-def generate(
+def call(
     model: OPENAI_REGISTERED_LLMS,
     *,
     tools: Sequence[ToolDef] | None = None,
@@ -242,7 +242,7 @@ def generate(
 
 
 @overload
-def generate(
+def call(
     model: OPENAI_REGISTERED_LLMS,
     *,
     tools: Sequence[ToolDef] | None = None,
@@ -255,7 +255,7 @@ def generate(
 
 
 @overload
-def generate(
+def call(
     model: REGISTERED_LLMS,
     *,
     tools: Sequence[ToolDef] | None = None,
@@ -268,7 +268,7 @@ def generate(
 
 
 @overload
-def generate(
+def call(
     model: REGISTERED_LLMS,
     *,
     tools: Sequence[ToolDef] | None = None,
@@ -280,7 +280,7 @@ def generate(
     ...
 
 
-def generate(
+def call(
     model: REGISTERED_LLMS,
     *,
     tools: Sequence[ToolDef] | None = None,
@@ -295,7 +295,7 @@ def generate(
         ```python
         from mirascope import llm
 
-        @llm.generate("openai:gpt-4o-mini")
+        @llm.call("openai:gpt-4o-mini")
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 

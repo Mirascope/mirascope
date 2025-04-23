@@ -40,7 +40,7 @@ class Stream:
         ```python
         from mirascope import llm
 
-        @llm.generate("openai:gpt-4o-mini")
+        @llm.call("openai:gpt-4o-mini")
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
@@ -68,7 +68,7 @@ class AsyncStream:
         ```python
         from mirascope import llm
 
-        @llm.generate("openai:gpt-4o-mini")
+        @llm.call("openai:gpt-4o-mini")
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
@@ -106,7 +106,7 @@ class StructuredStream(Generic[T]):
             title: str
             author: str
 
-        @llm.generate("openai:gpt-4o-mini", response_format=Book)
+        @llm.call("openai:gpt-4o-mini", response_format=Book)
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
@@ -140,7 +140,7 @@ class AsyncStructuredStream(Generic[T]):
             title: str
             author: str
 
-        @llm.generate("openai:gpt-4o-mini", response_format=Book)
+        @llm.call("openai:gpt-4o-mini", response_format=Book)
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 

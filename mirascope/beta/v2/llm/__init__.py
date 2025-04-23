@@ -5,13 +5,12 @@ including messages, tools, response formatting, and streaming. It allows you to 
 code that works with multiple LLM providers without changing your application logic.
 """
 
-from .embeddings import Embedding, embed
-from .generations import (
-    AsyncGeneration,
-    AsyncStructuredGeneration,
-    Generation,
-    StructuredGeneration,
-    generate,
+from .calls import (
+    AsyncCall,
+    AsyncStructuredCall,
+    Call,
+    StructuredCall,
+    call,
 )
 from .messages import (
     Audio,
@@ -43,16 +42,15 @@ from .tools import Tool, ToolDef, ToolOutput, tool
 
 __all__ = [
     "LLM",
-    "AsyncGeneration",
+    "AsyncCall",
     "AsyncStream",
-    "AsyncStructuredGeneration",
+    "AsyncStructuredCall",
     "Audio",
+    "Call",
     "Client",
     "Content",
     "Document",
     "DynamicConfig",
-    "Embedding",
-    "Generation",
     "Image",
     "Message",
     "Params",
@@ -64,7 +62,7 @@ __all__ = [
     "Stream",
     "Stream",
     "StreamChunk",
-    "StructuredGeneration",
+    "StructuredCall",
     "Text",
     "Thinking",
     "Tool",
@@ -73,8 +71,7 @@ __all__ = [
     "ToolOutput",
     "Video",
     "assistant",
-    "embed",
-    "generate",
+    "call",
     "model",
     "prompt_template",
     "response_format",

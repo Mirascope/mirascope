@@ -315,7 +315,7 @@ class DynamicConfig(TypedDict):
     """Class for specifying dynamic configuration in a prompt template method.
 
     This class allows prompt template functions to return additional configuration
-    options that will be applied during message generation, such as computed fields
+    options that will be applied during message rendering, such as computed fields
     that should be injected into the template or tools that should be made available
     to the LLM.
     """
@@ -330,36 +330,8 @@ class DynamicConfig(TypedDict):
     tools: NotRequired[Sequence[ToolDef]]
     """The list of dynamic tools to merge into the existing tools in the LLM call.
     
-    These tools will be added to any tools specified in the generation decorator
-    or at generation call time.
+    These tools will be added to any tools specified in the call decorator.
     """
-
-
-# class PromptTemplate(Protocol[P]):
-#     """Protocol for a prompt template function.
-
-#     This protocol defines the interface for a prompt template, which is used to create
-#     a list of messages based on a given input. The template can be used to generate
-#     messages for different roles (system, user, assistant) by parsing a string template
-#     with sections and variable placeholders.
-
-#     Functions decorated with `@prompt_template` will implement this protocol.
-#     """
-
-#     def __call__(
-#         self, *args: P.args, **kwargs: P.kwargs
-#     ) -> str | Sequence[Content] | list[Message] | tuple[list[Message], DynamicConfig]:
-#         """Renders the list of messages (and dynamic config) given input arguments.
-
-#         Args:
-#             *args: Positional arguments to pass to the template function.
-#             **kwargs: Keyword arguments to pass to the template function.
-
-#         Returns:
-#             Either a list of messages, or a tuple containing a list of messages and
-#             a DynamicConfig object with additional configuration options.
-#         """
-#         ...
 
 
 class StringReturn(Protocol[P]):
