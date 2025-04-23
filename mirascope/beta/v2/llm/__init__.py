@@ -5,6 +5,13 @@ including messages, tools, response formatting, and streaming. It allows you to 
 code that works with multiple LLM providers without changing your application logic.
 """
 
+from .generations import (
+    AsyncGeneration,
+    AsyncStructuredGeneration,
+    Generation,
+    StructuredGeneration,
+    generate,
+)
 from .messages import (
     Audio,
     Content,
@@ -35,12 +42,15 @@ from .tools import Tool, ToolDef, ToolOutput, tool
 
 __all__ = [
     "LLM",
+    "AsyncGeneration",
     "AsyncStream",
+    "AsyncStructuredGeneration",
     "Audio",
     "Client",
     "Content",
     "Document",
     "DynamicConfig",
+    "Generation",
     "Image",
     "Message",
     "Params",
@@ -50,7 +60,9 @@ __all__ = [
     "ResponseFormat",
     "Role",
     "Stream",
+    "Stream",
     "StreamChunk",
+    "StructuredGeneration",
     "Text",
     "Thinking",
     "Tool",
@@ -59,6 +71,7 @@ __all__ = [
     "ToolOutput",
     "Video",
     "assistant",
+    "generate",
     "model",
     "prompt_template",
     "response_format",

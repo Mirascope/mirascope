@@ -72,7 +72,7 @@ class AsyncStream:
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
-        stream = await answer_question.astream("What is the capital of France?")
+        stream = await answer_question.stream_async("What is the capital of France?")
         async for chunk in stream:
             print(chunk.content, end="", flush=True)
         ```
@@ -144,7 +144,7 @@ class AsyncStructuredStream(Generic[T]):
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
-        stream = await answer_question.astream("What is the capital of France?")
+        stream = await answer_question.stream_async("What is the capital of France?")
         async for partial_book in stream:
             print(partial_book)
         ```

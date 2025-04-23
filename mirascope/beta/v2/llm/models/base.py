@@ -19,7 +19,7 @@ ParamsT = TypeVar("ParamsT", bound="Params")
 ClientT = TypeVar("ClientT", bound="Client")
 
 
-class Params(TypedDict):
+class Params(TypedDict, total=False):
     """The base interface for LLM parameters."""
 
 

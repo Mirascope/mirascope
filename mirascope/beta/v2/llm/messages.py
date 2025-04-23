@@ -335,31 +335,134 @@ class DynamicConfig(TypedDict):
     """
 
 
-class PromptTemplate(Protocol[P]):
-    """Protocol for a prompt template function.
+# class PromptTemplate(Protocol[P]):
+#     """Protocol for a prompt template function.
 
-    This protocol defines the interface for a prompt template, which is used to create
-    a list of messages based on a given input. The template can be used to generate
-    messages for different roles (system, user, assistant) by parsing a string template
-    with sections and variable placeholders.
+#     This protocol defines the interface for a prompt template, which is used to create
+#     a list of messages based on a given input. The template can be used to generate
+#     messages for different roles (system, user, assistant) by parsing a string template
+#     with sections and variable placeholders.
 
-    Functions decorated with `@prompt_template` will implement this protocol.
-    """
+#     Functions decorated with `@prompt_template` will implement this protocol.
+#     """
+
+#     def __call__(
+#         self, *args: P.args, **kwargs: P.kwargs
+#     ) -> str | Sequence[Content] | list[Message] | tuple[list[Message], DynamicConfig]:
+#         """Renders the list of messages (and dynamic config) given input arguments.
+
+#         Args:
+#             *args: Positional arguments to pass to the template function.
+#             **kwargs: Keyword arguments to pass to the template function.
+
+#         Returns:
+#             Either a list of messages, or a tuple containing a list of messages and
+#             a DynamicConfig object with additional configuration options.
+#         """
+#         ...
+
+
+class StringReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a single string."""
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> str: ...
+
+
+class AsyncStringReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a single string."""
+
+    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> str: ...
+
+
+class ContentReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a single content part."""
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Content: ...
+
+
+class AsyncContentReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a single content part."""
+
+    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Content: ...
+
+
+class ContentSequenceReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a content parts sequence."""
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Content]: ...
+
+
+class AsyncContentSequenceReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a content parts sequence."""
+
+    async def __call__(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> Sequence[Content]: ...
+
+
+class MessagesReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a list of messages."""
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> list[Message]: ...
+
+
+class AsyncMessagesReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a list of messages."""
+
+    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> list[Message]: ...
+
+
+class DynamicConfigReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a dynamic configuration."""
 
     def __call__(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> list[Message] | tuple[list[Message], DynamicConfig]:
-        """Renders the list of messages (and dynamic config) given input arguments.
+    ) -> tuple[list[Message], DynamicConfig]: ...
 
-        Args:
-            *args: Positional arguments to pass to the template function.
-            **kwargs: Keyword arguments to pass to the template function.
 
-        Returns:
-            Either a list of messages, or a tuple containing a list of messages and
-            a DynamicConfig object with additional configuration options.
-        """
-        ...
+class AsyncDynamicConfigReturn(Protocol[P]):
+    """Protocol for a prompt template function that returns a dynamic configuration."""
+
+    async def __call__(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> tuple[list[Message], DynamicConfig]: ...
+
+
+PromptTemplate: TypeAlias = (
+    StringReturn[P]
+    | ContentReturn[P]
+    | ContentSequenceReturn[P]
+    | MessagesReturn[P]
+    | DynamicConfigReturn[P]
+)
+"""A prompt template function.
+
+A `PromptTemplate` function takes input arguments `P` and returns one of:
+- A single `str` that will be rendered as a single user message
+- A single `Content` part that will be rendered as a single user message
+- A sequence of `Content` parts that will be rendered as a single user message
+- A list of `Message` objects that will be rendered as-is
+- A tuple of a list of `Message` objects that will be rendered as-is and the
+      `DynamicConfig` used to render it.
+"""
+
+AsyncPromptTemplate: TypeAlias = (
+    AsyncStringReturn[P]
+    | AsyncContentReturn[P]
+    | AsyncContentSequenceReturn[P]
+    | AsyncMessagesReturn[P]
+    | AsyncDynamicConfigReturn[P]
+)
+"""An asynchronous prompt template function.
+
+An `AsyncPromptTemplate` function takes input arguments `P` and returns one of:
+- A single `str` that will be rendered as a single user message
+- A single `Content` part that will be rendered as a single user message
+- A sequence of `Content` parts that will be rendered as a single user message
+- A list of `Message` objects that will be rendered as-is
+- A tuple of a list of `Message` objects that will be rendered as-is and the
+      `DynamicConfig` used to render it.
+"""
 
 
 def prompt_template(
