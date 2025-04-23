@@ -13,38 +13,40 @@ from .messages import (
     Image,
     Message,
     PromptTemplate,
+    ResponseContent,
     Role,
     Text,
     Thinking,
     ToolCall,
-    ToolOutput,
     Video,
     assistant,
     prompt_template,
     system,
     user,
 )
-from .models import CallParams, Model, model
+from .models import LLM, Client, Params, model
 from .response_formatting import (
     ResponseFormat,
     response_format,
 )
 from .responses import Response
 from .streams import AsyncStream, Stream, StreamChunk
-from .tools import Tool, ToolDef, tool
+from .tools import Tool, ToolDef, ToolOutput, tool
 
 __all__ = [
+    "LLM",
     "AsyncStream",
     "Audio",
-    "CallParams",
+    "Client",
     "Content",
     "Document",
     "DynamicConfig",
     "Image",
     "Message",
-    "Model",
+    "Params",
     "PromptTemplate",
     "Response",
+    "ResponseContent",
     "ResponseFormat",
     "Role",
     "Stream",

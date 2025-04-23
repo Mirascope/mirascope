@@ -1,6 +1,0 @@
----
-icon: sandwich
----
-
-# Middleware
-

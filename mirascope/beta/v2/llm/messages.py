@@ -14,7 +14,7 @@ from typing import Literal, ParamSpec, Protocol, TypeAlias
 
 from typing_extensions import NotRequired, TypedDict
 
-from .tools import ToolDef
+from .tools import Tool, ToolDef, ToolOutput
 
 P = ParamSpec("P")
 
@@ -27,7 +27,7 @@ class Jsonable(Protocol):
     """
 
     def json(self) -> str:
-        """Convert the object to a JSON-serializable format."""
+        """Serialize the object as a JSON string."""
         ...
 
 
@@ -84,7 +84,7 @@ class Image:
 
     type: Literal["image"] = "image"
 
-    image: str | bytes
+    data: str | bytes
     """The image data, which can be a URL, file path, base64-encoded string, or binary data."""
 
     mime_type: Literal[
@@ -107,7 +107,7 @@ class Audio:
 
     type: Literal["audio"] = "audio"
 
-    audio: str | bytes
+    data: str | bytes
     """The audio data, which can be a URL, file path, base64-encoded string, or binary data."""
 
     mime_type: Literal[
@@ -130,7 +130,7 @@ class Video:
 
     type: Literal["video"] = "video"
 
-    video: str | bytes
+    data: str | bytes
     """The video data, which can be a URL, file path, base64-encoded string, or binary data."""
 
     mime_type: Literal[
@@ -156,7 +156,7 @@ class Document:
 
     type: Literal["document"] = "document"
 
-    document: str | bytes
+    data: str | bytes
     """The document data, which can be a URL, file path, base64-encoded string, or binary data."""
 
     mime_type: Literal[
@@ -196,23 +196,6 @@ class ToolCall:
 
 
 @dataclass(kw_only=True)
-class ToolOutput:
-    """Tool output content for a message.
-
-    Represents the output from a tool call. This is part of a user message's
-    content, typically following a tool call from the assistant.
-    """
-
-    type: Literal["tool_response"] = "tool_response"
-
-    id: str
-    """The ID of the tool call that this output is for."""
-
-    output: JsonableType
-    """The output from the tool call."""
-
-
-@dataclass(kw_only=True)
 class Thinking:
     """Thinking content for a message.
 
@@ -235,6 +218,7 @@ class Thinking:
 Content: TypeAlias = (
     str | Text | Image | Audio | Video | Document | ToolCall | ToolOutput | Thinking
 )
+ResponseContent: TypeAlias = str | Image | Audio | Video | Tool
 
 
 class Role(str, Enum):
@@ -312,7 +296,7 @@ def user(content: Content | Sequence[Content], *, name: str | None = None) -> Me
 
 
 def assistant(
-    content: str | Content | Sequence[str | Content], *, name: str | None = None
+    content: Content | Sequence[Content], *, name: str | None = None
 ) -> Message:
     """Shorthand method for creating a `Message` with the assistant role.
 

@@ -10,19 +10,46 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Generic, ParamSpec, Protocol, TypeGuard, TypeVar, overload
+from typing import (
+    Any,
+    Generic,
+    Literal,
+    ParamSpec,
+    Protocol,
+    TypeGuard,
+    TypeVar,
+    overload,
+)
 
 from .messages import JsonableType
 
 __all__ = [
     "Tool",
     "ToolDef",
+    "ToolOutput",
     "tool",
 ]
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=JsonableType)
 T = TypeVar("T", bound=JsonableType)
+
+
+@dataclass(kw_only=True)
+class ToolOutput(Generic[R]):
+    """Tool output content for a message.
+
+    Represents the output from a tool call. This is part of a user message's
+    content, typically following a tool call from the assistant.
+    """
+
+    type: Literal["tool_response"] = "tool_response"
+
+    id: str
+    """The ID of the tool call that this output is for."""
+
+    value: R
+    """The output value from the tool call."""
 
 
 @dataclass
@@ -45,11 +72,14 @@ class Tool(Generic[R]):
     id: str
     """Unique identifier for this tool call."""
 
-    def call(self) -> R:
+    def call(self) -> ToolOutput[R]:
         """Execute the tool with the arguments provided by the LLM.
 
         Returns:
-            The result of executing the tool with the provided arguments.
+            The `ToolOutput` result of executing the tool with the provided arguments.
+
+        Raises:
+            InvalidArgumentsError: If the arguments provided by the LLM are invalid.
         """
         raise NotImplementedError()
 
