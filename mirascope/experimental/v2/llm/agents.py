@@ -49,51 +49,63 @@ DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", default=None)
 
 
-class AgentStringReturn(Protocol[P]):
+class AgentStringReturn(Protocol[P, DepsT]):
     """Protocol for a prompt template function that returns a single string."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> str: ...
+    def __call__(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> str: ...
 
 
-class AsyncAgentStringReturn(Protocol[P]):
+class AsyncAgentStringReturn(Protocol[P, DepsT]):
     """Protocol for a prompt template function that returns a single string."""
 
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> str: ...
+    async def __call__(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> str: ...
 
 
-class AgentContentReturn(Protocol[P]):
+class AgentContentReturn(Protocol[P, DepsT]):
     """Protocol for a prompt template function that returns a single content part."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Content: ...
+    def __call__(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> Content: ...
 
 
-class AsyncAgentContentReturn(Protocol[P]):
+class AsyncAgentContentReturn(Protocol[P, DepsT]):
     """Protocol for a prompt template function that returns a single content part."""
 
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Content: ...
+    async def __call__(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> Content: ...
 
 
-class AgentContentSequenceReturn(Protocol[P]):
+class AgentContentSequenceReturn(Protocol[P, DepsT]):
     """Protocol for a prompt template function that returns a content parts sequence."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Content]: ...
+    def __call__(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> Sequence[Content]: ...
 
 
-class AsyncAgentContentSequenceReturn(Protocol[P]):
+class AsyncAgentContentSequenceReturn(Protocol[P, DepsT]):
     """Protocol for a prompt template function that returns a content parts sequence."""
 
     async def __call__(
-        self, *args: P.args, **kwargs: P.kwargs
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> Sequence[Content]: ...
 
 
 SystemPromptTemplate: TypeAlias = (
-    AgentStringReturn[P] | AgentContentReturn[P] | AgentContentSequenceReturn[P]
+    AgentStringReturn[P, DepsT]
+    | AgentContentReturn[P, DepsT]
+    | AgentContentSequenceReturn[P, DepsT]
 )
 AsyncSystemPromptTemplate: TypeAlias = (
-    AsyncAgentStringReturn[P]
-    | AsyncAgentContentReturn[P]
-    | AsyncAgentContentSequenceReturn[P]
+    AsyncAgentStringReturn[P, DepsT]
+    | AsyncAgentContentReturn[P, DepsT]
+    | AsyncAgentContentSequenceReturn[P, DepsT]
 )
 
 
@@ -259,17 +271,17 @@ class AgentDecorator(Protocol[DepsT]):
     """Protocol for the `agent` decorator."""
 
     @overload
-    def __call__(self, fn: AsyncSystemPromptTemplate[P]) -> Agent[DepsT]:
+    def __call__(self, fn: AsyncSystemPromptTemplate[P, DepsT]) -> Agent[DepsT]:
         """Decorator for creating an async only agent."""
         ...
 
     @overload
-    def __call__(self, fn: SystemPromptTemplate[P]) -> Agent[DepsT]:
+    def __call__(self, fn: SystemPromptTemplate[P, DepsT]) -> Agent[DepsT]:
         """Decorator for creating an agent."""
         ...
 
     def __call__(
-        self, fn: SystemPromptTemplate[P] | AsyncSystemPromptTemplate[P]
+        self, fn: SystemPromptTemplate[P, DepsT] | AsyncSystemPromptTemplate[P, DepsT]
     ) -> Agent[DepsT] | AsyncAgent[DepsT]:
         """Decorator for creating an agent."""
         ...
@@ -279,18 +291,20 @@ class StructuredAgentDecorator(Protocol[DepsT, T]):
     """Protocol for the `agent` decorator with a response format."""
 
     @overload
-    def __call__(self, fn: AsyncSystemPromptTemplate[P]) -> StructuredAgent[DepsT, T]:
+    def __call__(
+        self, fn: AsyncSystemPromptTemplate[P, DepsT]
+    ) -> StructuredAgent[DepsT, T]:
         """Decorator for creating an async only structured agent."""
         ...
 
     @overload
-    def __call__(self, fn: SystemPromptTemplate[P]) -> StructuredAgent[DepsT, T]:
+    def __call__(self, fn: SystemPromptTemplate[P, DepsT]) -> StructuredAgent[DepsT, T]:
         """Decorator for creating a structured agent."""
         ...
 
     def __call__(
         self,
-        fn: SystemPromptTemplate[P] | AsyncSystemPromptTemplate[P],
+        fn: SystemPromptTemplate[P, DepsT] | AsyncSystemPromptTemplate[P, DepsT],
     ) -> StructuredAgent[DepsT, T] | AsyncStructuredAgent[DepsT, T]:
         """Decorator for creating a structured agent."""
         ...
@@ -377,6 +391,20 @@ def agent(
     **params: Unpack[OpenAIParams],
 ) -> StructuredAgentDecorator[DepsT, T]:
     """Overload for OpenAI agents with response format."""
+    ...
+
+
+@overload
+def agent(
+    model: REGISTERED_LLMS,
+    *,
+    deps_type: type[DepsT] = NoneType,
+    tools: Sequence[ToolDef] | None = None,
+    response_format: ResponseFormat[T] | None = None,
+    client: Client | None = None,
+    **params: Unpack[Params],
+) -> AgentDecorator[DepsT] | StructuredAgentDecorator[DepsT, T]:
+    """Overload for all registered models so that autocomplete works."""
     ...
 
 
