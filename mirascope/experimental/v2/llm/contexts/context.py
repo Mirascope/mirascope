@@ -8,7 +8,7 @@ from typing import Generic
 
 from typing_extensions import TypeVar
 
-from .messages import Message
+from ..messages import Message
 
 NoneType = type(None)
 DepsT = TypeVar("DepsT", default=None)
@@ -38,7 +38,24 @@ def context(
     messages: list[Message] | None = None,
     deps: DepsT = None,
 ) -> Iterator[Context[DepsT]]:
-    """Set the context for LLM calls."""
+    """Set the context for LLM calls.
+
+    Example:
+
+        ```python
+        from mirascope import llm
+
+        class Book:
+            ...
+
+        @llm.call("openai:gpt-4o-mini", tools=[])
+        def answer_question(ctx: Context[Book], question: str) -> str:
+            return f"Answer this question: {question}"
+
+        ctx = Context()
+        with llm.context() as ctx:
+            response = answer_question(ctx, "What is the capital of France?")
+    """
     raise NotImplementedError()
     context = ...
     token = CONTEXT.set(context)  # need to construct context

@@ -1,10 +1,6 @@
 """The Anthropic-specific implementation of the `LLM` interface."""
 
-from typing import Literal, TypeAlias
-
 from .base import LLM, Client, Params
-
-ANTHROPIC_REGISTERED_LLMS: TypeAlias = Literal["anthropic:claude-3-5-sonnet-latest"]
 
 
 class AnthropicParams(Params, total=False):

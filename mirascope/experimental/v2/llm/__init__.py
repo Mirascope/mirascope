@@ -5,6 +5,8 @@ including messages, tools, response formatting, and streaming. It allows you to 
 code that works with multiple LLM providers without changing your application logic.
 """
 
+from . import content as content
+from .agents import Agent, AsyncAgent, AsyncStructuredAgent, StructuredAgent
 from .calls import (
     AsyncCall,
     AsyncStructuredCall,
@@ -12,66 +14,62 @@ from .calls import (
     StructuredCall,
     call,
 )
+from .content import Content
+from .contexts import Context, context, model
 from .messages import (
-    Audio,
-    Content,
-    Document,
     DynamicConfig,
-    Image,
     Message,
     PromptTemplate,
-    ResponseContent,
-    Role,
-    Text,
-    Thinking,
-    ToolCall,
-    Video,
     assistant,
     prompt_template,
     system,
     user,
 )
-from .models import LLM, Client, Params, model
+from .models import LLM, Client, Params
 from .response_formatting import (
     ResponseFormat,
     response_format,
 )
-from .responses import Response
-from .streams import AsyncStream, Stream, StreamChunk
-from .tools import Tool, ToolDef, ToolOutput, tool
+from .responses import (
+    AsyncStream,
+    AsyncStructuredStream,
+    Response,
+    Stream,
+    StreamChunk,
+    StructuredStream,
+)
+from .tools import Tool, ToolDef, tool
 
 __all__ = [
     "LLM",
+    "Agent",
+    "AsyncAgent",
     "AsyncCall",
     "AsyncStream",
+    "AsyncStructuredAgent",
     "AsyncStructuredCall",
-    "Audio",
+    "AsyncStructuredStream",
     "Call",
     "Client",
     "Content",
-    "Document",
+    "Context",
     "DynamicConfig",
-    "Image",
     "Message",
     "Params",
     "PromptTemplate",
     "Response",
-    "ResponseContent",
     "ResponseFormat",
-    "Role",
-    "Stream",
     "Stream",
     "StreamChunk",
+    "StructuredAgent",
     "StructuredCall",
-    "Text",
-    "Thinking",
+    "StructuredStream",
     "Tool",
-    "ToolCall",
     "ToolDef",
-    "ToolOutput",
-    "Video",
     "assistant",
     "call",
+    "content",
+    "context",
     "model",
     "prompt_template",
     "response_format",

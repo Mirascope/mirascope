@@ -10,8 +10,13 @@ from typing_extensions import TypedDict
 
 from ..messages import Message
 from ..response_formatting import ResponseFormat
-from ..responses import Response
-from ..streams import AsyncStream, AsyncStructuredStream, Stream, StructuredStream
+from ..responses import (
+    AsyncStream,
+    AsyncStructuredStream,
+    Response,
+    Stream,
+    StructuredStream,
+)
 from ..tools import ToolDef
 
 T = TypeVar("T")
@@ -27,8 +32,16 @@ class Client:
     """The base interface for LLM clients."""
 
 
-class Model(Generic[ParamsT, ClientT], ABC):
-    """The base interface for models."""
+class LLM(Generic[ParamsT, ClientT], ABC):
+    """The base interface for LLM models.
+
+    This class defines the interface for interacting with language models from
+    various providers. It handles the common operations like generating responses,
+    streaming, and async variants of these operations.
+
+    Implementations of this class for specific providers should extend it and
+    implement the abstract methods for calls and streaming.
+    """
 
     provider: str
     """The provider of the model (e.g., 'google', 'openai', 'anthropic', etc.)."""
@@ -53,18 +66,6 @@ class Model(Generic[ParamsT, ClientT], ABC):
     ) -> None:
         """Initializes a `GenerativeModel` instance."""
         ...
-
-
-class LLM(Model[ParamsT, ClientT], Generic[ParamsT, ClientT], ABC):
-    """The base interface for LLM models.
-
-    This class defines the interface for interacting with language models from
-    various providers. It handles the common operations like generating responses,
-    streaming, and async variants of these operations.
-
-    Implementations of this class for specific providers should extend it and
-    implement the abstract methods for calls and streaming.
-    """
 
     @overload
     def call(

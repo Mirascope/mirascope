@@ -7,6 +7,19 @@ time.
 """
 
 from .base import LLM, Client, Params
-from .context import model
+from .register import (
+    ANTHROPIC_REGISTERED_LLMS,
+    GOOGLE_REGISTERED_LLMS,
+    OPENAI_REGISTERED_LLMS,
+    REGISTERED_LLMS,
+)
 
-__all__ = ["LLM", "Client", "Params", "model"]
+__all__ = [
+    "ANTHROPIC_REGISTERED_LLMS",
+    "GOOGLE_REGISTERED_LLMS",
+    "LLM",
+    "OPENAI_REGISTERED_LLMS",
+    "REGISTERED_LLMS",
+    "Client",
+    "Params",
+]

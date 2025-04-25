@@ -5,28 +5,25 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import TYPE_CHECKING, TypeAlias, overload
+from typing import TYPE_CHECKING, overload
 
 from typing_extensions import Unpack
 
-from .base import Client, Model, Params
+from ..models import LLM, Client, Params
 
 if TYPE_CHECKING:
-    from .anthropic import (
+    from ..models import (
         ANTHROPIC_REGISTERED_LLMS,
-        Anthropic,
-        AnthropicClient,
-        AnthropicParams,
+        GOOGLE_REGISTERED_LLMS,
+        OPENAI_REGISTERED_LLMS,
+        REGISTERED_LLMS,
     )
-    from .google import GOOGLE_REGISTERED_LLMS, Google, GoogleClient, GoogleParams
-    from .openai import OPENAI_REGISTERED_LLMS, OpenAI, OpenAIClient, OpenAIParams
-
-    REGISTERED_LLMS: TypeAlias = (
-        ANTHROPIC_REGISTERED_LLMS | GOOGLE_REGISTERED_LLMS | OPENAI_REGISTERED_LLMS
-    )
+    from ..models.anthropic import Anthropic, AnthropicClient, AnthropicParams
+    from ..models.google import Google, GoogleClient, GoogleParams
+    from ..models.openai import OpenAI, OpenAIClient, OpenAIParams
 
 
-MODEL_CONTEXT: ContextVar[Model | None] = ContextVar("MODEL_CONTEXT", default=None)
+MODEL_CONTEXT: ContextVar[LLM | None] = ContextVar("MODEL_CONTEXT", default=None)
 
 
 @overload
@@ -72,7 +69,7 @@ def model(
     *,
     client: Client | None = None,
     **params: Unpack[Params],
-) -> Iterator[Model]:
+) -> Iterator[LLM]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -83,7 +80,7 @@ def model(
     *,
     client: Client | None = None,
     **params: Unpack[Params],
-) -> Iterator[Model]:
+) -> Iterator[LLM]:
     """Set the model context with the model of the given id.
 
     Any call to a function decorated with `@llm.call` will attempt to use the model
@@ -99,7 +96,7 @@ def model(
         **params: Optional parameters for the model (temperature, max_tokens, etc.).
 
     Yields:
-        The `Model` instance now set in the model context.
+        The `LLM` instance now set in the model context.
 
     Example:
 
