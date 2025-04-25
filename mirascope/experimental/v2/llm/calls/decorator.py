@@ -38,23 +38,32 @@ NoneType = type(None)
 P = ParamSpec("P")
 T = TypeVar("T", default=None)
 DepsT = TypeVar("DepsT", default=None)
+NoDepsT = TypeVar("NoDepsT", bound=None)
 
 
 class CallDecorator(Protocol):
     """A decorator for generating responses using LLMs."""
 
     @overload
-    def __call__(self, fn: AsyncPromptTemplate[P]) -> AsyncCall[P]:
+    def __call__(
+        self, fn: AsyncPromptTemplate[P] | AsyncContextPromptTemplate[P, NoDepsT]
+    ) -> AsyncCall[P]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: PromptTemplate[P]) -> Call[P]:
+    def __call__(
+        self, fn: PromptTemplate[P] | ContextPromptTemplate[P, NoDepsT]
+    ) -> Call[P]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
-        self, fn: PromptTemplate[P] | AsyncPromptTemplate[P]
+        self,
+        fn: PromptTemplate[P]
+        | ContextPromptTemplate[P, NoDepsT]
+        | AsyncPromptTemplate[P]
+        | AsyncContextPromptTemplate[P, NoDepsT],
     ) -> Call[P] | AsyncCall[P]:
         """Decorates a function to generate responses using LLMs."""
         ...
@@ -132,7 +141,7 @@ class StructuredContextCallDecorator(Protocol[T, DepsT]):
 def call(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
-    deps_type: None = None,
+    deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: None = None,
     client: AnthropicClient | None = None,
@@ -160,7 +169,7 @@ def call(
 def call(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
-    deps_type: None = None,
+    deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: ResponseFormat[T],
     client: AnthropicClient | None = None,
@@ -188,7 +197,7 @@ def call(
 def call(
     model: GOOGLE_REGISTERED_LLMS,
     *,
-    deps_type: None = None,
+    deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: None = None,
     client: GoogleClient | None = None,
@@ -216,7 +225,7 @@ def call(
 def call(
     model: GOOGLE_REGISTERED_LLMS,
     *,
-    deps_type: None = None,
+    deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: ResponseFormat[T],
     client: GoogleClient | None = None,
@@ -244,7 +253,7 @@ def call(
 def call(
     model: OPENAI_REGISTERED_LLMS,
     *,
-    deps_type: None = None,
+    deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: None = None,
     client: OpenAIClient | None = None,
@@ -272,7 +281,7 @@ def call(
 def call(
     model: OPENAI_REGISTERED_LLMS,
     *,
-    deps_type: None = None,
+    deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: ResponseFormat[T],
     client: OpenAIClient | None = None,
@@ -300,7 +309,7 @@ def call(
 def call(
     model: REGISTERED_LLMS,
     *,
-    deps_type: None = None,
+    deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: None = None,
     client: Client | None = None,
@@ -328,7 +337,7 @@ def call(
 def call(
     model: REGISTERED_LLMS,
     *,
-    deps_type: None = None,
+    deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: ResponseFormat[T],
     client: Client | None = None,
@@ -355,7 +364,7 @@ def call(
 def call(
     model: REGISTERED_LLMS,
     *,
-    deps_type: type[DepsT] | None = None,
+    deps_type: type[DepsT] | type[None] | None = None,
     tools: Sequence[ToolDef] | Sequence[ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: ResponseFormat[T] | None = None,
     client: Client | None = None,

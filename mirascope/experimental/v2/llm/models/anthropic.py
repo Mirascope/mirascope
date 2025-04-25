@@ -1,5 +1,8 @@
 """The Anthropic-specific implementation of the `LLM` interface."""
 
+from anthropic.types import MessageParam
+
+from ..messages import Message
 from .base import LLM, Client, Params
 
 
@@ -13,5 +16,5 @@ class AnthropicClient(Client):
     """The client for the Anthropic LLM model."""
 
 
-class Anthropic(LLM[AnthropicParams, AnthropicClient]):
+class Anthropic(LLM[Message | MessageParam, AnthropicParams, AnthropicClient]):
     """The Anthropic-specific implementation of the `LLM` interface."""

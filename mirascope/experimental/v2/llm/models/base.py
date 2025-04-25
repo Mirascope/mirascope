@@ -4,24 +4,30 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Generic, TypeVar, overload
+from typing import Any, Generic, overload
 
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict, TypeVar
 
-from ..messages import Message
 from ..response_formatting import ResponseFormat
 from ..responses import (
+    AsyncContextStream,
+    AsyncContextStructuredStream,
     AsyncStream,
     AsyncStructuredStream,
+    ContextResponse,
+    ContextStream,
+    ContextStructuredStream,
     Response,
     Stream,
     StructuredStream,
 )
-from ..tools import ToolDef
+from ..tools import ContextToolDef, ToolDef
 
-T = TypeVar("T")
+T = TypeVar("T", default=None)
+MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="Params")
 ClientT = TypeVar("ClientT", bound="Client")
+DepsT = TypeVar("DepsT", default=None)
 
 
 class Params(TypedDict, total=False):
@@ -32,7 +38,7 @@ class Client:
     """The base interface for LLM clients."""
 
 
-class LLM(Generic[ParamsT, ClientT], ABC):
+class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
     """The base interface for LLM models.
 
     This class defines the interface for interacting with language models from
@@ -71,19 +77,31 @@ class LLM(Generic[ParamsT, ClientT], ABC):
     def call(
         self,
         *,
-        messages: list[Message],
+        messages: list[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Response:
-        """Overload for call when there's no response format specified."""
+        """Overload for standard call."""
         ...
 
     @overload
     def call(
         self,
         *,
-        messages: list[Message],
+        messages: list[MessageT],
+        tools: Sequence[ContextToolDef[..., Any, DepsT]],
+        response_format: None = None,
+        params: ParamsT | None = None,
+    ) -> ContextResponse[DepsT]:
+        """Overload for standard context call."""
+        ...
+
+    @overload
+    def call(
+        self,
+        *,
+        messages: list[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: ResponseFormat[T],
         params: ParamsT | None = None,
@@ -91,15 +109,29 @@ class LLM(Generic[ParamsT, ClientT], ABC):
         """Overload for calls when a response format is specified."""
         ...
 
+    @overload
+    def call(
+        self,
+        *,
+        messages: list[MessageT],
+        tools: Sequence[ContextToolDef[..., Any, DepsT]],
+        response_format: ResponseFormat[T],
+        params: ParamsT | None = None,
+    ) -> ContextResponse[DepsT, T]:
+        """Overload for calls when a response format is specified."""
+        ...
+
     @abstractmethod
     def call(
         self,
         *,
-        messages: list[Message],
-        tools: Sequence[ToolDef] | None = None,
+        messages: list[MessageT],
+        tools: Sequence[ToolDef]
+        | Sequence[ContextToolDef[..., Any, DepsT]]
+        | None = None,
         response_format: ResponseFormat[T] | None = None,
         params: ParamsT | None = None,
-    ) -> Response | Response[T]:
+    ) -> Response | Response[T] | ContextResponse[DepsT] | ContextResponse[DepsT, T]:
         """Generate a response using the model."""
         ...
 
@@ -107,19 +139,31 @@ class LLM(Generic[ParamsT, ClientT], ABC):
     async def call_async(
         self,
         *,
-        messages: list[Message],
+        messages: list[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Response:
-        """Overload for async calls when there's no response format specified."""
+        """Overload for standard async call."""
         ...
 
     @overload
     async def call_async(
         self,
         *,
-        messages: list[Message],
+        messages: list[MessageT],
+        tools: Sequence[ContextToolDef[..., Any, DepsT]],
+        response_format: None = None,
+        params: ParamsT | None = None,
+    ) -> ContextResponse[DepsT]:
+        """Overload for standard async context call."""
+        ...
+
+    @overload
+    async def call_async(
+        self,
+        *,
+        messages: list[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: ResponseFormat[T],
         params: ParamsT | None = None,
@@ -127,15 +171,29 @@ class LLM(Generic[ParamsT, ClientT], ABC):
         """Overload for async calls when a response format is specified."""
         ...
 
+    @overload
+    async def call_async(
+        self,
+        *,
+        messages: list[MessageT],
+        tools: Sequence[ContextToolDef[..., Any, DepsT]],
+        response_format: ResponseFormat[T],
+        params: ParamsT | None = None,
+    ) -> ContextResponse[DepsT, T]:
+        """Overload for async context calls when a response format is specified."""
+        ...
+
     @abstractmethod
     async def call_async(
         self,
         *,
-        messages: list[Message],
-        tools: Sequence[ToolDef] | None = None,
+        messages: list[MessageT],
+        tools: Sequence[ToolDef]
+        | Sequence[ContextToolDef[..., Any, DepsT]]
+        | None = None,
         response_format: ResponseFormat[T] | None = None,
         params: ParamsT | None = None,
-    ) -> Response | Response[T]:
+    ) -> Response | Response[T] | ContextResponse[DepsT] | ContextResponse[DepsT, T]:
         """Generate a response asynchronously using the model."""
         ...
 
@@ -143,35 +201,66 @@ class LLM(Generic[ParamsT, ClientT], ABC):
     def stream(
         self,
         *,
-        messages: list[Message],
+        messages: list[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Stream:
-        """Overload for streaming when there's no response format specified."""
+        """Overload for standard streaming."""
         ...
 
     @overload
     def stream(
         self,
         *,
-        messages: list[Message],
+        messages: list[MessageT],
+        tools: Sequence[ContextToolDef[..., Any, DepsT]],
+        response_format: None = None,
+        params: ParamsT | None = None,
+    ) -> ContextStream[DepsT]:
+        """Overload for standard context streaming."""
+        ...
+
+    @overload
+    def stream(
+        self,
+        *,
+        messages: list[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: ResponseFormat[T],
         params: ParamsT | None = None,
     ) -> StructuredStream[T]:
-        """Overload for streaming when a response format is specified."""
+        """Overload for structured streaming."""
+        ...
+
+    @overload
+    def stream(
+        self,
+        *,
+        messages: list[MessageT],
+        tools: Sequence[ContextToolDef[..., Any, DepsT]],
+        response_format: ResponseFormat[T],
+        params: ParamsT | None = None,
+    ) -> ContextStructuredStream[DepsT, T]:
+        """Overload for context structured streaming."""
         ...
 
     @abstractmethod
     def stream(
         self,
         *,
-        messages: list[Message],
-        tools: Sequence[ToolDef] | None = None,
+        messages: list[MessageT],
+        tools: Sequence[ToolDef]
+        | Sequence[ContextToolDef[..., Any, DepsT]]
+        | None = None,
         response_format: ResponseFormat[T] | None = None,
         params: ParamsT | None = None,
-    ) -> Stream | StructuredStream[T]:
+    ) -> (
+        Stream
+        | StructuredStream[T]
+        | ContextStream[DepsT]
+        | ContextStructuredStream[DepsT, T]
+    ):
         """Stream a response using the model."""
         ...
 
@@ -179,33 +268,65 @@ class LLM(Generic[ParamsT, ClientT], ABC):
     async def stream_async(
         self,
         *,
-        messages: list[Message],
+        messages: list[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> AsyncStream:
-        """Overload for async streaming when there's no response format specified."""
+        """Overload for standard async streaming."""
         ...
 
     @overload
     async def stream_async(
         self,
         *,
-        messages: list[Message],
+        messages: list[MessageT],
+        tools: Sequence[ContextToolDef[..., Any, DepsT]],
+        response_format: None = None,
+        params: ParamsT | None = None,
+    ) -> AsyncContextStream[DepsT]:
+        """Overload for standard async context streaming."""
+        ...
+
+    @overload
+    async def stream_async(
+        self,
+        *,
+        messages: list[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: ResponseFormat[T],
         params: ParamsT | None = None,
     ) -> AsyncStructuredStream[T]:
-        """Overload for async streaming when a response format is specified."""
+        """Overload for async structured streaming."""
+        ...
+
+    @overload
+    async def stream_async(
+        self,
+        *,
+        messages: list[MessageT],
+        tools: Sequence[ContextToolDef[..., Any, DepsT]],
+        response_format: ResponseFormat[T],
+        params: ParamsT | None = None,
+    ) -> AsyncContextStructuredStream[DepsT, T]:
+        """Overload for async context structured streaming."""
         ...
 
     @abstractmethod
     async def stream_async(
         self,
-        messages: list[Message],
-        tools: Sequence[ToolDef] | None = None,
+        *,
+        messages: list[MessageT],
+        tools: Sequence[ToolDef]
+        | Sequence[ContextToolDef[..., Any, DepsT]]
+        | None = None,
         response_format: ResponseFormat[T] | None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStream | AsyncStructuredStream[T]:
+    ) -> (
+        AsyncStream
+        | AsyncStructuredStream[T]
+        | AsyncContextStream[DepsT]
+        | AsyncContextStructuredStream[DepsT, T]
+    ):
         """Stream a response asynchronously using the model."""
         ...

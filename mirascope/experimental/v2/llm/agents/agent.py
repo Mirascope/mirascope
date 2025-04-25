@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing_extensions import TypeVar
 
 from ..content import Content
-from ..responses import AsyncStream, Response, Stream
+from ..responses import AsyncStream, ContextResponse, Stream
 from .base_agent import BaseAgent
 
 DepsT = TypeVar("DepsT", default=None)
@@ -18,13 +18,13 @@ class Agent(BaseAgent[DepsT]):
 
     def __call__(
         self, query: Content | Sequence[Content], *, deps: DepsT = None
-    ) -> Response:
+    ) -> ContextResponse[DepsT]:
         """Generates a response by running the agent loop."""
         raise NotImplementedError()
 
     async def run_async(
         self, query: Content | Sequence[Content], *, deps: DepsT = None
-    ) -> Response:
+    ) -> ContextResponse[DepsT]:
         """Generates a response by running the agent loop asynchronously."""
         raise NotImplementedError()
 

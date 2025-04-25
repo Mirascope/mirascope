@@ -59,7 +59,7 @@ def tool(__fn: ToolFn[P, R]) -> ToolDef[P, R]:
 
 
 @overload
-def tool(*, deps_type: None = None, strict: bool = False) -> ToolDecorator:
+def tool(*, deps_type: type[None] | None = None, strict: bool = False) -> ToolDecorator:
     """Overload for setting non-default arguments."""
     ...
 
@@ -75,7 +75,7 @@ def tool(
 def tool(
     __fn: Callable[P, R] | None = None,
     *,
-    deps_type: type[DepsT] | None = None,
+    deps_type: type[DepsT] | type[None] | None = None,
     strict: bool = False,
 ) -> ToolDef[P, R] | ToolDecorator | ContextToolDecorator[DepsT]:
     '''Decorator that turns a function into a tool definition.
