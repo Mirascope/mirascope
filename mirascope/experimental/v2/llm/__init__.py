@@ -6,7 +6,7 @@ code that works with multiple LLM providers without changing your application lo
 """
 
 from . import content as content
-from .agents import Agent, AsyncAgent, AsyncStructuredAgent, StructuredAgent
+from .agents import Agent, AsyncAgent, AsyncStructuredAgent, StructuredAgent, agent
 from .calls import (
     AsyncCall,
     AsyncStructuredCall,
@@ -26,10 +26,8 @@ from .messages import (
     user,
 )
 from .models import LLM, Client, Params
-from .response_formatting import (
-    ResponseFormat,
-    response_format,
-)
+from .response_formatting import ResponseFormat
+from .response_formatting.decorator import response_format
 from .responses import (
     AsyncStream,
     AsyncStructuredStream,
@@ -38,7 +36,8 @@ from .responses import (
     StreamChunk,
     StructuredStream,
 )
-from .tools import Tool, ToolDef, tool
+from .tools import Tool, ToolDef
+from .tools.decorator import tool
 
 __all__ = [
     "LLM",
@@ -66,6 +65,7 @@ __all__ = [
     "StructuredStream",
     "Tool",
     "ToolDef",
+    "agent",
     "assistant",
     "call",
     "content",

@@ -1,42 +1,45 @@
-"""ContextTool interface for LLM tools that need access to the context."""
+"""ContextTool interface for LLM interactions with context.
+
+This module defines interfaces for tools with context that can be used by LLMs during a
+call. ContextTools are defined using the `@tool(deps_type=...)` decorator which creates
+a `ContextToolDef`. When an LLM uses a tool during a call, a `Tool` instance is created
+with the specific arguments provided by the LLM.
+"""
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Concatenate, Generic, TypeVar
+from typing import Concatenate, Generic, ParamSpec
 
+from typing_extensions import TypeVar
+
+from ..content import ToolOutput
 from ..contexts import Context
 from ..types import Jsonable
+from .base_tool import BaseTool
 
+P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
+T = TypeVar("T", bound=Jsonable)
+DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class ContextTool(Generic[R]):
-    """ContextTool interface for LLM tools that need access to the context.
+class ContextTool(BaseTool[R], Generic[R, DepsT]):
+    """Tool instance with arguments provided by an LLM.
 
-    This interface is used for tools that require access to the context of the LLM
-    call. It provides a method to set the context and a method to get the context.
+    When an LLM uses a tool during a call, a Tool instance is created with the specific
+    arguments provided by the LLM.
     """
 
-    fn: Callable[Concatenate[Context, ...], R]
-    """The function that defines the tool being calledm, which takes a Context as the first argument."""
+    fn: Callable[Concatenate[Context[DepsT], ...], R]
 
-    name: str
-    """The name of the tool being called."""
-
-    args: dict[str, Jsonable]
-    """The arguments provided by the LLM for this tool call."""
-
-    id: str
-    """Unique identifier for this tool call."""
-
-    def call(self, context: Context) -> R:
-        """Execute the tool with the context provided by the LLM.
-
-        Args:
-            context: The context to be passed to the tool.
+    def call(self, ctx: Context[DepsT]) -> ToolOutput[R]:
+        """Execute the tool with context and the arguments provided by the LLM.
 
         Returns:
-            The result of executing the tool with the provided context.
+            The `ToolOutput` result of executing the tool with the provided arguments.
+
+        Raises:
+            InvalidArgumentsError: If the arguments provided by the LLM are invalid.
         """
         raise NotImplementedError()

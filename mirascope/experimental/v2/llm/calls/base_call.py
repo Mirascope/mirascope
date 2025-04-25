@@ -1,22 +1,23 @@
 """The `BaseCall` class for LLM calls."""
 
 from abc import ABC
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic, ParamSpec
 
 from typing_extensions import TypeVar
 
-from ..messages import PromptTemplate
+from ..messages import AsyncPromptTemplate, PromptTemplate
 from ..models import LLM
 from ..tools import ToolDef
 
 P = ParamSpec("P")
 T = TypeVar("T", default=None)
+PromptTemplateT = TypeVar("PromptTemplateT", bound=PromptTemplate | AsyncPromptTemplate)
 
 
 @dataclass
-class BaseCall(Generic[P], ABC):
+class BaseCall(Generic[P, PromptTemplateT], ABC):
     """A base class for generating responses using LLMs."""
 
     model: LLM
@@ -25,5 +26,5 @@ class BaseCall(Generic[P], ABC):
     tools: Sequence[ToolDef] | None
     """The tools to be used with the LLM."""
 
-    fn: Callable[P, PromptTemplate[P]]
+    fn: PromptTemplateT
     """The function that generates the prompt template."""

@@ -5,6 +5,7 @@ from typing import ParamSpec
 
 from typing_extensions import TypeVar
 
+from ..messages import AsyncPromptTemplate
 from ..responses import AsyncStream, Response
 from .base_call import BaseCall
 
@@ -13,7 +14,7 @@ T = TypeVar("T", default=None)
 
 
 @dataclass
-class AsyncCall(BaseCall[P]):
+class AsyncCall(BaseCall[P, AsyncPromptTemplate]):
     """A class for generating responses using LLMs asynchronously."""
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response:

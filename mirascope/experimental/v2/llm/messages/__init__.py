@@ -14,14 +14,18 @@ from .message import (
     user,
 )
 from .prompt_template import (
+    AsyncContextPromptTemplate,
     AsyncPromptTemplate,
+    ContextPromptTemplate,
     DynamicConfig,
     PromptTemplate,
     prompt_template,
 )
 
 __all__ = [
+    "AsyncContextPromptTemplate",
     "AsyncPromptTemplate",
+    "ContextPromptTemplate",
     "DynamicConfig",
     "Jsonable",
     "JsonableObject",

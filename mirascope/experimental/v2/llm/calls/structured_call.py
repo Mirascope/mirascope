@@ -5,6 +5,7 @@ from typing import ParamSpec
 
 from typing_extensions import TypeVar
 
+from ..messages import PromptTemplate
 from ..responses import AsyncStructuredStream, Response, StructuredStream
 from .base_structured_call import BaseStructuredCall
 
@@ -13,7 +14,7 @@ T = TypeVar("T", default=None)
 
 
 @dataclass
-class StructuredCall(BaseStructuredCall[P, T]):
+class StructuredCall(BaseStructuredCall[P, PromptTemplate, T]):
     """A class for generating structured responses using LLMs."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
@@ -33,28 +34,3 @@ class StructuredCall(BaseStructuredCall[P, T]):
     ) -> AsyncStructuredStream[T]:
         """Generates an asynchronous streaming structured response using the LLM."""
         raise NotImplementedError()
-
-
-@dataclass
-class AsyncStructuredCall(BaseStructuredCall[P, T]):
-    """A class for generating structured responses using LLMs asynchronously."""
-
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
-        """Generates a structured response using the LLM asynchronously."""
-        raise NotImplementedError()
-
-    async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
-        """Generates an asynchronous structured response using the LLM."""
-        return await self(*args, **kwargs)
-
-    async def stream(
-        self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStructuredStream[T]:
-        """Generates a streaming structured response using the LLM asynchronously."""
-        raise NotImplementedError()
-
-    async def stream_async(
-        self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStructuredStream[T]:
-        """Generates an asynchronous streaming structured response using the LLM."""
-        return await self.stream(*args, **kwargs)

@@ -1,5 +1,6 @@
 """The `BaseStructuredAgent` class for structured LLM agents."""
 
+from abc import ABC
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
@@ -16,7 +17,7 @@ T = TypeVar("T", default=None)
 
 
 @dataclass
-class BaseStructuredAgent(Generic[DepsT, T]):
+class BaseStructuredAgent(Generic[DepsT, T], ABC):
     """Structured agent class for generating structured responses using LLMs with tools."""
 
     ctx: Context[DepsT]

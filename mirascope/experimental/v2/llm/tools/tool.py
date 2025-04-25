@@ -6,12 +6,12 @@ LLM uses a tool during a call, a `Tool` instance is created with the specific
 arguments provided by the LLM.
 """
 
-from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Generic, ParamSpec, TypeVar
+from typing import ParamSpec, TypeVar
 
 from ..content import ToolOutput
 from ..types import Jsonable
+from .base_tool import BaseTool
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
@@ -19,24 +19,12 @@ T = TypeVar("T", bound=Jsonable)
 
 
 @dataclass
-class Tool(Generic[R]):
+class Tool(BaseTool[R]):
     """Tool instance with arguments provided by an LLM.
 
     When an LLM uses a tool during a call, a Tool instance is created with the specific
     arguments provided by the LLM.
     """
-
-    fn: Callable[..., R]
-    """The ToolDef that defines the tool being called."""
-
-    name: str
-    """The name of the tool being called."""
-
-    args: dict[str, Jsonable]
-    """The arguments provided by the LLM for this tool call."""
-
-    id: str
-    """Unique identifier for this tool call."""
 
     def call(self) -> ToolOutput[R]:
         """Execute the tool with the arguments provided by the LLM.

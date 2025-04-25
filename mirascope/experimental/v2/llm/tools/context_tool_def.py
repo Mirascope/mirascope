@@ -1,14 +1,15 @@
-"""The `ToolDef` class for defining tools that LLMs can request be called."""
+"""The `ContextToolDef` class for defining tools that LLMs can request be called."""
 
 from dataclasses import dataclass
-from typing import ParamSpec, TypeGuard
+from typing import Generic, ParamSpec, TypeGuard
 
 from typing_extensions import TypeVar
 
+from ..contexts import Context
 from ..types import Jsonable
 from .base_tool import BaseTool
 from .base_tool_def import BaseToolDef
-from .tool import Tool
+from .context_tool import ContextTool
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
@@ -17,7 +18,7 @@ DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class ToolDef(BaseToolDef[P, R]):
+class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
     """Protocol defining a tool that can be used by LLMs.
 
     A ToolDef represents a function that can be called by an LLM during a call.
@@ -26,7 +27,7 @@ class ToolDef(BaseToolDef[P, R]):
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+    def __call__(self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs) -> R:
         """Call the tool with the provided arguments.
 
         Args:
@@ -37,7 +38,7 @@ class ToolDef(BaseToolDef[P, R]):
         """
         return self.fn(*args, **kwargs)
 
-    def defines(self, tool: BaseTool) -> TypeGuard[Tool[R]]:
+    def defines(self, tool: BaseTool) -> TypeGuard[ContextTool[R, DepsT]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific
