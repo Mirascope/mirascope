@@ -9,7 +9,7 @@ from ..content import Content
 from ..contexts import Context
 from ..models import Client, Params
 from ..response_formatting import ResponseFormat
-from ..tools import ContextToolDef
+from ..tools import ContextToolDef, ToolDef
 from .agent import Agent
 from .async_agent import AsyncAgent
 from .async_structured_agent import AsyncStructuredAgent
@@ -128,7 +128,7 @@ def agent(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
@@ -142,7 +142,7 @@ def agent(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: ResponseFormat[T],
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
@@ -156,7 +156,7 @@ def agent(
     model: GOOGLE_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
@@ -170,7 +170,7 @@ def agent(
     model: GOOGLE_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: ResponseFormat[T],
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
@@ -184,7 +184,7 @@ def agent(
     model: OPENAI_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
@@ -198,7 +198,7 @@ def agent(
     model: OPENAI_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: ResponseFormat[T],
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
@@ -212,7 +212,7 @@ def agent(
     model: REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: ResponseFormat[T] | None = None,
     client: Client | None = None,
     **params: Unpack[Params],
@@ -225,7 +225,7 @@ def agent(
     model: REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: ResponseFormat[T] | None = None,
     client: Client | None = None,
     **params: Unpack[Params],
