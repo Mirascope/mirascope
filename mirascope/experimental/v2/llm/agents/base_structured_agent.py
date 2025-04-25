@@ -1,0 +1,32 @@
+"""The `BaseStructuredAgent` class for structured LLM agents."""
+
+from collections.abc import Sequence
+from dataclasses import dataclass
+from typing import Generic
+
+from typing_extensions import TypeVar
+
+from ..contexts import Context
+from ..models import LLM
+from ..response_formatting import ResponseFormat
+from ..tools import ToolDef
+
+DepsT = TypeVar("DepsT", default=None)
+T = TypeVar("T", default=None)
+
+
+@dataclass
+class BaseStructuredAgent(Generic[DepsT, T]):
+    """Structured agent class for generating structured responses using LLMs with tools."""
+
+    ctx: Context[DepsT]
+    """The context for the agent, such as the history of messages."""
+
+    response_format: ResponseFormat[T] | None
+    """The response format for the agent, if any."""
+
+    tools: Sequence[ToolDef] | None
+    """The tools available to the agent, if any."""
+
+    model: LLM
+    """The default model the agent will use if not specified through context."""

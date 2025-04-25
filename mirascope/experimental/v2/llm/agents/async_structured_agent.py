@@ -2,36 +2,20 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Generic
 
 from typing_extensions import TypeVar
 
 from ..content import Content
-from ..contexts import Context
-from ..models import LLM
-from ..response_formatting import ResponseFormat
 from ..responses import AsyncStructuredStream, Response
-from ..tools import ToolDef
+from .base_structured_agent import BaseStructuredAgent
 
 DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", default=None)
 
 
 @dataclass
-class AsyncStructuredAgent(Generic[DepsT, T]):
+class AsyncStructuredAgent(BaseStructuredAgent[DepsT, T]):
     """Asynchronous structured agent class for generating structured responses using LLMs with tools."""
-
-    ctx: Context[DepsT]
-    """The context for the agent, such as the history of messages."""
-
-    response_format: ResponseFormat[T] | None
-    """The response format for the agent, if any."""
-
-    tools: Sequence[ToolDef] | None
-    """The tools available to the agent, if any."""
-
-    model: LLM
-    """The default model the agent will use if not specified through context."""
 
     async def __call__(
         self, query: Content | Sequence[Content], *, deps: DepsT = None

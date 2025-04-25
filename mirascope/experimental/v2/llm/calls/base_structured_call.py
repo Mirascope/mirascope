@@ -1,0 +1,33 @@
+"""The `BaseStructuredCall` class for structured LLM calls."""
+
+from abc import ABC
+from collections.abc import Callable, Sequence
+from dataclasses import dataclass
+from typing import Generic, ParamSpec
+
+from typing_extensions import TypeVar
+
+from ..messages import AsyncPromptTemplate
+from ..models import LLM
+from ..response_formatting import ResponseFormat
+from ..tools import ToolDef
+
+P = ParamSpec("P")
+T = TypeVar("T", default=None)
+
+
+@dataclass
+class BaseStructuredCall(Generic[P, T], ABC):
+    """A base class for generating responses using LLMs."""
+
+    model: LLM
+    """The LLM model used for generating responses."""
+
+    tools: Sequence[ToolDef] | None
+    """The tools to be used with the LLM."""
+
+    response_format: ResponseFormat[T]
+    """The response format for the generated response."""
+
+    fn: Callable[P, AsyncPromptTemplate[P]]
+    """The function that generates the prompt template."""
