@@ -8,13 +8,14 @@ from typing_extensions import TypeVar
 
 from ..content import Audio, ContextResponseContent, Image, ResponseContent, Text, Video
 from ..messages import DynamicConfig, Message
+from ..types import Dataclass
 from .finish_reason import FinishReason
 from .usage import Usage
 
 ResponseContentT = TypeVar(
     "ResponseContentT", bound=ResponseContent | ContextResponseContent
 )
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 
 
 @dataclass

@@ -11,10 +11,10 @@ from typing_extensions import TypeVar
 
 from ..content import ResponseContent
 from ..tools import Tool
-from ..types import Jsonable
+from ..types import Dataclass, Jsonable
 from .base_response import BaseResponse
 
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 
 
 @dataclass

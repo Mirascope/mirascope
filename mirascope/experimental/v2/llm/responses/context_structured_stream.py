@@ -13,10 +13,10 @@ from typing import Generic
 
 from typing_extensions import TypeVar
 
+from ..types import Dataclass
 from .context_stream_chunk import ContextStreamChunk
-from .structured_stream import Partial
 
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 DepsT = TypeVar("DepsT", default=None)
 
 
@@ -51,7 +51,7 @@ class ContextStructuredStream(Generic[DepsT, T]):
         ```
     """
 
-    def __iter__(self) -> Iterator[ContextStreamChunk[DepsT, Partial[T]]]:
+    def __iter__(self) -> Iterator[ContextStreamChunk[DepsT, T]]:
         """Iterate through the structured outputs of the stream.
 
         Returns:

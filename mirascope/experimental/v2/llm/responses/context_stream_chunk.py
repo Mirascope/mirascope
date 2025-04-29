@@ -7,8 +7,9 @@ from typing_extensions import TypeVar
 
 from ..content import ContextResponseContent
 from ..contexts.context import Context
+from ..types import Dataclass
 
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 DepsT = TypeVar("DepsT", default=None)
 
 

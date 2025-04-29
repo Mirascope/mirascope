@@ -8,18 +8,15 @@ TODO: this interface is missing stuff from v1 like usage etc. that we collect du
 the stream for convenience (e.g. calling stream.cost after the stream is done).
 """
 
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import Iterator
 from typing import Generic
 
 from typing_extensions import TypeVar
 
+from ..types import Dataclass
 from .stream_chunk import StreamChunk
 
-T = TypeVar("T", default=None)
-
-
-class Partial(Generic[T]):
-    """A partial structured output from an LLM."""
+T = TypeVar("T", bound=Dataclass | None, default=None)
 
 
 class StructuredStream(Generic[T]):
@@ -47,44 +44,10 @@ class StructuredStream(Generic[T]):
         ```
     """
 
-    def __iter__(self) -> Iterator[StreamChunk[Partial[T]]]:
+    def __iter__(self) -> Iterator[StreamChunk[T]]:
         """Iterate through the structured outputs of the stream.
 
         Returns:
             An iterator yielding structured output objects.
-        """
-        raise NotImplementedError()
-
-
-class AsyncStructuredStream(Generic[T]):
-    """An asynchronous stream of partial structured outputs from an LLM.
-
-    This class supports async iteration to process structured outputs as they arrive
-    from the model.
-
-    Example:
-        ```python
-        from mirascope import llm
-
-        @llm.response_format(parser="json")
-        class Book:
-            title: str
-            author: str
-
-        @llm.call("openai:gpt-4o-mini", response_format=Book)
-        def answer_question(question: str) -> str:
-            return f"Answer this question: {question}"
-
-        stream = await answer_question.stream_async("What is the capital of France?")
-        async for partial_book in stream:
-            print(partial_book)
-        ```
-    """
-
-    def __aiter__(self) -> AsyncIterator[StreamChunk[Partial[T]]]:
-        """Iterate through the structured outputs of the stream asynchronously.
-
-        Returns:
-            An async iterator yielding structured output objects.
         """
         raise NotImplementedError()

@@ -6,11 +6,7 @@ the stream for convenience (e.g. calling stream.cost after the stream is done).
 
 from collections.abc import AsyncIterator
 
-from typing_extensions import TypeVar
-
 from .stream_chunk import StreamChunk
-
-T = TypeVar("T", default=None)
 
 
 class AsyncStream:

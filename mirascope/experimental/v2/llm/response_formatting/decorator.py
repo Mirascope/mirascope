@@ -6,8 +6,9 @@ from typing import Any, Literal, Protocol, TypeVar, overload
 from typing_extensions import dataclass_transform
 
 from ..content import Content
+from ..types import Dataclass
 
-T = TypeVar("T")
+T = TypeVar("T", bound=Dataclass)
 CovariantT = TypeVar("CovariantT", covariant=True)
 
 

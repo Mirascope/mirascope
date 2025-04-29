@@ -7,10 +7,11 @@ from typing_extensions import TypeVar
 
 from ..messages import PromptTemplate
 from ..responses import AsyncStructuredStream, Response, StructuredStream
+from ..types import Dataclass
 from .base_structured_call import BaseStructuredCall
 
 P = ParamSpec("P")
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 
 
 @dataclass

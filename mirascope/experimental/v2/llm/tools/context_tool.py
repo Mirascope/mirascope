@@ -19,7 +19,6 @@ from .base_tool import BaseTool
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
-T = TypeVar("T", bound=Jsonable)
 DepsT = TypeVar("DepsT", default=None)
 
 

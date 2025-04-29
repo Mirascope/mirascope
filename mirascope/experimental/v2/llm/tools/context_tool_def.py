@@ -13,7 +13,6 @@ from .context_tool import ContextTool
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
-T = TypeVar("T", bound=Jsonable)
 DepsT = TypeVar("DepsT", default=None)
 
 

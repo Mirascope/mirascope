@@ -3,14 +3,11 @@
 from dataclasses import dataclass
 from typing import ParamSpec
 
-from typing_extensions import TypeVar
-
 from ..messages import AsyncPromptTemplate
 from ..responses import AsyncStream, Response
 from .base_call import BaseCall
 
 P = ParamSpec("P")
-T = TypeVar("T", default=None)
 
 
 @dataclass

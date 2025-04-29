@@ -15,11 +15,10 @@ from typing_extensions import TypeVar
 
 from .context_stream_chunk import ContextStreamChunk
 
-T = TypeVar("T", default=None)
 DepsT = TypeVar("DepsT", default=None)
 
 
-class AsyncContextStream(Generic[DepsT, T]):
+class AsyncContextStream(Generic[DepsT]):
     """An asynchronous stream of response chunks from an LLM with context.
 
     This class supports async iteration to process chunks as they arrive from the model.
@@ -45,7 +44,7 @@ class AsyncContextStream(Generic[DepsT, T]):
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[ContextStreamChunk[DepsT, T]]:
+    def __aiter__(self) -> AsyncIterator[ContextStreamChunk[DepsT, None]]:
         """Iterate through the chunks of the stream asynchronously.
 
         Returns:

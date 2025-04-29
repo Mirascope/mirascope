@@ -13,10 +13,10 @@ from typing import Generic
 
 from typing_extensions import TypeVar
 
+from ..types import Dataclass
 from .context_stream_chunk import ContextStreamChunk
-from .structured_stream import Partial
 
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 DepsT = TypeVar("DepsT", default=None)
 
 
@@ -51,7 +51,7 @@ class AsyncContextStructuredStream(Generic[DepsT, T]):
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[ContextStreamChunk[DepsT, Partial[T]]]:
+    def __aiter__(self) -> AsyncIterator[ContextStreamChunk[DepsT, T]]:
         """Iterate through the structured outputs of the stream asynchronously.
 
         Returns:

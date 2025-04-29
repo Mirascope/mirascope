@@ -6,8 +6,9 @@ from typing import Generic
 from typing_extensions import TypeVar
 
 from ..content import ResponseContent
+from ..types import Dataclass
 
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 
 
 @dataclass

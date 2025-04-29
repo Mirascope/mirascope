@@ -21,8 +21,9 @@ from ..responses import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
+from ..types import Dataclass
 
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="Params")
 ClientT = TypeVar("ClientT", bound="Client")

@@ -11,7 +11,6 @@ from ..responses import AsyncStream, ContextResponse, Stream
 from .base_call import BaseCall
 
 P = ParamSpec("P")
-T = TypeVar("T", default=None)
 DepsT = TypeVar("DepsT", default=None)
 
 

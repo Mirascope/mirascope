@@ -14,7 +14,6 @@ NoneType = type(None)
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
 CovariantR = TypeVar("CovariantR", covariant=True, bound=Jsonable)
-T = TypeVar("T", bound=Jsonable)
 DepsT = TypeVar("DepsT")
 
 

@@ -9,7 +9,6 @@ from ..types import Jsonable
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
-T = TypeVar("T", bound=Jsonable)
 
 
 @dataclass

@@ -9,6 +9,7 @@ from ..content import Content
 from ..contexts import Context
 from ..models import Client, Params
 from ..tools import ContextToolDef, ToolDef
+from ..types import Dataclass
 from .agent import Agent
 from .async_agent import AsyncAgent
 from .async_structured_agent import AsyncStructuredAgent
@@ -28,7 +29,7 @@ if TYPE_CHECKING:
 NoneType = type(None)
 P = ParamSpec("P")
 DepsT = TypeVar("DepsT", default=None)
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 
 
 class AgentStringReturn(Protocol[P, DepsT]):

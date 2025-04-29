@@ -10,9 +10,10 @@ from typing_extensions import TypeVar
 from ..messages import AsyncPromptTemplate, PromptTemplate
 from ..models import LLM
 from ..tools import ToolDef
+from ..types import Dataclass
 
 P = ParamSpec("P")
-T = TypeVar("T", default=None)
+T = TypeVar("T", bound=Dataclass | None, default=None)
 PromptTemplateT = TypeVar("PromptTemplateT", bound=PromptTemplate | AsyncPromptTemplate)
 
 

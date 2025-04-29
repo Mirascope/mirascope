@@ -3,7 +3,9 @@
 from dataclasses import dataclass
 from typing import Any, Generic, Literal, Protocol, TypeVar
 
-T = TypeVar("T")
+from ..types import Dataclass
+
+T = TypeVar("T", bound=Dataclass)
 CovariantT = TypeVar("CovariantT", covariant=True)
 
 

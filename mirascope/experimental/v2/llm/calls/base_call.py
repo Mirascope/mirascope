@@ -12,7 +12,6 @@ from ..models import LLM
 from ..tools import ToolDef
 
 P = ParamSpec("P")
-T = TypeVar("T", default=None)
 PromptTemplateT = TypeVar("PromptTemplateT", bound=PromptTemplate | AsyncPromptTemplate)
 
 
