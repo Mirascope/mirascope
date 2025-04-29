@@ -88,9 +88,6 @@ class ResponseFormat(Generic[T]):
         ```
     """
 
-    original: type[T]
-    """The original class definition before being decorated."""
-
     schema: dict[str, Any]
     """The original class definition before being decorated."""
 

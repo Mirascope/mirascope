@@ -6,6 +6,8 @@ easily run an LLM call with a model specified at runtime rather than definition
 time.
 """
 
+from contextlib import suppress
+
 from .base import LLM, Client, Params
 from .register import (
     ANTHROPIC_REGISTERED_LLMS,
@@ -14,12 +16,18 @@ from .register import (
     REGISTERED_LLMS,
 )
 
+with suppress(ImportError):
+    from .anthropic import Anthropic, AnthropicClient, AnthropicParams
+
 __all__ = [
     "ANTHROPIC_REGISTERED_LLMS",
     "GOOGLE_REGISTERED_LLMS",
     "LLM",
     "OPENAI_REGISTERED_LLMS",
     "REGISTERED_LLMS",
+    "Anthropic",
+    "AnthropicClient",
+    "AnthropicParams",
     "Client",
     "Params",
 ]

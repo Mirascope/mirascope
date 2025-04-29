@@ -12,7 +12,6 @@ from ..messages import (
     PromptTemplate,
 )
 from ..models import Client, Params
-from ..response_formatting import ResponseFormat
 from ..tools import ContextToolDef, ToolDef
 from .async_call import AsyncCall
 from .async_context_call import AsyncContextCall
@@ -171,7 +170,7 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> StructuredCallDecorator[T]:
@@ -185,7 +184,7 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> StructuredContextCallDecorator[T, DepsT]:
@@ -227,7 +226,7 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> StructuredCallDecorator[T]:
@@ -241,7 +240,7 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> StructuredContextCallDecorator[T, DepsT]:
@@ -283,7 +282,7 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> StructuredCallDecorator[T]:
@@ -297,7 +296,7 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> StructuredContextCallDecorator[T, DepsT]:
@@ -339,7 +338,7 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: Client | None = None,
     **params: Unpack[Params],
 ) -> StructuredCallDecorator[T]:
@@ -353,7 +352,7 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: Client | None = None,
     **params: Unpack[Params],
 ) -> StructuredContextCallDecorator[T, DepsT]:
@@ -368,7 +367,7 @@ def call(
     tools: Sequence[ToolDef]
     | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
     | None = None,
-    response_format: ResponseFormat[T] | None = None,
+    response_format: type[T] | None = None,
     client: Client | None = None,
     **params: Unpack[Params],
 ) -> (

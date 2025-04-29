@@ -11,10 +11,10 @@ from ..messages import DynamicConfig, Message
 from .finish_reason import FinishReason
 from .usage import Usage
 
-T = TypeVar("T", default=None)
 ResponseContentT = TypeVar(
     "ResponseContentT", bound=ResponseContent | ContextResponseContent
 )
+T = TypeVar("T", default=None)
 
 
 @dataclass
@@ -103,7 +103,7 @@ class BaseResponse(Generic[ResponseContentT, T]):
     def format(self) -> T:
         """Format the response according to the response format parser.
 
-        This method is only available if the call was created with a ResponseFormat[T].
+        This method is only available if the call was created with a T.
         It will parse the response content according to the specified format and return
         a structured object.
 

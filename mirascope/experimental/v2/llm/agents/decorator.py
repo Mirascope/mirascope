@@ -8,7 +8,6 @@ from typing_extensions import TypeVar, Unpack
 from ..content import Content
 from ..contexts import Context
 from ..models import Client, Params
-from ..response_formatting import ResponseFormat
 from ..tools import ContextToolDef, ToolDef
 from .agent import Agent
 from .async_agent import AsyncAgent
@@ -143,7 +142,7 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> StructuredAgentDecorator[DepsT, T]:
@@ -171,7 +170,7 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> StructuredAgentDecorator[DepsT, T]:
@@ -199,7 +198,7 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: ResponseFormat[T],
+    response_format: type[T],
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> StructuredAgentDecorator[DepsT, T]:
@@ -213,7 +212,7 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: ResponseFormat[T] | None = None,
+    response_format: type[T] | None = None,
     client: Client | None = None,
     **params: Unpack[Params],
 ) -> AgentDecorator[DepsT] | StructuredAgentDecorator[DepsT, T]:
@@ -226,7 +225,7 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: ResponseFormat[T] | None = None,
+    response_format: type[T] | None = None,
     client: Client | None = None,
     **params: Unpack[Params],
 ) -> AgentDecorator[DepsT] | StructuredAgentDecorator[DepsT, T]:
@@ -236,7 +235,7 @@ def agent(
         model: The model to use for the agent.
         deps_type: The type of dependencies for the agent, injected into the context.
         tools: The tools available to the agent.
-        response_format: The response format for the agent.
+        response_format: The response format type for the agent.
         client: The client to use for the agent.
         **params: Additional parameters for the model.
 

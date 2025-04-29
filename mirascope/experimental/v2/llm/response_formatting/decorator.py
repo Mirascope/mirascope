@@ -3,8 +3,9 @@
 from collections.abc import Callable, Sequence
 from typing import Any, Literal, Protocol, TypeVar, overload
 
+from typing_extensions import dataclass_transform
+
 from ..content import Content
-from .response_format import ResponseFormat
 
 T = TypeVar("T")
 CovariantT = TypeVar("CovariantT", covariant=True)
@@ -43,7 +44,7 @@ class ToolResponseFormatDef(Protocol[CovariantT]):
 
 
 class ContentResponseFormatDef(Protocol[CovariantT]):
-    """Protocol for defining a text mode response format."""
+    """Protocol for defining a content mode response format."""
 
     @classmethod
     def parse(cls, content: Content | Sequence[Content]) -> CovariantT:
@@ -59,68 +60,82 @@ class ContentResponseFormatDef(Protocol[CovariantT]):
 
 
 @overload
+# @dataclass_transform()
 def response_format(
     __cls: type[
         JsonResponseFormatDef[T]
         | ToolResponseFormatDef[T]
         | ContentResponseFormatDef[T]
     ],
-) -> ResponseFormat[T]:
+) -> T:
     """Overload for no arguments, which requires a parser classmethod."""
     ...
 
 
 @overload
+@dataclass_transform()
 def response_format(
     *,
     parser: None = None,
     strict: bool = False,
 ) -> Callable[
     [JsonResponseFormatDef[T] | ToolResponseFormatDef[T] | ContentResponseFormatDef[T]],
-    ResponseFormat[T],
+    T,
 ]:
     """Overload for no default parser, which requires a parser classmethod."""
     ...
 
 
 @overload
+@dataclass_transform()
 def response_format(
     *,
     parser: Literal["json", "tool"],
     strict: bool = False,
-) -> Callable[[type[T]], ResponseFormat[T]]:
+) -> Callable[[type[T]], T]:
     """Overload for setting a default parser."""
     ...
 
 
+@dataclass_transform()
 def response_format(
     __cls=None,
     *,
     parser: Literal["json", "tool"] | None = None,
     strict: bool = False,
 ) -> (
-    ResponseFormat[T]
+    T
     | Callable[
         [
             JsonResponseFormatDef[T]
             | ToolResponseFormatDef[T]
             | ContentResponseFormatDef[T]
         ],
-        ResponseFormat[T],
+        T,
     ]
-    | Callable[[type[T]], ResponseFormat[T]]
+    | Callable[[type[T]], T]
 ):
     '''Decorator that defines a structured response format for LLM outputs.
 
-    This decorator can be applied to a class to define how LLM responses should be
-    structured and parsed. The decorated class becomes a `ResponseFormat` that can be
-    used with `llm.call` to specify the expected response structure.
+    This decorator operates as a dataclass transformation so that the original class
+    retains its original behavior and typing. At definition time, the decorator will
+    set the `__response_format__: ResponseFormat` attribute on the class, which is used
+    downstream to determine how to parse the LLM response.
+
+    By default, the decorator requires the decorated class has a `parse` classmethod.
+    The single argument of this method determines how to set the call parameters for
+    structuring the response, which must be one of:
+        - `content: Content | Sequence[Content]` for structuring the content itself
+        - `json: dict[str, Any]` for structuring the response using JSON mode
+        - `args: dict[str, Any]` for structuring the response using tool mode
+
+    You can also set the `parser` argument to opt-in to a default parser.
 
     Args:
         parser: The default parser to use, if any:
             - "json": Use JSON mode for structured outputs
             - "tool": Use forced tool calling to structure outputs
-            - None: No default parser is applied, and a parser classmethod is required
+            - None: No default parser is applied, and a `parse` classmethod is required
         strict: Whether to use strict structured outputs when supported by the model.
             Default is False.
 
@@ -155,14 +170,14 @@ def response_format(
             author: str
 
             @classmethod
-            def parse(cls, text: str) -> Self:
+            def parse(cls, content: Content | Sequence[Content]) -> Book:
                 """FORMATTING INSTRUCTIONS:
 
                 ```plaintext
                 {title} by {author}
                 ```
                 """
-                title, author = text.split(" by ")
+                title, author = content[0].text.split(" by ")
                 return cls(title=title.strip(), author=author.strip())
         ```
     '''

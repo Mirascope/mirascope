@@ -241,33 +241,55 @@ class PromptTemplateDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], DynamicConfig]
-        | Callable[Concatenate[Context[DepsT], P], None],
-    ) -> ContextPromptTemplate[P, DepsT]:
+        fn: Callable[Concatenate[Context[DepsT], P], None],
+    ) -> ContextMessagesReturn[P, DepsT]:
         """Decorator for creating a context prompt template."""
         ...
 
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], Awaitable[DynamicConfig]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
-    ) -> AsyncContextPromptTemplate[P, DepsT]:
+        fn: Callable[Concatenate[Context[DepsT], P], DynamicConfig],
+    ) -> ContextDynamicConfigReturn[P, DepsT]:
+        """Decorator for creating a context dynamic config prompt template."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
+    ) -> AsyncContextMessagesReturn[P, DepsT]:
         """Decorator for creating an async context prompt template."""
         ...
 
     @overload
     def __call__(
-        self, fn: Callable[P, DynamicConfig] | Callable[P, None]
-    ) -> PromptTemplate[P]:
+        self,
+        fn: Callable[Concatenate[Context[DepsT], P], Awaitable[DynamicConfig]],
+    ) -> AsyncContextDynamicConfigReturn[P, DepsT]:
+        """Decorator for creating an async context dynamic config prompt template."""
+        ...
+
+    @overload
+    def __call__(self, fn: Callable[P, None]) -> MessagesReturn[P]:
         """Decorator for creating a prompt template."""
         ...
 
     @overload
-    def __call__(
-        self, fn: Callable[P, Awaitable[DynamicConfig]] | Callable[P, Awaitable[None]]
-    ) -> AsyncPromptTemplate[P]:
+    def __call__(self, fn: Callable[P, DynamicConfig]) -> DynamicConfigReturn[P]:
+        """Decorator for creating a dynamic config prompt template."""
+        ...
+
+    @overload
+    def __call__(self, fn: Callable[P, Awaitable[None]]) -> AsyncMessagesReturn[P]:
         """Decorator for creating an async prompt template."""
+        ...
+
+    @overload
+    def __call__(
+        self, fn: Callable[P, Awaitable[DynamicConfig]]
+    ) -> AsyncDynamicConfigReturn[P]:
+        """Decorator for creating an async dynamic config prompt template."""
         ...
 
     def __call__(

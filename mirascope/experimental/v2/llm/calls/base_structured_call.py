@@ -9,7 +9,6 @@ from typing_extensions import TypeVar
 
 from ..messages import AsyncPromptTemplate, PromptTemplate
 from ..models import LLM
-from ..response_formatting import ResponseFormat
 from ..tools import ToolDef
 
 P = ParamSpec("P")
@@ -27,7 +26,7 @@ class BaseStructuredCall(Generic[P, PromptTemplateT, T], ABC):
     tools: Sequence[ToolDef] | None
     """The tools to be used with the LLM."""
 
-    response_format: ResponseFormat[T]
+    response_format: type[T]
     """The response format for the generated response."""
 
     fn: PromptTemplateT
