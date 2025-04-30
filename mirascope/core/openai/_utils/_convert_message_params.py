@@ -22,6 +22,7 @@ def convert_message_params(
         else:
             converted_content = []
 
+            tool_calls = []
             for part in content:
                 if part.type == "text":
                     converted_content.append(part.model_dump())
@@ -100,25 +101,16 @@ def convert_message_params(
                         }
                     )
                 elif part.type == "tool_call":
-                    converted_message_param = {
-                        "role": "assistant",
-                        "name": part.name,
-                        "tool_calls": [
-                            {
-                                "function": {
-                                    "name": part.name,
-                                    "arguments": json.dumps(part.args),
-                                },
-                                "type": "function",
-                                "id": part.id,
-                            }
-                        ],
-                    }
-
-                    if converted_content:
-                        converted_message_param["content"] = converted_content
-                        converted_content = []
-                    converted_message_params.append(converted_message_param)
+                    tool_calls.append(
+                        {
+                            "function": {
+                                "name": part.name,
+                                "arguments": json.dumps(part.args),
+                            },
+                            "type": "function",
+                            "id": part.id,
+                        }
+                    )
                 elif part.type == "tool_result":
                     if converted_content:
                         converted_message_params.append(
@@ -138,9 +130,19 @@ def convert_message_params(
                         "OpenAI currently only supports text, image and audio parts. "
                         f"Part provided: {part.type}"
                     )
-            if converted_content:
+            if tool_calls:
+                converted_message_param = {
+                    "role": "assistant",
+                    "tool_calls": tool_calls,
+                }
+                converted_message_params.append(converted_message_param)
+                if converted_content:
+                    converted_message_param["content"] = converted_content
+            elif converted_content:
                 converted_message_params.append(
-                    {"role": message_param.role, "content": converted_content}
+                    {
+                        "role": message_param.role,
+                        "content": converted_content,
+                    }
                 )
-    # print(converted_message_params)
     return converted_message_params
