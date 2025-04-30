@@ -46,8 +46,9 @@ def test_convert_message_params() -> None:
             ],
         ),
         BaseMessageParam(
-            role="tool",
+            role="user",
             content=[
+                TextPart(type="text", text="Here you go!"),
                 ToolResultPart(
                     name="tool_name", id="tool_id", content="result", type="tool_result"
                 ),
@@ -89,6 +90,7 @@ def test_convert_message_params() -> None:
                 }
             ],
         },
+        {"content": [{"text": "Here you go!", "type": "text"}], "role": "user"},
         {"content": "result", "role": "tool", "tool_call_id": "tool_id"},
     ]
 
