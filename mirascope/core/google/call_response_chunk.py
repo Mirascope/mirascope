@@ -48,7 +48,14 @@ class GoogleCallResponseChunk(
     @property
     def content(self) -> str:
         """Returns the chunk content for the 0th choice."""
-        return self.chunk.candidates[0].content.parts[0].text  # pyright: ignore [reportOptionalMemberAccess, reportOptionalSubscript, reportReturnType]
+        if (
+            not (candidates := self.chunk.candidates)
+            or not (content := candidates[0].content)
+            or not (parts := content.parts)
+            or not (text := parts[0].text)
+        ):
+            return ""
+        return text
 
     @property
     def finish_reasons(self) -> list[GoogleFinishReason]:
