@@ -50,3 +50,22 @@ def test_mistral_tool() -> None:
         },
         "type": "function",
     }
+
+
+def test_mistral_tool_no_args() -> None:
+    """Tests the `MistralTool` class with no arguments."""
+
+    class FormatBook(MistralTool):
+        """Returns the title and author nicely formatted."""
+
+        def call(self) -> str:
+            return "No arguments"
+
+    assert FormatBook.tool_schema() == {
+        "function": {
+            "name": "FormatBook",
+            "description": "Returns the title and author nicely formatted.",
+            "parameters": {"type": "object"},
+        },
+        "type": "function",
+    }
