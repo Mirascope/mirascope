@@ -17,7 +17,7 @@ def _handle_chunk(
     """
     call_response_chunk = GoogleCallResponseChunk(chunk=chunk)
     has_tools = False
-    if (
+    if tool_types and (
         (candidates := chunk.candidates)
         and (content := candidates[0].content)
         and (parts := content.parts)
@@ -25,7 +25,7 @@ def _handle_chunk(
         for part in parts:
             if function_call := part.function_call:
                 has_tools = True
-                for tool_type in tool_types or []:
+                for tool_type in tool_types:
                     if tool_type._name() == function_call.name:
                         tool = tool_type.from_tool_call(function_call)
                         yield (call_response_chunk, tool)
