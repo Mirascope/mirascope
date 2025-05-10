@@ -16,9 +16,13 @@ from google.genai.types import (
 )
 
 from ...base import BaseMessageParam
-from ...base._utils import get_audio_type, get_image_type
+from ...base._utils import get_audio_type, get_document_type, get_image_type
 from ...base._utils._parse_content_template import _load_media
-from ._validate_media_type import _check_audio_media_type, _check_image_media_type
+from ._validate_media_type import (
+    _check_audio_media_type,
+    _check_document_media_type,
+    _check_image_media_type,
+)
 
 
 def _over_file_size_limit(size: int) -> bool:
@@ -154,9 +158,78 @@ async def _convert_message_params_async(
                         if _over_file_size_limit(total_payload_size):
                             must_upload[index] = blob_dict
                             total_payload_size -= audio_size
+                elif part.type == "document":
+                    _check_document_media_type(part.media_type)
+                    blob_dict = BlobDict(data=part.document, mime_type=part.media_type)
+                    converted_content.append(PartDict(inline_data=blob_dict))
+                    document_size = len(part.document)
+                    total_payload_size += document_size
+                    if _over_file_size_limit(total_payload_size):
+                        must_upload[index] = blob_dict
+                        total_payload_size -= document_size
+                elif part.type == "document_url":
+                    if (
+                        client.vertexai
+                        or not part.url.startswith(("https://", "http://"))
+                        or "generativelanguage.googleapis.com" in part.url
+                    ):
+                        converted_content.append(
+                            PartDict(
+                                file_data=FileDataDict(
+                                    file_uri=part.url, mime_type=None
+                                )
+                            )
+                        )
+                    else:
+                        media_type = None
+                        try:
+                            downloaded_document = _load_media(part.url)
+                            document_types = {
+                                "pdf": "application/pdf",
+                                "html": "text/html",
+                                "xml": "text/xml",
+                                "rtf": "text/rtf",
+                            }
+
+                            try:
+                                document_type_ext = get_document_type(
+                                    downloaded_document
+                                )
+                                media_type = document_types.get(document_type_ext)
+                            except ValueError:
+                                try:
+                                    downloaded_document.decode("utf-8")
+                                    media_type = "text/plain"
+                                except UnicodeDecodeError:
+                                    pass
+
+                            if media_type is None:
+                                raise ValueError(
+                                    f"Unsupported document format detected for URL: {part.url}. "
+                                    "Google API only supports the following document formats: "
+                                    "PDF, JavaScript, Python, TXT, HTML, CSS, Markdown, CSV, XML and RTF. "
+                                    "Please provide a document in one of these supported formats."
+                                )
+
+                            _check_document_media_type(media_type)
+                            blob_dict = BlobDict(
+                                data=downloaded_document, mime_type=media_type
+                            )
+                            converted_content.append(PartDict(inline_data=blob_dict))
+                            document_size = len(downloaded_document)
+                            total_payload_size += document_size
+                            if _over_file_size_limit(total_payload_size):
+                                must_upload[index] = blob_dict
+                                total_payload_size -= document_size
+                        except ValueError as e:
+                            raise ValueError(
+                                f"Failed to process document from URL: {part.url}. "
+                                f"Error details: {str(e)}. "
+                                "Please ensure the URL is accessible and points to a supported document format."
+                            )
                 else:
                     raise ValueError(
-                        "Google currently only supports text, tool_call, tool_result, image, and audio parts. "
+                        "Google currently only supports text, tool_call, tool_result, image, audio, and document parts. "
                         f"Part provided: {part.type}"
                     )
 

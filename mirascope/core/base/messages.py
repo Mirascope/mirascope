@@ -14,6 +14,7 @@ from .message_param import (
     BaseMessageParam,
     CacheControlPart,
     DocumentPart,
+    DocumentURLPart,
     ImagePart,
     ImageURLPart,
     TextPart,
@@ -36,6 +37,7 @@ class Messages:
             | AudioSegment
             | Wave_read
             | DocumentPart
+            | DocumentURLPart
         ]
         | list[BaseMessageParam | Any]
         | BaseMessageParam
@@ -57,6 +59,7 @@ class Messages:
             | AudioSegment
             | Wave_read
             | DocumentPart
+            | DocumentURLPart
         ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
@@ -80,6 +83,7 @@ class Messages:
             | AudioSegment
             | Wave_read
             | DocumentPart
+            | DocumentURLPart
         ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
@@ -103,6 +107,7 @@ class Messages:
             | AudioSegment
             | Wave_read
             | DocumentPart
+            | DocumentURLPart
         ],
     ) -> BaseMessageParam:
         return BaseMessageParam(
