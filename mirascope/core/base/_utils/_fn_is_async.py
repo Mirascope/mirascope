@@ -11,7 +11,7 @@ _R = TypeVar("_R")
 
 def fn_is_async(
     fn: Callable[..., Awaitable[_R] | Coroutine[Any, Any, _R]] | Callable[..., _R],
-) -> TypeIs[Callable[..., Coroutine[Any, Any, _R]]]:
+) -> TypeIs[Callable[..., Awaitable[_R]]]:
     if inspect.iscoroutinefunction(fn):
         return True
 
