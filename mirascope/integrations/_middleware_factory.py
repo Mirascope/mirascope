@@ -1,6 +1,5 @@
 """The `middleware_factory` method for handling the call response."""
 
-import inspect
 from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
 from contextlib import AbstractContextManager, contextmanager
 from functools import wraps
@@ -16,6 +15,7 @@ from pydantic import BaseModel
 
 from mirascope.core.base._utils._base_type import BaseType
 
+from ..core.base._utils import fn_is_async
 from ..core.base.call_response import BaseCallResponse
 from ..core.base.stream import BaseStream
 from ..core.base.structured_stream import BaseStructuredStream
@@ -136,14 +136,14 @@ def middleware_factory(
     def decorator(
         fn: Callable[_P, _R | Awaitable[_R]],
     ) -> Callable[_P, _R | Awaitable[_R]]:
-        if inspect.iscoroutinefunction(fn):
+        if fn_is_async(fn):
 
             @wraps(fn)
             async def wrapper_async(*args: _P.args, **kwargs: _P.kwargs) -> _R:
                 context_manager = custom_context_manager(fn)
                 context = context_manager.__enter__()
                 try:
-                    result = await fn(*args, **kwargs)
+                    result = await fn(*args, **kwargs)  # pyright: ignore [reportGeneralTypeIssues]
                 except Exception as e:
                     if handle_error_async:
                         try:
