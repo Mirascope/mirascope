@@ -103,6 +103,18 @@ class DocumentPart(BaseModel):
     document: bytes
 
 
+class DocumentURLPart(BaseModel):
+    """A content part for documents with a URL.
+
+    Attributes:
+        type: Always "document_url"
+        url: The URL to the document
+    """
+
+    type: Literal["document_url"]
+    url: str
+
+
 class ToolCallPart(BaseModel):
     """A content part for tool.
 
@@ -156,6 +168,7 @@ class BaseMessageParam(BaseModel):
             | AudioURLPart
             | CacheControlPart
             | DocumentPart
+            | DocumentURLPart
             | ToolCallPart
             | ToolResultPart
         ]

@@ -8,7 +8,7 @@ from google.genai.types import (
 )
 
 from mirascope.core import BaseMessageParam
-from mirascope.core.base import DocumentPart, ImagePart, TextPart
+from mirascope.core.base import DocumentPart, DocumentURLPart, ImagePart, TextPart
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
@@ -21,7 +21,11 @@ from mirascope.core.base.message_param import (
 )
 from mirascope.core.google._utils import convert_message_params
 
-from ._validate_media_type import _check_audio_media_type, _check_image_media_type
+from ._validate_media_type import (
+    _check_audio_media_type,
+    _check_document_media_type,
+    _check_image_media_type,
+)
 
 
 class GoogleMessageParamConverter(BaseMessageParamConverter):
@@ -78,7 +82,21 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                                 audio=data,
                             )
                         )
-                    elif mime_type == "application/pdf":
+                    elif mime_type in [
+                        "application/pdf",
+                        "application/x-javascript",
+                        "text/javascript",
+                        "application/x-python",
+                        "text/x-python",
+                        "text/plain",
+                        "text/html",
+                        "text/css",
+                        "text/csv",
+                        "text/xml",
+                        "text/rtf",
+                        "text/md",
+                    ]:
+                        _check_document_media_type(mime_type)
                         content_list.append(
                             DocumentPart(
                                 type="document", media_type=mime_type, document=data
@@ -103,6 +121,26 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                         content_list.append(
                             AudioURLPart(
                                 type="audio_url",
+                                url=cast(str, part.file_data.file_uri),
+                            )
+                        )
+                    elif mime_type in [
+                        "application/pdf",
+                        "application/x-javascript",
+                        "text/javascript",
+                        "application/x-python",
+                        "text/x-python",
+                        "text/plain",
+                        "text/html",
+                        "text/css",
+                        "text/csv",
+                        "text/xml",
+                        "text/rtf",
+                        "text/md",
+                    ]:
+                        content_list.append(
+                            DocumentURLPart(
+                                type="document_url",
                                 url=cast(str, part.file_data.file_uri),
                             )
                         )
@@ -148,7 +186,7 @@ class GoogleMessageParamConverter(BaseMessageParamConverter):
                     )
                 else:
                     raise ValueError(
-                        "Part does not contain any supported content (text, image, or document)."
+                        "Part does not contain any supported content (text, image, audio, or document)."
                     )
 
             if len(content_list) == 1 and isinstance(content_list[0], TextPart):

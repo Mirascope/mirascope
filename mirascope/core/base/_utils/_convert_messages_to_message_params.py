@@ -14,6 +14,7 @@ from ..message_param import (
     BaseMessageParam,
     CacheControlPart,
     DocumentPart,
+    DocumentURLPart,
     ImagePart,
     ImageURLPart,
     TextPart,
@@ -37,7 +38,8 @@ def _convert_message_sequence_part_to_content_part(
     | AudioURLPart
     | AudioSegment
     | Wave_read
-    | DocumentPart,
+    | DocumentPart
+    | DocumentURLPart,
 ) -> (
     TextPart
     | ImagePart
@@ -45,6 +47,7 @@ def _convert_message_sequence_part_to_content_part(
     | AudioPart
     | AudioURLPart
     | CacheControlPart
+    | DocumentURLPart
     | DocumentPart
 ):
     if isinstance(message_sequence_part, str):
@@ -57,7 +60,8 @@ def _convert_message_sequence_part_to_content_part(
         | AudioPart
         | AudioURLPart
         | CacheControlPart
-        | DocumentPart,
+        | DocumentPart
+        | DocumentURLPart,
     ):
         return message_sequence_part
     elif has_pil_module and isinstance(message_sequence_part, Image.Image):
@@ -107,6 +111,7 @@ def convert_message_content_to_message_param_content(
         | AudioSegment
         | Wave_read
         | DocumentPart
+        | DocumentURLPart,
     ],
 ) -> (
     list[
@@ -117,6 +122,7 @@ def convert_message_content_to_message_param_content(
         | AudioURLPart
         | CacheControlPart
         | DocumentPart
+        | DocumentURLPart,
     ]
     | str
 ):
@@ -151,6 +157,7 @@ def convert_messages_to_message_params(
         | AudioSegment
         | Wave_read
         | DocumentPart
+        | DocumentURLPart,
     ]
     | list[BaseMessageParam]
     | BaseMessageParam,
