@@ -75,6 +75,7 @@ class OpenAICallParams(BaseCallParams):
     logit_bias: NotRequired[dict[str, int] | None]
     logprobs: NotRequired[bool | None]
     max_tokens: NotRequired[int | None]
+    metadata: NotRequired[dict[str, str] | None]
     modalities: NotRequired[list[ChatCompletionModality] | None]
     n: NotRequired[int | None]
     parallel_tool_calls: NotRequired[bool]
