@@ -1,4 +1,2 @@
 User-agent: *
-Disallow: /*.md$
-
-Sitemap: https://mirascope.com/sitemap.xml
+Disallow: /
