@@ -1,8 +1,4 @@
-<div align="center" justiry="start">
-    <a href="https://mirascope.com">
-        <img align="bottom" src="https://github.com/Mirascope/mirascope/assets/99370834/e403d7ee-f8bc-4df1-b2d0-33763f021c89" alt="Frog Logo" width="84"/><br><img align="bottom" src="https://uploads-ssl.webflow.com/65a6fd6a1c3b2704d6217d3d/65b5674e9ceef563dc57eb11_Medium%20length%20hero%20headline%20goes%20here.svg" width="400" alt="Mirascope"/>
-    </a>
-</div>
+[![Mirascope Logo & Wordmark](https://github.com/user-attachments/assets/d40db106-3b9e-4524-9067-3104c6bd5b98)](https://mirascope.com)
 
 <p align="center">
     <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
