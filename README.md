@@ -1,4 +1,8 @@
-[![Mirascope Logo & Wordmark](https://github.com/user-attachments/assets/d40db106-3b9e-4524-9067-3104c6bd5b98)](https://mirascope.com)
+<p align="center">
+    <a href="https://mirascope.com/#mirascope">
+        <img src="https://github.com/user-attachments/assets/58b04850-8f30-40a6-be68-96ed2aa9b6d8" />
+    </a>
+</p>
 
 <p align="center">
     <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
