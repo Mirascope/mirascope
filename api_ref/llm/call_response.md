@@ -1,3 +1,3 @@
 # mirascope.llm.call_response
 
-::: mirascope.llm.call_repsonse
+::: mirascope.llm.call_response
