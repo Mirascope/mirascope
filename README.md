@@ -51,7 +51,7 @@ print(book)
 
 ## Tutorials
 
-Check out our [quickstart tutorial](https://mirascope.com/tutorials/getting_started/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
+Check out our [quickstart tutorial](https://mirascope.com/docs/mirascope/getting-started/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
 
 ## Usage
 
@@ -63,4 +63,4 @@ Mirascope uses [Semantic Versioning](https://semver.org/).
 
 ## Licence
 
-This project is licensed under the terms of the [MIT License](https://github.com/Mirascope/mirascope/blob/dev/LICENSE).
+This project is licensed under the terms of the [MIT License](https://github.com/Mirascope/mirascope/tree/main/LICENSE).
