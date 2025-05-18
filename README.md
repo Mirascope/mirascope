@@ -1,16 +1,16 @@
-<div align="center" justiry="start">
-    <a href="https://mirascope.com">
-        <img align="bottom" src="https://github.com/Mirascope/mirascope/assets/99370834/e403d7ee-f8bc-4df1-b2d0-33763f021c89" alt="Frog Logo" width="84"/><br><img align="bottom" src="https://uploads-ssl.webflow.com/65a6fd6a1c3b2704d6217d3d/65b5674e9ceef563dc57eb11_Medium%20length%20hero%20headline%20goes%20here.svg" width="400" alt="Mirascope"/>
+<p align="center">
+    <a href="https://mirascope.com/#mirascope">
+        <img src="https://github.com/user-attachments/assets/58b04850-8f30-40a6-be68-96ed2aa9b6d8" />
     </a>
-</div>
+</p>
 
 <p align="center">
     <a href="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml" target="_blank"><img src="https://github.com/Mirascope/mirascope/actions/workflows/tests.yml/badge.svg?branch=main" alt="Tests"/></a>
     <a href="https://codecov.io/github/Mirascope/mirascope" target="_blank"><img src="https://codecov.io/github/Mirascope/mirascope/graph/badge.svg?token=HAEAWT3KC9" alt="Coverage"/></a>
-    <a href="https://mirascope.com/WELCOME" target="_blank"><img src="https://img.shields.io/badge/docs-available-brightgreen" alt="Docs"/></a>
+    <a href="https://mirascope.com/docs/mirascope" target="_blank"><img src="https://img.shields.io/badge/docs-available-brightgreen" alt="Docs"/></a>
     <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/v/mirascope.svg" alt="PyPI Version"/></a>
     <a href="https://pypi.python.org/pypi/mirascope" target="_blank"><img src="https://img.shields.io/pypi/pyversions/mirascope.svg" alt="Stars"/></a>
-    <a href="https://github.com/Mirascope/mirascope/blog/dev/LICENSE"><img src="https://img.shields.io/github/license/Mirascope/mirascope.svg" alt="License"/></a>
+    <a href="https://github.com/Mirascope/mirascope/tree/main/LICENSE"><img src="https://img.shields.io/github/license/Mirascope/mirascope.svg" alt="License"/></a>
     <a href="https://github.com/Mirascope/mirascope/stargazers" target="_blank"><img src="https://img.shields.io/github/stars/Mirascope/mirascope.svg" alt="Stars"/></a>
 </p>
 
@@ -51,7 +51,7 @@ print(book)
 
 ## Tutorials
 
-Check out our [quickstart tutorial](https://mirascope.com/tutorials/getting_started/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
+Check out our [quickstart tutorial](https://mirascope.com/docs/mirascope/getting-started/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
 
 ## Usage
 
@@ -63,4 +63,4 @@ Mirascope uses [Semantic Versioning](https://semver.org/).
 
 ## Licence
 
-This project is licensed under the terms of the [MIT License](https://github.com/Mirascope/mirascope/blob/dev/LICENSE).
+This project is licensed under the terms of the [MIT License](https://github.com/Mirascope/mirascope/tree/main/LICENSE).
