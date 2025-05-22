@@ -183,7 +183,6 @@ def test_bedrock_call_response_with_tools() -> None:
                             {"text": "The Name of the Wind by Patrick Rothfuss"}
                         ],
                         "toolUseId": "id",
-                        "name": "FormatBook",
                     }
                 }
             ],
