@@ -186,39 +186,34 @@ def test_tool_message_params_various_tool_call_ids_with_annotations():
     class ToolCallWithID:
         id = "tool_call_with_id"
 
-    class ToolWithID(Tool):
+    class ToolWithID(BaseTool):
         tool_call: ClassVar[Any] = ToolCallWithID()
 
         def call(self): ...
-        @property
-        def model_fields(self): ...  # pyright: ignore [reportIncompatibleVariableOverride]
 
         field1: str = "tool_field"
 
-    class ToolNoCall(Tool):
+    class ToolNoCall(BaseTool):  # pyright: ignore [reportIncompatibleVariableOverride]
         def call(self): ...
-        @property
-        def model_fields(self): ...  # pyright: ignore [reportIncompatibleVariableOverride]
 
         field1: str = "tool_field"
 
     class ToolCallNoIDClass:
         pass
 
-    class ToolCallNoID(Tool):
+    class ToolCallNoID(BaseTool):
         tool_call: ClassVar[Any] = ToolCallNoIDClass()  # no id attribute
 
         def call(self): ...
-        @property
-        def model_fields(self): ...  # pyright: ignore [reportIncompatibleVariableOverride]
 
         field1: str = "tool_field"
 
-    mock_tool = MagicMock(spec=BaseTool)
-    mock_tool._name.return_value = "tool_name"
-    tool_with_id = ToolWithID(mock_tool)
-    tool_no_call = ToolNoCall(mock_tool)
-    tool_call_no_id = ToolCallNoID(mock_tool)
+    class MockTool(Tool):
+        def call(self): ...
+
+    tool_with_id = MockTool(ToolWithID())
+    tool_no_call = MockTool(ToolNoCall())
+    tool_call_no_id = MockTool(ToolCallNoID())
 
     result_with_id = CallResponse.tool_message_params([(tool_with_id, "output1")])
     assert isinstance(result_with_id[0].content[0], ToolResultPart)

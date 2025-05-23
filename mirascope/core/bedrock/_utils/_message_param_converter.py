@@ -100,25 +100,27 @@ class BedrockMessageParamConverter(BaseMessageParamConverter):
                     )
                 elif "toolUse" in block:
                     tool_use = block["toolUse"]
+
+                    tool_use_part = ToolCallPart(
+                        type="tool_call",
+                        name=tool_use["name"],
+                        id=tool_use["toolUseId"],
+                        args=tool_use["input"],
+                    )
                     if converted_content:
+                        converted_content.append(tool_use_part)
                         converted.append(
                             BaseMessageParam(
                                 role=message_param["role"], content=converted_content
                             )
                         )
                         converted_content = []
+                        continue
 
                     converted.append(
                         BaseMessageParam(
                             role="assistant",
-                            content=[
-                                ToolCallPart(
-                                    type="tool_call",
-                                    name=tool_use["name"],
-                                    id=tool_use["toolUseId"],
-                                    args=tool_use["input"],
-                                )
-                            ],
+                            content=[tool_use_part],
                         )
                     )
                 elif "toolResult" in block:
@@ -137,7 +139,6 @@ class BedrockMessageParamConverter(BaseMessageParamConverter):
                                 ToolResultPart(
                                     type="tool_result",
                                     id=tool_result["toolUseId"],
-                                    name=tool_result["name"],  # pyright: ignore [reportGeneralTypeIssues]
                                     content=tool_result["content"]
                                     if isinstance(tool_result["content"], str)
                                     else tool_result["content"][0]["text"],  # pyright: ignore [reportTypedDictNotRequiredAccess]

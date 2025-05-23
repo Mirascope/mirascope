@@ -56,6 +56,10 @@ class BedrockTool(BaseTool):
 
     tool_call: SkipJsonSchema[ToolUseBlockContentTypeDef]
 
+    @property
+    def id(self) -> str | None:
+        return self.tool_call["toolUse"]["toolUseId"]
+
     @classmethod
     def tool_schema(cls) -> ToolTypeDef:
         """Constructs a JSON Schema tool schema from the `BaseModel` schema defined.
