@@ -40,6 +40,7 @@ def test_bedrock_tool() -> None:
     assert tool.title == "The Name of the Wind"
     assert tool.author == "Patrick Rothfuss"
     assert tool.call() == "The Name of the Wind by Patrick Rothfuss"
+    assert tool.id == "id"
 
     expected_schema = ToolTypeDef(
         toolSpec=ToolSpecificationTypeDef(
