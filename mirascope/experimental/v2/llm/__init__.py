@@ -15,17 +15,13 @@ from .calls import (
     call,
 )
 from .content import Content
-from .contexts import Context, context, model
-from .messages import (
+from .context import Context, context
+from .messages import Message, assistant, system, user
+from .models import LLM, Client, Params, model
+from .prompt_templates import (
     DynamicConfig,
-    Message,
-    PromptTemplate,
-    assistant,
     prompt_template,
-    system,
-    user,
 )
-from .models import LLM, Client, Params
 from .response_formatting import ResponseFormat
 from .response_formatting.decorator import response_format
 from .responses import (
@@ -55,7 +51,6 @@ __all__ = [
     "DynamicConfig",
     "Message",
     "Params",
-    "PromptTemplate",
     "Response",
     "ResponseFormat",
     "Stream",

@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, overload
 
 from typing_extensions import Unpack
 
-from ..models import LLM, Client, Params
+from .base import LLM, Client, Params
 
 if TYPE_CHECKING:
     from ..models import (

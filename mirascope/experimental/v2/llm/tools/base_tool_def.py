@@ -1,6 +1,5 @@
 """The `BaseToolDef` class for defining tools that LLMs can request be called."""
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Generic, ParamSpec
 
@@ -22,9 +21,6 @@ class BaseToolDef(Generic[P, R]):
 
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
-
-    fn: Callable[..., R]
-    """The function that implements the tool's functionality."""
 
     name: str
     """The name of the tool, used by the LLM to identify which tool to call."""

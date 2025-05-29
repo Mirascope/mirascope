@@ -1,12 +1,14 @@
 """The `llm.agent` decorator for turning a function into an agent."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, TypeAlias, overload
 
 from typing_extensions import TypeVar, Unpack
 
 from ..content import Content
-from ..contexts import Context
+from ..context import Context
 from ..models import Client, Params
 from ..tools import ContextToolDef, ToolDef
 from ..types import Dataclass

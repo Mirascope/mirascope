@@ -5,7 +5,7 @@ from typing import ParamSpec, Protocol, overload
 
 from typing_extensions import TypeVar
 
-from ..contexts import Context
+from ..context import Context
 from ..types import Jsonable
 from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef

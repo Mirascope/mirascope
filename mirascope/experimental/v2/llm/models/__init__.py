@@ -9,6 +9,7 @@ time.
 from contextlib import suppress
 
 from .base import LLM, Client, Params
+from .context import model
 from .register import (
     ANTHROPIC_REGISTERED_LLMS,
     GOOGLE_REGISTERED_LLMS,
@@ -30,4 +31,5 @@ __all__ = [
     "AnthropicParams",
     "Client",
     "Params",
+    "model",
 ]

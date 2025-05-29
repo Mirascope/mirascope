@@ -1,7 +1,6 @@
 """BaseTool class for LLM tools."""
 
 from abc import ABC
-from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Generic, ParamSpec, TypeVar
 
@@ -12,15 +11,12 @@ R = TypeVar("R", bound=Jsonable)
 
 
 @dataclass
-class BaseTool(Generic[R], ABC):
+class BaseTool(Generic[P, R], ABC):
     """Tool instance with arguments provided by an LLM.
 
     When an LLM uses a tool during a call, a Tool instance is created with the specific
     arguments provided by the LLM.
     """
-
-    fn: Callable[..., R]
-    """The ToolDef that defines the tool being called."""
 
     name: str
     """The name of the tool being called."""

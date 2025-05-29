@@ -4,6 +4,7 @@ from .async_context_stream import AsyncContextStream
 from .async_context_structured_stream import AsyncContextStructuredStream
 from .async_stream import AsyncStream
 from .async_structured_stream import AsyncStructuredStream
+from .content import ContextResponseContent, ResponseContent
 from .context_response import ContextResponse
 from .context_stream import ContextStream
 from .context_stream_chunk import ContextStreamChunk
@@ -21,11 +22,13 @@ __all__ = [
     "AsyncStream",
     "AsyncStructuredStream",
     "ContextResponse",
+    "ContextResponseContent",
     "ContextStream",
     "ContextStreamChunk",
     "ContextStructuredStream",
     "FinishReason",
     "Response",
+    "ResponseContent",
     "Stream",
     "StreamChunk",
     "StructuredStream",

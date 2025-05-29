@@ -4,22 +4,9 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from enum import Enum
+from typing import Literal
 
 from ..content import Content
-
-
-class Role(str, Enum):
-    """Enumeration of possible message roles."""
-
-    SYSTEM = "system"
-    """The system role, used for instructions to the model."""
-
-    USER = "user"
-    """The user role, representing the human in the conversation."""
-
-    ASSISTANT = "assistant"
-    """The assistant role, representing the AI in the conversation."""
 
 
 @dataclass(kw_only=True)
@@ -45,7 +32,7 @@ class Message:
         ```
     """
 
-    role: Role
+    role: Literal["system", "user", "assistant"]
     """The role of the message sender (system, user, or assistant)."""
 
     content: Content | Sequence[Content]
@@ -66,7 +53,7 @@ def system(content: Content | Sequence[Content], *, name: str | None = None) -> 
     Returns:
         A Message with the system role.
     """
-    return Message(role=Role.SYSTEM, content=content, name=name)
+    return Message(role="system", content=content, name=name)
 
 
 def user(content: Content | Sequence[Content], *, name: str | None = None) -> Message:
@@ -80,7 +67,7 @@ def user(content: Content | Sequence[Content], *, name: str | None = None) -> Me
     Returns:
         A Message with the user role.
     """
-    return Message(role=Role.USER, content=content, name=name)
+    return Message(role="user", content=content, name=name)
 
 
 def assistant(
@@ -96,4 +83,4 @@ def assistant(
     Returns:
         A Message with the assistant role.
     """
-    return Message(role=Role.ASSISTANT, content=content, name=name)
+    return Message(role="assistant", content=content, name=name)

@@ -6,9 +6,11 @@ from typing import Any, Generic
 
 from typing_extensions import TypeVar
 
-from ..content import Audio, ContextResponseContent, Image, ResponseContent, Text, Video
-from ..messages import DynamicConfig, Message
+from ..content import Audio, Image, Text, Video
+from ..messages import Message
+from ..prompt_templates import DynamicConfig
 from ..types import Dataclass
+from .content import ContextResponseContent, ResponseContent
 from .finish_reason import FinishReason
 from .usage import Usage
 

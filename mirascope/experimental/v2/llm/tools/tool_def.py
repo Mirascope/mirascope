@@ -1,14 +1,19 @@
 """The `ToolDef` class for defining tools that LLMs can request be called."""
 
+from __future__ import annotations
+
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import ParamSpec, TypeGuard
+from typing import TYPE_CHECKING, ParamSpec, TypeGuard
 
 from typing_extensions import TypeVar
 
 from ..types import Jsonable
 from .base_tool import BaseTool
 from .base_tool_def import BaseToolDef
-from .tool import Tool
+
+if TYPE_CHECKING:
+    from .tool import Tool
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
@@ -25,6 +30,9 @@ class ToolDef(BaseToolDef[P, R]):
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
+    fn: Callable[P, R]
+    """The function that implements the tool's functionality."""
+
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
         """Call the tool with the provided arguments.
 
@@ -36,7 +44,7 @@ class ToolDef(BaseToolDef[P, R]):
         """
         return self.fn(*args, **kwargs)
 
-    def defines(self, tool: BaseTool) -> TypeGuard[Tool[R]]:
+    def defines(self, tool: BaseTool) -> TypeGuard[Tool[P, R]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific

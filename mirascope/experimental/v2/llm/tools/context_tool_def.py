@@ -1,15 +1,20 @@
 """The `ContextToolDef` class for defining tools that LLMs can request be called."""
 
+from __future__ import annotations
+
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Generic, ParamSpec, TypeGuard
+from typing import TYPE_CHECKING, Concatenate, Generic, ParamSpec, TypeGuard
 
 from typing_extensions import TypeVar
 
-from ..contexts import Context
+from ..context import Context
 from ..types import Jsonable
 from .base_tool import BaseTool
 from .base_tool_def import BaseToolDef
-from .context_tool import ContextTool
+
+if TYPE_CHECKING:
+    from .context_tool import ContextTool
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
@@ -26,6 +31,9 @@ class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
+    fn: Callable[Concatenate[Context[DepsT], P], R]
+    """The function that implements the tool's functionality."""
+
     def __call__(self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs) -> R:
         """Call the tool with the provided arguments.
 
@@ -35,9 +43,9 @@ class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
         Returns:
             The result of calling the tool function with the provided arguments.
         """
-        return self.fn(*args, **kwargs)
+        return self.fn(ctx, *args, **kwargs)
 
-    def defines(self, tool: BaseTool) -> TypeGuard[ContextTool[R, DepsT]]:
+    def defines(self, tool: BaseTool) -> TypeGuard[ContextTool[P, R, DepsT]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific

@@ -1,15 +1,15 @@
 """The AsyncStructuredContextCall module for generating structured responses using LLMs."""
 
 from dataclasses import dataclass
-from typing import Generic, ParamSpec
+from typing import ParamSpec
 
 from typing_extensions import TypeVar
 
-from ..contexts import Context
-from ..messages import AsyncPromptTemplate
+from ..context import Context
+from ..prompt_templates import AsyncPromptTemplate
 from ..responses import AsyncStructuredStream, ContextResponse
 from ..types import Dataclass
-from .base_structured_call import BaseStructuredCall
+from .base_structured_context_call import BaseStructuredContextCall
 
 P = ParamSpec("P")
 T = TypeVar("T", bound=Dataclass | None, default=None)
@@ -18,7 +18,7 @@ DepsT = TypeVar("DepsT", default=None)
 
 @dataclass
 class AsyncStructuredContextCall(
-    BaseStructuredCall[P, AsyncPromptTemplate, T], Generic[P, T, DepsT]
+    BaseStructuredContextCall[P, AsyncPromptTemplate, DepsT, T]
 ):
     """A class for generating structured responses using LLMs asynchronously."""
 

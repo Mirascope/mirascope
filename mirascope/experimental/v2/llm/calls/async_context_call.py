@@ -1,21 +1,21 @@
 """The AsyncContextCall module for generating responses asynchronously using LLMs."""
 
 from dataclasses import dataclass
-from typing import Generic, ParamSpec
+from typing import ParamSpec
 
 from typing_extensions import TypeVar
 
-from ..contexts import Context
-from ..messages import AsyncPromptTemplate
+from ..context import Context
+from ..prompt_templates import AsyncPromptTemplate
 from ..responses import AsyncStream, ContextResponse
-from .base_call import BaseCall
+from .base_context_call import BaseContextCall
 
 P = ParamSpec("P")
 DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class AsyncContextCall(BaseCall[P, AsyncPromptTemplate], Generic[P, DepsT]):
+class AsyncContextCall(BaseContextCall[P, AsyncPromptTemplate, DepsT]):
     """A class for generating responses using LLMs asynchronously."""
 
     async def __call__(

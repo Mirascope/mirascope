@@ -7,7 +7,7 @@ from typing import Generic
 
 from typing_extensions import TypeVar
 
-from ..contexts import Context
+from ..context import Context
 from ..models import LLM
 from ..tools import ToolDef
 from ..types import Dataclass

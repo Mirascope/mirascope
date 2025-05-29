@@ -5,8 +5,8 @@ from typing import Generic
 
 from typing_extensions import TypeVar
 
-from ..content import ResponseContent
 from ..types import Dataclass
+from .content import ResponseContent
 
 T = TypeVar("T", bound=Dataclass | None, default=None)
 

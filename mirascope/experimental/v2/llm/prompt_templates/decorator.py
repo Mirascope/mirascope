@@ -6,9 +6,9 @@ from typing import Concatenate, ParamSpec, Protocol, TypeAlias, overload
 from typing_extensions import TypeVar
 
 from ..content import Content
-from ..contexts import Context
+from ..context import Context
+from ..messages.message import Message
 from .dynamic_config import DynamicConfig
-from .message import Message
 
 P = ParamSpec("P")
 DepsT = TypeVar("DepsT", default=None)

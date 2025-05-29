@@ -1,17 +1,19 @@
 """The `llm.call` decorator for turning `PromptTemplate` functions into LLM calls."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, overload
 
 from typing_extensions import TypeVar, Unpack
 
-from ..messages import (
+from ..models import Client, Params
+from ..prompt_templates import (
     AsyncContextPromptTemplate,
     AsyncPromptTemplate,
     ContextPromptTemplate,
     PromptTemplate,
 )
-from ..models import Client, Params
 from ..tools import ContextToolDef, ToolDef
 from ..types import Dataclass
 from .async_call import AsyncCall

@@ -7,9 +7,10 @@ from typing import Generic, ParamSpec
 
 from typing_extensions import TypeVar
 
-from ..messages import AsyncPromptTemplate, PromptTemplate
 from ..models import LLM
+from ..prompt_templates import AsyncPromptTemplate, PromptTemplate
 from ..tools import ToolDef
+from ..types import Jsonable
 
 P = ParamSpec("P")
 PromptTemplateT = TypeVar("PromptTemplateT", bound=PromptTemplate | AsyncPromptTemplate)
@@ -22,7 +23,7 @@ class BaseCall(Generic[P, PromptTemplateT], ABC):
     model: LLM
     """The LLM model used for generating responses."""
 
-    tools: Sequence[ToolDef] | None
+    tools: Sequence[ToolDef[..., Jsonable]] | None
     """The tools to be used with the LLM."""
 
     fn: PromptTemplateT

@@ -93,7 +93,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> ContextResponse[DepsT]:
+    ) -> ContextResponse:
         """Overload for standard context call."""
         ...
 
@@ -117,7 +117,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
         params: ParamsT | None = None,
-    ) -> ContextResponse[DepsT, T]:
+    ) -> ContextResponse[T]:
         """Overload for calls when a response format is specified."""
         ...
 
@@ -131,7 +131,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         | None = None,
         response_format: type[T] | None = None,
         params: ParamsT | None = None,
-    ) -> Response | Response[T] | ContextResponse[DepsT] | ContextResponse[DepsT, T]:
+    ) -> Response | Response[T] | ContextResponse | ContextResponse[T]:
         """Generate a response using the model."""
         ...
 
@@ -155,7 +155,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> ContextResponse[DepsT]:
+    ) -> ContextResponse:
         """Overload for standard async context call."""
         ...
 
@@ -179,7 +179,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
         params: ParamsT | None = None,
-    ) -> ContextResponse[DepsT, T]:
+    ) -> ContextResponse[T]:
         """Overload for async context calls when a response format is specified."""
         ...
 
@@ -193,7 +193,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         | None = None,
         response_format: type[T] | None = None,
         params: ParamsT | None = None,
-    ) -> Response | Response[T] | ContextResponse[DepsT] | ContextResponse[DepsT, T]:
+    ) -> Response | Response[T] | ContextResponse | ContextResponse[T]:
         """Generate a response asynchronously using the model."""
         ...
 
