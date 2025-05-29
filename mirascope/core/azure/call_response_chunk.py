@@ -75,14 +75,14 @@ class AzureCallResponseChunk(
         return self.chunk.id
 
     @property
-    def usage(self) -> CompletionsUsage:
+    def usage(self) -> CompletionsUsage | None:
         """Returns the usage of the chat completion."""
         return self.chunk.usage
 
     @property
-    def input_tokens(self) -> int:
+    def input_tokens(self) -> int | None:
         """Returns the number of input tokens."""
-        return self.usage.prompt_tokens
+        return self.usage.prompt_tokens if self.usage else None
 
     @property
     def cached_tokens(self) -> int:
@@ -90,9 +90,9 @@ class AzureCallResponseChunk(
         return 0
 
     @property
-    def output_tokens(self) -> int:
+    def output_tokens(self) -> int | None:
         """Returns the number of output tokens."""
-        return self.usage.completion_tokens
+        return self.usage.completion_tokens if self.usage else None
 
     @property
     def cost_metadata(self) -> CostMetadata:

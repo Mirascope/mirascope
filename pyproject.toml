@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "1.22.4"
+version = "1.24.1"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -209,7 +209,7 @@ venvPath = "."
 venv = ".venv"
 
 [tool.codespell]
-skip = [".git", "*.lock", "./docs/blog/posts/llm-prompt.md"]
+skip = [".git", "*.lock"]
 ignore-words-list = 'EHR,reworkd,ROUGE,rouge,Rouge'
 ignore-regex = 'and buyed some milk'
 

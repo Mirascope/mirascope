@@ -61,8 +61,9 @@ class MistralTool(BaseTool):
         """
         fn: dict[str, Any] = {"name": cls._name(), "description": cls._description()}
         model_schema = cls.model_json_schema()
-        if model_schema["properties"]:
-            fn["parameters"] = model_schema
+        fn["parameters"] = (
+            model_schema if model_schema["properties"] else {"type": "object"}
+        )
         return {"function": fn, "type": "function"}
 
     @classmethod

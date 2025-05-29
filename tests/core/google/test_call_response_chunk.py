@@ -38,3 +38,8 @@ def test_google_call_response_chunk() -> None:
     assert call_response_chunk.output_tokens is None
     assert call_response_chunk.common_finish_reasons == ["stop"]
     assert call_response_chunk.cost_metadata == CostMetadata()
+
+    call_response_chunk_no_candidates = GoogleCallResponseChunk(
+        chunk=GenerateContentResponse(candidates=[])
+    )
+    assert call_response_chunk_no_candidates.content == ""

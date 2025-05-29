@@ -163,7 +163,6 @@ def test_tool_result():
                 "toolResult": {
                     "toolUseId": "tool_123",
                     "content": [{"text": "result"}],
-                    "name": "tool_123",
                 }
             }
         ],
@@ -175,7 +174,6 @@ def test_tool_result():
             content=[
                 ToolResultPart(
                     type="tool_result",
-                    name="tool_123",
                     content="result",
                     id="tool_123",
                     is_error=False,
@@ -187,7 +185,7 @@ def test_tool_result():
 
 def test_tool_use_with_text():
     message_param = {
-        "role": "user",
+        "role": "assistant",
         "content": [
             {"text": "Hello"},
             {
@@ -201,16 +199,16 @@ def test_tool_use_with_text():
     }
     results = BedrockMessageParamConverter.from_provider([message_param])  # pyright: ignore [reportArgumentType]
     assert results == [
-        BaseMessageParam(role="user", content=[TextPart(type="text", text="Hello")]),
         BaseMessageParam(
             role="assistant",
             content=[
+                TextPart(type="text", text="Hello"),
                 ToolCallPart(
                     type="tool_call",
                     name="tool_name",
                     args={"arg": "val"},
                     id="tool_id",
-                )
+                ),
             ],
         ),
     ]
@@ -225,7 +223,6 @@ def test_tool_result_with_text():
                 "toolResult": {
                     "toolUseId": "tool_id",
                     "content": [{"text": "result"}],
-                    "name": "tool_name",
                 }
             },
         ],
@@ -238,7 +235,6 @@ def test_tool_result_with_text():
             content=[
                 ToolResultPart(
                     type="tool_result",
-                    name="tool_name",
                     content="result",
                     id="tool_id",
                     is_error=False,

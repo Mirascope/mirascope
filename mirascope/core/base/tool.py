@@ -122,6 +122,15 @@ class BaseTool(BaseModel, ABC):
             if field not in {"tool_call", "delta"}
         }
 
+    @property
+    def id(self) -> str | None:
+        """The id of the tool."""
+        if tool_call := getattr(self, "tool_call", None):
+            # Expect tool_call has an id attribute.
+            # If not, we should override this method on the provider tool
+            return getattr(tool_call, "id", None)
+        return None
+
     @abstractmethod
     def call(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         """The method to call the tool."""

@@ -11,6 +11,8 @@ from mirascope.core.base import (
     AudioURLPart,
     BaseMessageParam,
     CacheControlPart,
+    DocumentPart,
+    DocumentURLPart,
     ImagePart,
     ImageURLPart,
     TextPart,
@@ -36,6 +38,9 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                     type="image", media_type="image/jpeg", image=b"image", detail=None
                 ),
                 AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
+                DocumentPart(
+                    type="document", media_type="application/pdf", document=b"%PDF-1.4"
+                ),
             ],
         ),
     ]
@@ -50,6 +55,7 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
                 {"text": "test"},
                 {"inline_data": {"data": b"image", "mime_type": "image/jpeg"}},
                 {"inline_data": {"data": b"audio", "mime_type": "audio/wav"}},
+                {"inline_data": {"data": b"%PDF-1.4", "mime_type": "application/pdf"}},
             ],
             "role": "user",
         },
@@ -99,7 +105,7 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
 
     with pytest.raises(
         ValueError,
-        match="Google currently only supports text, tool_call, tool_result, image, and audio parts. Part provided: cache_control",
+        match="Google currently only supports text, tool_call, tool_result, image, audio, and document parts. Part provided: cache_control",
     ):
         convert_message_params(
             [
@@ -112,6 +118,161 @@ def test_convert_message_params(mock_image_open: MagicMock) -> None:
             ],
             mock_client,
         )
+
+    with pytest.raises(
+        ValueError,
+        match="Unsupported document media type: application/msword. Google currently only supports PDF, JavaScript, Python, TXT, HTML, CSS, CSV, XML, RTF, and Markdown document types.",
+    ):
+        convert_message_params(
+            [
+                BaseMessageParam(
+                    role="user",
+                    content=[
+                        DocumentPart(
+                            type="document",
+                            document=b"doc_data",
+                            media_type="application/msword",
+                        )
+                    ],
+                )
+            ],
+            mock_client,
+        )
+
+
+def test_document_url_with_http_valid() -> None:
+    """Test document_url part with an HTTP URL and valid media type."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            DocumentURLPart(type="document_url", url="https://example.com/document.pdf")
+        ],
+    )
+    mock_client = MagicMock()
+    result = convert_message_params([message], mock_client)
+
+    assert result == [
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "file_data": {
+                        "file_uri": "https://example.com/document.pdf",
+                        "mime_type": None,
+                    }
+                }
+            ],
+        }
+    ]
+
+
+@patch(
+    "mirascope.core.google._utils._convert_message_params._load_media",
+    return_value=b"%PDF-1.4...",
+)
+@patch(
+    "mirascope.core.google._utils._convert_message_params.get_document_type",
+    return_value="pdf",
+)
+def test_document_url_with_http_valid_gemini(
+    mock_get_document_type: MagicMock, mock_load_media: MagicMock
+) -> None:
+    """Test document_url part with an HTTP URL and valid media type."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            DocumentURLPart(type="document_url", url="https://example.com/document.pdf")
+        ],
+    )
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_file = MagicMock(
+        uri="https://example.com/document.pdf", mime_type="application/pdf"
+    )
+    mock_client.files.upload.return_value = mock_file
+    result = convert_message_params([message], mock_client)
+
+    assert result == [
+        {
+            "role": "user",
+            "parts": [
+                {
+                    "inline_data": {
+                        "data": b"%PDF-1.4...",
+                        "mime_type": "application/pdf",
+                    }
+                }
+            ],
+        }
+    ]
+    mock_load_media.assert_called_once_with("https://example.com/document.pdf")
+    mock_get_document_type.assert_called_once_with(b"%PDF-1.4...")
+
+
+@patch(
+    "mirascope.core.google._utils._convert_message_params._load_media",
+    return_value=b"\x80\x81\x83",
+)
+@patch(
+    "mirascope.core.google._utils._convert_message_params.get_document_type",
+    return_value="unknown",
+)
+def test_document_url_invalid(
+    mock_get_document_type: MagicMock, mock_load_media: MagicMock
+) -> None:
+    """Test url with an invalid media type raises ValueError."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            DocumentURLPart(type="document_url", url="https://example.com/document.exe")
+        ],
+    )
+
+    expected_error_message = (
+        "Failed to process document from URL: https://example.com/document.exe. "
+        "Error details: Unsupported document format detected for URL: https://example.com/document.exe. "
+        "Google API only supports the following document formats: "
+        "PDF, JavaScript, Python, TXT, HTML, CSS, Markdown, CSV, XML and RTF. "
+        "Please provide a document in one of these supported formats.. "
+        "Please ensure the URL is accessible and points to a supported document format."
+    )
+    with pytest.raises(
+        ValueError,
+        match=expected_error_message,
+    ):
+        mock_client = MagicMock()
+        mock_client.vertexai = False
+        convert_message_params([message], mock_client)
+
+    mock_load_media.assert_called_once_with("https://example.com/document.exe")
+    mock_get_document_type.assert_called_once_with(b"\x80\x81\x83")
+
+
+@patch(
+    "mirascope.core.google._utils._convert_message_params._load_media",
+)
+def test_document_url_non_http(mock_load_media: MagicMock) -> None:
+    """Test document_url part with a non-HTTP URL returns a FileData object."""
+    message = BaseMessageParam(
+        role="user",
+        content=[DocumentURLPart(type="document_url", url="gs://bucket/document.pdf")],
+    )
+
+    result = convert_message_params([message], MagicMock())
+
+    assert len(result) == 1
+    assert "parts" in result[0]
+    assert result[0]["parts"]
+    part = result[0]["parts"][0]
+    assert isinstance(part, dict)
+    assert part == {
+        "file_data": {
+            "file_uri": "gs://bucket/document.pdf",
+            "mime_type": None,
+        }
+    }
+
+    mock_load_media.assert_not_called()
 
 
 def test_image_url_with_http_valid() -> None:
@@ -740,3 +901,241 @@ def test_tool_result_parts() -> None:
             "role": "model",
         }
     ]
+
+
+def test_multiple_async_document_uploads() -> None:
+    """Test multiple concurrent async document uploads."""
+    large_document_data = bytes([0] * (25 * 1024 * 1024))
+
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            DocumentPart(
+                type="document",
+                media_type="application/pdf",
+                document=large_document_data,
+            ),
+            TextPart(type="text", text="Some text in between"),
+            DocumentPart(
+                type="document",
+                media_type="application/pdf",
+                document=large_document_data,
+            ),
+        ],
+    )
+
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_client.aio = MagicMock()
+    mock_client.aio.files = MagicMock()
+
+    mock_files = [
+        MagicMock(uri=f"file://uploaded/document{i}", mime_type="application/pdf")
+        for i in range(2)
+    ]
+    mock_client.aio.files.upload = AsyncMock(side_effect=mock_files)
+
+    result = convert_message_params([message], mock_client)
+
+    assert result == [
+        {
+            "parts": [
+                {
+                    "file_data": {
+                        "file_uri": "file://uploaded/document0",
+                        "mime_type": "application/pdf",
+                    }
+                },
+                {"text": "Some text in between"},
+                {
+                    "file_data": {
+                        "file_uri": "file://uploaded/document1",
+                        "mime_type": "application/pdf",
+                    }
+                },
+            ],
+            "role": "user",
+        }
+    ]
+
+    assert mock_client.aio.files.upload.call_count == 2
+    calls = mock_client.aio.files.upload.call_args_list
+    assert calls[0][1]["config"]["mime_type"] == "application/pdf"
+    assert calls[1][1]["config"]["mime_type"] == "application/pdf"
+
+
+def test_large_document_upload() -> None:
+    """Test async upload of large documents (>10MB)."""
+    large_document_data = bytes([0] * (25 * 1024 * 1024))  # 25MB
+
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            DocumentPart(
+                type="document",
+                media_type="application/pdf",
+                document=large_document_data,
+            )
+        ],
+    )
+
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_client.aio = MagicMock()
+    mock_client.aio.files = MagicMock()
+    mock_file = MagicMock(uri="file://uploaded/document", mime_type="application/pdf")
+    mock_client.aio.files.upload = AsyncMock(return_value=mock_file)
+
+    result = convert_message_params([message], mock_client)
+
+    assert result == [
+        {
+            "parts": [
+                {
+                    "file_data": {
+                        "file_uri": "file://uploaded/document",
+                        "mime_type": "application/pdf",
+                    }
+                }
+            ],
+            "role": "user",
+        }
+    ]
+
+    mock_client.aio.files.upload.assert_called_once()
+    call_args = mock_client.aio.files.upload.call_args
+    assert isinstance(call_args[1]["file"], io.BytesIO)
+    assert call_args[1]["file"].getvalue() == large_document_data
+    assert call_args[1]["config"]["mime_type"] == "application/pdf"
+
+
+@patch(
+    "mirascope.core.google._utils._convert_message_params._load_media",
+    return_value=bytes([0] * (25 * 1024 * 1024)),
+)
+@patch(
+    "mirascope.core.google._utils._convert_message_params.get_document_type",
+    return_value="pdf",
+)
+def test_large_document_url_upload(
+    mock_get_document_type: MagicMock, mock_load_media: MagicMock
+) -> None:
+    """Test large document URL upload."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            DocumentURLPart(
+                type="document_url", url="https://example.com/large_document.pdf"
+            )
+        ],
+    )
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    mock_client.aio = MagicMock()
+    mock_client.aio.files = MagicMock()
+    mock_file = MagicMock(
+        uri="file://uploaded/large_document", mime_type="application/pdf"
+    )
+    mock_client.aio.files.upload = AsyncMock(return_value=mock_file)
+
+    result = convert_message_params([message], mock_client)
+
+    assert result == [
+        {
+            "parts": [
+                {
+                    "file_data": {
+                        "file_uri": "file://uploaded/large_document",
+                        "mime_type": "application/pdf",
+                    }
+                }
+            ],
+            "role": "user",
+        }
+    ]
+
+    mock_load_media.assert_called_once_with("https://example.com/large_document.pdf")
+    mock_get_document_type.assert_called_once_with(bytes([0] * (25 * 1024 * 1024)))
+
+    mock_client.aio.files.upload.assert_called_once()
+    call_args = mock_client.aio.files.upload.call_args
+    assert isinstance(call_args[1]["file"], io.BytesIO)
+    assert call_args[1]["file"].getvalue() == bytes([0] * (25 * 1024 * 1024))
+    assert call_args[1]["config"]["mime_type"] == "application/pdf"
+
+
+@patch(
+    "mirascope.core.google._utils._convert_message_params._load_media",
+    return_value=b"This is a plain text document.",
+)
+@patch(
+    "mirascope.core.google._utils._convert_message_params.get_document_type",
+    side_effect=ValueError("Unsupported document type"),
+)
+def test_document_url_infers_text_plain(
+    mock_get_document_type: MagicMock, mock_load_media: MagicMock
+) -> None:
+    """Tests that a document from a URL is inferred as text/plain if decodable."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            DocumentURLPart(type="document_url", url="https://example.com/document.txt")
+        ],
+    )
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+    result = convert_message_params([message], mock_client)
+
+    assert result == [
+        {
+            "parts": [
+                {
+                    "inline_data": {
+                        "data": b"This is a plain text document.",
+                        "mime_type": "text/plain",
+                    }
+                }
+            ],
+            "role": "user",
+        }
+    ]
+    mock_load_media.assert_called_once_with("https://example.com/document.txt")
+    mock_get_document_type.assert_called_once_with(b"This is a plain text document.")
+
+
+@patch(
+    "mirascope.core.google._utils._convert_message_params._load_media",
+    return_value=b"\xff\xfe\xfd",
+)
+@patch(
+    "mirascope.core.google._utils._convert_message_params.get_document_type",
+    side_effect=ValueError("Unknown type from get_document_type"),
+)
+def test_document_url_unsupported_type_after_decode_fails(
+    mock_get_document_type: MagicMock, mock_load_media: MagicMock
+) -> None:
+    """Tests that an error is raised for unsupported doc type if UTF-8 decode fails."""
+    message = BaseMessageParam(
+        role="user",
+        content=[
+            DocumentURLPart(
+                type="document_url", url="https://example.com/unknown_document"
+            )
+        ],
+    )
+    mock_client = MagicMock()
+    mock_client.vertexai = False
+
+    expected_error_message = (
+        "Failed to process document from URL: https://example.com/unknown_document. "
+        "Error details: Unsupported document format detected for URL: https://example.com/unknown_document. "
+        "Google API only supports the following document formats: "
+        "PDF, JavaScript, Python, TXT, HTML, CSS, Markdown, CSV, XML and RTF. "
+        "Please provide a document in one of these supported formats.. "
+        "Please ensure the URL is accessible and points to a supported document format."
+    )
+    with pytest.raises(ValueError, match=expected_error_message):
+        convert_message_params([message], mock_client)
+
+    mock_load_media.assert_called_once_with("https://example.com/unknown_document")
+    mock_get_document_type.assert_called_once_with(b"\xff\xfe\xfd")

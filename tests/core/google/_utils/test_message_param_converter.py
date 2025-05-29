@@ -13,6 +13,7 @@ from mirascope.core import BaseMessageParam
 from mirascope.core.base import (
     AudioURLPart,
     DocumentPart,
+    DocumentURLPart,
     ImagePart,
     ImageURLPart,
     ToolCallPart,
@@ -66,15 +67,50 @@ def test_google_convert_parts_image():
 
 def test_google_convert_parts_document():
     """
-    If file_data is a PDF, produce a DocumentPart.
+    If inline_data is a PDF, produce a DocumentPart.
     """
     part = PartDict(
-        file_data=FileDataDict(mime_type="application/pdf", file_uri="%PDF-1.4...")
+        inline_data=BlobDict(mime_type="application/pdf", data=b"%PDF-1.4...")
     )
     converted_message = GoogleMessageParamConverter.from_provider(
         [{"role": "assistant", "parts": [part]}]
     )[0]
-    assert isinstance(converted_message.content[0], ImageURLPart)
+    assert isinstance(converted_message.content[0], DocumentPart)
+    assert converted_message.content[0].media_type == "application/pdf"
+    assert converted_message.content[0].document == b"%PDF-1.4..."
+
+
+def test_google_convert_parts_document_url():
+    """
+    If file_data has a document mime type, produce a DocumentURLPart.
+    """
+    part = PartDict(
+        file_data=FileDataDict(
+            mime_type="application/pdf", file_uri="http://example.com/doc.pdf"
+        )
+    )
+    converted_message = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )[0]
+    assert isinstance(converted_message.content[0], DocumentURLPart)
+    assert converted_message.content[0].url == "http://example.com/doc.pdf"
+
+
+def test_google_convert_parts_text_document():
+    """
+    If inline_data has a text document mime type, produce a DocumentPart.
+    """
+    part = PartDict(
+        inline_data=BlobDict(
+            mime_type="text/html", data=b"<!DOCTYPE html><html></html>"
+        )
+    )
+    converted_message = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )[0]
+    assert isinstance(converted_message.content[0], DocumentPart)
+    assert converted_message.content[0].media_type == "text/html"
+    assert converted_message.content[0].document == b"<!DOCTYPE html><html></html>"
 
 
 def test_google_convert_parts_unsupported_image():
@@ -122,7 +158,7 @@ def test_google_convert_no_supported_content():
     # No text, no inline_data, no file_data, no function_call, no function_response
     with pytest.raises(
         ValueError,
-        match="Part does not contain any supported content \\(text, image, or document\\).",
+        match="Part does not contain any supported content \\(text, image, audio, or document\\).",
     ):
         GoogleMessageParamConverter.from_provider(
             [{"role": "assistant", "parts": [part]}]
@@ -229,6 +265,25 @@ def test_google_convert_parts_file_data_image():
     assert len(result.content) == 1
     assert isinstance(result.content[0], ImageURLPart)
     assert result.content[0].url == "http://example.com/img"
+
+
+def test_google_convert_parts_file_data_document():
+    """
+    When a part has file_data with a document mime type, it should produce a DocumentURLPart.
+    """
+    file_data = FileDataDict(
+        mime_type="application/pdf", file_uri="http://example.com/doc.pdf"
+    )
+    part = PartDict(file_data=file_data)
+    results = GoogleMessageParamConverter.from_provider(
+        [{"role": "assistant", "parts": [part]}]
+    )
+    assert len(results) == 1
+    result = results[0]
+    assert isinstance(result.content, list)
+    assert len(result.content) == 1
+    assert isinstance(result.content[0], DocumentURLPart)
+    assert result.content[0].url == "http://example.com/doc.pdf"
 
 
 def test_google_convert_parts_file_data_audio():

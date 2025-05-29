@@ -60,10 +60,8 @@ def transform_tool_outputs(
         tools_and_outputs: Sequence[tuple[_BaseToolT, JsonableType]],
     ) -> list[_ToolMessageParamT]:
         def recursive_serializer(value: JsonableType) -> BaseType:
-            if isinstance(value, str):
+            if isinstance(value, str | int | float | bool | None):
                 return value
-            if isinstance(value, int | float | bool):
-                return value  # Don't serialize primitives yet
             if isinstance(value, bytes):
                 return base64.b64encode(value).decode("utf-8")
             if isinstance(value, BaseModel):

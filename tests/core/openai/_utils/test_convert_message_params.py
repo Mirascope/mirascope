@@ -37,11 +37,21 @@ def test_convert_message_params() -> None:
                     type="image_url", url="http://example.com/image", detail="auto"
                 ),
                 AudioPart(type="audio", media_type="audio/wav", audio=b"audio"),
+            ],
+        ),
+        BaseMessageParam(
+            role="assistant",
+            content=[
+                ToolCallPart(type="tool_call", name="tool_name", id="tool_id"),
+            ],
+        ),
+        BaseMessageParam(
+            role="user",
+            content=[
+                TextPart(type="text", text="Here you go!"),
                 ToolResultPart(
                     name="tool_name", id="tool_id", content="result", type="tool_result"
                 ),
-                ToolCallPart(type="tool_call", name="tool_name", id="tool_id"),
-                TextPart(type="text", text="Hello"),
             ],
         ),
     ]
@@ -70,9 +80,7 @@ def test_convert_message_params() -> None:
             ],
             "role": "user",
         },
-        {"content": "result", "role": "tool", "tool_call_id": "tool_id"},
         {
-            "name": "tool_name",
             "role": "assistant",
             "tool_calls": [
                 {
@@ -82,7 +90,8 @@ def test_convert_message_params() -> None:
                 }
             ],
         },
-        {"content": [{"text": "Hello", "type": "text"}], "role": "user"},
+        {"content": [{"text": "Here you go!", "type": "text"}], "role": "user"},
+        {"content": "result", "role": "tool", "tool_call_id": "tool_id"},
     ]
 
     with pytest.raises(

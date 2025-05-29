@@ -4,8 +4,5 @@
 # Python Owner
 *.py        @willbakst
 
-# Documentation Owner
-/docs/      @willbakst
-
 # Examples Owner
 /examples/  @willbakst

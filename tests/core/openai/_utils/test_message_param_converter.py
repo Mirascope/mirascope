@@ -90,20 +90,31 @@ def test_to_provider():
         content=[
             TextPart(type="text", text="Hello, world!"),
             ToolCallPart(type="tool_call", name="test_tool", args={"key": "value"}),
+            ToolCallPart(type="tool_call", name="test_tool_2", args={"key": "value"}),
         ],
     )
     results = OpenAIMessageParamConverter.to_provider([message_param])
     assert results == [
         {
             "content": [{"text": "Hello, world!", "type": "text"}],
-            "name": "test_tool",
             "role": "assistant",
             "tool_calls": [
                 {
-                    "function": {"arguments": '{"key": "value"}', "name": "test_tool"},
+                    "function": {
+                        "arguments": '{"key": "value"}',
+                        "name": "test_tool",
+                    },
                     "id": None,
                     "type": "function",
-                }
+                },
+                {
+                    "function": {
+                        "arguments": '{"key": "value"}',
+                        "name": "test_tool_2",
+                    },
+                    "id": None,
+                    "type": "function",
+                },
             ],
         }
     ]
