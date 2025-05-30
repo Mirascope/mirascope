@@ -17,7 +17,7 @@ DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class StructuredContextCall(BaseStructuredContextCall[P, PromptTemplate, DepsT, T]):
+class StructuredContextCall(BaseStructuredContextCall[P, PromptTemplate, T, DepsT]):
     """A class for generating structured responses using LLMs."""
 
     def __call__(

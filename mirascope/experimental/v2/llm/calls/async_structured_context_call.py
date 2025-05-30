@@ -18,7 +18,7 @@ DepsT = TypeVar("DepsT", default=None)
 
 @dataclass
 class AsyncStructuredContextCall(
-    BaseStructuredContextCall[P, AsyncPromptTemplate, DepsT, T]
+    BaseStructuredContextCall[P, AsyncPromptTemplate, T, DepsT]
 ):
     """A class for generating structured responses using LLMs asynchronously."""
 

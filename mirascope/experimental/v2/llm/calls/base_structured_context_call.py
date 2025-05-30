@@ -19,7 +19,7 @@ DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class BaseStructuredContextCall(Generic[P, PromptTemplateT, DepsT, T], ABC):
+class BaseStructuredContextCall(Generic[P, PromptTemplateT, T, DepsT], ABC):
     """A base class for generating responses using LLMs."""
 
     model: LLM
