@@ -226,15 +226,15 @@ def create_tool_from_mcp_tool(tool: MCPTool) -> type[BaseTool]:
     for field_name, field_schema in properties.items():
         field_type = json_schema_to_python_type(field_schema)
 
-        default = field_schema.get("default", ...)
-        nullable = field_schema.get("nullable", False)
-
-        if nullable:
+        if field_schema.get("nullable", False):
             field_type = field_type | None
 
-        # there shouldn't be non-required, non-nullable fields with no default,
-        # but just in case...
+        default = field_schema.get("default", ...)
+
         if field_name not in required_fields:
+            # Fields that are not required and do not specify a default value
+            # get None as their default (although such fields shouldn't really
+            # exist in a schema)
             default = field_schema.get("default", None)
 
         assigned = Field(default, description=field_schema.get("description"))
