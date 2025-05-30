@@ -561,3 +561,84 @@ def test_setup_call_json_mode_with_response_model_sets_schema(
     assert len(messages_out) == len(initial_messages)
     if initial_messages and messages_out:
         assert messages_out[-1]["parts"] == initial_messages[-1]["parts"]
+
+
+@patch(
+    "mirascope.core.google._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
+def test_setup_call_strict_response_model_forces_schema(
+    mock_client_class: MagicMock,
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+) -> None:
+    """Test that setup_call uses response_schema when strict=True is set in response_model's config,
+    even when json_mode is False.
+    """
+    mock_client = MagicMock()
+    mock_client_class.return_value = mock_client
+    mock_utils.setup_call.return_value = _get_mock_base_setup_call_value()
+    mock_convert_message_params.side_effect = lambda x, y: x
+
+    class StrictResponseModel(BaseModel):
+        name: str
+        age: int
+
+        model_config = {"strict": True}
+
+    # Test with json_mode=False but strict=True
+    _, _, messages_out, _, call_kwargs = setup_call(
+        model="google-1.5-flash",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,  # json_mode is False
+        call_params={},
+        response_model=StrictResponseModel,
+        stream=False,
+    )
+
+    # Should still use response_schema because strict=True
+    assert "config" in call_kwargs
+    config = call_kwargs["config"]
+    assert isinstance(config, GenerateContentConfig)
+    assert config.response_mime_type == "application/json"
+    assert config.response_schema == StrictResponseModel
+
+    # Should not use tools path
+    assert config.tool_config is None
+
+    # Should not append json_mode_content
+    mock_utils.json_mode_content.assert_not_called()
+
+    # Test with both json_mode=True and strict=True
+    mock_utils.json_mode_content.reset_mock()
+    _, _, messages_out, _, call_kwargs = setup_call(
+        model="google-1.5-flash",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=True,  # json_mode is True
+        call_params={},
+        response_model=StrictResponseModel,
+        stream=False,
+    )
+
+    # Should still use response_schema
+    assert "config" in call_kwargs
+    config = call_kwargs["config"]
+    assert isinstance(config, GenerateContentConfig)
+    assert config.response_mime_type == "application/json"
+    assert config.response_schema == StrictResponseModel
+
+    # Should not use tools path
+    assert config.tool_config is None
+
+    # Should not append json_mode_content
+    mock_utils.json_mode_content.assert_not_called()
