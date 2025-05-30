@@ -147,11 +147,16 @@ def setup_call(
 
     if json_mode:
         with _generate_content_config_context(call_kwargs) as config:
-            if not tools:
-                config.response_mime_type = "application/json"
-        messages[-1]["parts"].append(  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
-            PartDict(text=_utils.json_mode_content(response_model))
-        )  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
+            config.response_mime_type = "application/json"
+            if response_model:
+                config.response_schema = response_model
+
+            elif not tools:
+                messages[-1][
+                    "parts"
+                ].append(  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
+                    PartDict(text=_utils.json_mode_content(None))
+                )  # pyright: ignore [reportTypedDictNotRequiredAccess, reportOptionalMemberAccess, reportArgumentType]
     elif response_model:
         assert tool_types, "At least one tool must be provided for extraction."
         with _generate_content_config_context(call_kwargs) as config:

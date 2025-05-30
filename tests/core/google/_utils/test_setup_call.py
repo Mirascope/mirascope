@@ -384,3 +384,180 @@ def test_setup_call_with_call_params(
         call_params,  # Call params should be passed directly
         convert_common_call_params,
     )
+
+
+class MyTestModel(BaseModel):
+    param: str
+    optional_param: int | None = None
+
+
+# Helper to structure mock returns for _utils.setup_call
+def _get_mock_base_setup_call_value(messages=None, call_kwargs_override=None):
+    base_messages = (
+        messages
+        if messages is not None
+        else [{"role": "user", "parts": [{"text": "test content"}]}]
+    )
+    base_call_kwargs = call_kwargs_override if call_kwargs_override is not None else {}
+    return [
+        MagicMock(),
+        base_messages,
+        MagicMock(),
+        base_call_kwargs,
+    ]  # prompt_template, messages, tool_types, call_kwargs
+
+
+@patch(
+    "mirascope.core.google._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
+def test_setup_call_json_mode_with_response_model(
+    mock_client_class: MagicMock,
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+) -> None:
+    """Tests `setup_call` with `json_mode=True` and a `response_model`.
+    It should set `response_schema` in the config and not add generic JSON content.
+    """
+    mock_client = MagicMock()
+    mock_client_class.return_value = mock_client
+    mock_utils.setup_call.return_value = _get_mock_base_setup_call_value()
+    mock_convert_message_params.side_effect = lambda x, y: x  # Passthrough
+
+    _, _, messages_out, _, call_kwargs = setup_call(
+        model="google-1.5-flash",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=True,
+        call_params={},
+        response_model=MyTestModel,
+        stream=False,
+    )
+
+    assert "config" in call_kwargs
+    config = call_kwargs["config"]
+    assert isinstance(config, GenerateContentConfig)
+    assert config.response_mime_type == "application/json"
+    assert config.response_schema == MyTestModel
+
+    # Ensure json_mode_content was NOT added to messages
+    # Assuming last message is user message and we check its parts
+    last_message_parts = messages_out[-1]["parts"]
+    for part in last_message_parts:
+        if isinstance(part, dict) and "text" in part:
+            assert mock_utils.json_mode_content.call_count == 0
+
+
+@patch(
+    "mirascope.core.google._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
+def test_setup_call_json_mode_no_response_model_no_tools(
+    mock_client_class: MagicMock,
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+) -> None:
+    """Tests `setup_call` with `json_mode=True`, no `response_model`, and no `tools`."""
+    mock_client = MagicMock()
+    mock_client_class.return_value = mock_client
+    # Simulate initial messages from base setup call
+    initial_messages = [{"role": "user", "parts": [{"text": "initial prompt"}]}]
+    mock_utils.setup_call.return_value = _get_mock_base_setup_call_value(
+        messages=initial_messages
+    )
+    mock_convert_message_params.side_effect = lambda x, y: x  # Passthrough
+    mock_utils.json_mode_content.return_value = "JSON_MODE_PROMPT_TEXT"
+
+    _, _, messages_out, _, call_kwargs = setup_call(
+        model="google-1.5-flash",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,  # Explicitly no tools
+        json_mode=True,
+        call_params={},
+        response_model=None,  # Explicitly no response model
+        stream=False,
+    )
+
+    assert "config" in call_kwargs
+    config = call_kwargs["config"]
+    assert isinstance(config, GenerateContentConfig)
+    assert config.response_mime_type == "application/json"
+    assert getattr(config, "response_schema", None) is None  # Schema should not be set
+
+    # Ensure json_mode_content WAS added to the last message
+    assert len(messages_out) > 0
+    last_message_parts = messages_out[-1]["parts"]
+    assert any(
+        part.get("text") == "JSON_MODE_PROMPT_TEXT"
+        for part in last_message_parts
+        if isinstance(part, dict)
+    )
+    mock_utils.json_mode_content.assert_called_once_with(None)
+
+
+@patch(
+    "mirascope.core.google._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.google._utils._setup_call._utils", new_callable=MagicMock)
+@patch("mirascope.core.google._utils._setup_call.Client", new_callable=MagicMock)
+def test_setup_call_json_mode_with_response_model_sets_schema(
+    mock_client_class: MagicMock,
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+    mock_base_setup_call: MagicMock,
+) -> None:
+    """Tests `setup_call` with `json_mode=True` and a `response_model`.
+
+    It should set `response_schema` in the config and not add generic JSON content by calling
+    `_utils.json_mode_content`.
+    """
+    mock_client = MagicMock()
+    mock_client_class.return_value = mock_client
+    
+    mock_utils.setup_call = mock_base_setup_call
+
+    initial_messages = [{"role": "user", "parts": [{"text": "initial prompt"}]}]
+    mock_base_setup_call.return_value[1] = initial_messages 
+    mock_base_setup_call.return_value[3] = {} 
+
+    mock_convert_message_params.side_effect = lambda x, y: x
+
+    class TestResponseModel(BaseModel):
+        foo: str
+        bar: int | None = None
+
+    _, _, messages_out, _, call_kwargs_out = setup_call(
+        model="google-1.5-flash",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=True,
+        call_params={},
+        response_model=TestResponseModel, # Use the concrete model class
+        stream=False,
+    )
+
+    assert "config" in call_kwargs_out
+    config = call_kwargs_out["config"]
+    assert isinstance(config, GenerateContentConfig)
+    assert config.response_mime_type == "application/json"
+    assert config.response_schema == TestResponseModel 
+
+    mock_utils.json_mode_content.assert_not_called()
+
+    assert len(messages_out) == len(initial_messages)
+    if initial_messages and messages_out:
+        assert messages_out[-1]["parts"] == initial_messages[-1]["parts"]
