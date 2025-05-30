@@ -192,6 +192,7 @@ def test_create_model_from_tool_extra():
             "properties": {
                 "opt_str": {"type": "string", "description": "optional string"},
                 "req_arr": {"type": "array", "items": {"type": "integer"}},
+                "nullable": {"type": "string", "nullable": True},
             },
             "required": ["req_arr"],
         },

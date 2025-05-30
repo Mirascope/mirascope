@@ -225,15 +225,18 @@ def create_tool_from_mcp_tool(tool: MCPTool) -> type[BaseTool]:
     fields = {}
     for field_name, field_schema in properties.items():
         field_type = json_schema_to_python_type(field_schema)
+        if field_schema.get("nullable", False):
+            field_type = field_type | None
 
-        if field_name in required_fields:
-            default = Field(..., description=field_schema.get("description"))
-            annotation = field_type
-        else:
-            default = Field(None, description=field_schema.get("description"))
-            annotation = field_type | None
+        field_info = {
+            "default": field_schema.get(
+                "default", ... if field_name in required_fields else None
+            )
+        }
+        if description := field_schema.get("description", ""):
+            field_info["description"] = description
 
-        fields[field_name] = (annotation, default)
+        fields[field_name] = (field_type, Field(**field_info))
 
     return create_model(snake_to_pascal(tool.name), __base__=BaseTool, **fields)
 
