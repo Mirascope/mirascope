@@ -232,12 +232,12 @@ def create_tool_from_mcp_tool(tool: MCPTool) -> type[BaseTool]:
         if nullable:
             field_type = field_type | None
 
-        if field_name in required_fields:
-            assigned = Field(..., description=field_schema.get("description"))
-        else:
+        # there shouldn't be non-required, non-nullable fields with no default,
+        # but just in case...
+        if field_name not in required_fields:
             default = field_schema.get("default", None)
-            assigned = Field(default, description=field_schema.get("description"))
 
+        assigned = Field(default, description=field_schema.get("description"))
         fields[field_name] = (field_type, assigned)
 
     return create_model(snake_to_pascal(tool.name), __base__=BaseTool, **fields)
