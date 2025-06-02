@@ -3,10 +3,14 @@
 usage docs: learn/streams.md
 """
 
+from collections.abc import AsyncGenerator, Generator
+from typing import Any
+
 from anthropic.types import (
     Message,
     MessageParam,
     TextBlock,
+    ThinkingBlock,
     ToolParam,
     ToolUseBlock,
     Usage,
@@ -16,6 +20,8 @@ from anthropic.types.text_block_param import TextBlockParam
 from anthropic.types.tool_use_block_param import ToolUseBlockParam
 from pydantic import BaseModel
 
+from ..base.call_kwargs import BaseCallKwargs
+from ..base.metadata import Metadata
 from ..base.stream import BaseStream
 from ..base.types import CostMetadata
 from .call_params import AnthropicCallParams
@@ -64,6 +70,47 @@ class AnthropicStream(
 
     _provider = "anthropic"
 
+    def __init__(
+        self,
+        *,
+        stream: Generator[
+            tuple[AnthropicCallResponseChunk, AnthropicTool | None], None, None
+        ]
+        | AsyncGenerator[tuple[AnthropicCallResponseChunk, AnthropicTool | None], None],
+        metadata: Metadata,
+        tool_types: list[type[AnthropicTool]] | None,
+        call_response_type: type[AnthropicCallResponse],
+        model: str,
+        prompt_template: str | None,
+        fn_args: dict[str, Any],
+        dynamic_config: AsyncAnthropicDynamicConfig | AnthropicDynamicConfig,
+        messages: list[MessageParam],
+        call_params: AnthropicCallParams,
+        call_kwargs: BaseCallKwargs[ToolParam],
+    ) -> None:
+        """Initialize AnthropicStream with thinking content tracking."""
+        super().__init__(
+            stream=stream,
+            metadata=metadata,
+            tool_types=tool_types,
+            call_response_type=call_response_type,
+            model=model,
+            prompt_template=prompt_template,
+            fn_args=fn_args,
+            dynamic_config=dynamic_config,
+            messages=messages,
+            call_params=call_params,
+            call_kwargs=call_kwargs,
+        )
+        self.thinking = ""
+        self.signature = ""
+
+    def _update_properties(self, chunk: AnthropicCallResponseChunk) -> None:
+        """Updates the properties of the stream, including thinking content."""
+        super()._update_properties(chunk)
+        self.thinking += chunk.thinking
+        self.signature += chunk.signature
+
     def _construct_message_param(
         self, tool_calls: list[ToolUseBlock] | None = None, content: str | None = None
     ) -> MessageParam:
@@ -101,6 +148,16 @@ class AnthropicStream(
         )
 
         content_blocks: list[ContentBlock] = []
+
+        # Add thinking block first if we have thinking content
+        if hasattr(self, "thinking") and self.thinking:
+            content_blocks.append(
+                ThinkingBlock(
+                    type="thinking",
+                    thinking=self.thinking,
+                    signature=getattr(self, "signature", ""),
+                )
+            )
 
         if isinstance(self.message_param["content"], str):
             content_blocks.append(

@@ -9,6 +9,7 @@ from anthropic.types import (
     ThinkingDelta,
     Usage,
 )
+from anthropic.types.signature_delta import SignatureDelta
 
 from mirascope.core.anthropic.call_response_chunk import AnthropicCallResponseChunk
 from mirascope.core.base.types import CostMetadata
@@ -79,3 +80,14 @@ def test_anthropic_call_response_chunk_thinking() -> None:
     call_response_chunk_text = AnthropicCallResponseChunk(chunk=text_chunk)
     assert call_response_chunk_text.thinking == ""
     assert call_response_chunk_text.content == "Hello world"
+
+    # Test signature delta chunk
+    signature_chunk = RawContentBlockDeltaEvent(
+        index=0,
+        delta=SignatureDelta(signature="ErUBCkYIBBgCIkDg...", type="signature_delta"),
+        type="content_block_delta",
+    )
+    call_response_chunk_sig = AnthropicCallResponseChunk(chunk=signature_chunk)
+    assert call_response_chunk_sig.signature == "ErUBCkYIBBgCIkDg..."
+    assert call_response_chunk_sig.content == ""
+    assert call_response_chunk_sig.thinking == ""
