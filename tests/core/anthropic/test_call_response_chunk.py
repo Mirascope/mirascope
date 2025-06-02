@@ -6,6 +6,7 @@ from anthropic.types import (
     RawMessageStartEvent,
     TextBlock,
     TextDelta,
+    ThinkingDelta,
     Usage,
 )
 
@@ -53,3 +54,28 @@ def test_anthropic_call_response_chunk() -> None:
     assert call_response_chunk_1.output_tokens is None
     assert call_response_chunk_1.common_finish_reasons is None
     assert call_response_chunk_1.cost_metadata == CostMetadata()
+
+
+def test_anthropic_call_response_chunk_thinking() -> None:
+    """Tests the `AnthropicCallResponseChunk` class with thinking deltas."""
+    # Test thinking delta chunk
+    thinking_chunk = RawContentBlockDeltaEvent(
+        index=0,
+        delta=ThinkingDelta(
+            thinking="Let me think about this...", type="thinking_delta"
+        ),
+        type="content_block_delta",
+    )
+    call_response_chunk = AnthropicCallResponseChunk(chunk=thinking_chunk)
+    assert call_response_chunk.thinking == "Let me think about this..."
+    assert call_response_chunk.content == ""
+
+    # Test text delta chunk (should have empty thinking)
+    text_chunk = RawContentBlockDeltaEvent(
+        index=0,
+        delta=TextDelta(text="Hello world", type="text_delta"),
+        type="content_block_delta",
+    )
+    call_response_chunk_text = AnthropicCallResponseChunk(chunk=text_chunk)
+    assert call_response_chunk_text.thinking == ""
+    assert call_response_chunk_text.content == "Hello world"
