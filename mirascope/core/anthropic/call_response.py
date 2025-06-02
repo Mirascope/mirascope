@@ -88,6 +88,15 @@ class AnthropicCallResponse(
 
     @computed_field
     @property
+    def signature(self) -> str | None:
+        """Returns the signature from the first thinking block."""
+        for block in self.response.content:
+            if block.type == "thinking":
+                return block.signature
+        return None
+
+    @computed_field
+    @property
     def finish_reasons(self) -> list[str]:
         """Returns the finish reasons of the response."""
         return [str(self.response.stop_reason)]

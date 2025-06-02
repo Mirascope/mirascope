@@ -438,3 +438,4 @@ def test_construct_call_response_with_thinking() -> None:
     # Verify the response properties work correctly
     assert constructed_call_response.thinking == "Let me think... about this problem."
     assert constructed_call_response.content == "The answer is 42."
+    assert constructed_call_response.signature == "ErUBCkYIBBgCIkDg..."

@@ -176,6 +176,8 @@ def test_anthropic_call_response_with_thinking() -> None:
         call_response.thinking
         == "This is a basic arithmetic problem asking me to calculate 2+2."
     )
+    # Test that signature returns the signature from thinking block
+    assert call_response.signature == "ErUBCkYIBBgCIkDg..."
     # Test other properties still work
     assert call_response.model == "claude-3-7-sonnet-20250101"
     assert call_response.id == "msg_123"
@@ -220,6 +222,8 @@ def test_anthropic_call_response_thinking_only() -> None:
     assert call_response.content == ""
     # Test that thinking returns the thinking content
     assert call_response.thinking == "Let me think about this problem step by step..."
+    # Test that signature is accessible
+    assert call_response.signature == "ErUBCkYIBBgCIkDg..."
 
 
 def test_anthropic_call_response_text_only_no_thinking() -> None:
@@ -257,6 +261,8 @@ def test_anthropic_call_response_text_only_no_thinking() -> None:
     assert call_response.content == "Just a regular response."
     # Test that thinking returns None when no thinking block exists
     assert call_response.thinking is None
+    # Test that signature returns None when no thinking block exists
+    assert call_response.signature is None
 
 
 def test_anthropic_call_response_multiple_thinking_blocks() -> None:
@@ -304,3 +310,5 @@ def test_anthropic_call_response_multiple_thinking_blocks() -> None:
     assert call_response.content == "Final answer."
     # Test that thinking returns only the first thinking block
     assert call_response.thinking == "First thinking block content."
+    # Test that signature returns only the first thinking block's signature
+    assert call_response.signature == "signature1"
