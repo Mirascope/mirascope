@@ -29,6 +29,7 @@ from pydantic import AnyUrl, BaseModel
 from mirascope.core import BaseTool
 from mirascope.core.base import AudioPart, DocumentPart, ImagePart, TextPart
 from mirascope.mcp._utils import (
+    _UNSET,
     build_object_type,
     convert_prompt_message_to_base_message_params,
     create_tool_from_mcp_tool,
@@ -203,7 +204,7 @@ def test_create_model_from_tool_extra():
     update_abstractmethods(Model)
     instance = Model(req_arr=[1, 2, 3])  # pyright: ignore [reportCallIssue]
     assert instance.req_arr == [1, 2, 3]  # pyright: ignore [reportAttributeAccessIssue]
-    assert instance.opt_str is None  # pyright: ignore [reportAttributeAccessIssue]
+    assert instance.opt_str is _UNSET  # pyright: ignore [reportAttributeAccessIssue]
 
 
 def test_convert_prompt_message_all_content_types():

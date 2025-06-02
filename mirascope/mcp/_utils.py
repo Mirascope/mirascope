@@ -22,6 +22,8 @@ from pydantic import BaseModel, ConfigDict, Field, create_model
 from ..core import BaseMessageParam, BaseTool
 from ..core.base import AudioPart, DocumentPart, ImagePart
 
+_UNSET = object()
+
 
 def create_tool_call(
     name: str,
@@ -38,7 +40,8 @@ def create_tool_call(
     """
 
     async def call(self: BaseTool) -> list[str | ImageContent | EmbeddedResource]:
-        result = await call_tool(name, self.args)  # pyright: ignore [reportOptionalCall]
+        args = {key: value for key, value in self.args.items() if value is not _UNSET}
+        result = await call_tool(name, args if args else None)
         if result.isError:
             raise RuntimeError(f"MCP Server returned error: {self._name()}")
         return [
@@ -230,7 +233,7 @@ def create_tool_from_mcp_tool(tool: MCPTool) -> type[BaseTool]:
 
         field_info = {
             "default": field_schema.get(
-                "default", ... if field_name in required_fields else None
+                "default", ... if field_name in required_fields else _UNSET
             )
         }
         if description := field_schema.get("description", ""):
