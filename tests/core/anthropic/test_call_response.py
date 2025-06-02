@@ -53,7 +53,7 @@ def test_anthropic_call_response() -> None:
     assert call_response.output_tokens == 1
     assert call_response.cost == 1.8e-5
     assert call_response.message_param == {
-        "content": [{"text": "content", "type": "text"}],
+        "content": [{"text": "content", "type": "text", "citations": None}],
         "role": "assistant",
     }
     assert call_response.tools is None

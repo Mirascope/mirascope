@@ -352,5 +352,5 @@ def test_construct_call_response_string_content() -> None:
     constructed_call_response = stream.construct_call_response()
     assert constructed_call_response.message_param == {
         "role": "assistant",
-        "content": [{"text": "content", "type": "text"}],
+        "content": [{"text": "content", "type": "text", "citations": None}],
     }
