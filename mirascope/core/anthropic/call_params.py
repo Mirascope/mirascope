@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from anthropic.types import TextBlockParam
 from anthropic.types.completion_create_params import Metadata
 from anthropic.types.message_create_params import ToolChoice
+from anthropic.types.thinking_config_param import ThinkingConfigParam
 from httpx import Timeout
 from typing_extensions import NotRequired
 
@@ -21,6 +22,7 @@ class AnthropicCallParams(BaseCallParams):
     Attributes:
         max_tokens: ...
         tool_choice: ...
+        thinking: ...
         metadata: ...
         stop_sequences: ...
         temperature: ...
@@ -32,6 +34,7 @@ class AnthropicCallParams(BaseCallParams):
     extra_headers: NotRequired[dict[str, str] | None]
     max_tokens: int
     tool_choice: NotRequired[ToolChoice | None]
+    thinking: NotRequired[ThinkingConfigParam | None]
     metadata: NotRequired[Metadata | None]
     stop_sequences: NotRequired[list[str] | None]
     system: NotRequired[str | Iterable[TextBlockParam] | None]

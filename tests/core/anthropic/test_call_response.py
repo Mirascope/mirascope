@@ -4,6 +4,7 @@ from anthropic.types import (
     Message,
     MessageParam,
     TextBlock,
+    ThinkingBlock,
     ToolResultBlockParam,
     ToolUseBlock,
     Usage,
@@ -130,3 +131,176 @@ def test_anthropic_call_response_with_tools() -> None:
             ],
         )
     ]
+
+
+def test_anthropic_call_response_with_thinking() -> None:
+    """Tests the `AnthropicCallResponse` class with thinking + text blocks."""
+    usage = Usage(input_tokens=10, output_tokens=20)
+    thinking_block = ThinkingBlock(
+        type="thinking",
+        thinking="This is a basic arithmetic problem asking me to calculate 2+2.",
+        signature="ErUBCkYIBBgCIkDg...",  # Truncated signature from real API
+    )
+    text_block = TextBlock(text="# 2+2 = 4\n\nThis is basic arithmetic.", type="text")
+
+    completion = Message(
+        id="msg_123",
+        content=[thinking_block, text_block],
+        model="claude-3-7-sonnet-20250101",
+        role="assistant",
+        stop_reason="end_turn",
+        stop_sequence=None,
+        type="message",
+        usage=usage,
+    )
+
+    call_response = AnthropicCallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params=AnthropicCallParams(max_tokens=1000),
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    # Test that content returns the text block content (not empty string)
+    assert call_response.content == "# 2+2 = 4\n\nThis is basic arithmetic."
+    # Test that thinking returns the thinking block content
+    assert (
+        call_response.thinking
+        == "This is a basic arithmetic problem asking me to calculate 2+2."
+    )
+    # Test other properties still work
+    assert call_response.model == "claude-3-7-sonnet-20250101"
+    assert call_response.id == "msg_123"
+
+
+def test_anthropic_call_response_thinking_only() -> None:
+    """Tests the `AnthropicCallResponse` class with only thinking block."""
+    usage = Usage(input_tokens=5, output_tokens=10)
+    thinking_block = ThinkingBlock(
+        type="thinking",
+        thinking="Let me think about this problem step by step...",
+        signature="ErUBCkYIBBgCIkDg...",
+    )
+
+    completion = Message(
+        id="msg_456",
+        content=[thinking_block],
+        model="claude-3-7-sonnet-20250101",
+        role="assistant",
+        stop_reason="end_turn",
+        stop_sequence=None,
+        type="message",
+        usage=usage,
+    )
+
+    call_response = AnthropicCallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params=AnthropicCallParams(max_tokens=1000),
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    # Test that content returns empty string when no text block exists
+    assert call_response.content == ""
+    # Test that thinking returns the thinking content
+    assert call_response.thinking == "Let me think about this problem step by step..."
+
+
+def test_anthropic_call_response_text_only_no_thinking() -> None:
+    """Tests that text-only responses still work (thinking returns None)."""
+    usage = Usage(input_tokens=3, output_tokens=5)
+    text_block = TextBlock(text="Just a regular response.", type="text")
+
+    completion = Message(
+        id="msg_789",
+        content=[text_block],
+        model="claude-3-5-sonnet-20240620",
+        role="assistant",
+        stop_reason="end_turn",
+        stop_sequence=None,
+        type="message",
+        usage=usage,
+    )
+
+    call_response = AnthropicCallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params=AnthropicCallParams(max_tokens=1000),
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    # Test that content works as before
+    assert call_response.content == "Just a regular response."
+    # Test that thinking returns None when no thinking block exists
+    assert call_response.thinking is None
+
+
+def test_anthropic_call_response_multiple_thinking_blocks() -> None:
+    """Tests behavior with multiple thinking blocks (returns first one)."""
+    usage = Usage(input_tokens=15, output_tokens=25)
+    thinking_block1 = ThinkingBlock(
+        type="thinking",
+        thinking="First thinking block content.",
+        signature="signature1",
+    )
+    thinking_block2 = ThinkingBlock(
+        type="thinking",
+        thinking="Second thinking block content.",
+        signature="signature2",
+    )
+    text_block = TextBlock(text="Final answer.", type="text")
+
+    completion = Message(
+        id="msg_multi",
+        content=[thinking_block1, thinking_block2, text_block],
+        model="claude-3-7-sonnet-20250101",
+        role="assistant",
+        stop_reason="end_turn",
+        stop_sequence=None,
+        type="message",
+        usage=usage,
+    )
+
+    call_response = AnthropicCallResponse(
+        metadata={},
+        response=completion,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params=AnthropicCallParams(max_tokens=1000),
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    # Test that content returns the text block
+    assert call_response.content == "Final answer."
+    # Test that thinking returns only the first thinking block
+    assert call_response.thinking == "First thinking block content."

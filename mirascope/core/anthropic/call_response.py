@@ -71,9 +71,20 @@ class AnthropicCallResponse(
     @computed_field
     @property
     def content(self) -> str:
-        """Returns the string text of the 0th text block."""
-        block = self.response.content[0]
-        return block.text if block.type == "text" else ""
+        """Returns the text content from the first text block."""
+        for block in self.response.content:
+            if block.type == "text":
+                return block.text
+        return ""
+
+    @computed_field
+    @property
+    def thinking(self) -> str | None:
+        """Returns the thinking content from the first thinking block."""
+        for block in self.response.content:
+            if block.type == "thinking":
+                return block.thinking
+        return None
 
     @computed_field
     @property
