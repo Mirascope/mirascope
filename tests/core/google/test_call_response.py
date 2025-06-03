@@ -153,3 +153,242 @@ def test_google_call_response_with_tools() -> None:
         BaseMessageParam(role="user", content="content"),
         BaseMessageParam(role="assistant", content="content"),
     ]
+
+
+def test_google_call_response_with_thinking() -> None:
+    """Tests the `GoogleCallResponse` class with thinking + text parts."""
+    response = GenerateContentResponse(
+        candidates=[
+            Candidate(
+                finish_reason=GoogleFinishReason.STOP,
+                content=Content(
+                    parts=[
+                        Part(text="This is my reasoning step by step...", thought=True),
+                        Part(text="The final answer is 42"),
+                    ],
+                    role="model",
+                ),
+            )
+        ]
+    )
+
+    call_response = GoogleCallResponse(
+        metadata={},
+        response=response,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    # Test that content returns the non-thinking text
+    assert call_response.content == "The final answer is 42"
+    # Test that thinking returns the thinking content
+    assert call_response.thinking == "This is my reasoning step by step..."
+
+
+def test_google_call_response_thinking_only() -> None:
+    """Tests the `GoogleCallResponse` class with only thinking parts."""
+    response = GenerateContentResponse(
+        candidates=[
+            Candidate(
+                finish_reason=GoogleFinishReason.STOP,
+                content=Content(
+                    parts=[
+                        Part(text="Let me think about this problem...", thought=True)
+                    ],
+                    role="model",
+                ),
+            )
+        ]
+    )
+
+    call_response = GoogleCallResponse(
+        metadata={},
+        response=response,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    # Test that content returns empty string when no non-thinking text exists
+    assert call_response.content == ""
+    # Test that thinking returns the thinking content
+    assert call_response.thinking == "Let me think about this problem..."
+
+
+def test_google_call_response_text_only_no_thinking() -> None:
+    """Tests that text-only responses still work (thinking returns None)."""
+    response = GenerateContentResponse(
+        candidates=[
+            Candidate(
+                finish_reason=GoogleFinishReason.STOP,
+                content=Content(
+                    parts=[Part(text="Just a regular response.")],
+                    role="model",
+                ),
+            )
+        ]
+    )
+
+    call_response = GoogleCallResponse(
+        metadata={},
+        response=response,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    # Test that content works as before
+    assert call_response.content == "Just a regular response."
+    # Test that thinking returns None when no thinking parts exist
+    assert call_response.thinking is None
+
+
+def test_google_call_response_multiple_thinking_parts() -> None:
+    """Tests behavior with multiple thinking parts (returns first one)."""
+    response = GenerateContentResponse(
+        candidates=[
+            Candidate(
+                finish_reason=GoogleFinishReason.STOP,
+                content=Content(
+                    parts=[
+                        Part(text="First thinking step.", thought=True),
+                        Part(text="Second thinking step.", thought=True),
+                        Part(text="Final answer."),
+                    ],
+                    role="model",
+                ),
+            )
+        ]
+    )
+
+    call_response = GoogleCallResponse(
+        metadata={},
+        response=response,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    # Test that content returns the non-thinking text
+    assert call_response.content == "Final answer."
+    # Test that thinking returns only the first thinking part
+    assert call_response.thinking == "First thinking step."
+
+
+def test_google_call_response_no_candidates() -> None:
+    """Tests that ValueError is raised when response has no candidates."""
+    import pytest
+
+    response = GenerateContentResponse(candidates=[])
+
+    call_response = GoogleCallResponse(
+        metadata={},
+        response=response,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    with pytest.raises(ValueError, match="Google Response has no candidates"):
+        _ = call_response.content
+
+
+def test_google_call_response_no_content_or_parts() -> None:
+    """Tests that ValueError is raised when candidate has no content or parts."""
+    import pytest
+
+    # Test with no content
+    response = GenerateContentResponse(
+        candidates=[
+            Candidate(
+                finish_reason=GoogleFinishReason.STOP,
+                content=None,
+            )
+        ]
+    )
+
+    call_response = GoogleCallResponse(
+        metadata={},
+        response=response,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    with pytest.raises(
+        ValueError, match="Google Response Candidate has no content or parts"
+    ):
+        _ = call_response.content
+
+    # Test with content but no parts
+    response_no_parts = GenerateContentResponse(
+        candidates=[
+            Candidate(
+                finish_reason=GoogleFinishReason.STOP,
+                content=Content(parts=None, role="model"),
+            )
+        ]
+    )
+
+    call_response_no_parts = GoogleCallResponse(
+        metadata={},
+        response=response_no_parts,
+        tool_types=None,
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[],
+        call_params={},
+        call_kwargs={},
+        user_message_param=None,
+        start_time=0,
+        end_time=0,
+    )
+
+    with pytest.raises(
+        ValueError, match="Google Response Candidate has no content or parts"
+    ):
+        _ = call_response_no_parts.content

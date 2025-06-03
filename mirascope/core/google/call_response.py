@@ -13,6 +13,7 @@ from google.genai.types import (
     FunctionResponseDict,
     GenerateContentResponse,
     GenerateContentResponseUsageMetadata,
+    Part,
     PartDict,
     # Import manually SchemaDict to avoid Pydantic error
     SchemaDict,  # noqa: F401
@@ -72,11 +73,33 @@ class GoogleCallResponse(
 
     _provider = "google"
 
+    def _parts(self) -> list[Part]:
+        """Returns the parts of the 0th candidate."""
+        candidates = self.response.candidates
+        if not candidates:
+            raise ValueError("Google Response has no candidates")
+        content = candidates[0].content
+        if not content or not content.parts:
+            raise ValueError("Google Response Candidate has no content or parts")
+        return content.parts
+
     @computed_field
     @property
     def content(self) -> str:
         """Returns the contained string content for the 0th choice."""
-        return self.response.candidates[0].content.parts[0].text  # pyright: ignore [reportOptionalSubscript, reportReturnType, reportOptionalMemberAccess, reportOptionalIterable]
+        for part in self._parts():
+            if not part.thought and part.text:
+                return part.text
+        return ""
+
+    @computed_field
+    @property
+    def thinking(self) -> str | None:
+        """Returns the thought content from the first thought part"""
+        for part in self._parts():
+            if part.thought and part.text:
+                return part.text
+        return None
 
     @computed_field
     @property
