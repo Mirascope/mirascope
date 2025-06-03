@@ -3,7 +3,8 @@
 usage docs: learn/streams.md
 """
 
-from typing import cast
+from collections.abc import AsyncGenerator, Generator
+from typing import Any, cast
 
 from google.genai.types import (
     Candidate,
@@ -15,10 +16,13 @@ from google.genai.types import (
     FunctionCall,
     GenerateContentResponse,
     GenerateContentResponseUsageMetadata,
+    Part,
     PartDict,
     Tool,
 )
 
+from ..base.call_kwargs import BaseCallKwargs
+from ..base.metadata import Metadata
 from ..base.stream import BaseStream
 from ..base.types import CostMetadata
 from .call_params import GoogleCallParams
@@ -64,6 +68,43 @@ class GoogleStream(
 
     _provider = "google"
 
+    def __init__(
+        self,
+        *,
+        stream: Generator[tuple[GoogleCallResponseChunk, GoogleTool | None], None, None]
+        | AsyncGenerator[tuple[GoogleCallResponseChunk, GoogleTool | None], None],
+        metadata: Metadata,
+        tool_types: list[type[GoogleTool]] | None,
+        call_response_type: type[GoogleCallResponse],
+        model: str,
+        prompt_template: str | None,
+        fn_args: dict[str, Any],
+        dynamic_config: GoogleDynamicConfig,
+        messages: list[ContentListUnion | ContentListUnionDict],
+        call_params: GoogleCallParams,
+        call_kwargs: BaseCallKwargs[Tool],
+    ) -> None:
+        """Initialize GoogleStream with thinking content tracking."""
+        super().__init__(
+            stream=stream,
+            metadata=metadata,
+            tool_types=tool_types,
+            call_response_type=call_response_type,
+            model=model,
+            prompt_template=prompt_template,
+            fn_args=fn_args,
+            dynamic_config=dynamic_config,
+            messages=messages,
+            call_params=call_params,
+            call_kwargs=call_kwargs,
+        )
+        self.thinking = ""
+
+    def _update_properties(self, chunk: GoogleCallResponseChunk) -> None:
+        """Updates the properties of the stream, including thinking content."""
+        super()._update_properties(chunk)
+        self.thinking += chunk.thinking
+
     def _construct_message_param(
         self, tool_calls: list[FunctionCall] | None = None, content: str | None = None
     ) -> ContentDict:
@@ -103,6 +144,19 @@ class GoogleStream(
         total_token_count = int(candidates_token_count or 0) + int(
             prompt_token_count or 0
         )
+
+        parts: list[Part] = []
+
+        # Add thinking part first if we have thinking content
+        if hasattr(self, "thinking") and self.thinking:
+            parts.append(Part(text=self.thinking, thought=True))
+
+        # Add the regular content parts only if they have actual content
+        regular_parts = self.message_param["parts"]  # pyright: ignore [reportTypedDictNotRequiredAccess, reportArgumentType]
+        if regular_parts and any(part.get("text") for part in regular_parts):  # pyright: ignore [reportAttributeAccessIssue]
+            # Convert PartDict to Part objects
+            parts.extend([Part(**part) for part in regular_parts])  # pyright: ignore [reportArgumentType]
+
         response = GenerateContentResponse(
             candidates=[
                 Candidate(
@@ -111,7 +165,7 @@ class GoogleStream(
                     else FinishReason.STOP,
                     content=Content(
                         role=self.message_param["role"],  # pyright: ignore [reportTypedDictNotRequiredAccess]
-                        parts=self.message_param["parts"],  # pyright: ignore [reportTypedDictNotRequiredAccess, reportArgumentType]
+                        parts=parts,
                     ),
                 )
             ],

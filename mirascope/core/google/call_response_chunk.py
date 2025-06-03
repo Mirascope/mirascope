@@ -52,10 +52,28 @@ class GoogleCallResponseChunk(
             not (candidates := self.chunk.candidates)
             or not (content := candidates[0].content)
             or not (parts := content.parts)
-            or not (text := parts[0].text)
         ):
             return ""
-        return text
+
+        for part in parts:
+            if not part.thought and part.text:
+                return part.text
+        return ""
+
+    @property
+    def thinking(self) -> str:
+        """Returns the thinking content from thinking parts."""
+        if (
+            not (candidates := self.chunk.candidates)
+            or not (content := candidates[0].content)
+            or not (parts := content.parts)
+        ):
+            return ""
+
+        for part in parts:
+            if part.thought and part.text:
+                return part.text
+        return ""
 
     @property
     def finish_reasons(self) -> list[GoogleFinishReason]:
