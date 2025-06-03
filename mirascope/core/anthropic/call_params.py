@@ -11,6 +11,7 @@ from httpx import Timeout
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
+from ._thinking import ThinkingConfigParam
 
 
 class AnthropicCallParams(BaseCallParams):
@@ -21,6 +22,7 @@ class AnthropicCallParams(BaseCallParams):
     Attributes:
         max_tokens: ...
         tool_choice: ...
+        thinking: ...
         metadata: ...
         stop_sequences: ...
         temperature: ...
@@ -32,6 +34,7 @@ class AnthropicCallParams(BaseCallParams):
     extra_headers: NotRequired[dict[str, str] | None]
     max_tokens: int
     tool_choice: NotRequired[ToolChoice | None]
+    thinking: NotRequired[ThinkingConfigParam | None]
     metadata: NotRequired[Metadata | None]
     stop_sequences: NotRequired[list[str] | None]
     system: NotRequired[str | Iterable[TextBlockParam] | None]

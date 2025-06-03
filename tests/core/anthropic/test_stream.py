@@ -27,6 +27,11 @@ except ImportError:
 
 from anthropic.types.raw_message_delta_event import Delta
 
+from mirascope.core.anthropic._thinking import (
+    SignatureDelta,
+    ThinkingBlock,
+    ThinkingDelta,
+)
 from mirascope.core.anthropic.call_params import AnthropicCallParams
 from mirascope.core.anthropic.call_response import AnthropicCallResponse
 from mirascope.core.anthropic.call_response_chunk import AnthropicCallResponseChunk
@@ -352,5 +357,87 @@ def test_construct_call_response_string_content() -> None:
     constructed_call_response = stream.construct_call_response()
     assert constructed_call_response.message_param == {
         "role": "assistant",
-        "content": [{"text": "content", "type": "text"}],
+        "content": [{"text": "content", "type": "text", "citations": None}],
     }
+
+
+def test_construct_call_response_with_thinking() -> None:
+    """Tests the `construct_call_response` method with thinking content."""
+    chunks = [
+        RawMessageStartEvent(
+            message=Message(
+                id="msg_123",
+                content=[],
+                model="claude-3-7-sonnet-20250101",
+                role="assistant",
+                stop_reason=None,
+                stop_sequence=None,
+                type="message",
+                usage=Usage(input_tokens=10, output_tokens=20),
+            ),
+            type="message_start",
+        ),
+        RawContentBlockDeltaEvent(
+            index=0,
+            delta=ThinkingDelta(thinking="Let me think...", type="thinking_delta"),  # pyright: ignore [reportArgumentType]
+            type="content_block_delta",
+        ),
+        RawContentBlockDeltaEvent(
+            index=0,
+            delta=ThinkingDelta(thinking=" about this problem.", type="thinking_delta"),  # pyright: ignore [reportArgumentType]
+            type="content_block_delta",
+        ),
+        RawContentBlockDeltaEvent(
+            index=0,
+            delta=SignatureDelta(  # pyright: ignore [reportArgumentType]
+                signature="ErUBCkYIBBgCIkDg...", type="signature_delta"
+            ),
+            type="content_block_delta",
+        ),
+        RawContentBlockDeltaEvent(
+            index=1,
+            delta=TextDelta(text="The answer is 42.", type="text_delta"),
+            type="content_block_delta",
+        ),
+        RawMessageStopEvent(type="message_stop"),
+    ]
+
+    stream = AnthropicStream(
+        stream=((AnthropicCallResponseChunk(chunk=chunk), None) for chunk in chunks),
+        metadata={},
+        tool_types=None,
+        call_response_type=AnthropicCallResponse,
+        model="claude-3-7-sonnet-20250101",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[{"role": "user", "content": "What is the answer?"}],
+        call_params=AnthropicCallParams(max_tokens=1000),
+        call_kwargs={},
+    )
+
+    # Consume the stream to accumulate thinking and content
+    for _ in stream:
+        pass
+
+    # Construct the call response
+    constructed_call_response = stream.construct_call_response()
+
+    # Verify the response has both thinking and text blocks
+    assert len(constructed_call_response.response.content) == 2
+
+    # First block should be thinking
+    thinking_block = constructed_call_response.response.content[0]
+    assert isinstance(thinking_block, ThinkingBlock)
+    assert thinking_block.thinking == "Let me think... about this problem."
+    assert thinking_block.signature == "ErUBCkYIBBgCIkDg..."
+
+    # Second block should be text
+    text_block = constructed_call_response.response.content[1]
+    assert isinstance(text_block, TextBlock)
+    assert text_block.text == "The answer is 42."
+
+    # Verify the response properties work correctly
+    assert constructed_call_response.thinking == "Let me think... about this problem."
+    assert constructed_call_response.content == "The answer is 42."
+    assert constructed_call_response.signature == "ErUBCkYIBBgCIkDg..."

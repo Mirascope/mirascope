@@ -62,6 +62,26 @@ class AnthropicCallResponseChunk(
         )
 
     @property
+    def thinking(self) -> str:
+        """Returns the thinking content from thinking deltas."""
+        return (
+            self.chunk.delta.thinking
+            if self.chunk.type == "content_block_delta"
+            and self.chunk.delta.type == "thinking_delta"
+            else ""
+        )
+
+    @property
+    def signature(self) -> str:
+        """Returns the signature content from signature deltas."""
+        return (
+            self.chunk.delta.signature
+            if self.chunk.type == "content_block_delta"
+            and self.chunk.delta.type == "signature_delta"
+            else ""
+        )
+
+    @property
     def finish_reasons(self) -> list[FinishReason] | None:
         """Returns the finish reason of the response."""
         if (
