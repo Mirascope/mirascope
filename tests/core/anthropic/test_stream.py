@@ -12,12 +12,9 @@ from anthropic.types import (
     RawMessageStopEvent,
     TextBlock,
     TextDelta,
-    ThinkingBlock,
-    ThinkingDelta,
     ToolUseBlock,
     Usage,
 )
-from anthropic.types.signature_delta import SignatureDelta
 
 try:
     from anthropic.types import (
@@ -30,6 +27,11 @@ except ImportError:
 
 from anthropic.types.raw_message_delta_event import Delta
 
+from mirascope.core.anthropic._thinking import (
+    SignatureDelta,
+    ThinkingBlock,
+    ThinkingDelta,
+)
 from mirascope.core.anthropic.call_params import AnthropicCallParams
 from mirascope.core.anthropic.call_response import AnthropicCallResponse
 from mirascope.core.anthropic.call_response_chunk import AnthropicCallResponseChunk
@@ -377,17 +379,17 @@ def test_construct_call_response_with_thinking() -> None:
         ),
         RawContentBlockDeltaEvent(
             index=0,
-            delta=ThinkingDelta(thinking="Let me think...", type="thinking_delta"),
+            delta=ThinkingDelta(thinking="Let me think...", type="thinking_delta"),  # pyright: ignore [reportArgumentType]
             type="content_block_delta",
         ),
         RawContentBlockDeltaEvent(
             index=0,
-            delta=ThinkingDelta(thinking=" about this problem.", type="thinking_delta"),
+            delta=ThinkingDelta(thinking=" about this problem.", type="thinking_delta"),  # pyright: ignore [reportArgumentType]
             type="content_block_delta",
         ),
         RawContentBlockDeltaEvent(
             index=0,
-            delta=SignatureDelta(
+            delta=SignatureDelta(  # pyright: ignore [reportArgumentType]
                 signature="ErUBCkYIBBgCIkDg...", type="signature_delta"
             ),
             type="content_block_delta",

@@ -4,13 +4,13 @@ from anthropic.types import (
     Message,
     MessageParam,
     TextBlock,
-    ThinkingBlock,
     ToolResultBlockParam,
     ToolUseBlock,
     Usage,
 )
 
 from mirascope.core import BaseMessageParam
+from mirascope.core.anthropic._thinking import ThinkingBlock
 from mirascope.core.anthropic.call_params import AnthropicCallParams
 from mirascope.core.anthropic.call_response import AnthropicCallResponse
 from mirascope.core.anthropic.tool import AnthropicTool
@@ -145,7 +145,7 @@ def test_anthropic_call_response_with_thinking() -> None:
 
     completion = Message(
         id="msg_123",
-        content=[thinking_block, text_block],
+        content=[thinking_block, text_block],  # pyright: ignore [reportArgumentType]
         model="claude-3-7-sonnet-20250101",
         role="assistant",
         stop_reason="end_turn",
@@ -194,7 +194,7 @@ def test_anthropic_call_response_thinking_only() -> None:
 
     completion = Message(
         id="msg_456",
-        content=[thinking_block],
+        content=[thinking_block],  # pyright: ignore [reportArgumentType]
         model="claude-3-7-sonnet-20250101",
         role="assistant",
         stop_reason="end_turn",
@@ -282,7 +282,7 @@ def test_anthropic_call_response_multiple_thinking_blocks() -> None:
 
     completion = Message(
         id="msg_multi",
-        content=[thinking_block1, thinking_block2, text_block],
+        content=[thinking_block1, thinking_block2, text_block],  # pyright: ignore [reportArgumentType]
         model="claude-3-7-sonnet-20250101",
         role="assistant",
         stop_reason="end_turn",

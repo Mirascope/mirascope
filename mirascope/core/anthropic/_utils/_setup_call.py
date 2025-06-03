@@ -19,6 +19,7 @@ from ...base import BaseMessageParam, BaseTool, _utils
 from ...base._utils import AsyncCreateFn, CreateFn
 from ...base.stream_config import StreamConfig
 from .._call_kwargs import AnthropicCallKwargs
+from .._thinking import HAS_THINKING_SUPPORT
 from ..call_params import AnthropicCallParams
 from ..dynamic_config import AnthropicDynamicConfig, AsyncAnthropicDynamicConfig
 from ..tool import AnthropicTool
@@ -95,6 +96,13 @@ def setup_call(
     list[type[AnthropicTool]] | None,
     AnthropicCallKwargs,
 ]:
+    # Validate thinking parameter before processing
+    if call_params.get("thinking") is not None and not HAS_THINKING_SUPPORT:
+        raise ValueError(  # pragma: no cover
+            "Thinking parameter requires anthropic>=0.47.0. "
+            "Please upgrade: pip install 'anthropic>=0.47.0'"
+        )
+
     prompt_template, messages, tool_types, base_call_kwargs = _utils.setup_call(
         fn,
         fn_args,

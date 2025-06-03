@@ -7,11 +7,11 @@ from collections.abc import Iterable
 from anthropic.types import TextBlockParam
 from anthropic.types.completion_create_params import Metadata
 from anthropic.types.message_create_params import ToolChoice
-from anthropic.types.thinking_config_param import ThinkingConfigParam
 from httpx import Timeout
 from typing_extensions import NotRequired
 
 from ..base import BaseCallParams
+from ._thinking import ThinkingConfigParam
 
 
 class AnthropicCallParams(BaseCallParams):

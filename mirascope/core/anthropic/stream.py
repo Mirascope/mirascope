@@ -10,7 +10,6 @@ from anthropic.types import (
     Message,
     MessageParam,
     TextBlock,
-    ThinkingBlock,
     ToolParam,
     ToolUseBlock,
     Usage,
@@ -24,6 +23,7 @@ from ..base.call_kwargs import BaseCallKwargs
 from ..base.metadata import Metadata
 from ..base.stream import BaseStream
 from ..base.types import CostMetadata
+from ._thinking import ThinkingBlock
 from .call_params import AnthropicCallParams
 from .call_response import AnthropicCallResponse
 from .call_response_chunk import AnthropicCallResponseChunk
@@ -152,7 +152,7 @@ class AnthropicStream(
         # Add thinking block first if we have thinking content
         if hasattr(self, "thinking") and self.thinking:
             content_blocks.append(
-                ThinkingBlock(
+                ThinkingBlock(  # pyright: ignore [reportArgumentType]
                     type="thinking",
                     thinking=self.thinking,
                     signature=getattr(self, "signature", ""),
