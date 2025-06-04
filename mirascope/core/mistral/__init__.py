@@ -12,6 +12,8 @@ from mistralai.models import (
 from ..base import BaseMessageParam
 from ._call import mistral_call
 from ._call import mistral_call as call
+from ._ocr import ocr
+from .ocr_response import OCRResponse
 from .call_params import MistralCallParams
 from .call_response import MistralCallResponse
 from .call_response_chunk import MistralCallResponseChunk
@@ -31,6 +33,8 @@ __all__ = [
     "MistralMessageParam",
     "MistralStream",
     "MistralTool",
+    "OCRResponse",  # Added OCRResponse
     "call",
     "mistral_call",
+    "ocr",  # Added ocr
 ]
