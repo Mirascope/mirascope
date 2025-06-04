@@ -304,15 +304,14 @@ def test_google_call_response_multiple_thinking_parts() -> None:
     assert call_response.thinking == "First thinking step."
 
 
-def test_google_call_response_no_candidates() -> None:
-    """Tests that ValueError is raised when response has no candidates."""
-    import pytest
+def test_empty_call_responses() -> None:
+    """Test behavior on a call response with no candidates."""
 
-    response = GenerateContentResponse(candidates=[])
+    response_no_candidates = GenerateContentResponse(candidates=[])
 
-    call_response = GoogleCallResponse(
+    call_response_no_candidates = GoogleCallResponse(
         metadata={},
-        response=response,
+        response=response_no_candidates,
         tool_types=None,
         prompt_template="",
         fn_args={},
@@ -325,16 +324,10 @@ def test_google_call_response_no_candidates() -> None:
         end_time=0,
     )
 
-    with pytest.raises(ValueError, match="Google Response has no candidates"):
-        _ = call_response.content
-
-
-def test_google_call_response_no_content_or_parts() -> None:
-    """Tests that ValueError is raised when candidate has no content or parts."""
-    import pytest
+    assert call_response_no_candidates.content == ""
 
     # Test with no content
-    response = GenerateContentResponse(
+    response_no_content = GenerateContentResponse(
         candidates=[
             Candidate(
                 finish_reason=GoogleFinishReason.STOP,
@@ -343,9 +336,9 @@ def test_google_call_response_no_content_or_parts() -> None:
         ]
     )
 
-    call_response = GoogleCallResponse(
+    call_response_no_content = GoogleCallResponse(
         metadata={},
-        response=response,
+        response=response_no_content,
         tool_types=None,
         prompt_template="",
         fn_args={},
@@ -358,10 +351,7 @@ def test_google_call_response_no_content_or_parts() -> None:
         end_time=0,
     )
 
-    with pytest.raises(
-        ValueError, match="Google Response Candidate has no content or parts"
-    ):
-        _ = call_response.content
+    assert call_response_no_content.content == ""
 
     # Test with content but no parts
     response_no_parts = GenerateContentResponse(
@@ -387,8 +377,4 @@ def test_google_call_response_no_content_or_parts() -> None:
         start_time=0,
         end_time=0,
     )
-
-    with pytest.raises(
-        ValueError, match="Google Response Candidate has no content or parts"
-    ):
-        _ = call_response_no_parts.content
+    assert call_response_no_parts.content == ""

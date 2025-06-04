@@ -75,13 +75,13 @@ class GoogleCallResponse(
 
     def _parts(self) -> list[Part]:
         """Returns the parts of the 0th candidate."""
-        candidates = self.response.candidates
-        if not candidates:
-            raise ValueError("Google Response has no candidates")
-        content = candidates[0].content
-        if not content or not content.parts:
-            raise ValueError("Google Response Candidate has no content or parts")
-        return content.parts
+        if (
+            not (candidates := self.response.candidates)
+            or not (content := candidates[0].content)
+            or not (parts := content.parts)
+        ):
+            return []
+        return parts
 
     @computed_field
     @property

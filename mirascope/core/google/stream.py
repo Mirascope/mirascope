@@ -16,7 +16,6 @@ from google.genai.types import (
     FunctionCall,
     GenerateContentResponse,
     GenerateContentResponseUsageMetadata,
-    Part,
     PartDict,
     Tool,
 )
@@ -145,17 +144,20 @@ class GoogleStream(
             prompt_token_count or 0
         )
 
-        parts: list[Part] = []
+        parts: list[PartDict] = []
 
         # Add thinking part first if we have thinking content
-        if hasattr(self, "thinking") and self.thinking:
-            parts.append(Part(text=self.thinking, thought=True))
+        if self.thinking:
+            parts.append({"text": self.thinking, "thought": True})
 
-        # Add the regular content parts only if they have actual content
-        regular_parts = self.message_param["parts"]  # pyright: ignore [reportTypedDictNotRequiredAccess, reportArgumentType]
-        if regular_parts and any(part.get("text") for part in regular_parts):  # pyright: ignore [reportAttributeAccessIssue]
-            # Convert PartDict to Part objects
-            parts.extend([Part(**part) for part in regular_parts])  # pyright: ignore [reportArgumentType]
+        for pd in self.message_param.get("parts") or []:
+            if pd.get("text") == "":
+                # These parts are generated based only on chunk content;
+                # thinking parts have empty content and are reconstructed separately.
+                # Skip this so the thinking parts aren't duplicated.
+                continue
+            else:
+                parts.append(pd)
 
         response = GenerateContentResponse(
             candidates=[
@@ -165,7 +167,7 @@ class GoogleStream(
                     else FinishReason.STOP,
                     content=Content(
                         role=self.message_param["role"],  # pyright: ignore [reportTypedDictNotRequiredAccess]
-                        parts=parts,
+                        parts=parts,  # pyright: ignore [reportArgumentType]
                     ),
                 )
             ],
