@@ -96,8 +96,10 @@ def setup_call(
     list[type[AnthropicTool]] | None,
     AnthropicCallKwargs,
 ]:
+    thinking_enabled = call_params.get("thinking") is not None
+
     # Validate thinking parameter before processing
-    if call_params.get("thinking") is not None and not HAS_THINKING_SUPPORT:
+    if thinking_enabled and not HAS_THINKING_SUPPORT:
         raise ValueError(  # pragma: no cover
             "Thinking parameter requires anthropic>=0.47.0. "
             "Please upgrade: pip install 'anthropic>=0.47.0'"
@@ -119,7 +121,9 @@ def setup_call(
     if messages[0]["role"] == "system":
         call_kwargs["system"] = messages.pop(0)["content"]  # pyright: ignore [reportGeneralTypeIssues]
 
-    if json_mode:
+    use_json_mode = json_mode or (response_model and thinking_enabled)
+
+    if use_json_mode:
         json_mode_content = _utils.json_mode_content(response_model)
         if isinstance(messages[-1]["content"], str):
             messages[-1]["content"] += json_mode_content

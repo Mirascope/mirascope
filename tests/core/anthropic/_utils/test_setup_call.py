@@ -179,3 +179,45 @@ def test_setup_call_extract(
         "type": "tool",
         "name": tool_types[0]._name(),
     }
+
+
+@patch(
+    "mirascope.core.anthropic._utils._setup_call.convert_message_params",
+    new_callable=MagicMock,
+)
+@patch("mirascope.core.anthropic._utils._setup_call._utils", new_callable=MagicMock)
+def test_setup_call_thinking_with_response_model(
+    mock_utils: MagicMock,
+    mock_convert_message_params: MagicMock,
+    mock_base_setup_call: MagicMock,
+) -> None:
+    """Tests that response_model with thinking automatically uses JSON mode."""
+    mock_utils.setup_call = mock_base_setup_call
+    mock_utils.json_mode_content = MagicMock(return_value="\n\njson_instructions")
+    mock_base_setup_call.return_value[1] = [{"role": "user", "content": "test message"}]
+    mock_base_setup_call.return_value[2] = [
+        MagicMock(spec=AnthropicTool, __name__="tool")
+    ]
+    mock_base_setup_call.return_value[3] = {"max_tokens": 1000}
+    mock_convert_message_params.side_effect = lambda x: x
+
+    _, _, messages, tool_types, call_kwargs = setup_call(
+        model="claude-3-5-sonnet-20240620",
+        client=None,
+        fn=MagicMock(),
+        fn_args={},
+        dynamic_config=None,
+        tools=None,
+        json_mode=False,
+        call_params={
+            "max_tokens": 1000,
+            "thinking": {"type": "enabled", "budget_tokens": 1000},
+        },
+        response_model=BaseModel,
+        stream=False,
+    )
+
+    # Should automatically use JSON mode instead of forced tool calling
+    assert "tool_choice" not in call_kwargs
+    assert messages[-1]["content"] == "test message\n\njson_instructions"  # type: ignore
+    mock_utils.json_mode_content.assert_called_once_with(BaseModel)
