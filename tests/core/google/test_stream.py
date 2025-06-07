@@ -145,3 +145,128 @@ def test_construct_call_response() -> None:
     )
     constructed_call_response = stream.construct_call_response()
     assert constructed_call_response.response.__eq__(call_response.response)
+
+
+def test_construct_call_response_with_thinking() -> None:
+    """Tests the `construct_call_response` method with thinking content."""
+    chunks = [
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=GoogleFinishReason.STOP,
+                    content=Content(
+                        parts=[Part(text="Let me analyze this problem.", thought=True)],
+                        role="model",
+                    ),
+                )
+            ]
+        ),
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=GoogleFinishReason.STOP,
+                    content=Content(
+                        parts=[Part(text="The answer is 42.")], role="model"
+                    ),
+                )
+            ]
+        ),
+    ]
+
+    stream = GoogleStream(
+        stream=((GoogleCallResponseChunk(chunk=chunk), None) for chunk in chunks),
+        metadata={},
+        tool_types=None,
+        call_response_type=GoogleCallResponse,
+        model="google-1.5-flash",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[{"role": "user", "parts": [{"text": "What is the answer?"}]}],
+        call_params={},
+        call_kwargs={},
+    )
+
+    # Consume the stream to accumulate thinking and content
+    for _ in stream:
+        pass
+
+    # Construct the call response
+    constructed_call_response = stream.construct_call_response()
+
+    # Verify the response has both thinking and text parts
+    assert constructed_call_response.response.candidates is not None
+    candidate = constructed_call_response.response.candidates[0]
+    assert candidate.content is not None
+    assert candidate.content.parts is not None
+    assert len(candidate.content.parts) == 2
+
+    # First part should be thinking
+    thinking_part = candidate.content.parts[0]
+    assert thinking_part.thought is True
+    assert thinking_part.text == "Let me analyze this problem."
+
+    # Second part should be regular text
+    text_part = candidate.content.parts[1]
+    assert text_part.thought is not True  # Could be False or None
+    assert text_part.text == "The answer is 42."
+
+    # Verify the response properties work correctly
+    assert constructed_call_response.thinking == "Let me analyze this problem."
+    assert constructed_call_response.content == "The answer is 42."
+
+
+def test_construct_call_response_thinking_only() -> None:
+    """Tests the `construct_call_response` method with only thinking content."""
+    chunks = [
+        GenerateContentResponse(
+            candidates=[
+                Candidate(
+                    finish_reason=GoogleFinishReason.STOP,
+                    content=Content(
+                        parts=[
+                            Part(text="I need to think about this more.", thought=True)
+                        ],
+                        role="model",
+                    ),
+                )
+            ]
+        ),
+    ]
+
+    stream = GoogleStream(
+        stream=((GoogleCallResponseChunk(chunk=chunk), None) for chunk in chunks),
+        metadata={},
+        tool_types=None,
+        call_response_type=GoogleCallResponse,
+        model="google-1.5-flash",
+        prompt_template="",
+        fn_args={},
+        dynamic_config=None,
+        messages=[{"role": "user", "parts": [{"text": "Help me think."}]}],
+        call_params={},
+        call_kwargs={},
+    )
+
+    # Consume the stream
+    for _ in stream:
+        pass
+
+    # Construct the call response
+    constructed_call_response = stream.construct_call_response()
+
+    # Verify the response has only the thinking part
+    assert constructed_call_response.response.candidates is not None
+    candidate = constructed_call_response.response.candidates[0]
+    assert candidate.content is not None
+    assert candidate.content.parts is not None
+    assert len(candidate.content.parts) == 1
+
+    # Should be thinking part only
+    thinking_part = candidate.content.parts[0]
+    assert thinking_part.thought is True
+    assert thinking_part.text == "I need to think about this more."
+
+    # Verify the response properties
+    assert constructed_call_response.thinking == "I need to think about this more."
+    assert constructed_call_response.content == ""  # No regular content
