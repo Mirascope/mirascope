@@ -91,7 +91,7 @@ xai = ["openai>=1.6.0,<2"]
 dev-dependencies = [
     "ruff>=0.9.7",
     "pytest>=8.3.2",
-    "pyright>=1.1.396",
+    "pyright>=1.1.401",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
     "pre-commit>=3.8.0",

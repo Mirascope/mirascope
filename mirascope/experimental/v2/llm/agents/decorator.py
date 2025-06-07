@@ -5,11 +5,10 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, TypeAlias, overload
 
-from typing_extensions import TypeVar, Unpack
+from typing_extensions import TypeVar
 
 from ..content import Content
 from ..context import Context
-from ..models import Client, Params
 from ..tools import ContextToolDef, ToolDef
 from ..types import Dataclass
 from .agent import Agent
@@ -19,14 +18,8 @@ from .structured_agent import StructuredAgent
 
 if TYPE_CHECKING:
     from ..models import (
-        ANTHROPIC_REGISTERED_LLMS,
-        GOOGLE_REGISTERED_LLMS,
-        OPENAI_REGISTERED_LLMS,
         REGISTERED_LLMS,
     )
-    from ..models.anthropic import AnthropicClient, AnthropicParams
-    from ..models.google import GoogleClient, GoogleParams
-    from ..models.openai import OpenAIClient, OpenAIParams
 
 NoneType = type(None)
 P = ParamSpec("P")
@@ -125,87 +118,101 @@ class StructuredAgentDecorator(Protocol[DepsT, T]):
         ...
 
 
+# @overload
+# def agent(
+#     model: ANTHROPIC_REGISTERED_LLMS,
+#     *,
+#     deps_type: type[DepsT] = NoneType,
+#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+#     response_format: None = None,
+#     client: AnthropicClient | None = None,
+#     **params: Unpack[AnthropicParams],
+# ) -> AgentDecorator[DepsT]:
+#     """Overload for Anthropic agents."""
+#     ...
+
+
+# @overload
+# def agent(
+#     model: ANTHROPIC_REGISTERED_LLMS,
+#     *,
+#     deps_type: type[DepsT] = NoneType,
+#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+#     response_format: type[T],
+#     client: AnthropicClient | None = None,
+#     **params: Unpack[AnthropicParams],
+# ) -> StructuredAgentDecorator[DepsT, T]:
+#     """Overload for Anthropic agents with response format."""
+#     ...
+
+
+# @overload
+# def agent(
+#     model: GOOGLE_REGISTERED_LLMS,
+#     *,
+#     deps_type: type[DepsT] = NoneType,
+#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+#     response_format: None = None,
+#     client: GoogleClient | None = None,
+#     **params: Unpack[GoogleParams],
+# ) -> AgentDecorator[DepsT]:
+#     """Overload for Google agents."""
+#     ...
+
+
+# @overload
+# def agent(
+#     model: GOOGLE_REGISTERED_LLMS,
+#     *,
+#     deps_type: type[DepsT] = NoneType,
+#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+#     response_format: type[T],
+#     client: GoogleClient | None = None,
+#     **params: Unpack[GoogleParams],
+# ) -> StructuredAgentDecorator[DepsT, T]:
+#     """Overload for Google agents with response format."""
+#     ...
+
+
+# @overload
+# def agent(
+#     model: OPENAI_REGISTERED_LLMS,
+#     *,
+#     deps_type: type[DepsT] = NoneType,
+#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+#     response_format: None = None,
+#     client: OpenAIClient | None = None,
+#     **params: Unpack[OpenAIParams],
+# ) -> AgentDecorator[DepsT]:
+#     """Overload for OpenAI agents."""
+#     ...
+
+
+# @overload
+# def agent(
+#     model: OPENAI_REGISTERED_LLMS,
+#     *,
+#     deps_type: type[DepsT] = NoneType,
+#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+#     response_format: type[T],
+#     client: OpenAIClient | None = None,
+#     **params: Unpack[OpenAIParams],
+# ) -> StructuredAgentDecorator[DepsT, T]:
+#     """Overload for OpenAI agents with response format."""
+#     ...
+
+
 @overload
 def agent(
-    model: ANTHROPIC_REGISTERED_LLMS,
+    model: REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: None = None,
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
+    # client: Client | None = None,
+    # **params: Unpack[Params],
 ) -> AgentDecorator[DepsT]:
-    """Overload for Anthropic agents."""
-    ...
-
-
-@overload
-def agent(
-    model: ANTHROPIC_REGISTERED_LLMS,
-    *,
-    deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T],
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
-) -> StructuredAgentDecorator[DepsT, T]:
-    """Overload for Anthropic agents with response format."""
-    ...
-
-
-@overload
-def agent(
-    model: GOOGLE_REGISTERED_LLMS,
-    *,
-    deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: None = None,
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
-) -> AgentDecorator[DepsT]:
-    """Overload for Google agents."""
-    ...
-
-
-@overload
-def agent(
-    model: GOOGLE_REGISTERED_LLMS,
-    *,
-    deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T],
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
-) -> StructuredAgentDecorator[DepsT, T]:
-    """Overload for Google agents with response format."""
-    ...
-
-
-@overload
-def agent(
-    model: OPENAI_REGISTERED_LLMS,
-    *,
-    deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: None = None,
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
-) -> AgentDecorator[DepsT]:
-    """Overload for OpenAI agents."""
-    ...
-
-
-@overload
-def agent(
-    model: OPENAI_REGISTERED_LLMS,
-    *,
-    deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T],
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
-) -> StructuredAgentDecorator[DepsT, T]:
-    """Overload for OpenAI agents with response format."""
+    """Overload for all registered models so that autocomplete works."""
     ...
 
 
@@ -215,10 +222,10 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T] | None = None,
-    client: Client | None = None,
-    **params: Unpack[Params],
-) -> AgentDecorator[DepsT] | StructuredAgentDecorator[DepsT, T]:
+    response_format: type[T],
+    # client: Client | None = None,
+    # **params: Unpack[Params],
+) -> StructuredAgentDecorator[DepsT, T]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -229,8 +236,8 @@ def agent(
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: type[T] | None = None,
-    client: Client | None = None,
-    **params: Unpack[Params],
+    # client: Client | None = None,
+    # **params: Unpack[Params],
 ) -> AgentDecorator[DepsT] | StructuredAgentDecorator[DepsT, T]:
     """Decorator for creating an agent or structured agent.
 
