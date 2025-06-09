@@ -1,0 +1,10 @@
+{
+  "name": "mirascope",
+  "private": true,
+  "scripts": {
+    "docs:dev": "CONTENT_DIR=$(pwd)/mirascope/experimental/v2 && cd node_modules/@mirascope/docs-viewer && DOCS_VIEWER_DIR=. bun scripts/preprocess-content.ts --content-dir $CONTENT_DIR && bun scripts/start.ts --content-dir $CONTENT_DIR"
+  },
+  "devDependencies": {
+    "@mirascope/docs-viewer": "0.1.6"
+  }
+}

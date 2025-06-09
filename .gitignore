@@ -175,3 +175,7 @@ cython_debug/
 
 #sqlite
 database.db
+
+# docs-viewer stuff
+node_modules
+public
