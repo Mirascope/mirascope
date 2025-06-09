@@ -2,7 +2,12 @@
   "name": "mirascope",
   "private": true,
   "scripts": {
-    "docs:dev": "CONTENT_DIR=$(pwd)/mirascope/experimental/v2 && cd node_modules/@mirascope/docs-viewer && DOCS_VIEWER_DIR=. bun scripts/preprocess-content.ts --content-dir $CONTENT_DIR && bun scripts/start.ts --content-dir $CONTENT_DIR"
+    "docs:clean": "rm -rf .docs-build",
+    "docs:copy": "mkdir -p .docs-build && cp -r mirascope/experimental/v2/docs .docs-build/ && cp -r mirascope/experimental/v2/examples .docs-build/",
+    "docs:preprocess": "CONTENT_DIR=$(pwd)/.docs-build && cd node_modules/@mirascope/docs-viewer && DOCS_VIEWER_DIR=. bun scripts/preprocess-content.ts --content-dir $CONTENT_DIR",
+    "docs:serve": "CONTENT_DIR=$(pwd)/.docs-build && cd node_modules/@mirascope/docs-viewer && DOCS_VIEWER_DIR=. bun scripts/start.ts --content-dir $CONTENT_DIR",
+    "docs:build": "bun docs:clean && bun docs:copy && bun docs:preprocess",
+    "docs:dev": "bun docs:build && bun docs:serve"
   },
   "devDependencies": {
     "@mirascope/docs-viewer": "0.1.6"
