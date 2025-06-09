@@ -18,18 +18,54 @@ class ModelUsage(BaseModel):
     unit: str
 
 
+def _get_tool_calls(result: BaseCallResponse) -> list[dict[str, Any]] | None:
+    if tools := result.tools:
+        tool_calls = [
+            {
+                "function": {
+                    "arguments": tool.args,
+                    "name": tool._name(),
+                }
+            }
+            for tool in tools
+        ]
+        return tool_calls
+    return None
+
+
 def _get_call_response_observation(
     result: BaseCallResponse, fn: Callable
 ) -> dict[str, Any]:
     metadata = get_metadata(fn, {})
     tags = metadata.get("tags", [])
+    output = None
+    if content := result.content:
+        output = content
+    if tools := result.tools:
+        tool_calls = [
+            {
+                "function": {
+                    "arguments": tool.args,
+                    "name": tool._name(),
+                }
+            }
+            for tool in tools
+        ]
+        if output is not None:
+            output = {
+                'content': output,
+                'tools' : tool_calls
+            }
+        else:
+            output = tool_calls
+
     return {
         "name": f"{fn.__name__} with {result.model}",
         "input": result.messages,
         "metadata": result.response,
         "tags": tags,
         "model": result.model,
-        "output": result.message_param.get("content", None),
+        "output": output,
     }
 
 
