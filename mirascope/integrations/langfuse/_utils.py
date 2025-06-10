@@ -29,7 +29,7 @@ def _get_call_response_observation(
         "metadata": result.response,
         "tags": tags,
         "model": result.model,
-        "output": result.message_param.get("content", None),
+        "output": getattr(result.message_param, "content", None),
     }
 
 
