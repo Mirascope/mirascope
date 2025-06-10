@@ -5,8 +5,8 @@ import path from 'path';
 import type { SectionSpec, DocSpec, FullDocsSpec } from '../node_modules/@mirascope/docs-viewer/src/lib/content/spec';
 
 function flattenApiMeta(): void {
-  const apiMetaPath = path.join(process.cwd(), '.docs-build/docs/api/_meta.json');
-  const mainMetaPath = path.join(process.cwd(), '.docs-build/docs/_meta.json');
+  const apiMetaPath = path.join(process.cwd(), '.docs-content/docs/api/_meta.json');
+  const mainMetaPath = path.join(process.cwd(), '.docs-content/docs/_meta.json');
   
   if (!fs.existsSync(apiMetaPath)) {
     console.log('No API meta file found, skipping API navigation merge');
