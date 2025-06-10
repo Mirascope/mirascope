@@ -4,7 +4,7 @@
     "": {
       "name": "mirascope",
       "devDependencies": {
-        "@mirascope/docs-viewer": "0.1.6",
+        "@mirascope/docs-viewer": "0.4.2",
       },
     },
   },
@@ -143,7 +143,7 @@
 
     "@mermaid-js/parser": ["@mermaid-js/parser@0.4.0", "", { "dependencies": { "langium": "3.3.1" } }, "sha512-wla8XOWvQAwuqy+gxiZqY+c7FokraOTHRWMsbB4AgRx9Sy7zKslNyejy7E+a77qHfey5GXw/ik3IXv/NHMJgaA=="],
 
-    "@mirascope/docs-viewer": ["@mirascope/docs-viewer@0.1.6", "", { "dependencies": { "@mdx-js/react": "^3.1.0", "@radix-ui/react-dropdown-menu": "^2.1.6", "@radix-ui/react-navigation-menu": "^1.2.5", "@radix-ui/react-slot": "^1.2.3", "@radix-ui/react-tabs": "^1.1.12", "@radix-ui/react-tooltip": "^1.1.8", "@shikijs/transformers": "^3.4.2", "@tailwindcss/vite": "^4.0.6", "@tanstack/react-router": "^1.120.13", "@tanstack/react-router-devtools": "^1.114.3", "@tanstack/router-plugin": "^1.114.3", "class-variance-authority": "^0.7.1", "clsx": "^2.1.1", "js-tiktoken": "^1.0.20", "lucide-react": "^0.512.0", "mermaid": "^11.6.0", "next-mdx-remote": "^5.0.0", "oniguruma-to-es": "4.2.0", "react": "^19.0.0", "react-dom": "^19.0.0", "rehype-pretty-code": "^0.14.1", "remark-gfm": "^4.0.1", "shiki": "^3.4.2", "sonner": "^2.0.3", "tailwind-merge": "^3.0.2", "tailwindcss": "^4.0.6", "tailwindcss-animate": "^1.0.7", "zod": "^3.25.51" }, "bin": { "docs-viewer": "scripts/start.ts" } }, "sha512-Wnvx6Jls3ENToaZserTXP/zyRmZclzO248VkjtPWTeZ6/RtXPaystEklf1cUlqMNJbcWYbNG8MiWV2yZ4Sevzg=="],
+    "@mirascope/docs-viewer": ["@mirascope/docs-viewer@0.4.2", "", { "dependencies": { "@mdx-js/react": "^3.1.0", "@radix-ui/react-dropdown-menu": "^2.1.6", "@radix-ui/react-navigation-menu": "^1.2.5", "@radix-ui/react-slot": "^1.2.3", "@radix-ui/react-tabs": "^1.1.12", "@radix-ui/react-tooltip": "^1.1.8", "@shikijs/transformers": "^3.4.2", "@tailwindcss/vite": "^4.0.6", "@tanstack/react-router": "^1.120.13", "@tanstack/react-router-devtools": "^1.114.3", "@tanstack/router-plugin": "^1.114.3", "class-variance-authority": "^0.7.1", "clsx": "^2.1.1", "js-tiktoken": "^1.0.20", "lucide-react": "^0.512.0", "mermaid": "^11.6.0", "next-mdx-remote": "^5.0.0", "oniguruma-to-es": "4.2.0", "react": "^19.0.0", "react-dom": "^19.0.0", "rehype-pretty-code": "^0.14.1", "remark-gfm": "^4.0.1", "shiki": "^3.4.2", "sonner": "^2.0.3", "tailwind-merge": "^3.0.2", "tailwindcss": "^4.0.6", "tailwindcss-animate": "^1.0.7", "zod": "^3.25.51" }, "bin": { "docs-viewer": "scripts/start.ts" } }, "sha512-pqEBGb3sVpvi2jtGqelFiJd9CaFclEU8q44nTRCdDxftmkhxrgDypH/tLGiWiY0lkyaD1LJ/rGw9vkWiqL8XiA=="],
 
     "@radix-ui/primitive": ["@radix-ui/primitive@1.1.2", "", {}, "sha512-XnbHrrprsNqZKQhStrSwgRUQzoCI1glLzdw79xiZPoofhGICeZRSQ3dIxAKH1gb3OHfNf4d6f+vAv3kil2eggA=="],
 
