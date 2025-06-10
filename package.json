@@ -12,6 +12,6 @@
     "docs:dev": "bun docs:build && bun docs:serve"
   },
   "devDependencies": {
-    "@mirascope/docs-viewer": "0.4.2"
+    "@mirascope/docs-viewer": "0.4.4"
   }
 }
