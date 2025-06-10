@@ -4,9 +4,11 @@
   "scripts": {
     "docs:clean": "rm -rf .docs-build",
     "docs:copy": "mkdir -p .docs-build && cp -r mirascope/experimental/v2/docs .docs-build/ && cp -r mirascope/experimental/v2/examples .docs-build/",
+    "docs:api": "PYTHONPATH=. uv run api2mdx --source-path . --package mirascope.experimental.v2.llm --output .docs-build/docs/api && mv .docs-build/docs/api/experimental/v2/llm/* .docs-build/docs/api/ && rm -rf .docs-build/docs/api/experimental",
     "docs:preprocess": "CONTENT_DIR=$(pwd)/.docs-build && cd node_modules/@mirascope/docs-viewer && DOCS_VIEWER_DIR=. bun scripts/preprocess-content.ts --content-dir $CONTENT_DIR",
     "docs:serve": "CONTENT_DIR=$(pwd)/.docs-build && cd node_modules/@mirascope/docs-viewer && DOCS_VIEWER_DIR=. bun scripts/start.ts --content-dir $CONTENT_DIR",
-    "docs:build": "bun docs:clean && bun docs:copy && bun docs:preprocess",
+    "docs:merge-api": "bun scripts/merge-api-meta.ts",
+    "docs:build": "bun docs:clean && bun docs:copy && bun docs:api && bun docs:merge-api && bun docs:preprocess",
     "docs:dev": "bun docs:build && bun docs:serve"
   },
   "devDependencies": {
