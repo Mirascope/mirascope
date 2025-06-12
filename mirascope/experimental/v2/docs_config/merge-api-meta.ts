@@ -6,7 +6,7 @@ import type {
   SectionSpec,
   DocSpec,
   FullDocsSpec,
-} from "../node_modules/@mirascope/docs-viewer/src/lib/content/spec";
+} from "@mirascope/docs-viewer/src/lib/content/spec";
 
 function flattenApiMeta(): void {
   const apiMetaPath = path.join(
