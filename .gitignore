@@ -177,7 +177,7 @@ cython_debug/
 database.db
 
 # docs-viewer stuff
-node_modules
-public
-.docs-build/
-.docs-content/
+mirascope/experimental/v2/docs_config/node_modules
+mirascope/experimental/v2/docs_config/public
+mirascope/experimental/v2/docs_config/.docs-build/
+mirascope/experimental/v2/docs_config/.docs-content/
