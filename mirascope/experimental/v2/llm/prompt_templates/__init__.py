@@ -9,6 +9,7 @@ from .decorator import (
     AsyncPromptTemplate,
     ContextPromptTemplate,
     PromptTemplate,
+    PromptTemplateDecorator,
     prompt_template,
 )
 from .dynamic_config import DynamicConfig
@@ -19,5 +20,6 @@ __all__ = [
     "ContextPromptTemplate",
     "DynamicConfig",
     "PromptTemplate",
+    "PromptTemplateDecorator",
     "prompt_template",
 ]
