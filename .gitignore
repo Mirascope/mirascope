@@ -180,3 +180,4 @@ database.db
 node_modules
 public
 .docs-build/
+.docs-content/

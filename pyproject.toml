@@ -123,7 +123,7 @@ dev-dependencies = [
     "notebook>=7.2.2",
     "nbconvert>=7.16.4",
     "docker>=7.1.0",
-    "api2mdx>=0.2.1",
+    "api2mdx>=0.2.2",
 ]
 
 [tool.uv.sources]
