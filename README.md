@@ -24,6 +24,10 @@ This branch contains Mirascope v2, which is under active development.
 
 Use `uv run docs-dev` to launch the docs dev site. Note that [Bun](http://bun.sh/) must be installed.
 
+## Building documentation
+
+Use `uv run docs-build` to build the docs. To preview the build, use `npx serve --single docs/config/dist`.
+
 ## Versioning
 
 Mirascope uses [Semantic Versioning](https://semver.org/).

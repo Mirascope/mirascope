@@ -177,6 +177,6 @@ cython_debug/
 database.db
 
 # docs-viewer stuff
-docs_config/node_modules
-docs_config/dist
-docs_config/.docs-content
+docs/config/node_modules
+docs/config/dist
+docs/config/.docs-content

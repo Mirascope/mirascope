@@ -49,8 +49,8 @@ Issues = "https://github.com/Mirascope/mirascope/issues"
 Changelog = "https://github.com/Mirascope/mirascope/releases"
 
 [project.scripts]
-docs-dev = "docs_config.cli:docs_dev"
-docs-build = "docs_config.cli:docs_build"
+docs-dev = "docs.config.cli:docs_dev"
+docs-build = "docs.config.cli:docs_build"
 
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.29.0,<1.0"]
@@ -94,7 +94,7 @@ exclude = [
     "buck-out",
     "build",
     "dist",
-    "docs_config/node_modules",
+    "docs/config/node_modules",
     "venv",
 ]
 line-length = 88
@@ -140,7 +140,7 @@ known-first-party = ['mirascope', 'tests', 'examples']
 [tool.pyright]
 exclude = [
     ".venv",
-    "docs_config/node_modules",
+    "docs/config/node_modules",
     "build",
 ]
 venvPath = "."
