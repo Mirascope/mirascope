@@ -1,61 +1,6 @@
-"""Mirascope package."""
+"""Mirascope v2 Beta."""
 
-import importlib.metadata
-from contextlib import suppress
+from . import graphs as graphs
+from . import llm as llm
 
-with suppress(ImportError):
-    from . import core as core
-
-from .core import (
-    AudioPart,
-    AudioURLPart,
-    BaseDynamicConfig,
-    BaseMessageParam,
-    BaseTool,
-    BaseToolKit,
-    CacheControlPart,
-    DocumentPart,
-    DocumentURLPart,
-    ImagePart,
-    ImageURLPart,
-    LocalProvider,
-    Messages,
-    Provider,
-    TextPart,
-    ToolCallPart,
-    ToolResultPart,
-    prompt_template,
-)
-
-with suppress(ImportError):
-    from . import integrations as integrations
-
-with suppress(ImportError):
-    from . import retries as retries
-
-__version__ = importlib.metadata.version("mirascope")
-
-__all__ = [
-    "AudioPart",
-    "AudioURLPart",
-    "BaseDynamicConfig",
-    "BaseMessageParam",
-    "BaseTool",
-    "BaseToolKit",
-    "CacheControlPart",
-    "DocumentPart",
-    "DocumentURLPart",
-    "ImagePart",
-    "ImageURLPart",
-    "LocalProvider",
-    "Messages",
-    "Provider",
-    "TextPart",
-    "ToolCallPart",
-    "ToolResultPart",
-    "__version__",
-    "core",
-    "integrations",
-    "prompt_template",
-    "retries",
-]
+__all__ = ["graphs", "llm"]

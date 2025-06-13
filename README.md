@@ -16,46 +16,17 @@
 
 ---
 
-Mirascope is a powerful, flexible, and user-friendly library that simplifies the process of working with LLMs through a unified interface that works across various supported providers, including [OpenAI](https://openai.com/), [Anthropic](https://www.anthropic.com/), [Mistral](https://mistral.ai/), [Google (Gemini/Vertex)](https://googleapis.github.io/python-genai/), [Groq](https://groq.com/), [Cohere](https://cohere.com/), [LiteLLM](https://www.litellm.ai/), [Azure AI](https://azure.microsoft.com/en-us/solutions/ai), and [Bedrock](https://aws.amazon.com/bedrock/).
+## Mirascope v2 Alpha
 
-Whether you're generating text, extracting structured information, or developing complex AI-driven agent systems, Mirascope provides the tools you need to streamline your development process and create powerful, robust applications.
+This branch contains Mirascope v2, which is under active development.
 
-## 30 Second Quickstart
+## Viewing documentation
 
-Install Mirascope, specifying the provider(s) you intend to use, and set your API key:
+Use `uv run docs-dev` to launch the docs dev site. Note that [Bun](http://bun.sh/) must be installed.
 
-```bash
-pip install "mirascope[openai]"
-export OPENAI_API_KEY=XXXXX
-```
+## Building documentation
 
-Make your first call to an LLM to extract the title and author of a book from unstructured text:
-
-```python
-from mirascope import llm
-from pydantic import BaseModel
-
-class Book(BaseModel):
-    title: str
-    author: str
-
-@llm.call(provider="openai", model="gpt-4o-mini", response_model=Book)
-def extract_book(text: str) -> str:
-    return f"Extract {text}"
-
-book = extract_book("The Name of the Wind by Patrick Rothfuss")
-assert isinstance(book, Book)
-print(book)
-# Output: title='The Name of the Wind' author='Patrick Rothfuss'
-```
-
-## Tutorials
-
-Check out our [quickstart tutorial](https://mirascope.com/docs/mirascope/getting-started/quickstart) and many other tutorials for an interactive way to getting started with Mirascope.
-
-## Usage
-
-For a complete guide on how to use all of the various features Mirascope has to offer, read through our [Learn](https://mirascope.com/learn) documentation.
+Use `uv run docs-build` to build the docs. To preview the build, use `npx serve --single docs/config/dist`.
 
 ## Versioning
 
