@@ -1,0 +1,18 @@
+[
+  {
+    "product": "mirascope",
+    "sections": [
+      {
+        "slug": "index",
+        "label": "Docs",
+        "weight": 2,
+        "children": [
+          {
+            "slug": "index",
+            "label": "Mirascope V2"
+          }
+        ]
+      }
+    ]
+  }
+]

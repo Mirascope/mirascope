@@ -56,6 +56,10 @@ Repository = "https://github.com/Mirascope/mirascope"
 Issues = "https://github.com/Mirascope/mirascope/issues"
 Changelog = "https://github.com/Mirascope/mirascope/releases"
 
+[project.scripts]
+docs-dev = "mirascope.experimental.v2.docs_config.cli:docs_dev"
+docs-build = "mirascope.experimental.v2.docs_config.cli:docs_build"
+
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.29.0,<1.0"]
 azure = ["azure-ai-inference>=1.0.0b4,<2.0", "aiohttp>=3.10.5,<4.0"]
@@ -123,6 +127,7 @@ dev-dependencies = [
     "notebook>=7.2.2",
     "nbconvert>=7.16.4",
     "docker>=7.1.0",
+    "api2mdx>=0.2.2",
 ]
 
 [tool.uv.sources]
@@ -152,7 +157,7 @@ exclude = [
     "buck-out",
     "build",
     "dist",
-    "node_modules",
+    "mirascope/experimental/v2/docs_config/node_modules",
     "venv",
 ]
 line-length = 88
@@ -203,6 +208,7 @@ exclude = [
     "examples/learn/tools/basic_usage/official_sdk/bedrock_sdk.py",
     "examples/learn/response_models/basic_usage/official_sdk/bedrock_sdk.py",
     ".venv",
+    "mirascope/experimental/v2/docs_config/node_modules",
     "build",
 ]
 venvPath = "."

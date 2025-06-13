@@ -5,7 +5,18 @@ including messages, tools, response formatting, and streaming. It allows you to 
 code that works with multiple LLM providers without changing your application logic.
 """
 
-from . import content as content
+from . import (
+    agents,
+    calls,
+    content,
+    messages,
+    models,
+    prompt_templates,
+    response_formatting,
+    responses,
+    tools,
+    types,
+)
 from .agents import Agent, AsyncAgent, AsyncStructuredAgent, StructuredAgent, agent
 from .calls import (
     AsyncCall,
@@ -61,14 +72,23 @@ __all__ = [
     "Tool",
     "ToolDef",
     "agent",
+    "agents",
     "assistant",
     "call",
+    "calls",
     "content",
     "context",
+    "messages",
     "model",
+    "models",
     "prompt_template",
+    "prompt_templates",
     "response_format",
+    "response_formatting",
+    "responses",
     "system",
     "tool",
+    "tools",
+    "types",
     "user",
 ]
