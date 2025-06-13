@@ -8,7 +8,7 @@
     "docs:copy": "mkdir -p .docs-content public && cp -r ../docs .docs-content/ && cp -r ../examples .docs-content/",
     "docs:api": "PYTHONPATH=.. uv run api2mdx --source-path . --package llm --output .docs-content/docs/api",
     "docs:merge-api": "bun merge-api-meta.ts",
-    "docs:serve": "rm -r node_modules/.vite && node_modules/@mirascope/docs-viewer/scripts/start.ts --content-dir .docs-content --working-dir dist",
+    "docs:serve": "rm -rf node_modules/.vite && node_modules/@mirascope/docs-viewer/scripts/start.ts --content-dir .docs-content --working-dir dist",
     "docs:prepare": "bun docs:clean && bun docs:copy && bun docs:api && bun docs:merge-api",
     "docs:build": "bun node_modules/@mirascope/docs-viewer/scripts/build.ts --content-dir .docs-content --output-dir dist"
   },
