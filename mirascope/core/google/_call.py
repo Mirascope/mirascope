@@ -56,7 +56,7 @@ Args:
     output_parser (Callable[[GoogleCallResponse | ResponseModelT], Any]): A function
         for parsing the call response whose value will be returned in place of the
         original call response.
-    json_modem (bool): Whether to use JSON Mode.
+    json_mode (bool): Whether to use JSON Mode.
     client (object): An optional custom client to use in place of the default client.
     call_params (GoogleCallParams): The `GoogleCallParams` call parameters to use in the
         API call.
