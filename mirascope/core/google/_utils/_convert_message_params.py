@@ -89,7 +89,10 @@ async def _convert_message_params_async(
                     converted_content.append(PartDict(inline_data=blob_dict))
                     image_size = len(part.image)
                     total_payload_size += image_size
-                    if _over_file_size_limit(total_payload_size):
+                    if (
+                        _over_file_size_limit(total_payload_size)
+                        and not client.vertexai
+                    ):
                         must_upload[index] = blob_dict
                         total_payload_size -= image_size
                 elif part.type == "image_url":
@@ -115,7 +118,10 @@ async def _convert_message_params_async(
                         converted_content.append(PartDict(inline_data=blob_dict))
                         image_size = len(downloaded_image)
                         total_payload_size += image_size
-                        if _over_file_size_limit(total_payload_size):
+                        if (
+                            _over_file_size_limit(total_payload_size)
+                            and not client.vertexai
+                        ):
                             must_upload[index] = blob_dict
                             total_payload_size -= image_size
                 elif part.type == "audio":
@@ -129,7 +135,10 @@ async def _convert_message_params_async(
                     converted_content.append(PartDict(inline_data=blob_dict))
                     audio_size = len(audio_data)
                     total_payload_size += audio_size
-                    if _over_file_size_limit(total_payload_size):
+                    if (
+                        _over_file_size_limit(total_payload_size)
+                        and not client.vertexai
+                    ):
                         must_upload[index] = blob_dict
                         total_payload_size -= audio_size
                 elif part.type == "audio_url":
@@ -155,7 +164,10 @@ async def _convert_message_params_async(
                         converted_content.append(PartDict(inline_data=blob_dict))
                         audio_size = len(downloaded_audio)
                         total_payload_size += audio_size
-                        if _over_file_size_limit(total_payload_size):
+                        if (
+                            _over_file_size_limit(total_payload_size)
+                            and not client.vertexai
+                        ):
                             must_upload[index] = blob_dict
                             total_payload_size -= audio_size
                 elif part.type == "document":
@@ -164,7 +176,10 @@ async def _convert_message_params_async(
                     converted_content.append(PartDict(inline_data=blob_dict))
                     document_size = len(part.document)
                     total_payload_size += document_size
-                    if _over_file_size_limit(total_payload_size):
+                    if (
+                        _over_file_size_limit(total_payload_size)
+                        and not client.vertexai
+                    ):
                         must_upload[index] = blob_dict
                         total_payload_size -= document_size
                 elif part.type == "document_url":
@@ -218,7 +233,10 @@ async def _convert_message_params_async(
                             converted_content.append(PartDict(inline_data=blob_dict))
                             document_size = len(downloaded_document)
                             total_payload_size += document_size
-                            if _over_file_size_limit(total_payload_size):
+                            if (
+                                _over_file_size_limit(total_payload_size)
+                                and not client.vertexai
+                            ):
                                 must_upload[index] = blob_dict
                                 total_payload_size -= document_size
                         except ValueError as e:
@@ -233,7 +251,7 @@ async def _convert_message_params_async(
                         f"Part provided: {part.type}"
                     )
 
-            if must_upload:
+            if must_upload and not client.vertexai:
                 indices, blob_dicts = zip(*must_upload.items(), strict=True)
                 upload_tasks = [
                     client.aio.files.upload(
