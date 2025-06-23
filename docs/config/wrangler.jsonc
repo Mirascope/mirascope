@@ -1,6 +1,8 @@
 {
   "name": "v2-docs",
-  "routes": [{ "pattern": "v2.mirascope.com/*", "zone_name": "mirascope.com" }],
+  "routes": [
+    { "pattern": "v2.mirascope.com/*", "zone_name": "v2.mirascope.com" },
+  ],
   "compatibility_date": "2025-06-10",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
