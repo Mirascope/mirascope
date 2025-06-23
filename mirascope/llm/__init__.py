@@ -25,7 +25,16 @@ from .calls import (
     StructuredCall,
     call,
 )
-from .content import Content
+from .content import (
+    Audio,
+    Content,
+    Document,
+    Image,
+    Thinking,
+    ToolCall,
+    ToolOutput,
+    Video,
+)
 from .context import Context, context
 from .messages import Message, assistant, system, user
 from .models import LLM, Client, Params, model
@@ -57,7 +66,14 @@ __all__ = [
     "AsyncStructuredStream",
     "Call",
     "Client",
+    "Audio",
     "Content",
+    "Document",
+    "Image",
+    "Thinking",
+    "ToolCall",
+    "ToolOutput",
+    "Video",
     "Context",
     "DynamicConfig",
     "Message",
