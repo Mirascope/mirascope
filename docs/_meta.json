@@ -9,7 +9,11 @@
         "children": [
           {
             "slug": "index",
-            "label": "Mirascope V2"
+            "label": "Welcome to Mirascope V2"
+          },
+          {
+            "slug": "messages",
+            "label": "Messages"
           }
         ]
       }

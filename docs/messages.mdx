@@ -1,0 +1,256 @@
+---
+title: Messages
+description: Learn how to use Messages to communicate with Large Language Models in Mirascope.
+---
+
+# Messages
+
+Messages are the fundamental building blocks of Large Language Model (LLM) interactions. Understanding messages is essential for building any LLM-powered application, as they define how you communicate with an AI model and how it responds to you.
+
+## What are Messages?
+
+In the context of LLMs, a "message" represents a single unit of communication in a conversation. Think of it like a chat conversation where each participant takes turns speaking. Each message has two key components:
+
+1. **Role**: Who is speaking (system, user, or assistant)
+2. **Content**: What is being said (text, images, audio, etc.)
+
+This message-based structure allows LLMs to maintain context across a conversation and understand the flow of dialogue between different participants.
+
+In Mirascope, each message is represented by a [Message class](../api/messages#message).
+
+## Why Messages Matter
+
+Understanding messages is crucial because they are the fundamental mechanism for communicating with large language models. Properly using messages enables many capabilities:
+
+1. **Context Preservation**: Messages allow LLMs to maintain conversation history and context
+2. **Multimodal Capabilities**: You can include text, images, audio, and other content types
+3. **Role Clarity**: Different roles help the LLM understand the conversation structure
+4. **Conversation Flow**: Messages enable back-and-forth dialogue rather than single isolated queries
+
+When you call an LLM through Mirascope, you'll pass an array of messages that represents the entire conversation context.
+
+## Message Structure Fundamentals
+
+Every message in Mirascope follows the same structure: it has a role, indicating who the message is from, and it contains the content of the message.
+
+### Basic Message Creation
+
+Mirascope provides convenient shorthand functions for creating messages:
+
+<CodeExample file="examples/messages/basic.py" lines="1-5" />
+
+These shorthand functions (`llm.system`, `llm.user`, `llm.assistant`) are the most convenient way to construct messages.
+
+<Note title="Manual Message Construction" collapsible={true} defaultOpen={false}>
+
+For more control, you can construct messages directly using the `Message` class:
+
+<CodeExample file="examples/messages/basic.py" lines="7-13" />
+
+Both approaches create identical message objects. We recommend the shorthand functions for convenience.
+
+</Note>
+
+## Message Roles Deep Dive
+
+Every message must have a role that identifies who is speaking. There are three role options: `"system"`, `"user"`, and `"assistant"`.
+
+### System Messages
+
+System messages set the context and instructions for the AI assistant. They're like giving the AI a job description or personality before the conversation begins.
+
+<CodeExample file="examples/messages/basic.py" lines="3-3" />
+
+System messages typically define the AI's role or persona, provide instructions or constraints, and give context about the task or domain. Often times prompt engineering focuses on improving the system message, for example by adding detailed examples of representative queries and the desired outputs.
+
+### User Messages
+
+User messages represent input from the person interacting with the AI. These are questions, requests, or any input you want the AI to respond to.
+
+<CodeExample file="examples/messages/basic.py" lines="4-4" />
+
+### Assistant Messages
+
+Assistant messages are responses from the AI. You typically don't create these yourself - they're generated when the LLM responds to your conversation. However, you might manually create them when building conversation history or providing examples.
+
+<CodeExample file="examples/messages/basic.py" lines="5-5" />
+
+### Role Interaction Patterns
+
+Here's how roles work together in a typical conversation:
+
+<CodeExample file="examples/messages/basic.py" lines="15-19" />
+
+The system message sets the context, user messages drive the conversation forward, and assistant messages provide responses that maintain the established context.
+
+## Message Content Types
+
+Messages can contain much more than just text. Modern LLMs support multimodal content, allowing you to include various types of media in your conversations.
+
+### Basic Content Types
+
+The most commonly supported content types work across most LLM providers:
+
+| Type  | Anthropic | Google | OpenAI |
+| ----- | :-------: | :----: | :----: |
+| Text  |     ✓     |   ✓    |   ✓    |
+| Image |     ✓     |   ✓    |   ✓    |
+| Audio |     —     |   ✓    |   ✓    |
+
+_Legend: ✓ (Supported), — (Not Supported)_
+
+**TODO: Replace this with centralized compatibilty table (#1031)**
+
+### Text Content
+
+The most common type of content is text, represented as plain strings:
+
+<CodeExample file="examples/messages/content.py" lines="3-3" />
+
+### Image Content
+
+You can also include image content.
+
+<CodeExample file="examples/messages/content.py" lines="4-9" />
+
+<Info>
+Images can be provided as:
+- File paths to local images
+- URLs to online images
+- Base64-encoded image data
+- Raw bytes data
+
+You can optionally provide the id field as a unique identifier for that image, which can be useful for tracking and referencing generated images.
+</Info>
+
+### Audio Content
+
+For voice- or sound-based interactions (where supported):
+
+<CodeExample file="examples/messages/content.py" lines="11-16" />
+
+<Info>
+Audio files can be provided as:
+- File paths to local audio files
+- URLs to online files
+- Base64-encoded strings
+- Raw bytes data
+
+Audio files may also have an optional transcript, which is useful for accessibility. As with images, you may also provide an id as a unique identifier.
+</Info>
+
+### Content Combinations
+
+You can combine different content types in a single message:
+
+<CodeExample file="examples/messages/content.py" lines="18-24" />
+
+This is particularly powerful for creating rich, multimodal interactions where you want to provide both textual context and visual or audio information.
+
+## Building Conversations
+
+Messages work together to create conversations. The order and structure of messages determines how the AI understands and responds to your requests.
+
+### Conversation Structure
+
+A conversation is simply a list of messages in chronological order:
+
+<CodeExample file="examples/messages/conversations.py" lines="4-11" />
+
+This conversation structure maintains context, allowing the AI to remember what was discussed earlier and provide relevant responses.
+
+### Conversation Patterns
+
+Here are common patterns for structuring conversations:
+
+**Single Exchange:**
+
+<CodeExample file="examples/messages/conversations.py" lines="14-17" />
+
+**Multi-turn Conversation:**
+
+<CodeExample file="examples/messages/conversations.py" lines="20-26" />
+
+**Context Building:**
+
+<CodeExample file="examples/messages/conversations.py" lines="29-41" />
+
+### Context Management
+
+Each message in a conversation adds to the context that the AI uses to generate responses. The AI can:
+
+- Reference information from earlier messages
+- Maintain consistent personality and tone
+- Build on previous topics and decisions
+- Understand implied context from the conversation flow
+
+### Practical Example
+
+Here's a complete conversation from start to finish:
+
+<CodeExample file="examples/messages/conversations.py" lines="44-64" />
+
+This conversation demonstrates how system instructions, user queries, and assistant responses work together to create a coherent, helpful interaction.
+
+## Advanced Features
+
+### Message Names
+
+For complex scenarios involving multiple users or specialized assistants, you can optionally specify names:
+
+<CodeExample file="examples/messages/advanced.py" lines="4-12" />
+
+Message names are useful for:
+
+- Multi-user conversations
+- Different AI assistants with specialized roles
+- Tracking conversation participants
+- Creating more structured dialogue flows
+
+### Advanced Content Types
+
+Mirascope v2 supports additional specialized content types for advanced use cases:
+
+| Type       | Anthropic | Google | OpenAI |
+| ---------- | :-------: | :----: | :----: |
+| Video      |     —     |   ✓    |   —    |
+| Document   |     ✓     |   ✓    |   ✓    |
+| Thinking   |     ✓     |   ✓    |   ✓    |
+| ToolCall   |     ✓     |   ✓    |   ✓    |
+| ToolOutput |     ✓     |   ✓    |   ✓    |
+
+_Legend: ✓ (Supported), — (Not Supported)_
+
+TODO: Integrate auto-generated compatibility table (#1031)
+
+#### Document Content
+
+For processing documents like PDFs, Word files, or other structured content:
+
+<CodeExample file="examples/messages/advanced.py" lines="15-16" />
+
+#### Tool Interactions
+
+Tool content is relevant when the LLM wants to call external functions, also known as "Tools". The `ToolCall` content allows the LLM to specify that it wants to call a function, and the `ToolOutput` content allows the LLM to work with the result of calling the tool. For more info, see our guide on [tools](./tools).
+
+<CodeExample file="examples/messages/advanced.py" lines="19-36" />
+
+#### Thinking Content
+
+Some models support thinking, in which case they spend time reasoning before generating their output content. The Thinking content gives insight into the model's thinking process.
+
+<CodeExample file="examples/messages/advanced.py" lines="39-48" />
+
+### Dynamic Message Construction
+
+You can build messages programmatically based on your application's logic:
+
+<CodeExample file="examples/messages/advanced.py" lines="52-68" />
+
+## Next Steps
+
+Now that you understand messages, you're ready to learn how to use them with Mirascope's `llm.call` decorator to actually interact with LLM providers. Messages form the foundation for all LLM interactions, whether you're making simple queries, building complex conversations, or creating AI agents.
+
+The message structure we've covered here works consistently across all LLM providers that Mirascope supports, giving you a unified interface regardless of whether you're using OpenAI, Anthropic, Google, or any other supported provider.
+
+In the section on [Calls](./calls), you'll learn how to send these messages to LLM providers and receive responses, turning your message structures into actual AI interactions. But first, we'll discuss [Prompt Templates](./prompt-templates), a convenient way to start LLM conversations using a functional interface.
