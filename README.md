@@ -26,7 +26,7 @@ Use `uv run docs-dev` to launch the docs dev site. Note that [Bun](http://bun.sh
 
 ## Building documentation
 
-Use `uv run docs-build` to build the docs. To preview the build, use `npx serve --single docs/config/dist`.
+Use `uv run docs-build` to build the docs. To preview the build, use `bunx serve --single docs/config/dist`.
 
 ## Versioning
 
