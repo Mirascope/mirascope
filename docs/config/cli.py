@@ -28,7 +28,7 @@ def docs_build() -> None:
     docs_config_dir = os.path.dirname(__file__)
     subprocess.run(["bun", "install"], cwd=docs_config_dir, check=True)
     subprocess.run(["bun", "run", "build"], cwd=docs_config_dir, check=True)
-    # NOTE: this is to prevent any crawling of the v2 docs site
+    # NOTE: this is to prevent any crawling of the v2 docs site, which we may always want
     with open(os.path.join(docs_config_dir, "dist", "robots.txt"), "w") as f:
         f.write("User-agent: *\nDisallow: /")
     with open(os.path.join(docs_config_dir, "dist", "public", "robots.txt"), "w") as f:
