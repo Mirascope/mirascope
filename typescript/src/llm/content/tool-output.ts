@@ -12,7 +12,7 @@ import type { Jsonable } from '../types';
  */
 export type ToolOutput<R extends Jsonable = Jsonable> = {
   /** The content type identifier */
-  type: "tool-response";
+  type: "tool-output";
 
   /** The ID of the tool call that this output is for. */
   id: string;
