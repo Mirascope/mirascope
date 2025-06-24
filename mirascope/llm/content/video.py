@@ -13,13 +13,13 @@ class Video:
 
     type: Literal["video"] = "video"
 
-    id: str | None
+    id: str | None = None
     """A unique identifier for this video content. This is useful for tracking and referencing generated videos."""
 
     data: str | bytes
     """The video data, which can be a URL, file path, base64-encoded string, or binary data."""
 
-    transcript: str | None
+    transcript: str | None = None
     """The transcript of the video, if available. This is useful for accessibility and search."""
 
     mime_type: Literal[

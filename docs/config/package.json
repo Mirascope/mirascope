@@ -5,7 +5,7 @@
     "dev": "bun docs:prepare && bun docs:serve",
     "build": "bun docs:prepare && bun docs:build",
     "docs:clean": "rm -rf .docs-content dist",
-    "docs:copy": "mkdir -p .docs-content/docs && rsync -av --exclude='config/' .. .docs-content/docs && cp -r ../../examples .docs-content/",
+    "docs:copy": "./copy-docs.sh",
     "docs:api": "PYTHONPATH=.. uv run api2mdx --source-path ../.. --package mirascope.llm --output .docs-content/docs/api",
     "docs:merge-api": "bun merge-api-meta.ts",
     "docs:serve": "rm -rf node_modules/.vite && node_modules/@mirascope/docs-viewer/scripts/start.ts --content-dir .docs-content --working-dir dist",
