@@ -1,0 +1,142 @@
+---
+title: Messages
+description: Learn how to use Messages to communicate with Large Language Models (LLMs) in Mirascope.
+---
+
+# Messages
+
+Messages are the fundamental building blocks of Large Language Model (LLM) interactions. They are a shared abstraction underpinning LLM usage: you provide context to the LLM via messages, and it responds by generating messages of its own.
+
+Here is a simple example:
+
+<CodeExample file="examples/messages/basic.py" lines="1-4" />
+
+Each message is represented by a [Message](/docs/api/messages#message) class. The class has two required properties: `role`, which specifies what kind of entity is providing the message, and `content`, which specifies the content of the message. There's also an optional `name` field, which is helpful if there are multiple participants with the same role.
+
+## Message Roles
+
+Every message is associated with one of three roles: "system", "user", or "assistant". Roles are foundational to how messages are interpreted, so Mirascope provides role-specific shorthand functions for constructing messages:
+[`llm.system`](/docs/api/messages#system),
+[`llm.user`](/docs/api/messages#user),
+and [`llm.assistant`](/docs/api/messages#assistant).
+
+### System Messages
+
+System messages are instructions from the application developer, and take priority over user messages. The system message may include specific directives, a persona the LLM should adopt, or detailed examples of intended behavior. Context engineering often focuses on improving the system message.
+
+<CodeExample file="examples/messages/basic.py" lines="6-6" />
+
+### User Messages
+
+User messages represent input from the person interacting with the LLM. These are questions, requests, or any input the LLM should respond to.
+
+<CodeExample file="examples/messages/basic.py" lines="7-7" />
+
+### Assistant Messages
+
+Assistant messages are responses from the LLM. You typically don't create these by hand, but receive them as part of LLM responses.
+
+<CodeExample file="examples/messages/basic.py" lines="8-8" />
+
+<Note title="Manual Message Construction" collapsible={true} defaultOpen={false}>
+Instead of using the shorthand functions, you can also construct the `Message` class directly:
+
+<CodeExample file="examples/messages/basic.py" lines="10-16" />
+
+Both approaches create identical messages, so we recommend the shorthand functions for convenience.
+
+</Note>
+
+<Info title="Message Names" collapsible={true} defaultOpen={false}>
+
+Messages have an optional `name` parameter, which may be provided to the
+shorthand function. The name is useful when there are multiple participants in a conversation; for example multiple users, or (as shown below) multiple specialized assistants.
+
+<CodeExample file="examples/messages/conversations.py" lines="15-25" />
+
+</Info>
+
+## Message Content Types
+
+Messages can contain much more than just text. Modern LLMs support multimodal content, allowing you to include multiple media types in a conversation, or even within a single message. Mirascope allows 8 different content types, although support may vary depending on your chosen provider.
+
+| Content Type                                 | Anthropic | Google | OpenAI |
+| -------------------------------------------- | :-------: | :----: | :----: |
+| `Text`                                       |     ✓     |   ✓    |   ✓    |
+| [`Image`](/docs/api/content#image)           |     ✓     |   ✓    |   ✓    |
+| [`Audio`](/docs/api/content#audio)           |     —     |   ✓    |   ✓    |
+| [`Video`](/docs/api/content#video)           |     —     |   ✓    |   —    |
+| [`Document`](/docs/api/content#document)     |     ✓     |   ✓    |   ✓    |
+| [`Thinking`](/docs/api/content#thinking)     |     ✓     |   ✓    |   ✓    |
+| [`ToolCall`](/docs/api/content#toolcall)     |     ✓     |   ✓    |   ✓    |
+| [`ToolOutput`](/docs/api/content#tooloutput) |     ✓     |   ✓    |   ✓    |
+
+_TODO: Replace this with centralized compatibilty table (#1031)_
+
+### Text Content
+
+The most common type of content is text, represented as plain strings:
+
+<CodeExample file="examples/messages/content.py" lines="3-3" />
+
+### Media Content
+
+Depending on provider support, you can supply `Image`, `Audio`, or even `Video` content.
+
+<CodeExample file="examples/messages/content.py" lines="5-10" />
+
+<CodeExample file="examples/messages/content.py" lines="12-18" />
+
+<CodeExample file="examples/messages/content.py" lines="20-26" />
+
+<Info>
+**Media content** (`Image`, `Audio`, `Video`) can be provided as file paths, URLs, base64-encoded strings, or raw bytes.
+
+Additional options:
+
+- `id`: Optional unique identifier for tracking and referencing with a conversation.
+- `transcript`: Optional text transcript for `Audio` and `Video` content.
+
+</Info>
+
+### Document Content
+
+`Document` content allows you to embed structured document files, such as PDFs. Like media content, it can be specified via a file path, a URL, a base64-encoded string, or raw bytes.
+
+<CodeExample file="examples/messages/content.py" lines="28-32" />
+
+### Tool Interactions
+
+`ToolCall` and `ToolOutput` content is relevant when the LLM is calling external functions, also known as [Tools](./tools). The `ToolCall` content allows the LLM to specify that it wants to use a tool, and the `ToolOutput` content gives the LLM access to the output from that computation. By convention, the `ToolCall` is included in an assistant message, and the `ToolOutput` is provided as a user message.
+
+<CodeExample file="examples/messages/content.py" lines="34-45" />
+
+### Thinking Content
+
+Some models support thinking, in which case they create intermediate reasoning content that informs their final response. The `Thinking` content gives insight into the model's thinking process. Depending on the provider, this may be the raw thinking text, or a generated summary.
+
+<CodeExample file="examples/messages/content.py" lines="47-57" />
+
+### Content Sequences
+
+A message can contain a sequence of content objects, potentially of multiple types:
+
+<CodeExample file="examples/messages/content.py" lines="59-68" />
+
+## Building Conversations
+
+LLMs operate on sequences of messages, which allows the LLM to maintain consistent context in an ongoing interaction. A conversation history is just a list of messages in chronological order. Each message in the history contributes to the context that the LLM will "see" when it generates its response. Two common patterns for structuring conversations are single query (or "one shot"), and multi-turn.
+
+**Single Query:**
+
+<CodeExample file="examples/messages/conversations.py" lines="3-5" />
+
+**Multi-turn Conversation:**
+
+<CodeExample file="examples/messages/conversations.py" lines="7-13" />
+
+## Next Steps
+
+The message structure we've covered here works consistently across all LLM providers that Mirascope supports, giving you a unified interface regardless of whether you're using OpenAI, Anthropic, Google, or any other supported provider.
+
+In the next section on [Prompt Templates](./prompt-templates), we will describe how Mirascope provides a re-usable functional interface for constructing messages. This offers a maintainable way to construct and optimize messages, which will then be used for llm [Calls](./calls).

@@ -15,7 +15,7 @@ class Image:
 
     type: Literal["image"] = "image"
 
-    id: str | None
+    id: str | None = None
     """A unique identifier for this image content. This is useful for tracking and referencing generated images."""
 
     data: str | bytes
