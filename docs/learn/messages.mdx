@@ -56,9 +56,7 @@ assistants.
 
 ## Message Content Types
 
-Messages can contain much more than just text. Modern LLMs support multimodal content, allowing you to include multiple media types in a conversation, or even within a single message.
-
-Mirascope allows 8 different content types, although support may vary depending on your chosen provider.
+Messages can contain much more than just text. Modern LLMs support multimodal content, allowing you to include multiple media types in a conversation, or even within a single message. Mirascope allows 8 different content types, although support may vary depending on your chosen provider.
 
 | Content Type                                 | Anthropic | Google | OpenAI |
 | -------------------------------------------- | :-------: | :----: | :----: |
@@ -107,7 +105,7 @@ Additional options:
 
 ### Tool Interactions
 
-`ToolCall` and `ToolOutput` content is relevant when the LLM is using external functions, also known as "[Tools](./tools)". The `ToolCall` content allows the LLM to specify that it wants to call a function, and the `ToolOutput` content gives the LLM access to the output of the executed tool.
+`ToolCall` and `ToolOutput` content is relevant when the LLM is calling external functions, also known as [Tools](./tools). The `ToolCall` content allows the LLM to specify that it wants to use a tool, and the `ToolOutput` content gives the LLM access to the output from that computation.
 
 <CodeExample file="examples/messages/content.py" lines="34-45" />
 
@@ -125,11 +123,7 @@ A message can contain a sequence of content objects, potentially of multiple typ
 
 ## Building Conversations
 
-LLMs operate on sequences of messages, which allows the LLM to maintain consistent context in an ongoing interaction. A conversation history is just a list of messages in chronological order. Each message in the history contributes to the context that the LLM will "see" when it generates its response.
-
-### Conversation Patterns
-
-Here are common patterns for structuring conversations:
+LLMs operate on sequences of messages, which allows the LLM to maintain consistent context in an ongoing interaction. A conversation history is just a list of messages in chronological order. Each message in the history contributes to the context that the LLM will "see" when it generates its response. Two common patterns for structuring conversations are single query (or "one shot"), and multi-turn.
 
 **Single Query:**
 
@@ -143,4 +137,4 @@ Here are common patterns for structuring conversations:
 
 The message structure we've covered here works consistently across all LLM providers that Mirascope supports, giving you a unified interface regardless of whether you're using OpenAI, Anthropic, Google, or any other supported provider.
 
-In the next section on [Prompt Templates](./prompt-templates), we will describe how Mirascope provides a re-usable functional interface for constructing messages. Once we have prompt templates, we can use them to actually call the LLM.
+In the next section on [Prompt Templates](./prompt-templates), we will describe how Mirascope provides a re-usable functional interface for constructing messages. This offers a maintainable way to construct and optimize messages, which will then be used for llm [Calls](./calls).
