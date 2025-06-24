@@ -36,7 +36,7 @@ from .content import (
     Video,
 )
 from .context import Context, context
-from .messages import Message, assistant, system, user
+from .messages import Message
 from .models import LLM, Client, Params, model
 from .prompt_templates import (
     DynamicConfig,
@@ -64,18 +64,14 @@ __all__ = [
     "AsyncStructuredAgent",
     "AsyncStructuredCall",
     "AsyncStructuredStream",
+    "Audio",
     "Call",
     "Client",
-    "Audio",
     "Content",
-    "Document",
-    "Image",
-    "Thinking",
-    "ToolCall",
-    "ToolOutput",
-    "Video",
     "Context",
+    "Document",
     "DynamicConfig",
+    "Image",
     "Message",
     "Params",
     "Response",
@@ -85,11 +81,14 @@ __all__ = [
     "StructuredAgent",
     "StructuredCall",
     "StructuredStream",
+    "Thinking",
     "Tool",
+    "ToolCall",
     "ToolDef",
+    "ToolOutput",
+    "Video",
     "agent",
     "agents",
-    "assistant",
     "call",
     "calls",
     "content",
@@ -102,9 +101,7 @@ __all__ = [
     "response_format",
     "response_formatting",
     "responses",
-    "system",
     "tool",
     "tools",
     "types",
-    "user",
 ]
