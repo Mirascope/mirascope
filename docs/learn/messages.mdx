@@ -9,11 +9,11 @@ Messages are the fundamental building blocks of Large Language Model (LLM) inter
 
 <CodeExample file="examples/messages/basic.py" lines="1-4" />
 
-Each message is represented by a [Message](/docs/api/messages#message) class. The class has two required properties: `role`, which specifies what kind of entity is providing the message, and `content`, which specifies the content of the message. (There's also an optional `name` field, which we get to later.)
+Each message is represented by a [Message](/docs/api/messages#message) class. The class has two required properties: `role`, which specifies what kind of entity is providing the message, and `content`, which specifies the content of the message. There's also an optional `name` field, which is helpful if there are multiple participants with the same role.
 
 ## Message Roles
 
-Every message has a role, which may be one of "system", "user", or "assistant". Mirascope provides shorthand functions that construct messages with each role:
+Every message is associated with one of three roles: "system", "user", or "assistant". Roles are foundational to how messages are interpreted, so Mirascope provides role-specific shorthand functions for constructing messages:
 [`llm.system`](/docs/api/messages#system),
 [`llm.user`](/docs/api/messages#user),
 and [`llm.assistant`](/docs/api/messages#assistant).
@@ -32,7 +32,7 @@ User messages represent input from the person interacting with the LLM. These ar
 
 ### Assistant Messages
 
-Assistant messages are responses from the LLM. You typically don't create these by hand, but instead receive them when making LLM [calls](./calls).
+Assistant messages are responses from the LLM. You typically don't create these by hand, but receive them as part of LLM responses.
 
 <CodeExample file="examples/messages/basic.py" lines="8-8" />
 
@@ -47,10 +47,10 @@ Both approaches create identical messages, so we recommend the shorthand functio
 
 <Info title="Message Names" collapsible={true} defaultOpen={false}>
 
-Messages also have an optional `name` parameter, which may be provided to the
-shorthand function. The name is useful when there are multiple participants in
-a conversation; for example multiple users, or multiple specialized
-assistants.
+Messages have an optional `name` parameter, which may be provided to the
+shorthand function. The name is useful when there are multiple participants in a conversation; for example multiple users, or (as shown below) multiple specialized assistants.
+
+<CodeExample file="examples/messages/conversations.py" lines="15-25" />
 
 </Info>
 

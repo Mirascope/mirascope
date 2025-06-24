@@ -11,3 +11,15 @@ multi_turn = [
     llm.user("I like science fiction."),
     llm.assistant("Want a classic? Check out Dune by Frank Herbert."),
 ]
+
+multi_participant = [
+    llm.user("I need help finding research materials"),
+    llm.assistant(
+        "I can help you get started. What's your research topic?", name="ConciergeAgent"
+    ),
+    llm.user("I'm researching climate change impacts on agriculture"),
+    llm.assistant(
+        "For academic sources on climate and agriculture, I recommend starting with...",
+        name="LibrarianAgent",
+    ),
+]
