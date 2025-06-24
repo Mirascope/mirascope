@@ -1,0 +1,41 @@
+{
+  "name": "mirascope",
+  "version": "2.0.0-alpha.0",
+  "description": "LLM abstractions that aren't obstructions",
+  "module": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "bun run --watch index.ts",
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "agents",
+    "artificial intelligence",
+    "developer tools",
+    "llm",
+    "llm tools",
+    "openai",
+    "prompt engineering"
+  ],
+  "author": "William Bakst <william@mirascope.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mirascope/mirascope.git"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
