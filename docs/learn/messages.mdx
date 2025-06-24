@@ -77,7 +77,7 @@ The most common type of content is text, represented as plain strings:
 
 <CodeExample file="examples/messages/content.py" lines="3-3" />
 
-### Image, Audio, and Video Content
+### Media Content
 
 Depending on provider support, you can supply `Image`, `Audio`, or even `Video` content.
 
@@ -105,7 +105,7 @@ Additional options:
 
 ### Tool Interactions
 
-`ToolCall` and `ToolOutput` content is relevant when the LLM is calling external functions, also known as [Tools](./tools). The `ToolCall` content allows the LLM to specify that it wants to use a tool, and the `ToolOutput` content gives the LLM access to the output from that computation.
+`ToolCall` and `ToolOutput` content is relevant when the LLM is calling external functions, also known as [Tools](./tools). The `ToolCall` content allows the LLM to specify that it wants to use a tool, and the `ToolOutput` content gives the LLM access to the output from that computation. By convention, the `ToolCall` is included in an assistant message, and the `ToolOutput` is provided as a user message.
 
 <CodeExample file="examples/messages/content.py" lines="34-45" />
 
@@ -113,13 +113,13 @@ Additional options:
 
 Some models support thinking, in which case they create intermediate reasoning content that informs their final response. The `Thinking` content gives insight into the model's thinking process. Depending on the provider, this may be the raw thinking text, or a generated summary.
 
-<CodeExample file="examples/messages/content.py" lines="47-55" />
+<CodeExample file="examples/messages/content.py" lines="47-57" />
 
 ### Content Sequences
 
 A message can contain a sequence of content objects, potentially of multiple types:
 
-<CodeExample file="examples/messages/content.py" lines="57-63" />
+<CodeExample file="examples/messages/content.py" lines="59-68" />
 
 ## Building Conversations
 

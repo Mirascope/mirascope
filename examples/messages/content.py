@@ -27,7 +27,7 @@ video_msg = llm.user(["What do you think of this book review?", video])
 
 document = llm.Document(
     data="/path/to/research-paper.pdf",  # or URL, base64, or bytes
-    mime_type="application/pdf"
+    mime_type="application/pdf",
 )
 document_msg = llm.user(["Please summarize this research paper:", document])
 
@@ -49,15 +49,20 @@ thinking = llm.Thinking(
     thoughts="The user liked The Martian and Project Hail Mary, both hard sci-fi with problem-solving. They want similar themes but different settings. I should recommend books with clever protagonists facing technical challenges...",
     redacted=False,
 )
-thinking_msg = llm.assistant([
-    thinking,
-    "Based on your love for Andy Weir's problem-solving narratives, I recommend 'Recursion' by Blake Crouch.",
-])
+thinking_msg = llm.assistant(
+    [
+        thinking,
+        "Based on your love for Andy Weir's problem-solving narratives, I recommend 'Recursion' by Blake Crouch.",
+    ]
+)
 
 mixed_msg = llm.user(
     [
         "I have a question about this book cover:",
-        image,
+        llm.Image(
+            data="https://coppermind.net/wiki/Mistborn:_The_Final_Empire/Covers#/media/File:TFE_US_1st_Cover.jpeg",
+            mime_type="image/jpeg",
+        ),
         "Can you tell me what genre this appears to be?",
     ]
 )
