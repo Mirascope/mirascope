@@ -4,13 +4,11 @@ from mirascope import llm
 
 
 @llm.prompt("Please recommend a book")
-def simple_prompt():
-    pass
+def simple_prompt(): ...
 
 
 @llm.prompt("Please recommend a {genre} book")
-def genre_prompt(genre: str):
-    pass
+def genre_prompt(genre: str): ...
 
 
 @dataclass
@@ -20,8 +18,7 @@ class Book:
 
 
 @llm.prompt("Recommend a book like {{ book.title }} by {{ book.author }}.")
-def book_prompt(book: Book):
-    pass
+def book_prompt(book: Book): ...
 
 
 @llm.prompt(
@@ -32,8 +29,7 @@ def book_prompt(book: Book):
     Format your response as a numbered list.
     """
 )
-def multiline_template(genre: str):
-    pass
+def multiline_template(genre: str): ...
 
 
 # BAD - inconsistent indentation
@@ -43,8 +39,7 @@ def multiline_template(genre: str):
     Second line with different indentation
     """
 )
-def bad_indentation_template():
-    pass
+def bad_indentation_template(): ...
 
 
 # GOOD - consistent indentation
@@ -55,8 +50,7 @@ def bad_indentation_template():
     Second line with same indentation
     """
 )
-def good_indentation_template():
-    pass
+def good_indentation_template(): ...
 
 
 @llm.prompt(
@@ -69,8 +63,7 @@ def good_indentation_template():
     [USER] I'd like a {{ genre }} book, please.
     """
 )
-def pirate_prompt(genre: str):
-    pass
+def pirate_prompt(genre: str): ...
 
 
 @llm.prompt(
@@ -79,28 +72,23 @@ def pirate_prompt(genre: str):
     [USER] Please recommend a book!
     """
 )
-def unsafe(genre: str):
-    pass
+def unsafe(genre: str): ...
 
 
 @llm.prompt("What book is this? {{ book_cover:image }}")
-def image_prompt(book_cover: llm.Image | str | bytes):
-    pass
+def image_prompt(book_cover: llm.Image | str | bytes): ...
 
 
 @llm.prompt("Analyze this audio recording: {{ audio:audio }}")
-def audio_prompt(audio: llm.Audio | str | bytes):
-    pass
+def audio_prompt(audio: llm.Audio | str | bytes): ...
 
 
 @llm.prompt("Do these video clips remind you of any book? {{ clips:videos }}")
-def videos_prompt(clips: list[llm.Video | str | bytes]):
-    pass
+def videos_prompt(clips: list[llm.Video | str | bytes]): ...
 
 
 @llm.prompt("Review these documents: {{ docs:documents }}")
-def documents_prompt(docs: list[llm.Document | str | bytes]):
-    pass
+def documents_prompt(docs: list[llm.Document | str | bytes]): ...
 
 
 @llm.prompt(
@@ -118,8 +106,7 @@ def mixed_media_prompt(
     cover: llm.Image | str | bytes,
     narration: llm.Audio | str | bytes,
     docs: list[llm.Document | str | bytes],
-):
-    pass
+): ...
 
 
 @llm.prompt(
@@ -129,8 +116,7 @@ def mixed_media_prompt(
     [USER] Please summarize our conversation, and recommend a book based on this chat.
     """
 )
-def history_prompt(history: list[llm.Message]):
-    pass
+def history_prompt(history: list[llm.Message]): ...
 
 
 with open("book_recommendation.txt") as f:
@@ -138,5 +124,4 @@ with open("book_recommendation.txt") as f:
 
 
 @llm.prompt(template_content)
-def file_based_prompt(genre: str):
-    pass
+def file_based_prompt(genre: str): ...
