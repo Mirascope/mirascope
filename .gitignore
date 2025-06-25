@@ -176,10 +176,5 @@ cython_debug/
 #sqlite
 database.db
 
-# docs-viewer stuff
-docs/config/node_modules
-docs/config/dist
-docs/config/.docs-content
-
 # Cloudflare
 .wrangler

@@ -20,13 +20,14 @@
 
 This branch contains Mirascope v2, which is under active development.
 
-## Viewing documentation
+## Viewing & Building Documentation
 
-Use `uv run docs-dev` to launch the docs dev site. Note that [Bun](http://bun.sh/) must be installed.
+Use `bun run docs:dev` to launch the dev server. Note it does not currently have hot reloading; you'll need to restart it on every change.
 
-## Building documentation
+Use `bun run docs:build` to build the docs, and `bun run docs:preview` to preview the built docs.
 
-Use `uv run docs-build` to build the docs. To preview the build, use `bunx serve --single docs/config/dist`.
+Note that [Bun](http://bun.sh/) must be installed.
+
 
 ## Versioning
 
