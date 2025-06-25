@@ -63,12 +63,12 @@ class AsyncAgentContentSequenceReturn(Protocol[P, DepsT]):
     async def __call__(self, ctx: Context[DepsT]) -> Sequence[Content]: ...
 
 
-SystemPromptTemplate: TypeAlias = (
+SystemPrompt: TypeAlias = (
     AgentStringReturn[P, DepsT]
     | AgentContentReturn[P, DepsT]
     | AgentContentSequenceReturn[P, DepsT]
 )
-AsyncSystemPromptTemplate: TypeAlias = (
+AsyncSystemPrompt: TypeAlias = (
     AsyncAgentStringReturn[P, DepsT]
     | AsyncAgentContentReturn[P, DepsT]
     | AsyncAgentContentSequenceReturn[P, DepsT]
@@ -79,17 +79,17 @@ class AgentDecorator(Protocol[DepsT]):
     """Protocol for the `agent` decorator."""
 
     @overload
-    def __call__(self, fn: AsyncSystemPromptTemplate[P, DepsT]) -> Agent[DepsT]:
+    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> Agent[DepsT]:
         """Decorator for creating an async only agent."""
         ...
 
     @overload
-    def __call__(self, fn: SystemPromptTemplate[P, DepsT]) -> Agent[DepsT]:
+    def __call__(self, fn: SystemPrompt[P, DepsT]) -> Agent[DepsT]:
         """Decorator for creating an agent."""
         ...
 
     def __call__(
-        self, fn: SystemPromptTemplate[P, DepsT] | AsyncSystemPromptTemplate[P, DepsT]
+        self, fn: SystemPrompt[P, DepsT] | AsyncSystemPrompt[P, DepsT]
     ) -> Agent[DepsT] | AsyncAgent[DepsT]:
         """Decorator for creating an agent."""
         ...
@@ -99,20 +99,18 @@ class StructuredAgentDecorator(Protocol[DepsT, T]):
     """Protocol for the `agent` decorator with a response format."""
 
     @overload
-    def __call__(
-        self, fn: AsyncSystemPromptTemplate[P, DepsT]
-    ) -> StructuredAgent[DepsT, T]:
+    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> StructuredAgent[DepsT, T]:
         """Decorator for creating an async only structured agent."""
         ...
 
     @overload
-    def __call__(self, fn: SystemPromptTemplate[P, DepsT]) -> StructuredAgent[DepsT, T]:
+    def __call__(self, fn: SystemPrompt[P, DepsT]) -> StructuredAgent[DepsT, T]:
         """Decorator for creating a structured agent."""
         ...
 
     def __call__(
         self,
-        fn: SystemPromptTemplate[P, DepsT] | AsyncSystemPromptTemplate[P, DepsT],
+        fn: SystemPrompt[P, DepsT] | AsyncSystemPrompt[P, DepsT],
     ) -> StructuredAgent[DepsT, T] | AsyncStructuredAgent[DepsT, T]:
         """Decorator for creating a structured agent."""
         ...

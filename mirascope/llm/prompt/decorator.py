@@ -1,4 +1,4 @@
-"""The `prompt_template` decorator for writing messages as string templates."""
+"""The `prompt` decorator for writing messages as string templates."""
 
 from collections.abc import Awaitable, Callable, Sequence
 from typing import Concatenate, ParamSpec, Protocol, TypeAlias, overload
@@ -14,13 +14,13 @@ DepsT = TypeVar("DepsT", default=None)
 
 
 class ContentReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a single content part."""
+    """Protocol for a prompt function that returns a single content part."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Content: ...
 
 
 class ContextContentReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a single content part."""
+    """Protocol for a context prompt function that returns a single content part."""
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -28,13 +28,13 @@ class ContextContentReturn(Protocol[P, DepsT]):
 
 
 class AsyncContentReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a single content part."""
+    """Protocol for a prompt function that returns a single content part."""
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Content: ...
 
 
 class AsyncContextContentReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a single content part."""
+    """Protocol for a context prompt function that returns a single content part."""
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -42,13 +42,13 @@ class AsyncContextContentReturn(Protocol[P, DepsT]):
 
 
 class ContentSequenceReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a content parts sequence."""
+    """Protocol for a prompt function that returns a content parts sequence."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Content]: ...
 
 
 class ContextContentSequenceReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a content parts sequence."""
+    """Protocol for a context prompt function that returns a content parts sequence."""
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -56,7 +56,7 @@ class ContextContentSequenceReturn(Protocol[P, DepsT]):
 
 
 class AsyncContentSequenceReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a content parts sequence."""
+    """Protocol for a prompt function that returns a content parts sequence."""
 
     async def __call__(
         self, *args: P.args, **kwargs: P.kwargs
@@ -64,7 +64,7 @@ class AsyncContentSequenceReturn(Protocol[P]):
 
 
 class AsyncContextContentSequenceReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a content parts sequence."""
+    """Protocol for a context prompt function that returns a content parts sequence."""
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -72,13 +72,13 @@ class AsyncContextContentSequenceReturn(Protocol[P, DepsT]):
 
 
 class MessagesReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a list of messages."""
+    """Protocol for a prompt function that returns a list of messages."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> list[Message]: ...
 
 
 class ContextMessagesReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a list of messages."""
+    """Protocol for a context prompt function that returns a list of messages."""
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -86,63 +86,61 @@ class ContextMessagesReturn(Protocol[P, DepsT]):
 
 
 class AsyncMessagesReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a list of messages."""
+    """Protocol for a prompt function that returns a list of messages."""
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> list[Message]: ...
 
 
 class AsyncContextMessagesReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a list of messages."""
+    """Protocol for a context prompt function that returns a list of messages."""
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> list[Message]: ...
 
 
-PromptTemplate: TypeAlias = (
-    ContentReturn[P] | ContentSequenceReturn[P] | MessagesReturn[P]
-)
-"""A prompt template function.
+Prompt: TypeAlias = ContentReturn[P] | ContentSequenceReturn[P] | MessagesReturn[P]
+"""A prompt function.
 
-A `PromptTemplate` function takes input arguments `P` and returns one of:
+A `Prompt` function takes input arguments `P` and returns one of:
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
 """
 
-ContextPromptTemplate: TypeAlias = (
+ContextPrompt: TypeAlias = (
     ContextContentReturn[P, DepsT]
     | ContextContentSequenceReturn[P, DepsT]
     | ContextMessagesReturn[P, DepsT]
 )
-"""A context prompt template function.
+"""A context prompt function.
 
-A `ContextPromptTemplate` function takes input arguments `Context[DepsT]` and `P` and
+A `ContextPrompt` function takes input arguments `Context[DepsT]` and `P` and
 returns one of:
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
 """
 
-AsyncPromptTemplate: TypeAlias = (
+AsyncPrompt: TypeAlias = (
     AsyncContentReturn[P] | AsyncContentSequenceReturn[P] | AsyncMessagesReturn[P]
 )
-"""An asynchronous prompt template function.
+"""An asynchronous prompt function.
 
-An `AsyncPromptTemplate` function takes input arguments `P` and returns one of:
+An `AsyncPrompt` function takes input arguments `P` and returns one of:
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
 """
 
-AsyncContextPromptTemplate: TypeAlias = (
+AsyncContextPrompt: TypeAlias = (
     AsyncContextContentReturn[P, DepsT]
     | AsyncContextContentSequenceReturn[P, DepsT]
     | AsyncContextMessagesReturn[P, DepsT]
 )
-"""An asynchronous context prompt template function.
+"""An asynchronous context prompt function.
 
-An `AsyncContextPromptTemplate` function takes input arguments
+An `AsyncContextPrompt` function takes input arguments
 `Context[DepsT]` and `P` and returns one of:
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
@@ -150,15 +148,15 @@ An `AsyncContextPromptTemplate` function takes input arguments
 """
 
 
-class PromptTemplateDecorator(Protocol[DepsT]):
-    """Protocol for the `prompt_template` decorator."""
+class PromptDecorator(Protocol[DepsT]):
+    """Protocol for the `prompt` decorator."""
 
     @overload
     def __call__(
         self,
         fn: Callable[Concatenate[Context[DepsT], P], None],
     ) -> ContextMessagesReturn[P, DepsT]:
-        """Decorator for creating a context prompt template."""
+        """Decorator for creating a context prompt."""
         ...
 
     @overload
@@ -166,17 +164,17 @@ class PromptTemplateDecorator(Protocol[DepsT]):
         self,
         fn: Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
     ) -> AsyncContextMessagesReturn[P, DepsT]:
-        """Decorator for creating an async context prompt template."""
+        """Decorator for creating an async context prompt."""
         ...
 
     @overload
     def __call__(self, fn: Callable[P, None]) -> MessagesReturn[P]:
-        """Decorator for creating a prompt template."""
+        """Decorator for creating a prompt."""
         ...
 
     @overload
     def __call__(self, fn: Callable[P, Awaitable[None]]) -> AsyncMessagesReturn[P]:
-        """Decorator for creating an async prompt template."""
+        """Decorator for creating an async prompt."""
         ...
 
     def __call__(
@@ -186,19 +184,19 @@ class PromptTemplateDecorator(Protocol[DepsT]):
         | Callable[Concatenate[Context[DepsT], P], None]
         | Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
     ) -> (
-        PromptTemplate[P]
-        | AsyncPromptTemplate[P]
-        | ContextPromptTemplate[P, DepsT]
-        | AsyncContextPromptTemplate[P, DepsT]
+        Prompt[P]
+        | AsyncPrompt[P]
+        | ContextPrompt[P, DepsT]
+        | AsyncContextPrompt[P, DepsT]
     ):
-        """Decorator for creating a prompt template."""
+        """Decorator for creating a prompt."""
         ...
 
 
-def prompt_template(template: str) -> PromptTemplateDecorator:
-    '''Prompt template decorator for writing messages as a string template.
+def prompt(template: str) -> PromptDecorator:
+    '''Prompt decorator for writing messages as a string template.
 
-    This decorator transforms a function into a prompt template that will process
+    This decorator transforms a function into a prompt that will process
     template placeholders and convert sections into messages. Templates can include
     sections like [SYSTEM], [USER], [ASSISTANT] to designate role-specific content.
 
@@ -208,13 +206,13 @@ def prompt_template(template: str) -> PromptTemplateDecorator:
             [USER], and [ASSISTANT].
 
     Returns:
-        A decorator function that converts the decorated function into a prompt template.
+        A decorator function that converts the decorated function into a prompt.
 
     Example:
         ```python
         from mirascope import llm
 
-        @llm.prompt_template("""
+        @llm.prompt("""
             [SYSTEM]
             You are a helpful assistant specializing in {{ domain }}.
 
@@ -225,7 +223,7 @@ def prompt_template(template: str) -> PromptTemplateDecorator:
             # This function body should be empty
             pass
 
-        # Use the prompt template to generate messages
+        # Use the prompt to generate messages
         messages = my_prompt(domain="astronomy", question="What is a black hole?")
         ```
     '''
