@@ -3,7 +3,7 @@ name = "mirascope"
 version = "2.0.0-alpha.0"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = { file = "../LICENSE" }
 requires-python = ">=3.10"
 authors = [
     { name = "William Bakst", email = "william@mirascope.com" },
@@ -41,10 +41,6 @@ Documentation = "https://v2.mirascope.com/"
 Repository = "https://github.com/Mirascope/mirascope"
 Issues = "https://github.com/Mirascope/mirascope/issues"
 Changelog = "https://github.com/Mirascope/mirascope/releases"
-
-[project.scripts]
-docs-dev = "docs.config.cli:docs_dev"
-docs-build = "docs.config.cli:docs_build"
 
 [project.optional-dependencies]
 anthropic = ["anthropic>=0.29.0,<1.0"]
@@ -87,8 +83,6 @@ exclude = [
     "_build",
     "buck-out",
     "build",
-    "dist",
-    "docs/config/node_modules",
     "venv",
 ]
 line-length = 88
@@ -132,14 +126,12 @@ line-ending = "auto"
 known-first-party = ['mirascope', 'tests', 'examples']
 
 [tool.pyright]
-exclude = [".venv", "docs/config/node_modules", "build"]
+exclude = [".venv", "docs/node_modules", "build"]
 venvPath = "."
 venv = ".venv"
 
 [tool.codespell]
 skip = [".git", "*.lock"]
-ignore-words-list = 'EHR,reworkd,ROUGE,rouge,Rouge'
-ignore-regex = 'and buyed some milk'
 
 [tool.coverage.run]
 omit = []

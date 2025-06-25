@@ -4,18 +4,14 @@
 mkdir -p .docs-content/docs
 mkdir -p .docs-content/typescript/examples
 
-# Copy all files and directories from parent, excluding config/
-for item in ../*; do
-    if [[ "$(basename "$item")" != "config" ]]; then
-        cp -r "$item" .docs-content/docs/
-    fi
-done
+# Copy docs content
+cp -r content/* .docs-content/docs/
 
 # Copy examples
-cp -r ../../examples .docs-content/
+cp -r ../python/examples .docs-content/
 
 # Copy TypeScript examples excluding specific files/directories
-for item in ../../typescript/examples/*; do
+for item in ../typescript/examples/*; do
     basename_item="$(basename "$item")"
     case "$basename_item" in
         node_modules|bun.lock|package.json|tsconfig.json)

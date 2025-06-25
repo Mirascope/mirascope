@@ -1,13 +1,13 @@
 {
-  "name": "mirascope",
+  "name": "mirascope-docs",
   "private": true,
   "scripts": {
     "dev": "bun docs:prepare && bun docs:serve",
     "build": "bun docs:prepare && bun docs:build",
     "docs:clean": "rm -rf .docs-content dist",
     "docs:copy": "./copy-docs.sh",
-    "docs:api": "PYTHONPATH=.. uv run api2mdx --source-path ../.. --package mirascope.llm --output .docs-content/docs/api",
-    "docs:merge-api": "bun merge-api-meta.ts",
+    "docs:api": "PYTHONPATH=. uv run api2mdx --source-path ../python --package mirascope.llm --output .docs-content/docs/api",
+    "docs:merge-api": "bun scripts/merge-api-meta.ts",
     "docs:serve": "rm -rf node_modules/.vite && node_modules/@mirascope/docs-viewer/scripts/start.ts --content-dir .docs-content --working-dir dist",
     "docs:prepare": "bun docs:clean && bun docs:copy && bun docs:api && bun docs:merge-api",
     "docs:build": "bun node_modules/@mirascope/docs-viewer/scripts/build.ts --content-dir .docs-content --output-dir dist"

@@ -1,0 +1,10 @@
+{
+  "name": "mirascope-monorepo",
+  "private": true,
+  "scripts": {
+    "docs:dev": "cd docs && bun run dev",
+    "docs:build": "cd docs && bun run build",
+    "docs:preview": "bunx serve --single docs/dist",
+    "typecheck:python": "cd python && uv run pyright ."
+  }
+}
