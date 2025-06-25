@@ -14,12 +14,12 @@ from ..types import Dataclass, Jsonable
 
 P = ParamSpec("P")
 T = TypeVar("T", bound=Dataclass | None, default=None)
-PromptT = TypeVar("PromptT", bound=Promptable | AsyncPromptable)
+PromptableT = TypeVar("PromptableT", bound=Promptable | AsyncPromptable)
 DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class BaseStructuredContextCall(Generic[P, PromptT, T, DepsT], ABC):
+class BaseStructuredContextCall(Generic[P, PromptableT, T, DepsT], ABC):
     """A base class for generating responses using LLMs."""
 
     model: LLM
@@ -31,5 +31,5 @@ class BaseStructuredContextCall(Generic[P, PromptT, T, DepsT], ABC):
     response_format: type[T]
     """The response format for the generated response."""
 
-    fn: PromptT
-    """The function that generates the prompt template."""
+    fn: PromptableT
+    """The Promptable function that generates the Prompt."""

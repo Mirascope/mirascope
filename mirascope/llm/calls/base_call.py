@@ -13,11 +13,11 @@ from ..tools import ToolDef
 from ..types import Jsonable
 
 P = ParamSpec("P")
-PromptT = TypeVar("PromptT", bound=Promptable | AsyncPromptable)
+PromptableT = TypeVar("PromptableT", bound=Promptable | AsyncPromptable)
 
 
 @dataclass
-class BaseCall(Generic[P, PromptT], ABC):
+class BaseCall(Generic[P, PromptableT], ABC):
     """A base class for generating responses using LLMs."""
 
     model: LLM
@@ -26,5 +26,5 @@ class BaseCall(Generic[P, PromptT], ABC):
     tools: Sequence[ToolDef[..., Jsonable]] | None
     """The tools to be used with the LLM."""
 
-    fn: PromptT
-    """The function that generates the prompt template."""
+    fn: PromptableT
+    """The Promptable function that generates the Prompt."""
