@@ -6,17 +6,25 @@ python functions.
 
 from .decorator import (
     AsyncContextPrompt,
+    AsyncContextPromptable,
     AsyncPrompt,
+    AsyncPromptable,
     ContextPrompt,
+    ContextPromptable,
     Prompt,
+    Promptable,
     PromptDecorator,
     prompt,
 )
 
 __all__ = [
+    "AsyncContextPromptable",
     "AsyncContextPrompt",
+    "AsyncPromptable",
     "AsyncPrompt",
+    "ContextPromptable",
     "ContextPrompt",
+    "Promptable",
     "Prompt",
     "PromptDecorator",
     "prompt",

@@ -8,12 +8,12 @@ from typing import Generic, ParamSpec
 from typing_extensions import TypeVar
 
 from ..models import LLM
-from ..prompt import AsyncPrompt, Prompt
+from ..prompt import AsyncPromptable, Promptable
 from ..tools import ToolDef
 from ..types import Jsonable
 
 P = ParamSpec("P")
-PromptT = TypeVar("PromptT", bound=Prompt | AsyncPrompt)
+PromptT = TypeVar("PromptT", bound=Promptable | AsyncPromptable)
 
 
 @dataclass
