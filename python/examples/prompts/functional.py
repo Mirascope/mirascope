@@ -1,3 +1,5 @@
+import inspect
+
 from mirascope import llm
 
 
@@ -9,6 +11,17 @@ def simple_prompt() -> str:
 @llm.prompt()
 def genre_prompt(genre: str) -> str:
     return f"Please recommend a {genre} book"
+
+
+@llm.prompt()
+def detailed_prompt(genre: str, age: int) -> str:
+    return inspect.cleandoc(
+        f"""
+        Please recommend a {genre} book that would be appropriate for a {age}-year-old reader.
+        Include the title, author, and a brief description.
+        Make sure the content is age-appropriate and engaging.
+        """
+    )
 
 
 @llm.prompt()

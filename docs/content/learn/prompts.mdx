@@ -11,31 +11,30 @@ Working with Large Language Models (LLMs) involves providing them with "prompts"
   This guide focuses just on creating prompts. The [Calls](./calls) guide shows how to use them.
 </Info>
 
-In the [Messages](./messages) guide, we explore how to create [`llm.Message`](/docs/api/messages#message)s that provide context to LLMs. Using just that knowledge, we could create single-use prompt, as follows:
+In the [last guide](./messages), we learned how to create Messages that provide context to the LLM. Using just that knowledge, we could create a simple prompt:
 
-<CodeExample file="examples/prompts/intro.py" lines="1-16" />
+<CodeExample file="examples/prompts/intro.py" lines="3-3" />
 
-<Note>
-*We use `inspect.cleandoc` to strip unnecessary whitespace, while maintaining clean code formatting.*
-</Note>
+This works for a single use case, but what if we want different genres? We'd end up duplicating code:
 
-This works, but because the prompt is hard-coded to a single person and their interests, it is not reusable. If all you want is a single recommendation, you could just ask your favorite LLM directly—no need to write any code! 
+<CodeExample file="examples/prompts/intro.py" lines="5-7" />
 
-In AI engineering, we are interested in flexible, reusable, and optimized prompts. In practice, that means thinking about our prompts not as specific lists of messages, but as *functions* that generate lists of messages. This is the core of how Mirascope handles prompts.
+This duplication isn't reusable or maintainable. As AI engineers, we want flexible, reusable prompts. The solution is to think of prompts not as static lists of messages, but as *functions* that generate lists of messages based on parameters.
 
 <Note title="Mirascope Prompts">
 In Mirascope terminology, a **Prompt** is any function that returns `list[llm.Message]`. The [prompts module](/docs/api/prompts) provides tools for creating and modifying prompts.
 </Note>
 
-With that in mind, let's write our first Prompt:
+Here's our first reusable prompt:
 
-<CodeExample file="examples/prompts/intro.py" lines="19-31" />
+<CodeExample file="examples/prompts/intro.py" lines="10-11" />
 
-This prompt is an example of a *functional style prompt*, in which the content for the LLM is created within the function body. Mirascope also supports *template style prompts*, in which the prompt is written into a template string:
+Mirascope makes constructing prompts easier via the `@llm.prompt` decorator. It offers two principal ways for making prompts: by providing pre-prepared string templates to the decorator ("Template Style"), or by transforming functions that return content into full prompts ("Functional Style"). Here are examples of each:
 
-<CodeExample file="examples/prompts/intro.py" lines="34-46" />
+<CodeExample file="examples/prompts/intro.py" lines="14-23" />
 
-Both approaches are equally powerful. The template style is declarative and can be more readable, while the functional style excels if you need to dynamically compute pieces of the prompt. Both styles of prompts can be constructed using the [`@llm.prompt` decorator](/docs/api/prompts#prompt). 
+
+Both approaches are powerful. The template style is declarative and can be more readable, while the functional style gives you the full power of the Python programming language.
 
 **[Template-style prompts](#template-style-prompts)** are best when:
 - Your prompt structure is mostly static 
@@ -43,9 +42,9 @@ Both approaches are equally powerful. The template style is declarative and can 
 - You prefer clear separation between prompt structure and application logic
 
 **[Functional-style prompts](#functional-style-prompts)** are best when:
-- You want dynamic logic, like computing 
-- Your prompt construction involves complex business logic  
-- You want tight integration with existing application code
+- Your prompt construction involves complex logic, like adding computed variables to your prompt, or conditionally included messages
+- You prefer leveraging the power of Python rather than using a domain-specific templating system
+
 
 
 
@@ -76,13 +75,13 @@ When writing templates that span multiple lines, the template string is automati
 <Warning title="On Indentation Consistency" collapsible={true} defaultOpen={false}>
 When using multi-line templates, all content within a message section must start at the same indentation level for proper formatting. Here's what to avoid and what works correctly:
 
-<CodeExample file="examples/prompts/template.py" lines="39-47" />
+<CodeExample file="examples/prompts/template.py" lines="39-59" />
 
 The template system removes leading whitespace consistently, so misaligned content can result in unexpected formatting in your final messages.
 </Warning>
 
 
-### Templated roles
+### Templated Roles
 
 Templates also support specifying multiple messages with distinct roles, using the `[SYSTEM]`, `[USER]`, and `[ASSISTANT]` role markers. When a role marker is detected, everything up until the next role marker will be included in a message from that role.
 
@@ -126,6 +125,8 @@ You can combine multiple content types in a single template:
 
 <CodeExample file="examples/prompts/template.py" lines="106-122" />
 
+In all of the above examples, the various content parts are combined into a single user message.
+
 #### Content Input Formats
 
 The `Image`, `Audio`, `Video`, and `Document` types are all supported. (See the [Messages guide](./messages#message-content-types) to refresh on content types.) Content variables accept multiple input formats:
@@ -160,8 +161,6 @@ Prompt templates give you the option of storing your prompts separately from you
 
 ### Template Syntax Reference
 
-## Template Syntax Reference
-
 Here's a quick reference of the special syntax options in prompt templates:
 
 - `{{ variable }}` - Variable substitution
@@ -182,17 +181,25 @@ While template-style prompts excel at declarative patterns, functional-style pro
 
 The simplest functional prompt returns a string, which becomes a user message:
 
-<CodeExample file="examples/prompts/functional.py" lines="4-6" />
+<CodeExample file="examples/prompts/functional.py" lines="6-8" />
 
 You can also parameterize functional prompts just like templates:
 
-<CodeExample file="examples/prompts/functional.py" lines="9-11" />
+<CodeExample file="examples/prompts/functional.py" lines="11-13" />
+
+### Multi-line Functional Prompts
+
+For longer prompts spanning multiple lines, use `inspect.cleandoc` (from the Python standard library) to handle indentation properly:
+
+<CodeExample file="examples/prompts/functional.py" lines="16-25" />
+
+Unlike template-style prompts which automatically clean indentation, functional prompts require explicit handling of whitespace. The `inspect.cleandoc` function removes common leading whitespace while preserving the relative indentation of your content.
 
 ### Multi-role Functional Prompts
 
 For complex conversations requiring multiple roles, return a list of messages:
 
-<CodeExample file="examples/prompts/functional.py" lines="14-25" />
+<CodeExample file="examples/prompts/functional.py" lines="27-38" />
 
 This gives you complete control over the conversation structure, including the ability to conditionally include messages or compute content dynamically.
 
@@ -200,17 +207,17 @@ This gives you complete control over the conversation structure, including the a
 
 Functional prompts handle multimodal content by including it directly in the message:
 
-<CodeExample file="examples/prompts/functional.py" lines="28-30" />
+<CodeExample file="examples/prompts/functional.py" lines="41-43" />
 
 For multiple content items, use list unpacking:
 
-<CodeExample file="examples/prompts/functional.py" lines="33-35" />
+<CodeExample file="examples/prompts/functional.py" lines="46-48" />
 
 ### Message History Integration
 
 You can inject existing conversation history using the spread operator:
 
-<CodeExample file="examples/prompts/functional.py" lines="38-48" />
+<CodeExample file="examples/prompts/functional.py" lines="51-61" />
 
 
 ## Next Steps
