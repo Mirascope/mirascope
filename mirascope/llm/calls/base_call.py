@@ -8,16 +8,16 @@ from typing import Generic, ParamSpec
 from typing_extensions import TypeVar
 
 from ..models import LLM
-from ..prompt_templates import AsyncPromptTemplate, PromptTemplate
+from ..prompts import AsyncPromptable, Promptable
 from ..tools import ToolDef
 from ..types import Jsonable
 
 P = ParamSpec("P")
-PromptTemplateT = TypeVar("PromptTemplateT", bound=PromptTemplate | AsyncPromptTemplate)
+PromptableT = TypeVar("PromptableT", bound=Promptable | AsyncPromptable)
 
 
 @dataclass
-class BaseCall(Generic[P, PromptTemplateT], ABC):
+class BaseCall(Generic[P, PromptableT], ABC):
     """A base class for generating responses using LLMs."""
 
     model: LLM
@@ -26,5 +26,5 @@ class BaseCall(Generic[P, PromptTemplateT], ABC):
     tools: Sequence[ToolDef[..., Jsonable]] | None
     """The tools to be used with the LLM."""
 
-    fn: PromptTemplateT
-    """The function that generates the prompt template."""
+    fn: PromptableT
+    """The Promptable function that generates the Prompt."""

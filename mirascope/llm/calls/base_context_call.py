@@ -8,17 +8,17 @@ from typing import Generic, ParamSpec
 from typing_extensions import TypeVar
 
 from ..models import LLM
-from ..prompt_templates import AsyncPromptTemplate, PromptTemplate
+from ..prompts import AsyncPromptable, Promptable
 from ..tools import ContextToolDef
 from ..types import Jsonable
 
 P = ParamSpec("P")
-PromptTemplateT = TypeVar("PromptTemplateT", bound=PromptTemplate | AsyncPromptTemplate)
+PromptableT = TypeVar("PromptableT", bound=Promptable | AsyncPromptable)
 DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class BaseContextCall(Generic[P, PromptTemplateT, DepsT], ABC):
+class BaseContextCall(Generic[P, PromptableT, DepsT], ABC):
     """A base class for generating responses with context using LLMs."""
 
     model: LLM
@@ -27,5 +27,5 @@ class BaseContextCall(Generic[P, PromptTemplateT, DepsT], ABC):
     tools: Sequence[ContextToolDef[..., Jsonable, DepsT]] | None
     """The tools to be used with the LLM."""
 
-    fn: PromptTemplateT
-    """The function that generates the prompt template."""
+    fn: PromptableT
+    """The Promptable function that generates the Prompt."""

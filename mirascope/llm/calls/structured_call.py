@@ -5,7 +5,7 @@ from typing import ParamSpec
 
 from typing_extensions import TypeVar
 
-from ..prompt_templates import PromptTemplate
+from ..prompts import Promptable
 from ..responses import AsyncStructuredStream, Response, StructuredStream
 from ..types import Dataclass
 from .base_structured_call import BaseStructuredCall
@@ -15,7 +15,7 @@ T = TypeVar("T", bound=Dataclass | None, default=None)
 
 
 @dataclass
-class StructuredCall(BaseStructuredCall[P, PromptTemplate, T]):
+class StructuredCall(BaseStructuredCall[P, Promptable, T]):
     """A class for generating structured responses using LLMs."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:

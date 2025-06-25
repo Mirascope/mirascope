@@ -8,7 +8,6 @@ from typing_extensions import TypeVar
 
 from ..content import Audio, Image, Video
 from ..messages import Message
-from ..prompt_templates import DynamicConfig
 from ..types import Dataclass
 from .content import ContextResponseContent, ResponseContent
 from .finish_reason import FinishReason
@@ -35,9 +34,6 @@ class BaseResponse(Generic[ResponseContentT, T]):
 
     args: dict[str, Any]
     """The arguments used to generate the response."""
-
-    dynamic_config: DynamicConfig
-    """The dynamic configuration used to generate the response."""
 
     template: str | None
     """The string template used to define the messages array, if any."""
