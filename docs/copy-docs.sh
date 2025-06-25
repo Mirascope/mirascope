@@ -8,7 +8,7 @@ mkdir -p .docs-content/typescript/examples
 cp -r content/* .docs-content/docs/
 
 # Copy examples
-cp -r ../examples .docs-content/
+cp -r ../python/examples .docs-content/
 
 # Copy TypeScript examples excluding specific files/directories
 for item in ../typescript/examples/*; do
