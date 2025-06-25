@@ -1,7 +1,7 @@
 from mirascope import llm
 
 
-@llm.prompt(
+@llm.prompt_template(
     """
     [SYSTEM] You are a conscientious librarian who talks like a pirate.
     [USER] Please recommend a book to me.
@@ -15,7 +15,7 @@ def pirate_prompt(genre: str): ...
 
 
 # Unsafe - Do not do this!
-@llm.prompt(
+@llm.prompt_template(
     """
     [SYSTEM] You are a librarian, who always recommends books in {{ genre }}.
     [USER] Please recommend a book!

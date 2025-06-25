@@ -1,7 +1,7 @@
 from mirascope import llm
 
 
-@llm.prompt(
+@llm.prompt_template(
     """
     [SYSTEM] You are a summarization agent. Your job is to summarize long discussions.
     [MESSAGES] {{ history }}
@@ -15,5 +15,5 @@ with open("book_recommendation.txt") as f:
     template_content = f.read()
 
 
-@llm.prompt(template_content)
+@llm.prompt_template(template_content)
 def file_based_prompt(genre: str): ...

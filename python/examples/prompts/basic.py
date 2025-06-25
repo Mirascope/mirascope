@@ -1,7 +1,7 @@
 from mirascope import llm
 
 
-@llm.prompt(
+@llm.prompt_template(
     """
     [SYSTEM] You are a helpful librarian.
     [USER] Recommend a {{ genre }} book.
@@ -11,17 +11,17 @@ def template_prompt(genre: str):
     pass
 
 
-@llm.prompt()
+@llm.prompt_template()
 def content_prompt(genre: str) -> str:
     return f"Recommend a {genre} book"
 
 
-@llm.prompt()
+@llm.prompt_template()
 def content_sequence_prompt(genre: str) -> list[str]:
     return ["I'm looking for a book.", f"Can you recommend one in {genre}"]
 
 
-@llm.prompt()
+@llm.prompt_template()
 def messages_prompt(genre: str) -> list[llm.Message]:
     return [
         llm.messages.system("You are a helpful librarian."),

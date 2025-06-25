@@ -1,17 +1,17 @@
 from mirascope import llm
 
 
-@llm.prompt()
+@llm.prompt_template()
 def recommend_book_prompt() -> str:
     return "Please recommend a book"
 
 
-@llm.prompt()
+@llm.prompt_template()
 def recommend_genre_prompt(genre: str) -> str:
     return f"Please recommend a {genre} book"
 
 
-@llm.prompt()
+@llm.prompt_template()
 def recommend_genre_age_appropriate_prompt(genre: str, age: int) -> str:
     return f"""
     Please recommend a {genre} book that would be appropriate for a {age}-year-old reader.
@@ -20,7 +20,7 @@ def recommend_genre_age_appropriate_prompt(genre: str, age: int) -> str:
     """
 
 
-@llm.prompt()
+@llm.prompt_template()
 def pirate_prompt(genre: str) -> list[llm.Message]:
     return [
         llm.messages.system(
@@ -35,17 +35,17 @@ def pirate_prompt(genre: str) -> list[llm.Message]:
     ]
 
 
-@llm.prompt()
+@llm.prompt_template()
 def image_prompt(book_cover: llm.Image) -> list[llm.Content]:
     return ["What book is this?", book_cover]
 
 
-@llm.prompt()
+@llm.prompt_template()
 def videos_prompt(clips: list[llm.Video]) -> list[llm.Content]:
     return ["Do these video clips remind you of any book?", *clips]
 
 
-@llm.prompt()
+@llm.prompt_template()
 def history_prompt(history: list[llm.Message]) -> list[llm.Message]:
     return [
         llm.messages.system(

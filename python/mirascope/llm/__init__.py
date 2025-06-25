@@ -38,7 +38,7 @@ from .content import (
 from .context import Context, context
 from .messages import Message
 from .models import LLM, Client, Params, model
-from .prompts import prompt
+from .prompts import prompt_template
 from .response_formatting import ResponseFormat
 from .response_formatting.decorator import response_format
 from .responses import (
