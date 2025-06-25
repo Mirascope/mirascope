@@ -36,7 +36,7 @@ from .content import (
     Video,
 )
 from .context import Context, context
-from .messages import Message
+from .messages import Message, Prompt
 from .models import LLM, Client, Params, model
 from .prompt_templates import prompt_template
 from .response_formatting import ResponseFormat
@@ -70,6 +70,7 @@ __all__ = [
     "Image",
     "Message",
     "Params",
+    "Prompt",
     "Response",
     "ResponseFormat",
     "Stream",

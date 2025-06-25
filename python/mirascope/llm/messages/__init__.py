@@ -7,6 +7,7 @@ content arrays that can include text, images, audio, documents, and tool interac
 
 from .message import (
     Message,
+    Prompt,
     assistant,
     system,
     user,
@@ -14,6 +15,7 @@ from .message import (
 
 __all__ = [
     "Message",
+    "Prompt",
     "assistant",
     "system",
     "user",
