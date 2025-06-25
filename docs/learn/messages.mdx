@@ -9,7 +9,14 @@ Messages are the fundamental building blocks of Large Language Model (LLM) inter
 
 Here is a simple example:
 
-<CodeExample file="examples/messages/manual.py" lines="1-4" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/manual.py" lines="1-4" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/manual.ts" lines="1-4" />
+  </Tab>
+</TabbedSection>
 
 Each message is represented by a [Message](/docs/api/messages#message) class. The class has two required properties: `role`, which specifies what kind of entity is providing the message, and `content`, which specifies the content of the message. There's also an optional `name` field, which is helpful if there are multiple participants with the same role.
 
@@ -24,24 +31,52 @@ and [`llm.messages.assistant`](/docs/api/messages#assistant).
 
 System messages are instructions from the application developer, and take priority over user messages. The system message may include specific directives, a persona the LLM should adopt, or detailed examples of intended behavior. Context engineering often focuses on improving the system message.
 
-<CodeExample file="examples/messages/shorthand.py" lines="3-5" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/shorthand.py" lines="3-5" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/shorthand.ts" lines="3-5" />
+  </Tab>
+</TabbedSection>
 
 ### User Messages
 
 User messages represent input from the person interacting with the LLM. These are questions, requests, or any input the LLM should respond to.
 
-<CodeExample file="examples/messages/shorthand.py" lines="6-6" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/shorthand.py" lines="6-6" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/shorthand.ts" lines="6-6" />
+  </Tab>
+</TabbedSection>
 
 ### Assistant Messages
 
 Assistant messages are responses from the LLM. You typically don't create these by hand, but receive them as part of LLM responses.
 
-<CodeExample file="examples/messages/shorthand.py" lines="7-9" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/shorthand.py" lines="7-9" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/shorthand.ts" lines="7-9" />
+  </Tab>
+</TabbedSection>
 
 <Note title="Manual Message Construction" collapsible={true} defaultOpen={false}>
 Instead of using the shorthand functions, you can also construct the `Message` class directly:
 
-<CodeExample file="examples/messages/manual.py" lines="6-14" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/manual.py" lines="6-14" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/manual.ts" lines="6-17" />
+  </Tab>
+</TabbedSection>
 
 Both approaches create identical messages, so we recommend the shorthand functions for convenience.
 
@@ -52,7 +87,14 @@ Both approaches create identical messages, so we recommend the shorthand functio
 Messages have an optional `name` parameter, which may be provided to the
 shorthand function. The name is useful when there are multiple participants in a conversation; for example multiple users, or (as shown below) multiple specialized assistants.
 
-<CodeExample file="examples/messages/conversations.py" lines="15-25" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/conversations.py" lines="15-25" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/conversations.ts" lines="13-24" />
+  </Tab>
+</TabbedSection>
 
 </Info>
 
@@ -77,17 +119,45 @@ _TODO: Replace this with centralized compatibility table (#1031)_
 
 The most common type of content is text, represented as plain strings:
 
-<CodeExample file="examples/messages/content.py" lines="3-3" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/content.py" lines="3-3" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/content.ts" lines="3-3" />
+  </Tab>
+</TabbedSection>
 
 ### Media Content
 
 Depending on provider support, you can supply `Image`, `Audio`, or even `Video` content.
 
-<CodeExample file="examples/messages/content.py" lines="5-10" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/content.py" lines="5-10" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/content.ts" lines="5-14" />
+  </Tab>
+</TabbedSection>
 
-<CodeExample file="examples/messages/content.py" lines="12-18" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/content.py" lines="12-18" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/content.ts" lines="16-23" />
+  </Tab>
+</TabbedSection>
 
-<CodeExample file="examples/messages/content.py" lines="20-26" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/content.py" lines="20-26" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/content.ts" lines="25-35" />
+  </Tab>
+</TabbedSection>
 
 <Info>
 **Media content** (`Image`, `Audio`, `Video`) can be provided as file paths, URLs, base64-encoded strings, or raw bytes.
@@ -103,25 +173,53 @@ Additional options:
 
 `Document` content allows you to embed structured document files, such as PDFs. Like media content, it can be specified via a file path, a URL, a base64-encoded string, or raw bytes.
 
-<CodeExample file="examples/messages/content.py" lines="28-34" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/content.py" lines="28-34" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/content.ts" lines="37-45" />
+  </Tab>
+</TabbedSection>
 
 ### Tool Interactions
 
 `ToolCall` and `ToolOutput` content is relevant when the LLM is calling external functions, also known as [Tools](./tools). The `ToolCall` content allows the LLM to specify that it wants to use a tool, and the `ToolOutput` content gives the LLM access to the output from that computation. By convention, the `ToolCall` is included in an assistant message, and the `ToolOutput` is provided as a user message.
 
-<CodeExample file="examples/messages/content.py" lines="36-47" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/content.py" lines="36-47" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/content.ts" lines="47-60" />
+  </Tab>
+</TabbedSection>
 
 ### Thinking Content
 
 Some models support thinking, in which case they create intermediate reasoning content that informs their final response. The `Thinking` content gives insight into the model's thinking process. Depending on the provider, this may be the raw thinking text, or a generated summary.
 
-<CodeExample file="examples/messages/content.py" lines="49-59" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/content.py" lines="49-59" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/content.ts" lines="62-72" />
+  </Tab>
+</TabbedSection>
 
 ### Content Sequences
 
 A message can contain a sequence of content objects, potentially of multiple types:
 
-<CodeExample file="examples/messages/content.py" lines="61-70" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/content.py" lines="61-70" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/content.ts" lines="74-82" />
+  </Tab>
+</TabbedSection>
 
 ## Building Conversations
 
@@ -129,11 +227,25 @@ LLMs operate on sequences of messages, which allows the LLM to maintain consiste
 
 **Single Query:**
 
-<CodeExample file="examples/messages/conversations.py" lines="3-5" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/conversations.py" lines="3-5" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/conversations.ts" lines="3-5" />
+  </Tab>
+</TabbedSection>
 
 **Multi-turn Conversation:**
 
-<CodeExample file="examples/messages/conversations.py" lines="7-13" />
+<TabbedSection>
+  <Tab value="Python">
+    <CodeExample file="examples/messages/conversations.py" lines="7-13" />
+  </Tab>
+  <Tab value="Typescript">
+    <CodeExample file="typescript/examples/messages/conversations.ts" lines="5-11" />
+  </Tab>
+</TabbedSection>
 
 ## Next Steps
 
