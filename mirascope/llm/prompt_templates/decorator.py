@@ -8,7 +8,6 @@ from typing_extensions import TypeVar
 from ..content import Content
 from ..context import Context
 from ..messages.message import Message
-from .dynamic_config import DynamicConfig
 
 P = ParamSpec("P")
 DepsT = TypeVar("DepsT", default=None)
@@ -100,43 +99,8 @@ class AsyncContextMessagesReturn(Protocol[P, DepsT]):
     ) -> list[Message]: ...
 
 
-class DynamicConfigReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a dynamic configuration."""
-
-    def __call__(
-        self, *args: P.args, **kwargs: P.kwargs
-    ) -> tuple[list[Message], DynamicConfig]: ...
-
-
-class ContextDynamicConfigReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a dynamic configuration."""
-
-    def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> tuple[list[Message], DynamicConfig]: ...
-
-
-class AsyncDynamicConfigReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a dynamic configuration."""
-
-    async def __call__(
-        self, *args: P.args, **kwargs: P.kwargs
-    ) -> tuple[list[Message], DynamicConfig]: ...
-
-
-class AsyncContextDynamicConfigReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a dynamic configuration."""
-
-    async def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> tuple[list[Message], DynamicConfig]: ...
-
-
 PromptTemplate: TypeAlias = (
-    ContentReturn[P]
-    | ContentSequenceReturn[P]
-    | MessagesReturn[P]
-    | DynamicConfigReturn[P]
+    ContentReturn[P] | ContentSequenceReturn[P] | MessagesReturn[P]
 )
 """A prompt template function.
 
@@ -144,15 +108,12 @@ A `PromptTemplate` function takes input arguments `P` and returns one of:
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
-- A tuple of a list of `Message` objects that will be rendered as-is and the
-      `DynamicConfig` used to render it.
 """
 
 ContextPromptTemplate: TypeAlias = (
     ContextContentReturn[P, DepsT]
     | ContextContentSequenceReturn[P, DepsT]
     | ContextMessagesReturn[P, DepsT]
-    | ContextDynamicConfigReturn[P, DepsT]
 )
 """A context prompt template function.
 
@@ -161,15 +122,10 @@ returns one of:
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
-- A tuple of a list of `Message` objects that will be rendered as-is and the
-      `DynamicConfig` used to render it.
 """
 
 AsyncPromptTemplate: TypeAlias = (
-    AsyncContentReturn[P]
-    | AsyncContentSequenceReturn[P]
-    | AsyncMessagesReturn[P]
-    | AsyncDynamicConfigReturn[P]
+    AsyncContentReturn[P] | AsyncContentSequenceReturn[P] | AsyncMessagesReturn[P]
 )
 """An asynchronous prompt template function.
 
@@ -177,15 +133,12 @@ An `AsyncPromptTemplate` function takes input arguments `P` and returns one of:
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
-- A tuple of a list of `Message` objects that will be rendered as-is and the
-      `DynamicConfig` used to render it.
 """
 
 AsyncContextPromptTemplate: TypeAlias = (
     AsyncContextContentReturn[P, DepsT]
     | AsyncContextContentSequenceReturn[P, DepsT]
     | AsyncContextMessagesReturn[P, DepsT]
-    | AsyncContextDynamicConfigReturn[P, DepsT]
 )
 """An asynchronous context prompt template function.
 
@@ -194,8 +147,6 @@ An `AsyncContextPromptTemplate` function takes input arguments
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
-- A tuple of a list of `Message` objects that will be rendered as-is and the
-      `DynamicConfig` used to render it.
 """
 
 
@@ -213,25 +164,9 @@ class PromptTemplateDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], DynamicConfig],
-    ) -> ContextDynamicConfigReturn[P, DepsT]:
-        """Decorator for creating a context dynamic config prompt template."""
-        ...
-
-    @overload
-    def __call__(
-        self,
         fn: Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
     ) -> AsyncContextMessagesReturn[P, DepsT]:
         """Decorator for creating an async context prompt template."""
-        ...
-
-    @overload
-    def __call__(
-        self,
-        fn: Callable[Concatenate[Context[DepsT], P], Awaitable[DynamicConfig]],
-    ) -> AsyncContextDynamicConfigReturn[P, DepsT]:
-        """Decorator for creating an async context dynamic config prompt template."""
         ...
 
     @overload
@@ -240,31 +175,15 @@ class PromptTemplateDecorator(Protocol[DepsT]):
         ...
 
     @overload
-    def __call__(self, fn: Callable[P, DynamicConfig]) -> DynamicConfigReturn[P]:
-        """Decorator for creating a dynamic config prompt template."""
-        ...
-
-    @overload
     def __call__(self, fn: Callable[P, Awaitable[None]]) -> AsyncMessagesReturn[P]:
         """Decorator for creating an async prompt template."""
         ...
 
-    @overload
-    def __call__(
-        self, fn: Callable[P, Awaitable[DynamicConfig]]
-    ) -> AsyncDynamicConfigReturn[P]:
-        """Decorator for creating an async dynamic config prompt template."""
-        ...
-
     def __call__(
         self,
-        fn: Callable[P, DynamicConfig]
-        | Callable[P, None]
-        | Callable[P, Awaitable[DynamicConfig]]
+        fn: Callable[P, None]
         | Callable[P, Awaitable[None]]
-        | Callable[Concatenate[Context[DepsT], P], DynamicConfig]
         | Callable[Concatenate[Context[DepsT], P], None]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[DynamicConfig]]
         | Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
     ) -> (
         PromptTemplate[P]
@@ -303,8 +222,7 @@ def prompt_template(template: str) -> PromptTemplateDecorator:
             {{ question }}
         """)
         def my_prompt(domain: str, question: str) -> None:
-            # This function body can be empty or contain logic for computing
-            # dynamic fields or tools that are returned via DynamicConfig
+            # This function body should be empty
             pass
 
         # Use the prompt template to generate messages
