@@ -6,4 +6,3 @@ export { content, messages, types };
 
 export type { Content, Image, Audio, Video, Document, ToolCall, ToolOutput, Thinking } from './content';
 export type { Message } from './messages';
-export { system, user, assistant } from './messages';
