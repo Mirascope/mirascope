@@ -8,7 +8,7 @@ from typing import Generic, ParamSpec
 from typing_extensions import TypeVar
 
 from ..models import LLM
-from ..prompts import AsyncPromptable, Promptable
+from ..prompt_templates import AsyncPromptable, Promptable
 from ..tools import ContextToolDef
 from ..types import Jsonable
 

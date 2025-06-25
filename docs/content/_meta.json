@@ -20,8 +20,8 @@
                 "label": "Messages"
               },
               {
-                "slug": "prompts",
-                "label": "Prompts"
+                "slug": "prompt_templates",
+                "label": "Prompt Templates"
               }
             ]
           }

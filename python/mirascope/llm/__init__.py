@@ -11,7 +11,7 @@ from . import (
     content,
     messages,
     models,
-    prompts,
+    prompt_templates,
     response_formatting,
     responses,
     tools,
@@ -38,7 +38,7 @@ from .content import (
 from .context import Context, context
 from .messages import Message
 from .models import LLM, Client, Params, model
-from .prompts import prompt_template
+from .prompt_templates import prompt_template
 from .response_formatting import ResponseFormat
 from .response_formatting.decorator import response_format
 from .responses import (
@@ -92,7 +92,7 @@ __all__ = [
     "messages",
     "model",
     "models",
-    "prompts",
+    "prompt_templates",
     "response_format",
     "response_formatting",
     "responses",
