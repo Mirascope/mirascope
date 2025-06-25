@@ -18,6 +18,10 @@
               {
                 "slug": "messages",
                 "label": "Messages"
+              },
+              {
+                "slug": "prompts",
+                "label": "Prompts"
               }
             ]
           }
