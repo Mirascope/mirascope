@@ -11,7 +11,15 @@ import type { ToolOutput } from './tool-output';
 import type { Video } from './video';
 
 /* Content types that can be included in messages. */
-export type Content = string | Image | Audio | Video | Document | ToolCall | ToolOutput | Thinking;
+export type Content =
+  | string
+  | Image
+  | Audio
+  | Video
+  | Document
+  | ToolCall
+  | ToolOutput
+  | Thinking;
 
 export type { Audio } from './audio';
 export type { Document } from './document';

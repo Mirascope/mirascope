@@ -4,12 +4,12 @@
 
 /**
  * Video content for a message.
- * 
+ *
  * Video can be included in messages for video-based interactions.
  */
 export type Video = {
   /** The content type identifier */
-  type: "video";
+  type: 'video';
 
   /** A unique identifier for this video content. This is useful for tracking and referencing generated videos. */
   id?: string;
@@ -21,14 +21,14 @@ export type Video = {
   transcript?: string;
 
   /** The MIME type of the video, e.g., 'video/mp4', 'video/webm'. */
-  mimeType: 
-    | "video/mp4"
-    | "video/mpeg"
-    | "video/mov"
-    | "video/avi"
-    | "video/x-flv"
-    | "video/mpg"
-    | "video/webm"
-    | "video/wmv"
-    | "video/3gpp";
-}
+  mimeType:
+    | 'video/mp4'
+    | 'video/mpeg'
+    | 'video/mov'
+    | 'video/avi'
+    | 'video/x-flv'
+    | 'video/mpg'
+    | 'video/webm'
+    | 'video/wmv'
+    | 'video/3gpp';
+};

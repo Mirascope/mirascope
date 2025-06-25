@@ -4,5 +4,14 @@ import * as types from './types';
 
 export { content, messages, types };
 
-export type { Content, Image, Audio, Video, Document, ToolCall, ToolOutput, Thinking } from './content';
+export type {
+  Content,
+  Image,
+  Audio,
+  Video,
+  Document,
+  ToolCall,
+  ToolOutput,
+  Thinking,
+} from './content';
 export type { Message } from './messages';
