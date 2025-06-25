@@ -5,11 +5,11 @@ description: Learn how to use Messages to communicate with Large Language Models
 
 # Messages
 
-Messages are the fundamental building blocks of Large Language Model (LLM) interactions. They are a shared abstraction underpinning LLM usage: you provide context to the LLM via messages, and it responds by generating messages of its own.
+Messages are the fundamental building blocks of Large Language Model (LLM) interactions.They are a shared abstraction underpinning LLM usage: you provide context to the LLM via messages, and it responds by generating messages of its own.
 
 Here is a simple example:
 
-<CodeExample file="examples/messages/basic.py" lines="1-4" />
+<CodeExample file="examples/messages/manual.py" lines="1-4" />
 
 Each message is represented by a [Message](/docs/api/messages#message) class. The class has two required properties: `role`, which specifies what kind of entity is providing the message, and `content`, which specifies the content of the message. There's also an optional `name` field, which is helpful if there are multiple participants with the same role.
 
@@ -24,24 +24,24 @@ and [`llm.messages.assistant`](/docs/api/messages#assistant).
 
 System messages are instructions from the application developer, and take priority over user messages. The system message may include specific directives, a persona the LLM should adopt, or detailed examples of intended behavior. Context engineering often focuses on improving the system message.
 
-<CodeExample file="examples/messages/basic.py" lines="6-6" />
+<CodeExample file="examples/messages/shorthand.py" lines="3-5" />
 
 ### User Messages
 
 User messages represent input from the person interacting with the LLM. These are questions, requests, or any input the LLM should respond to.
 
-<CodeExample file="examples/messages/basic.py" lines="7-7" />
+<CodeExample file="examples/messages/shorthand.py" lines="6-6" />
 
 ### Assistant Messages
 
 Assistant messages are responses from the LLM. You typically don't create these by hand, but receive them as part of LLM responses.
 
-<CodeExample file="examples/messages/basic.py" lines="8-10" />
+<CodeExample file="examples/messages/shorthand.py" lines="7-9" />
 
 <Note title="Manual Message Construction" collapsible={true} defaultOpen={false}>
 Instead of using the shorthand functions, you can also construct the `Message` class directly:
 
-<CodeExample file="examples/messages/basic.py" lines="12-18" />
+<CodeExample file="examples/messages/manual.py" lines="6-14" />
 
 Both approaches create identical messages, so we recommend the shorthand functions for convenience.
 
@@ -71,7 +71,7 @@ Messages can contain much more than just text. Modern LLMs support multimodal co
 | [`ToolCall`](/docs/api/content#toolcall)     |     ✓     |   ✓    |   ✓    |
 | [`ToolOutput`](/docs/api/content#tooloutput) |     ✓     |   ✓    |   ✓    |
 
-_TODO: Replace this with centralized compatibilty table (#1031)_
+_TODO: Replace this with centralized compatibility table (#1031)_
 
 ### Text Content
 
@@ -103,25 +103,25 @@ Additional options:
 
 `Document` content allows you to embed structured document files, such as PDFs. Like media content, it can be specified via a file path, a URL, a base64-encoded string, or raw bytes.
 
-<CodeExample file="examples/messages/content.py" lines="28-32" />
+<CodeExample file="examples/messages/content.py" lines="28-34" />
 
 ### Tool Interactions
 
 `ToolCall` and `ToolOutput` content is relevant when the LLM is calling external functions, also known as [Tools](./tools). The `ToolCall` content allows the LLM to specify that it wants to use a tool, and the `ToolOutput` content gives the LLM access to the output from that computation. By convention, the `ToolCall` is included in an assistant message, and the `ToolOutput` is provided as a user message.
 
-<CodeExample file="examples/messages/content.py" lines="34-45" />
+<CodeExample file="examples/messages/content.py" lines="36-47" />
 
 ### Thinking Content
 
 Some models support thinking, in which case they create intermediate reasoning content that informs their final response. The `Thinking` content gives insight into the model's thinking process. Depending on the provider, this may be the raw thinking text, or a generated summary.
 
-<CodeExample file="examples/messages/content.py" lines="47-57" />
+<CodeExample file="examples/messages/content.py" lines="49-59" />
 
 ### Content Sequences
 
 A message can contain a sequence of content objects, potentially of multiple types:
 
-<CodeExample file="examples/messages/content.py" lines="59-68" />
+<CodeExample file="examples/messages/content.py" lines="61-70" />
 
 ## Building Conversations
 
@@ -139,4 +139,4 @@ LLMs operate on sequences of messages, which allows the LLM to maintain consiste
 
 The message structure we've covered here works consistently across all LLM providers that Mirascope supports, giving you a unified interface regardless of whether you're using OpenAI, Anthropic, Google, or any other supported provider.
 
-In the next section on [Prompt Templates](./prompt-templates), we will describe how Mirascope provides a re-usable functional interface for constructing messages. This offers a maintainable way to construct and optimize messages, which will then be used for llm [Calls](./calls).
+In the next section on [Prompt Templates](./prompt-templates), we will describe how Mirascope provides a reusable functional interface for constructing messages. This offers a maintainable way to construct and optimize messages, which will then be used for llm [Calls](./calls).
