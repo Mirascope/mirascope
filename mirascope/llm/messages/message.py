@@ -26,8 +26,8 @@ class Message:
         from mirascope import llm
 
         messages = [
-            llm.system("You are a helpful assistant."),
-            llm.user("Hello, how are you?"),
+            llm.messages.system("You are a helpful assistant."),
+            llm.messages.user("Hello, how are you?"),
         ]
         ```
     """

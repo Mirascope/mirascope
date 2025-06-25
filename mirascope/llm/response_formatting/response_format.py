@@ -80,8 +80,8 @@ class ResponseFormat(Generic[T]):
         @llm.call("openai:gpt-4o", response_format=Book)
         def recommend_book(genre: str) -> list[llm.Message]:
             return [
-                llm.system("You are a helpful assistant."),
-                llm.user(f"Recommend a {genre} book.")
+                llm.messages.system("You are a helpful assistant."),
+                llm.messages.user(f"Recommend a {genre} book.")
             ]
 
         response: llm.Response[Book] = recommend_book("fantasy")
