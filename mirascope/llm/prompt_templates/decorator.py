@@ -14,34 +14,6 @@ P = ParamSpec("P")
 DepsT = TypeVar("DepsT", default=None)
 
 
-class StringReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a single string."""
-
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> str: ...
-
-
-class ContextStringReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a single string."""
-
-    def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> str: ...
-
-
-class AsyncStringReturn(Protocol[P]):
-    """Protocol for a prompt template function that returns a single string."""
-
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> str: ...
-
-
-class AsyncContextStringReturn(Protocol[P, DepsT]):
-    """Protocol for a context prompt template function that returns a single string."""
-
-    async def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> str: ...
-
-
 class ContentReturn(Protocol[P]):
     """Protocol for a prompt template function that returns a single content part."""
 
@@ -161,8 +133,7 @@ class AsyncContextDynamicConfigReturn(Protocol[P, DepsT]):
 
 
 PromptTemplate: TypeAlias = (
-    StringReturn[P]
-    | ContentReturn[P]
+    ContentReturn[P]
     | ContentSequenceReturn[P]
     | MessagesReturn[P]
     | DynamicConfigReturn[P]
@@ -170,7 +141,6 @@ PromptTemplate: TypeAlias = (
 """A prompt template function.
 
 A `PromptTemplate` function takes input arguments `P` and returns one of:
-- A single `str` that will be rendered as a single user message
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
@@ -179,8 +149,7 @@ A `PromptTemplate` function takes input arguments `P` and returns one of:
 """
 
 ContextPromptTemplate: TypeAlias = (
-    ContextStringReturn[P, DepsT]
-    | ContextContentReturn[P, DepsT]
+    ContextContentReturn[P, DepsT]
     | ContextContentSequenceReturn[P, DepsT]
     | ContextMessagesReturn[P, DepsT]
     | ContextDynamicConfigReturn[P, DepsT]
@@ -189,7 +158,6 @@ ContextPromptTemplate: TypeAlias = (
 
 A `ContextPromptTemplate` function takes input arguments `Context[DepsT]` and `P` and
 returns one of:
-- A single `str` that will be rendered as a single user message
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
@@ -198,8 +166,7 @@ returns one of:
 """
 
 AsyncPromptTemplate: TypeAlias = (
-    AsyncStringReturn[P]
-    | AsyncContentReturn[P]
+    AsyncContentReturn[P]
     | AsyncContentSequenceReturn[P]
     | AsyncMessagesReturn[P]
     | AsyncDynamicConfigReturn[P]
@@ -207,7 +174,6 @@ AsyncPromptTemplate: TypeAlias = (
 """An asynchronous prompt template function.
 
 An `AsyncPromptTemplate` function takes input arguments `P` and returns one of:
-- A single `str` that will be rendered as a single user message
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
@@ -216,8 +182,7 @@ An `AsyncPromptTemplate` function takes input arguments `P` and returns one of:
 """
 
 AsyncContextPromptTemplate: TypeAlias = (
-    AsyncContextStringReturn[P, DepsT]
-    | AsyncContextContentReturn[P, DepsT]
+    AsyncContextContentReturn[P, DepsT]
     | AsyncContextContentSequenceReturn[P, DepsT]
     | AsyncContextMessagesReturn[P, DepsT]
     | AsyncContextDynamicConfigReturn[P, DepsT]
@@ -226,7 +191,6 @@ AsyncContextPromptTemplate: TypeAlias = (
 
 An `AsyncContextPromptTemplate` function takes input arguments
 `Context[DepsT]` and `P` and returns one of:
-- A single `str` that will be rendered as a single user message
 - A single `Content` part that will be rendered as a single user message
 - A sequence of `Content` parts that will be rendered as a single user message
 - A list of `Message` objects that will be rendered as-is
