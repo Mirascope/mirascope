@@ -13,7 +13,8 @@ from .decorator import (
     ContextPromptable,
     Prompt,
     Promptable,
-    PromptDecorator,
+    PromptableDecorator,
+    PromptTemplateDecorator,
     prompt,
 )
 
@@ -26,6 +27,7 @@ __all__ = [
     "ContextPrompt",
     "Promptable",
     "Prompt",
-    "PromptDecorator",
+    "PromptableDecorator",
+    "PromptTemplateDecorator",
     "prompt",
 ]
