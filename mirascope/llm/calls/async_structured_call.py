@@ -5,7 +5,7 @@ from typing import ParamSpec
 
 from typing_extensions import TypeVar
 
-from ..prompt import AsyncPromptable
+from ..prompts import AsyncPromptable
 from ..responses import AsyncStructuredStream, Response
 from ..types import Dataclass
 from .base_structured_call import BaseStructuredCall

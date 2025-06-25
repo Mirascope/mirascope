@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, overload
 
 from typing_extensions import TypeVar
 
-from ..prompt import (
+from ..prompts import (
     AsyncContextPromptable,
     AsyncPromptable,
     ContextPromptable,
