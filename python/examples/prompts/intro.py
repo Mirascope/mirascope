@@ -13,8 +13,7 @@ def genre_prompt(genre: str) -> list[llm.Message]:
 
 # Template Style
 @llm.prompt("Please recommend a {{ genre }} book")
-def genre_prompt_from_template(genre: str):
-    pass
+def genre_prompt_from_template(genre: str): ...
 
 
 # Functional Style
