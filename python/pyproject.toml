@@ -91,7 +91,7 @@ target-version = "py310"
 "__init__.py" = ["F401"]
 "tests/*.py" = ["S101", "ANN"]
 "examples/*.{py}" = ["T201", "ANN"]
-"docs/*.{py}" = ["T201", "ANN"]
+"mirascope/graphs/*.{py}" = ["T201"]
 
 [tool.ruff.lint]
 select = [
