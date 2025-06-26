@@ -55,7 +55,8 @@ dev-dependencies = [
     "pyright>=1.1.401",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
-    "pre-commit>=3.8.0"
+    "pre-commit>=3.8.0",
+    "codespell>=2.3.0"
 ]
 
 
@@ -91,7 +92,7 @@ target-version = "py310"
 "__init__.py" = ["F401"]
 "tests/*.py" = ["S101", "ANN"]
 "examples/*.{py}" = ["T201", "ANN"]
-"docs/*.{py}" = ["T201", "ANN"]
+"mirascope/graphs/*.{py}" = ["T201"]
 
 [tool.ruff.lint]
 select = [

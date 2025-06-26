@@ -3,10 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "bun run --cwd mirascope typecheck && bun run --cwd examples typecheck",
-    "build": "bun run --cwd mirascope build",
-    "lint": "bun run --cwd mirascope lint",
-    "format": "bun run --cwd mirascope format",
+    "build": "bun x tsc --build mirascope/tsconfig.json examples/tsconfig.json",
+    "typecheck": "bun x tsc --build mirascope/tsconfig.json examples/tsconfig.json",
+    "lint": "bun run typecheck && bun run lint:eslint && bun run format:check",
+    "lint:eslint": "eslint .",
+    "lint:eslint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "bun run --cwd mirascope test"
   },
   "workspaces": [
@@ -19,6 +22,7 @@
     "@typescript-eslint/parser": "^8.35.0",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
+    "jiti": "^2.4.2",
     "prettier": "^3.6.0",
     "typescript": "^5"
   }

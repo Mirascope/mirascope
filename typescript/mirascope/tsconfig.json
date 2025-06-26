@@ -6,28 +6,28 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "jsx": "react-jsx",
-    
+
     // TypeScript-first: assume bundler usage
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
-    "noEmit": false,
-    
+
     // Output configuration for library
+    "composite": true,
     "declaration": true,
     "declarationMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    
+
     // Enable features for runtime type access
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    
+
     // Best practices
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    
+
     // Stricter flags for library quality
     "noUnusedLocals": true,
     "noUnusedParameters": true,

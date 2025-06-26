@@ -20,6 +20,15 @@
 
 This branch contains Mirascope v2, which is under active development.
 
+
+## Monorepo Structure
+
+This project is structured as a monorepo, that conceptually divides into three parts:
+
+- `python/` contains the Python implementation, and examples (in `python/examples`)
+- `typescript/` contains the Typescript implementation, and examples (in `typescript/examples`)
+- `docs/` contains the unified cross-language documentation (in `docs/content`), as well as configuration needed to build the docs.
+
 ## Viewing & Building Documentation
 
 Use `bun run docs:dev` to launch the dev server. Note it does not currently have hot reloading; you'll need to restart it on every change.
@@ -28,6 +37,17 @@ Use `bun run docs:build` to build the docs, and `bun run docs:preview` to previe
 
 Note that [Bun](http://bun.sh/) must be installed.
 
+The docs are automatically built and previewed on every pull request or push.
+
+## CI and local testing
+
+We currently have four CI jobs:
+- codespell: Checks for common misspellings including python, typescript, and docs repos
+- python-lint: Linting and typechecking for Python code
+- typescript-lint: Linting and typechecking for Typescript code
+- cloudflare docs build: Builds and previews the documentation site
+
+You can run `bun run ci` in the root directory to run all CI checks locally. If adding new checks to GitHub CI, please also add it to the ci script in root `package.json` as well.
 
 ## Versioning
 

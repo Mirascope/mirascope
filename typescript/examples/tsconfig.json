@@ -7,8 +7,10 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
+    "noEmit": true,
     "forceConsistentCasingInFileNames": true
   },
+  "references": [{ "path": "../mirascope" }],
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

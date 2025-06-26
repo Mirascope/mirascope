@@ -1,24 +1,35 @@
 name: lint
 run-name: ${{ github.actor }} is linting the package
 
+# When updating, please coordinate with the `ci` command in root `package.json`,
+# so that `bun run ci` will accurately forecast GitHub CI status.
+
 on:
   push:
     branches:
       - main
+      - v2
       - release/*
   pull_request:
-    branches:
-      - main
-      - release/*
 
 jobs:
-  lints:
-    name: Ruff, Pyright, and Codespell
+  codespell:
+    name: Spell Check
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
       - uses: codespell-project/actions-codespell@v2
+
+  python-lint:
+    name: Python Linting and Type Checking
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Set up uv
         run: curl -LsSf https://astral.sh/uv/0.6.10/install.sh | sh
@@ -49,3 +60,22 @@ jobs:
 
       - name: Minimize uv cache
         run: uv cache prune --ci
+
+  typescript-lint:
+    name: TypeScript Linting and Type Checking
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: typescript
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install TypeScript dependencies
+        run: bun install
+
+      - name: Run TypeScript lint
+        run: bun run lint
