@@ -17,9 +17,7 @@
   },
   "lint-staged": {
     "typescript/**/*.{ts,tsx}": [
-      "bun typescript/typecheck.ts",
-      "bun run --cwd typescript format",
-      "bun run --cwd typescript lint:eslint:fix"
+      "bun typescript/lint-staged.ts"
     ],
     "python/**/*.py": [
       "bun python/lint-staged.ts"
