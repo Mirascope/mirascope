@@ -1,6 +1,6 @@
-import * as content from './content';
-import * as messages from './messages';
-import * as types from './types';
+import * as content from './content/index.js';
+import * as messages from './messages/index.js';
+import * as types from './types/index.js';
 
 export { content, messages, types };
 
@@ -13,5 +13,5 @@ export type {
   ToolCall,
   ToolOutput,
   Thinking,
-} from './content';
-export type { Message, Prompt } from './messages';
+} from './content/index.js';
+export type { Message } from './messages/index.js';

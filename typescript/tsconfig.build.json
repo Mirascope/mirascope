@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "declaration": true,
     "outDir": "./dist",
     "rootDir": "./src",

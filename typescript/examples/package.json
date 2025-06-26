@@ -1,6 +1,7 @@
 {
   "name": "mirascope-typescript-examples",
   "private": true,
+  "type": "module",
   "dependencies": {
     "mirascope": "file:..",
     "typescript": "^5.0.0"
