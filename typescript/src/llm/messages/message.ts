@@ -24,7 +24,7 @@ export type Message = {
 };
 
 /** Type alias for an array of messages that form a prompt */
-export type Prompt = Array<Message>;
+export type Prompt = Message[];
 
 /**
  * Shorthand function for creating a `Message` with the system role.

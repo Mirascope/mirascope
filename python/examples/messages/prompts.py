@@ -11,7 +11,6 @@ system_and_user: llm.Prompt = [
     llm.messages.user("What's a good book to read?"),
 ]
 
-
 multi_turn: llm.Prompt = [
     llm.messages.system(
         "You are a librarian, who recommends contemporary young-adult fantasy novels."

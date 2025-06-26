@@ -17,13 +17,13 @@ from .decorator import (
 )
 
 __all__ = [
-    "AsyncContextPromptable",
     "AsyncContextPromptTemplate",
-    "AsyncPromptable",
+    "AsyncContextPromptable",
     "AsyncPromptTemplate",
-    "ContextPromptable",
+    "AsyncPromptable",
     "ContextPromptTemplate",
-    "Promptable",
+    "ContextPromptable",
     "PromptTemplate",
+    "Promptable",
     "prompt_template",
 ]

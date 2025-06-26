@@ -63,14 +63,19 @@ def mixed_media_prompt(
     cover: llm.Image, narration: llm.Audio, docs: list[llm.Document]
 ) -> list[llm.Content]:
     return [
-        "Analyze this multimedia presentation:",
-        "- Cover image:",
+        """
+        Analyze this multimedia presentation:
+        - Cover image:
+        """,
         cover,
         "- Audio narration:",
         narration,
         "- Supporting documents:",
         *docs,
-        "What is the main theme?",
+        """
+        
+        What is the main theme?
+        """,
     ]
 
 

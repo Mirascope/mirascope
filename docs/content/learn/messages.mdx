@@ -223,7 +223,7 @@ A message can contain a sequence of content objects, potentially of multiple typ
 
 ## Building Prompts
 
-LLMs operate on sequences of messages, which provide the context that the LLM responds to. A sequence of messages is called a "prompt". Here, we show how some common prompting patterns can be constructed using the Mirascope message APIs.
+LLMs operate on sequences of messages, which we call "prompts", and which provide the context the LLM uses to generate its response. Here, we show how some common prompting patterns can be constructed using the Mirascope message APIs.
 
 **One-shot:**
 
@@ -240,10 +240,10 @@ LLMs operate on sequences of messages, which provide the context that the LLM re
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/prompts.py" lines="15-24" />
+<CodeExample file="examples/messages/prompts.py" lines="7-12" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/messages/prompts.ts" lines="14-23" />
+<CodeExample file="typescript/examples/messages/prompts.ts" lines="7-12" />
 </Tab>
 </TabbedSection>
 
@@ -251,7 +251,7 @@ LLMs operate on sequences of messages, which provide the context that the LLM re
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/prompts.py" lines="15-24" />
+<CodeExample file="examples/messages/prompts.py" lines="14-23" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/prompts.ts" lines="14-23" />
