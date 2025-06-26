@@ -73,11 +73,5 @@ jobs:
       - name: Install TypeScript dependencies
         run: bun install
 
-      - name: List files for debugging
-        run: |
-          ls -R .
-          ls -R mirascope
-          ls -R examples
-
       - name: Run TypeScript lint
         run: bun run lint
