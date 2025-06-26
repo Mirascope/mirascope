@@ -72,10 +72,7 @@ def mixed_media_prompt(
         narration,
         "- Supporting documents:",
         *docs,
-        """
-        
-        What is the main theme?
-        """,
+        "What is the main theme?",
     ]
 
 

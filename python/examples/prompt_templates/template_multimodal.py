@@ -39,7 +39,6 @@ def documents_prompt(docs: list[llm.Document | str | bytes]): ...
     - Cover image: {{ cover:image }}
     - Audio narration: {{ narration:audio }}
     - Supporting documents: {{ docs:documents }}
-    
     What is the main theme?
     """
 )

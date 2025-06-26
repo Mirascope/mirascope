@@ -130,7 +130,7 @@ For multiple content items of the same type, append "s" to the annotation:
 
 You can combine multiple content types in a single spec:
 
-<CodeExample file="examples/prompt_templates/template_multimodal.py" lines="36-50" />
+<CodeExample file="examples/prompt_templates/template_multimodal.py" lines="36-49" />
 
 In all of the above examples, the various content parts are combined into a single user message.
 
@@ -192,7 +192,7 @@ While spec prompt templates excel at declarative patterns, functional prompt tem
 
 ### Basic Functional Prompts
 
-You've already seen that we can write a prompt template by hand, without using any decorators. You just write a function that directly returns a list of messages:
+You've already seen that we can write a prompt template without using any decorators. You just write a function that directly returns a list of messages:
 
 <CodeExample file="examples/prompt_templates/intro.py" lines="10-11" />
 
@@ -237,13 +237,13 @@ For multiple content items of the same type, use unpacking:
 
 You can also combine different content types in a single prompt:
 
-<CodeExample file="examples/prompt_templates/functional.py" lines="61-79" />
+<CodeExample file="examples/prompt_templates/functional.py" lines="61-76" />
 
 ### Message History Integration
 
 You can also inject conversation history using list unpacking.
 
-<CodeExample file="examples/prompt_templates/functional.py" lines="82-92" />
+<CodeExample file="examples/prompt_templates/functional.py" lines="79-89" />
 
 
 ## Next Steps
