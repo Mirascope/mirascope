@@ -6,6 +6,10 @@ run-name: ${{ github.actor }} is linting the package
 
 on:
   push:
+    branches:
+      - main
+      - v2
+      - release/*
   pull_request:
 
 jobs:
