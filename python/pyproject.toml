@@ -55,8 +55,7 @@ dev-dependencies = [
     "pyright>=1.1.401",
     "pytest-asyncio>=0.23.8",
     "pytest-cov>=5.0.0",
-    "pre-commit>=3.8.0",
-    "api2mdx>=0.2.2",
+    "pre-commit>=3.8.0"
 ]
 
 
