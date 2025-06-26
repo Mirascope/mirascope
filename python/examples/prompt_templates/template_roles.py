@@ -11,7 +11,7 @@ from mirascope import llm
     [USER] I'd like a {{ genre }} book, please.
     """
 )
-def pirate_prompt(genre: str): ...
+def pirate_prompt_template(genre: str): ...
 
 
 # Unsafe - Do not do this!

@@ -4,11 +4,11 @@ from mirascope import llm
 
 
 @llm.prompt_template(spec="Please recommend a book")
-def simple_prompt(): ...
+def simple_prompt_template(): ...
 
 
 @llm.prompt_template(spec="Please recommend a {{ genre }} book")
-def genre_prompt(genre: str): ...
+def genre_prompt_template(genre: str): ...
 
 
 @dataclass
@@ -18,7 +18,7 @@ class Book:
 
 
 @llm.prompt_template("Recommend a book like {{ book.title }} by {{ book.author }}.")
-def book_prompt(book: Book): ...
+def book_prompt_template(book: Book): ...
 
 
 @llm.prompt_template(
