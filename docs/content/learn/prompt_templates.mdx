@@ -1,11 +1,11 @@
 ---
 title: Prompt Templates
-description: Learn how to create prompts using reusable prompt templates in Mirascope.
+description: Learn how to create reusable prompt templates in Mirascope. Prompt templates enable effective context engineering and LLM application development!
 ---
 
-# Prompts
+# Prompt Templates
 
-Working with Large Language Models (LLMs) involves providing them with "prompts": lists of messages that provide all the context the LLM will use to generate its response. Effectively engineering this context is the heart of AI engineering. This guide dives into how you can create reusable prompts in Mirascope.
+Working with Large Language Models (LLMs) involves providing them with "Prompts": lists of messages that provide all the context the LLM needs to produce a response. Engineering this context is the heart of AI engineering. Mirascope approaches this through Prompt Templates.
 
 <Info title="Calls will come later">
   This guide focuses just on creating prompts. The [Calls](./calls) guide shows how to use them.
@@ -97,8 +97,6 @@ For safety, **always place user content in user messages.**
 
 Note that variable substitution happens _after_ the spec's message structure is parsed. So, you do not need to worry about users injecting an extra `[SYSTEM]` message as part of their user message. 
 </Warning>
-
-
 
 ### Multimodal content
 
