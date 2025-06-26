@@ -89,10 +89,10 @@ shorthand function. The name is useful when there are multiple participants in a
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/conversations.py" lines="15-25" />
+<CodeExample file="examples/messages/prompts.py" lines="15-25" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/messages/conversations.ts" lines="13-24" />
+<CodeExample file="typescript/examples/messages/prompts.ts" lines="13-24" />
 </Tab>
 </TabbedSection>
 
@@ -221,18 +221,29 @@ A message can contain a sequence of content objects, potentially of multiple typ
 </Tab>
 </TabbedSection>
 
-## Building Conversations
+## Building Prompts
 
-LLMs operate on sequences of messages, which allows the LLM to maintain consistent context in an ongoing interaction. A conversation history is just a list of messages in chronological order. Each message in the history contributes to the context that the LLM will "see" when it generates its response. Two common patterns for structuring conversations are single query (or "one shot"), and multi-turn.
+LLMs operate on sequences of messages, which we call "prompts", and which provide the context the LLM uses to generate its response. Here, we show how some common prompting patterns can be constructed using the Mirascope message APIs.
 
-**Single Query:**
+**One-shot:**
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/conversations.py" lines="3-5" />
+<CodeExample file="examples/messages/prompts.py" lines="3-5" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/messages/conversations.ts" lines="3-5" />
+<CodeExample file="typescript/examples/messages/prompts.ts" lines="3-5" />
+</Tab>
+</TabbedSection>
+
+**With system instructions:**
+
+<TabbedSection>
+<Tab value="Python">
+<CodeExample file="examples/messages/prompts.py" lines="7-12" />
+</Tab>
+<Tab value="Typescript">
+<CodeExample file="typescript/examples/messages/prompts.ts" lines="7-12" />
 </Tab>
 </TabbedSection>
 
@@ -240,10 +251,10 @@ LLMs operate on sequences of messages, which allows the LLM to maintain consiste
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/conversations.py" lines="7-13" />
+<CodeExample file="examples/messages/prompts.py" lines="14-23" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/messages/conversations.ts" lines="5-11" />
+<CodeExample file="typescript/examples/messages/prompts.ts" lines="14-23" />
 </Tab>
 </TabbedSection>
 
@@ -251,4 +262,4 @@ LLMs operate on sequences of messages, which allows the LLM to maintain consiste
 
 The message structure we've covered here works consistently across all LLM providers that Mirascope supports, giving you a unified interface regardless of whether you're using OpenAI, Anthropic, Google, or any other supported provider.
 
-In the next section on [Prompt Templates](./prompt-templates), we will describe how Mirascope provides a reusable functional interface for constructing messages. This offers a maintainable way to construct and optimize messages, which will then be used for llm [Calls](./calls).
+In the next section on [Prompt Templates](./prompt-templates), we will describe how Mirascope provides a reusable functional interface for constructing prompts. This sets you up for success when context engineering your LLM [Calls](./calls).

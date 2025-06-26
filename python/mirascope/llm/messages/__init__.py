@@ -5,18 +5,17 @@ as a unified `Message` class with different roles (system, user, assistant) and 
 content arrays that can include text, images, audio, documents, and tool interactions.
 """
 
-from ..types.jsonable import Jsonable, JsonableObject
 from .message import (
     Message,
+    Prompt,
     assistant,
     system,
     user,
 )
 
 __all__ = [
-    "Jsonable",
-    "JsonableObject",
     "Message",
+    "Prompt",
     "assistant",
     "system",
     "user",

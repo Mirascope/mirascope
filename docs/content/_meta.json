@@ -18,6 +18,10 @@
               {
                 "slug": "messages",
                 "label": "Messages"
+              },
+              {
+                "slug": "prompt_templates",
+                "label": "Prompt Templates"
               }
             ]
           }
