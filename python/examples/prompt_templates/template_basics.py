@@ -3,11 +3,11 @@ from dataclasses import dataclass
 from mirascope import llm
 
 
-@llm.prompt_template("Please recommend a book")
+@llm.prompt_template(spec="Please recommend a book")
 def simple_prompt(): ...
 
 
-@llm.prompt_template("Please recommend a {{ genre }} book")
+@llm.prompt_template(spec="Please recommend a {{ genre }} book")
 def genre_prompt(genre: str): ...
 
 
