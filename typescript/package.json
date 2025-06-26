@@ -1,42 +1,17 @@
 {
-  "name": "mirascope",
-  "version": "2.0.0-alpha.0",
-  "description": "LLM abstractions that aren't obstructions",
-  "module": "src/index.ts",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "name": "mirascope-typescript",
+  "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "dev": "bun run --watch index.ts",
-    "test": "bun test",
-    "prepublishOnly": "bun run build",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run format:check && npm run typecheck"
+    "typecheck": "bun run --cwd mirascope typecheck && bun run --cwd examples typecheck",
+    "build": "bun run --cwd mirascope build",
+    "lint": "bun run --cwd mirascope lint",
+    "format": "bun run --cwd mirascope format",
+    "test": "bun run --cwd mirascope test"
   },
-  "keywords": [
-    "agents",
-    "artificial intelligence",
-    "developer tools",
-    "llm",
-    "llm tools",
-    "openai",
-    "prompt engineering"
-  ],
-  "author": "William Bakst <william@mirascope.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Mirascope/mirascope.git"
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
+  "workspaces": [
+    "mirascope",
+    "examples"
   ],
   "devDependencies": {
     "@types/bun": "latest",
@@ -44,9 +19,7 @@
     "@typescript-eslint/parser": "^8.35.0",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
-    "prettier": "^3.6.0"
-  },
-  "peerDependencies": {
+    "prettier": "^3.6.0",
     "typescript": "^5"
   }
 }

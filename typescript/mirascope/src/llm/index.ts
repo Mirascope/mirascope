@@ -14,4 +14,4 @@ export type {
   ToolOutput,
   Thinking,
 } from './content/index.js';
-export type { Message } from './messages/index.js';
+export type { Message, Prompt } from './messages/index.js';
