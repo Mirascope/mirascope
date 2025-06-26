@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc",
     "dev": "bun run --watch index.ts",
     "test": "bun test",
     "prepublishOnly": "bun run build",
