@@ -1,6 +1,9 @@
 name: lint
 run-name: ${{ github.actor }} is linting the package
 
+# If adding new steps here, please coordinate with the lint command in the root package.json
+# to ensure that `bun run lint` forecasts whether CI passes.
+
 on:
   push:
   pull_request:
@@ -70,5 +73,5 @@ jobs:
       - name: Install TypeScript dependencies
         run: bun install
 
-      - name: Run TypeScript typecheck
-        run: bun run typecheck
+      - name: Run TypeScript lint
+        run: bun run lint

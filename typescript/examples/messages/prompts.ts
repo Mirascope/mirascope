@@ -1,8 +1,6 @@
 import { llm } from 'mirascope';
 
-const oneShot: llm.Prompt = [
-  llm.messages.user("What's a good book to read?"),
-];
+const oneShot: llm.Prompt = [llm.messages.user("What's a good book to read?")];
 
 const systemAndUser: llm.Prompt = [
   llm.messages.system(

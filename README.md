@@ -39,9 +39,15 @@ Note that [Bun](http://bun.sh/) must be installed.
 
 The docs are automatically built and previewed on every pull request or push.
 
-## Linting and CI
+## CI and local testing
 
-We have automated linting in CI via GitHub actions. To check whether CI will pass, run `bun run lint` in the root directory.
+We currently have four CI jobs:
+- codespell: Checks for common misspellings including python, typescript, and docs repos
+- python-lint: Linting and typechecking for Python code
+- typescript-lint: Linting and typechecking for Typescript code
+- cloudflare docs build: Builds and previews the documentation site
+
+You can run `bun run ci` in the root directory to run all CI checks locally. If adding new checks to GitHub CI, please also add it to the ci script in root `package.json` as well.
 
 ## Versioning
 

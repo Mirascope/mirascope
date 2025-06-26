@@ -2,15 +2,16 @@
   "name": "mirascope-monorepo",
   "private": true,
   "scripts": {
-    "docs:dev": "cd docs && bun run dev",
-    "docs:build": "cd docs && bun run build",
+    "docs:dev": "cd docs && bun i && bun run dev",
+    "docs:build": "cd docs && bun i &&  bun run build",
     "docs:preview": "bunx serve --single docs/dist",
     "typecheck": "bun run typecheck:typescript && bun run typecheck:python",
     "typecheck:python": "cd python && uv run pyright .",
     "typecheck:typescript": "bun run --cwd typescript typecheck",
     "codespell": "bunx codespell",
+    "ci": "bun run lint && bun run docs:build",
     "lint": "bun run codespell && bun run lint:python && bun run lint:typescript",
     "lint:python": "cd python && uv sync --all-extras --dev && uv run ruff check . && uv run pyright .",
-    "lint:typescript": "bun run --cwd typescript typecheck"
+    "lint:typescript": "bun run --cwd typescript lint"
   }
 }
