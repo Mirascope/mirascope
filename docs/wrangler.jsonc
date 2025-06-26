@@ -8,9 +8,7 @@
     "not_found_handling": "single-page-application",
   },
   "build": {
-    "command": "uv run docs-build",
-    "cwd": "../../",
-    "watch_dir": "../",
+    "command": "bun run build",
   },
   "observability": {
     "enabled": true,
