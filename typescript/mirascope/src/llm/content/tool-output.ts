@@ -2,7 +2,7 @@
  * @fileoverview The `ToolOutput` content class.
  */
 
-import type { Jsonable } from '../types/index.js';
+import type { Jsonable } from '../types';
 
 /**
  * Tool output content for a message.

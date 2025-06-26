@@ -2,7 +2,7 @@
  * @fileoverview The `Message` type and its utility constructors
  */
 
-import type { Content } from '../content/index.js';
+import type { Content } from '../content';
 
 /**
  * A message in an LLM interaction.

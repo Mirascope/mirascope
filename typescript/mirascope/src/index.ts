@@ -2,4 +2,4 @@
  * @fileoverview The `mirascope` module.
  */
 
-export * as llm from './llm/index.js';
+export * as llm from './llm';

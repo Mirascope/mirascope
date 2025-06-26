@@ -2,7 +2,7 @@
  * @fileoverview The `ToolCall` content class.
  */
 
-import type { Jsonable } from '../types/index.js';
+import type { Jsonable } from '../types';
 
 /**
  * Tool call content for a message.
