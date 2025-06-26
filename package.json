@@ -5,6 +5,8 @@
     "docs:dev": "cd docs && bun run dev",
     "docs:build": "cd docs && bun run build",
     "docs:preview": "bunx serve --single docs/dist",
-    "typecheck:python": "cd python && uv run pyright ."
+    "typecheck": "bun run typecheck:typescript && bun run typecheck:python",
+    "typecheck:python": "cd python && uv run pyright .",
+    "typecheck:typescript": "bun run --cwd typescript typecheck"
   }
 }

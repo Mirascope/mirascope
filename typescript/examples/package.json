@@ -1,11 +1,12 @@
 {
-  "name": "mirascope-typescript-examples",
+  "name": "mirascope-examples",
   "private": true,
-  "dependencies": {
-    "mirascope": "file:..",
-    "typescript": "^5.0.0"
+  "type": "module",
+  "scripts": {
+    "typecheck": "bun run --cwd .. build && tsc --noEmit"
   },
-  "devDependencies": {
-    "@types/node": "^20.0.0"
+  "dependencies": {
+    "mirascope": "workspace:*",
+    "typescript": "^5.0.0"
   }
 }
