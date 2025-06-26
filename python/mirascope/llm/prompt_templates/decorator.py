@@ -155,7 +155,7 @@ An `AsyncContextPromptable` function takes input arguments
 """
 
 
-class PromptableDecorator(Protocol[DepsT]):
+class PromptTemplateFunctionalDecorator(Protocol[DepsT]):
     """Protocol for the `prompt` decorator when used without a template."""
 
     @overload
@@ -222,7 +222,7 @@ class PromptableDecorator(Protocol[DepsT]):
         ...
 
 
-class PromptTemplateDecorator(Protocol[DepsT]):
+class PromptTemplateSpecDecorator(Protocol[DepsT]):
     """Protocol for the `prompt` decorator when used with a template."""
 
     @overload
@@ -274,46 +274,46 @@ class PromptTemplateDecorator(Protocol[DepsT]):
 
 
 @overload
-def prompt_template() -> PromptableDecorator:
+def prompt_template() -> PromptTemplateFunctionalDecorator:
     """Create a decorator for promptable functions (no template)."""
     ...
 
 
 @overload
-def prompt_template(template: str) -> PromptTemplateDecorator:
+def prompt_template(spec: str) -> PromptTemplateSpecDecorator:
     """Create a decorator for template functions."""
     ...
 
 
 def prompt_template(
-    template: str | None = None,
-) -> PromptableDecorator | PromptTemplateDecorator:
+    spec: str | None = None,
+) -> PromptTemplateFunctionalDecorator | PromptTemplateSpecDecorator:
     '''Prompt decorator for turning functions into prompts.
 
-    This decorator transforms a function into a Prompt, i.e. a function that returns
-    `list[llm.Message]`. Its behavior depends on whether it's called with a template
+    This decorator transforms a function into a PromptTemplate, i.e. a function that
+    returns `list[llm.Message]`. Its behavior depends on whether it's called with a spec
     string.
 
-    With a template string, it returns a PromptTemplateDecorator, in which case it uses
-    the provided template to decorate an function with an empty body, and uses arguments
-    to the function for variable substitution in the template. The resulting Prompt
-    returns messages based on the template.
+    With a spec string, it returns a PromptTemplateSpecDecorator, in which case it uses
+    the provided spec to decorate an function with an empty body, and uses arguments
+    to the function for variable substitution in the spec. The resulting PromptTemplate
+    returns messages based on the spec.
 
-    Without a template string, it returns a PromptableDecorator, which transforms a
-    Promptable (a function returning either content, content sequence, or messages)
-    into a Prompt. The resulting prompt either promotes the content / content sequence
-    into a list containing a single user message with that content, or passes along
-    the messages returned by the decorated function.
+    Without a spec string, it returns a PromptTemplateFunctionalDecorator, which
+    transforms a Promptable (a function returning either content, content sequence,
+    or messages) into a PromptTemplate. The resulting prompt template either promotes
+    the content / content sequence into a list containing a single user message with
+    that content, or passes along the messages returned by the decorated function.
 
     Args:
-        template: A string template with placeholders using `{{ variable_name }}`
+        spec: A string spec with placeholders using `{{ variable_name }}`
             and optional role markers like [SYSTEM], [USER], and [ASSISTANT].
 
     Returns:
-        A PromptTemplateDecorator or PromptableDecorator that converts the decorated
-            function into a prompt.
+        A PromptTemplateSpecDecorator or PromptTemplateFunctionalDecorator that converts
+            the decorated function into a prompt.
 
-    Template substitution rules:
+    Spec substitution rules:
     - [USER], [ASSISTANT], [SYSTEM] demarcate the start of a new message with that role
     - [MESSAGES] indicates the next variable contains a list of messages to include
     - `{{ variable }}` injects the variable as a string, unless annotated
@@ -326,15 +326,15 @@ def prompt_template(
 
     Examples:
         ```python
-        @llm.prompt("""
+        @llm.prompt_template("""
             [SYSTEM] You are a helpful assistant specializing in {{ domain }}.
             [USER] {{ question }}
         """)
-        def templated_prompt(domain: str, question: str) -> None:
+        def domain_question(domain: str, question: str) -> None:
             pass
 
-        @llm.prompt()
-        def content_prompt(question: str) -> str:
+        @llm.prompt_template()
+        def answer_question(question: str) -> str:
             return f"Answer: {question}"
         ```
     '''
