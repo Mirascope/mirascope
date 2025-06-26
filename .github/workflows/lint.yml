@@ -6,6 +6,14 @@ on:
   pull_request:
 
 jobs:
+  codespell:
+    name: Spell Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: codespell-project/actions-codespell@v2
+
   python-lint:
     name: Python Linting and Type Checking
     runs-on: ubuntu-latest
@@ -15,7 +23,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: codespell-project/actions-codespell@v2
 
       - name: Set up uv
         run: curl -LsSf https://astral.sh/uv/0.6.10/install.sh | sh
@@ -30,9 +37,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.uv-cache
-          key: uv-${{ runner.os }}-${{ hashFiles('python/uv.lock') }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
           restore-keys: |
-            uv-${{ runner.os }}-${{ hashFiles('python/uv.lock') }}
+            uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
             uv-${{ runner.os }}
 
       - name: Install the project
