@@ -14,4 +14,4 @@ export type {
   ToolOutput,
   Thinking,
 } from './content';
-export type { Message } from './messages';
+export type { Message, Prompt } from './messages';
