@@ -22,8 +22,7 @@
       "bun run --cwd typescript lint:eslint:fix"
     ],
     "python/**/*.py": [
-      "cd python && uv run ruff check --fix",
-      "cd python && uv run pyright"
+      "bun python/lint-staged.ts"
     ]
   },
   "devDependencies": {
