@@ -14,7 +14,7 @@ def analyze_image(image: llm.Image) -> list[llm.Content]:
 @llm.prompt_template()  # No-op, as recommend_book_pirate is already a prompt template
 def recommend_book_pirate(genre: str) -> llm.Prompt:
     return [
-        llm.messages.system("You are a librarian, who always talks like a pirate"),
+        llm.messages.system("You are a librarian who always talks like a pirate"),
         llm.messages.user(f"I want to read a {genre} book!"),
     ]
 

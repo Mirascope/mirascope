@@ -6,14 +6,14 @@ const oneShot: llm.Prompt = [
 
 const systemAndUser: llm.Prompt = [
   llm.messages.system(
-    'You are a librarian, who recommends contemporary young-adult fantasy novels.'
+    'You are a librarian who recommends contemporary young-adult fantasy novels.'
   ),
   llm.messages.user("What's a good book to read?"),
 ];
 
 const multiTurn: llm.Prompt = [
   llm.messages.system(
-    'You are a librarian, who recommends contemporary young-adult fantasy novels.'
+    'You are a librarian who recommends contemporary young-adult fantasy novels.'
   ),
   llm.messages.user("What's a good book to read?"),
   llm.messages.assistant('I recommend Name of the Wind, by Patrick Rothfuss'),
