@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "bun run --cwd mirascope typecheck && bun run build && bun run --cwd examples typecheck",
-    "build": "bun run --cwd mirascope build",
+    "build": "bun x tsc --build mirascope/tsconfig.json examples/tsconfig.json",
+    "typecheck": "bun x tsc --build mirascope/tsconfig.json examples/tsconfig.json",
     "lint": "bun run typecheck && bun run lint:eslint && bun run format:check",
     "lint:eslint": "eslint .",
     "lint:eslint:fix": "eslint . --fix",

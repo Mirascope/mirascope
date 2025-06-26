@@ -10,9 +10,9 @@
     // TypeScript-first: assume bundler usage
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
-    "noEmit": false,
 
     // Output configuration for library
+    "composite": true,
     "declaration": true,
     "declarationMap": true,
     "outDir": "./dist",
