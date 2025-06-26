@@ -35,7 +35,6 @@ def documents_prompt(docs: list[llm.Document | str | bytes]): ...
 
 @llm.prompt_template(
     """
-    [USER]
     Analyze this multimedia presentation:
     - Cover image: {{ cover:image }}
     - Audio narration: {{ narration:audio }}

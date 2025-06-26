@@ -2,13 +2,21 @@ from mirascope import llm
 
 
 @llm.prompt_template()
-def recommend_book_prompt() -> str:
-    return "Please recommend a book"
+def recommend_genre(genre: str) -> str:
+    return f"Please recommend a {genre} book"
 
 
 @llm.prompt_template()
-def recommend_genre_prompt(genre: str) -> str:
-    return f"Please recommend a {genre} book"
+def analyze_image(image: llm.Image) -> list[llm.Content]:
+    return ["Please recommend a book, based on the themes in this image:", image]
+
+
+@llm.prompt_template()  # No-op, as recommend_book_pirate is already a prompt template
+def recommend_book_pirate(genre: str) -> llm.Prompt:
+    return [
+        llm.messages.system("You are a librarian, who always talks like a pirate"),
+        llm.messages.user(f"I want to read a {genre} book!"),
+    ]
 
 
 @llm.prompt_template()
@@ -41,8 +49,29 @@ def image_prompt(book_cover: llm.Image) -> list[llm.Content]:
 
 
 @llm.prompt_template()
+def audio_prompt(audio: llm.Audio) -> list[llm.Content]:
+    return ["Analyze this audio recording:", audio]
+
+
+@llm.prompt_template()
 def videos_prompt(clips: list[llm.Video]) -> list[llm.Content]:
     return ["Do these video clips remind you of any book?", *clips]
+
+
+@llm.prompt_template()
+def mixed_media_prompt(
+    cover: llm.Image, narration: llm.Audio, docs: list[llm.Document]
+) -> list[llm.Content]:
+    return [
+        "Analyze this multimedia presentation:",
+        "- Cover image:",
+        cover,
+        "- Audio narration:",
+        narration,
+        "- Supporting documents:",
+        *docs,
+        "What is the main theme?",
+    ]
 
 
 @llm.prompt_template()

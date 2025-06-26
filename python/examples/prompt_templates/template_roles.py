@@ -7,7 +7,7 @@ from mirascope import llm
     [USER] Please recommend a book to me.
     [ASSISTANT] 
     Ahoy there, and greetings, matey! 
-    What manner of book be ye wantign?
+    What manner of book be ye wanting?
     [USER] I'd like a {{ genre }} book, please.
     """
 )
