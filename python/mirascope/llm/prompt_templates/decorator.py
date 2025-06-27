@@ -37,9 +37,9 @@ Promptable: TypeAlias = (
 """A function that can be promoted to a prompt.
 
 A `Promptable` function takes input arguments `P` and returns one of:
-- A single `Content` part that will be rendered as a single user message
-- A sequence of `Content` parts that will be rendered as a single user message
-- A list of `Message` objects that will be rendered as-is
+    - A single `Content` part that will be rendered as a single user message
+    - A sequence of `Content` parts that will be rendered as a single user message
+    - A list of `Message` objects that will be rendered as-is
 """
 
 
@@ -71,9 +71,9 @@ AsyncPromptable: TypeAlias = (
 """An asynchronous promptable function.
 
 An `AsyncPromptable` function takes input arguments `P` and returns one of:
-- A single `Content` part that will be rendered as a single user message
-- A sequence of `Content` parts that will be rendered as a single user message
-- A list of `Message` objects that will be rendered as-is
+    - A single `Content` part that will be rendered as a single user message
+    - A sequence of `Content` parts that will be rendered as a single user message
+    - A list of `Message` objects that will be rendered as-is
 """
 
 
