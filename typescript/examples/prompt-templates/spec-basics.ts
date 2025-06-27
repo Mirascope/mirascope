@@ -1,10 +1,5 @@
 import { llm } from 'mirascope';
 
-interface Book {
-  title: string;
-  author: string;
-}
-
 const simplePromptTemplate = llm.promptTemplate`
   Please recommend a book
 `;
@@ -12,6 +7,11 @@ const simplePromptTemplate = llm.promptTemplate`
 const genrePromptTemplate = llm.promptTemplate<{ genre: string }>`
   Please recommend a {{ genre }} book
 `;
+
+type Book = {
+  title: string;
+  author: string;
+};
 
 const bookPromptTemplate = llm.promptTemplate<{ book: Book }>`
   Recommend a book like {{ book.title }} by {{ book.author }}.

@@ -11,7 +11,7 @@ recommend_scifi_book_prompt: llm.Prompt = [
 ]
 
 
-def recommend_genre(genre: str) -> llm.Prompt:
+def recommend_genre_prompt_template(genre: str) -> llm.Prompt:
     return [llm.messages.user(f"Recommend a {genre} book")]
 
 
