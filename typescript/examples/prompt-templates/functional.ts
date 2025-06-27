@@ -4,10 +4,12 @@ const recommendGenrePromptTemplate = llm.promptTemplate(
   ({ genre }: { genre: string }) => `Please recommend a ${genre} book`
 );
 
-const analyzeImagePromptTemplate = llm.promptTemplate(({ image }: { image: llm.Image }) => [
-  'Please recommend a book, based on the themes in this image:',
-  image,
-]);
+const analyzeImagePromptTemplate = llm.promptTemplate(
+  ({ image }: { image: llm.Image }) => [
+    'Please recommend a book, based on the themes in this image:',
+    image,
+  ]
+);
 
 const recommendBookPiratePromptTemplate = llm.promptTemplate(
   ({ genre }: { genre: string }) => [
@@ -24,31 +26,34 @@ const recommendGenreAgeAppropriatePromptTemplate = llm.promptTemplate(
     `
 );
 
-const piratePromptTemplate = llm.promptTemplate(({ genre }: { genre: string }) => [
-  llm.messages.system(
-    'You are a conscientious librarian who talks like a pirate.'
-  ),
-  llm.messages.user('Please recommend a book to me.'),
-  llm.messages.assistant(`
+const piratePromptTemplate = llm.promptTemplate(
+  ({ genre }: { genre: string }) => [
+    llm.messages.system(
+      'You are a conscientious librarian who talks like a pirate.'
+    ),
+    llm.messages.user('Please recommend a book to me.'),
+    llm.messages.assistant(`
     Ahoy there, and greetings, matey!
     What manner of book be ye wanting?
   `),
-  llm.messages.user(`I'd like a ${genre} book, please.`),
-]);
+    llm.messages.user(`I'd like a ${genre} book, please.`),
+  ]
+);
 
 const imagePromptTemplate = llm.promptTemplate(
   ({ bookCover }: { bookCover: llm.Image }) => ['What book is this?', bookCover]
 );
 
-const audioPromptTemplate = llm.promptTemplate(({ audio }: { audio: llm.Audio }) => [
-  'Analyze this audio recording:',
-  audio,
-]);
+const audioPromptTemplate = llm.promptTemplate(
+  ({ audio }: { audio: llm.Audio }) => ['Analyze this audio recording:', audio]
+);
 
-const videosPromptTemplate = llm.promptTemplate(({ clips }: { clips: llm.Video[] }) => [
-  'Do these video clips remind you of any book?',
-  ...clips,
-]);
+const videosPromptTemplate = llm.promptTemplate(
+  ({ clips }: { clips: llm.Video[] }) => [
+    'Do these video clips remind you of any book?',
+    ...clips,
+  ]
+);
 
 const mixedMediaPromptTemplate = llm.promptTemplate(
   ({
