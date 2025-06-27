@@ -335,7 +335,7 @@ def prompt_template(
 
         @llm.prompt_template()
         def answer_question(question: str) -> str:
-            return f"Answer: {question}"
+            return f"Answer this question: {question}"
         ```
     '''
     raise NotImplementedError()

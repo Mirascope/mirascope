@@ -148,20 +148,14 @@ type AsyncContextPromptable<P extends PromptParams, DepsT = undefined> =
  *
  * @example
  * ```typescript
- * class Prompts {
- *   @promptTemplate(`
- *     [SYSTEM] You are a helpful assistant specializing in {{ domain }}.
- *     [USER] {{ question }}
- *   `)
- *   static domainQuestion(domain: string, question: string): {} {
- *     return {};
- *   }
+ * const domainQuestion = promptTemplate<{ domain: string; question: string }>`
+ *   [SYSTEM] You are a helpful assistant specializing in {{ domain }}.
+ *   [USER] {{ question }}
+ * `;
  *
- *   @promptTemplate()
- *   static answerQuestion(question: string): string {
- *     return `Answer: ${question}`;
- *   }
- * }
+ * const answerQuestion = promptTemplate(
+ *   ({ question }: { question: string }) => `Answer this question: ${question}`
+ * );
  * ```
  */
 function promptTemplate<P extends PromptParams>(
