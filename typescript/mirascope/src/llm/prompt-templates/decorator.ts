@@ -111,32 +111,6 @@ type AsyncContextPromptable<P extends PromptParams, DepsT = undefined> =
   | AsyncContextContentSequencePromptable<P, DepsT>
   | AsyncContextPromptTemplate<P, DepsT>;
 
-// Spec Prompt Template Overload
-function promptTemplate<P extends PromptParams>(
-  strings: TemplateStringsArray,
-  ...values: any[]
-): PromptTemplate<P>;
-
-// Functional Prompt Template Overloads
-function promptTemplate<P extends PromptParams>(
-  fn: Promptable<P>
-): PromptTemplate<P>;
-function promptTemplate<P extends PromptParams>(
-  fn: AsyncPromptable<P>
-): AsyncPromptTemplate<P>;
-function promptTemplate<P extends PromptParams>(
-  fn: ContextPromptable<P>
-): ContextPromptTemplate<P>;
-function promptTemplate<P extends PromptParams, DepsT>(
-  fn: ContextPromptable<P, DepsT>
-): ContextPromptTemplate<P, DepsT>;
-function promptTemplate<P extends PromptParams>(
-  fn: AsyncContextPromptable<P>
-): AsyncContextPromptTemplate<P>;
-function promptTemplate<P extends PromptParams, DepsT>(
-  fn: AsyncContextPromptable<P, DepsT>
-): AsyncContextPromptTemplate<P, DepsT>;
-
 /**
  * Prompt decorator for turning functions into prompts.
  *
@@ -190,8 +164,38 @@ function promptTemplate<P extends PromptParams, DepsT>(
  * }
  * ```
  */
+function promptTemplate<P extends PromptParams>(
+  strings: TemplateStringsArray,
+  ...values: unknown[]
+): PromptTemplate<P>;
+
+function promptTemplate<P extends PromptParams>(
+  fn: Promptable<P>
+): PromptTemplate<P>;
+
+function promptTemplate<P extends PromptParams>(
+  fn: AsyncPromptable<P>
+): AsyncPromptTemplate<P>;
+
+function promptTemplate<P extends PromptParams>(
+  fn: ContextPromptable<P>
+): ContextPromptTemplate<P>;
+
+function promptTemplate<P extends PromptParams, DepsT>(
+  fn: ContextPromptable<P, DepsT>
+): ContextPromptTemplate<P, DepsT>;
+
+function promptTemplate<P extends PromptParams>(
+  fn: AsyncContextPromptable<P>
+): AsyncContextPromptTemplate<P>;
+
+function promptTemplate<P extends PromptParams, DepsT>(
+  fn: AsyncContextPromptable<P, DepsT>
+): AsyncContextPromptTemplate<P, DepsT>;
+
 function promptTemplate<P extends PromptParams, DepsT = unknown>(
-  stringsOrFn:
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _stringsOrFn:
     | TemplateStringsArray
     | Promptable<P>
     | AsyncPromptable<P>
@@ -199,7 +203,8 @@ function promptTemplate<P extends PromptParams, DepsT = unknown>(
     | ContextPromptable<P, DepsT>
     | AsyncContextPromptable<P>
     | AsyncContextPromptable<P, DepsT>,
-  ...values: any[]
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ..._values: unknown[]
 ):
   | PromptTemplate<P>
   | AsyncPromptTemplate<P>
