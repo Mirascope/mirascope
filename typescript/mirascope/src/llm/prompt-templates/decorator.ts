@@ -30,13 +30,19 @@ type Promptable<P extends PromptParams> =
   | ContentSequencePromptable<P>
   | PromptTemplate<P>;
 
-type AsyncContentPromptable<P extends PromptParams> = (params: P) => Promise<Content>;
-type AsyncContentSequencePromptable<P extends PromptParams> = (params: P) => Promise<Content[]>;
-type AsyncPromptTemplate<P extends PromptParams> = (params: P) => Promise<Message[]>;
+type AsyncContentPromptable<P extends PromptParams> = (
+  params: P
+) => Promise<Content>;
+type AsyncContentSequencePromptable<P extends PromptParams> = (
+  params: P
+) => Promise<Content[]>;
+type AsyncPromptTemplate<P extends PromptParams> = (
+  params: P
+) => Promise<Message[]>;
 
 /**
  * An asynchronous promptable function.
- * 
+ *
  * An `AsyncPromptable` function takes input arguments `P` and returns one of:
  *   - A single `Content` part that will be rendered as a single user message
  *   - A sequence of `Content` parts that will be rendered as a single user message
@@ -47,25 +53,24 @@ type AsyncPromptable<P extends PromptParams> =
   | AsyncContentSequencePromptable<P>
   | AsyncPromptTemplate<P>;
 
-
 type ContextContentPromptable<P extends PromptParams, DepsT = undefined> = (
-  ctx: Context<DepsT>, 
+  ctx: Context<DepsT>,
   params: P
 ) => Content;
 
-type ContextContentSequencePromptable<P extends PromptParams, DepsT = undefined> = (
-  ctx: Context<DepsT>, 
-  params: P
-) => Content[];
+type ContextContentSequencePromptable<
+  P extends PromptParams,
+  DepsT = undefined,
+> = (ctx: Context<DepsT>, params: P) => Content[];
 
 type ContextPromptTemplate<P extends PromptParams, DepsT = undefined> = (
-  ctx: Context<DepsT>, 
+  ctx: Context<DepsT>,
   params: P
 ) => Message[];
 
 /**
  * A context promptable function.
- * 
+ *
  * A `ContextPromptable` function takes input arguments `Context[DepsT]` and `P` and
  * returns one of:
  *   - A single `Content` part that will be rendered as a single user message
@@ -77,24 +82,24 @@ type ContextPromptable<P extends PromptParams, DepsT = undefined> =
   | ContextContentSequencePromptable<P, DepsT>
   | ContextPromptTemplate<P, DepsT>;
 
-type AsyncContextContentPromptable<P extends PromptParams, DepsT = undefined> = (
-  ctx: Context<DepsT>, 
-  params: P
-) => Promise<Content>;
+type AsyncContextContentPromptable<
+  P extends PromptParams,
+  DepsT = undefined,
+> = (ctx: Context<DepsT>, params: P) => Promise<Content>;
 
-type AsyncContextContentSequencePromptable<P extends PromptParams, DepsT = undefined> = (
-  ctx: Context<DepsT>, 
-  params: P
-) => Promise<Content[]>;
+type AsyncContextContentSequencePromptable<
+  P extends PromptParams,
+  DepsT = undefined,
+> = (ctx: Context<DepsT>, params: P) => Promise<Content[]>;
 
 type AsyncContextPromptTemplate<P extends PromptParams, DepsT = undefined> = (
-  ctx: Context<DepsT>, 
+  ctx: Context<DepsT>,
   params: P
 ) => Promise<Message[]>;
 
 /**
  * An asynchronous context promptable function.
- * 
+ *
  * An `AsyncContextPromptable` function takes input arguments `Context[DepsT]` and `P`
  * and returns one of:
  *   - A single `Content` part that will be rendered as a single user message
@@ -108,17 +113,29 @@ type AsyncContextPromptable<P extends PromptParams, DepsT = undefined> =
 
 // Spec Prompt Template Overload
 function promptTemplate<P extends PromptParams>(
-  strings: TemplateStringsArray, 
+  strings: TemplateStringsArray,
   ...values: any[]
 ): PromptTemplate<P>;
 
 // Functional Prompt Template Overloads
-function promptTemplate<P extends PromptParams>(fn: Promptable<P>): PromptTemplate<P>; 
-function promptTemplate<P extends PromptParams>(fn: AsyncPromptable<P>): AsyncPromptTemplate<P>;
-function promptTemplate<P extends PromptParams>(fn: ContextPromptable<P>): ContextPromptTemplate<P>;
-function promptTemplate<P extends PromptParams, DepsT>(fn: ContextPromptable<P, DepsT>): ContextPromptTemplate<P, DepsT>;
-function promptTemplate<P extends PromptParams>(fn: AsyncContextPromptable<P>): AsyncContextPromptTemplate<P>;
-function promptTemplate<P extends PromptParams, DepsT>(fn: AsyncContextPromptable<P, DepsT>): AsyncContextPromptTemplate<P, DepsT>;
+function promptTemplate<P extends PromptParams>(
+  fn: Promptable<P>
+): PromptTemplate<P>;
+function promptTemplate<P extends PromptParams>(
+  fn: AsyncPromptable<P>
+): AsyncPromptTemplate<P>;
+function promptTemplate<P extends PromptParams>(
+  fn: ContextPromptable<P>
+): ContextPromptTemplate<P>;
+function promptTemplate<P extends PromptParams, DepsT>(
+  fn: ContextPromptable<P, DepsT>
+): ContextPromptTemplate<P, DepsT>;
+function promptTemplate<P extends PromptParams>(
+  fn: AsyncContextPromptable<P>
+): AsyncContextPromptTemplate<P>;
+function promptTemplate<P extends PromptParams, DepsT>(
+  fn: AsyncContextPromptable<P, DepsT>
+): AsyncContextPromptTemplate<P, DepsT>;
 
 /**
  * Prompt decorator for turning functions into prompts.
@@ -174,9 +191,22 @@ function promptTemplate<P extends PromptParams, DepsT>(fn: AsyncContextPromptabl
  * ```
  */
 function promptTemplate<P extends PromptParams, DepsT = unknown>(
-  stringsOrFn: TemplateStringsArray | Promptable<P> | AsyncPromptable<P> | ContextPromptable<P> | ContextPromptable<P, DepsT> | AsyncContextPromptable<P> | AsyncContextPromptable<P, DepsT>, 
+  stringsOrFn:
+    | TemplateStringsArray
+    | Promptable<P>
+    | AsyncPromptable<P>
+    | ContextPromptable<P>
+    | ContextPromptable<P, DepsT>
+    | AsyncContextPromptable<P>
+    | AsyncContextPromptable<P, DepsT>,
   ...values: any[]
-): PromptTemplate<P> | AsyncPromptTemplate<P> | ContextPromptTemplate<P> | ContextPromptTemplate<P, DepsT> | AsyncContextPromptTemplate<P> | AsyncContextPromptTemplate<P, DepsT> {
+):
+  | PromptTemplate<P>
+  | AsyncPromptTemplate<P>
+  | ContextPromptTemplate<P>
+  | ContextPromptTemplate<P, DepsT>
+  | AsyncContextPromptTemplate<P>
+  | AsyncContextPromptTemplate<P, DepsT> {
   throw new Error('Not implemented');
 }
 
