@@ -1,8 +1,8 @@
 /**
- * @fileoverview The `promptTemplate` decorator for promoting "promptables" into prompt templates.
+ * @fileoverview The `promptTemplate` method for promoting "promptables" into prompt templates.
  */
 /**
- * The `promptTemplate` decorator for writing messages as string templates.
+ * The `promptTemplate` method for writing messages as string templates.
  */
 
 import type { Content } from '../content';
@@ -112,9 +112,9 @@ type AsyncContextPromptable<P extends PromptParams, DepsT = undefined> =
   | AsyncContextPromptTemplate<P, DepsT>;
 
 /**
- * Prompt decorator for turning functions into prompts.
+ * Prompt Template method for turning functions (or "promptables") into prompts.
  *
- * This decorator transforms a function into a PromptTemplate, i.e. a function that
+ * This method transforms a function into a PromptTemplate, i.e. a function that
  * returns `Message[]`. Its behavior depends on whether it's called with a spec
  * string.
  *

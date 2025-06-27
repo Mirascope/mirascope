@@ -288,7 +288,7 @@ def prompt_template(spec: str) -> PromptTemplateSpecDecorator:
 def prompt_template(
     spec: str | None = None,
 ) -> PromptTemplateFunctionalDecorator | PromptTemplateSpecDecorator:
-    '''Prompt decorator for turning functions into prompts.
+    '''Prompt Template decorator for turning functions (or "promptables") into prompts.
 
     This decorator transforms a function into a PromptTemplate, i.e. a function that
     returns `list[llm.Message]`. Its behavior depends on whether it's called with a spec
