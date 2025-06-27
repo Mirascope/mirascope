@@ -12,6 +12,19 @@
     "ci": "bun run lint && bun run docs:build",
     "lint": "bun run codespell && bun run lint:python && bun run lint:typescript",
     "lint:python": "cd python && uv sync --all-extras --dev && uv run ruff check . && uv run pyright .",
-    "lint:typescript": "cd typescript && bun i && bun run lint"
+    "lint:typescript": "cd typescript && bun i && bun run lint",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "typescript/**/*.{ts,tsx}": [
+      "bun typescript/lint-staged.ts"
+    ],
+    "python/**/*.py": [
+      "bun python/lint-staged.ts"
+    ]
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2"
   }
 }

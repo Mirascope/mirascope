@@ -178,3 +178,5 @@ database.db
 
 # Cloudflare
 .wrangler
+
+node_modules
