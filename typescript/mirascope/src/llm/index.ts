@@ -17,4 +17,4 @@ export type {
 } from './content';
 export type { Context } from './context';
 export type { Message, Prompt } from './messages';
-export { promptTemplate } from './prompt-templates';
+export { definePromptTemplate } from './prompt-templates';

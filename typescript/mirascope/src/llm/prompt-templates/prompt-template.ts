@@ -11,14 +11,17 @@ import type { Message } from '../messages/message';
 
 type PromptParams = Record<string, unknown>;
 
-type PromptTemplate<P extends PromptParams> = (params: P) => Message[];
+// Promptable function types with prompt parameters
 type ContentPromptable<P extends PromptParams> = (params: P) => Content;
+
 type ContentSequencePromptable<P extends PromptParams> = (
   params: P
 ) => Content[];
 
+type PromptTemplate<P extends PromptParams> = (params: P) => Message[];
+
 /**
- * A function that can be promoted to a prompt.
+ * A function with prompt parameters that can be promoted to a prompt.
  *
  * A `Promptable` function takes input arguments `P` and returns one of:
  *   - A single `Content` part that will be rendered as a single user message
@@ -26,22 +29,51 @@ type ContentSequencePromptable<P extends PromptParams> = (
  *   - A list of `Message` objects that will be rendered as-is
  */
 type Promptable<P extends PromptParams> =
+  | PromptTemplate<P>
   | ContentPromptable<P>
-  | ContentSequencePromptable<P>
-  | PromptTemplate<P>;
+  | ContentSequencePromptable<P>;
 
+// Promptable function types with positional arguments
+type PositionalContentPromptable<Args extends readonly unknown[] = any[]> = (
+  ...args: Args
+) => Content;
+
+type PositionalContentSequencePromptable<
+  Args extends readonly unknown[] = any[],
+> = (...args: Args) => Content[];
+
+type PositionalPromptTemplate<Args extends readonly unknown[] = any[]> = (
+  ...args: Args
+) => Message[];
+
+/**
+ * A function with positional arguments that can be promoted to a prompt.
+ *
+ * A `Promptable` function takes input arguments `P` and returns one of:
+ *   - A single `Content` part that will be rendered as a single user message
+ *   - A sequence of `Content` parts that will be rendered as a single user message
+ *   - A list of `Message` objects that will be rendered as-is
+ */
+type PositionalPromptable<Args extends readonly unknown[] = any[]> =
+  | PositionalPromptTemplate<Args>
+  | PositionalContentPromptable<Args>
+  | PositionalContentSequencePromptable<Args>;
+
+// Async promptable function types with prompt parameters
 type AsyncContentPromptable<P extends PromptParams> = (
   params: P
 ) => Promise<Content>;
+
 type AsyncContentSequencePromptable<P extends PromptParams> = (
   params: P
 ) => Promise<Content[]>;
+
 type AsyncPromptTemplate<P extends PromptParams> = (
   params: P
 ) => Promise<Message[]>;
 
 /**
- * An asynchronous promptable function.
+ * An asynchronous promptable with prompt parameters.
  *
  * An `AsyncPromptable` function takes input arguments `P` and returns one of:
  *   - A single `Content` part that will be rendered as a single user message
@@ -53,6 +85,32 @@ type AsyncPromptable<P extends PromptParams> =
   | AsyncContentSequencePromptable<P>
   | AsyncPromptTemplate<P>;
 
+// Async promptable function types with positional arguments
+type AsyncPositionalContentPromptable<Args extends readonly unknown[] = any[]> =
+  (...args: Args) => Promise<Content>;
+
+type AsyncPositionalContentSequencePromptable<
+  Args extends readonly unknown[] = any[],
+> = (...args: Args) => Promise<Content[]>;
+
+type AsyncPositionalPromptTemplate<Args extends readonly unknown[] = any[]> = (
+  ...args: Args
+) => Promise<Message[]>;
+
+/**
+ * An asynchronous promptable with positional arguments.
+ *
+ * An `AsyncPromptable` function takes input arguments `P` and returns one of:
+ *   - A single `Content` part that will be rendered as a single user message
+ *   - A sequence of `Content` parts that will be rendered as a single user message
+ *   - A list of `Message` objects that will be rendered as-is
+ */
+type AsyncPositionalPromptable<Args extends readonly unknown[] = any[]> =
+  | AsyncPositionalPromptTemplate<Args>
+  | AsyncPositionalContentPromptable<Args>
+  | AsyncPositionalContentSequencePromptable<Args>;
+
+// Context promptable function types with prompt parameters
 type ContextContentPromptable<P extends PromptParams, DepsT = undefined> = (
   ctx: Context<DepsT>,
   params: P
@@ -69,7 +127,7 @@ type ContextPromptTemplate<P extends PromptParams, DepsT = undefined> = (
 ) => Message[];
 
 /**
- * A context promptable function.
+ * A context promptable function with prompt parameters.
  *
  * A `ContextPromptable` function takes input arguments `Context[DepsT]` and `P` and
  * returns one of:
@@ -82,6 +140,40 @@ type ContextPromptable<P extends PromptParams, DepsT = undefined> =
   | ContextContentSequencePromptable<P, DepsT>
   | ContextPromptTemplate<P, DepsT>;
 
+// Context promptable function types with positional arguments
+type PositionalContextContentPromptable<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+> = (ctx: Context<DepsT>, ...args: Args) => Content;
+
+type PositionalContextContentSequencePromptable<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+> = (ctx: Context<DepsT>, ...args: Args) => Content[];
+
+type PositionalContextPromptTemplate<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+> = (ctx: Context<DepsT>, ...args: Args) => Message[];
+
+/**
+ * A context promptable function with positional arguments.
+ *
+ * A `PositionalContextPromptable` function takes input arguments `Context[DepsT]` and
+ * `Args` and returns one of:
+ *   - A single `Content` part that will be rendered as a single user message
+ *   - A sequence of `Content` parts that will be rendered as a single user message
+ *   - A list of `Message` objects that will be rendered as-is
+ */
+type PositionalContextPromptable<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+> =
+  | PositionalContextPromptTemplate<Args, DepsT>
+  | PositionalContextContentPromptable<Args, DepsT>
+  | PositionalContextContentSequencePromptable<Args, DepsT>;
+
+// Asynchronous context promptable function types with prompt parameters
 type AsyncContextContentPromptable<
   P extends PromptParams,
   DepsT = undefined,
@@ -98,7 +190,7 @@ type AsyncContextPromptTemplate<P extends PromptParams, DepsT = undefined> = (
 ) => Promise<Message[]>;
 
 /**
- * An asynchronous context promptable function.
+ * An asynchronous context promptable function with prompt parameters.
  *
  * An `AsyncContextPromptable` function takes input arguments `Context[DepsT]` and `P`
  * and returns one of:
@@ -110,6 +202,39 @@ type AsyncContextPromptable<P extends PromptParams, DepsT = undefined> =
   | AsyncContextContentPromptable<P, DepsT>
   | AsyncContextContentSequencePromptable<P, DepsT>
   | AsyncContextPromptTemplate<P, DepsT>;
+
+// Asynchronous context promptable function types with positional arguments
+type AsyncPositionalContextContentPromptable<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+> = (ctx: Context<DepsT>, ...args: Args) => Promise<Content>;
+
+type AsyncPositionalContextContentSequencePromptable<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+> = (ctx: Context<DepsT>, ...args: Args) => Promise<Content[]>;
+
+type AsyncPositionalContextPromptTemplate<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+> = (ctx: Context<DepsT>, ...args: Args) => Promise<Message[]>;
+
+/**
+ * An asynchronous context promptable function with positional arguments.
+ *
+ * An `AsyncPositionalContextPromptable` function takes input arguments
+ * `Context[DepsT]` and `Args` and returns one of:
+ *   - A single `Content` part that will be rendered as a single user message
+ *   - A sequence of `Content` parts that will be rendered as a single user message
+ *   - A list of `Message` objects that will be rendered as-is
+ */
+type AsyncPositionalContextPromptable<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+> =
+  | AsyncPositionalContextPromptTemplate<Args, DepsT>
+  | AsyncPositionalContextContentPromptable<Args, DepsT>
+  | AsyncPositionalContextContentSequencePromptable<Args, DepsT>;
 
 /**
  * Prompt Template method for turning functions (or "promptables") into prompts.
@@ -148,65 +273,89 @@ type AsyncContextPromptable<P extends PromptParams, DepsT = undefined> =
  *
  * @example
  * ```typescript
- * const domainQuestion = promptTemplate<{ domain: string; question: string }>`
+ * const domainQuestionPromptTemplate = definePromptTemplate<{ domain: string; question: string }>`
  *   [SYSTEM] You are a helpful assistant specializing in {{ domain }}.
  *   [USER] {{ question }}
  * `;
  *
- * const answerQuestion = promptTemplate(
+ * const answerQuestionPromptTemplate = definePromptTemplate(
  *   ({ question }: { question: string }) => `Answer this question: ${question}`
+ * );
+ *
+ * const answerQuestionPromptTemplate = definePromptTemplate(
+ *   (question: string) => `Answer this question: ${question}`
  * );
  * ```
  */
-function promptTemplate<P extends PromptParams>(
+function definePromptTemplate<P extends PromptParams>(
   strings: TemplateStringsArray,
   ...values: unknown[]
 ): PromptTemplate<P>;
 
-function promptTemplate<P extends PromptParams>(
+function definePromptTemplate<P extends PromptParams>(
   fn: Promptable<P>
 ): PromptTemplate<P>;
 
-function promptTemplate<P extends PromptParams>(
+function definePromptTemplate<Args extends readonly unknown[] = any[]>(
+  fn: PositionalPromptable<Args>
+): PositionalPromptTemplate<Args>;
+
+function definePromptTemplate<P extends PromptParams>(
   fn: AsyncPromptable<P>
 ): AsyncPromptTemplate<P>;
 
-function promptTemplate<P extends PromptParams>(
-  fn: ContextPromptable<P>
-): ContextPromptTemplate<P>;
+function definePromptTemplate<Args extends readonly unknown[] = any[]>(
+  fn: AsyncPositionalPromptable<Args>
+): AsyncPositionalPromptTemplate<Args>;
 
-function promptTemplate<P extends PromptParams, DepsT>(
+function definePromptTemplate<P extends PromptParams, DepsT = undefined>(
   fn: ContextPromptable<P, DepsT>
 ): ContextPromptTemplate<P, DepsT>;
 
-function promptTemplate<P extends PromptParams>(
-  fn: AsyncContextPromptable<P>
-): AsyncContextPromptTemplate<P>;
+function definePromptTemplate<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+>(
+  fn: PositionalContextPromptable<Args, DepsT>
+): PositionalContextPromptTemplate<Args, DepsT>;
 
-function promptTemplate<P extends PromptParams, DepsT>(
+function definePromptTemplate<P extends PromptParams, DepsT = undefined>(
   fn: AsyncContextPromptable<P, DepsT>
 ): AsyncContextPromptTemplate<P, DepsT>;
 
-function promptTemplate<P extends PromptParams, DepsT = unknown>(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+function definePromptTemplate<
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+>(
+  fn: AsyncPositionalContextPromptable<Args, DepsT>
+): AsyncPositionalContextPromptTemplate<Args, DepsT>;
+
+function definePromptTemplate<
+  P extends PromptParams,
+  Args extends readonly unknown[] = any[],
+  DepsT = undefined,
+>(
   _stringsOrFn:
     | TemplateStringsArray
     | Promptable<P>
+    | PositionalPromptable<Args>
     | AsyncPromptable<P>
-    | ContextPromptable<P>
+    | AsyncPositionalPromptable<Args>
     | ContextPromptable<P, DepsT>
-    | AsyncContextPromptable<P>
-    | AsyncContextPromptable<P, DepsT>,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    | PositionalContextPromptable<Args, DepsT>
+    | AsyncContextPromptable<P, DepsT>
+    | AsyncPositionalContextPromptable<Args, DepsT>,
   ..._values: unknown[]
 ):
   | PromptTemplate<P>
+  | PositionalPromptTemplate<Args>
   | AsyncPromptTemplate<P>
-  | ContextPromptTemplate<P>
+  | AsyncPositionalPromptTemplate<Args>
   | ContextPromptTemplate<P, DepsT>
-  | AsyncContextPromptTemplate<P>
-  | AsyncContextPromptTemplate<P, DepsT> {
+  | PositionalContextPromptTemplate<Args, DepsT>
+  | AsyncContextPromptTemplate<P, DepsT>
+  | AsyncPositionalContextPromptTemplate<Args, DepsT> {
   throw new Error('Not implemented');
 }
 
-export { promptTemplate };
+export { definePromptTemplate };
