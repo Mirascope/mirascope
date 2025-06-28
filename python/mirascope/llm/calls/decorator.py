@@ -14,7 +14,6 @@ from ..prompt_templates import (
     Promptable,
 )
 from ..tools import ContextToolDef, ToolDef
-from ..types import Dataclass
 from .async_call import AsyncCall
 from .async_context_call import AsyncContextCall
 from .async_structured_call import AsyncStructuredCall
@@ -31,7 +30,7 @@ if TYPE_CHECKING:
 
 NoneType = type(None)
 P = ParamSpec("P")
-T = TypeVar("T", bound=Dataclass | None, default=None)
+T = TypeVar("T", bound=object | None, default=None)
 DepsT = TypeVar("DepsT", default=None)
 NoDepsT = TypeVar("NoDepsT", bound=None)
 

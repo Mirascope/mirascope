@@ -12,10 +12,11 @@ from .decorator import (
     response_format,
 )
 from .from_call_args import FromCallArgs
-from .response_format import ResponseFormat
+from .response_format import Formattable, ResponseFormat
 
 __all__ = [
     "ContentResponseFormatDef",
+    "Formattable",
     "FromCallArgs",
     "JsonResponseFormatDef",
     "ResponseFormat",

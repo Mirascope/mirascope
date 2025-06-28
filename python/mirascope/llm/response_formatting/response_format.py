@@ -1,11 +1,9 @@
 """The `ResponseFormat` class for defining how to structure an LLM response."""
 
 from dataclasses import dataclass
-from typing import Any, Generic, Literal, Protocol, TypeVar
+from typing import Any, Generic, Literal, Protocol, TypeVar, runtime_checkable
 
-from ..types import Dataclass
-
-T = TypeVar("T", bound=Dataclass)
+T = TypeVar("T", bound=object)
 CovariantT = TypeVar("CovariantT", covariant=True)
 
 
@@ -104,3 +102,11 @@ class ResponseFormat(Generic[T]):
 
     strict: bool
     """Whether the response format should use strict validation when supported."""
+
+
+@runtime_checkable
+class Formattable(Protocol[T]):
+    """Protocol for classes that have been decorated with `@response_format()`."""
+
+    __response_format__: ResponseFormat[T]
+    """The `ResponseFormat` instance constructed by the `@response_format()` decorator."""

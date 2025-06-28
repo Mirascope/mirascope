@@ -10,10 +10,10 @@ from typing_extensions import TypeVar
 from ..models import LLM
 from ..prompt_templates import AsyncPromptable, Promptable
 from ..tools import ToolDef
-from ..types import Dataclass, Jsonable
+from ..types import Jsonable
 
 P = ParamSpec("P")
-T = TypeVar("T", bound=Dataclass | None, default=None)
+T = TypeVar("T", bound=object | None, default=None)
 PromptableT = TypeVar("PromptableT", bound=Promptable | AsyncPromptable)
 
 
