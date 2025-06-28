@@ -13,10 +13,9 @@ from typing import Generic
 
 from typing_extensions import TypeVar
 
-from ..types import Dataclass
 from .stream_chunk import StreamChunk
 
-T = TypeVar("T", bound=Dataclass | None, default=None)
+T = TypeVar("T", bound=object | None, default=None)
 
 
 class StructuredStream(Generic[T]):

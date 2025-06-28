@@ -11,13 +11,12 @@ from ..responses import (
     Response,
     StructuredStream,
 )
-from ..types import Dataclass
 from .base_structured_agent import (
     BaseStructuredAgent,
 )
 
 DepsT = TypeVar("DepsT", default=None)
-T = TypeVar("T", bound=Dataclass | None, default=None)
+T = TypeVar("T", bound=object | None, default=None)
 
 
 @dataclass

@@ -10,7 +10,6 @@ from typing_extensions import TypeVar
 from ..content import Content
 from ..context import Context
 from ..tools import ContextToolDef, ToolDef
-from ..types import Dataclass
 from .agent import Agent
 from .async_agent import AsyncAgent
 from .async_structured_agent import AsyncStructuredAgent
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
 NoneType = type(None)
 P = ParamSpec("P")
 DepsT = TypeVar("DepsT", default=None)
-T = TypeVar("T", bound=Dataclass | None, default=None)
+T = TypeVar("T", bound=object | None, default=None)
 
 
 class AgentStringReturn(Protocol[P, DepsT]):

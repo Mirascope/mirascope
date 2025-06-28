@@ -6,10 +6,9 @@ from typing import Generic
 from typing_extensions import TypeVar
 
 from ..context import Context
-from ..types import Dataclass
 from .content import ContextResponseContent
 
-T = TypeVar("T", bound=Dataclass | None, default=None)
+T = TypeVar("T", bound=object | None, default=None)
 DepsT = TypeVar("DepsT", default=None)
 
 

@@ -8,11 +8,10 @@ from typing_extensions import TypeVar
 from ..context import Context
 from ..prompt_templates import AsyncPromptable
 from ..responses import AsyncStructuredStream, ContextResponse
-from ..types import Dataclass
 from .base_structured_context_call import BaseStructuredContextCall
 
 P = ParamSpec("P")
-T = TypeVar("T", bound=Dataclass | None, default=None)
+T = TypeVar("T", bound=object | None, default=None)
 DepsT = TypeVar("DepsT", default=None)
 
 
