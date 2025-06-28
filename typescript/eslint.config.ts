@@ -1,4 +1,5 @@
 import eslint from '@eslint/js';
+import globals from 'globals';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
 import prettier from 'eslint-config-prettier';
@@ -25,6 +26,8 @@ export default [
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-inferrable-types': 'off',
+      'no-redeclare': 'off',
+      '@typescript-eslint/no-redeclare': 'error',
     },
   },
   {
@@ -35,6 +38,9 @@ export default [
         ecmaVersion: 'latest',
         sourceType: 'module',
         project: './examples/tsconfig.json',
+      },
+      globals: {
+        ...globals.node,
       },
     },
     plugins: {

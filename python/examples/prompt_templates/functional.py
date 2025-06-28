@@ -2,17 +2,17 @@ from mirascope import llm
 
 
 @llm.prompt_template()
-def recommend_genre(genre: str) -> str:
+def recommend_genre_prompt_template(genre: str) -> str:
     return f"Please recommend a {genre} book"
 
 
 @llm.prompt_template()
-def analyze_image(image: llm.Image) -> list[llm.Content]:
+def analyze_image_prompt_template(image: llm.Image) -> list[llm.Content]:
     return ["Please recommend a book, based on the themes in this image:", image]
 
 
 @llm.prompt_template()  # No-op, as recommend_book_pirate is already a prompt template
-def recommend_book_pirate(genre: str) -> llm.Prompt:
+def recommend_book_pirate_prompt_template(genre: str) -> llm.Prompt:
     return [
         llm.messages.system("You are a librarian who always talks like a pirate"),
         llm.messages.user(f"I want to read a {genre} book!"),
@@ -20,7 +20,7 @@ def recommend_book_pirate(genre: str) -> llm.Prompt:
 
 
 @llm.prompt_template()
-def recommend_genre_age_appropriate_prompt(genre: str, age: int) -> str:
+def recommend_genre_age_appropriate_prompt_template(genre: str, age: int) -> str:
     return f"""
     Please recommend a {genre} book that would be appropriate for a {age}-year-old reader.
     Include the title, author, and a brief description.
@@ -29,7 +29,7 @@ def recommend_genre_age_appropriate_prompt(genre: str, age: int) -> str:
 
 
 @llm.prompt_template()
-def pirate_prompt(genre: str) -> list[llm.Message]:
+def pirate_prompt_template(genre: str) -> list[llm.Message]:
     return [
         llm.messages.system(
             "You are a conscientious librarian who talks like a pirate."
@@ -44,22 +44,22 @@ def pirate_prompt(genre: str) -> list[llm.Message]:
 
 
 @llm.prompt_template()
-def image_prompt(book_cover: llm.Image) -> list[llm.Content]:
+def image_prompt_template(book_cover: llm.Image) -> list[llm.Content]:
     return ["What book is this?", book_cover]
 
 
 @llm.prompt_template()
-def audio_prompt(audio: llm.Audio) -> list[llm.Content]:
+def audio_prompt_template(audio: llm.Audio) -> list[llm.Content]:
     return ["Analyze this audio recording:", audio]
 
 
 @llm.prompt_template()
-def videos_prompt(clips: list[llm.Video]) -> list[llm.Content]:
+def videos_prompt_template(clips: list[llm.Video]) -> list[llm.Content]:
     return ["Do these video clips remind you of any book?", *clips]
 
 
 @llm.prompt_template()
-def mixed_media_prompt(
+def mixed_media_prompt_template(
     cover: llm.Image, narration: llm.Audio, docs: list[llm.Document]
 ) -> list[llm.Content]:
     return [
@@ -77,7 +77,7 @@ def mixed_media_prompt(
 
 
 @llm.prompt_template()
-def history_prompt(history: list[llm.Message]) -> list[llm.Message]:
+def history_prompt_template(history: list[llm.Message]) -> list[llm.Message]:
     return [
         llm.messages.system(
             "You are a summarization agent. Your job is to summarize long discussions."
