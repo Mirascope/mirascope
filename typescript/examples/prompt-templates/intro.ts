@@ -19,3 +19,8 @@ const recommend_genre_prompt_template = (genre: string) => [
 const recommend_genre_prompt_template_from_spec = llm.definePromptTemplate<{
   genre: string;
 }>`Recommend a {{ genre }} book`;
+
+const recommend_genre_prompt: llm.Message[] =
+  recommend_genre_prompt_template_from_spec({ genre: 'fantasy' });
+console.log(recommend_genre_prompt);
+// > [llm.messages.user('Recommend a fantasy book')]
