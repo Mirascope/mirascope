@@ -38,8 +38,8 @@ class Response(Generic[ResponseContentT, T]):
     args: dict[str, Any]
     """The arguments used to generate the response."""
 
-    template: str | None
-    """The string template used to define the messages array, if any."""
+    spec: str | None
+    """The string spec used to define the messages array, if any."""
 
     messages: list[Message]
     """The messages used to generate the response. This will not include the system message."""
@@ -95,7 +95,6 @@ class Response(Generic[ResponseContentT, T]):
     def thinking(self) -> Thinking | None:
         """Returns the first thinking in the response content, if any."""
         raise NotImplementedError()
-
 
     def format(self) -> T:
         """Format the response according to the response format parser.
