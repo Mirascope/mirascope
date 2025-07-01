@@ -37,9 +37,9 @@ Promptable: TypeAlias = (
 """A function that can be promoted to a prompt.
 
 A `Promptable` function takes input arguments `P` and returns one of:
-- A single `Content` part that will be rendered as a single user message
-- A sequence of `Content` parts that will be rendered as a single user message
-- A list of `Message` objects that will be rendered as-is
+  - A single `Content` part that will be rendered as a single user message
+  - A sequence of `Content` parts that will be rendered as a single user message
+  - A list of `Message` objects that will be rendered as-is
 """
 
 
@@ -71,9 +71,9 @@ AsyncPromptable: TypeAlias = (
 """An asynchronous promptable function.
 
 An `AsyncPromptable` function takes input arguments `P` and returns one of:
-- A single `Content` part that will be rendered as a single user message
-- A sequence of `Content` parts that will be rendered as a single user message
-- A list of `Message` objects that will be rendered as-is
+  - A single `Content` part that will be rendered as a single user message
+  - A sequence of `Content` parts that will be rendered as a single user message
+  - A list of `Message` objects that will be rendered as-is
 """
 
 
@@ -110,9 +110,9 @@ ContextPromptable: TypeAlias = (
 
 A `ContextPromptable` function takes input arguments `Context[DepsT]` and `P` and
 returns one of:
-- A single `Content` part that will be rendered as a single user message
-- A sequence of `Content` parts that will be rendered as a single user message
-- A list of `Message` objects that will be rendered as-is
+  - A single `Content` part that will be rendered as a single user message
+  - A sequence of `Content` parts that will be rendered as a single user message
+  - A list of `Message` objects that will be rendered as-is
 """
 
 
@@ -147,11 +147,11 @@ AsyncContextPromptable: TypeAlias = (
 )
 """An asynchronous context promptable function.
 
-An `AsyncContextPromptable` function takes input arguments
-`Context[DepsT]` and `P` and returns one of:
-- A single `Content` part that will be rendered as a single user message
-- A sequence of `Content` parts that will be rendered as a single user message
-- A list of `Message` objects that will be rendered as-is
+An `AsyncContextPromptable` function takes input arguments `Context[DepsT]` and `P` and
+returns one of:
+  - A single `Content` part that will be rendered as a single user message
+  - A sequence of `Content` parts that will be rendered as a single user message
+  - A list of `Message` objects that will be rendered as-is
 """
 
 
@@ -288,7 +288,7 @@ def prompt_template(spec: str) -> PromptTemplateSpecDecorator:
 def prompt_template(
     spec: str | None = None,
 ) -> PromptTemplateFunctionalDecorator | PromptTemplateSpecDecorator:
-    '''Prompt decorator for turning functions into prompts.
+    '''Prompt Template decorator for turning functions (or "promptables") into prompts.
 
     This decorator transforms a function into a PromptTemplate, i.e. a function that
     returns `list[llm.Message]`. Its behavior depends on whether it's called with a spec
@@ -335,7 +335,7 @@ def prompt_template(
 
         @llm.prompt_template()
         def answer_question(question: str) -> str:
-            return f"Answer: {question}"
+            return f"Answer this question: {question}"
         ```
     '''
     raise NotImplementedError()

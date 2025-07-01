@@ -8,7 +8,7 @@ from mirascope import llm
     [USER] Please summarize our conversation, and recommend a book based on this chat.
     """
 )
-def history_prompt(history: list[llm.Message]): ...
+def history_prompt_template(history: list[llm.Message]): ...
 
 
 with open("book_recommendation.txt") as f:
@@ -16,4 +16,4 @@ with open("book_recommendation.txt") as f:
 
 
 @llm.prompt_template(template_content)
-def file_based_prompt(genre: str): ...
+def file_based_prompt_template(genre: str): ...
