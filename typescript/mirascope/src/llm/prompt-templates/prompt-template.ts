@@ -53,8 +53,14 @@ type ContextPromptable<T, DepsT = undefined> = T extends readonly unknown[]
  *   - A list of `Message` objects that will be rendered as-is
  */
 type AsyncContextPromptable<T, DepsT = undefined> = T extends readonly unknown[]
-  ? (ctx: Context<DepsT>, ...args: T) => Promise<Content | Content[] | Message[]>
-  : (ctx: Context<DepsT>, params: T) => Promise<Content | Content[] | Message[]>;
+  ? (
+      ctx: Context<DepsT>,
+      ...args: T
+    ) => Promise<Content | Content[] | Message[]>
+  : (
+      ctx: Context<DepsT>,
+      params: T
+    ) => Promise<Content | Content[] | Message[]>;
 
 /**
  * A prompt template function that always returns Message[].
@@ -80,7 +86,10 @@ type ContextPromptTemplate<T, DepsT = undefined> = T extends readonly unknown[]
 /**
  * An asynchronous context prompt template function that always returns Promise<Message[]>.
  */
-type AsyncContextPromptTemplate<T, DepsT = undefined> = T extends readonly unknown[]
+type AsyncContextPromptTemplate<
+  T,
+  DepsT = undefined,
+> = T extends readonly unknown[]
   ? (ctx: Context<DepsT>, ...args: T) => Promise<Message[]>
   : (ctx: Context<DepsT>, params: T) => Promise<Message[]>;
 
@@ -118,30 +127,15 @@ type AsyncContextPromptTemplate<T, DepsT = undefined> = T extends readonly unkno
  *
  * @example
  * ```typescript
- * // Tagged template literal
- * const specTemplate = definePromptTemplate<[string, number]>`
- *   [SYSTEM] You are a helpful assistant.
- *   [USER] Hello {{ 0 }}, you are {{ 1 }} years old.
+ * // From template spec
+ * const domainQuestionPromptTemplate = definePromptTemplate<{ domain: string; question: string }>`
+ *   [SYSTEM] You are a helpful assistant specializing in {{ domain }}.
+ *   [USER] {{ question }}
  * `;
  *
- * // Simple function with positional args
- * const simpleTemplate = definePromptTemplate(
- *   (genre: string) => `Recommend a ${genre} book`
- * );
- *
- * // Object parameters
- * const objectTemplate = definePromptTemplate(
- *   (params: {question: string}) => `Answer: ${params.question}`
- * );
- *
- * // Context function
- * const contextTemplate = definePromptTemplate(
- *   (ctx: Context<DB>, query: string) => buildPrompt(ctx, query)
- * );
- *
- * // Async function
- * const asyncTemplate = definePromptTemplate(
- *   async (id: string) => await loadTemplate(id)
+ * // Direct promptable function
+ * const answerQuestionPromptTemplate = definePromptTemplate(
+ *   (question: string) => `Answer this question: ${question}`
  * );
  * ```
  */
@@ -150,9 +144,7 @@ function definePromptTemplate<T>(
   ...values: unknown[]
 ): PromptTemplate<T>;
 
-function definePromptTemplate<T>(
-  fn: Promptable<T>
-): PromptTemplate<T>;
+function definePromptTemplate<T>(fn: Promptable<T>): PromptTemplate<T>;
 
 function definePromptTemplate<T>(
   fn: AsyncPromptable<T>
