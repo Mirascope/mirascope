@@ -8,7 +8,7 @@ from typing_extensions import TypeVar
 
 from ..content import Audio, Image, Video
 from ..messages import Message
-from .content import ContextResponseContent, ResponseContent
+from .content import ResponseContent
 from .finish_reason import FinishReason
 from .usage import Usage
 
@@ -18,9 +18,7 @@ if TYPE_CHECKING:
     )
 
 
-ResponseContentT = TypeVar(
-    "ResponseContentT", bound=ResponseContent | ContextResponseContent
-)
+ResponseContentT = TypeVar("ResponseContentT", bound=ResponseContent)
 T = TypeVar("T", bound=object | None, default=None)
 
 
@@ -71,8 +69,10 @@ class Response(Generic[ResponseContentT, T]):
     """The cost of the request to the LLM, if available."""
 
     @property
-    def text(self) -> str | None:
-        """Returns the first text in the response content, if any."""
+    def text(self) -> str:
+        """Returns all the text parts from the LLM response, concatenated with newlines.
+
+        Will return an empty string if the response has no text parts."""
         raise NotImplementedError()
 
     @property
@@ -94,10 +94,8 @@ class Response(Generic[ResponseContentT, T]):
         """Iterate over the transformed response content.
 
         This method allows iteration over the response content, returning
-        each item in the order they were generated. Each item will be transformed for
-        convenience. For example, `Text` content will be extracted into simple `str`s,
-        and `ToolCall` response content will be automatically converted into `Tool`
-        instances for easy calling.
+        each item in the order they were generated. `ToolCall` response content will be
+        automatically converted into `Tool` instances for easy calling.
 
         Yields:
             The next item in the response content (text, image, audio, video, or tool).

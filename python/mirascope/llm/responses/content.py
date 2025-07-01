@@ -3,8 +3,14 @@ from typing import TypeAlias
 from ..content import Audio, Image, Video
 from ..tools import ContextTool, Tool
 
-ResponseContent: TypeAlias = str | Image | Audio | Video | Tool
-"""Content types that can be returned in a model response."""
+BaseResponseContent: TypeAlias = str | Image | Audio | Video
+"""Base content response types that do not vary based on context."""
 
-ContextResponseContent: TypeAlias = str | Image | Audio | Video | ContextTool
-"""Content types that can be returned in a model response with context."""
+SimpleResponseContent: TypeAlias = BaseResponseContent | Tool
+"""Content types that can be returned in a SimpleResponse (non-context)."""
+
+ContextResponseContent: TypeAlias = BaseResponseContent | ContextTool
+"""Content types that can be returned in a ContextResponse."""
+
+ResponseContent: TypeAlias = SimpleResponseContent | ContextResponseContent
+"""Content types that can be returned in a Response."""
