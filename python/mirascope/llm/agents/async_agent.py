@@ -8,7 +8,7 @@ from typing_extensions import TypeVar
 from ..content import Content
 from ..responses import (
     AsyncStream,
-    Response,
+    SimpleResponse,
 )
 from .base_agent import BaseAgent
 
@@ -21,13 +21,13 @@ class AsyncAgent(BaseAgent[DepsT]):
 
     async def __call__(
         self, query: Content | Sequence[Content], *, deps: DepsT = None
-    ) -> Response:
+    ) -> SimpleResponse:
         """Generates a response by running the agent loop asynchronously."""
         raise NotImplementedError()
 
     async def run_async(
         self, query: Content | Sequence[Content], *, deps: DepsT = None
-    ) -> Response:
+    ) -> SimpleResponse:
         """Generates a response by running the agent loop asynchronously."""
         return await self(query, deps=deps)
 

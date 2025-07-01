@@ -8,7 +8,7 @@ from typing_extensions import TypeVar
 from ..content import Content
 from ..responses import (
     AsyncStructuredStream,
-    Response,
+    SimpleResponse,
     StructuredStream,
 )
 from .base_structured_agent import (
@@ -25,13 +25,13 @@ class StructuredAgent(BaseStructuredAgent[DepsT, T]):
 
     def __call__(
         self, query: Content | Sequence[Content], *, deps: DepsT = None
-    ) -> Response[T]:
+    ) -> SimpleResponse[T]:
         """Generates a structured response by running the agent loop."""
         raise NotImplementedError()
 
     async def run_async(
         self, query: Content | Sequence[Content], *, deps: DepsT = None
-    ) -> Response[T]:
+    ) -> SimpleResponse[T]:
         """Generates a structured response by running the agent loop asynchronously."""
         raise NotImplementedError()
 

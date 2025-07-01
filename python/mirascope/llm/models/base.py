@@ -16,7 +16,7 @@ from ..responses import (
     ContextResponse,
     ContextStream,
     ContextStructuredStream,
-    Response,
+    SimpleResponse,
     Stream,
     StructuredStream,
 )
@@ -80,7 +80,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> Response:
+    ) -> SimpleResponse:
         """Overload for standard call."""
         ...
 
@@ -104,7 +104,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
         params: ParamsT | None = None,
-    ) -> Response[T]:
+    ) -> SimpleResponse[T]:
         """Overload for calls when a response format is specified."""
         ...
 
@@ -130,7 +130,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         | None = None,
         response_format: type[T] | None = None,
         params: ParamsT | None = None,
-    ) -> Response | Response[T] | ContextResponse | ContextResponse[T]:
+    ) -> SimpleResponse | SimpleResponse[T] | ContextResponse | ContextResponse[T]:
         """Generate a response using the model."""
         ...
 
@@ -142,7 +142,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> Response:
+    ) -> SimpleResponse:
         """Overload for standard async call."""
         ...
 
@@ -166,7 +166,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
         params: ParamsT | None = None,
-    ) -> Response[T]:
+    ) -> SimpleResponse[T]:
         """Overload for async calls when a response format is specified."""
         ...
 
@@ -192,7 +192,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         | None = None,
         response_format: type[T] | None = None,
         params: ParamsT | None = None,
-    ) -> Response | Response[T] | ContextResponse | ContextResponse[T]:
+    ) -> SimpleResponse | SimpleResponse[T] | ContextResponse | ContextResponse[T]:
         """Generate a response asynchronously using the model."""
         ...
 

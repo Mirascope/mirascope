@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import ParamSpec
 
 from ..prompt_templates import Promptable
-from ..responses import AsyncStream, Response, Stream
+from ..responses import AsyncStream, SimpleResponse, Stream
 from .base_call import BaseCall
 
 P = ParamSpec("P")
@@ -14,11 +14,11 @@ P = ParamSpec("P")
 class Call(BaseCall[P, Promptable]):
     """A class for generating responses using LLMs."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> SimpleResponse:
         """Generates a response using the LLM."""
         raise NotImplementedError()
 
-    async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response:
+    async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> SimpleResponse:
         """Generates an asynchronous response using the LLM."""
         raise NotImplementedError()
 
