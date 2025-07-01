@@ -66,7 +66,7 @@ class Response(Generic[ResponseContentT, T]):
     """The reason why the LLM finished generating a response."""
 
     usage: Usage | None
-    """The usage statistics for the request to the LLM."""
+    """The token usage statistics for the request to the LLM."""
 
     cost: float | None
     """The cost of the request to the LLM, if available."""
