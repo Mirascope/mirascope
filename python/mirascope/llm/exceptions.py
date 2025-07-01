@@ -1,0 +1,49 @@
+"""Mirascope exception hierarchy for unified error handling across providers."""
+
+from typing import Any
+
+
+class MirascopeError(Exception):
+    """Base exception for all Mirascope errors."""
+    
+    original_exception: Exception | None
+    provider: str | None
+
+
+class APIError(MirascopeError):
+    """Base class for API-related errors."""
+    
+    status_code: int | None
+    response: Any
+
+
+class ConnectionError(MirascopeError):
+    """Raised when unable to connect to the API (network issues, timeouts)."""
+
+
+class AuthenticationError(APIError):
+    """Raised for authentication failures (401, invalid API keys)."""
+
+
+class PermissionError(APIError):
+    """Raised for permission/authorization failures (403)."""
+
+
+class BadRequestError(APIError):
+    """Raised for malformed requests (400, 422)."""
+
+
+class NotFoundError(APIError):
+    """Raised when requested resource is not found (404)."""
+
+
+class RateLimitError(APIError):
+    """Raised when rate limits are exceeded (429)."""
+
+
+class ServerError(APIError):
+    """Raised for server-side errors (500+)."""
+
+
+class TimeoutError(MirascopeError):
+    """Raised when requests timeout or deadline exceeded."""

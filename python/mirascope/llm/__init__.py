@@ -9,6 +9,7 @@ from . import (
     agents,
     calls,
     content,
+    exceptions,
     messages,
     models,
     prompt_templates,
@@ -36,6 +37,18 @@ from .content import (
     Video,
 )
 from .context import Context, context
+from .exceptions import (
+    APIError,
+    AuthenticationError,
+    BadRequestError,
+    ConnectionError,
+    MirascopeError,
+    NotFoundError,
+    PermissionError,
+    RateLimitError,
+    ServerError,
+    TimeoutError,
+)
 from .messages import Message, Prompt
 from .models import LLM, Client, Params, model
 from .prompt_templates import prompt_template
@@ -56,6 +69,7 @@ from .tools.decorator import tool
 
 __all__ = [
     "LLM",
+    "APIError",
     "Agent",
     "AsyncAgent",
     "AsyncCall",
@@ -64,18 +78,26 @@ __all__ = [
     "AsyncStructuredCall",
     "AsyncStructuredStream",
     "Audio",
+    "AuthenticationError",
+    "BadRequestError",
     "Call",
     "Client",
+    "ConnectionError",
     "Content",
     "Context",
     "ContextResponse",
     "Document",
     "Image",
     "Message",
+    "MirascopeError",
+    "NotFoundError",
     "Params",
+    "PermissionError",
     "Prompt",
+    "RateLimitError",
     "Response",
     "ResponseFormat",
+    "ServerError",
     "SimpleResponse",
     "Stream",
     "StreamChunk",
@@ -83,6 +105,7 @@ __all__ = [
     "StructuredCall",
     "StructuredStream",
     "Thinking",
+    "TimeoutError",
     "Tool",
     "ToolCall",
     "ToolDef",
@@ -94,6 +117,7 @@ __all__ = [
     "calls",
     "content",
     "context",
+    "exceptions",
     "messages",
     "model",
     "models",
