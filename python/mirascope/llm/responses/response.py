@@ -70,9 +70,7 @@ class Response(Generic[ResponseContentT, T]):
 
     @property
     def text(self) -> str:
-        """Returns all the text parts from the LLM response, concatenated with newlines.
-
-        Will return an empty string if the response has no text parts."""
+        """Returns all text content concatenated with newlines, or empty string if none."""
         raise NotImplementedError()
 
     @property
