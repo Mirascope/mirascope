@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Generic
 
 from typing_extensions import TypeVar
 
-from ..content import Audio, Image, Video
+from ..content import Audio, Image, Thinking, Video
 from ..messages import Message
 from .content import ResponseContent
 from .finish_reason import FinishReason
@@ -59,6 +59,9 @@ class Response(Generic[ResponseContentT, T]):
     videos: Sequence[Video]
     """The video content in the generated response, if any."""
 
+    thinkings: Sequence[Thinking]
+    """The thinking content in the generated response, if any."""
+
     finish_reason: FinishReason
     """The reason why the LLM finished generating a response."""
 
@@ -86,6 +89,11 @@ class Response(Generic[ResponseContentT, T]):
     @property
     def video(self) -> Video | None:
         """Returns the first video in the response content, if any."""
+        raise NotImplementedError()
+
+    @property
+    def thinking(self) -> Thinking | None:
+        """Returns the first thinking in the response content, if any."""
         raise NotImplementedError()
 
 

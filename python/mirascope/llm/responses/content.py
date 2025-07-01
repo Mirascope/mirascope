@@ -1,9 +1,9 @@
 from typing import TypeAlias
 
-from ..content import Audio, Image, Video
+from ..content import Audio, Image, Thinking, Video
 from ..tools import ContextTool, Tool
 
-BaseResponseContent: TypeAlias = str | Image | Audio | Video
+BaseResponseContent: TypeAlias = str | Image | Audio | Video | Thinking
 """Base content response types that do not vary based on context."""
 
 SimpleResponseContent: TypeAlias = BaseResponseContent | Tool
