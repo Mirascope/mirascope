@@ -12,12 +12,12 @@ from typing import Generic
 from typing_extensions import TypeVar
 
 from ..tools import ContextTool
-from ..types import Dataclass, Jsonable
+from ..types import Jsonable
 from .base_response import BaseResponse
 from .content import ResponseContent
 
 DepsT = TypeVar("DepsT", default=None)
-T = TypeVar("T", bound=Dataclass | None, default=None)
+T = TypeVar("T", bound=object | None, default=None)
 
 
 @dataclass

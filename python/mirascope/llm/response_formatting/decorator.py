@@ -3,12 +3,9 @@
 from collections.abc import Callable, Sequence
 from typing import Any, Literal, Protocol, TypeVar, overload
 
-from typing_extensions import dataclass_transform
-
 from ..content import Content
-from ..types import Dataclass
 
-T = TypeVar("T", bound=Dataclass)
+T = TypeVar("T", bound=object)
 CovariantT = TypeVar("CovariantT", covariant=True)
 
 
@@ -61,44 +58,40 @@ class ContentResponseFormatDef(Protocol[CovariantT]):
 
 
 @overload
-# @dataclass_transform()
 def response_format(
     __cls: type[
         JsonResponseFormatDef[T]
         | ToolResponseFormatDef[T]
         | ContentResponseFormatDef[T]
     ],
-) -> T:
+) -> type[T]:
     """Overload for no arguments, which requires a parser classmethod."""
     ...
 
 
 @overload
-@dataclass_transform()
 def response_format(
     *,
     parser: None = None,
     strict: bool = False,
 ) -> Callable[
     [JsonResponseFormatDef[T] | ToolResponseFormatDef[T] | ContentResponseFormatDef[T]],
-    T,
+    type[T],
 ]:
     """Overload for no default parser, which requires a parser classmethod."""
     ...
 
 
 @overload
-@dataclass_transform()
 def response_format(
     *,
     parser: Literal["json", "tool"],
     strict: bool = False,
-) -> Callable[[type[T]], T]:
+) -> Callable[[type[T]], type[T]]:
     """Overload for setting a default parser."""
     ...
 
 
-@dataclass_transform()
 def response_format(
     __cls=None,
     *,
@@ -112,9 +105,9 @@ def response_format(
             | ToolResponseFormatDef[T]
             | ContentResponseFormatDef[T]
         ],
-        T,
+        type[T],
     ]
-    | Callable[[type[T]], T]
+    | Callable[[type[T]], type[T]]
 ):
     '''Decorator that defines a structured response format for LLM outputs.
 
