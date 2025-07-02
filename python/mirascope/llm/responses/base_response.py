@@ -2,6 +2,7 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Generic
 
 from typing_extensions import TypeVar
@@ -68,7 +69,7 @@ class BaseResponse(Generic[ResponseContentT, ToolT, T]):
     usage: Usage | None
     """The token usage statistics for the request to the LLM."""
 
-    cost: float | None
+    cost: Decimal | None
     """The cost of the request to the LLM, if available."""
 
     tools: Sequence[ToolT]

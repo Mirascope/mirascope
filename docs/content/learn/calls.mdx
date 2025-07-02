@@ -75,7 +75,7 @@ Regardless of which provider you use, you'll get back a consistent object: an [l
 |----------|------|-------------|
 | `finish_reason` | [FinishReason](/docs/api/responses#finishreason) | The reason why the LLM finished generating a response (e.g., "stop", "length"). |
 | `usage` | [Usage](/docs/api/responses#usage) \| None | The token usage statistics for the request to the LLM, if available. |
-| `cost` | float \| None | The cost of the request to the LLM, if available. |
+| `cost` | [Decimal](https://docs.python.org/3/library/decimal.html) \| None | The USD cost of the request to the LLM, if available. |
 
 ### Call Information
 
