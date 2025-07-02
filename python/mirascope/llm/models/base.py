@@ -31,6 +31,9 @@ DepsT = TypeVar("DepsT", default=None)
 
 class Params(TypedDict, total=False):
     """The base interface for LLM parameters."""
+    
+    temperature: float
+    max_tokens: int
 
 
 class Client:

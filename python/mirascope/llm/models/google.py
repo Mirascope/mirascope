@@ -9,8 +9,6 @@ from .base import LLM, Client, Params
 class GoogleParams(Params, total=False):
     """The parameters for the Google LLM model."""
 
-    temperature: float
-
 
 class GoogleClient(Client):
     """The client for the Google LLM model."""

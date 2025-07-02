@@ -115,6 +115,15 @@ Mirascope defines the following exception types:
 
 <CodeExample file="examples/calls/exceptions.py" />
 
+## Call Params
+
+Mirascope supports common parameters like `temperature` and `max_tokens` that work consistently across all providers:
+
+<CodeExample file="examples/calls/params.py" />
+
+These parameters are part of the base interface, so you can use them with any model without worrying about provider-specific differences.
+
+
 ## Custom Clients
 
 If you want to access provider-specific client configuration, you may pass a custom client tied to that specific provider, as below:
@@ -130,3 +139,4 @@ If you want to access provider-specific client configuration, you may pass a cus
 <CodeExample file="examples/calls/custom_client_google.py" />
 </Tab>
 </TabbedSection>
+

@@ -9,8 +9,6 @@ from .base import LLM, Client, Params
 class AnthropicParams(Params, total=False):
     """The parameters for the Anthropic LLM model."""
 
-    temperature: float
-
 
 class AnthropicClient(Client):
     """The client for the Anthropic LLM model."""
