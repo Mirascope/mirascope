@@ -24,6 +24,7 @@ T = TypeVar("T", bound=object | None)
 MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="BaseParams")
 DepsT = TypeVar("DepsT")
+ModelT = TypeVar("ModelT", bound=str)
 
 
 class BaseParams(TypedDict, total=False):
@@ -33,7 +34,7 @@ class BaseParams(TypedDict, total=False):
     max_tokens: int
 
 
-class BaseClient(Generic[MessageT, ParamsT], ABC):
+class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
@@ -44,6 +45,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     def call(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
@@ -55,6 +57,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     def context_call(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
@@ -66,6 +69,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     def structured_call(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
@@ -78,6 +82,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     def structured_context_call(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
@@ -90,6 +95,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     async def call_async(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
@@ -101,6 +107,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     async def context_call_async(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
@@ -112,6 +119,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     async def structured_call_async(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
@@ -124,6 +132,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     async def structured_context_call_async(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
@@ -136,6 +145,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     def stream(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
@@ -147,6 +157,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     def context_stream(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
@@ -158,6 +169,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     def structured_stream(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
@@ -170,6 +182,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     def structured_context_stream(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
@@ -182,6 +195,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     async def stream_async(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
@@ -193,6 +207,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     async def context_stream_async(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
@@ -204,6 +219,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     async def structured_stream_async(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
@@ -216,6 +232,7 @@ class BaseClient(Generic[MessageT, ParamsT], ABC):
     async def structured_context_stream_async(
         self,
         *,
+        model: ModelT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
