@@ -16,7 +16,7 @@ from ..responses import (
     ContextResponse,
     ContextStream,
     ContextStructuredStream,
-    SimpleResponse,
+    Response,
     Stream,
     StructuredStream,
 )
@@ -31,7 +31,7 @@ DepsT = TypeVar("DepsT", default=None)
 
 class Params(TypedDict, total=False):
     """The base interface for LLM parameters."""
-    
+
     temperature: float
     max_tokens: int
 
@@ -83,7 +83,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> SimpleResponse:
+    ) -> Response:
         """Overload for standard call."""
         ...
 
@@ -107,7 +107,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
         params: ParamsT | None = None,
-    ) -> SimpleResponse[T]:
+    ) -> Response[T]:
         """Overload for calls when a response format is specified."""
         ...
 
@@ -133,7 +133,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         | None = None,
         response_format: type[T] | None = None,
         params: ParamsT | None = None,
-    ) -> SimpleResponse | SimpleResponse[T] | ContextResponse | ContextResponse[T]:
+    ) -> Response | Response[T] | ContextResponse | ContextResponse[T]:
         """Generate a response using the model."""
         ...
 
@@ -145,7 +145,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> SimpleResponse:
+    ) -> Response:
         """Overload for standard async call."""
         ...
 
@@ -169,7 +169,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
         params: ParamsT | None = None,
-    ) -> SimpleResponse[T]:
+    ) -> Response[T]:
         """Overload for async calls when a response format is specified."""
         ...
 
@@ -195,7 +195,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         | None = None,
         response_format: type[T] | None = None,
         params: ParamsT | None = None,
-    ) -> SimpleResponse | SimpleResponse[T] | ContextResponse | ContextResponse[T]:
+    ) -> Response | Response[T] | ContextResponse | ContextResponse[T]:
         """Generate a response asynchronously using the model."""
         ...
 

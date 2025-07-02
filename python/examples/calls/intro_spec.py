@@ -6,6 +6,6 @@ from mirascope import llm
 def recommend_book(genre: str): ...
 
 
-response: llm.SimpleResponse = recommend_book("fantasy")
+response: llm.Response = recommend_book("fantasy")
 print(response.text)
 # "Here are a few highly recommended fantasy books..."

@@ -6,7 +6,7 @@ from typing import ParamSpec
 from typing_extensions import TypeVar
 
 from ..prompt_templates import Promptable
-from ..responses import AsyncStructuredStream, SimpleResponse, StructuredStream
+from ..responses import AsyncStructuredStream, Response, StructuredStream
 from .base_structured_call import BaseStructuredCall
 
 P = ParamSpec("P")
@@ -17,11 +17,11 @@ T = TypeVar("T", bound=object | None, default=None)
 class StructuredCall(BaseStructuredCall[P, Promptable, T]):
     """A class for generating structured responses using LLMs."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> SimpleResponse[T]:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
         """Generates a structured response using the LLM."""
         raise NotImplementedError()
 
-    async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> SimpleResponse[T]:
+    async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response[T]:
         """Generates an asynchronous structured response using the LLM."""
         raise NotImplementedError()
 

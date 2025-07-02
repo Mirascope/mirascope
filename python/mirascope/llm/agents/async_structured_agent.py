@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing_extensions import TypeVar
 
 from ..content import Content
-from ..responses import AsyncStructuredStream, SimpleResponse
+from ..responses import AsyncStructuredStream, Response
 from .base_structured_agent import BaseStructuredAgent
 
 DepsT = TypeVar("DepsT", default=None)
@@ -19,13 +19,13 @@ class AsyncStructuredAgent(BaseStructuredAgent[DepsT, T]):
 
     async def __call__(
         self, query: Content | Sequence[Content], *, deps: DepsT = None
-    ) -> SimpleResponse[T]:
+    ) -> Response[T]:
         """Generates a structured response by running the agent loop asynchronously."""
         raise NotImplementedError()
 
     async def call_async(
         self, query: Content | Sequence[Content], *, deps: DepsT = None
-    ) -> SimpleResponse[T]:
+    ) -> Response[T]:
         """Generates a structured response by running the agent loop asynchronously."""
         return await self(query, deps=deps)
 

@@ -6,10 +6,10 @@ def recommend_book(genre: str):
     return f"Recommend a {genre} book"
 
 
-response: llm.SimpleResponse = recommend_book("fantasy")
+response: llm.Response = recommend_book("fantasy")
 print(response.text)
 # "Here are a few highly recommended fantasy books..."
 
-scifi_response: llm.SimpleResponse = recommend_book("scifi")
+scifi_response: llm.Response = recommend_book("scifi")
 print(scifi_response.text)
 # ""Here are a few standout science-fiction picks..."

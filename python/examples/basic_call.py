@@ -6,5 +6,5 @@ def answer_question(question: str) -> str:
     return f"Answer this question: ${question}"
 
 
-response: llm.Response = answer_question("What is the capital of France?")
+response: llm.BaseResponse = answer_question("What is the capital of France?")
 print(response.text)
