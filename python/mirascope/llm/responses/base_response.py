@@ -10,7 +10,7 @@ from ..content import Audio, Image, Thinking, Video
 from ..messages import Message
 from ..tools import ContextTool, Tool
 from ..types import Jsonable
-from .content import ResponseContent
+from .content import BaseResponseContent
 from .finish_reason import FinishReason
 from .usage import Usage
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     )
 
 
-ResponseContentT = TypeVar("ResponseContentT", bound=ResponseContent)
+ResponseContentT = TypeVar("ResponseContentT", bound=BaseResponseContent)
 ToolT = TypeVar("ToolT", bound=Tool[..., Jsonable] | ContextTool[..., Jsonable, Any])
 T = TypeVar("T", bound=object | None, default=None)
 

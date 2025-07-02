@@ -9,7 +9,6 @@ from .content import (
     BaseResponseContent,
     ContextResponseContent,
     ResponseContent,
-    SimpleResponseContent,
 )
 from .context_response import ContextResponse
 from .context_stream import ContextStream
@@ -37,7 +36,7 @@ __all__ = [
     "FinishReason",
     "Response",
     "ResponseContent",
-    "SimpleResponseContent",
+    "ResponseContent",
     "Stream",
     "StreamChunk",
     "StructuredStream",
