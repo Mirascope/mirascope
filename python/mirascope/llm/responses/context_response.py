@@ -12,8 +12,8 @@ from typing_extensions import TypeVar
 
 from ..tools import ContextTool
 from ..types import Jsonable
-from .content import ContextResponseContent
 from .base_response import BaseResponse
+from .content import ContextResponseContent
 
 DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", bound=object | None, default=None)

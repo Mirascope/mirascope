@@ -1,6 +1,6 @@
 from mirascope import llm
 
-custom_client = llm.models.OpenAIClient()
+custom_client = llm.providers.openai.Client()
 
 
 @llm.call(

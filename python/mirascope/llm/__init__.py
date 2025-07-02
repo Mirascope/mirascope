@@ -13,6 +13,7 @@ from . import (
     messages,
     models,
     prompt_templates,
+    providers,
     response_formatting,
     responses,
     tools,
@@ -26,6 +27,7 @@ from .calls import (
     StructuredCall,
     call,
 )
+from .clients import BaseClient
 from .content import (
     Audio,
     Content,
@@ -50,7 +52,7 @@ from .exceptions import (
     TimeoutError,
 )
 from .messages import Message, Prompt
-from .models import LLM, Client, Params, model
+from .models import LLM, BaseParams, model
 from .prompt_templates import prompt_template
 from .response_formatting import ResponseFormat
 from .response_formatting.decorator import response_format
@@ -80,8 +82,10 @@ __all__ = [
     "Audio",
     "AuthenticationError",
     "BadRequestError",
+    "BaseClient",
+    "BaseParams",
+    "BaseResponse",
     "Call",
-    "Client",
     "ConnectionError",
     "Content",
     "Context",
@@ -91,14 +95,12 @@ __all__ = [
     "Message",
     "MirascopeError",
     "NotFoundError",
-    "Params",
     "PermissionError",
     "Prompt",
     "RateLimitError",
-    "BaseResponse",
+    "Response",
     "ResponseFormat",
     "ServerError",
-    "Response",
     "Stream",
     "StreamChunk",
     "StructuredAgent",
@@ -122,6 +124,7 @@ __all__ = [
     "model",
     "models",
     "prompt_templates",
+    "providers",
     "response_format",
     "response_formatting",
     "responses",

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, overload
 
 from typing_extensions import TypeVar, Unpack
 
+from ..clients import BaseClient
 from ..prompt_templates import (
     AsyncContextPromptable,
     AsyncPromptable,
@@ -29,15 +30,9 @@ if TYPE_CHECKING:
         GOOGLE_REGISTERED_LLMS,
         OPENAI_REGISTERED_LLMS,
         REGISTERED_LLMS,
-        AnthropicClient,
-        AnthropicParams,
-        Client,
-        GoogleClient,
-        GoogleParams,
-        OpenAIClient,
-        OpenAIParams,
-        Params,
+        BaseParams,
     )
+    from ..providers import anthropic, google, openai
 
 NoneType = type(None)
 P = ParamSpec("P")
@@ -147,8 +142,8 @@ def call(
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: None = None,
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
+    client: anthropic.Client | None = None,
+    **params: Unpack[anthropic.Params],
 ) -> CallDecorator:
     """Overload for Anthropic generation."""
     ...
@@ -161,8 +156,8 @@ def call(
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: None = None,
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
+    client: anthropic.Client | None = None,
+    **params: Unpack[anthropic.Params],
 ) -> ContextCallDecorator[DepsT]:
     """Overload for Anthropic contextual generation."""
     ...
@@ -175,8 +170,8 @@ def call(
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: type[T],
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
+    client: anthropic.Client | None = None,
+    **params: Unpack[anthropic.Params],
 ) -> StructuredCallDecorator[T]:
     """Overload for Anthropic structured generation."""
     ...
@@ -189,8 +184,8 @@ def call(
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: type[T],
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
+    client: anthropic.Client | None = None,
+    **params: Unpack[anthropic.Params],
 ) -> StructuredContextCallDecorator[T, DepsT]:
     """Overload for Anthropic structured contextual generation."""
     ...
@@ -203,8 +198,8 @@ def call(
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: None = None,
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
+    client: google.Client | None = None,
+    **params: Unpack[google.Params],
 ) -> CallDecorator:
     """Overload for Google generation."""
     ...
@@ -217,8 +212,8 @@ def call(
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: None = None,
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
+    client: google.Client | None = None,
+    **params: Unpack[google.Params],
 ) -> ContextCallDecorator[DepsT]:
     """Overload for Google contextual generation."""
     ...
@@ -231,8 +226,8 @@ def call(
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: type[T],
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
+    client: google.Client | None = None,
+    **params: Unpack[google.Params],
 ) -> StructuredCallDecorator[T]:
     """Overload for Google structured generation."""
     ...
@@ -245,8 +240,8 @@ def call(
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: type[T],
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
+    client: google.Client | None = None,
+    **params: Unpack[google.Params],
 ) -> StructuredContextCallDecorator[T, DepsT]:
     """Overload for Google structured contextual generation."""
     ...
@@ -259,8 +254,8 @@ def call(
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: None = None,
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
+    client: openai.Client | None = None,
+    **params: Unpack[openai.Params],
 ) -> CallDecorator:
     """Overload for OpenAI generation."""
     ...
@@ -273,8 +268,8 @@ def call(
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: None = None,
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
+    client: openai.Client | None = None,
+    **params: Unpack[openai.Params],
 ) -> ContextCallDecorator[DepsT]:
     """Overload for OpenAI contextual generation."""
     ...
@@ -287,8 +282,8 @@ def call(
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: type[T],
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
+    client: openai.Client | None = None,
+    **params: Unpack[openai.Params],
 ) -> StructuredCallDecorator[T]:
     """Overload for OpenAI structured generation."""
     ...
@@ -301,8 +296,8 @@ def call(
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: type[T],
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
+    client: openai.Client | None = None,
+    **params: Unpack[openai.Params],
 ) -> StructuredContextCallDecorator[T, DepsT]:
     """Overload for OpenAI structured contextual generation."""
     ...
@@ -315,8 +310,8 @@ def call(
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: None = None,
-    client: Client | None = None,
-    **params: Unpack[Params],
+    client: None,
+    **params: Unpack[BaseParams],
 ) -> CallDecorator:
     """Overload for all registered models so that autocomplete works."""
     ...
@@ -329,8 +324,8 @@ def call(
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: None = None,
-    client: Client | None = None,
-    **params: Unpack[Params],
+    client: None,
+    **params: Unpack[BaseParams],
 ) -> ContextCallDecorator[DepsT]:
     """Overload for all registered models so that autocomplete works."""
     ...
@@ -343,8 +338,8 @@ def call(
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
     response_format: type[T],
-    client: Client | None = None,
-    **params: Unpack[Params],
+    client: None,
+    **params: Unpack[BaseParams],
 ) -> StructuredCallDecorator[T]:
     """Overload for all registered models so that autocomplete works."""
     ...
@@ -357,8 +352,8 @@ def call(
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: type[T],
-    client: Client | None = None,
-    **params: Unpack[Params],
+    client: None,
+    **params: Unpack[BaseParams],
 ) -> StructuredContextCallDecorator[T, DepsT]:
     """Overload for all registered models so that autocomplete works."""
     ...
@@ -372,7 +367,7 @@ def call(
     | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
     | None = None,
     response_format: type[T] | None = None,
-    client: Client | None = None,
+    client: BaseClient | None = None,
     **kwargs: Any,
 ) -> (
     CallDecorator

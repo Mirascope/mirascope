@@ -1,13 +1,13 @@
-"""The base abstract model interfaces for LLM models."""
+"""The base model interfaces for LLM models."""
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from typing import Any, Generic, overload
 
 from typing_extensions import TypedDict, TypeVar
 
+from ..clients.base import BaseClient
 from ..responses import (
     AsyncContextStream,
     AsyncContextStructuredStream,
@@ -24,31 +24,24 @@ from ..tools import ContextToolDef, ToolDef
 
 T = TypeVar("T", bound=object | None, default=None)
 MessageT = TypeVar("MessageT")
-ParamsT = TypeVar("ParamsT", bound="Params")
-ClientT = TypeVar("ClientT", bound="Client")
+ParamsT = TypeVar("ParamsT", bound="BaseParams")
+ClientT = TypeVar("ClientT", bound="BaseClient")
 DepsT = TypeVar("DepsT", default=None)
 
 
-class Params(TypedDict, total=False):
+class BaseParams(TypedDict, total=False):
     """The base interface for LLM parameters."""
 
     temperature: float
     max_tokens: int
 
 
-class Client:
-    """The base interface for LLM clients."""
+class LLM(Generic[MessageT, ParamsT, ClientT]):
+    """The unified LLM interface that delegates to provider-specific clients.
 
-
-class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
-    """The base interface for LLM models.
-
-    This class defines the interface for interacting with language models from
-    various providers. It handles the common operations like generating responses,
-    streaming, and async variants of these operations.
-
-    Implementations of this class for specific providers should extend it and
-    implement the abstract methods for calls and streaming.
+    This class provides a consistent interface for interacting with language models
+    from various providers. It handles the common operations like generating responses,
+    streaming, and async variants by delegating to the appropriate client methods.
     """
 
     provider: str
@@ -63,7 +56,6 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
     client: ClientT
     """The client object used to interact with the model API."""
 
-    @abstractmethod
     def __init__(
         self,
         *,
@@ -123,7 +115,6 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         """Overload for calls when a response format is specified."""
         ...
 
-    @abstractmethod
     def call(
         self,
         *,
@@ -185,7 +176,6 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         """Overload for async context calls when a response format is specified."""
         ...
 
-    @abstractmethod
     async def call_async(
         self,
         *,
@@ -247,7 +237,6 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         """Overload for context structured streaming."""
         ...
 
-    @abstractmethod
     def stream(
         self,
         *,
@@ -314,7 +303,6 @@ class LLM(Generic[MessageT, ParamsT, ClientT], ABC):
         """Overload for async context structured streaming."""
         ...
 
-    @abstractmethod
     async def stream_async(
         self,
         *,

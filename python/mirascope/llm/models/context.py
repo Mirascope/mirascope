@@ -9,7 +9,8 @@ from typing import TYPE_CHECKING, overload
 
 from typing_extensions import Unpack
 
-from .base import LLM, Client, Params
+from ..clients import BaseClient
+from .base import LLM, BaseParams
 
 if TYPE_CHECKING:
     from ..models import (
@@ -18,9 +19,7 @@ if TYPE_CHECKING:
         OPENAI_REGISTERED_LLMS,
         REGISTERED_LLMS,
     )
-    from ..models.anthropic import Anthropic, AnthropicClient, AnthropicParams
-    from ..models.google import Google, GoogleClient, GoogleParams
-    from ..models.openai import OpenAI, OpenAIClient, OpenAIParams
+    from ..providers import anthropic, google, openai
 
 
 MODEL_CONTEXT: ContextVar[LLM | None] = ContextVar("MODEL_CONTEXT", default=None)
@@ -31,9 +30,9 @@ MODEL_CONTEXT: ContextVar[LLM | None] = ContextVar("MODEL_CONTEXT", default=None
 def model(
     id: ANTHROPIC_REGISTERED_LLMS,
     *,
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
-) -> Iterator[Anthropic]:
+    client: anthropic.Client | None = None,
+    **params: Unpack[anthropic.Params],
+) -> Iterator[anthropic.Model]:
     """Overload for Anthropic models."""
     ...
 
@@ -43,9 +42,9 @@ def model(
 def model(
     id: GOOGLE_REGISTERED_LLMS,
     *,
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
-) -> Iterator[Google]:
+    client: google.Client | None = None,
+    **params: Unpack[google.Params],
+) -> Iterator[google.Model]:
     """Overload for Google models."""
     ...
 
@@ -55,9 +54,9 @@ def model(
 def model(
     id: OPENAI_REGISTERED_LLMS,
     *,
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
-) -> Iterator[OpenAI]:
+    client: openai.Client | None = None,
+    **params: Unpack[openai.Params],
+) -> Iterator[openai.Model]:
     """Overload for OpenAI models."""
     ...
 
@@ -67,8 +66,8 @@ def model(
 def model(
     id: REGISTERED_LLMS,
     *,
-    client: Client | None = None,
-    **params: Unpack[Params],
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
 ) -> Iterator[LLM]:
     """Overload for all registered models so that autocomplete works."""
     ...
@@ -78,8 +77,8 @@ def model(
 def model(
     id: REGISTERED_LLMS,
     *,
-    client: Client | None = None,
-    **params: Unpack[Params],
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
 ) -> Iterator[LLM]:
     """Set the model context with the model of the given id.
 
