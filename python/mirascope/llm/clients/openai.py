@@ -1,7 +1,7 @@
 """OpenAI client implementation."""
 
 from collections.abc import Sequence
-from typing import Any
+from typing import Any, TypeAlias
 
 from openai.types.chat import ChatCompletionMessageParam
 
@@ -22,14 +22,16 @@ from ..responses import (
 from ..tools import ContextToolDef, ToolDef
 from .base import BaseClient
 
+OpenAIMessage: TypeAlias = Message | ChatCompletionMessageParam
 
-class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams]):
+
+class OpenAIClient(BaseClient[OpenAIMessage, BaseParams]):
     """The client for the OpenAI LLM model."""
 
     def call(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         params: BaseParams | None = None,
     ) -> Response:
@@ -38,7 +40,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     def context_call(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         params: BaseParams | None = None,
     ) -> ContextResponse:
@@ -47,7 +49,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     def structured_call(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
         params: BaseParams | None = None,
@@ -57,7 +59,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     def structured_context_call(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
         params: BaseParams | None = None,
@@ -67,7 +69,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     async def call_async(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         params: BaseParams | None = None,
     ) -> Response:
@@ -76,7 +78,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     async def context_call_async(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         params: BaseParams | None = None,
     ) -> ContextResponse:
@@ -85,7 +87,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     async def structured_call_async(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
         params: BaseParams | None = None,
@@ -95,7 +97,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     async def structured_context_call_async(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
         params: BaseParams | None = None,
@@ -105,7 +107,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     def stream(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         params: BaseParams | None = None,
     ) -> Stream:
@@ -114,7 +116,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     def context_stream(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         params: BaseParams | None = None,
     ) -> ContextStream:
@@ -123,7 +125,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     def structured_stream(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
         params: BaseParams | None = None,
@@ -133,7 +135,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     def structured_context_stream(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
         params: BaseParams | None = None,
@@ -143,7 +145,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     async def stream_async(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         params: BaseParams | None = None,
     ) -> AsyncStream:
@@ -152,7 +154,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     async def context_stream_async(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         params: BaseParams | None = None,
     ) -> AsyncContextStream:
@@ -161,7 +163,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     async def structured_stream_async(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
         params: BaseParams | None = None,
@@ -171,7 +173,7 @@ class OpenAIClient(BaseClient[Message | ChatCompletionMessageParam, BaseParams])
     async def structured_context_stream_async(
         self,
         *,
-        messages: Sequence[Message | ChatCompletionMessageParam],
+        messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
         params: BaseParams | None = None,
