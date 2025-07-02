@@ -1,17 +1,17 @@
 from mirascope import llm
 
 
-@llm.prompt_template()
+@llm.prompt()
 def recommend_genre_prompt_template(genre: str) -> str:
     return f"Please recommend a {genre} book"
 
 
-@llm.prompt_template()
+@llm.prompt()
 def analyze_image_prompt_template(image: llm.Image) -> list[llm.Content]:
     return ["Please recommend a book, based on the themes in this image:", image]
 
 
-@llm.prompt_template()  # No-op, as recommend_book_pirate is already a prompt template
+@llm.prompt()  # No-op, as recommend_book_pirate is already a prompt template
 def recommend_book_pirate_prompt_template(genre: str):
     return [
         llm.messages.system("You are a librarian who always talks like a pirate"),
@@ -19,7 +19,7 @@ def recommend_book_pirate_prompt_template(genre: str):
     ]
 
 
-@llm.prompt_template()
+@llm.prompt()
 def recommend_genre_age_appropriate_prompt_template(genre: str, age: int) -> str:
     return f"""
     Please recommend a {genre} book that would be appropriate for a {age}-year-old reader.
@@ -28,7 +28,7 @@ def recommend_genre_age_appropriate_prompt_template(genre: str, age: int) -> str
     """
 
 
-@llm.prompt_template()
+@llm.prompt()
 def pirate_prompt_template(genre: str) -> list[llm.Message]:
     return [
         llm.messages.system(
@@ -43,22 +43,22 @@ def pirate_prompt_template(genre: str) -> list[llm.Message]:
     ]
 
 
-@llm.prompt_template()
+@llm.prompt()
 def image_prompt_template(book_cover: llm.Image) -> list[llm.Content]:
     return ["What book is this?", book_cover]
 
 
-@llm.prompt_template()
+@llm.prompt()
 def audio_prompt_template(audio: llm.Audio) -> list[llm.Content]:
     return ["Analyze this audio recording:", audio]
 
 
-@llm.prompt_template()
+@llm.prompt()
 def videos_prompt_template(clips: list[llm.Video]) -> list[llm.Content]:
     return ["Do these video clips remind you of any book?", *clips]
 
 
-@llm.prompt_template()
+@llm.prompt()
 def mixed_media_prompt_template(
     cover: llm.Image, narration: llm.Audio, docs: list[llm.Document]
 ) -> list[llm.Content]:
@@ -76,7 +76,7 @@ def mixed_media_prompt_template(
     ]
 
 
-@llm.prompt_template()
+@llm.prompt()
 def history_prompt_template(history: list[llm.Message]) -> list[llm.Message]:
     return [
         llm.messages.system(

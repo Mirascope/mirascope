@@ -13,7 +13,7 @@ P = ParamSpec("P")
 DepsT = TypeVar("DepsT", default=None)
 
 
-class PromptTemplate(Protocol[P]):
+class Prompt(Protocol[P]):
     """Protocol for a prompt function that returns a list of messages."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> list[Message]: ...
@@ -31,9 +31,7 @@ class ContentSequencePromptable(Protocol[P]):
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Content]: ...
 
 
-Promptable: TypeAlias = (
-    ContentPromptable[P] | ContentSequencePromptable[P] | PromptTemplate[P]
-)
+Promptable: TypeAlias = ContentPromptable[P] | ContentSequencePromptable[P] | Prompt[P]
 """A function that can be promoted to a prompt.
 
 A `Promptable` function takes input arguments `P` and returns one of:
@@ -43,7 +41,7 @@ A `Promptable` function takes input arguments `P` and returns one of:
 """
 
 
-class AsyncPromptTemplate(Protocol[P]):
+class AsyncPrompt(Protocol[P]):
     """Protocol for a prompt function that returns a list of messages."""
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> list[Message]: ...
@@ -64,9 +62,7 @@ class AsyncContentSequencePromptable(Protocol[P]):
 
 
 AsyncPromptable: TypeAlias = (
-    AsyncContentPromptable[P]
-    | AsyncContentSequencePromptable[P]
-    | AsyncPromptTemplate[P]
+    AsyncContentPromptable[P] | AsyncContentSequencePromptable[P] | AsyncPrompt[P]
 )
 """An asynchronous promptable function.
 
@@ -77,7 +73,7 @@ An `AsyncPromptable` function takes input arguments `P` and returns one of:
 """
 
 
-class ContextPromptTemplate(Protocol[P, DepsT]):
+class ContextPrompt(Protocol[P, DepsT]):
     """Protocol for a context prompt function that returns a list of messages."""
 
     def __call__(
@@ -104,7 +100,7 @@ class ContextContentSequencePromptable(Protocol[P, DepsT]):
 ContextPromptable: TypeAlias = (
     ContextContentPromptable[P, DepsT]
     | ContextContentSequencePromptable[P, DepsT]
-    | ContextPromptTemplate[P, DepsT]
+    | ContextPrompt[P, DepsT]
 )
 """A context promptable function.
 
@@ -116,7 +112,7 @@ returns one of:
 """
 
 
-class AsyncContextPromptTemplate(Protocol[P, DepsT]):
+class AsyncContextPrompt(Protocol[P, DepsT]):
     """Protocol for a context prompt function that returns a list of messages."""
 
     async def __call__(
@@ -143,7 +139,7 @@ class AsyncContextContentSequencePromptable(Protocol[P, DepsT]):
 AsyncContextPromptable: TypeAlias = (
     AsyncContextContentPromptable[P, DepsT]
     | AsyncContextContentSequencePromptable[P, DepsT]
-    | AsyncContextPromptTemplate[P, DepsT]
+    | AsyncContextPrompt[P, DepsT]
 )
 """An asynchronous context promptable function.
 
@@ -155,7 +151,7 @@ returns one of:
 """
 
 
-class PromptTemplateFunctionalDecorator(Protocol[DepsT]):
+class PromptFunctionalDecorator(Protocol[DepsT]):
     """Protocol for the `prompt` decorator when used without a template."""
 
     @overload
@@ -164,7 +160,7 @@ class PromptTemplateFunctionalDecorator(Protocol[DepsT]):
         fn: Callable[Concatenate[Context[DepsT], P], Content]
         | Callable[Concatenate[Context[DepsT], P], Sequence[Content]]
         | Callable[Concatenate[Context[DepsT], P], list[Message]],
-    ) -> ContextPromptTemplate[P, DepsT]:
+    ) -> ContextPrompt[P, DepsT]:
         """Decorator for creating context prompts."""
         ...
 
@@ -174,7 +170,7 @@ class PromptTemplateFunctionalDecorator(Protocol[DepsT]):
         fn: Callable[Concatenate[Context[DepsT], P], Awaitable[Content]]
         | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[Content]]]
         | Callable[Concatenate[Context[DepsT], P], Awaitable[list[Message]]],
-    ) -> AsyncContextPromptTemplate[P, DepsT]:
+    ) -> AsyncContextPrompt[P, DepsT]:
         """Decorator for creating async context prompts."""
         ...
 
@@ -184,7 +180,7 @@ class PromptTemplateFunctionalDecorator(Protocol[DepsT]):
         fn: Callable[P, Content]
         | Callable[P, Sequence[Content]]
         | Callable[P, list[Message]],
-    ) -> PromptTemplate[P]:
+    ) -> Prompt[P]:
         """Decorator for creating prompts."""
         ...
 
@@ -194,7 +190,7 @@ class PromptTemplateFunctionalDecorator(Protocol[DepsT]):
         fn: Callable[P, Awaitable[Content]]
         | Callable[P, Awaitable[Sequence[Content]]]
         | Callable[P, Awaitable[list[Message]]],
-    ) -> AsyncPromptTemplate[P]:
+    ) -> AsyncPrompt[P]:
         """Decorator for creating async prompts."""
         ...
 
@@ -213,23 +209,23 @@ class PromptTemplateFunctionalDecorator(Protocol[DepsT]):
         | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[Content]]]
         | Callable[Concatenate[Context[DepsT], P], Awaitable[list[Message]]],
     ) -> (
-        PromptTemplate[P]
-        | AsyncPromptTemplate[P]
-        | ContextPromptTemplate[P, DepsT]
-        | AsyncContextPromptTemplate[P, DepsT]
+        Prompt[P]
+        | AsyncPrompt[P]
+        | ContextPrompt[P, DepsT]
+        | AsyncContextPrompt[P, DepsT]
     ):
         """Decorator for creating a prompt."""
         ...
 
 
-class PromptTemplateSpecDecorator(Protocol[DepsT]):
+class PromptTemplateDecorator(Protocol[DepsT]):
     """Protocol for the `prompt` decorator when used with a template."""
 
     @overload
     def __call__(
         self,
         fn: Callable[Concatenate[Context[DepsT], P], None],
-    ) -> ContextPromptTemplate[P, DepsT]:
+    ) -> ContextPrompt[P, DepsT]:
         """Decorator for creating context prompts from template functions."""
         ...
 
@@ -237,7 +233,7 @@ class PromptTemplateSpecDecorator(Protocol[DepsT]):
     def __call__(
         self,
         fn: Callable[P, None],
-    ) -> PromptTemplate[P]:
+    ) -> Prompt[P]:
         """Decorator for creating prompts from template functions."""
         ...
 
@@ -245,7 +241,7 @@ class PromptTemplateSpecDecorator(Protocol[DepsT]):
     def __call__(
         self,
         fn: Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
-    ) -> AsyncContextPromptTemplate[P, DepsT]:
+    ) -> AsyncContextPrompt[P, DepsT]:
         """Decorator for creating async context prompts from template functions."""
         ...
 
@@ -253,7 +249,7 @@ class PromptTemplateSpecDecorator(Protocol[DepsT]):
     def __call__(
         self,
         fn: Callable[P, Awaitable[None]],
-    ) -> AsyncPromptTemplate[P]:
+    ) -> AsyncPrompt[P]:
         """Decorator for creating async prompts from template functions."""
         ...
 
@@ -264,42 +260,42 @@ class PromptTemplateSpecDecorator(Protocol[DepsT]):
         | Callable[Concatenate[Context[DepsT], P], None]
         | Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
     ) -> (
-        PromptTemplate[P]
-        | AsyncPromptTemplate[P]
-        | ContextPromptTemplate[P, DepsT]
-        | AsyncContextPromptTemplate[P, DepsT]
+        Prompt[P]
+        | AsyncPrompt[P]
+        | ContextPrompt[P, DepsT]
+        | AsyncContextPrompt[P, DepsT]
     ):
         """Decorator for creating a prompt from a template function."""
         ...
 
 
 @overload
-def prompt_template() -> PromptTemplateFunctionalDecorator:
+def prompt() -> PromptFunctionalDecorator:
     """Create a decorator for promptable functions (no template)."""
     ...
 
 
 @overload
-def prompt_template(spec: str) -> PromptTemplateSpecDecorator:
+def prompt(template: str) -> PromptTemplateDecorator:
     """Create a decorator for template functions."""
     ...
 
 
-def prompt_template(
-    spec: str | None = None,
-) -> PromptTemplateFunctionalDecorator | PromptTemplateSpecDecorator:
-    '''Prompt Template decorator for turning functions (or "promptables") into prompts.
+def prompt(
+    template: str | None = None,
+) -> PromptFunctionalDecorator | PromptTemplateDecorator:
+    '''Prompt decorator for turning functions (or "promptables") into prompts.
 
-    This decorator transforms a function into a PromptTemplate, i.e. a function that
+    This decorator transforms a function into a Prompt, i.e. a function that
     returns `list[llm.Message]`. Its behavior depends on whether it's called with a spec
     string.
 
-    With a spec string, it returns a PromptTemplateSpecDecorator, in which case it uses
+    With a spec string, it returns a PromptTemplateDecorator, in which case it uses
     the provided spec to decorate an function with an empty body, and uses arguments
     to the function for variable substitution in the spec. The resulting PromptTemplate
     returns messages based on the spec.
 
-    Without a spec string, it returns a PromptTemplateFunctionalDecorator, which
+    Without a spec string, it returns a PromptFunctionalDecorator, which
     transforms a Promptable (a function returning either content, content sequence,
     or messages) into a PromptTemplate. The resulting prompt template either promotes
     the content / content sequence into a list containing a single user message with
@@ -310,7 +306,7 @@ def prompt_template(
             and optional role markers like [SYSTEM], [USER], and [ASSISTANT].
 
     Returns:
-        A PromptTemplateSpecDecorator or PromptTemplateFunctionalDecorator that converts
+        A PromptTemplateDecorator or PromptFunctionalDecorator that converts
             the decorated function into a prompt.
 
     Spec substitution rules:

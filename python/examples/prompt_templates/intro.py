@@ -11,7 +11,7 @@ def recommend_genre_prompt_template(genre: str):
     return [llm.messages.user(f"Recommend a {genre} book")]
 
 
-@llm.prompt_template("Recommend a {{ genre }} book")
+@llm.prompt("Recommend a {{ genre }} book")
 def recommend_genre_prompt_template_from_spec(genre: str): ...
 
 

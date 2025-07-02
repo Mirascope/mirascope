@@ -5,25 +5,25 @@ python functions.
 """
 
 from .decorator import (
+    AsyncContextPrompt,
     AsyncContextPromptable,
-    AsyncContextPromptTemplate,
+    AsyncPrompt,
     AsyncPromptable,
-    AsyncPromptTemplate,
+    ContextPrompt,
     ContextPromptable,
-    ContextPromptTemplate,
+    Prompt,
     Promptable,
-    PromptTemplate,
-    prompt_template,
+    prompt,
 )
 
 __all__ = [
-    "AsyncContextPromptTemplate",
+    "AsyncContextPrompt",
     "AsyncContextPromptable",
-    "AsyncPromptTemplate",
+    "AsyncPrompt",
     "AsyncPromptable",
-    "ContextPromptTemplate",
+    "ContextPrompt",
     "ContextPromptable",
-    "PromptTemplate",
+    "Prompt",
     "Promptable",
-    "prompt_template",
+    "prompt",
 ]

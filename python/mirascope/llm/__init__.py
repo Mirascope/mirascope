@@ -52,7 +52,7 @@ from .exceptions import (
 )
 from .messages import Message
 from .models import LLM, model
-from .prompts import prompt_template
+from .prompts import prompt
 from .response_formatting import ResponseFormat
 from .response_formatting.decorator import response_format
 from .responses import (

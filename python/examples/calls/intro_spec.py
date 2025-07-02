@@ -2,7 +2,7 @@ from mirascope import llm
 
 
 @llm.call("openai:gpt-4o-mini")  # [!code highlight]
-@llm.prompt_template("Recommend a {{ genre }} book")
+@llm.prompt("Recommend a {{ genre }} book")
 def recommend_book(genre: str): ...
 
 

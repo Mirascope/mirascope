@@ -39,8 +39,8 @@ class BaseResponse(Generic[ResponseContentT, ToolT, T]):
     args: dict[str, Any]
     """The arguments used to generate the response."""
 
-    spec: str | None
-    """The string spec used to define the messages array, if any."""
+    template: str | None
+    """The string template used to define the messages array, if any."""
 
     messages: list[Message]
     """The messages used to generate the response."""
