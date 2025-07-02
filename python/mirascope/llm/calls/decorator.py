@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, overload
 from typing_extensions import TypeVar, Unpack
 
 from ..clients import BaseClient, BaseParams
-from ..prompt_templates import (
+from ..prompts import (
     AsyncContextPromptable,
     AsyncPromptable,
     ContextPromptable,

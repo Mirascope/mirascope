@@ -6,7 +6,7 @@ from typing import ParamSpec
 from typing_extensions import TypeVar
 
 from ..context import Context
-from ..prompt_templates import AsyncPromptable
+from ..prompts import AsyncPromptable
 from ..responses import AsyncStructuredStream, ContextResponse
 from .base_structured_context_call import BaseStructuredContextCall
 

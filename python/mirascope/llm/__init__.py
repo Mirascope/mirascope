@@ -12,7 +12,7 @@ from . import (
     exceptions,
     messages,
     models,
-    prompt_templates,
+    prompts,
     response_formatting,
     responses,
     tools,
@@ -52,7 +52,7 @@ from .exceptions import (
 )
 from .messages import Message, Prompt
 from .models import LLM, model
-from .prompt_templates import prompt_template
+from .prompts import prompt_template
 from .response_formatting import ResponseFormat
 from .response_formatting.decorator import response_format
 from .responses import (
@@ -122,7 +122,7 @@ __all__ = [
     "messages",
     "model",
     "models",
-    "prompt_templates",
+    "prompts",
     "response_format",
     "response_formatting",
     "responses",

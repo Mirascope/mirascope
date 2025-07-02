@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import ParamSpec
 
-from ..prompt_templates import AsyncPromptable
+from ..prompts import AsyncPromptable
 from ..responses import AsyncStream, Response
 from .base_call import BaseCall
 
