@@ -14,6 +14,10 @@ from .base import LLM, BaseParams
 
 if TYPE_CHECKING:
     from ..clients import (
+        ANTHROPIC_REGISTERED_LLMS,
+        GOOGLE_REGISTERED_LLMS,
+        OPENAI_REGISTERED_LLMS,
+        REGISTERED_LLMS,
         AnthropicClient,
         AnthropicParams,
         GoogleClient,
@@ -22,19 +26,9 @@ if TYPE_CHECKING:
         OpenAIParams,
     )
     from ..models import (
-        ANTHROPIC_REGISTERED_LLMS,
-        GOOGLE_REGISTERED_LLMS,
-        OPENAI_REGISTERED_LLMS,
-        REGISTERED_LLMS,
-    )
-    from ..models import (
-        Anthropic as AnthropicModel,
-    )
-    from ..models import (
-        Google as GoogleModel,
-    )
-    from ..models import (
-        OpenAI as OpenAIModel,
+        Anthropic,
+        Google,
+        OpenAI,
     )
 
 MODEL_CONTEXT: ContextVar[LLM | None] = ContextVar("MODEL_CONTEXT", default=None)
@@ -47,7 +41,7 @@ def model(
     *,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> Iterator[AnthropicModel]:
+) -> Iterator[Anthropic]:
     """Overload for Anthropic models."""
     ...
 
@@ -59,7 +53,7 @@ def model(
     *,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> Iterator[GoogleModel]:
+) -> Iterator[Google]:
     """Overload for Google models."""
     ...
 
@@ -71,7 +65,7 @@ def model(
     *,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> Iterator[OpenAIModel]:
+) -> Iterator[OpenAI]:
     """Overload for OpenAI models."""
     ...
 

@@ -26,18 +26,16 @@ from .structured_context_call import StructuredContextCall
 
 if TYPE_CHECKING:
     from ..clients import (
+        ANTHROPIC_REGISTERED_LLMS,
+        GOOGLE_REGISTERED_LLMS,
+        OPENAI_REGISTERED_LLMS,
+        REGISTERED_LLMS,
         AnthropicClient,
         AnthropicParams,
         GoogleClient,
         GoogleParams,
         OpenAIClient,
         OpenAIParams,
-    )
-    from ..models import (
-        ANTHROPIC_REGISTERED_LLMS,
-        GOOGLE_REGISTERED_LLMS,
-        OPENAI_REGISTERED_LLMS,
-        REGISTERED_LLMS,
     )
 
 

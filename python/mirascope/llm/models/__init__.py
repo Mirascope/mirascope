@@ -6,24 +6,13 @@ easily run an LLM call with a model specified at runtime rather than definition
 time.
 """
 
-from .base import LLM, BaseParams
+from .base import LLM
 from .context import model
 from .models import Anthropic, Google, OpenAI
-from .register import (
-    ANTHROPIC_REGISTERED_LLMS,
-    GOOGLE_REGISTERED_LLMS,
-    OPENAI_REGISTERED_LLMS,
-    REGISTERED_LLMS,
-)
 
 __all__ = [
-    "ANTHROPIC_REGISTERED_LLMS",
-    "GOOGLE_REGISTERED_LLMS",
     "LLM",
-    "OPENAI_REGISTERED_LLMS",
-    "REGISTERED_LLMS",
     "Anthropic",
-    "BaseParams",
     "Google",
     "OpenAI",
     "model",

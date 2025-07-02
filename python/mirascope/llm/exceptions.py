@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from .models import (
+    from .clients import (
         REGISTERED_LLMS,
     )
 

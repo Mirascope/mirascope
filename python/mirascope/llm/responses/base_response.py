@@ -16,7 +16,7 @@ from .finish_reason import FinishReason
 from .usage import Usage
 
 if TYPE_CHECKING:
-    from ..models import (
+    from ..clients import (
         REGISTERED_LLMS,
     )
 

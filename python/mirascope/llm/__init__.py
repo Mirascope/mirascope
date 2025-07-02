@@ -27,7 +27,7 @@ from .calls import (
     StructuredCall,
     call,
 )
-from .clients import BaseClient
+from .clients import BaseClient, BaseParams
 from .content import (
     Audio,
     Content,
@@ -52,7 +52,7 @@ from .exceptions import (
     TimeoutError,
 )
 from .messages import Message, Prompt
-from .models import LLM, BaseParams, model
+from .models import LLM, model
 from .prompt_templates import prompt_template
 from .response_formatting import ResponseFormat
 from .response_formatting.decorator import response_format
