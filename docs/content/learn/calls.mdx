@@ -123,6 +123,13 @@ Mirascope supports common parameters like `temperature` and `max_tokens` that wo
 
 These parameters are part of the base interface, so you can use them with any model without worrying about provider-specific differences.
 
+## Handling Token Limits
+
+Sometimes your response might be truncated due to token limits. You can detect this using the `finish_reason` and automatically continue the generation:
+
+<CodeExample file="examples/calls/token_continuation.py" />
+
+This pattern is useful for generating longer content while respecting token limits and avoiding truncated responses.
 
 ## Custom Clients
 
