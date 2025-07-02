@@ -20,7 +20,6 @@ except llm.ConnectionError as e:
     print(f"Original provider error: {e.original_exception}")
 except llm.APIError as e:
     print(f"API error ({e.status_code}): {e}")
-    print(f"Provider: {e.provider}")
     print(f"Original provider error: {e.original_exception}")
 except Exception as e:
     print(f"Unexpected error: {e}")

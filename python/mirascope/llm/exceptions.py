@@ -1,18 +1,23 @@
 """Mirascope exception hierarchy for unified error handling across providers."""
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .models import (
+        REGISTERED_LLMS,
+    )
 
 
 class MirascopeError(Exception):
     """Base exception for all Mirascope errors."""
-    
+
     original_exception: Exception | None
-    provider: str | None
+    model: REGISTERED_LLMS | None
 
 
 class APIError(MirascopeError):
     """Base class for API-related errors."""
-    
+
     status_code: int | None
     response: Any
 
