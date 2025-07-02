@@ -5,9 +5,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any, Generic, overload
 
-from typing_extensions import TypedDict, TypeVar
+from typing_extensions import TypeVar
 
-from ..clients.base import BaseClient
+from ..clients.base import BaseClient, BaseParams
 from ..responses import (
     AsyncContextStream,
     AsyncContextStructuredStream,
@@ -27,13 +27,6 @@ MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="BaseParams")
 ClientT = TypeVar("ClientT", bound="BaseClient")
 DepsT = TypeVar("DepsT", default=None)
-
-
-class BaseParams(TypedDict, total=False):
-    """The base interface for LLM parameters."""
-
-    temperature: float
-    max_tokens: int
 
 
 class LLM(Generic[MessageT, ParamsT, ClientT]):

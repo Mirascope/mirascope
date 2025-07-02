@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypedDict, TypeVar
 
 from ..responses import (
     AsyncContextStream,
@@ -22,13 +22,20 @@ from ..tools import ContextToolDef, ToolDef
 
 T = TypeVar("T", bound=object | None)
 MessageT = TypeVar("MessageT")
-ParamsT = TypeVar("ParamsT")
+ParamsT = TypeVar("ParamsT", bound="BaseParams")
 DepsT = TypeVar("DepsT")
+
+
+class BaseParams(TypedDict, total=False):
+    """The base interface for LLM parameters."""
+
+    temperature: float
+    max_tokens: int
 
 
 class BaseClient(Generic[MessageT, ParamsT], ABC):
     """Base abstract client for provider-specific implementations.
-    
+
     This class defines explicit methods for each type of call, eliminating
     the need for complex overloads in provider implementations.
     """

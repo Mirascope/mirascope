@@ -8,6 +8,7 @@ time.
 
 from .base import LLM, BaseParams
 from .context import model
+from .models import Anthropic, Google, OpenAI
 from .register import (
     ANTHROPIC_REGISTERED_LLMS,
     GOOGLE_REGISTERED_LLMS,
@@ -21,6 +22,9 @@ __all__ = [
     "LLM",
     "OPENAI_REGISTERED_LLMS",
     "REGISTERED_LLMS",
+    "Anthropic",
     "BaseParams",
+    "Google",
+    "OpenAI",
     "model",
 ]

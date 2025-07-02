@@ -1,13 +1,12 @@
-"""Anthropic provider implementation."""
+"""Google client implementation."""
 
 from collections.abc import Sequence
-from typing import Any, Literal, TypeAlias
+from typing import Any
 
-from anthropic.types import MessageParam
+from google.genai.types import ContentDict, FunctionResponse
 
-from ..clients.base import BaseClient
 from ..messages import Message
-from ..models.base import LLM, BaseParams
+from ..models.base import BaseParams
 from ..responses import (
     AsyncContextStream,
     AsyncContextStructuredStream,
@@ -21,22 +20,16 @@ from ..responses import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
-
-REGISTERED_LLMS: TypeAlias = Literal["anthropic:claude-3-5-sonnet-latest"]
-"""The Anthropic models registered with Mirascope."""
+from .base import BaseClient
 
 
-class Params(BaseParams, total=False):
-    """The parameters for the Anthropic LLM model."""
-
-
-class Client(BaseClient[Message | MessageParam, BaseParams]):
-    """The client for the Anthropic LLM model."""
+class GoogleClient(BaseClient[Message | ContentDict | FunctionResponse, BaseParams]):
+    """The client for the Google LLM model."""
     
     def call(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef] | None = None,
         params: BaseParams | None = None,
     ) -> Response:
@@ -45,7 +38,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     def context_call(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         params: BaseParams | None = None,
     ) -> ContextResponse:
@@ -54,7 +47,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     def structured_call(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
         params: BaseParams | None = None,
@@ -64,7 +57,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     def structured_context_call(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
         params: BaseParams | None = None,
@@ -74,7 +67,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     async def call_async(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef] | None = None,
         params: BaseParams | None = None,
     ) -> Response:
@@ -83,7 +76,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     async def context_call_async(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         params: BaseParams | None = None,
     ) -> ContextResponse:
@@ -92,7 +85,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     async def structured_call_async(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
         params: BaseParams | None = None,
@@ -102,7 +95,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     async def structured_context_call_async(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
         params: BaseParams | None = None,
@@ -112,7 +105,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     def stream(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef] | None = None,
         params: BaseParams | None = None,
     ) -> Stream:
@@ -121,7 +114,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     def context_stream(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         params: BaseParams | None = None,
     ) -> ContextStream:
@@ -130,7 +123,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     def structured_stream(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
         params: BaseParams | None = None,
@@ -140,7 +133,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     def structured_context_stream(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
         params: BaseParams | None = None,
@@ -150,7 +143,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     async def stream_async(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef] | None = None,
         params: BaseParams | None = None,
     ) -> AsyncStream:
@@ -159,7 +152,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     async def context_stream_async(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         params: BaseParams | None = None,
     ) -> AsyncContextStream:
@@ -168,7 +161,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     async def structured_stream_async(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
         params: BaseParams | None = None,
@@ -178,7 +171,7 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
     async def structured_context_stream_async(
         self,
         *,
-        messages: Sequence[Message | MessageParam],
+        messages: Sequence[Message | ContentDict | FunctionResponse],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
         params: BaseParams | None = None,
@@ -186,5 +179,5 @@ class Client(BaseClient[Message | MessageParam, BaseParams]):
         raise NotImplementedError
 
 
-class Model(LLM[Message | MessageParam, BaseParams, Client]):
-    """The Anthropic-specific implementation of the `LLM` interface."""
+class GoogleParams(BaseParams, total=False):
+    """The parameters for the Google LLM model."""
