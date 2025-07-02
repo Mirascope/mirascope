@@ -1,16 +1,11 @@
 from mirascope import llm
 
-custom_client = llm.clients.OpenAIClient()
+custom_client = llm.clients.OpenAIClient()  # [!code highlight]
 
 
 @llm.call(
     "openai:gpt-4o-mini",
-    client=custom_client,
+    client=custom_client,  # [!code highlight]
 )
 def recommend_book(genre: str):
     return f"Recommend a {genre} book"
-
-
-response: llm.BaseResponse = recommend_book("fantasy")
-print(response.text)
-# "Here are a few highly recommended fantasy books..."

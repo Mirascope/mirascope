@@ -120,3 +120,13 @@ class BaseResponse(Generic[ResponseContentT, ToolT, T]):
                 specified format.
         """
         raise NotImplementedError()
+
+    def __repr__(self) -> str:
+        """Return a string representation of all response content including embedded media.
+
+        The resulting string includes all raw text directly, and includes placeholder
+        representations for embedded media, eg {image: url=...} or {thinking: thoughts=...}
+
+        Each content piece will be separated by newlines.
+        """
+        raise NotImplementedError()
