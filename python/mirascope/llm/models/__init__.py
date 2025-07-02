@@ -20,6 +20,12 @@ from .register import (
 with suppress(ImportError):
     from .anthropic import Anthropic, AnthropicClient, AnthropicParams
 
+with suppress(ImportError):
+    from .google import Google, GoogleClient, GoogleParams
+
+with suppress(ImportError):
+    from .openai import OpenAI, OpenAIClient, OpenAIParams
+
 __all__ = [
     "ANTHROPIC_REGISTERED_LLMS",
     "GOOGLE_REGISTERED_LLMS",
@@ -30,6 +36,12 @@ __all__ = [
     "AnthropicClient",
     "AnthropicParams",
     "Client",
+    "Google",
+    "GoogleClient",
+    "GoogleParams",
+    "OpenAI",
+    "OpenAIClient",
+    "OpenAIParams",
     "Params",
     "model",
 ]
