@@ -50,7 +50,7 @@ from .exceptions import (
     ServerError,
     TimeoutError,
 )
-from .messages import Message, Prompt
+from .messages import Message
 from .models import LLM, model
 from .prompts import prompt_template
 from .response_formatting import ResponseFormat
@@ -95,7 +95,6 @@ __all__ = [
     "MirascopeError",
     "NotFoundError",
     "PermissionError",
-    "Prompt",
     "RateLimitError",
     "Response",
     "ResponseFormat",
