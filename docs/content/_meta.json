@@ -20,12 +20,12 @@
                 "label": "Messages"
               },
               {
-                "slug": "prompt_templates",
-                "label": "Prompt Templates"
-              },
-              {
                 "slug": "calls",
                 "label": "Calls"
+              },
+              {
+                "slug": "prompt_templates",
+                "label": "Prompt Templates"
               }
             ]
           }

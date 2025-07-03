@@ -33,7 +33,7 @@ While strings are the most common case, a prompt can return any valid `llm.Conte
 
 <Info title="Refresher on content types" collapsible={true} defaultOpen={false}>
 
-Mirascope supports [8 different content types](/docs/learn/messages#message-content-types), which includes things like tool calls that you likely won't specify in the prompt. For purposes of writing prompts, besides strings, you likely want images, audio, video, and documents. Content support varies by provider, so be sure to take a look at our [compatibility reference](/docs/compatibiliy).
+Mirascope supports [8 different content types](/docs/learn/messages#message-content-types), which includes things like tool calls that you likely won't specify in the prompt. For purposes of writing prompts, besides strings, you likely want images, audio, video, and documents. Content support varies by provider, so be sure to take a look at our [compatibility reference](/docs/compatibility).
 
 | Content Type                                 |
 | -------------------------------------------- |
@@ -56,6 +56,14 @@ Sometimes you will want to directly construct the messages; for example, when pr
 This can also be useful when you want to include past messages as part of a prompt.
 
 <CodeExample file="examples/calls/prompts.py" lines="40-47" />
+
+### Multi-Line Prompts
+
+For longer prompts spanning multiple lines, Mirascope automatically cleans leading indentation. This allows you to write your prompt content with an indentation level that matches your code without adding extra whitespace tokens to the prompt itself:
+
+<CodeExample file="examples/calls/multiline_prompts.py" lines="4-14" />
+
+In the example above, Mirascope strips the leading spaces from each line of the prompt, so the actual content sent to the LLM doesn't include the extra indentation.
 
 ## Calls
 
