@@ -8,6 +8,6 @@
  * TODO: add all of the finish reasons.
  */
 export enum FinishReason {
-  STOP = "stop",
-  MAX_TOKENS = "max_tokens",
+  STOP = 'stop',
+  MAX_TOKENS = 'max_tokens',
 }

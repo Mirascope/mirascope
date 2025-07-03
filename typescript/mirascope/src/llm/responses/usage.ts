@@ -5,7 +5,7 @@
 /**
  * The usage statistics for a request to an LLM.
  */
-export type Usage =  {
+export type Usage = {
   /**
    * Number of tokens in the prompt (including messages, tools, etc).
    */
@@ -27,4 +27,4 @@ export type Usage =  {
    * Total number of tokens used in the request (prompt + completion).
    */
   totalTokens: number;
-}
+};

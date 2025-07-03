@@ -5,22 +5,22 @@
 /**
  * The Anthropic models registered with Mirascope.
  */
-export type AnthropicRegisteredLLMs = "anthropic:claude-3-5-sonnet-latest";
+export type ANTHROPIC_REGISTERED_LLMS = 'anthropic:claude-3-5-sonnet-latest';
 
 /**
  * The Google models registered with Mirascope.
  */
-export type GoogleRegisteredLLMs = "google:gemini-2.5-flash";
+export type GOOGLE_REGISTERED_LLMS = 'google:gemini-2.5-flash';
 
 /**
  * The OpenAI models registered with Mirascope.
  */
-export type OpenAIRegisteredLLMs = "openai:gpt-4o-mini";
+export type OPENAI_REGISTERED_LLMS = 'openai:gpt-4o-mini';
 
 /**
  * The models registered with Mirascope.
  */
-export type RegisteredLLMs =
-  | AnthropicRegisteredLLMs
-  | GoogleRegisteredLLMs
-  | OpenAIRegisteredLLMs;
+export type REGISTERED_LLMS =
+  | ANTHROPIC_REGISTERED_LLMS
+  | GOOGLE_REGISTERED_LLMS
+  | OPENAI_REGISTERED_LLMS;
