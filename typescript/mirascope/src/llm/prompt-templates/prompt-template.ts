@@ -158,14 +158,14 @@ function definePromptTemplate<T, DepsT = undefined>(
 
 function definePromptTemplate<T, DepsT = undefined>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _stringsOrFn:
+  stringsOrFn:
     | TemplateStringsArray
     | Prompt<T>
     | AsyncPrompt<T>
     | ContextPrompt<T, DepsT>
     | AsyncContextPrompt<T, DepsT>,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ..._values: unknown[]
+  ...values: unknown[]
 ):
   | PromptTemplate<T>
   | AsyncPromptTemplate<T>
