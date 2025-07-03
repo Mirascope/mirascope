@@ -39,8 +39,8 @@ class BaseResponse(Generic[ResponseContentT, ToolT, T]):
     args: dict[str, Any]
     """The arguments used to generate the response."""
 
-    spec: str | None
-    """The string spec used to define the messages array, if any."""
+    template: str | None
+    """The string template used to define the messages array, if any."""
 
     messages: list[Message]
     """The messages used to generate the response."""
@@ -118,5 +118,15 @@ class BaseResponse(Generic[ResponseContentT, ToolT, T]):
         Raises:
             ValueError: If the response cannot be formatted according to the
                 specified format.
+        """
+        raise NotImplementedError()
+
+    def __repr__(self) -> str:
+        """Return a string representation of all response content including embedded media.
+
+        The resulting string includes all raw text directly, and includes placeholder
+        representations for embedded media, eg {image: url=...} or {thinking: thoughts=...}
+
+        Each content piece will be separated by newlines.
         """
         raise NotImplementedError()

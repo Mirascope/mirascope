@@ -1,17 +1,17 @@
 from mirascope import llm
 
-one_shot: llm.Prompt = [
+one_shot: list[llm.Message] = [
     llm.messages.user("What's a good book to read?"),
 ]
 
-system_and_user: llm.Prompt = [
+system_and_user: list[llm.Message] = [
     llm.messages.system(
         "You are a librarian who recommends contemporary young-adult fantasy novels."
     ),
     llm.messages.user("What's a good book to read?"),
 ]
 
-multi_turn: llm.Prompt = [
+multi_turn: list[llm.Message] = [
     llm.messages.system(
         "You are a librarian who recommends contemporary young-adult fantasy novels."
     ),

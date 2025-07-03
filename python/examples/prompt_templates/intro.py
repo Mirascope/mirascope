@@ -1,26 +1,11 @@
 from mirascope import llm
 
-recommend_book_prompt: llm.Prompt = [llm.messages.user("Recommend a book")]
 
-recommend_fantasy_book_prompt: llm.Prompt = [
-    llm.messages.user("Recommend a fantasy book")
-]
-
-recommend_scifi_book_prompt: llm.Prompt = [
-    llm.messages.user("Recommend a science fiction book")
-]
+# Functional Style
+def recommend_genre(genre: str):
+    return "Recommend a {genre} book"
 
 
-def recommend_genre_prompt_template(genre: str) -> llm.Prompt:
-    return [llm.messages.user(f"Recommend a {genre} book")]
-
-
-@llm.prompt_template("Recommend a {{ genre }} book")
-def recommend_genre_prompt_template_from_spec(genre: str): ...
-
-
-recommend_genre_prompt: list[llm.Message] = recommend_genre_prompt_template_from_spec(
-    genre="fantasy"
-)
-print(recommend_genre_prompt)
-# > [llm.messages.user('Recommend a fantasy book')]
+# Template Style
+@llm.prompt("Recommend a {{ genre }} book")
+def recommend_genre_template(genre: str): ...

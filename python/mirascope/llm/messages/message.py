@@ -42,10 +42,6 @@ class Message:
     """Optional name to identify specific users or assistants in multi-party conversations."""
 
 
-Prompt = list[Message]
-"""Type alias for a list of messages that form a prompt."""
-
-
 def system(content: Content | Sequence[Content], *, name: str | None = None) -> Message:
     """Shorthand method for creating a `Message` with the system role.
 
