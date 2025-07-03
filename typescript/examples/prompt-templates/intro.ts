@@ -6,6 +6,6 @@ function recommendGenre(genre: string) {
 }
 
 // Template Style
-const recommendGenreTemplate = llm.definePromptTemplate<{
+const recommendGenreTemplate = llm.promptTemplate<{
   genre: string;
 }>`Recommend a {{ genre }} book`;

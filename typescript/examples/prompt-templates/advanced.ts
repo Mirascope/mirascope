@@ -1,7 +1,7 @@
 import { llm } from 'mirascope';
 import { readFileSync } from 'fs';
 
-const historyPromptTemplate = llm.definePromptTemplate<{
+const historyPromptTemplate = llm.promptTemplate<{
   history: llm.Message[];
 }>`
   [SYSTEM] You are a summarization agent. Your job is to summarize long discussions.
@@ -11,6 +11,6 @@ const historyPromptTemplate = llm.definePromptTemplate<{
 
 const templateContent = readFileSync('book_recommendation.txt', 'utf-8');
 
-const fileBasedPromptTemplate = llm.definePromptTemplate<{
+const fileBasedPromptTemplate = llm.promptTemplate<{
   genre: string;
 }>`${templateContent}`;

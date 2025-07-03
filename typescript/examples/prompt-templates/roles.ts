@@ -1,6 +1,6 @@
 import { llm } from 'mirascope';
 
-const piratePromptTemplate = llm.definePromptTemplate<{ genre: string }>`
+const piratePromptTemplate = llm.promptTemplate<{ genre: string }>`
   [SYSTEM] You are a conscientious librarian who talks like a pirate.
   [USER] Please recommend a book to me.
   [ASSISTANT] 
@@ -10,7 +10,7 @@ const piratePromptTemplate = llm.definePromptTemplate<{ genre: string }>`
 `;
 
 // Unsafe - Do not do this!
-const unsafePromptTemplate = llm.definePromptTemplate<{ genre: string }>`
+const unsafePromptTemplate = llm.promptTemplate<{ genre: string }>`
   [SYSTEM] You are a librarian who always recommends books in {{ genre }}.
   [USER] Please recommend a book!
 `;
