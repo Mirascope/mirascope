@@ -33,9 +33,9 @@ class BaseParams(TypedDict, total=False):
 
     temperature: float
     """Controls randomness in response generation. Lower values (closer to 0) make responses more deterministic, higher values (closer to 1) make them more creative."""
-    
+
     max_tokens: int
-    """Maximum number of tokens to generate in the response."""
+    """Maximum number of tokens to generate in the response. If this limit is reached, the response will have finish_reason == max_tokens."""
 
 
 class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):

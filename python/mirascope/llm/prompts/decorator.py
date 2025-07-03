@@ -151,7 +151,7 @@ returns one of:
 """
 
 
-class PromptFunctionalDecorator(Protocol[DepsT]):
+class PromptDecorator(Protocol[DepsT]):
     """Protocol for the `prompt` decorator when used without a template."""
 
     @overload
@@ -270,7 +270,7 @@ class PromptTemplateDecorator(Protocol[DepsT]):
 
 
 @overload
-def prompt() -> PromptFunctionalDecorator:
+def prompt() -> PromptDecorator:
     """Create a decorator for Prompt functions (no template)."""
     ...
 
@@ -283,7 +283,7 @@ def prompt(template: str) -> PromptTemplateDecorator:
 
 def prompt(
     template: str | None = None,
-) -> PromptFunctionalDecorator | PromptTemplateDecorator:
+) -> PromptDecorator | PromptTemplateDecorator:
     '''Prompt decorator for turning functions (or "Prompts") into prompts.
 
     This decorator transforms a function into a Prompt, i.e. a function that

@@ -9,5 +9,8 @@ def recommend_book(genre: str):
 recommendation: llm.Response = recommend_book("fantasy")
 
 # For a response with a single piece of text content, these are both the same:
-repr = str(recommendation)  # [!code highlight]
+representation = str(recommendation)  # [!code highlight]
 text = recommendation.text  # [!code highlight]
+
+print(representation)
+# "Here are some fantasy books you may enjoy..."

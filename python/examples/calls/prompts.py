@@ -37,13 +37,13 @@ def messages_prompt(genre: str) -> list[llm.Message]:
     ]
 
 
-def summarization_prompt(conversation: list[llm.Message]) -> list[llm.Message]:
+def summarization_prompt(query: str, history: list[llm.Message]) -> list[llm.Message]:
     return [
-        llm.messages.system(
-            "You are a conversation summarizer, who distills long conversations while keeping all themes"
+        llm.messages.user(
+            "Answer the user's query, based on the following conversation:"
         ),
-        llm.messages.user("Summarize the following conversation:"),
-        *conversation,
+        *history,
+        llm.messages.user(f"Now answer this question: {query}"),
     ]
 
 

@@ -35,10 +35,10 @@ Template-style prompts use the `@llm.prompt` decorator with a template string. H
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_basics.py" lines="6-7" />
+<CodeExample file="examples/prompt_templates/basics.py" lines="6-7" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-basics.ts" lines="3-5" />
+<CodeExample file="typescript/examples/prompt-templates/basics.ts" lines="3-5" />
 </Tab>
 </TabbedSection>
 
@@ -50,10 +50,10 @@ Templates support parameterization via variable substitution. The syntax for add
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_basics.py" lines="10-11" />
+<CodeExample file="examples/prompt_templates/basics.py" lines="10-11" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-basics.ts" lines="7-9" />
+<CodeExample file="typescript/examples/prompt-templates/basics.ts" lines="7-9" />
 </Tab>
 </TabbedSection>
 
@@ -61,10 +61,10 @@ You can also access properties on objects when using variable substitution, usin
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_basics.py" lines="14-21" />
+<CodeExample file="examples/prompt_templates/basics.py" lines="14-21" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-basics.ts" lines="11-18" />
+<CodeExample file="typescript/examples/prompt-templates/basics.ts" lines="11-18" />
 </Tab>
 </TabbedSection>
 
@@ -74,10 +74,10 @@ Multi-line templates are automatically cleaned to remove unnecessary indentation
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_basics.py" lines="24-31" />
+<CodeExample file="examples/prompt_templates/basics.py" lines="24-31" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-basics.ts" lines="20-24" />
+<CodeExample file="typescript/examples/prompt-templates/basics.ts" lines="20-24" />
 </Tab>
 </TabbedSection>
 
@@ -86,10 +86,10 @@ When using multi-line templates, all content within a message section must start
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_basics.py" lines="34-52" />
+<CodeExample file="examples/prompt_templates/basics.py" lines="34-52" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-basics.ts" lines="26-37" />
+<CodeExample file="typescript/examples/prompt-templates/basics.ts" lines="26-37" />
 </Tab>
 </TabbedSection>
 
@@ -103,10 +103,10 @@ Templates also support specifying multiple messages with distinct roles, using t
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_roles.py" lines="4-14" />
+<CodeExample file="examples/prompt_templates/roles.py" lines="4-14" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-roles.ts" lines="3-10" />
+<CodeExample file="typescript/examples/prompt-templates/roles.ts" lines="3-10" />
 </Tab>
 </TabbedSection>
 
@@ -115,10 +115,10 @@ When injecting user-provided content into templates, always place it in `[USER]`
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_roles.py" lines="17-24" />
+<CodeExample file="examples/prompt_templates/roles.py" lines="17-24" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-roles.ts" lines="12-16" />
+<CodeExample file="typescript/examples/prompt-templates/roles.ts" lines="12-16" />
 </Tab>
 </TabbedSection>
 
@@ -139,37 +139,37 @@ For individual content items, use the singular format specifier:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_multimodal.py" lines="4-5" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="4-5" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-multimodal.ts" lines="3-7" />
+<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="3-7" />
 </Tab>
 </TabbedSection>
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_multimodal.py" lines="8-9" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="8-9" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-multimodal.ts" lines="9-13" />
+<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="9-13" />
 </Tab>
 </TabbedSection>
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_multimodal.py" lines="12-13" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="12-13" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-multimodal.ts" lines="15-19" />
+<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="15-19" />
 </Tab>
 </TabbedSection>
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_multimodal.py" lines="16-17" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="16-17" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-multimodal.ts" lines="21-25" />
+<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="21-25" />
 </Tab>
 </TabbedSection>
 
@@ -179,37 +179,37 @@ For multiple content items of the same type, append "s" to the annotation:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_multimodal.py" lines="20-21" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="20-21" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-multimodal.ts" lines="27-31" />
+<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="27-31" />
 </Tab>
 </TabbedSection>
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_multimodal.py" lines="24-25" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="24-25" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-multimodal.ts" lines="33-37" />
+<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="33-37" />
 </Tab>
 </TabbedSection>
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_multimodal.py" lines="28-29" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="28-29" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-multimodal.ts" lines="39-43" />
+<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="39-43" />
 </Tab>
 </TabbedSection>
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_multimodal.py" lines="32-33" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="32-33" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-multimodal.ts" lines="45-49" />
+<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="45-49" />
 </Tab>
 </TabbedSection>
 
@@ -219,10 +219,10 @@ You can combine multiple content types in a single spec:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_multimodal.py" lines="36-49" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="36-49" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-multimodal.ts" lines="51-61" />
+<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="51-61" />
 </Tab>
 </TabbedSection>
 
@@ -254,10 +254,10 @@ Sometimes, you may want to inject the entire history of an ongoing conversation 
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_advanced.py" lines="4-11" />
+<CodeExample file="examples/prompt_templates/advanced.py" lines="4-11" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-advanced.ts" lines="4-10" />
+<CodeExample file="typescript/examples/prompt-templates/advanced.ts" lines="4-10" />
 </Tab>
 </TabbedSection>
 
@@ -267,10 +267,10 @@ Prompt templates give you the option of storing your prompts separately from you
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/spec_advanced.py" lines="14-19" />
+<CodeExample file="examples/prompt_templates/advanced.py" lines="14-19" />
 </Tab>
 <Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/spec-advanced.ts" lines="12-16" />
+<CodeExample file="typescript/examples/prompt-templates/advanced.ts" lines="12-16" />
 </Tab>
 </TabbedSection>
 
@@ -303,6 +303,6 @@ Prompt templates provide a declarative way to structure your prompts, especially
 - [Context](/docs/learn/context) for automatically maintaining context (e.g. conversation history) that is shared across calls
 - [Structured Outputs](/docs/learn/structured_outputs) for type-safe approaches to get structured data from LLMs
 - [Tools](/docs/learn/tools) to give LLMs access to custom tools that extend their capabilities
-- [Agents](/docs/learn/agents) for more powerful LLM-empowered workflows that iteratively accomplish more complex tasks
+- [Agents](/docs/learn/agents) that can act autonomously or semi-autonomously on your behalf to accomplish more complex tasks
 
 Pick whichever path aligns best with what you're hoping to get from Mirascope.

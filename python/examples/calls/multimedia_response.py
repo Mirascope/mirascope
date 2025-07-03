@@ -15,11 +15,11 @@ def generate_book(genre: str):
 
 book: llm.Response = generate_book("fantasy")
 print(book)
-# {thinking: thoughts="The user wants an imaginary fantasy book...""}
-# Embers of the Starfallen is a high fantasy epic by Lyra Nightwind, featuring...
-# {image: url="https://sdmntprcentralus.oaiusercontent.com/files/...""}
-# Here's an SSML snippet you can feed into any compatible Text-to-Speech engine...
-# {document type="xml"}
+# > {thinking: thoughts="The user wants an imaginary fantasy book...""}
+# > Embers of the Starfallen is a high fantasy epic by Lyra Nightwind, featuring...
+# > {image: url="https://sdmntprcentralus.oaiusercontent.com/files/...""}
+# > Here's an SSML snippet you can feed into any compatible Text-to-Speech engine...
+# > {document type="xml"}
 # ...
 
 for content_item in book.content:
@@ -31,10 +31,20 @@ for content_item in book.content:
         print(f"Content type: {content_item.type}")
 
 
+# Would print:
+# > Content type: thinking
+# > Text: Embers of the Starfallen is a high fantasy epic...
+# > Content type: image
+# > Text: Here's an SSM snippet...
+# > Content type: document
+
 # Access specific content types
 if book.image:
-    print(f"Image data: {book.image.data}")
+    print(f"Image data: {book.image.data[:50]}...")  # First 50 chars of base64 data
     print(f"Image type: {book.image.mime_type}")
+    # Would print:
+    # > Image data: iVBORw0KGgoAAAANSUhEUgAABQAAAAMACAYAAADpLHQ3AAAA...
+    # > Image type: image/png
 
 if book.audio:
     print(f"Audio data: {book.audio.data}")
