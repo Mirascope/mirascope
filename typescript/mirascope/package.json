@@ -38,6 +38,9 @@
     "LICENSE"
   ],
   "peerDependencies": {
+    "@anthropic-ai/sdk": "^0.56.0",
+    "@google/genai": "^1.8.0",
+    "openai": "^5.8.2",
     "typescript": "^5"
   }
 }
