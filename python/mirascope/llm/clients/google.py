@@ -6,7 +6,6 @@ from typing import Any, TypeAlias
 from google.genai.types import ContentDict, FunctionResponse
 
 from ..messages import Message
-from ..models.base import BaseParams
 from ..responses import (
     AsyncContextStream,
     AsyncContextStructuredStream,
@@ -20,7 +19,7 @@ from ..responses import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
-from .base import BaseClient
+from .base import BaseClient, BaseParams
 from .register import GOOGLE_REGISTERED_LLMS
 
 GoogleMessage: TypeAlias = Message | ContentDict | FunctionResponse

@@ -1,3 +1,5 @@
+"""The content types for specific response types."""
+
 from typing import TypeAlias
 
 from typing_extensions import TypeVar
