@@ -1,5 +1,5 @@
 /**
- * @fileoverview The `promptTemplate` method for promoting "promptables" into prompt templates.
+ * @fileoverview The `promptTemplate` method for promoting "prompts" into prompt templates.
  */
 
 import type { Content } from '../content';
@@ -9,50 +9,50 @@ import type { Message } from '../messages/message';
 /**
  * A function that can be promoted to a prompt template.
  *
- * A `Promptable` function takes any arguments and returns one of:
+ * A `Prompt` function takes any arguments and returns one of:
  *   - A single `Content` part that will be rendered as a single user message
  *   - A sequence of `Content` parts that will be rendered as a single user message
  *   - A list of `Message` objects that will be rendered as-is
  */
-type Promptable<T> = T extends readonly unknown[]
+type Prompt<T> = T extends readonly unknown[]
   ? (...args: T) => Content | Content[] | Message[]
   : (params: T) => Content | Content[] | Message[];
 
 /**
- * An asynchronous promptable function.
+ * An asynchronous prompt function.
  *
- * An `AsyncPromptable` function takes any arguments and returns one of:
+ * An `AsyncPrompt` function takes any arguments and returns one of:
  *   - A single `Content` part that will be rendered as a single user message
  *   - A sequence of `Content` parts that will be rendered as a single user message
  *   - A list of `Message` objects that will be rendered as-is
  */
-type AsyncPromptable<T> = T extends readonly unknown[]
+type AsyncPrompt<T> = T extends readonly unknown[]
   ? (...args: T) => Promise<Content | Content[] | Message[]>
   : (params: T) => Promise<Content | Content[] | Message[]>;
 
 /**
- * A context promptable function.
+ * A context prompt function.
  *
- * A `ContextPromptable` function takes a Context as the first argument followed by
+ * A `ContextPrompt` function takes a Context as the first argument followed by
  * any other arguments and returns one of:
  *   - A single `Content` part that will be rendered as a single user message
  *   - A sequence of `Content` parts that will be rendered as a single user message
  *   - A list of `Message` objects that will be rendered as-is
  */
-type ContextPromptable<T, DepsT = undefined> = T extends readonly unknown[]
+type ContextPrompt<T, DepsT = undefined> = T extends readonly unknown[]
   ? (ctx: Context<DepsT>, ...args: T) => Content | Content[] | Message[]
   : (ctx: Context<DepsT>, params: T) => Content | Content[] | Message[];
 
 /**
- * An asynchronous context promptable function.
+ * An asynchronous context prompt function.
  *
- * An `AsyncContextPromptable` function takes a Context as the first argument followed by
+ * An `AsyncContextPrompt` function takes a Context as the first argument followed by
  * any other arguments and returns one of:
  *   - A single `Content` part that will be rendered as a single user message
  *   - A sequence of `Content` parts that will be rendered as a single user message
  *   - A list of `Message` objects that will be rendered as-is
  */
-type AsyncContextPromptable<T, DepsT = undefined> = T extends readonly unknown[]
+type AsyncContextPrompt<T, DepsT = undefined> = T extends readonly unknown[]
   ? (
       ctx: Context<DepsT>,
       ...args: T
@@ -94,7 +94,7 @@ type AsyncContextPromptTemplate<
   : (ctx: Context<DepsT>, params: T) => Promise<Message[]>;
 
 /**
- * Prompt Template method for turning functions (or "promptables") into prompts.
+ * Prompt Template method for turning functions (or "prompts") into prompts.
  *
  * This method transforms a function into a PromptTemplate, i.e. a function that
  * returns `Message[]`. Its behavior depends on whether it's called with a spec
@@ -104,12 +104,12 @@ type AsyncContextPromptTemplate<
  * and uses arguments to the function for variable substitution in the spec. The resulting
  * PromptTemplate returns messages based on the spec.
  *
- * Without a spec string, it transforms a Promptable (a function returning either content,
+ * Without a spec string, it transforms a Prompt (a function returning either content,
  * content sequence, or messages) into a PromptTemplate. The resulting prompt template either
  * promotes the content / content sequence into an array containing a single user message with
  * that content, or passes along the messages returned by the decorated function.
  *
- * @param stringsOrFn Either a template string (tagged template literal) or a promptable function
+ * @param stringsOrFn Either a template string (tagged template literal) or a prompt function
  * @param values Template literal values (when using tagged template syntax)
  *
  * @returns A PromptTemplate that converts the input into a prompt
@@ -133,7 +133,7 @@ type AsyncContextPromptTemplate<
  *   [USER] {{ question }}
  * `;
  *
- * // Direct promptable function
+ * // Direct prompt function
  * const answerQuestionPromptTemplate = definePromptTemplate(
  *   (question: string) => `Answer this question: ${question}`
  * );
@@ -144,28 +144,26 @@ function definePromptTemplate<T>(
   ...values: unknown[]
 ): PromptTemplate<T>;
 
-function definePromptTemplate<T>(fn: Promptable<T>): PromptTemplate<T>;
+function definePromptTemplate<T>(fn: Prompt<T>): PromptTemplate<T>;
 
-function definePromptTemplate<T>(
-  fn: AsyncPromptable<T>
-): AsyncPromptTemplate<T>;
+function definePromptTemplate<T>(fn: AsyncPrompt<T>): AsyncPromptTemplate<T>;
 
 function definePromptTemplate<T, DepsT = undefined>(
-  fn: ContextPromptable<T, DepsT>
+  fn: ContextPrompt<T, DepsT>
 ): ContextPromptTemplate<T, DepsT>;
 
 function definePromptTemplate<T, DepsT = undefined>(
-  fn: AsyncContextPromptable<T, DepsT>
+  fn: AsyncContextPrompt<T, DepsT>
 ): AsyncContextPromptTemplate<T, DepsT>;
 
 function definePromptTemplate<T, DepsT = undefined>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _stringsOrFn:
     | TemplateStringsArray
-    | Promptable<T>
-    | AsyncPromptable<T>
-    | ContextPromptable<T, DepsT>
-    | AsyncContextPromptable<T, DepsT>,
+    | Prompt<T>
+    | AsyncPrompt<T>
+    | ContextPrompt<T, DepsT>
+    | AsyncContextPrompt<T, DepsT>,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ..._values: unknown[]
 ):

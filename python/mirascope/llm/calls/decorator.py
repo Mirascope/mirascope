@@ -9,10 +9,10 @@ from typing_extensions import TypeVar, Unpack
 
 from ..clients import BaseClient, BaseParams
 from ..prompts import (
-    AsyncContextPromptable,
-    AsyncPromptable,
-    ContextPromptable,
-    Promptable,
+    AsyncContextPrompt,
+    AsyncPrompt,
+    ContextPrompt,
+    Prompt,
 )
 from ..tools import ContextToolDef, ToolDef
 from .async_call import AsyncCall
@@ -51,22 +51,22 @@ class CallDecorator(Protocol):
 
     @overload
     def __call__(
-        self, fn: AsyncPromptable[P] | AsyncContextPromptable[P, NoDepsT]
+        self, fn: AsyncPrompt[P] | AsyncContextPrompt[P, NoDepsT]
     ) -> AsyncCall[P]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: Promptable[P] | ContextPromptable[P, NoDepsT]) -> Call[P]:
+    def __call__(self, fn: Prompt[P] | ContextPrompt[P, NoDepsT]) -> Call[P]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
         self,
-        fn: Promptable[P]
-        | ContextPromptable[P, NoDepsT]
-        | AsyncPromptable[P]
-        | AsyncContextPromptable[P, NoDepsT],
+        fn: Prompt[P]
+        | ContextPrompt[P, NoDepsT]
+        | AsyncPrompt[P]
+        | AsyncContextPrompt[P, NoDepsT],
     ) -> Call[P] | AsyncCall[P]:
         """Decorates a function to generate responses using LLMs."""
         ...
@@ -76,20 +76,18 @@ class ContextCallDecorator(Protocol[DepsT]):
     """A decorator for generating responses using LLMs."""
 
     @overload
-    def __call__(
-        self, fn: AsyncContextPromptable[P, DepsT]
-    ) -> AsyncContextCall[P, DepsT]:
+    def __call__(self, fn: AsyncContextPrompt[P, DepsT]) -> AsyncContextCall[P, DepsT]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: ContextPromptable[P, DepsT]) -> ContextCall[P, DepsT]:
+    def __call__(self, fn: ContextPrompt[P, DepsT]) -> ContextCall[P, DepsT]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
         self,
-        fn: ContextPromptable[P, DepsT] | AsyncContextPromptable[P, DepsT],
+        fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
     ) -> ContextCall[P, DepsT] | AsyncContextCall[P, DepsT]:
         """Decorates a function to generate responses using LLMs."""
         ...
@@ -99,17 +97,17 @@ class StructuredCallDecorator(Protocol[T]):
     """A decorator for generating responses using LLMs."""
 
     @overload
-    def __call__(self, fn: AsyncPromptable[P]) -> AsyncStructuredCall[P, T]:
+    def __call__(self, fn: AsyncPrompt[P]) -> AsyncStructuredCall[P, T]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: Promptable[P]) -> StructuredCall[P, T]:
+    def __call__(self, fn: Prompt[P]) -> StructuredCall[P, T]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
-        self, fn: Promptable[P] | AsyncPromptable[P]
+        self, fn: Prompt[P] | AsyncPrompt[P]
     ) -> StructuredCall[P, T] | AsyncStructuredCall[P, T]:
         """Decorates a function to generate responses using LLMs."""
         ...
@@ -120,21 +118,21 @@ class StructuredContextCallDecorator(Protocol[T, DepsT]):
 
     @overload
     def __call__(
-        self, fn: AsyncContextPromptable[P, DepsT]
+        self, fn: AsyncContextPrompt[P, DepsT]
     ) -> AsyncStructuredContextCall[P, T, DepsT]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
     def __call__(
-        self, fn: ContextPromptable[P, DepsT]
+        self, fn: ContextPrompt[P, DepsT]
     ) -> StructuredContextCall[P, T, DepsT]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
         self,
-        fn: ContextPromptable[P, DepsT] | AsyncContextPromptable[P, DepsT],
+        fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
     ) -> StructuredContextCall[P, T, DepsT] | AsyncStructuredContextCall[P, T, DepsT]:
         """Decorates a function to generate responses using LLMs."""
         ...

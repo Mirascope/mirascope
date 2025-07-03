@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import ParamSpec
 
-from ..prompts import AsyncPromptable
+from ..prompts import AsyncPrompt
 from ..responses import AsyncStream, Response
 from .base_call import BaseCall
 
@@ -11,7 +11,7 @@ P = ParamSpec("P")
 
 
 @dataclass
-class AsyncCall(BaseCall[P, AsyncPromptable]):
+class AsyncCall(BaseCall[P, AsyncPrompt]):
     """A class for generating responses using LLMs asynchronously."""
 
     async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response:

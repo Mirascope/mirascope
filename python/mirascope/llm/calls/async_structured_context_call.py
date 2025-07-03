@@ -6,7 +6,7 @@ from typing import ParamSpec
 from typing_extensions import TypeVar
 
 from ..context import Context
-from ..prompts import AsyncPromptable
+from ..prompts import AsyncPrompt
 from ..responses import AsyncStructuredStream, ContextResponse
 from .base_structured_context_call import BaseStructuredContextCall
 
@@ -16,9 +16,7 @@ DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class AsyncStructuredContextCall(
-    BaseStructuredContextCall[P, AsyncPromptable, T, DepsT]
-):
+class AsyncStructuredContextCall(BaseStructuredContextCall[P, AsyncPrompt, T, DepsT]):
     """A class for generating structured responses using LLMs asynchronously."""
 
     async def __call__(

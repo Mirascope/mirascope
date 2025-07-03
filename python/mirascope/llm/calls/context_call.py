@@ -6,7 +6,7 @@ from typing import ParamSpec
 from typing_extensions import TypeVar
 
 from ..context import Context
-from ..prompts import Promptable
+from ..prompts import Prompt
 from ..responses import AsyncStream, ContextResponse, Stream
 from .base_context_call import BaseContextCall
 
@@ -15,7 +15,7 @@ DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class ContextCall(BaseContextCall[P, Promptable, DepsT]):
+class ContextCall(BaseContextCall[P, Prompt, DepsT]):
     """A class for generating responses using LLMs."""
 
     def __call__(
