@@ -2,4 +2,4 @@
  * @fileoverview The `llm.prompt-templates` module.
  */
 
-export { definePromptTemplate } from './prompt-template';
+export { definePrompt } from './prompt';

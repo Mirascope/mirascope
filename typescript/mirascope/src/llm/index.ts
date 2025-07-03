@@ -1,9 +1,9 @@
 import * as content from './content';
 import * as messages from './messages';
 import * as types from './types';
-import * as promptTemplates from './prompt-templates';
+import * as prompts from './prompts';
 
-export { content, messages, types, promptTemplates };
+export { content, messages, types, prompts };
 
 export type {
   Content,
@@ -17,4 +17,4 @@ export type {
 } from './content';
 export type { Context } from './context';
 export type { Message, Prompt } from './messages';
-export { definePromptTemplate } from './prompt-templates';
+export { definePrompt } from './prompts';

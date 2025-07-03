@@ -139,24 +139,24 @@ type AsyncContextPromptTemplate<
  * );
  * ```
  */
-function definePromptTemplate<T>(
+function definePrompt<T>(
   strings: TemplateStringsArray,
   ...values: unknown[]
 ): PromptTemplate<T>;
 
-function definePromptTemplate<T>(fn: Prompt<T>): PromptTemplate<T>;
+function definePrompt<T>(fn: Prompt<T>): PromptTemplate<T>;
 
-function definePromptTemplate<T>(fn: AsyncPrompt<T>): AsyncPromptTemplate<T>;
+function definePrompt<T>(fn: AsyncPrompt<T>): AsyncPromptTemplate<T>;
 
-function definePromptTemplate<T, DepsT = undefined>(
+function definePrompt<T, DepsT = undefined>(
   fn: ContextPrompt<T, DepsT>
 ): ContextPromptTemplate<T, DepsT>;
 
-function definePromptTemplate<T, DepsT = undefined>(
+function definePrompt<T, DepsT = undefined>(
   fn: AsyncContextPrompt<T, DepsT>
 ): AsyncContextPromptTemplate<T, DepsT>;
 
-function definePromptTemplate<T, DepsT = undefined>(
+function definePrompt<T, DepsT = undefined>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   stringsOrFn:
     | TemplateStringsArray
@@ -174,4 +174,4 @@ function definePromptTemplate<T, DepsT = undefined>(
   throw new Error('Not implemented');
 }
 
-export { definePromptTemplate };
+export { definePrompt };
