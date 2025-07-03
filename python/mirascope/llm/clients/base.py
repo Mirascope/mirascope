@@ -29,13 +29,32 @@ LLMT = TypeVar("LLMT", bound=REGISTERED_LLMS)
 
 
 class BaseParams(TypedDict, total=False):
-    """The base interface for LLM parameters."""
+    """Common parameters shared across LLM providers.
 
-    temperature: float
-    """Controls randomness in response generation. Lower values (closer to 0) make responses more deterministic, higher values (closer to 1) make them more creative."""
+    Note: Each provider may handle these parameters differently or not support them at all.
+    Please check provider-specific documentation for parameter support and behavior.
+    """
 
-    max_tokens: int
-    """Maximum number of tokens to generate in the response. If this limit is reached, the response will have finish_reason == max_tokens."""
+    temperature: float | None
+    """Controls randomness in the output (0.0 to 1.0)."""
+
+    max_tokens: int | None
+    """Maximum number of tokens to generate."""
+
+    top_p: float | None
+    """Nucleus sampling parameter (0.0 to 1.0)."""
+
+    frequency_penalty: float | None
+    """Penalizes frequent tokens (-2.0 to 2.0)."""
+
+    presence_penalty: float | None
+    """Penalizes tokens based on presence (-2.0 to 2.0)."""
+
+    seed: int | None
+    """Random seed for reproducibility."""
+
+    stop: str | list[str] | None
+    """Stop sequence(s) to end generation."""
 
 
 class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):

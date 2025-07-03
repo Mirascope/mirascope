@@ -93,18 +93,25 @@ You can provide call params like `max_tokens` or `temperature` which affect the 
 
 <CodeExample file="examples/calls/params.py" lines="4-10"/>
 
-Mirascope abstracts these into common params, so you can use them across all supported providers. Here's a reference on supported common call params:
+Mirascope abstracts these into common params, so you can use them across all supported providers. Note that support for individual parameters varies by provider—see the [compatibility docs](/docs/compatibility).
+
+Here's a reference on supported common call params:
 
 | Param | Type | Description |
 | --- | --- | --- |
-| temperature | float | Controls randomness in response generation. Lower values (closer to 0) make responses more deterministic, higher values (closer to 1) make them more creative |
-| max_tokens | int | Maximum number of tokens to generate in the response |
+| temperature | float | Controls randomness in the output (0.0 to 1.0) |
+| max_tokens | int | Maximum number of tokens to generate |
+| top_p | float | Nucleus sampling parameter (0.0 to 1.0) |
+| frequency_penalty | float | Penalizes frequent tokens (-2.0 to 2.0) |
+| presence_penalty | float | Penalizes tokens based on presence (-2.0 to 2.0) |
+| seed | int | Random seed for reproducibility |
+| stop | str \| list[str] | Stop sequence(s) to end generation |
 
 ### Custom Call Params & Clients
 
 It's also possible to use provider-specific custom params:
 
-<CodeExample file="examples/calls/params.py" lines="3-8"/>
+<CodeExample file="examples/calls/custom_params.py" lines="3-8"/>
 
 Or a custom client:
 
