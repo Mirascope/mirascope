@@ -49,7 +49,7 @@ A prompt can also return a sequence of content, which is combined into one user 
 
 ### System Messages
 
-When you want to include a system message, you can construct it directly, and include it in a list of messages. 
+When you want to include a system message, you can construct it directly and include it in a list of messages. 
 
 <CodeExample file="examples/calls/prompts.py" lines="31-37" />
 
@@ -65,7 +65,7 @@ For safety, **always place user content in user messages.**
 
 ### Message History
 
-You can also include conversational history by unpacking past messages into an array.
+You can also include conversational history by unpacking a list of previous messages:
 
 <CodeExample file="examples/calls/prompts.py" lines="40-47" />
 
@@ -79,7 +79,7 @@ In the example above, Mirascope strips the leading spaces from each line of the 
 
 ## Defining Calls
 
-Regardless of the style of prompt you write, you will want to transform it into a call, which is as simple as choosing a model string of the form `provider:model` (e.g. `openai:gpt-4o-mini`) and providing it to the `@llm.call` decorator. The decorator transforms the decorated function from a prompt (which returns context) to a call (which returns llm responses). We revisit our simple example:
+Regardless of the style of prompt you write, you will want to transform it into a call, which is as simple as choosing a model string of the form `provider:model` (e.g. `openai:gpt-4o-mini`) and providing it to the `@llm.call` decorator. The decorator transforms the decorated function from a prompt (which returns context) to a call (which returns LLM responses). We revisit our simple example:
 
 <CodeExample file="examples/calls/intro.py" lines="4-9" />
 
@@ -89,7 +89,7 @@ In the example above, we've intentionally left out the return type signature on 
 
 <CodeExample file="examples/calls/return_type.py" lines="4-9" />
 
-This can be confusing because calling recommend_book returns an `llm.Response`—not a string. The reason is that the call decorator transforms `recommend_book` from a prompt that returns a `str` into an LLM call that returns an `llm.Response`. Going forward, we'll leave out the return types for decorated functions to avoid potential confusion.
+This can be confusing because calling `recommend_book` returns an `llm.Response` — not a string. The reason is that the call decorator transforms `recommend_book` from a prompt that returns a `str` into an LLM call that returns an `llm.Response`. Going forward, we'll leave out the return types for decorated functions to avoid potential confusion.
 
 </Note>
 
@@ -103,7 +103,7 @@ You can provide call params like `max_tokens` or `temperature` which affect the 
 
 <CodeExample file="examples/calls/params.py" lines="4-10"/>
 
-Mirascope abstracts these into common params, so you can use them across all supported providers. Note that support for individual parameters varies by provider—see the [compatibility docs](/docs/compatibility).
+Mirascope abstracts these into common params, so you can use them across all supported providers. Note that support for individual parameters varies by provider — see the [compatibility docs](/docs/compatibility).
 
 Here's a reference on supported common call params:
 
@@ -131,13 +131,14 @@ Or a custom client:
 ## Responses
 
 Once you invoke the call, you'll get back an an [llm.Response](/docs/api/responses#response). Under the hood, the LLM generates an assistant message, and the response wraps the content from that message. 
+
 The response has a `__repr__` method that produces a string representation of all the response's content, so you can easily print it (or call `str(response)`). If you know that the message will contain a single piece of text, you can also conveniently access it via `response.text`.
 
 <CodeExample file="examples/calls/basic_response.py" lines="4-16" />
 
 When getting a multi-media response, it will consist of multiple content parts. In this case, you'll want to either iterate over the response content, or use the type-specific accessor properties:
 
-<CodeExample file="examples/calls/multimedia_response.py" lines="4-52" />
+<CodeExample file="examples/calls/multimedia_response.py" lines="4-56" />
 
 
 ### Response Content Properties

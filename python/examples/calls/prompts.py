@@ -43,7 +43,7 @@ def summarization_prompt(query: str, history: list[llm.Message]) -> list[llm.Mes
             "Answer the user's query, based on the following conversation:"
         ),
         *history,
-        llm.messages.user(f"Now answer this question: {query}"),
+        llm.messages.user(query),
     ]
 
 

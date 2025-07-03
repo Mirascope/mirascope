@@ -43,10 +43,14 @@ if book.image:
     print(f"Image data: {book.image.data[:50]}...")  # First 50 chars of base64 data
     print(f"Image type: {book.image.mime_type}")
     # Would print:
-    # > Image data: iVBORw0KGgoAAAANSUhEUgAABQAAAAMACAYAAADpLHQ3AAAA...
+    # > Image data: <base64 encoded image data>...
     # > Image type: image/png
 
 if book.audio:
     print(f"Audio data: {book.audio.data}")
+    # Would print:
+    # > Audio data: <base64 encoded audio data>
     if book.audio.transcript:
         print(f"Transcript: {book.audio.transcript}")
+        # Would print:
+        # > Transcript: The title of the book is Embers of the Starfallen...
