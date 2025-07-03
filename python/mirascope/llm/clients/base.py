@@ -19,12 +19,13 @@ from ..responses import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
+from .register import REGISTERED_LLMS
 
 T = TypeVar("T", bound=object | None)
 MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="BaseParams")
 DepsT = TypeVar("DepsT")
-ModelT = TypeVar("ModelT", bound=str)
+LLMT = TypeVar("LLMT", bound=REGISTERED_LLMS)
 
 
 class BaseParams(TypedDict, total=False):
@@ -34,7 +35,7 @@ class BaseParams(TypedDict, total=False):
     max_tokens: int
 
 
-class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
+class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
@@ -45,7 +46,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     def call(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
@@ -57,7 +58,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     def context_call(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
@@ -69,7 +70,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     def structured_call(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
@@ -82,7 +83,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     def structured_context_call(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
@@ -95,7 +96,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     async def call_async(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
@@ -107,7 +108,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     async def context_call_async(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
@@ -119,7 +120,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     async def structured_call_async(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
@@ -132,7 +133,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     async def structured_context_call_async(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
@@ -145,7 +146,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     def stream(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
@@ -157,7 +158,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     def context_stream(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
@@ -169,7 +170,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     def structured_stream(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
@@ -182,7 +183,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     def structured_context_stream(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
@@ -195,7 +196,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     async def stream_async(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
@@ -207,7 +208,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     async def context_stream_async(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
@@ -219,7 +220,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     async def structured_stream_async(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[T],
@@ -232,7 +233,7 @@ class BaseClient(Generic[MessageT, ParamsT, ModelT], ABC):
     async def structured_context_stream_async(
         self,
         *,
-        model: ModelT,
+        model: LLMT,
         messages: Sequence[MessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],

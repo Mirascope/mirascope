@@ -26,7 +26,11 @@ from .register import OPENAI_REGISTERED_LLMS
 OpenAIMessage: TypeAlias = Message | ChatCompletionMessageParam
 
 
-class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]):
+class OpenAIParams(BaseParams, total=False):
+    """The parameters for the OpenAI LLM model."""
+
+
+class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLMS]):
     """The client for the OpenAI LLM model."""
 
     def call(
@@ -35,7 +39,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> Response:
         raise NotImplementedError
 
@@ -45,7 +49,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> ContextResponse:
         raise NotImplementedError
 
@@ -56,7 +60,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> Response:
         raise NotImplementedError
 
@@ -67,7 +71,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> ContextResponse:
         raise NotImplementedError
 
@@ -77,7 +81,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> Response:
         raise NotImplementedError
 
@@ -87,7 +91,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> ContextResponse:
         raise NotImplementedError
 
@@ -98,7 +102,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> Response:
         raise NotImplementedError
 
@@ -109,7 +113,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> ContextResponse:
         raise NotImplementedError
 
@@ -119,7 +123,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> Stream:
         raise NotImplementedError
 
@@ -129,7 +133,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> ContextStream:
         raise NotImplementedError
 
@@ -140,7 +144,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> StructuredStream:
         raise NotImplementedError
 
@@ -151,7 +155,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> ContextStructuredStream:
         raise NotImplementedError
 
@@ -161,7 +165,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncStream:
         raise NotImplementedError
 
@@ -171,7 +175,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncContextStream:
         raise NotImplementedError
 
@@ -182,7 +186,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef] | None = None,
         response_format: type,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncStructuredStream:
         raise NotImplementedError
 
@@ -193,10 +197,6 @@ class OpenAIClient(BaseClient[OpenAIMessage, BaseParams, OPENAI_REGISTERED_LLMS]
         messages: Sequence[OpenAIMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
         response_format: type,
-        params: BaseParams | None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncContextStructuredStream:
         raise NotImplementedError
-
-
-class OpenAIParams(BaseParams, total=False):
-    """The parameters for the OpenAI LLM model."""

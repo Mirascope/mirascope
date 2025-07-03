@@ -81,8 +81,8 @@ class BaseResponse(Generic[ResponseContentT, ToolT, T]):
         raise NotImplementedError()
 
     @property
-    def text(self) -> str:
-        """Returns all text content concatenated with newlines, or empty string if none."""
+    def text(self) -> str | None:
+        """Returns the first text in the response content, if any."""
         raise NotImplementedError()
 
     @property

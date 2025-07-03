@@ -373,7 +373,7 @@ def call(
     | None = None,
     response_format: type[T] | None = None,
     client: BaseClient | None = None,
-    **kwargs: Any,
+    **params: Unpack[BaseParams],
 ) -> (
     CallDecorator
     | ContextCallDecorator[DepsT]
