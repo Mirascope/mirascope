@@ -62,7 +62,7 @@ export abstract class BaseClient<
   /**
    * Generate a standard response.
    */
-  abstract call(options: {
+  abstract call(args: {
     model: LLMT;
     messages: MessageT[];
     params?: ParamsT | null;
@@ -71,7 +71,7 @@ export abstract class BaseClient<
   /**
    * Generate a standard response asynchronously.
    */
-  abstract callAsync(options: {
+  abstract callAsync(args: {
     model: LLMT;
     messages: MessageT[];
     params?: ParamsT | null;

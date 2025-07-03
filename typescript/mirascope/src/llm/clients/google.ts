@@ -23,7 +23,7 @@ export class GoogleClient extends BaseClient<
   GoogleParams,
   GOOGLE_REGISTERED_LLMS
 > {
-  call(options: {
+  call(args: {
     model: GOOGLE_REGISTERED_LLMS;
     messages: GoogleMessage[];
     params?: GoogleParams | null;
@@ -31,7 +31,7 @@ export class GoogleClient extends BaseClient<
     throw new Error('Not implemented');
   }
 
-  async callAsync(options: {
+  async callAsync(args: {
     model: GOOGLE_REGISTERED_LLMS;
     messages: GoogleMessage[];
     params?: GoogleParams | null;

@@ -23,7 +23,7 @@ export class OpenAIClient extends BaseClient<
   OpenAIParams,
   OPENAI_REGISTERED_LLMS
 > {
-  call(options: {
+  call(args: {
     model: OPENAI_REGISTERED_LLMS;
     messages: OpenAIMessage[];
     params?: OpenAIParams | null;
@@ -31,7 +31,7 @@ export class OpenAIClient extends BaseClient<
     throw new Error('Not implemented');
   }
 
-  async callAsync(options: {
+  async callAsync(args: {
     model: OPENAI_REGISTERED_LLMS;
     messages: OpenAIMessage[];
     params?: OpenAIParams | null;

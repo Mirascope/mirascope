@@ -23,7 +23,7 @@ export class AnthropicClient extends BaseClient<
   AnthropicParams,
   ANTHROPIC_REGISTERED_LLMS
 > {
-  call(options: {
+  call(args: {
     model: ANTHROPIC_REGISTERED_LLMS;
     messages: AnthropicMessage[];
     params?: AnthropicParams | null;
@@ -31,7 +31,7 @@ export class AnthropicClient extends BaseClient<
     throw new Error('Not implemented');
   }
 
-  async callAsync(options: {
+  async callAsync(args: {
     model: ANTHROPIC_REGISTERED_LLMS;
     messages: AnthropicMessage[];
     params?: AnthropicParams | null;
