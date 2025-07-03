@@ -26,6 +26,10 @@
               {
                 "slug": "prompt_templates",
                 "label": "Prompt Templates"
+              },
+              {
+                "slug": "streams",
+                "label": "Streams"
               }
             ]
           }
