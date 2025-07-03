@@ -9,19 +9,27 @@ from typing import TYPE_CHECKING, overload
 
 from typing_extensions import Unpack
 
-from .base import LLM, Client, Params
+from ..clients import BaseClient
+from .base import LLM, BaseParams
 
 if TYPE_CHECKING:
-    from ..models import (
+    from ..clients import (
         ANTHROPIC_REGISTERED_LLMS,
         GOOGLE_REGISTERED_LLMS,
         OPENAI_REGISTERED_LLMS,
         REGISTERED_LLMS,
+        AnthropicClient,
+        AnthropicParams,
+        GoogleClient,
+        GoogleParams,
+        OpenAIClient,
+        OpenAIParams,
     )
-    from ..models.anthropic import Anthropic, AnthropicClient, AnthropicParams
-    from ..models.google import Google, GoogleClient, GoogleParams
-    from ..models.openai import OpenAI, OpenAIClient, OpenAIParams
-
+    from ..models import (
+        Anthropic,
+        Google,
+        OpenAI,
+    )
 
 MODEL_CONTEXT: ContextVar[LLM | None] = ContextVar("MODEL_CONTEXT", default=None)
 
@@ -67,8 +75,8 @@ def model(
 def model(
     id: REGISTERED_LLMS,
     *,
-    client: Client | None = None,
-    **params: Unpack[Params],
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
 ) -> Iterator[LLM]:
     """Overload for all registered models so that autocomplete works."""
     ...
@@ -78,8 +86,8 @@ def model(
 def model(
     id: REGISTERED_LLMS,
     *,
-    client: Client | None = None,
-    **params: Unpack[Params],
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
 ) -> Iterator[LLM]:
     """Set the model context with the model of the given id.
 

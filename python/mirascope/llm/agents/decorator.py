@@ -16,7 +16,7 @@ from .async_structured_agent import AsyncStructuredAgent
 from .structured_agent import StructuredAgent
 
 if TYPE_CHECKING:
-    from ..models import (
+    from ..clients import (
         REGISTERED_LLMS,
     )
 

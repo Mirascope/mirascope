@@ -1,10 +1,17 @@
 from typing import TypeAlias
 
-from ..content import Audio, Image, Video
+from typing_extensions import TypeVar
+
+from ..content import Audio, Image, Thinking, Video
 from ..tools import ContextTool, Tool
 
-ResponseContent: TypeAlias = str | Image | Audio | Video | Tool
-"""Content types that can be returned in a model response."""
+ToolT = TypeVar("ToolT", bound=Tool | ContextTool)
 
-ContextResponseContent: TypeAlias = str | Image | Audio | Video | ContextTool
-"""Content types that can be returned in a model response with context."""
+BaseResponseContent: TypeAlias = str | Image | Audio | Video | Thinking | ToolT
+"""Base content response types that do not vary based on context."""
+
+ResponseContent: TypeAlias = BaseResponseContent[Tool]
+"""Content types that can be returned in a SimpleResponse (non-context)."""
+
+ContextResponseContent: TypeAlias = BaseResponseContent[ContextTool]
+"""Content types that can be returned in a ContextResponse."""
