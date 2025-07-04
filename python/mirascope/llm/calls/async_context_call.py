@@ -7,7 +7,7 @@ from typing_extensions import TypeVar
 
 from ..context import Context
 from ..prompts import AsyncPrompt
-from ..responses import AsyncStream, ContextResponse
+from ..responses import AsyncStream, Response
 from .base_context_call import BaseContextCall
 
 P = ParamSpec("P")
@@ -20,13 +20,13 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT]):
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> ContextResponse[DepsT]:
+    ) -> Response:
         """Generates a response using the LLM asynchronously."""
         raise NotImplementedError()
 
     async def call_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> ContextResponse[DepsT]:
+    ) -> Response:
         """Generates an asynchronous response using the LLM."""
         return await self(ctx, *args, **kwargs)
 

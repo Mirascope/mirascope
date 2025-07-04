@@ -4,17 +4,14 @@ from collections.abc import Sequence
 from typing import Any, TypeAlias
 
 from google.genai.types import ContentDict, FunctionResponse
+from typing_extensions import TypeVar
 
+from ..context import Context
 from ..messages import Message
 from ..models.base import BaseParams
 from ..responses import (
-    AsyncContextStream,
-    AsyncContextStructuredStream,
     AsyncStream,
     AsyncStructuredStream,
-    ContextResponse,
-    ContextStream,
-    ContextStructuredStream,
     Response,
     Stream,
     StructuredStream,
@@ -22,6 +19,9 @@ from ..responses import (
 from ..tools import ContextToolDef, ToolDef
 from .base import BaseClient
 from .register import GOOGLE_REGISTERED_LLMS
+
+T = TypeVar("T", bound=object | None, default=None)
+DepsT = TypeVar("DepsT", default=None)
 
 GoogleMessage: TypeAlias = Message | ContentDict | FunctionResponse
 
@@ -48,9 +48,10 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
+        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: GoogleParams | None = None,
-    ) -> ContextResponse:
+        ctx: Context[DepsT],
+    ) -> Response:
         raise NotImplementedError
 
     def structured_call(
@@ -59,9 +60,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type,
+        response_format: type[T],
         params: GoogleParams | None = None,
-    ) -> Response:
+    ) -> Response[T]:
         raise NotImplementedError
 
     def structured_context_call(
@@ -69,10 +70,11 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
-        response_format: type,
+        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        response_format: type[T],
         params: GoogleParams | None = None,
-    ) -> ContextResponse:
+        ctx: Context[DepsT],
+    ) -> Response[T]:
         raise NotImplementedError
 
     async def call_async(
@@ -90,9 +92,10 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
+        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: GoogleParams | None = None,
-    ) -> ContextResponse:
+        ctx: Context[DepsT],
+    ) -> Response:
         raise NotImplementedError
 
     async def structured_call_async(
@@ -101,9 +104,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type,
+        response_format: type[T],
         params: GoogleParams | None = None,
-    ) -> Response:
+    ) -> Response[T]:
         raise NotImplementedError
 
     async def structured_context_call_async(
@@ -111,10 +114,11 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
-        response_format: type,
+        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        response_format: type[T],
         params: GoogleParams | None = None,
-    ) -> ContextResponse:
+        ctx: Context[DepsT],
+    ) -> Response[T]:
         raise NotImplementedError
 
     def stream(
@@ -132,9 +136,10 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
+        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: GoogleParams | None = None,
-    ) -> ContextStream:
+        ctx: Context[DepsT],
+    ) -> Stream:
         raise NotImplementedError
 
     def structured_stream(
@@ -143,9 +148,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type,
+        response_format: type[T],
         params: GoogleParams | None = None,
-    ) -> StructuredStream:
+    ) -> StructuredStream[T]:
         raise NotImplementedError
 
     def structured_context_stream(
@@ -153,10 +158,11 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
-        response_format: type,
+        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        response_format: type[T],
         params: GoogleParams | None = None,
-    ) -> ContextStructuredStream:
+        ctx: Context[DepsT],
+    ) -> StructuredStream[T]:
         raise NotImplementedError
 
     async def stream_async(
@@ -174,9 +180,10 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
+        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: GoogleParams | None = None,
-    ) -> AsyncContextStream:
+        ctx: Context[DepsT],
+    ) -> AsyncStream:
         raise NotImplementedError
 
     async def structured_stream_async(
@@ -185,9 +192,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type,
+        response_format: type[T],
         params: GoogleParams | None = None,
-    ) -> AsyncStructuredStream:
+    ) -> AsyncStructuredStream[T]:
         raise NotImplementedError
 
     async def structured_context_stream_async(
@@ -195,8 +202,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, Any]],
-        response_format: type,
+        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        response_format: type[T],
         params: GoogleParams | None = None,
-    ) -> AsyncContextStructuredStream:
+        ctx: Context[DepsT],
+    ) -> AsyncStructuredStream[T]:
         raise NotImplementedError
