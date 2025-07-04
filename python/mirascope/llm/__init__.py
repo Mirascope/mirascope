@@ -68,6 +68,7 @@ from .responses import Response
 from .streams import (
     AsyncStream,
     AsyncStructuredStream,
+    BaseStream,
     Stream,
     StructuredStream,
 )
@@ -90,6 +91,7 @@ __all__ = [
     "BadRequestError",
     "BaseClient",
     "BaseParams",
+    "BaseStream",
     "Call",
     "ConnectionError",
     "Content",

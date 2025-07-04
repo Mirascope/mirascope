@@ -1,15 +1,12 @@
-"""Interface for streaming responses asynchronously from LLMs.
-
-TODO: this interface is missing stuff from v1 like usage etc. that we collect during
-the stream for convenience (e.g. calling stream.cost after the stream is done).
-"""
+"""Interface for streaming responses asynchronously from LLMs."""
 
 from collections.abc import AsyncIterator
 
 from ..content import ContentChunk
+from .stream import BaseStream
 
 
-class AsyncStream:
+class AsyncStream(BaseStream):
     """An asynchronous stream of response chunks from an LLM.
 
     This class supports async iteration to process chunks as they arrive from the model.
