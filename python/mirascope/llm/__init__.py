@@ -15,6 +15,7 @@ from . import (
     prompts,
     response_formatting,
     responses,
+    streams,
     tools,
     types,
 )
@@ -63,10 +64,10 @@ from .models import LLM, model
 from .prompts import prompt
 from .response_formatting import ResponseFormat
 from .response_formatting.decorator import response_format
-from .responses import (
+from .responses import Response
+from .streams import (
     AsyncStream,
     AsyncStructuredStream,
-    Response,
     Stream,
     StructuredStream,
 )
@@ -135,6 +136,7 @@ __all__ = [
     "response_format",
     "response_formatting",
     "responses",
+    "streams",
     "tool",
     "tools",
     "types",

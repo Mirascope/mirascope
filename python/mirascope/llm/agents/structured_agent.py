@@ -6,9 +6,9 @@ from dataclasses import dataclass
 from typing_extensions import TypeVar
 
 from ..content import Content
-from ..responses import (
+from ..responses import Response
+from ..streams import (
     AsyncStructuredStream,
-    Response,
     StructuredStream,
 )
 from .base_structured_agent import (

@@ -6,7 +6,8 @@ from typing import ParamSpec
 from typing_extensions import TypeVar
 
 from ..prompts import AsyncPrompt
-from ..responses import AsyncStructuredStream, Response
+from ..responses import Response
+from ..streams import AsyncStructuredStream
 from .base_structured_call import BaseStructuredCall
 
 P = ParamSpec("P")

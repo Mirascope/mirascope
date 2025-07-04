@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from typing import ParamSpec
 
 from ..prompts import Prompt
-from ..responses import AsyncStream, Response, Stream
+from ..responses import Response
+from ..streams import AsyncStream, Stream
 from .base_call import BaseCall
 
 P = ParamSpec("P")

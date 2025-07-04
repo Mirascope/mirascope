@@ -9,10 +9,10 @@ from typing_extensions import TypeVar
 from ..context import Context
 from ..messages import Message
 from ..models.base import BaseParams
-from ..responses import (
+from ..responses import Response
+from ..streams import (
     AsyncStream,
     AsyncStructuredStream,
-    Response,
     Stream,
     StructuredStream,
 )

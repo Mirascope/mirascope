@@ -7,7 +7,8 @@ from typing_extensions import TypeVar
 
 from ..context import Context
 from ..prompts import Prompt
-from ..responses import AsyncStructuredStream, Response, StructuredStream
+from ..responses import Response
+from ..streams import AsyncStructuredStream, StructuredStream
 from .base_structured_context_call import BaseStructuredContextCall
 
 P = ParamSpec("P")
