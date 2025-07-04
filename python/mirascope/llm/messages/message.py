@@ -9,6 +9,34 @@ from typing import Literal
 from ..content import Content, Text
 
 
+def _promote_content(
+    input: str | Content | Sequence[str | Content],
+) -> Sequence[Content]:
+    """Promotes content (including strings) to a sequence of Content objects.
+
+    Args:
+        input: The input content, which can be a string, a Content object,
+               or a sequence of strings and/or Content objects.
+
+    Returns:
+        A sequence of Content objects.
+    """
+    if isinstance(input, str):
+        return [Text(text=input)]
+    elif isinstance(input, Content):
+        return [input]
+    elif isinstance(input, Sequence):
+        promoted_content = []
+        for item in input:
+            if isinstance(item, str):
+                promoted_content.append(Text(text=item))
+            else:
+                promoted_content.append(item)
+        return promoted_content
+    else:
+        raise TypeError(f"Unsupported input type for promotion: {type(input)}")
+
+
 @dataclass(kw_only=True)
 class Message:
     """A message in an LLM interaction.
@@ -55,7 +83,7 @@ def system(
     Returns:
         A Message with the system role.
     """
-    return Message(role="system", content=_promote(content), name=name)
+    return Message(role="system", content=_promote_content(content), name=name)
 
 
 def user(
@@ -73,7 +101,7 @@ def user(
     """
     if isinstance(content, str):
         content = Text(text=content)
-    return Message(role="user", content=_promote(content), name=name)
+    return Message(role="user", content=_promote_content(content), name=name)
 
 
 def assistant(
@@ -90,30 +118,4 @@ def assistant(
         A Message with the assistant role.
     """
 
-    return Message(role="assistant", content=_promote(content), name=name)
-
-
-def _promote(input: str | Content | Sequence[str | Content]) -> Sequence[Content]:
-    """Promotes content (including strings) to a sequence of Content objects.
-
-    Args:
-        input: The input content, which can be a string, a Content object,
-               or a sequence of strings and/or Content objects.
-
-    Returns:
-        A sequence of Content objects.
-    """
-    if isinstance(input, str):
-        return [Text(text=input)]
-    elif isinstance(input, Content):
-        return [input]
-    elif isinstance(input, Sequence):
-        promoted_content = []
-        for item in input:
-            if isinstance(item, str):
-                promoted_content.append(Text(text=item))
-            else:
-                promoted_content.append(item)
-        return promoted_content
-    else:
-        raise TypeError(f"Unsupported input type for promotion: {type(input)}")
+    return Message(role="assistant", content=_promote_content(content), name=name)
