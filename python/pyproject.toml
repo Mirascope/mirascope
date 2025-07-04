@@ -91,7 +91,7 @@ target-version = "py310"
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/*.py" = ["S101", "ANN"]
-"examples/*.{py}" = ["T201", "ANN"]
+"examples/*.{py}" = ["T201", "ANN", "B905"]
 "mirascope/graphs/*.{py}" = ["T201"]
 
 [tool.ruff.lint]
