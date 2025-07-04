@@ -71,14 +71,14 @@ Instead of using the shorthand functions, you can also construct the `Message` c
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/manual.py" lines="6-14" />
+<CodeExample file="examples/messages/manual.py" lines="6-18" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/manual.ts" lines="6-17" />
 </Tab>
 </TabbedSection>
 
-Both approaches create identical messages, so we recommend the shorthand functions for convenience.
+Both approaches create identical messages, but the shorthand functions allow you to provide strings without manual wrapping. We recommend them for convenience.
 
 </Note>
 
@@ -104,7 +104,7 @@ Messages can contain much more than just text. Modern LLMs support multimodal co
 
 | Content Type                                 | Anthropic | Google | OpenAI |
 | -------------------------------------------- | :-------: | :----: | :----: |
-| `str`                                        |     ✓     |   ✓    |   ✓    |
+| [`Text`](/docs/api/content#text)                                         |     ✓     |   ✓    |   ✓    |
 | [`Image`](/docs/api/content#image)           |     ✓     |   ✓    |   ✓    |
 | [`Audio`](/docs/api/content#audio)           |     —     |   ✓    |   ✓    |
 | [`Video`](/docs/api/content#video)           |     —     |   ✓    |   —    |
@@ -117,7 +117,7 @@ _TODO: Replace this with centralized compatibility table (#1031)_
 
 ### Text Content
 
-The most common type of content is text, represented as plain strings:
+The most common type of content is text. It's represented as an `llm.Text` for consistency, but our APIs will automatically wrap plain strings:
 
 <TabbedSection>
 <Tab value="Python">

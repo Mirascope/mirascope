@@ -1,7 +1,6 @@
-"""The `llm.messages.content` module."""
+from typing import TypeAlias
 
 from .audio import Audio
-from .content import Content
 from .document import Document
 from .image import Image
 from .text import Text
@@ -10,14 +9,7 @@ from .tool_call import ToolCall
 from .tool_output import ToolOutput
 from .video import Video
 
-__all__ = [
-    "Audio",
-    "Content",
-    "Document",
-    "Image",
-    "Text",
-    "Thinking",
-    "ToolCall",
-    "ToolOutput",
-    "Video",
-]
+Content: TypeAlias = (
+    Text | Image | Audio | Video | Document | ToolCall | ToolOutput | Thinking
+)
+"""Content types that can be included in messages."""
