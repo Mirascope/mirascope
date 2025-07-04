@@ -1,20 +1,17 @@
 """Interface for streaming responses from LLMs."""
 
 from collections.abc import Iterator
-from decimal import Decimal
-from typing import Generic
 
 from typing_extensions import TypeVar
 
-from .finish_reason import FinishReason
+from .base_stream import BaseStream
 from .response import Response
 from .stream_chunk import StreamChunk
-from .usage import Usage
 
 T = TypeVar("T", bound=object | None, default=None)
 
 
-class Stream(Generic[T]):
+class Stream(BaseStream[T]):
     """A synchronous stream of response chunks from an LLM.
 
     This class supports iteration to process chunks as they arrive from the model.
@@ -33,14 +30,6 @@ class Stream(Generic[T]):
         ```
     """
 
-    finish_reason: FinishReason | None
-    """The reason why the LLM finished generating a response, available after the stream completes."""
-
-    usage: Usage | None
-    """The token usage statistics reflecting all chunks processed so far. Updates as chunks are consumed."""
-
-    cost: Decimal | None
-    """The cost reflecting all chunks processed so far. Updates as chunks are consumed."""
 
     def __iter__(self) -> Iterator[StreamChunk[T]]:
         """Iterate through the chunks of the stream.

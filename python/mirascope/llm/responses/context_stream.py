@@ -3,9 +3,6 @@
 This module defines interfaces for streaming responses from language models that have
 contextual information or data, such as the history of messages and dependencies used to
 generate the response.
-
-TODO: this interface is missing stuff from v1 like usage etc. that we collect during
-the stream for convenience (e.g. calling stream.cost after the stream is done).
 """
 
 from collections.abc import Iterator
@@ -13,12 +10,14 @@ from typing import Generic
 
 from typing_extensions import TypeVar
 
+from .base_stream import BaseStream
 from .context_stream_chunk import ContextStreamChunk
 
 DepsT = TypeVar("DepsT", default=None)
+T = TypeVar("T", bound=object | None, default=None)
 
 
-class ContextStream(Generic[DepsT]):
+class ContextStream(BaseStream[T], Generic[DepsT, T]):
     """A synchronous stream of response chunks from an LLM with context.
 
     This class supports iteration to process chunks as they arrive from the model.
@@ -44,7 +43,7 @@ class ContextStream(Generic[DepsT]):
         ```
     """
 
-    def __iter__(self) -> Iterator[ContextStreamChunk[DepsT, None]]:
+    def __iter__(self) -> Iterator[ContextStreamChunk[DepsT, T]]:
         """Iterate through the chunks of the stream.
 
         Returns:

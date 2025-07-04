@@ -1,11 +1,13 @@
 """The `ContextStreamChunk` class for handling streamed chunks from contextual LLM calls."""
 
 from dataclasses import dataclass
-from typing import Generic
 
 from typing_extensions import TypeVar
 
 from ..context import Context
+from ..tools import ContextTool
+from ..types import Jsonable
+from .base_stream_chunk import BaseStreamChunk
 from .content import ContextResponseContent
 
 T = TypeVar("T", bound=object | None, default=None)
@@ -13,7 +15,7 @@ DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class ContextStreamChunk(Generic[DepsT, T]):
+class ContextStreamChunk(BaseStreamChunk[ContextResponseContent, ContextTool[..., Jsonable, DepsT], T]):
     """A chunk of a streaming response from a contextual LLM call.
 
     Context stream chunks represent incremental pieces of a response that are delivered
@@ -21,16 +23,5 @@ class ContextStreamChunk(Generic[DepsT, T]):
     with access to the context dependencies.
     """
 
-    content: ContextResponseContent
-    """The content in this chunk of the response."""
-
     ctx: Context[DepsT]
     """The context associated with this stream chunk."""
-
-    def format(self) -> T:
-        """Format the content of this chunk.
-
-        Returns:
-            The formatted content of this chunk.
-        """
-        raise NotImplementedError()
