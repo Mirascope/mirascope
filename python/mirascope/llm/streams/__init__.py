@@ -2,7 +2,8 @@
 
 from .async_stream import AsyncStream
 from .async_structured_stream import AsyncStructuredStream
-from .stream import BaseStream, Stream
+from .base import BaseStream
+from .stream import Stream
 from .structured_stream import StructuredStream
 
 __all__ = [
