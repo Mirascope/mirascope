@@ -7,7 +7,7 @@ from typing_extensions import TypeVar
 
 from ..context import Context
 from ..prompts import Prompt
-from ..responses import AsyncStructuredStream, ContextResponse, StructuredStream
+from ..responses import AsyncStructuredStream, Response, StructuredStream
 from .base_structured_context_call import BaseStructuredContextCall
 
 P = ParamSpec("P")
@@ -21,13 +21,13 @@ class StructuredContextCall(BaseStructuredContextCall[P, Prompt, T, DepsT]):
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> ContextResponse[DepsT, T]:
+    ) -> Response[T]:
         """Generates a structured response using the LLM."""
         raise NotImplementedError()
 
     async def call_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> ContextResponse[DepsT, T]:
+    ) -> Response[T]:
         """Generates an asynchronous structured response using the LLM."""
         raise NotImplementedError()
 
