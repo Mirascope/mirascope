@@ -241,7 +241,12 @@ def create_tool_from_mcp_tool(tool: MCPTool) -> type[BaseTool]:
 
         fields[field_name] = (field_type, Field(**field_info))
 
-    return create_model(snake_to_pascal(tool.name), __base__=BaseTool, **fields)
+    return create_model(
+        snake_to_pascal(tool.name),
+        __base__=BaseTool,
+        __doc__=tool.description,
+        **fields,
+    )
 
 
 @asynccontextmanager
