@@ -13,6 +13,9 @@
     "lint": "bun run codespell && bun run lint:python && bun run lint:typescript",
     "lint:python": "cd python && uv sync --all-extras --dev && uv run ruff check . && uv run pyright .",
     "lint:typescript": "cd typescript && bun i && bun run lint",
+    "fix": "bun run fix:python && bun run fix:typescript",
+    "fix:python": "cd python && uv run ruff check --fix .",
+    "fix:typescript": "cd typescript && bun i && bun run fix",
     "prepare": "husky"
   },
   "lint-staged": {

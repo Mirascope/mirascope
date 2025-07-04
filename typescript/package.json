@@ -10,6 +10,7 @@
     "lint:eslint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "fix": "bun run format && bun run lint:eslint:fix",
     "test": "bun run --cwd mirascope test"
   },
   "workspaces": [
