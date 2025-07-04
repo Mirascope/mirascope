@@ -6,7 +6,7 @@ the stream for convenience (e.g. calling stream.cost after the stream is done).
 
 from collections.abc import AsyncIterator
 
-from .stream_chunk import StreamChunk
+from ..content import ContentChunk
 
 
 class AsyncStream:
@@ -28,10 +28,10 @@ class AsyncStream:
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[StreamChunk]:
+    def __aiter__(self) -> AsyncIterator[ContentChunk]:
         """Iterate through the chunks of the stream asynchronously.
 
         Returns:
-            An async iterator yielding StreamChunk objects.
+            An async iterator yielding ContentChunk objects.
         """
         raise NotImplementedError()

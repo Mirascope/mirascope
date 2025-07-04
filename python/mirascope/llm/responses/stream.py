@@ -6,7 +6,7 @@ the stream for convenience (e.g. calling stream.cost after the stream is done).
 
 from collections.abc import Iterator
 
-from .stream_chunk import StreamChunk
+from ..content import ContentChunk
 
 
 class Stream:
@@ -28,10 +28,10 @@ class Stream:
         ```
     """
 
-    def __iter__(self) -> Iterator[StreamChunk]:
+    def __iter__(self) -> Iterator[ContentChunk]:
         """Iterate through the chunks of the stream.
 
         Returns:
-            An iterator yielding StreamChunk objects.
+            An iterator yielding ContentChunk objects.
         """
         raise NotImplementedError()
