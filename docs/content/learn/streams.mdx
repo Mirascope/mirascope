@@ -47,7 +47,7 @@ You can convert a stream to a standard response using the `stream.to_response()`
 
 ### Monitoring Stream Usage & Cost
 
-Each chunk provides `usage` and `cost` properties which give token usage and cost for that chunk (if available). The stream also keeps track of its running total `usage` and `cost`, as shown below:
+Each chunk provides `usage` and `cost` properties that give token usage and cost for that chunk (if available). The stream also keeps track of its running total `usage` and `cost`, as shown below:
 
 <CodeExample file="examples/streams/usage_and_cost.py" />
 
@@ -57,11 +57,11 @@ Error handling in streams is similar to [standard calls](/docs/learn/calls#error
 
 <CodeExample file="examples/streams/error_handling.py" />
 
-Note how we wrap the iteration loop in a try/except block to catch any errors that might occur during streaming. The initial response when calling `.stream()` will return an iterable, but any errors that may occur during streaming will not happen until you actually iterate through it.
+Note how we wrap the iteration loop in a try/except block to catch any errors that might occur during streaming. The initial response when calling `.stream()` will return an iterable, but any errors that occur during streaming will not happen until you actually iterate through it.
 
 ## Async Streams
 
-Async streams operate similarly to [async calls](/docs/learn/calls#async-calls). The simplest approach is to decorate an async function with `call`, and then call the `stream()` method. This returns an `llm.AsyncStream` that you can iterate over with `async for`:
+Async streams operate similarly to [async calls](/docs/learn/calls#async-calls). The simplest approach is to decorate an async function with `call` and then call the `stream()` method. This returns an `llm.AsyncStream` that you can iterate over with `async for`:
 
 <TabbedSection>
 <Tab value="Python">
