@@ -1,15 +1,13 @@
-"""Interface for streaming responses from LLMs.
+"""Interface for streaming responses from LLMs."""
 
-TODO: this interface is missing stuff from v1 like usage etc. that we collect during
-the stream for convenience (e.g. calling stream.cost after the stream is done).
-"""
+from typing_extensions import TypeVar
 
-from collections.abc import Iterator
+from .base_stream import BaseSyncStream
 
-from .stream_chunk import StreamChunk
+T = TypeVar("T", bound=object | None, default=None)
 
 
-class Stream:
+class Stream(BaseSyncStream[T]):
     """A synchronous stream of response chunks from an LLM.
 
     This class supports iteration to process chunks as they arrive from the model.
@@ -28,10 +26,4 @@ class Stream:
         ```
     """
 
-    def __iter__(self) -> Iterator[StreamChunk]:
-        """Iterate through the chunks of the stream.
 
-        Returns:
-            An iterator yielding StreamChunk objects.
-        """
-        raise NotImplementedError()

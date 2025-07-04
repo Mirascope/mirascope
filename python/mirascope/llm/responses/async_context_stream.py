@@ -3,22 +3,19 @@
 This module defines interfaces for streaming responses asynchronously from language models
 that have contextual information or data, such as the history of messages and dependencies
 used to generate the response.
-
-TODO: this interface is missing stuff from v1 like usage etc. that we collect during
-the stream for convenience (e.g. calling stream.cost after the stream is done).
 """
 
-from collections.abc import AsyncIterator
 from typing import Generic
 
 from typing_extensions import TypeVar
 
-from .context_stream_chunk import ContextStreamChunk
+from .base_stream import BaseAsyncStream
 
 DepsT = TypeVar("DepsT", default=None)
+T = TypeVar("T", bound=object | None, default=None)
 
 
-class AsyncContextStream(Generic[DepsT]):
+class AsyncContextStream(BaseAsyncStream[T], Generic[DepsT, T]):
     """An asynchronous stream of response chunks from an LLM with context.
 
     This class supports async iteration to process chunks as they arrive from the model.
@@ -44,10 +41,3 @@ class AsyncContextStream(Generic[DepsT]):
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[ContextStreamChunk[DepsT, None]]:
-        """Iterate through the chunks of the stream asynchronously.
-
-        Returns:
-            An async iterator yielding ContextStreamChunk objects.
-        """
-        raise NotImplementedError()
