@@ -14,7 +14,7 @@ def audio_prompt(audio: llm.Audio) -> llm.Content:
 
 def multimodal_prompt(
     audio: llm.Audio, image: llm.Image, video: llm.Video, documents: list[llm.Document]
-) -> list[llm.Content]:
+) -> list[llm.Content | str]:
     return [
         "Analyze the following audio",
         audio,
@@ -47,7 +47,9 @@ def summarization_prompt(query: str, history: list[llm.Message]) -> list[llm.Mes
     ]
 
 
-def content_sequence_prompt(genre: str, book_cover: llm.Image) -> list[llm.Content]:
+def content_sequence_prompt(
+    genre: str, book_cover: llm.Image
+) -> list[llm.Content | str]:
     return [
         f"Please recommend a {genre} book, with similar themes to the book in this image:",
         book_cover,
