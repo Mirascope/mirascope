@@ -59,6 +59,42 @@ Error handling in streams is similar to [standard calls](/docs/learn/calls#error
 
 Note how we wrap the iteration loop in a try/except block to catch any errors that might occur during streaming. The initial response when calling `.stream()` will return an iterable, but any errors that may occur during streaming will not happen until you actually iterate through it.
 
+## Async Streams
+
+Async streams operate similarly to [async calls](/docs/learn/calls#async-calls). The simplest approach is to decorate an async function with `call`, and then call the `stream()` method. This returns an `llm.AsyncStream` that you can iterate over with `async for`:
+
+<TabbedSection>
+<Tab value="Python">
+<CodeExample file="examples/streams/async_basic.py" />
+</Tab>
+</TabbedSection>
+
+If you have a synchronous call definition, you can use the `stream_async()` method to get an async stream:
+
+<TabbedSection>
+<Tab value="Python">
+<CodeExample file="examples/streams/async_stream_method.py" />
+</Tab>
+</TabbedSection>
+
+Note that converting an async stream to a response is an async operation:
+
+<TabbedSection>
+<Tab value="Python">
+<CodeExample file="examples/streams/async_stream_response.py" />
+</Tab>
+</TabbedSection>
+
+### Async Stream Properties and Methods
+
+`llm.AsyncStream` has the same properties and methods as `llm.Stream`, including:
+
+- `finish_reason`, `usage`, and `cost` properties that are populated as the stream is consumed
+- The same error handling patterns apply to async streams
+- All the same chunk properties and accessor methods are available
+
+The main difference is that you use `async for` instead of `for` to iterate through the chunks, and that `to_response` is async.
+
 ## Chunk Properties and Methods
 
 All `llm.StreamChunk` objects share common properties for accessing content and metadata:
