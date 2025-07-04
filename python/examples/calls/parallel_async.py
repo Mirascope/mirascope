@@ -13,7 +13,7 @@ async def main():
     tasks = [recommend_book(genre) for genre in genres]
     results = await asyncio.gather(*tasks)  # [!code highlight]
 
-    for genre, response in zip(genres, results):
+    for genre, response in zip(genres, results, strict=True):
         print(f"({genre}):\n{response}\n")
 
 

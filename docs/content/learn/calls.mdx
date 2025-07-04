@@ -214,9 +214,14 @@ Async calls are useful when you need non-blocking operations or want to make mul
 
 <CodeExample file="examples/calls/async.py" />
 
-If you wish, you can also define the call as usual, and then use the `call_async` method on the call. This can be helpful if you want to use the same call in synchronous and asynchronous settings.
+
+You can also define the call as usual, and then use the `call_async` method on the call. This can be helpful if you want to use the same call in synchronous and asynchronous settings.
 
 <CodeExample file="examples/calls/call_async.py" />
+
+<Note>
+The main reason to define the prompt as `async` is if the prompt itself needs to do something asynchronously. Otherwise, we recommend defining the prompt synchronously, and using `call_async` when you want async execution, as this approach gives you the flexibility to choose sync/async at call time.
+</Note>
 
 ### Parallel Async Calls 
 
