@@ -38,6 +38,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
     """
 
     model: REGISTERED_LLMS
+    """The model being used (e.g. `openai:gpt-4o-mini`)"""
 
     params: ParamsT
     """The default parameters for the model (temperature, max_tokens, etc.)."""
@@ -53,7 +54,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         params: ParamsT | None = None,
         client: ClientT | None = None,
     ) -> None:
-        """Initializes a `LLM` instance."""
+        """Initializes an `LLM` instance."""
         ...
 
     @overload

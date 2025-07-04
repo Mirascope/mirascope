@@ -48,11 +48,11 @@ class AnthropicClient(
     def context_call(
         self,
         *,
+        ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: AnthropicParams | None = None,
-        ctx: Context[DepsT],
     ) -> Response:
         raise NotImplementedError
 
@@ -70,12 +70,12 @@ class AnthropicClient(
     def structured_context_call(
         self,
         *,
+        ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
         params: AnthropicParams | None = None,
-        ctx: Context[DepsT],
     ) -> Response[T]:
         raise NotImplementedError
 
@@ -92,11 +92,11 @@ class AnthropicClient(
     async def context_call_async(
         self,
         *,
+        ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: AnthropicParams | None = None,
-        ctx: Context[DepsT],
     ) -> Response:
         raise NotImplementedError
 
@@ -114,12 +114,12 @@ class AnthropicClient(
     async def structured_context_call_async(
         self,
         *,
+        ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
         params: AnthropicParams | None = None,
-        ctx: Context[DepsT],
     ) -> Response[T]:
         raise NotImplementedError
 
@@ -136,11 +136,11 @@ class AnthropicClient(
     def context_stream(
         self,
         *,
+        ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: AnthropicParams | None = None,
-        ctx: Context[DepsT],
     ) -> Stream:
         raise NotImplementedError
 
@@ -158,12 +158,12 @@ class AnthropicClient(
     def structured_context_stream(
         self,
         *,
+        ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
         params: AnthropicParams | None = None,
-        ctx: Context[DepsT],
     ) -> StructuredStream[T]:
         raise NotImplementedError
 
@@ -180,11 +180,11 @@ class AnthropicClient(
     async def context_stream_async(
         self,
         *,
+        ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: AnthropicParams | None = None,
-        ctx: Context[DepsT],
     ) -> AsyncStream:
         raise NotImplementedError
 
@@ -202,11 +202,11 @@ class AnthropicClient(
     async def structured_context_stream_async(
         self,
         *,
+        ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[T],
         params: AnthropicParams | None = None,
-        ctx: Context[DepsT],
     ) -> AsyncStructuredStream[T]:
         raise NotImplementedError
