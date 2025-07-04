@@ -208,6 +208,27 @@ Mirascope defines the following exception types:
 
 <CodeExample file="examples/calls/exceptions.py" />
 
+## Async Calls
+
+Async calls are useful when you need non-blocking operations or want to make multiple LLM calls concurrently. To make a call async, simply define the function as `async` and use the `await` keyword when calling it. Here's an example, using `asyncio` to start the asynchronous event loop and run the main function:
+
+<CodeExample file="examples/calls/async.py" />
+
+
+You can also define the call as usual, and then use the `call_async` method on the call. This can be helpful if you want to use the same call in synchronous and asynchronous settings.
+
+<CodeExample file="examples/calls/call_async.py" />
+
+<Note>
+The main reason to define the prompt as `async` is if the prompt itself needs to do something asynchronously. Otherwise, we recommend defining the prompt synchronously, and using `call_async` when you want async execution, as this approach gives you the flexibility to choose sync/async at call time.
+</Note>
+
+### Parallel Async Calls 
+
+One of the main benefits of asynchronous programming is the ability to run multiple operations concurrently. Here's an example of making parallel async calls, using `asyncio.gather` for concurrent execution:
+
+<CodeExample file="examples/calls/parallel_async.py" />
+
 
 ## Next Steps
 
