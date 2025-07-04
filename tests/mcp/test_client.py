@@ -188,6 +188,7 @@ def test_build_object_type_full():
 def test_create_model_from_tool_extra():
     tool = Tool(
         name="extra_tool",
+        description="A tool for testing",
         inputSchema={
             "type": "object",
             "properties": {
@@ -205,6 +206,8 @@ def test_create_model_from_tool_extra():
     instance = Model(req_arr=[1, 2, 3])  # pyright: ignore [reportCallIssue]
     assert instance.req_arr == [1, 2, 3]  # pyright: ignore [reportAttributeAccessIssue]
     assert instance.opt_str is _UNSET  # pyright: ignore [reportAttributeAccessIssue]
+    assert instance._name() == snake_to_pascal(tool.name)
+    assert instance._description() == tool.description
 
 
 def test_convert_prompt_message_all_content_types():
