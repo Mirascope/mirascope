@@ -1,16 +1,13 @@
 """Interface for streaming responses asynchronously from LLMs."""
 
-from collections.abc import AsyncIterator
-
 from typing_extensions import TypeVar
 
-from .base_stream import BaseStream
-from .stream_chunk import StreamChunk
+from .base_stream import BaseAsyncStream
 
 T = TypeVar("T", bound=object | None, default=None)
 
 
-class AsyncStream(BaseStream[T]):
+class AsyncStream(BaseAsyncStream[T]):
     """An asynchronous stream of response chunks from an LLM.
 
     This class supports async iteration to process chunks as they arrive from the model.
@@ -29,10 +26,3 @@ class AsyncStream(BaseStream[T]):
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[StreamChunk[T]]:
-        """Iterate through the chunks of the stream asynchronously.
-
-        Returns:
-            An async iterator yielding StreamChunk objects.
-        """
-        raise NotImplementedError()

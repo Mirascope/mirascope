@@ -5,19 +5,17 @@ that have contextual information or data, such as the history of messages and de
 used to generate the response.
 """
 
-from collections.abc import AsyncIterator
 from typing import Generic
 
 from typing_extensions import TypeVar
 
-from .base_stream import BaseStream
-from .context_stream_chunk import ContextStreamChunk
+from .base_stream import BaseAsyncStream
 
 DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", bound=object | None, default=None)
 
 
-class AsyncContextStream(BaseStream[T], Generic[DepsT, T]):
+class AsyncContextStream(BaseAsyncStream[T], Generic[DepsT, T]):
     """An asynchronous stream of response chunks from an LLM with context.
 
     This class supports async iteration to process chunks as they arrive from the model.
@@ -43,10 +41,3 @@ class AsyncContextStream(BaseStream[T], Generic[DepsT, T]):
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[ContextStreamChunk[DepsT, T]]:
-        """Iterate through the chunks of the stream asynchronously.
-
-        Returns:
-            An async iterator yielding ContextStreamChunk objects.
-        """
-        raise NotImplementedError()

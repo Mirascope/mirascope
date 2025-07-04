@@ -5,19 +5,17 @@ contextual information or data, such as the history of messages and dependencies
 generate the response.
 """
 
-from collections.abc import Iterator
 from typing import Generic
 
 from typing_extensions import TypeVar
 
-from .base_stream import BaseStream
-from .context_stream_chunk import ContextStreamChunk
+from .base_stream import BaseSyncStream
 
 DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", bound=object | None, default=None)
 
 
-class ContextStream(BaseStream[T], Generic[DepsT, T]):
+class ContextStream(BaseSyncStream[T], Generic[DepsT, T]):
     """A synchronous stream of response chunks from an LLM with context.
 
     This class supports iteration to process chunks as they arrive from the model.
@@ -43,10 +41,3 @@ class ContextStream(BaseStream[T], Generic[DepsT, T]):
         ```
     """
 
-    def __iter__(self) -> Iterator[ContextStreamChunk[DepsT, T]]:
-        """Iterate through the chunks of the stream.
-
-        Returns:
-            An iterator yielding ContextStreamChunk objects.
-        """
-        raise NotImplementedError()
