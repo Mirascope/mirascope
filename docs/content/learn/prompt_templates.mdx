@@ -269,8 +269,8 @@ Here's a quick reference of the special syntax options in prompt templates:
 | ------ | ------- | ------- |
 | `{{ variable }}` | Variable substitution | `{{ genre }}`, `{{ age }}` |
 | `{{ obj.property }}` | Property access | `{{ book.title }}`, `{{ user.name }}` |
-| `{{ content:image }}` | Single media content | `{{ photo:image }}`, `{{ recording:audio }}` |
-| `{{ content:images }}` | Multiple media content | `{{ photos:images }}` |
+| `{{ content:type }}` | Single media content | `{{ photo:image }}`, `{{ recording:audio }}`, `{{ file:document }}` |
+| `{{ content:types }}` | Multiple media content | `{{ photos:images }}`, `{{ recordings:audios }}`, `{{ files:documents }}` |
 | `[SYSTEM]` | System message section | `[SYSTEM] You are a helpful assistant.` |
 | `[USER]` | User message section | `[USER] Please help me with...` |
 | `[ASSISTANT]` | Assistant message section | `[ASSISTANT] I'd be happy to help!` |
