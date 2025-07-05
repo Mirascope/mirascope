@@ -27,7 +27,5 @@ class ImageChunk:
     id: str | None = None
     """A unique identifier for this image content. This is useful for tracking and referencing generated images."""
 
-    partial: bytes
-
-
-"""The progressive image data for this rendering stage."""
+    partial: str
+    """The progressive image data for this rendering stage as a base64 encoded string."""

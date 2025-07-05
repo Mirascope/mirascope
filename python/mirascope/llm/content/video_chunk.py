@@ -26,5 +26,5 @@ class VideoChunk:
     id: str | None = None
     """A unique identifier for this series of chunks, if available."""
 
-    partial: bytes
-    """The accumulated video data in this chunk."""
+    partial: str
+    """The accumulated video data in this chunk as a base64 encoded string."""

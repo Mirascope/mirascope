@@ -23,8 +23,8 @@ class AudioChunk:
     id: str | None = None
     """A unique identifier for this series of chunks, if available."""
 
-    delta: bytes
-    """The incremental audio in this chunk."""
+    delta: str
+    """The incremental audio in this chunk as a base64 encoded string."""
 
-    partial: bytes
-    """The accumulated audio data in this series of chunks."""
+    partial: str
+    """The accumulated audio data in this series of chunks as a base64 encoded string."""
