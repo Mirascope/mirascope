@@ -316,10 +316,10 @@ def prompt(
     - [MESSAGES] indicates the next variable contains a list of messages to include
     - `{{ variable }}` injects the variable as a string, unless annotated
     - Annotations: `{{ variable:annotation }}` where annotation is one of:
-        image, images, audio, audios, video, videos, document, documents
-    - Single content annotations (image, audio, video, document) expect a file path,
+        image, images, audio, audios, document, documents
+    - Single content annotations (image, audio, document) expect a file path,
         URL, base64 string, or bytes, which becomes a content part with inferred mime-type
-    - Multiple content annotations (images, audios, videos, documents) expect a list
+    - Multiple content annotations (images, audios, documents) expect a list
         of strings or bytes, each becoming a content part with inferred mime-type
 
     Examples:

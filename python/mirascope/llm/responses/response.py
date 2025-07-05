@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, Generic
 
 from typing_extensions import TypeVar
 
-from ..content import Audio, Content, Image, Text, Thinking, ToolCall, Video
+from ..content import Audio, Content, Image, Text, Thinking, ToolCall
 from ..messages import Message
 from .finish_reason import FinishReason
 from .usage import Usage
@@ -55,9 +55,6 @@ class Response(Generic[T]):
     audios: Sequence[Audio]
     """The audio content in the generated response, if any."""
 
-    videos: Sequence[Video]
-    """The video content in the generated response, if any."""
-
     thinkings: Sequence[Thinking]
     """The thinking content in the generated response, if any."""
 
@@ -91,11 +88,6 @@ class Response(Generic[T]):
     @property
     def audio(self) -> Audio | None:
         """Returns the first audio in the response content, if any."""
-        raise NotImplementedError()
-
-    @property
-    def video(self) -> Video | None:
-        """Returns the first video in the response content, if any."""
         raise NotImplementedError()
 
     @property

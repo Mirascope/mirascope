@@ -7,10 +7,10 @@ from collections.abc import Sequence
 from typing import Any, Generic, TypedDict, TypeVar
 
 from ..context import Context
-from ..responses import (
+from ..responses import Response
+from ..streams import (
     AsyncStream,
     AsyncStructuredStream,
-    Response,
     Stream,
     StructuredStream,
 )

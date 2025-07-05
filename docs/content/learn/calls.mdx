@@ -33,12 +33,11 @@ While strings are the most common case, a prompt can return any valid `llm.Conte
 
 <Info title="Refresher on content types" collapsible={true} defaultOpen={false}>
 
-Mirascope supports [8 different content types](/docs/learn/messages#message-content-types), which includes things like tool calls that you likely won't specify in the prompt. For purposes of writing prompts, besides strings, you likely want images, audio, video, and documents. Content support varies by provider, so be sure to take a look at our [compatibility reference](/docs/compatibility).
+Mirascope supports [7 different content types](/docs/learn/messages#message-content-types), which includes things like tool calls that you likely won't specify in the prompt. For purposes of writing prompts, besides strings, you likely want images, audio, and documents. Content support varies by provider, so be sure to take a look at our [compatibility reference](/docs/compatibility).
 
 - str (automatically converted to [Text](/docs/api/content#text))
 - [Image](/docs/api/content#image)
 - [Audio](/docs/api/content#audio)
-- [Video](/docs/api/content#video)
 - [Document](/docs/api/content#document)
 
 </Info>
@@ -152,8 +151,6 @@ When getting a multi-media response, it will consist of multiple content parts. 
 | `images` | Sequence[[Image](/docs/api/content#image)] | All image content (empty sequence if none). |
 | `audio` | [Audio](/docs/api/content#audio) \| None | Returns the first audio in the response content, if any. |
 | `audios` | Sequence[[Audio](/docs/api/content#audio)] | All audio content (empty sequence if none). |
-| `video` | [Video](/docs/api/content#video) \| None | Returns the first video in the response content, if any. |
-| `videos` | Sequence[[Video](/docs/api/content#video)] | All video content (empty sequence if none). |
 | `tool` | [Tool](/docs/api/tools#tool) \| [ContextTool](/docs/api/tools#contexttool) \| None | Returns the first tool called by the LLM, if any. See our [Tools guide](/docs/learn/tools) for details. |
 | `tools` | Sequence[[Tool](/docs/api/tools#tool)] \| Sequence[[ContextTool](/docs/api/tools#contexttool)] | All tools called by the LLM (empty sequence if none). See our [Tools guide](/docs/learn/tools) for details. |
 | `thinking` | [Thinking](/docs/api/content#thinking) \| None | Returns the first thinking content in the response, if any. |

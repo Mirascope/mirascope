@@ -13,15 +13,13 @@ def audio_prompt(audio: llm.Audio) -> llm.Content:
 
 
 def multimodal_prompt(
-    audio: llm.Audio, image: llm.Image, video: llm.Video, documents: list[llm.Document]
+    audio: llm.Audio, image: llm.Image, documents: list[llm.Document]
 ) -> list[str | llm.Content]:
     return [
         "Analyze the following audio",
         audio,
         "and the following image",
         image,
-        "and the following video",
-        video,
         "and all of the following documents",
         *documents,
         "and then recommend a book based on the themes",

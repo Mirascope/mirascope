@@ -1,15 +1,12 @@
-"""Interface for streaming responses from LLMs.
-
-TODO: this interface is missing stuff from v1 like usage etc. that we collect during
-the stream for convenience (e.g. calling stream.cost after the stream is done).
-"""
+"""Interface for streaming responses from LLMs."""
 
 from collections.abc import Iterator
 
-from .stream_chunk import StreamChunk
+from ..content import StreamedContent
+from .base import BaseStream
 
 
-class Stream:
+class Stream(BaseStream):
     """A synchronous stream of response chunks from an LLM.
 
     This class supports iteration to process chunks as they arrive from the model.
@@ -23,15 +20,15 @@ class Stream:
             return f"Answer this question: {question}"
 
         stream = answer_question.stream("What is the capital of France?")
-        for chunk in stream:
+    for chunk in stream:
             print(chunk.content, end="", flush=True)
         ```
     """
 
-    def __iter__(self) -> Iterator[StreamChunk]:
+    def __iter__(self) -> Iterator[StreamedContent]:
         """Iterate through the chunks of the stream.
 
         Returns:
-            An iterator yielding StreamChunk objects.
+            An iterator yielding ContentChunk objects.
         """
         raise NotImplementedError()

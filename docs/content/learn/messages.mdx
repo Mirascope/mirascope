@@ -100,20 +100,16 @@ shorthand function. The name is useful when there are multiple participants in a
 
 ## Message Content Types
 
-Messages can contain much more than just text. Modern LLMs support multimodal content, allowing you to include multiple media types in a conversation, or even within a single message. Mirascope allows 8 different content types, although support may vary depending on your chosen provider.
+Messages can contain much more than just text. Modern LLMs support multimodal content, allowing you to include multiple media types in a conversation, or even within a single message. Mirascope supports 7 different content types, although [support varies depending on your chosen provider](/docs/compatibility).
 
-| Content Type                                 | Anthropic | Google | OpenAI |
-| -------------------------------------------- | :-------: | :----: | :----: |
-| [`Text`](/docs/api/content#text)                                         |     ✓     |   ✓    |   ✓    |
-| [`Image`](/docs/api/content#image)           |     ✓     |   ✓    |   ✓    |
-| [`Audio`](/docs/api/content#audio)           |     —     |   ✓    |   ✓    |
-| [`Video`](/docs/api/content#video)           |     —     |   ✓    |   —    |
-| [`Document`](/docs/api/content#document)     |     ✓     |   ✓    |   ✓    |
-| [`Thinking`](/docs/api/content#thinking)     |     ✓     |   ✓    |   ✓    |
-| [`ToolCall`](/docs/api/content#toolcall)     |     ✓     |   ✓    |   ✓    |
-| [`ToolOutput`](/docs/api/content#tooloutput) |     ✓     |   ✓    |   ✓    |
+- [`Text`](/docs/api/content#text)
+- [`Image`](/docs/api/content#image)
+- [`Audio`](/docs/api/content#audio)
+- [`Document`](/docs/api/content#document)
+- [`Thinking`](/docs/api/content#thinking)
+- [`ToolCall`](/docs/api/content#toolcall)
+- [`ToolOutput`](/docs/api/content#tooloutput) 
 
-_TODO: Replace this with centralized compatibility table (#1031)_
 
 ### Text Content
 
@@ -130,7 +126,7 @@ The most common type of content is text. It's represented as an `llm.Text` for c
 
 ### Media Content
 
-Depending on provider support, you can supply `Image`, `Audio`, or even `Video` content.
+[Depending on provider support](/docs/compatibility), you can supply `Image` or `Audio` media.
 
 <TabbedSection>
 <Tab value="Python">
@@ -149,23 +145,14 @@ Depending on provider support, you can supply `Image`, `Audio`, or even `Video` 
 <CodeExample file="typescript/examples/messages/content.ts" lines="16-23" />
 </Tab>
 </TabbedSection>
-<br/>
-<TabbedSection>
-<Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="20-26" />
-</Tab>
-<Tab value="Typescript">
-<CodeExample file="typescript/examples/messages/content.ts" lines="25-35" />
-</Tab>
-</TabbedSection>
 
 <Info>
-**Media content** (`Image`, `Audio`, `Video`) can be provided as file paths, URLs, base64-encoded strings, or raw bytes.
+**Media content** (`Image`, `Audio`) can be provided as file paths, URLs, base64-encoded strings, or raw bytes.
 
 Additional options:
 
 - `id`: Optional unique identifier for tracking and referencing with a conversation.
-- `transcript`: Optional text transcript for `Audio` and `Video` content.
+- `transcript`: Optional text transcript for `Audio` content.
 
 </Info>
 
@@ -175,7 +162,7 @@ Additional options:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="28-34" />
+<CodeExample file="examples/messages/content.py" lines="20-26" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/content.ts" lines="37-45" />
@@ -188,7 +175,7 @@ Additional options:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="36-47" />
+<CodeExample file="examples/messages/content.py" lines="28-39" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/content.ts" lines="47-60" />
@@ -201,7 +188,7 @@ Some models support thinking, in which case they create intermediate reasoning c
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="49-59" />
+<CodeExample file="examples/messages/content.py" lines="41-51" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/content.ts" lines="62-72" />
@@ -214,7 +201,7 @@ A message can contain a sequence of content objects, potentially of multiple typ
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="61-70" />
+<CodeExample file="examples/messages/content.py" lines="53-62" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/content.ts" lines="74-82" />
@@ -262,4 +249,5 @@ LLMs operate on sequences of messages, which we call "prompts", and which provid
 
 The message structure we've covered here works consistently across all LLM providers that Mirascope supports, giving you a unified interface regardless of whether you're using OpenAI, Anthropic, Google, or any other supported provider.
 
-In the next section on [Prompt Templates](/docs/learn/prompt-templates), we will describe how Mirascope provides a reusable functional interface for constructing prompts. This sets you up for success when context engineering your LLM [Calls](/docs/learn/calls).
+We recommend you head to [Calls](/docs/learn/calls) next, and start using LLMs to generate responses to your messages.
+You can also explore [Prompt Templates](/docs/learn/prompt-templates), an alternative template-based approach to constructing messages.
