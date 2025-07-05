@@ -34,7 +34,7 @@ from .content import (
     Content,
     Document,
     Image,
-    ImageChunk,
+    ImagePartial,
     StreamedContent,
     Text,
     TextChunk,
@@ -44,7 +44,6 @@ from .content import (
     ToolCallChunk,
     ToolOutput,
     Video,
-    VideoChunk,
 )
 from .context import Context, context
 from .exceptions import (
@@ -98,7 +97,7 @@ __all__ = [
     "Context",
     "Document",
     "Image",
-    "ImageChunk",
+    "ImagePartial",
     "Message",
     "MirascopeError",
     "NotFoundError",
@@ -123,7 +122,6 @@ __all__ = [
     "ToolDef",
     "ToolOutput",
     "Video",
-    "VideoChunk",
     "agent",
     "agents",
     "call",

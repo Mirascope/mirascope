@@ -5,7 +5,7 @@ from .audio_chunk import AudioChunk
 from .content import Content
 from .document import Document
 from .image import Image
-from .image_chunk import ImageChunk
+from .image_partial import ImagePartial
 from .streamed_content import StreamedContent
 from .text import Text
 from .text_chunk import TextChunk
@@ -15,7 +15,6 @@ from .tool_call import ToolCall
 from .tool_call_chunk import ToolCallChunk
 from .tool_output import ToolOutput
 from .video import Video
-from .video_chunk import VideoChunk
 
 __all__ = [
     "Audio",
@@ -23,7 +22,7 @@ __all__ = [
     "Content",
     "Document",
     "Image",
-    "ImageChunk",
+    "ImagePartial",
     "StreamedContent",
     "Text",
     "TextChunk",
@@ -33,5 +32,4 @@ __all__ = [
     "ToolCallChunk",
     "ToolOutput",
     "Video",
-    "VideoChunk",
 ]
