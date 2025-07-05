@@ -131,7 +131,7 @@ Note that variable substitution happens _after_ the template's message structure
 
 ### Multimodal content
 
-Templates support multimodal content by annotating variables with content type specifiers. This allows you to include images, audio, video, and documents directly in your prompts.
+Templates support multimodal content by annotating variables with content type specifiers. This allows you to include images, audio, and documents directly in your prompts.
 
 #### Single Content Items
 
@@ -164,14 +164,6 @@ For individual content items, use the singular format specifier:
 </Tab>
 </TabbedSection>
 
-<TabbedSection>
-<Tab value="Python">
-<CodeExample file="examples/prompt_templates/multimodal.py" lines="16-17" />
-</Tab>
-<Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="21-25" />
-</Tab>
-</TabbedSection>
 
 #### Content Sequences  
 
@@ -179,7 +171,7 @@ For multiple content items of the same type, append "s" to the annotation:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/multimodal.py" lines="20-21" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="16-18" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="27-31" />
@@ -188,7 +180,7 @@ For multiple content items of the same type, append "s" to the annotation:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/multimodal.py" lines="24-25" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="20-21" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="33-37" />
@@ -197,21 +189,13 @@ For multiple content items of the same type, append "s" to the annotation:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/multimodal.py" lines="28-29" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="24-25" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="39-43" />
 </Tab>
 </TabbedSection>
 
-<TabbedSection>
-<Tab value="Python">
-<CodeExample file="examples/prompt_templates/multimodal.py" lines="32-33" />
-</Tab>
-<Tab value="Typescript">
-<CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="45-49" />
-</Tab>
-</TabbedSection>
 
 #### Mixed Media Examples
 
@@ -219,7 +203,7 @@ You can combine multiple content types in a single spec:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/prompt_templates/multimodal.py" lines="36-49" />
+<CodeExample file="examples/prompt_templates/multimodal.py" lines="28-41" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/prompt-templates/multimodal.ts" lines="51-61" />
@@ -230,7 +214,7 @@ In all of the above examples, the various content parts are combined into a sing
 
 #### Content Input Formats
 
-The [`Image`](/docs/api/content#image), [`Audio`](/docs/api/content#audio), [`Video`](/docs/api/content#video), and [`Document`](/docs/api/content#document) types are all supported (see the [Messages guide](./messages#message-content-types) to refresh on content types). Content variables accept multiple input formats:
+The [`Image`](/docs/api/content#image), [`Audio`](/docs/api/content#audio), and [`Document`](/docs/api/content#document) types are all supported (see the [Messages guide](./messages#message-content-types) to refresh on content types). Content variables accept multiple input formats:
 - **llm.Content objects**: `llm.Image(...)` 
 - **File paths**: `"/path/to/file.jpg"`
 - **URLs**: `"https://example.com/image.png"`
@@ -244,7 +228,6 @@ The mime-type is automatically inferred based on the provided content format.
 | -------------------------------------------- | :--------------: | :--------------: |
 | [`Image`](/docs/api/content#image)           |     `:image`     |    `:images`     |
 | [`Audio`](/docs/api/content#audio)           |     `:audio`     |    `:audios`     |
-| [`Video`](/docs/api/content#video)           |     `:video`     |    `:videos`     |
 | [`Document`](/docs/api/content#document)     |   `:document`    |  `:documents`    |
 
 
@@ -287,7 +270,7 @@ Here's a quick reference of the special syntax options in prompt templates:
 | `{{ variable }}` | Variable substitution | `{{ genre }}`, `{{ age }}` |
 | `{{ obj.property }}` | Property access | `{{ book.title }}`, `{{ user.name }}` |
 | `{{ content:image }}` | Single media content | `{{ photo:image }}`, `{{ recording:audio }}` |
-| `{{ content:images }}` | Multiple media content | `{{ photos:images }}`, `{{ clips:videos }}` |
+| `{{ content:images }}` | Multiple media content | `{{ photos:images }}` |
 | `[SYSTEM]` | System message section | `[SYSTEM] You are a helpful assistant.` |
 | `[USER]` | User message section | `[USER] Please help me with...` |
 | `[ASSISTANT]` | Assistant message section | `[ASSISTANT] I'd be happy to help!` |

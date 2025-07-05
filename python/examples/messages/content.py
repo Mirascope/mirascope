@@ -17,14 +17,6 @@ audio = llm.Audio(
 )
 audio_message = llm.messages.user(audio)
 
-video = llm.Video(
-    data="/path/to/book-review.mp4",  # or URL, base64, or bytes
-    mime_type="video/mp4",
-    transcript="This is my review of The Martian...",  # optional
-    id="book-review",  # optional
-)
-video_message = llm.messages.user(["What do you think of this book review?", video])
-
 document = llm.Document(
     data="/path/to/research-paper.pdf",  # or URL, base64, or bytes
     mime_type="application/pdf",
