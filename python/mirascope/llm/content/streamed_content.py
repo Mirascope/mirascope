@@ -7,5 +7,7 @@ from .thinking_chunk import ThinkingChunk
 from .tool_call_chunk import ToolCallChunk
 from .video_chunk import VideoChunk
 
-ContentChunk: TypeAlias = TextChunk | ImageChunk | AudioChunk | VideoChunk | ToolCallChunk | ThinkingChunk
+StreamedContent: TypeAlias = (
+    TextChunk | ImageChunk | AudioChunk | VideoChunk | ToolCallChunk | ThinkingChunk
+)
 """Content types that can be included in messages."""

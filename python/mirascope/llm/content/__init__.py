@@ -3,10 +3,10 @@
 from .audio import Audio
 from .audio_chunk import AudioChunk
 from .content import Content
-from .content_chunk import ContentChunk
 from .document import Document
 from .image import Image
 from .image_chunk import ImageChunk
+from .streamed_content import StreamedContent
 from .text import Text
 from .text_chunk import TextChunk
 from .thinking import Thinking
@@ -21,10 +21,10 @@ __all__ = [
     "Audio",
     "AudioChunk",
     "Content",
-    "ContentChunk",
     "Document",
     "Image",
     "ImageChunk",
+    "StreamedContent",
     "Text",
     "TextChunk",
     "Thinking",
