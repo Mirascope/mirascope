@@ -29,6 +29,22 @@ Both approaches are powerful. Template-style prompts are declarative and can be 
 - Your prompt construction involves complex logic, like adding computed variables to your prompt, or conditionally included messages
 - You prefer leveraging the power of Python rather than using a domain-specific templating system
 
+<Info title="Template Syntax Reference" collapsible={true} defaultOpen={false}>
+Here's a quick reference of the special syntax options in prompt templates:
+
+| Syntax | Purpose | Example |
+| ------ | ------- | ------- |
+| `{{ variable }}` | Variable substitution | `{{ genre }}`, `{{ age }}` |
+| `{{ obj.property }}` | Property access | `{{ book.title }}`, `{{ user.name }}` |
+| `{{ content:type }}` | Single media content | `{{ photo:image }}`, `{{ recording:audio }}`, `{{ file:document }}` |
+| `{{ content:types }}` | Multiple media content | `{{ photos:images }}`, `{{ recordings:audios }}`, `{{ files:documents }}` |
+| `[SYSTEM]` | System message section | `[SYSTEM] You are a helpful assistant.` |
+| `[USER]` | User message section | `[USER] Please help me with...` |
+| `[ASSISTANT]` | Assistant message section | `[ASSISTANT] I'd be happy to help!` |
+| `[MESSAGES] {{ history }}` | Inject message history | `[MESSAGES] {{ conversation }}` |
+
+</Info>
+
 ## Template-Style Prompts
 
 Template-style prompts use the `@llm.prompt` decorator with a template string. Here's a trivial example, consisting of a static prompt:
@@ -260,22 +276,6 @@ Prompt templates give you the option of storing your prompts separately from you
 ### Template Error Handling
 
 If a template can't be properly interpolated, it will throw an error at runtime. This includes syntax errors, missing variables, or if a variable has an unsatisfiable type annotation.
-
-### Template Syntax Reference
-
-Here's a quick reference of the special syntax options in prompt templates:
-
-| Syntax | Purpose | Example |
-| ------ | ------- | ------- |
-| `{{ variable }}` | Variable substitution | `{{ genre }}`, `{{ age }}` |
-| `{{ obj.property }}` | Property access | `{{ book.title }}`, `{{ user.name }}` |
-| `{{ content:type }}` | Single media content | `{{ photo:image }}`, `{{ recording:audio }}`, `{{ file:document }}` |
-| `{{ content:types }}` | Multiple media content | `{{ photos:images }}`, `{{ recordings:audios }}`, `{{ files:documents }}` |
-| `[SYSTEM]` | System message section | `[SYSTEM] You are a helpful assistant.` |
-| `[USER]` | User message section | `[USER] Please help me with...` |
-| `[ASSISTANT]` | Assistant message section | `[ASSISTANT] I'd be happy to help!` |
-| `[MESSAGES] {{ history }}` | Inject message history | `[MESSAGES] {{ conversation }}` |
-
 
 
 ## Next Steps
