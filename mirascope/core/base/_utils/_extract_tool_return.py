@@ -26,8 +26,8 @@ def extract_tool_return(
             json_output.encode(),
             partial_mode="trailing-strings" if allow_partial else "off",
         )
-        if isinstance(json_output, str)
-        else json_output
+        if json_output and isinstance(json_output, str)
+        else json_output or {}
     )
     if is_base_type(response_model):
         temp_model = convert_base_type_to_base_tool(response_model, BaseModel)
