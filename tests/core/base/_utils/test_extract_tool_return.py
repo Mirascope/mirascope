@@ -87,3 +87,16 @@ def test_extract_tool_return_parse_array_with_fields_from_call_args() -> None:
     assert isinstance(list_model.root, list)
     assert len(list_model.root) == 1
     assert list_model.root[0].title == "The Name of the Wind"
+
+
+def test_extract_tool_return_partial_empty_string() -> None:
+    """Testts the `extract_tool_return` function when partial returns an empty string."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    book = extract_tool_return(Book, "", allow_partial=True, fields_from_call_args={})
+    assert isinstance(book, Book)
+    assert book.title is None
+    assert book.author is None
