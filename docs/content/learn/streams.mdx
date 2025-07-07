@@ -15,7 +15,7 @@ Streaming allows you to receive and process LLM responses as they're generated, 
 
 To use streaming, first create a prompt and transform it into a [call](/docs/learn/calls), just as you would with a non-streaming response. Then, instead of directly invoking the call, you call `.stream()` on it to get an [`llm.Stream`](python/mirascope/llm/responses/stream.py) instead.
 
-`llm.Stream` is an iterable. When you iterate on it, you get content chunks as they are generated. In the example below, we generate text chunks, and print each one with `end=""` and `flush=True` to ensure the output is displayed immediately and without line breaks.
+`llm.Stream` is an iterable. When you iterate on it, you get content chunks as they are generated. In the example below, we generate text chunks and print each one with `end=""` and `flush=True` to ensure the output is displayed immediately and without line breaks.
 
 
 <TabbedSection>
@@ -60,7 +60,7 @@ For processing multimodal streams, Mirascope offers a more advanced `groups()` A
 </Tab>
 </TabbedSection>
 
-When using the groups api, Mirascope automatically filters out the `ChunkStart` and `ChunkEnd` chunks for you. 
+When using the groups API, Mirascope automatically filters out the `ChunkStart` and `ChunkEnd` chunks for you. 
 
 Each group provides:
 - `type`: The content type for type discrimination (e.g., "text", "image", "audio")
