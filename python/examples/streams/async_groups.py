@@ -4,7 +4,7 @@ from mirascope import llm
 
 
 @llm.call("openai:gpt-4o-mini")
-async def generate_book_async(genre: str):
+def generate_book(genre: str):
     return f"""
     Come up with an imaginary book in genre {genre}. Describe its title and synopsis.
 
@@ -14,21 +14,21 @@ async def generate_book_async(genre: str):
 
 
 async def main():
-    stream = await generate_book_async.stream("fantasy")
+    stream = generate_book.stream_async("fantasy")
 
     async for group in stream.groups():
         if group.type == "text":
             async for chunk in group:
                 print(chunk.delta, end="", flush=True)
             print()  # New line after text
-        
+
         elif group.type == "image":
             print("Generating image...")
             async for _ in group:
                 print(".", end="", flush=True)
             if group.final:
                 print(f" ✓ Image complete: {len(group.final.data)} bytes")
-        
+
         elif group.type == "audio":
             print("Generating audio...")
             async for chunk in group:

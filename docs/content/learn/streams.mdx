@@ -31,7 +31,7 @@ In the example above, we directly print every chunk from the stream. These chunk
 
 ### Multi-modal stream output
 
-Streams can output every modality of content, via distinct chunk types, like `llm.TextChunk`, `llm.ImageChunk`, and so forth. Each chunk has a string `delta`, which is the incremental content in that chunk. The semantics of the delta vary based on chunk type. For text, the delta is the incremental text of that particular chunk. For images, each delta is a base64-encoded string with a progressive render of the image. For audio, the delta is a base64-encoded string of audio data, but there is also a `transcript_delta` with incremental transcripts.
+Streams can output every modality of content, via distinct chunk types like `llm.TextChunk`, `llm.ImageChunk`, and so forth. Each chunk has a string `delta`, which is the incremental content in that chunk. The semantics of the delta vary based on chunk type. For text, the delta is the incremental text of that particular chunk. For images, each delta is a base64-encoded string with a progressive render of the image. For audio, the delta is a base64-encoded string of audio data, but there is also a `transcript_delta` with incremental transcripts.
 
 Mirascope also provides `llm.ChunkStart` and `llm.ChunkEnd` chunks, which demarcate the start and end of a particular piece of content. This is helpful to distinguish between e.g. multiple images that are being progressively rendered and streamed in sequence. When iterating over the chunks in a stream, you can use the `type` discriminator field to process each chunk type distinctly. 
 
@@ -130,7 +130,7 @@ After creating a stream, you can access properties and methods on the `llm.Strea
 
 ### ContentChunk Types
 
-`llm.ContentChunk` is an alias, which corresponds to five distinct chunk types. Each chunk type has a `type` field for type descrimination. Here are the types and their properties:
+`llm.ContentChunk` is an alias, which corresponds to five distinct chunk types. Each chunk type has a `type` field for type discrimination. Here are the types and their properties:
 
 | Class | Type | Properties | Notes | 
 |-------|------|------------| ----- | 
@@ -145,22 +145,23 @@ The `mime_type` property specifies supported formats: audio types include `audio
 
 ## Async Streams
 
-Async streams operate similarly to [async calls](/docs/learn/calls#async-calls). The simplest approach is to decorate an async function with `call` and then call the `stream()` method. This returns an `llm.AsyncStream` that you can iterate over with `async for`:
+Async streams operate similarly to [async calls](/docs/learn/calls#async-calls). If you have a synchronous prompt, you can decorate it and call `stream_async()` to get an `llm.AsyncStream`:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/streams/async_basic.py" />
+<CodeExample file="examples/streams/async_stream.py" />
 </Tab>
 </TabbedSection>
 
-If you have a synchronous call definition, you can use the `stream_async()` method to get an async stream:
+If your prompt function itself is async, then `stream()` will be async, and will return an `llm.AsyncStream`:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/streams/async_stream_method.py" />
+<CodeExample file="examples/streams/async_decorated.py" />
 </Tab>
 </TabbedSection>
 
+Either way, you will get an `llm.AsyncStream` that supports async iteration. If your prompt is synchronous, then we recommend using `stream_async` for call-time flexibility.
 
 ### Async Properties 
 

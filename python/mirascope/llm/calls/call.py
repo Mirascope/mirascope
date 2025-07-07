@@ -27,6 +27,6 @@ class Call(BaseCall[P, Prompt]):
         """Generates a streaming response using the LLM."""
         raise NotImplementedError()
 
-    async def stream_async(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream:
+    def stream_async(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream:
         """Generates an asynchronous streaming response using the LLM."""
         raise NotImplementedError()
