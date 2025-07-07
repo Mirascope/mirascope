@@ -76,7 +76,7 @@ class Response(Generic[T]):
         raise NotImplementedError()
 
     @property
-    def text(self) -> str | None:
+    def text(self) -> Text | None:
         """Returns the first text in the response content, if any."""
         raise NotImplementedError()
 

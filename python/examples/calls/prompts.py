@@ -1,11 +1,12 @@
 from mirascope import llm
 
 
-def string_prompt() -> str:
+def recommend_book_string() -> str:
     return "Please recommend a book."
 
 
-string_messages = [llm.messages.user("Please recommend a book")]
+def recommend_book_messages() -> list[llm.Message]:
+    return [llm.messages.user("Please recommend a book")]
 
 
 def audio_prompt(audio: llm.Audio) -> llm.Content:
@@ -42,13 +43,4 @@ def summarization_prompt(query: str, history: list[llm.Message]) -> list[llm.Mes
         ),
         *history,
         llm.messages.user(query),
-    ]
-
-
-def content_sequence_prompt(
-    genre: str, book_cover: llm.Image
-) -> list[str | llm.Content]:
-    return [
-        f"Please recommend a {genre} book, with similar themes to the book in this image:",
-        book_cover,
     ]
