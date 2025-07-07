@@ -60,10 +60,12 @@ For processing multimodal streams, Mirascope offers a more advanced `groups()` A
 </Tab>
 </TabbedSection>
 
+When using the groups api, Mirascope automatically filters out the `ChunkStart` and `ChunkEnd` chunks for you. 
+
 Each group provides:
 - `type`: The content type for type discrimination (e.g., "text", "image", "audio")
-- `partial`: Live-updating accumulated content as chunks are consumed
-- `final`: The complete content object once the group is finished (None until then)
+- `partial`: Live-updating accumulated content as chunks are consumed, structured as a combined Chunk
+- `final`: The complete content object once the group is finished (None until then). Note this will not be the chunk type, but the type of the final content, like `llm.Text`, `llm.Image`, and so forth.
 
 Groups enforce sequential consumption - you must fully exhaust one group before moving to the next. This ensures proper ordering of multimodal content generation.
 

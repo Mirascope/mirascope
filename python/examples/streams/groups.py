@@ -13,64 +13,50 @@ def generate_book(genre: str):
 
 stream = generate_book.stream("fantasy")
 
+print("Processing stream groups:")
 for group in stream.groups():
     if group.type == "text":
+        print("  Text content:")
         for chunk in group:
             print(chunk.delta, end="", flush=True)
+        print()  # Newline after text
+        if group.final:
+            print(f"  Final text length: {len(group.final.text)} characters")
 
     elif group.type == "image":
-        print("Processing image content:")
+        print("  Image content (progressive render):")
         for _ in group:
-            print("  Image chunk received (progressive render)")
-            print(f"  Current image size: ~{len(group.partial.delta)} bytes")
-
+            print(".", end="", flush=True)  # Show progress
         if group.final:
             print(
-                f"✓ Completed image: {group.final.mime_type}, ~{len(group.final.data)} bytes"
+                f"\n  ✓ Image complete ({group.final.mime_type}, {len(group.final.data)} bytes)"
             )
 
     elif group.type == "audio":
-        print("Processing audio content:")
+        print("  Audio content (progressive render):")
         for chunk in group:
             if chunk.delta_transcript:
-                print(f"  Transcript: '{chunk.delta_transcript}'")
-            print(f". Current audio size: ~{len(group.partial.delta)} bytes")
-
+                print(f"  Transcript delta: '{chunk.delta_transcript}'")
         if group.final:
-            print(f"✓ Completed audio: {group.final.mime_type}")
+            print(f"  ✓ Audio complete ({group.final.mime_type})")
             if group.final.transcript:
                 print(f"  Full transcript: '{group.final.transcript}'")
 
-    print()  # Blank line between groups
 
-
-# Example output:
-# Processing text content:
-#   Text chunk: 'Embers'
-#   Accumulated so far: 'Embers...'
-#   Text chunk: ' of the'
-#   Accumulated so far: 'Embers of the...'
-#   ...
-# ✓ Completed text: Text
-#   Final text: 'Embers of the Starfallen is a high fantasy epic...'
+# Example output (updated to reflect simplification):
+# Processing stream groups:
 #
-# Processing image content:
-#   Image chunk received (progressive render)
-#   Current image size: ~1024 bytes
-#   Image chunk received (progressive render)
-#   Current image size: ~2048 bytes
-#   ...
-# ✓ Completed image: Image
-#   Final image: image/png, ~8192 bytes
+#   Text content:
+# Embers of the Starfallen is a high fantasy epic...
+#   Final text length: 50 characters
 #
-# Processing audio content:
-#   Audio chunk received
-#   Transcript: 'Embers'
-#   Full transcript so far: 'Embers'
-#   Audio chunk received
-#   Transcript: ' of the'
-#   Full transcript so far: 'Embers of the'
+#   Image content (progressive render):
+# ...
+#   ✓ Image complete (image/png, 8192 bytes)
+#
+#   Audio content (progressive render):
+#   Transcript delta: 'Embers'
+#   Transcript delta: ' of the'
 #   ...
-# ✓ Completed audio: Audio
-#   Final audio: audio/wav
+#   ✓ Audio complete (audio/wav)
 #   Full transcript: 'Embers of the Starfallen'
