@@ -2,7 +2,7 @@
 
 from collections.abc import Iterator
 
-from ..content import StreamedContent
+from ..content import ContentChunk
 from .base import BaseStream
 
 
@@ -25,7 +25,7 @@ class Stream(BaseStream):
         ```
     """
 
-    def __iter__(self) -> Iterator[StreamedContent]:
+    def __iter__(self) -> Iterator[ContentChunk]:
         """Iterate through the chunks of the stream.
 
         Returns:

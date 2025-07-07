@@ -28,3 +28,6 @@ class AudioChunk:
 
     partial: str
     """The accumulated audio data in this series of chunks as a base64 encoded string."""
+
+    final: bool
+    """Whether this is the final piece of content in its sequence. If true, this content's partial is finished generating."""

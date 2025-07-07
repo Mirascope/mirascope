@@ -1,28 +1,28 @@
 """The `llm.messages.content` module."""
 
-from .audio import Audio
-from .audio_chunk import AudioChunk
+from .audios.audio import Audio
+from .audios.audio_chunk import AudioChunk
 from .content import Content
-from .document import Document
-from .image import Image
-from .image_partial import ImagePartial
-from .streamed_content import StreamedContent
-from .text import Text
-from .text_chunk import TextChunk
-from .thinking import Thinking
-from .thinking_chunk import ThinkingChunk
-from .tool_call import ToolCall
-from .tool_call_chunk import ToolCallChunk
-from .tool_output import ToolOutput
+from .content_chunk import ContentChunk
+from .documents.document import Document
+from .images.image import Image
+from .images.image_chunk import ImageChunk
+from .texts.text import Text
+from .texts.text_chunk import TextChunk
+from .thinking.thinking import Thinking
+from .thinking.thinking_chunk import ThinkingChunk
+from .tools.tool_call import ToolCall
+from .tools.tool_call_chunk import ToolCallChunk
+from .tools.tool_output import ToolOutput
 
 __all__ = [
     "Audio",
     "AudioChunk",
     "Content",
+    "ContentChunk",
     "Document",
     "Image",
-    "ImagePartial",
-    "StreamedContent",
+    "ImageChunk",
     "Text",
     "TextChunk",
     "Thinking",

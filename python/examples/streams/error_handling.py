@@ -13,8 +13,7 @@ try:
         print(content, end="", flush=True)
     print("")
 except llm.MirascopeError as e:
-    print("")
-    print(f"Streaming error: {e}")
+    print(f"\nStreaming error: {e}")
 else:
     print("Stream completed successfully")
     print(f"Final usage: {stream.usage}")

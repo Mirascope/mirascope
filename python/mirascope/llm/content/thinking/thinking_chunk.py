@@ -18,3 +18,6 @@ class ThinkingChunk:
 
     partial: str
     """The accumulated thinking text in this series of chunks."""
+
+    final: bool
+    """Whether this is the final piece of content in its sequence. If true, this content's partial is finished generating."""

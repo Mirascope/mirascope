@@ -13,7 +13,7 @@ from typing import Generic
 
 from typing_extensions import TypeVar
 
-from ..content import StreamedContent
+from ..content import ContentChunk
 
 T = TypeVar("T", bound=object | None, default=None)
 
@@ -43,7 +43,7 @@ class StructuredStream(Generic[T]):
         ```
     """
 
-    def __iter__(self) -> Iterator[StreamedContent]:
+    def __iter__(self) -> Iterator[ContentChunk]:
         """Iterate through the structured outputs of the stream.
 
         Returns:

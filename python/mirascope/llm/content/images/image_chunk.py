@@ -5,7 +5,7 @@ from typing import Literal
 
 
 @dataclass(kw_only=True)
-class ImagePartial:
+class ImageChunk:
     """Image content chunk when streaming.
 
     The partial field contains bytes data of the current state of the image, which

@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Literal
 
-from ..types import Jsonable
+from ...types import Jsonable
 
 
 @dataclass(kw_only=True)
@@ -15,11 +15,14 @@ class ToolCallChunk:
     id: str
     """A unique identifier for this tool call."""
 
-    name: str | None = None
+    name: str
     """The name of the tool to call."""
 
-    args_delta: str
+    delta: str
     """The incremental delta to JSON arguments present in this particular chunk."""
 
-    args_partial: dict[str, Jsonable]
+    partial: dict[str, Jsonable]
     """The accumulated JSON arguments in this series of chunks."""
+
+    final: bool
+    """Whether this is the final piece of content in its sequence. If true, this content's partial is finished generating."""

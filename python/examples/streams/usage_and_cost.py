@@ -12,5 +12,7 @@ for content in stream:
     print(content, end="", flush=True)
 print("")  # Add trailing newline now that stream is complete
 
-print(f"Final usage: {stream.usage}")  # [!code highlight]
-print(f"Final cost: ${stream.cost}")  # [!code highlight]
+if stream.usage:
+    print(f"Final usage: {stream.usage}")  # [!code highlight]
+if stream.cost:
+    print(f"Final cost: ${stream.cost}")  # [!code highlight]

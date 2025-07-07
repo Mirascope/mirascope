@@ -2,7 +2,7 @@
 
 from collections.abc import AsyncIterator
 
-from ..content import StreamedContent
+from ..content import ContentChunk
 from .stream import BaseStream
 
 
@@ -25,7 +25,7 @@ class AsyncStream(BaseStream):
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[StreamedContent]:
+    def __aiter__(self) -> AsyncIterator[ContentChunk]:
         """Iterate through the chunks of the stream asynchronously.
 
         Returns:
