@@ -11,14 +11,11 @@ try:
 
     for content in stream:
         print(content, end="", flush=True)
-
+    print("")
 except llm.MirascopeError as e:
-    print(f"\nStreaming error: {e}")
-
-except Exception as e:
-    print(f"\nUnexpected error: {e}")
-
+    print("")
+    print(f"Streaming error: {e}")
 else:
-    print("\nStream completed successfully")
+    print("Stream completed successfully")
     print(f"Final usage: {stream.usage}")
     print(f"Final cost: ${stream.cost}")

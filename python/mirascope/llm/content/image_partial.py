@@ -12,7 +12,7 @@ class ImagePartial:
     may be progressively rendering. There is no delta.
     """
 
-    type: Literal["image_chunk"] = "image_chunk"
+    type: Literal["image_partial"] = "image_partial"
 
     mime_type: Literal[
         "image/png",

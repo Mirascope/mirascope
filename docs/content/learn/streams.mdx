@@ -1,6 +1,6 @@
 ---
 title: Streams
-description: Learn how to stream LLM call responses for a more real-time interaction
+description: Learn how to stream LLM call responses for responsive systems with immediate feedback
 ---
 
 # Streams
@@ -9,9 +9,7 @@ description: Learn how to stream LLM call responses for a more real-time interac
   If you haven't already, we recommend first reading about [Calls](/docs/learn/calls).
 </Note>
 
-Streaming is a powerful feature when using LLMs that allows you to process chunks of an LLM response in real-time as they are generated. This can be particularly useful for long-running tasks, providing immediate feedback to users, or implementing more responsive applications.
-
-This approach offers several benefits, including:
+Streaming is a powerful feature when using LLMs that allows you to process chunks of an LLM response as they are generated. This approach offers several benefits, including:
 
 1. **Immediate feedback**: Users can see responses as they're being generated, creating a more 
 interactive experience.
@@ -21,7 +19,7 @@ interactive experience.
 
 ## Basic Usage and Syntax
 
-To use streaming, first create a prompt and transform it into a [call](/docs/learn/calls), just as you would with a non-streaming response. Then, instead of directly invoking the call, you call `.stream()` on it to get a [`llm.Stream`](python/mirascope/llm/responses/stream.py) instead.
+To use streaming, first create a prompt and transform it into a [call](/docs/learn/calls), just as you would with a non-streaming response. Then, instead of directly invoking the call, you call `.stream()` on it to get an [`llm.Stream`](python/mirascope/llm/responses/stream.py) instead.
 
 <TabbedSection>
 <Tab value="Python">
@@ -29,19 +27,16 @@ To use streaming, first create a prompt and transform it into a [call](/docs/lea
 </Tab>
 </TabbedSection>
 
-`llm.Stream` is an iterable. When you iterate on it, you get [`llm.StreamChunk`](/docs/api/responses#streamchunk)s as they are ready. Each chunk has a `content` property that contains one piece of `llm.Content` (typically strings). In the example, we print each one with `end=""` and `flush=True` to ensure the output is displayed in real-time without line breaks.
+`llm.Stream` is an iterable. When you iterate on it, you get [`llm.StreamedContent`](/docs/api/streams#streamedcontent)s as they are generated. In the example, we print each one with `end=""` and `flush=True` to ensure the output is displayed immediately and without line breaks.
 
-### Accessing Chunk Content
-
-Each `llm.StreamChunk` provides multiple ways to access its content. You can access the raw `content` property directly, or use type-specific accessor properties like `.text`, `.image`, `.audio`, etc. for convenience:
-
-<CodeExample file="examples/streams/chunk_content.py" />
-
-The accessor properties return `None` if that content type is not present in the chunk, making it easy to handle different content types safely. You can also use `str(chunk)` to get a string representation across all types of media.
 
 ### Converting Streams to Responses
 
-You can convert a stream to a standard response using the `stream.to_response()` method. You can invoke it before or after consuming the stream. Note that calling `to_response` will iterate through all the chunks, exhausting the stream. You won't be able to iterate over it afterwards.
+You can convert a stream to a standard response by calling [`Stream.to_response`](/docs/api/streams#to-response). Note that `to_response` can only be successfully called after you have iterated through all the stream's content and exhausted it. Calling it on an un-exhausted stream will raise an exception.
+
+<Warning title="Response Reconstruction Limitations">
+Mirascope tries its best to match the reconstructed `llm.Response` with the response that would have been generated if streaming were not involved. However, we can't guarantee that they will be exactly the same.
+</Warning>
 
 <CodeExample file="examples/streams/to_response.py" />
 
@@ -77,54 +72,6 @@ If you have a synchronous call definition, you can use the `stream_async()` meth
 </Tab>
 </TabbedSection>
 
-Note that converting an async stream to a response is an async operation:
-
-<TabbedSection>
-<Tab value="Python">
-<CodeExample file="examples/streams/async_stream_response.py" />
-</Tab>
-</TabbedSection>
-
-### Async Stream Properties and Methods
-
-`llm.AsyncStream` has the same properties and methods as `llm.Stream`, including:
-
-- `finish_reason`, `usage`, and `cost` properties that are populated as the stream is consumed
-- The same error handling patterns apply to async streams
-- All the same chunk properties and accessor methods are available
-
-The main difference is that you use `async for` instead of `for` to iterate through the chunks, and that `to_response` is async.
-
-## Chunk Properties and Methods
-
-All `llm.StreamChunk` objects share common properties for accessing content and metadata:
-
-### Content Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `content` | [ResponseContent](/docs/api/responses#responsecontent) | The content in this chunk of the response. |
-| `text` | str \| None | Returns the text content in this chunk, if any. |
-| `image` | [Image](/docs/api/content#image) \| None | Returns the image content in this chunk, if any. |
-| `audio` | [Audio](/docs/api/content#audio) \| None | Returns the audio content in this chunk, if any. |
-| `video` | [Video](/docs/api/content#video) \| None | Returns the video content in this chunk, if any. |
-| `thinking` | [Thinking](/docs/api/content#thinking) \| None | Returns the thinking content in this chunk, if any. |
-| `tool` | [Tool](/docs/api/tools#tool) \| None | Returns the tool content in this chunk, if any. |
-
-### Metadata Properties
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `finish_reason` | [FinishReason](/docs/api/responses#finishreason) \| None | The reason why the LLM finished generating a response, if this is the final chunk. |
-| `usage` | [Usage](/docs/api/responses#usage) \| None | The token usage statistics for this chunk, if available. |
-| `cost` | [Decimal](https://docs.python.org/3/library/decimal.html) \| None | The cost for this chunk, if available. |
-| `raw` | Any | The raw chunk response from the LLM provider. Useful for accessing provider-specific details not exposed in the standard interface. |
-
-### Formatting Methods
-
-| Method | Type | Description |
-|--------|------|-------------|
-| `format()` | T | Format the content of this chunk according to a response format parser. This method is only available if the call was created with a response format to generate [structured outputs](/docs/learn/structured_outputs). |
 
 ## Stream Properties and Methods
 
@@ -138,15 +85,31 @@ After creating a stream, you can access properties and methods on the `llm.Strea
 | `usage` | [Usage](/docs/api/responses#usage) \| None | The token usage statistics reflecting all chunks processed so far. Updates as chunks are consumed. |
 | `cost` | [Decimal](https://docs.python.org/3/library/decimal.html) \| None | The cost reflecting all chunks processed so far. Updates as chunks are consumed. |
 
+### Stream Methods
+
+| Method | Type | Description |
+|--------|------|-------------|
+| `to_response()` | `llm.Response` | Convert the stream into a reconstructed `llm.Response`. Can only be called after the stream has been exhausted (i.e. all content has been iterated). |
+
+### Async Properties 
+
+`llm.AsyncStream` has the same properties and methods as `llm.Stream`, including:
+
+- `finish_reason`, `usage`, and `cost` properties that are populated as the stream is consumed
+- The same error handling patterns apply to async streams
+- All the same chunk properties and accessor methods are available
+
+The main difference is that you use `async for` instead of `for` to iterate through the chunks, and that `to_response` is async.
+
 ## Next Steps
 
-By mastering streaming in Mirascope, you can create more responsive and efficient LLM-powered applications that provide real-time feedback to users.
+By mastering streaming in Mirascope, you can create more responsive and efficient LLM-powered applications that provide immediate feedback to users.
 
 Next, we recommend exploring:
 
 - [Audio Streaming](/docs/learn/audio-streaming) - Learn how to handle audio outputs in streaming responses for speech-based applications
 - [Context](/docs/learn/context) - Automatically maintain conversation history and dependencies across multiple calls
 - [Tools](/docs/learn/tools) - Give LLMs access to custom tools and see how tool calls work in streaming responses
-- [Agents](/docs/learn/agents) - Build autonomous agents that can stream their reasoning and actions in real-time
+- [Agents](/docs/learn/agents) - Build autonomous agents that can stream their reasoning and actions
 
 Pick whichever path you prefer.

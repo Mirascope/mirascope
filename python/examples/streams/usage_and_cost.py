@@ -10,7 +10,7 @@ stream = recommend_book.stream("fantasy")
 
 for content in stream:
     print(content, end="", flush=True)
+print("")  # Add trailing newline now that stream is complete
 
-
-print(f"\nFinal usage: {stream.usage}")  # [!code highlight]
+print(f"Final usage: {stream.usage}")  # [!code highlight]
 print(f"Final cost: ${stream.cost}")  # [!code highlight]
