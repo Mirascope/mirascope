@@ -7,6 +7,5 @@ def recommend_book(genre: str):
 
 
 stream: llm.Stream = recommend_book.stream("fantasy")  # [!code highlight]
-for content in stream:  # [!code highlight]
-    if content.type == "text_chunk":  # [!code highlight]
-        print(content.delta, end="", flush=True)  # [!code highlight]
+for chunk in stream:  # [!code highlight]
+    print(chunk, end="", flush=True)  # [!code highlight]

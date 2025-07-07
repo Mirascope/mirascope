@@ -8,7 +8,7 @@ def recommend_book(genre: str):
 
 stream: llm.Stream = recommend_book.stream("fantasy")
 
-for content in stream:
-    print(content, end="", flush=True)
+for chunk in stream:
+    print(chunk, end="", flush=True)
 
 response: llm.Response = stream.to_response()  # [!code highlight]

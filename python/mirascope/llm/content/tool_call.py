@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Literal
 
-from ...types import Jsonable
+from ..types import Jsonable
 
 
 @dataclass(kw_only=True)

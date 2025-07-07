@@ -16,8 +16,9 @@ class ThinkingChunk:
     delta: str
     """The incremental thinking text present in this particular chunk."""
 
-    partial: str
-    """The accumulated thinking text in this series of chunks."""
-
     final: bool
     """Whether this is the final piece of content in its sequence. If true, this content's partial is finished generating."""
+
+    def __repr__(self) -> str:
+        """Strategic representation for clean default printing."""
+        return self.delta

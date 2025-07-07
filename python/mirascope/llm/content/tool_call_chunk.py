@@ -3,8 +3,6 @@
 from dataclasses import dataclass
 from typing import Literal
 
-from ...types import Jsonable
-
 
 @dataclass(kw_only=True)
 class ToolCallChunk:
@@ -21,8 +19,9 @@ class ToolCallChunk:
     delta: str
     """The incremental delta to JSON arguments present in this particular chunk."""
 
-    partial: dict[str, Jsonable]
-    """The accumulated JSON arguments in this series of chunks."""
-
     final: bool
     """Whether this is the final piece of content in its sequence. If true, this content's partial is finished generating."""
+
+    def __repr__(self) -> str:
+        """Strategic representation for clean default printing."""
+        return self.delta

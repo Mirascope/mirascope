@@ -26,8 +26,12 @@ class AudioChunk:
     delta: str
     """The incremental audio in this chunk as a base64 encoded string."""
 
-    partial: str
-    """The accumulated audio data in this series of chunks as a base64 encoded string."""
+    delta_transcript: str | None = None
+    """The incremental transcript text in this chunk, if available."""
 
     final: bool
     """Whether this is the final piece of content in its sequence. If true, this content's partial is finished generating."""
+
+    def __repr__(self) -> str:
+        """Strategic representation for clean default printing."""
+        return self.delta_transcript or "."

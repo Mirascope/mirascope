@@ -16,5 +16,6 @@ class TextChunk:
     delta: str
     """The incremental text present in this particular chunk."""
 
-    partial: str
-    """The accumulated text in this series of chunks."""
+    def __repr__(self) -> str:
+        """Strategic representation for clean default printing."""
+        return self.delta

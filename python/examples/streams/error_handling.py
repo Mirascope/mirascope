@@ -9,8 +9,8 @@ def recommend_book(genre: str):
 try:
     stream = recommend_book.stream("fantasy")
 
-    for content in stream:
-        print(content, end="", flush=True)
+    for chunk in stream:
+        print(chunk, end="", flush=True)
     print("")
 except llm.MirascopeError as e:
     print(f"\nStreaming error: {e}")
