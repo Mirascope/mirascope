@@ -8,9 +8,14 @@ def recommend_book(genre: str):
 
 recommendation: llm.Response = recommend_book("fantasy")
 
-# For a response with a single piece of text content, these are both the same:
+# For a response with a single piece of text content, you can get the text by casting
+# the response to string:
 representation = str(recommendation)  # [!code highlight]
-text = recommendation.text  # [!code highlight]
 
-print(representation)
+# Or you can retrieve the wrapped Text via the `.text` property:
+text_content: llm.Text | None = recommendation.text  # [!code highlight]
+text = text_content.text if text_content else None  # [!code highlight]
+
+assert representation == text
+print(text)
 # "Here are some fantasy books you may enjoy..."
