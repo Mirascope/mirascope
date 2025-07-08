@@ -1,6 +1,7 @@
 """This module contains the setup_call function for the Anthropic API."""
 
 import inspect
+import os
 from collections.abc import Awaitable, Callable
 from typing import Any, cast, overload
 
@@ -141,6 +142,21 @@ def setup_call(
     }
 
     if client is None:
-        client = AsyncAnthropic() if inspect.iscoroutinefunction(fn) else Anthropic()
+        if mirascope_api_key := os.environ.get("MIRASCOPE_API_KEY"):
+            client = (
+                AsyncAnthropic(
+                    base_url="http://localhost:3000/router/v0/anthropic",
+                    api_key=mirascope_api_key,
+                )
+                if inspect.iscoroutinefunction(fn)
+                else Anthropic(
+                    base_url="http://localhost:3000/router/v0/anthropic",
+                    api_key=mirascope_api_key,
+                )
+            )
+        else:
+            client = (
+                AsyncAnthropic() if inspect.iscoroutinefunction(fn) else Anthropic()
+            )
     create = client.messages.create
     return create, prompt_template, messages, tool_types, call_kwargs

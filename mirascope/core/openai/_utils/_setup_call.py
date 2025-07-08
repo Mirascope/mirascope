@@ -1,6 +1,7 @@
 """This module contains the setup_call function for OpenAI tools."""
 
 import inspect
+import os
 import warnings
 from collections.abc import Awaitable, Callable
 from typing import Any, cast, overload
@@ -146,7 +147,20 @@ def setup_call(
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:
-        client = AsyncOpenAI() if inspect.iscoroutinefunction(fn) else OpenAI()
+        if mirascope_api_key := os.environ.get("MIRASCOPE_API_KEY"):
+            client = (
+                AsyncOpenAI(
+                    base_url="http://localhost:3000/router/v0/openai",
+                    api_key=mirascope_api_key,
+                )
+                if inspect.iscoroutinefunction(fn)
+                else OpenAI(
+                    base_url="http://localhost:3000/router/v0/openai",
+                    api_key=mirascope_api_key,
+                )
+            )
+        else:
+            client = AsyncOpenAI() if inspect.iscoroutinefunction(fn) else OpenAI()
     create = (
         get_async_create_fn(client.chat.completions.create)
         if isinstance(client, AsyncOpenAI)

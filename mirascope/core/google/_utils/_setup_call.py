@@ -1,10 +1,11 @@
 """This module contains the setup_call function, which is used to set up the"""
 
 import contextlib
+import os
 from collections.abc import Awaitable, Callable, Generator
 from typing import Any, cast, overload
 
-from google.genai import Client
+from google.genai import Client, types
 from google.genai.types import (
     ContentDict,
     FunctionCallingConfig,
@@ -132,7 +133,15 @@ def setup_call(
     messages = cast(list[BaseMessageParam | ContentDict], messages)
 
     if client is None:
-        client = Client()
+        if mirascope_api_key := os.environ.get("MIRASCOPE_API_KEY"):
+            client = Client(
+                api_key=mirascope_api_key,
+                http_options=types.HttpOptions(
+                    base_url="http://localhost:3000/router/v0/google"
+                ),
+            )
+        else:
+            client = Client()
 
     messages = convert_message_params(messages, client)
 
