@@ -3,6 +3,15 @@
 from dataclasses import dataclass
 from typing import Literal
 
+ImageMimeType = Literal[
+    "image/png",
+    "image/jpeg",
+    "image/webp",
+    "image/gif",
+    "image/heic",
+    "image/heif",
+]
+
 
 @dataclass(kw_only=True)
 class Image:
@@ -18,15 +27,48 @@ class Image:
     id: str | None = None
     """A unique identifier for this image content. This is useful for tracking and referencing generated images."""
 
-    data: str | bytes
-    """The image data, which can be a URL, file path, base64-encoded string, or binary data."""
+    data: str
+    """The image data, as a base64 encoded string."""
 
-    mime_type: Literal[
-        "image/png",
-        "image/jpeg",
-        "image/webp",
-        "image/gif",
-        "image/heic",
-        "image/heif",
-    ]
+    mime_type: ImageMimeType
+    """The MIME type of the image, e.g., 'image/png', 'image/jpeg'."""
+
+    @classmethod
+    def from_file(
+        cls,
+        file_path: str,
+        *,
+        mime_type: ImageMimeType | None,
+        id: str | None = None,
+    ) -> "Image":
+        """Create an Image from a file path."""
+        raise NotImplementedError
+
+    @classmethod
+    def from_bytes(
+        cls,
+        data: bytes,
+        *,
+        mime_type: ImageMimeType | None,
+        id: str | None = None,
+    ) -> "Image":
+        """Create an Image from raw bytes."""
+        raise NotImplementedError
+
+
+@dataclass(kw_only=True)
+class ImageUrl:
+    """Image content for a message, referenced by url.
+
+    Use ImageUrl when you want to provide image content, but have the LLM load it
+    via http. This can be specified as input, but LLM generated images will use standard
+    Image content.
+    """
+
+    type: Literal["image_url"] = "image_url"
+
+    url: str
+    """The image url."""
+
+    mime_type: ImageMimeType | None
     """The MIME type of the image, e.g., 'image/png', 'image/jpeg'."""

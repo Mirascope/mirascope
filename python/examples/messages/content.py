@@ -2,23 +2,29 @@ from mirascope import llm
 
 text_message = llm.messages.user("Hello, how are you?")
 
-image = llm.Image(
-    data="/path/to/book-cover.jpg",  # or URL, base64, or bytes
+image = llm.Image.from_file(
+    "/path/to/book-cover.jpg",
     mime_type="image/jpeg",
     id="book-cover",  # optional
 )
 image_message = llm.messages.user(["What book is shown in this image?", image])
 
-audio = llm.Audio(
-    data="/path/to/audio-question.mp3",  # or URL, base64, or bytes
+image_url = llm.ImageUrl(
+    url="https://coppermind.net/wiki/Mistborn:_The_Final_Empire/Covers#/media/File:TFE_US_1st_Cover.jpeg",
+    mime_type="image/jpeg",
+)
+image_url_message = llm.messages.user(["What book is shown in this image?", image_url])
+
+audio = llm.Audio.from_file(
+    "/path/to/audio-question.mp3",
     mime_type="audio/mp3",
     transcript="What's your favorite book genre?",  # optional
     id="audio-question",  # optional
 )
 audio_message = llm.messages.user(audio)
 
-document = llm.Document(
-    data="/path/to/research-paper.pdf",  # or URL, base64, or bytes
+document = llm.Document.from_file(
+    "/path/to/research-paper.pdf",
     mime_type="application/pdf",
 )
 document_message = llm.messages.user(
@@ -50,11 +56,12 @@ thinking_message = llm.messages.assistant(
     ]
 )
 
+
 mixed_message = llm.messages.user(
     [
         "I have a question about this book cover:",
-        llm.Image(
-            data="https://coppermind.net/wiki/Mistborn:_The_Final_Empire/Covers#/media/File:TFE_US_1st_Cover.jpeg",
+        llm.Image.from_file(
+            "/path/to/local-book-cover.jpg",
             mime_type="image/jpeg",
         ),
         "Can you tell me what genre this appears to be?",
