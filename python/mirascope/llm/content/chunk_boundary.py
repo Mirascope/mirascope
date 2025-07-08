@@ -26,7 +26,7 @@ class ChunkStart:
             return "{tool:start}"
         elif self.subtype == "thinking_chunk":
             return "{thinking:start}"
-        return f"{{chunk:start:{self.subtype}}}"
+        return "{chunk:start}"
 
 
 @dataclass(kw_only=True)
@@ -44,11 +44,11 @@ class ChunkEnd:
         if self.subtype == "text_chunk":
             return "\n"
         elif self.subtype == "image_chunk":
-            return "{image:done}"
+            return "{image:end}"
         elif self.subtype == "audio_chunk":
-            return "{audio:done}"
+            return "{audio:end}"
         elif self.subtype == "tool_call_chunk":
-            return "{tool:done}"
+            return "{tool:end}"
         elif self.subtype == "thinking_chunk":
-            return "{thinking:done}"
-        return f"{{chunk:end:{self.subtype}}}"
+            return "{thinking:end}"
+        return "{chunk:end:}"

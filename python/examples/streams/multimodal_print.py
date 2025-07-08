@@ -17,5 +17,5 @@ for chunk in stream:
 # Output:
 # Sure, I can generate a fictional book for you.
 # Embers of the Starfallen is a high fantasy fiction book by Lyra Nightward.
-# {image:start}....{image:done}
+# {image:start}....{image:end} # [!code highlight]
 # Here is its generated cover.

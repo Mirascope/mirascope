@@ -19,28 +19,25 @@ for group in stream.groups():
         print("  Text content:")
         for chunk in group:
             print(chunk.delta, end="", flush=True)
-        print()  # Newline after text
-        if group.final:
-            print(f"  Final text length: {len(group.final.text)} characters")
+        print("")  # Newline after text
 
     elif group.type == "image":
         print("  Image content (progressive render):")
         for _ in group:
             print(".", end="", flush=True)  # Show progress
-        if group.final:
-            print(
-                f"\n  ✓ Image complete ({group.final.mime_type}, {len(group.final.data)} bytes)"
-            )
+        final = group.collect()
+        print(f"\n  ✓ Image complete ({final.mime_type}, ~{len(final.data)} bytes)")
 
     elif group.type == "audio":
         print("  Audio content (progressive render):")
         for chunk in group:
             if chunk.delta_transcript:
                 print(f"  Transcript delta: '{chunk.delta_transcript}'")
-        if group.final:
-            print(f"  ✓ Audio complete ({group.final.mime_type})")
-            if group.final.transcript:
-                print(f"  Full transcript: '{group.final.transcript}'")
+            print(f". Audio size: ~{len(group.partial.delta)} bytes")
+        final = group.collect()
+        print(f"  ✓ Audio complete ({final.mime_type})")
+        if final.transcript:
+            print(f"  Full transcript: '{final.transcript}'")
 
 
 # Example output (updated to reflect simplification):

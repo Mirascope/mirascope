@@ -20,14 +20,14 @@ async def main():
         if group.type == "text":
             async for chunk in group:
                 print(chunk.delta, end="", flush=True)
-            print()  # New line after text
+            print("")  # New line after text
 
         elif group.type == "image":
             print("Generating image...")
             async for _ in group:
                 print(".", end="", flush=True)
-            if group.final:
-                print(f" ✓ Image complete: {len(group.final.data)} bytes")
+            final = await group.collect()
+            print(f" ✓ Image complete: {len(final.data)} bytes")
 
         elif group.type == "audio":
             print("Generating audio...")

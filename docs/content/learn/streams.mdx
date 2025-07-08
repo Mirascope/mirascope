@@ -161,17 +161,7 @@ If your prompt function itself is async, then `stream()` will be async, and will
 </Tab>
 </TabbedSection>
 
-Either way, you will get an `llm.AsyncStream` that supports async iteration. If your prompt is synchronous, then we recommend using `stream_async` for call-time flexibility.
-
-### Async Properties 
-
-`llm.AsyncStream` has the same properties and methods as `llm.Stream`, including:
-
-- `finish_reason`, `usage`, and `cost` properties that are populated as the stream is consumed
-- The same error handling patterns apply to async streams
-
-The main difference is that you use `async for` instead of `for` to iterate through the chunks. Similarly, you will use `async for` to iterate through groups, and through the chunks within each group. Once the stream is exhausted, `to_response` is still synchronous.
-
+Either way, you will get an `llm.AsyncStream` that supports async iteration. If your prompt is synchronous, then we recommend using `stream_async` for call-time flexibility. The main difference with an `llm.AsyncStream` is that you use `async for` to iterate through chunks (or groups).
 ### Async Groups
 
 The groups API works seamlessly with async streams. You use `async for` at both the group level and chunk level:
