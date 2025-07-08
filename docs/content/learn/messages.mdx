@@ -89,7 +89,7 @@ shorthand function. The name is useful when there are multiple participants in a
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/prompts.py" lines="15-25" />
+<CodeExample file="examples/messages/prompts.py" lines="25-35" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/prompts.ts" lines="13-24" />
@@ -100,10 +100,11 @@ shorthand function. The name is useful when there are multiple participants in a
 
 ## Message Content Types
 
-Messages can contain much more than just text. Modern LLMs support multimodal content, allowing you to include multiple media types in a conversation, or even within a single message. Mirascope supports 7 different content types, although [support varies depending on your chosen provider](/docs/compatibility).
+Messages can contain much more than just text. Modern LLMs support multimodal content, allowing you to include multiple media types in a conversation, or even within a single message. Mirascope supports several content types, although [support varies depending on your chosen provider](/docs/compatibility).
 
 - [`Text`](/docs/api/content#text)
 - [`Image`](/docs/api/content#image)
+- [`ImageUrl`](/docs/api/content#imageurl)
 - [`Audio`](/docs/api/content#audio)
 - [`Document`](/docs/api/content#document)
 - [`Thinking`](/docs/api/content#thinking)
@@ -126,28 +127,43 @@ The most common type of content is text. It's represented as an `llm.Text` for c
 
 ### Media Content
 
-[Depending on provider support](/docs/compatibility), you can supply `Image` or `Audio` media.
+[Depending on provider support](/docs/compatibility), you can supply `Image`, `Audio`, or `Document` media.
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="5-10" />
+<CodeExample file="examples/messages/content.py" lines="5-16" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/content.ts" lines="5-14" />
 </Tab>
 </TabbedSection>
+
 <br/>
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="12-18" />
+<CodeExample file="examples/messages/content.py" lines="18-24" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/content.ts" lines="16-23" />
 </Tab>
 </TabbedSection>
 
+<br/>
+<TabbedSection>
+<Tab value="Python">
+<CodeExample file="examples/messages/content.py" lines="26-32" />
+</Tab>
+<Tab value="Typescript">
+<CodeExample file="typescript/examples/messages/content.ts" lines="37-45" />
+</Tab>
+</TabbedSection>
+
 <Info>
-**Media content** (`Image`, `Audio`) can be provided as file paths, URLs, base64-encoded strings, or raw bytes.
+**Media content** (`Image`, `Audio`, `Document`) are represented by a `data` property, of type `str`. Generally, those strings are base64 encoded, although some document types are plain text. 
+
+Images may also be specified by http url using the `ImageUrl` type. Specifying an image by url can be more efficient, as it avoids the overhead of base64 encoding, and the LLM provider will download it directly from the external URL.
+
+For convenience, the media types all have `from_file` and `from_bytes` as static class methods.
 
 Additional options:
 
@@ -156,18 +172,6 @@ Additional options:
 
 </Info>
 
-### Document Content
-
-`Document` content allows you to embed structured document files, such as PDFs. Like media content, it can be specified via a file path, a URL, a base64-encoded string, or raw bytes.
-
-<TabbedSection>
-<Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="20-26" />
-</Tab>
-<Tab value="Typescript">
-<CodeExample file="typescript/examples/messages/content.ts" lines="37-45" />
-</Tab>
-</TabbedSection>
 
 ### Tool Interactions
 
@@ -175,7 +179,7 @@ Additional options:
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="28-39" />
+<CodeExample file="examples/messages/content.py" lines="34-45" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/content.ts" lines="47-60" />
@@ -188,7 +192,7 @@ Some models support thinking, in which case they create intermediate reasoning c
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="41-51" />
+<CodeExample file="examples/messages/content.py" lines="47-57" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/content.ts" lines="62-72" />
@@ -201,7 +205,7 @@ A message can contain a sequence of content objects, potentially of multiple typ
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="53-62" />
+<CodeExample file="examples/messages/content.py" lines="60-69" />
 </Tab>
 <Tab value="Typescript">
 <CodeExample file="typescript/examples/messages/content.ts" lines="74-82" />

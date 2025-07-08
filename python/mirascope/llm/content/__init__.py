@@ -6,8 +6,9 @@ from .chunk_boundary import ChunkEnd, ChunkStart
 from .content import Content
 from .content_chunk import ContentChunk
 from .document import Document
-from .image import Image
+from .image import Image, ImageUrl
 from .image_chunk import ImageChunk
+from .response_content import ResponseContent
 from .text import Text
 from .text_chunk import TextChunk
 from .thinking import Thinking
@@ -26,6 +27,8 @@ __all__ = [
     "Document",
     "Image",
     "ImageChunk",
+    "ImageUrl",
+    "ResponseContent",
     "Text",
     "TextChunk",
     "Thinking",

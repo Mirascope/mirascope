@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 from typing import Literal
 
+from .audio import AudioMimeType
+
 
 @dataclass(kw_only=True)
 class AudioChunk:
@@ -10,14 +12,7 @@ class AudioChunk:
 
     type: Literal["audio_chunk"] = "audio_chunk"
 
-    mime_type: Literal[
-        "audio/wav",
-        "audio/mp3",
-        "audio/aiff",
-        "audio/aac",
-        "audio/ogg",
-        "audio/flac",
-    ]
+    mime_type: AudioMimeType
     """The MIME type of the audio, e.g., 'audio/mp3', 'audio/wav'."""
 
     id: str | None = None

@@ -230,13 +230,14 @@ In all of the above examples, the various content parts are combined into a sing
 
 #### Content Input Formats
 
-The [`Image`](/docs/api/content#image), [`Audio`](/docs/api/content#audio), and [`Document`](/docs/api/content#document) types are all supported (see the [Messages guide](./messages#message-content-types) to refresh on content types). Content variables accept multiple input formats:
+The [`Image`](/docs/api/content#image), [`Audio`](/docs/api/content#audio), and [`Document`](/docs/api/content#document) types are all supported (see the [Messages guide](./messages#message-content-types) to refresh on content types). Template content variables support flexible specification, including:
 - **llm.Content objects**: `llm.Image(...)` 
 - **File paths**: `"/path/to/file.jpg"`
 - **URLs**: `"https://example.com/image.png"`
 - **Base64 strings**: `"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD..."`
 - **Raw bytes**: Binary data with inferred mime-type
 
+Under the hood, content data is generally encoded as a base64-encoded string for consistency. 
 The mime-type is automatically inferred based on the provided content format.
 
 

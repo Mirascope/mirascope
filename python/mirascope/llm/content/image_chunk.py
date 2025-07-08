@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 from typing import Literal
 
+from .image import ImageMimeType
+
 
 @dataclass(kw_only=True)
 class ImageChunk:
@@ -13,14 +15,7 @@ class ImageChunk:
 
     type: Literal["image_chunk"] = "image_chunk"
 
-    mime_type: Literal[
-        "image/png",
-        "image/jpeg",
-        "image/webp",
-        "image/gif",
-        "image/heic",
-        "image/heif",
-    ]
+    mime_type: ImageMimeType
     """The MIME type of the image, e.g., 'image/png', 'image/jpeg'."""
 
     id: str | None = None
