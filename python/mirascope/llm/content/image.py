@@ -38,7 +38,7 @@ class Image:
         cls,
         file_path: str,
         *,
-        mime_type: ImageMimeType,
+        mime_type: ImageMimeType | None,
         id: str | None = None,
     ) -> "Image":
         """Create an Image from a file path."""
@@ -49,7 +49,7 @@ class Image:
         cls,
         data: bytes,
         *,
-        mime_type: ImageMimeType,
+        mime_type: ImageMimeType | None,
         id: str | None = None,
     ) -> "Image":
         """Create an Image from raw bytes."""
@@ -70,5 +70,5 @@ class ImageUrl:
     url: str
     """The image url."""
 
-    mime_type: ImageMimeType
+    mime_type: ImageMimeType | None
     """The MIME type of the image, e.g., 'image/png', 'image/jpeg'."""

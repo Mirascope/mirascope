@@ -106,6 +106,7 @@ Messages can contain much more than just text. Modern LLMs support multimodal co
 - [`Image`](/docs/api/content#image)
 - [`ImageUrl`](/docs/api/content#imageurl)
 - [`Audio`](/docs/api/content#audio)
+- [`AudioUrl`](/docs/api/content#audiourl)
 - [`Document`](/docs/api/content#document)
 - [`Thinking`](/docs/api/content#thinking)
 - [`ToolCall`](/docs/api/content#toolcall)
@@ -148,22 +149,13 @@ The most common type of content is text. It's represented as an `llm.Text` for c
 </Tab>
 </TabbedSection>
 
-<br/>
-<TabbedSection>
-<Tab value="Python">
-<CodeExample file="examples/messages/content.py" lines="26-32" />
-</Tab>
-<Tab value="Typescript">
-<CodeExample file="typescript/examples/messages/content.ts" lines="37-45" />
-</Tab>
-</TabbedSection>
 
 <Info>
-**Media content** (`Image`, `Audio`, `Document`) are represented by a `data` property, of type `str`. Generally, those strings are base64 encoded, although some document types are plain text. 
+**Media content** (`Image`, `Audio`) is represented by a `data` property, of type `str`. Generally, those strings are base64 encoded, although some document types are plain text. 
 
-Images may also be specified by http url using the `ImageUrl` type. Specifying an image by url can be more efficient, as it avoids the overhead of base64 encoding, and the LLM provider will download it directly from the external URL.
+Media may also be specified by remote url using the `ImageUrl` and `AudioUrl` types. Specifying media by url can be more efficient, as it avoids the overhead of base64 encoding, and the LLM provider will download it directly from the external URL.
 
-For convenience, the media types all have `from_file` and `from_bytes` as static class methods.
+For convenience, the media types all have `from_file` and `from_bytes` as class methods.
 
 Additional options:
 
@@ -172,6 +164,19 @@ Additional options:
 
 </Info>
 
+### Document Content
+
+`Document` content allows you to embed structured document files, such as PDFs. Like media content, it is specified by a string (base64 encoded or plain text depending on document type), but can be loaded using `from_file` and `from_bytes` class methods.
+
+
+<TabbedSection>
+<Tab value="Python">
+<CodeExample file="examples/messages/content.py" lines="26-32" />
+</Tab>
+<Tab value="Typescript">
+<CodeExample file="typescript/examples/messages/content.ts" lines="37-45" />
+</Tab>
+</TabbedSection>
 
 ### Tool Interactions
 

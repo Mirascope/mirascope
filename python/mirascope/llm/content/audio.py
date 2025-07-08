@@ -39,7 +39,7 @@ class Audio:
         cls,
         file_path: str,
         *,
-        mime_type: AudioMimeType,
+        mime_type: AudioMimeType | None,
         transcript: str | None = None,
         id: str | None = None,
     ) -> "Audio":
@@ -51,9 +51,27 @@ class Audio:
         cls,
         data: bytes,
         *,
-        mime_type: AudioMimeType,
+        mime_type: AudioMimeType | None,
         transcript: str | None = None,
         id: str | None = None,
     ) -> "Audio":
         """Create an Audio from raw bytes."""
         raise NotImplementedError
+
+
+@dataclass(kw_only=True)
+class AudioUrl:
+    """Audio content for a message, referenced by url.
+
+    Use AudioUrl when you want to provide audio content, but have the LLM load it
+    via http. This can be specified as input, but LLM generated audios will use standard
+    audio content.
+    """
+
+    type: Literal["audio_url"] = "audio_url"
+
+    url: str
+    """The audio url."""
+
+    mime_type: AudioMimeType | None
+    """The MIME type of the audio, e.g., 'audio/png', 'audio/jpeg'."""

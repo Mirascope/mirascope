@@ -16,9 +16,7 @@ DocumentTextMimeType = Literal[
     "text/rtf",
 ]
 
-DocumentBase64MimeType = Literal[
-    "application/pdf",
-]
+DocumentBase64MimeType = Literal["application/pdf",]
 
 DocumentMimeType = DocumentTextMimeType | DocumentBase64MimeType
 
@@ -43,7 +41,7 @@ class Document:
         cls,
         file_path: str,
         *,
-        mime_type: DocumentMimeType,
+        mime_type: DocumentMimeType | None,
     ) -> "Document":
         """Create a Document from a file path."""
         raise NotImplementedError
@@ -53,7 +51,7 @@ class Document:
         cls,
         data: bytes,
         *,
-        mime_type: DocumentMimeType,
+        mime_type: DocumentMimeType | None,
     ) -> "Document":
         """Create a Document from raw bytes."""
         raise NotImplementedError
