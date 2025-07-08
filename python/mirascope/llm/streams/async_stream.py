@@ -2,8 +2,9 @@
 
 from collections.abc import AsyncIterator
 
-from ..content import StreamedContent
-from .stream import BaseStream
+from ..content import ContentChunk
+from .base import BaseStream
+from .group_types import AsyncGroup
 
 
 class AsyncStream(BaseStream):
@@ -25,10 +26,18 @@ class AsyncStream(BaseStream):
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[StreamedContent]:
+    def __aiter__(self) -> AsyncIterator[ContentChunk]:
         """Iterate through the chunks of the stream asynchronously.
 
         Returns:
             An async iterator yielding ContentChunk objects.
+        """
+        raise NotImplementedError()
+
+    def groups(self) -> AsyncIterator[AsyncGroup]:
+        """Iterate through grouped chunks of the stream asynchronously.
+
+        Returns:
+            An async iterator yielding AsyncGroup objects that contain related chunks.
         """
         raise NotImplementedError()

@@ -5,7 +5,7 @@ from typing import Generic
 
 from typing_extensions import TypeVar
 
-from ..content import StreamedContent
+from ..content import ContentChunk
 
 T = TypeVar("T", bound=object | None, default=None)
 
@@ -35,7 +35,7 @@ class AsyncStructuredStream(Generic[T]):
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[StreamedContent]:
+    def __aiter__(self) -> AsyncIterator[ContentChunk]:
         """Iterate through the structured outputs of the stream asynchronously.
 
         Returns:

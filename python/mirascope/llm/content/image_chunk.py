@@ -5,11 +5,10 @@ from typing import Literal
 
 
 @dataclass(kw_only=True)
-class ImagePartial:
+class ImageChunk:
     """Image content chunk when streaming.
 
-    The partial field contains bytes data of the current state of the image, which
-    may be progressively rendering. There is no delta.
+    Contains progressive image data as it's being generated.
     """
 
     type: Literal["image_chunk"] = "image_chunk"
@@ -27,5 +26,9 @@ class ImagePartial:
     id: str | None = None
     """A unique identifier for this image content. This is useful for tracking and referencing generated images."""
 
-    partial: str
+    delta: str
     """The progressive image data for this rendering stage as a base64 encoded string."""
+
+    def __repr__(self) -> str:
+        """Strategic representation for clean default printing."""
+        return "."

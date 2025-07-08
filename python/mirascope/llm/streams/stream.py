@@ -2,8 +2,9 @@
 
 from collections.abc import Iterator
 
-from ..content import StreamedContent
+from ..content import ContentChunk
 from .base import BaseStream
+from .group_types import Group
 
 
 class Stream(BaseStream):
@@ -25,10 +26,18 @@ class Stream(BaseStream):
         ```
     """
 
-    def __iter__(self) -> Iterator[StreamedContent]:
+    def __iter__(self) -> Iterator[ContentChunk]:
         """Iterate through the chunks of the stream.
 
         Returns:
             An iterator yielding ContentChunk objects.
+        """
+        raise NotImplementedError()
+
+    def groups(self) -> Iterator[Group]:
+        """Iterate through grouped chunks of the stream.
+
+        Returns:
+            An iterator yielding Group objects that contain related chunks.
         """
         raise NotImplementedError()

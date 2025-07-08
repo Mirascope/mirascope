@@ -1,0 +1,18 @@
+from mirascope import llm
+
+
+@llm.call("openai:gpt-4o-mini")
+def recommend_book(genre: str):
+    return f"Recommend a {genre} book and explain why it's great."
+
+
+stream = recommend_book.stream("fantasy")
+
+for chunk in stream:
+    print(chunk, end="", flush=True)
+print("")  # Add trailing newline now that stream is complete
+
+if stream.usage:
+    print(f"Final usage: {stream.usage}")  # [!code highlight]
+if stream.cost:
+    print(f"Final cost: ${stream.cost}")  # [!code highlight]
