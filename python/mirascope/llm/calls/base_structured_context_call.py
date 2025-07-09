@@ -5,14 +5,10 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
 
-from typing_extensions import TypeVar
-
 from ..models import LLM
-from ..prompts import AsyncPrompt, Prompt
+from ..prompts import PromptT
 from ..tools import ContextToolDef
 from ..types import DepsT, FormatT, Jsonable, P
-
-PromptT = TypeVar("PromptT", bound=Prompt | AsyncPrompt)
 
 
 @dataclass
