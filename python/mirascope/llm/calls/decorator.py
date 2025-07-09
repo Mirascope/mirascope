@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     )
 
 
-from ..types import DepsT, P, T
+from ..types import DepsT, FormatT, P
 
 NoneType = type(None)
 
@@ -94,47 +94,50 @@ class ContextCallDecorator(Protocol[DepsT]):
         ...
 
 
-class StructuredCallDecorator(Protocol[T]):
+class StructuredCallDecorator(Protocol[FormatT]):
     """A decorator for generating responses using LLMs."""
 
     @overload
-    def __call__(self, fn: AsyncPrompt[P]) -> AsyncStructuredCall[P, T]:
+    def __call__(self, fn: AsyncPrompt[P]) -> AsyncStructuredCall[P, FormatT]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: Prompt[P]) -> StructuredCall[P, T]:
+    def __call__(self, fn: Prompt[P]) -> StructuredCall[P, FormatT]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
         self, fn: Prompt[P] | AsyncPrompt[P]
-    ) -> StructuredCall[P, T] | AsyncStructuredCall[P, T]:
+    ) -> StructuredCall[P, FormatT] | AsyncStructuredCall[P, FormatT]:
         """Decorates a function to generate responses using LLMs."""
         ...
 
 
-class StructuredContextCallDecorator(Protocol[T, DepsT]):
+class StructuredContextCallDecorator(Protocol[FormatT, DepsT]):
     """A decorator for generating responses using LLMs."""
 
     @overload
     def __call__(
         self, fn: AsyncContextPrompt[P, DepsT]
-    ) -> AsyncStructuredContextCall[P, T, DepsT]:
+    ) -> AsyncStructuredContextCall[P, FormatT, DepsT]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
     def __call__(
         self, fn: ContextPrompt[P, DepsT]
-    ) -> StructuredContextCall[P, T, DepsT]:
+    ) -> StructuredContextCall[P, FormatT, DepsT]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
         self,
         fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
-    ) -> StructuredContextCall[P, T, DepsT] | AsyncStructuredContextCall[P, T, DepsT]:
+    ) -> (
+        StructuredContextCall[P, FormatT, DepsT]
+        | AsyncStructuredContextCall[P, FormatT, DepsT]
+    ):
         """Decorates a function to generate responses using LLMs."""
         ...
 
@@ -173,10 +176,10 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: type[T],
+    response_format: type[FormatT],
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> StructuredCallDecorator[T]:
+) -> StructuredCallDecorator[FormatT]:
     """Overload for Anthropic structured generation."""
     ...
 
@@ -187,10 +190,10 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T],
+    response_format: type[FormatT],
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> StructuredContextCallDecorator[T, DepsT]:
+) -> StructuredContextCallDecorator[FormatT, DepsT]:
     """Overload for Anthropic structured contextual generation."""
     ...
 
@@ -229,10 +232,10 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: type[T],
+    response_format: type[FormatT],
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> StructuredCallDecorator[T]:
+) -> StructuredCallDecorator[FormatT]:
     """Overload for Google structured generation."""
     ...
 
@@ -243,10 +246,10 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T],
+    response_format: type[FormatT],
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> StructuredContextCallDecorator[T, DepsT]:
+) -> StructuredContextCallDecorator[FormatT, DepsT]:
     """Overload for Google structured contextual generation."""
     ...
 
@@ -285,10 +288,10 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: type[T],
+    response_format: type[FormatT],
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> StructuredCallDecorator[T]:
+) -> StructuredCallDecorator[FormatT]:
     """Overload for OpenAI structured generation."""
     ...
 
@@ -299,10 +302,10 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T],
+    response_format: type[FormatT],
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> StructuredContextCallDecorator[T, DepsT]:
+) -> StructuredContextCallDecorator[FormatT, DepsT]:
     """Overload for OpenAI structured contextual generation."""
     ...
 
@@ -341,10 +344,10 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: type[T],
+    response_format: type[FormatT],
     client: None,
     **params: Unpack[BaseParams],
-) -> StructuredCallDecorator[T]:
+) -> StructuredCallDecorator[FormatT]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -355,10 +358,10 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T],
+    response_format: type[FormatT],
     client: None,
     **params: Unpack[BaseParams],
-) -> StructuredContextCallDecorator[T, DepsT]:
+) -> StructuredContextCallDecorator[FormatT, DepsT]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -370,14 +373,14 @@ def call(
     tools: Sequence[ToolDef]
     | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
     | None = None,
-    response_format: type[T] | None = None,
+    response_format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
 ) -> (
     CallDecorator
     | ContextCallDecorator[DepsT]
-    | StructuredCallDecorator[T]
-    | StructuredContextCallDecorator[T, DepsT]
+    | StructuredCallDecorator[FormatT]
+    | StructuredContextCallDecorator[FormatT, DepsT]
 ):
     """Returns a decorator for turning prompt template functions into generations.
 

@@ -2,6 +2,6 @@
 
 from .dataclass import Dataclass
 from .jsonable import Jsonable
-from .type_vars import DepsT, P, T
+from .type_vars import DepsT, FormatT, P
 
-__all__ = ["Dataclass", "DepsT", "Jsonable", "P", "T"]
+__all__ = ["Dataclass", "DepsT", "FormatT", "Jsonable", "P"]

@@ -8,17 +8,17 @@ from typing import Generic
 from ..context import Context
 from ..models import LLM
 from ..tools import ToolDef
-from ..types import DepsT, T
+from ..types import DepsT, FormatT
 
 
 @dataclass
-class BaseStructuredAgent(Generic[DepsT, T], ABC):
+class BaseStructuredAgent(Generic[DepsT, FormatT], ABC):
     """Structured agent class for generating structured responses using LLMs with tools."""
 
     ctx: Context[DepsT]
     """The context for the agent, such as the history of messages."""
 
-    response_format: type[T] | None
+    response_format: type[FormatT] | None
     """The response format for the agent, if any."""
 
     tools: Sequence[ToolDef] | None

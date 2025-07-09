@@ -17,7 +17,7 @@ if TYPE_CHECKING:
         REGISTERED_LLMS,
     )
 
-from ..types import DepsT, P, T
+from ..types import DepsT, FormatT, P
 
 NoneType = type(None)
 
@@ -54,23 +54,25 @@ class AgentDecorator(Protocol[DepsT]):
         ...
 
 
-class StructuredAgentDecorator(Protocol[DepsT, T]):
+class StructuredAgentDecorator(Protocol[DepsT, FormatT]):
     """Protocol for the `agent` decorator with a response format."""
 
     @overload
-    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> StructuredAgent[DepsT, T]:
+    def __call__(
+        self, fn: AsyncSystemPrompt[P, DepsT]
+    ) -> StructuredAgent[DepsT, FormatT]:
         """Decorator for creating an async only structured agent."""
         ...
 
     @overload
-    def __call__(self, fn: SystemPrompt[P, DepsT]) -> StructuredAgent[DepsT, T]:
+    def __call__(self, fn: SystemPrompt[P, DepsT]) -> StructuredAgent[DepsT, FormatT]:
         """Decorator for creating a structured agent."""
         ...
 
     def __call__(
         self,
         fn: SystemPrompt[P, DepsT] | AsyncSystemPrompt[P, DepsT],
-    ) -> StructuredAgent[DepsT, T] | AsyncStructuredAgent[DepsT, T]:
+    ) -> StructuredAgent[DepsT, FormatT] | AsyncStructuredAgent[DepsT, FormatT]:
         """Decorator for creating a structured agent."""
         ...
 
@@ -179,10 +181,10 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T],
+    response_format: type[FormatT],
     # client: Client | None = None,
     # **params: Unpack[Params],
-) -> StructuredAgentDecorator[DepsT, T]:
+) -> StructuredAgentDecorator[DepsT, FormatT]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -192,10 +194,10 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T] | None = None,
+    response_format: type[FormatT] | None = None,
     # client: Client | None = None,
     # **params: Unpack[Params],
-) -> AgentDecorator[DepsT] | StructuredAgentDecorator[DepsT, T]:
+) -> AgentDecorator[DepsT] | StructuredAgentDecorator[DepsT, FormatT]:
     """Decorator for creating an agent or structured agent.
 
     Args:

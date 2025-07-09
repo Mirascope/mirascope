@@ -2,7 +2,14 @@
 
 from typing_extensions import ParamSpec, TypeVar
 
-T = TypeVar("T", bound=object | None, default=None)
+FormatT = TypeVar("FormatT", bound=object | None, default=None)
+"""Type variable for structured response format types.
+
+This TypeVar represents the type of structured output format that LLM responses
+can be parsed into, such as Pydantic models, dataclasses, or custom classes.
+It can be None for unstructured responses and defaults to None when no specific
+format is required.
+"""
 
 P = ParamSpec("P")
 """Parameter specification for function signatures.

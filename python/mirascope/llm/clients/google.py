@@ -16,7 +16,7 @@ from ..streams import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
-from ..types import DepsT, T
+from ..types import DepsT, FormatT
 from .base import BaseClient
 from .register import GOOGLE_REGISTERED_LLMS
 
@@ -57,9 +57,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type[T],
+        response_format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> Response[T]:
+    ) -> Response[FormatT]:
         raise NotImplementedError
 
     def structured_context_call(
@@ -69,9 +69,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
-        response_format: type[T],
+        response_format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> Response[T]:
+    ) -> Response[FormatT]:
         raise NotImplementedError
 
     async def call_async(
@@ -101,9 +101,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type[T],
+        response_format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> Response[T]:
+    ) -> Response[FormatT]:
         raise NotImplementedError
 
     async def structured_context_call_async(
@@ -113,9 +113,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
-        response_format: type[T],
+        response_format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> Response[T]:
+    ) -> Response[FormatT]:
         raise NotImplementedError
 
     def stream(
@@ -145,9 +145,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type[T],
+        response_format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> StructuredStream[T]:
+    ) -> StructuredStream[FormatT]:
         raise NotImplementedError
 
     def structured_context_stream(
@@ -157,9 +157,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
-        response_format: type[T],
+        response_format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> StructuredStream[T]:
+    ) -> StructuredStream[FormatT]:
         raise NotImplementedError
 
     async def stream_async(
@@ -189,9 +189,9 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type[T],
+        response_format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> AsyncStructuredStream[T]:
+    ) -> AsyncStructuredStream[FormatT]:
         raise NotImplementedError
 
     async def structured_context_stream_async(
@@ -201,7 +201,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
-        response_format: type[T],
+        response_format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> AsyncStructuredStream[T]:
+    ) -> AsyncStructuredStream[FormatT]:
         raise NotImplementedError
