@@ -39,11 +39,11 @@ if TYPE_CHECKING:
     )
 
 
-from ..types import DepsT, P
+from ..types import DepsT, P, T
 
 NoneType = type(None)
 
-T = TypeVar("T", bound=object | None, default=None)
+
 NoDepsT = TypeVar("NoDepsT", bound=None)
 
 

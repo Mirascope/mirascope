@@ -3,16 +3,12 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from typing_extensions import TypeVar
-
 from ..content import UserContent
 from ..prompts import AsyncPrompt
 from ..responses import Response
 from ..streams import AsyncStructuredStream
-from ..types import P
+from ..types import P, T
 from .base_structured_call import BaseStructuredCall
-
-T = TypeVar("T", bound=object | None, default=None)
 
 
 @dataclass

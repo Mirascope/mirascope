@@ -22,9 +22,8 @@ if TYPE_CHECKING:
     from ..clients import REGISTERED_LLMS
 
 
-from ..types import DepsT
+from ..types import DepsT, T
 
-T = TypeVar("T", bound=object | None, default=None)
 MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="BaseParams")
 ClientT = TypeVar("ClientT", bound="BaseClient")

@@ -2,6 +2,8 @@
 
 from typing_extensions import ParamSpec, TypeVar
 
+T = TypeVar("T", bound=object | None, default=None)
+
 P = ParamSpec("P")
 """Parameter specification for function signatures.
 

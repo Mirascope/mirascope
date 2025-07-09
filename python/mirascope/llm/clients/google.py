@@ -4,7 +4,6 @@ from collections.abc import Sequence
 from typing import Any, TypeAlias
 
 from google.genai.types import ContentDict, FunctionResponse
-from typing_extensions import TypeVar
 
 from ..context import Context
 from ..messages import Message
@@ -17,11 +16,9 @@ from ..streams import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
-from ..types import DepsT
+from ..types import DepsT, T
 from .base import BaseClient
 from .register import GOOGLE_REGISTERED_LLMS
-
-T = TypeVar("T", bound=object | None, default=None)
 
 GoogleMessage: TypeAlias = Message | ContentDict | FunctionResponse
 

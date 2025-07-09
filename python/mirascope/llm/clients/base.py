@@ -15,9 +15,9 @@ from ..streams import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
+from ..types import T
 from .register import REGISTERED_LLMS
 
-T = TypeVar("T", bound=object | None)
 MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="BaseParams")
 DepsT = TypeVar("DepsT")

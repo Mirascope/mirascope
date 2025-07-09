@@ -5,8 +5,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Protocol, overload
 
-from typing_extensions import TypeVar
-
 from ..context import Context
 from ..tools import ContextToolDef, ToolDef
 from .agent import Agent
@@ -19,11 +17,9 @@ if TYPE_CHECKING:
         REGISTERED_LLMS,
     )
 
-from ..types import DepsT, P
+from ..types import DepsT, P, T
 
 NoneType = type(None)
-
-T = TypeVar("T", bound=object | None, default=None)
 
 
 class SystemPrompt(Protocol[P, DepsT]):
