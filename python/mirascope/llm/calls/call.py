@@ -2,15 +2,13 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import ParamSpec
 
 from ..content import UserContent
 from ..prompts import Prompt
 from ..responses import Response
 from ..streams import AsyncStream, Stream
+from ..types import P
 from .base_call import BaseCall
-
-P = ParamSpec("P")
 
 
 @dataclass

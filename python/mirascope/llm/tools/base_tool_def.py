@@ -1,13 +1,12 @@
 """The `BaseToolDef` class for defining tools that LLMs can request be called."""
 
 from dataclasses import dataclass
-from typing import Generic, ParamSpec
+from typing import Generic
 
 from typing_extensions import TypeVar
 
-from ..types import Jsonable
+from ..types import Jsonable, P
 
-P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
 
 

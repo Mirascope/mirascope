@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Concatenate, Generic, ParamSpec, TypeGuard
+from typing import TYPE_CHECKING, Concatenate, Generic, TypeGuard
 
 from typing_extensions import TypeVar
 
@@ -16,7 +16,8 @@ from .base_tool_def import BaseToolDef
 if TYPE_CHECKING:
     from .context_tool import ContextTool
 
-P = ParamSpec("P")
+from ..types import P
+
 R = TypeVar("R", bound=Jsonable)
 
 

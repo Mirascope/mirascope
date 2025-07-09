@@ -2,17 +2,14 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import ParamSpec
 
 from ..content import UserContent
 from ..context import Context
 from ..prompts import Prompt
 from ..responses import Response
 from ..streams import AsyncStream, Stream
-from ..types import DepsT
+from ..types import DepsT, P
 from .base_context_call import BaseContextCall
-
-P = ParamSpec("P")
 
 
 @dataclass
@@ -50,25 +47,33 @@ class ContextCall(BaseContextCall[P, Prompt, DepsT]):
         raise NotImplementedError()
 
     def resume(
-        self, response: Response[DepsT, None], content: UserContent | Sequence[UserContent]
+        self,
+        response: Response[DepsT, None],
+        content: UserContent | Sequence[UserContent],
     ) -> Response[DepsT, None]:
         """Generate a new response by continuing from a previous response, plus new user content."""
         raise NotImplementedError()
 
     async def resume_async(
-        self, response: Response[DepsT, None], content: UserContent | Sequence[UserContent]
+        self,
+        response: Response[DepsT, None],
+        content: UserContent | Sequence[UserContent],
     ) -> Response[DepsT, None]:
         """Generate a new response asynchronously by continuing from a previous response, plus new user content."""
         raise NotImplementedError()
 
     def resume_stream(
-        self, response: Response[DepsT, None], content: UserContent | Sequence[UserContent]
+        self,
+        response: Response[DepsT, None],
+        content: UserContent | Sequence[UserContent],
     ) -> Stream[DepsT]:
         """Generate a new stream by continuing from a previous response, plus new user content."""
         raise NotImplementedError()
 
     def resume_stream_async(
-        self, response: Response[DepsT, None], content: UserContent | Sequence[UserContent]
+        self,
+        response: Response[DepsT, None],
+        content: UserContent | Sequence[UserContent],
     ) -> AsyncStream[DepsT]:
         """Generate a new async stream by continuing from a previous response, plus new user content."""
         raise NotImplementedError()

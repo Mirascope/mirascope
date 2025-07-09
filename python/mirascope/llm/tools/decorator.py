@@ -1,17 +1,17 @@
 """The `llm.tool` decorator for turning functions into tools."""
 
 from collections.abc import Callable
-from typing import ParamSpec, Protocol, overload
+from typing import Protocol, overload
 
 from typing_extensions import TypeVar
 
 from ..context import Context
-from ..types import Jsonable
+from ..types import Jsonable, P
 from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef
 
 NoneType = type(None)
-P = ParamSpec("P")
+
 R = TypeVar("R", bound=Jsonable)
 CovariantR = TypeVar("CovariantR", covariant=True, bound=Jsonable)
 DepsT = TypeVar("DepsT")

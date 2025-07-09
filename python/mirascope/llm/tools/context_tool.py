@@ -7,17 +7,16 @@ with the specific arguments provided by the LLM.
 """
 
 from dataclasses import dataclass
-from typing import Generic, ParamSpec
+from typing import Generic
 
 from typing_extensions import TypeVar
 
 from ..content import ToolOutput
 from ..context import Context
-from ..types import DepsT, Jsonable
+from ..types import DepsT, Jsonable, P
 from .base_tool import BaseTool
 from .context_tool_def import ContextToolDef
 
-P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
 
 

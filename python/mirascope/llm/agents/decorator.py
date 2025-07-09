@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, overload
+from typing import TYPE_CHECKING, Any, Protocol, overload
 
 from typing_extensions import TypeVar
 
@@ -19,10 +19,10 @@ if TYPE_CHECKING:
         REGISTERED_LLMS,
     )
 
-from ..types import DepsT
+from ..types import DepsT, P
 
 NoneType = type(None)
-P = ParamSpec("P")
+
 T = TypeVar("T", bound=object | None, default=None)
 
 

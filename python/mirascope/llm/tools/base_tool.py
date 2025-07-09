@@ -2,11 +2,10 @@
 
 from abc import ABC
 from dataclasses import dataclass
-from typing import Generic, ParamSpec, TypeVar
+from typing import Generic, TypeVar
 
-from ..types import Jsonable
+from ..types import Jsonable, P
 
-P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
 
 

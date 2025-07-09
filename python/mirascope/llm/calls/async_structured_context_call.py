@@ -2,7 +2,6 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import ParamSpec
 
 from typing_extensions import TypeVar
 
@@ -11,10 +10,9 @@ from ..context import Context
 from ..prompts import AsyncPrompt
 from ..responses import Response
 from ..streams import AsyncStructuredStream
-from ..types import DepsT
+from ..types import DepsT, P
 from .base_structured_context_call import BaseStructuredContextCall
 
-P = ParamSpec("P")
 T = TypeVar("T", bound=object | None, default=None)
 
 
