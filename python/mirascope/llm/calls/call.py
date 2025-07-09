@@ -1,7 +1,9 @@
 """The Call module for generating responses using LLMs."""
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
+from ..content import UserContent
 from ..prompts import Prompt
 from ..responses import Response
 from ..streams import AsyncStream, Stream
@@ -17,6 +19,10 @@ class Call(BaseCall[P, Prompt]):
         """Generates a response using the LLM."""
         raise NotImplementedError()
 
+    def call(self, *args: P.args, **kwargs: P.kwargs) -> Response[None, None]:
+        """Generates a response using the LLM."""
+        raise NotImplementedError()
+
     async def call_async(
         self, *args: P.args, **kwargs: P.kwargs
     ) -> Response[None, None]:
@@ -29,4 +35,28 @@ class Call(BaseCall[P, Prompt]):
 
     def stream_async(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream[None]:
         """Generates an asynchronous streaming response using the LLM."""
+        raise NotImplementedError()
+
+    def resume(
+        self, response: Response, content: UserContent | Sequence[UserContent]
+    ) -> Response[None, None]:
+        """Generate a new response by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()
+
+    async def resume_async(
+        self, response: Response, content: UserContent | Sequence[UserContent]
+    ) -> Response[None, None]:
+        """Generate a new response asynchronously by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()
+
+    def resume_stream(
+        self, response: Response, content: UserContent | Sequence[UserContent]
+    ) -> Stream[None]:
+        """Generate a new stream by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()
+
+    def resume_stream_async(
+        self, response: Response, content: UserContent | Sequence[UserContent]
+    ) -> AsyncStream[None]:
+        """Generate a new async stream by continuing from a previous response, plus new user content."""
         raise NotImplementedError()
