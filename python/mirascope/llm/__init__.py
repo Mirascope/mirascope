@@ -56,6 +56,7 @@ from .exceptions import (
     RateLimitError,
     ServerError,
     TimeoutError,
+    ToolNotFoundError,
 )
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
@@ -120,6 +121,7 @@ __all__ = [
     "ToolCall",
     "ToolCallChunk",
     "ToolDef",
+    "ToolNotFoundError",
     "ToolOutput",
     "UserContent",
     "UserMessage",
