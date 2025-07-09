@@ -19,7 +19,7 @@ async def main():
     async for group in stream.groups():
         if group.type == "text":
             async for chunk in group:
-                print(chunk.delta, end="", flush=True)
+                print(chunk, end="", flush=True)
             print("")  # New line after text
 
         elif group.type == "image":

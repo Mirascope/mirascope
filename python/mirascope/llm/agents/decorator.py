@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, TypeAlias, overload
+from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, overload
 
 from typing_extensions import TypeVar
 
-from ..content import Content
 from ..context import Context
 from ..tools import ContextToolDef, ToolDef
 from .agent import Agent
@@ -26,52 +25,16 @@ DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", bound=object | None, default=None)
 
 
-class AgentStringReturn(Protocol[P, DepsT]):
-    """Protocol for a prompt template function that returns a single string."""
+class SystemPrompt(Protocol[P, DepsT]):
+    """Protocol for a prompt template function that returns a system prompt as a string."""
 
     def __call__(self, ctx: Context[DepsT]) -> str: ...
 
 
-class AsyncAgentStringReturn(Protocol[P, DepsT]):
-    """Protocol for a prompt template function that returns a single string."""
+class AsyncSystemPrompt(Protocol[P, DepsT]):
+    """Protocol for an async prompt template function that returns a system prompt as a string."""
 
     async def __call__(self, ctx: Context[DepsT]) -> str: ...
-
-
-class AgentContentReturn(Protocol[P, DepsT]):
-    """Protocol for a prompt template function that returns a single content part."""
-
-    def __call__(self, ctx: Context[DepsT]) -> Content: ...
-
-
-class AsyncAgentContentReturn(Protocol[P, DepsT]):
-    """Protocol for a prompt template function that returns a single content part."""
-
-    async def __call__(self, ctx: Context[DepsT]) -> Content: ...
-
-
-class AgentContentSequenceReturn(Protocol[P, DepsT]):
-    """Protocol for a prompt template function that returns a content parts sequence."""
-
-    def __call__(self, ctx: Context[DepsT]) -> Sequence[Content]: ...
-
-
-class AsyncAgentContentSequenceReturn(Protocol[P, DepsT]):
-    """Protocol for a prompt template function that returns a content parts sequence."""
-
-    async def __call__(self, ctx: Context[DepsT]) -> Sequence[Content]: ...
-
-
-SystemPrompt: TypeAlias = (
-    AgentStringReturn[P, DepsT]
-    | AgentContentReturn[P, DepsT]
-    | AgentContentSequenceReturn[P, DepsT]
-)
-AsyncSystemPrompt: TypeAlias = (
-    AsyncAgentStringReturn[P, DepsT]
-    | AsyncAgentContentReturn[P, DepsT]
-    | AsyncAgentContentSequenceReturn[P, DepsT]
-)
 
 
 class AgentDecorator(Protocol[DepsT]):

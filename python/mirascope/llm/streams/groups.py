@@ -3,13 +3,13 @@
 from collections.abc import AsyncIterator, Iterator
 from typing import Generic, TypeVar
 
-from ..content import Content
+from ..content import AssistantContent
 
 ChunkT = TypeVar("ChunkT")
-ContentT = TypeVar("ContentT", bound=Content)
+AssistantContentT = TypeVar("AssistantContentT", bound=AssistantContent)
 
 
-class BaseGroup(Generic[ChunkT, ContentT]):
+class BaseGroup(Generic[ChunkT, AssistantContentT]):
     """Base class for streaming content groups.
 
     Groups represent sequences of related chunks that accumulate into a final content object.
@@ -26,7 +26,7 @@ class BaseGroup(Generic[ChunkT, ContentT]):
         """The latest accumulated chunk state, updated as chunks are consumed."""
         raise NotImplementedError()
 
-    def collect(self) -> ContentT:
+    def collect(self) -> AssistantContentT:
         """Collects the final combined content of the group. Calling this will iterate through the stream if it is not already exhausted."""
         raise NotImplementedError()
 
@@ -39,7 +39,7 @@ class BaseGroup(Generic[ChunkT, ContentT]):
         raise NotImplementedError()
 
 
-class BaseAsyncGroup(Generic[ChunkT, ContentT]):
+class BaseAsyncGroup(Generic[ChunkT, AssistantContentT]):
     """Base class for async streaming content groups.
 
     Async version of BaseGroup for asynchronous streaming.
@@ -55,7 +55,7 @@ class BaseAsyncGroup(Generic[ChunkT, ContentT]):
         """The latest accumulated chunk state, updated as chunks are consumed."""
         raise NotImplementedError()
 
-    async def collect(self) -> ContentT:
+    async def collect(self) -> AssistantContentT:
         """Collects the final combined content of the group. Calling this will iterate through the stream if it is not already exhausted."""
         raise NotImplementedError()
 

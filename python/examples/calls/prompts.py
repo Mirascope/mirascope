@@ -9,13 +9,13 @@ def recommend_book_messages() -> list[llm.Message]:
     return [llm.messages.user("Please recommend a book")]
 
 
-def audio_prompt(audio: llm.Audio) -> llm.Content:
+def audio_prompt(audio: llm.Audio) -> llm.UserContent:
     return audio
 
 
 def multimodal_prompt(
     audio: llm.Audio, image: llm.Image, documents: list[llm.Document]
-) -> list[str | llm.Content]:
+) -> list[str | llm.UserContent]:
     return [
         "Analyze the following audio",
         audio,

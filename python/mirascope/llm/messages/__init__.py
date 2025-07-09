@@ -6,14 +6,20 @@ content arrays that can include text, images, audio, documents, and tool interac
 """
 
 from .message import (
+    AssistantMessage,
     Message,
+    SystemMessage,
+    UserMessage,
     assistant,
     system,
     user,
 )
 
 __all__ = [
+    "AssistantMessage",
     "Message",
+    "SystemMessage",
+    "UserMessage",
     "assistant",
     "system",
     "user",

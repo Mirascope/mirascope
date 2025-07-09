@@ -13,8 +13,7 @@ recommendation: llm.Response = recommend_book("fantasy")
 representation = str(recommendation)  # [!code highlight]
 
 # Or you can retrieve the wrapped Text via the `.text` property:
-text_content: llm.Text | None = recommendation.text  # [!code highlight]
-text = text_content.text if text_content else None  # [!code highlight]
+text: str | None = recommendation.text  # [!code highlight]
 
 assert representation == text
 print(text)
