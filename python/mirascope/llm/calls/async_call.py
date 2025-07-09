@@ -1,8 +1,10 @@
 """The AsyncCall module for generating responses asynchronously using LLMs."""
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import ParamSpec
 
+from ..content import UserContent
 from ..prompts import AsyncPrompt
 from ..responses import Response
 from ..streams import AsyncStream
@@ -19,6 +21,10 @@ class AsyncCall(BaseCall[P, AsyncPrompt]):
         """Generates a response using the LLM asynchronously."""
         raise NotImplementedError()
 
+    async def call(self, *args: P.args, **kwargs: P.kwargs) -> Response:
+        """Generates a response using the LLM asynchronously."""
+        raise NotImplementedError()
+
     async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response:
         """Generates an asynchronous response using the LLM."""
         return await self(*args, **kwargs)
@@ -30,3 +36,27 @@ class AsyncCall(BaseCall[P, AsyncPrompt]):
     async def stream_async(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream:
         """Generates an asynchronous streaming response using the LLM."""
         return await self.stream(*args, **kwargs)
+
+    async def resume(
+        self, response: Response, content: UserContent | Sequence[UserContent]
+    ) -> Response:
+        """Generate a new response by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()
+
+    async def resume_async(
+        self, response: Response, content: UserContent | Sequence[UserContent]
+    ) -> Response:
+        """Generate a new response asynchronously by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()
+
+    async def resume_stream(
+        self, response: Response, content: UserContent | Sequence[UserContent]
+    ) -> AsyncStream:
+        """Generate a new stream by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()
+
+    async def resume_stream_async(
+        self, response: Response, content: UserContent | Sequence[UserContent]
+    ) -> AsyncStream:
+        """Generate a new async stream by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()

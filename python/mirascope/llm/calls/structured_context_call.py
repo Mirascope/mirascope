@@ -1,10 +1,12 @@
 """The StructuredContextCall module for generating structured responses using LLMs."""
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import ParamSpec
 
 from typing_extensions import TypeVar
 
+from ..content import UserContent
 from ..context import Context
 from ..prompts import Prompt
 from ..responses import Response
@@ -26,6 +28,12 @@ class StructuredContextCall(BaseStructuredContextCall[P, Prompt, T, DepsT]):
         """Generates a structured response using the LLM."""
         raise NotImplementedError()
 
+    def call(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> Response[DepsT, T]:
+        """Generates a structured response using the LLM."""
+        raise NotImplementedError()
+
     async def call_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> Response[DepsT, T]:
@@ -42,4 +50,28 @@ class StructuredContextCall(BaseStructuredContextCall[P, Prompt, T, DepsT]):
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStructuredStream[DepsT, T]:
         """Generates an asynchronous streaming structured response using the LLM."""
+        raise NotImplementedError()
+
+    def resume(
+        self, response: Response[DepsT, T], content: UserContent | Sequence[UserContent]
+    ) -> Response[DepsT, T]:
+        """Generate a new response by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()
+
+    async def resume_async(
+        self, response: Response[DepsT, T], content: UserContent | Sequence[UserContent]
+    ) -> Response[DepsT, T]:
+        """Generate a new response asynchronously by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()
+
+    def resume_stream(
+        self, response: Response[DepsT, T], content: UserContent | Sequence[UserContent]
+    ) -> StructuredStream[DepsT, T]:
+        """Generate a new stream by continuing from a previous response, plus new user content."""
+        raise NotImplementedError()
+
+    async def resume_stream_async(
+        self, response: Response[DepsT, T], content: UserContent | Sequence[UserContent]
+    ) -> AsyncStructuredStream[DepsT, T]:
+        """Generate a new async stream by continuing from a previous response, plus new user content."""
         raise NotImplementedError()
