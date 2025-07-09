@@ -42,6 +42,10 @@ class NotFoundError(APIError):
     """Raised when requested resource is not found (404)."""
 
 
+class ToolNotFoundError(APIError):
+    """Raised if a tool_call cannot be converted to any corresponding tool."""
+
+
 class RateLimitError(APIError):
     """Raised when rate limits are exceeded (429)."""
 
