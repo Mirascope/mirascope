@@ -1,18 +1,13 @@
 """The ContextCall module for generating responses using LLMs with context."""
 
 from dataclasses import dataclass
-from typing import ParamSpec
-
-from typing_extensions import TypeVar
 
 from ..context import Context
 from ..prompts import Prompt
 from ..responses import Response
 from ..streams import AsyncStream, Stream
+from ..types import DepsT, P
 from .base_context_call import BaseContextCall
-
-P = ParamSpec("P")
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass

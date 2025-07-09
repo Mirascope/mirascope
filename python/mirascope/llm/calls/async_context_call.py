@@ -1,18 +1,13 @@
 """The AsyncContextCall module for generating responses asynchronously using LLMs."""
 
 from dataclasses import dataclass
-from typing import ParamSpec
-
-from typing_extensions import TypeVar
 
 from ..context import Context
 from ..prompts import AsyncPrompt
 from ..responses import Response
 from ..streams import AsyncStream
+from ..types import DepsT, P
 from .base_context_call import BaseContextCall
-
-P = ParamSpec("P")
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass

@@ -11,14 +11,11 @@ the stream for convenience (e.g. calling stream.cost after the stream is done).
 from collections.abc import Iterator
 from typing import Generic
 
-from typing_extensions import TypeVar
-
 from ..content import ContentChunk
+from ..types import FormatT
 
-T = TypeVar("T", bound=object | None, default=None)
 
-
-class StructuredStream(Generic[T]):
+class StructuredStream(Generic[FormatT]):
     """A synchronous stream of partial structured outputs from an LLM.
 
     This class supports iteration to process structured outputs as they arrive from the

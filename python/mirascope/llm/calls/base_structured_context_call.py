@@ -3,23 +3,16 @@
 from abc import ABC
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Generic, ParamSpec
-
-from typing_extensions import TypeVar
+from typing import Generic
 
 from ..models import LLM
-from ..prompts import AsyncPrompt, Prompt
+from ..prompts import PromptT
 from ..tools import ContextToolDef
-from ..types import Jsonable
-
-P = ParamSpec("P")
-T = TypeVar("T", bound=object | None, default=None)
-PromptT = TypeVar("PromptT", bound=Prompt | AsyncPrompt)
-DepsT = TypeVar("DepsT", default=None)
+from ..types import DepsT, FormatT, Jsonable, P
 
 
 @dataclass
-class BaseStructuredContextCall(Generic[P, PromptT, T, DepsT], ABC):
+class BaseStructuredContextCall(Generic[P, PromptT, FormatT, DepsT], ABC):
     """A base class for generating responses using LLMs."""
 
     model: LLM
@@ -28,7 +21,7 @@ class BaseStructuredContextCall(Generic[P, PromptT, T, DepsT], ABC):
     tools: Sequence[ContextToolDef[..., Jsonable, DepsT]] | None
     """The tools to be used with the LLM."""
 
-    response_format: type[T]
+    response_format: type[FormatT]
     """The response format for the generated response."""
 
     fn: PromptT

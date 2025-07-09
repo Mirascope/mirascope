@@ -3,14 +3,11 @@
 from collections.abc import AsyncIterator
 from typing import Generic
 
-from typing_extensions import TypeVar
-
 from ..content import ContentChunk
+from ..types import FormatT
 
-T = TypeVar("T", bound=object | None, default=None)
 
-
-class AsyncStructuredStream(Generic[T]):
+class AsyncStructuredStream(Generic[FormatT]):
     """An asynchronous stream of partial structured outputs from an LLM.
 
     This class supports async iteration to process structured outputs as they arrive

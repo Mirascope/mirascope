@@ -3,18 +3,12 @@
 from abc import ABC
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Generic, ParamSpec
-
-from typing_extensions import TypeVar
+from typing import Generic
 
 from ..models import LLM
-from ..prompts import AsyncPrompt, Prompt
+from ..prompts import PromptT
 from ..tools import ContextToolDef
-from ..types import Jsonable
-
-P = ParamSpec("P")
-PromptT = TypeVar("PromptT", bound=Prompt | AsyncPrompt)
-DepsT = TypeVar("DepsT", default=None)
+from ..types import DepsT, Jsonable, P
 
 
 @dataclass
