@@ -3,11 +3,7 @@
 from dataclasses import dataclass
 from typing import Generic
 
-from typing_extensions import TypeVar
-
-from ..types import Jsonable, P
-
-R = TypeVar("R", bound=Jsonable)
+from ..types import Jsonable, P, R
 
 
 @dataclass

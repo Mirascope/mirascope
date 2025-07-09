@@ -6,19 +6,15 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Concatenate, Generic, TypeGuard
 
-from typing_extensions import TypeVar
-
 from ..context import Context
-from ..types import DepsT, Jsonable
+from ..types import DepsT
 from .base_tool import BaseTool
 from .base_tool_def import BaseToolDef
 
 if TYPE_CHECKING:
     from .context_tool import ContextTool
 
-from ..types import P
-
-R = TypeVar("R", bound=Jsonable)
+from ..types import P, R
 
 
 @dataclass

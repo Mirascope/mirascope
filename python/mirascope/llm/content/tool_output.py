@@ -1,11 +1,9 @@
 """The `ToolOutput` content class."""
 
 from dataclasses import dataclass
-from typing import Generic, Literal, TypeVar
+from typing import Generic, Literal
 
-from ..types import Jsonable
-
-R = TypeVar("R", bound=Jsonable)
+from ..types import R
 
 
 @dataclass(kw_only=True)

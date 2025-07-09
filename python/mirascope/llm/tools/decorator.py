@@ -6,13 +6,13 @@ from typing import Protocol, overload
 from typing_extensions import TypeVar
 
 from ..context import Context
-from ..types import Jsonable, P
+from ..types import Jsonable, P, R
 from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef
 
 NoneType = type(None)
 
-R = TypeVar("R", bound=Jsonable)
+
 CovariantR = TypeVar("CovariantR", covariant=True, bound=Jsonable)
 DepsT = TypeVar("DepsT")
 

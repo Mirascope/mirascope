@@ -7,14 +7,11 @@ arguments provided by the LLM.
 """
 
 from dataclasses import dataclass
-from typing import TypeVar
 
 from ..content import ToolOutput
-from ..types import Jsonable, P
+from ..types import P, R
 from .base_tool import BaseTool
 from .tool_def import ToolDef
-
-R = TypeVar("R", bound=Jsonable)
 
 
 @dataclass

@@ -9,15 +9,11 @@ with the specific arguments provided by the LLM.
 from dataclasses import dataclass
 from typing import Generic
 
-from typing_extensions import TypeVar
-
 from ..content import ToolOutput
 from ..context import Context
-from ..types import DepsT, Jsonable, P
+from ..types import DepsT, P, R
 from .base_tool import BaseTool
 from .context_tool_def import ContextToolDef
-
-R = TypeVar("R", bound=Jsonable)
 
 
 @dataclass

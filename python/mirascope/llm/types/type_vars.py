@@ -2,6 +2,11 @@
 
 from typing_extensions import ParamSpec, TypeVar
 
+from .jsonable import Jsonable
+
+R = TypeVar("R", bound=Jsonable)
+"""Type variable for tool output types."""
+
 FormatT = TypeVar("FormatT", bound=object | None, default=None)
 """Type variable for structured response format types.
 
