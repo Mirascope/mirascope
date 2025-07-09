@@ -4,8 +4,8 @@ from collections.abc import Callable, Sequence
 from typing import Any, Literal, Protocol, TypeVar, overload
 
 from ..content import AssistantContent
+from ..types import ResponseFormatT
 
-T = TypeVar("T", bound=object)
 CovariantT = TypeVar("CovariantT", covariant=True)
 
 
@@ -62,11 +62,11 @@ class ContentResponseFormatDef(Protocol[CovariantT]):
 @overload
 def response_format(
     __cls: type[
-        JsonResponseFormatDef[T]
-        | ToolResponseFormatDef[T]
-        | ContentResponseFormatDef[T]
+        JsonResponseFormatDef[ResponseFormatT]
+        | ToolResponseFormatDef[ResponseFormatT]
+        | ContentResponseFormatDef[ResponseFormatT]
     ],
-) -> type[T]:
+) -> type[ResponseFormatT]:
     """Overload for no arguments, which requires a parser classmethod."""
     ...
 
@@ -77,8 +77,12 @@ def response_format(
     parser: None = None,
     strict: bool = False,
 ) -> Callable[
-    [JsonResponseFormatDef[T] | ToolResponseFormatDef[T] | ContentResponseFormatDef[T]],
-    type[T],
+    [
+        JsonResponseFormatDef[ResponseFormatT]
+        | ToolResponseFormatDef[ResponseFormatT]
+        | ContentResponseFormatDef[ResponseFormatT]
+    ],
+    type[ResponseFormatT],
 ]:
     """Overload for no default parser, which requires a parser classmethod."""
     ...
@@ -89,7 +93,7 @@ def response_format(
     *,
     parser: Literal["json", "tool"],
     strict: bool = False,
-) -> Callable[[type[T]], type[T]]:
+) -> Callable[[type[ResponseFormatT]], type[ResponseFormatT]]:
     """Overload for setting a default parser."""
     ...
 
@@ -100,16 +104,16 @@ def response_format(
     parser: Literal["json", "tool"] | None = None,
     strict: bool = False,
 ) -> (
-    T
+    ResponseFormatT
     | Callable[
         [
-            JsonResponseFormatDef[T]
-            | ToolResponseFormatDef[T]
-            | ContentResponseFormatDef[T]
+            JsonResponseFormatDef[ResponseFormatT]
+            | ToolResponseFormatDef[ResponseFormatT]
+            | ContentResponseFormatDef[ResponseFormatT]
         ],
-        type[T],
+        type[ResponseFormatT],
     ]
-    | Callable[[type[T]], type[T]]
+    | Callable[[type[ResponseFormatT]], type[ResponseFormatT]]
 ):
     '''Decorator that defines a structured response format for LLM outputs.
 
