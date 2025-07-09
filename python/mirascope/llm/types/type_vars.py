@@ -4,8 +4,12 @@ from typing_extensions import ParamSpec, TypeVar
 
 from .jsonable import Jsonable
 
-R = TypeVar("R", bound=Jsonable)
-"""Type variable for tool output types."""
+ToolReturnT = TypeVar("ToolReturnT", bound=Jsonable)
+"""Type variable for tool output types.
+
+This TypeVar represents the return type of tool functions, which must be
+serializable to JSON (bound to Jsonable) for LLM consumption.
+"""
 
 FormatT = TypeVar("FormatT", bound=object | None, default=None)
 """Type variable for structured response format types.

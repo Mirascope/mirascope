@@ -14,11 +14,11 @@ from .base_tool_def import BaseToolDef
 if TYPE_CHECKING:
     from .context_tool import ContextTool
 
-from ..types import P, R
+from ..types import P, ToolReturnT
 
 
 @dataclass
-class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
+class ContextToolDef(BaseToolDef[P, ToolReturnT], Generic[P, ToolReturnT, DepsT]):
     """Protocol defining a tool that can be used by LLMs.
 
     A ToolDef represents a function that can be called by an LLM during a call.
@@ -27,10 +27,12 @@ class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    fn: Callable[Concatenate[Context[DepsT], P], R]
+    fn: Callable[Concatenate[Context[DepsT], P], ToolReturnT]
     """The function that implements the tool's functionality."""
 
-    def __call__(self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs) -> R:
+    def __call__(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> ToolReturnT:
         """Call the tool with the provided arguments.
 
         Args:
@@ -41,7 +43,7 @@ class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
         """
         return self.fn(ctx, *args, **kwargs)
 
-    def defines(self, tool: BaseTool) -> TypeGuard[ContextTool[P, R, DepsT]]:
+    def defines(self, tool: BaseTool) -> TypeGuard[ContextTool[P, ToolReturnT, DepsT]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific

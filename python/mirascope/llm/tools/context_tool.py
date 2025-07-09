@@ -11,23 +11,23 @@ from typing import Generic
 
 from ..content import ToolOutput
 from ..context import Context
-from ..types import DepsT, P, R
+from ..types import DepsT, P, ToolReturnT
 from .base_tool import BaseTool
 from .context_tool_def import ContextToolDef
 
 
 @dataclass
-class ContextTool(BaseTool[P, R], Generic[P, R, DepsT]):
+class ContextTool(BaseTool[P, ToolReturnT], Generic[P, ToolReturnT, DepsT]):
     """Tool instance with arguments provided by an LLM.
 
     When an LLM uses a tool during a call, a Tool instance is created with the specific
     arguments provided by the LLM.
     """
 
-    tool_def: ContextToolDef[P, R, DepsT]
+    tool_def: ContextToolDef[P, ToolReturnT, DepsT]
     """The ContextToolDef that defines the tool being called."""
 
-    def call(self, ctx: Context[DepsT]) -> ToolOutput[R]:
+    def call(self, ctx: Context[DepsT]) -> ToolOutput[ToolReturnT]:
         """Execute the tool with context and the arguments provided by the LLM.
 
         Returns:

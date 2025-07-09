@@ -3,11 +3,11 @@
 from dataclasses import dataclass
 from typing import Generic
 
-from ..types import Jsonable, P, R
+from ..types import Jsonable, P, ToolReturnT
 
 
 @dataclass
-class BaseToolDef(Generic[P, R]):
+class BaseToolDef(Generic[P, ToolReturnT]):
     """Base class defining a tool that can be used by LLMs.
 
     A ToolDef represents a function that can be called by an LLM during a call.

@@ -4,11 +4,11 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import Generic
 
-from ..types import Jsonable, P, R
+from ..types import Jsonable, P, ToolReturnT
 
 
 @dataclass
-class BaseTool(Generic[P, R], ABC):
+class BaseTool(Generic[P, ToolReturnT], ABC):
     """Tool instance with arguments provided by an LLM.
 
     When an LLM uses a tool during a call, a Tool instance is created with the specific

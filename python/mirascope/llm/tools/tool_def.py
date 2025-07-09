@@ -12,11 +12,11 @@ from .base_tool_def import BaseToolDef
 if TYPE_CHECKING:
     from .tool import Tool
 
-from ..types import P, R
+from ..types import P, ToolReturnT
 
 
 @dataclass
-class ToolDef(BaseToolDef[P, R]):
+class ToolDef(BaseToolDef[P, ToolReturnT]):
     """Protocol defining a tool that can be used by LLMs.
 
     A ToolDef represents a function that can be called by an LLM during a call.
@@ -25,10 +25,10 @@ class ToolDef(BaseToolDef[P, R]):
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    fn: Callable[P, R]
+    fn: Callable[P, ToolReturnT]
     """The function that implements the tool's functionality."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> ToolReturnT:
         """Call the tool with the provided arguments.
 
         Args:
@@ -39,7 +39,7 @@ class ToolDef(BaseToolDef[P, R]):
         """
         return self.fn(*args, **kwargs)
 
-    def defines(self, tool: BaseTool) -> TypeGuard[Tool[P, R]]:
+    def defines(self, tool: BaseTool) -> TypeGuard[Tool[P, ToolReturnT]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific

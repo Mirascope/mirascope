@@ -9,23 +9,23 @@ arguments provided by the LLM.
 from dataclasses import dataclass
 
 from ..content import ToolOutput
-from ..types import P, R
+from ..types import P, ToolReturnT
 from .base_tool import BaseTool
 from .tool_def import ToolDef
 
 
 @dataclass
-class Tool(BaseTool[P, R]):
+class Tool(BaseTool[P, ToolReturnT]):
     """Tool instance with arguments provided by an LLM.
 
     When an LLM uses a tool during a call, a Tool instance is created with the specific
     arguments provided by the LLM.
     """
 
-    tool_def: ToolDef[P, R]
+    tool_def: ToolDef[P, ToolReturnT]
     """The ToolDef that defines the tool being called."""
 
-    def call(self) -> ToolOutput[R]:
+    def call(self) -> ToolOutput[ToolReturnT]:
         """Execute the tool with the arguments provided by the LLM.
 
         Returns:
