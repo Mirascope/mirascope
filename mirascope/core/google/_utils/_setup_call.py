@@ -137,7 +137,7 @@ def setup_call(
             client = Client(
                 api_key=mirascope_api_key,
                 http_options=types.HttpOptions(
-                    base_url="http://localhost:3000/router/v0/google"
+                    base_url="https://app.mirascope.com/router/v0/google"
                 ),
             )
         else:

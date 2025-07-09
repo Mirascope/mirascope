@@ -145,12 +145,12 @@ def setup_call(
         if mirascope_api_key := os.environ.get("MIRASCOPE_API_KEY"):
             client = (
                 AsyncAnthropic(
-                    base_url="http://localhost:3000/router/v0/anthropic",
+                    base_url="https://app.mirascope.com/router/v0/anthropic",
                     api_key=mirascope_api_key,
                 )
                 if inspect.iscoroutinefunction(fn)
                 else Anthropic(
-                    base_url="http://localhost:3000/router/v0/anthropic",
+                    base_url="https://app.mirascope.com/router/v0/anthropic",
                     api_key=mirascope_api_key,
                 )
             )

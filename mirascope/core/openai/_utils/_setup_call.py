@@ -150,12 +150,12 @@ def setup_call(
         if mirascope_api_key := os.environ.get("MIRASCOPE_API_KEY"):
             client = (
                 AsyncOpenAI(
-                    base_url="http://localhost:3000/router/v0/openai",
+                    base_url="https://app.mirascope.com/router/v0/openai",
                     api_key=mirascope_api_key,
                 )
                 if inspect.iscoroutinefunction(fn)
                 else OpenAI(
-                    base_url="http://localhost:3000/router/v0/openai",
+                    base_url="https://app.mirascope.com/router/v0/openai",
                     api_key=mirascope_api_key,
                 )
             )
