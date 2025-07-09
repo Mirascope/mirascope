@@ -5,7 +5,7 @@ from typing import Concatenate, ParamSpec, Protocol, TypeAlias, overload
 
 from typing_extensions import TypeVar
 
-from ..content import Content
+from ..content import UserContent
 from ..context import Context
 from ..messages.message import Message
 
@@ -22,23 +22,21 @@ class MessagesPrompt(Protocol[P]):
 class ContentPrompt(Protocol[P]):
     """Protocol for a Prompt function that returns a single content part."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> str | Content: ...
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> UserContent: ...
 
 
 class ContentSequencePrompt(Protocol[P]):
     """Protocol for a prompt function that returns a content parts sequence."""
 
-    def __call__(
-        self, *args: P.args, **kwargs: P.kwargs
-    ) -> Sequence[str | Content]: ...
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[UserContent]: ...
 
 
 Prompt: TypeAlias = ContentPrompt[P] | ContentSequencePrompt[P] | MessagesPrompt[P]
 """A function that can be promoted to a prompt.
 
 A `Prompt` function takes input arguments `P` and returns one of:
-  - A single `str | Content` part that will be rendered as a single user message
-  - A sequence of `str | Content` parts that will be rendered as a single user message
+  - A single `UserContent` part that will be rendered as a single user message
+  - A sequence of `UserContent` parts that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
 """
 
@@ -52,7 +50,7 @@ class AsyncMessagesPrompt(Protocol[P]):
 class AsyncContentPrompt(Protocol[P]):
     """Protocol for a prompt function that returns a single content part."""
 
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> str | Content: ...
+    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> UserContent: ...
 
 
 class AsyncContentSequencePrompt(Protocol[P]):
@@ -60,7 +58,7 @@ class AsyncContentSequencePrompt(Protocol[P]):
 
     async def __call__(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> Sequence[str | Content]: ...
+    ) -> Sequence[UserContent]: ...
 
 
 AsyncPrompt: TypeAlias = (
@@ -69,8 +67,8 @@ AsyncPrompt: TypeAlias = (
 """An asynchronous Prompt function.
 
 An `AsyncPrompt` function takes input arguments `P` and returns one of:
-  - A single `str | Content` part that will be rendered as a single user message
-  - A sequence of `str | Content` parts that will be rendered as a single user message
+  - A single `UserContent` part that will be rendered as a single user message
+  - A sequence of `UserContent` parts that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
 """
 
@@ -88,7 +86,7 @@ class ContextContentPrompt(Protocol[P, DepsT]):
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> str | Content: ...
+    ) -> UserContent: ...
 
 
 class ContextContentSequencePrompt(Protocol[P, DepsT]):
@@ -96,7 +94,7 @@ class ContextContentSequencePrompt(Protocol[P, DepsT]):
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Sequence[str | Content]: ...
+    ) -> Sequence[UserContent]: ...
 
 
 ContextPrompt: TypeAlias = (
@@ -108,8 +106,8 @@ ContextPrompt: TypeAlias = (
 
 A `ContextPrompt` function takes input arguments `Context[DepsT]` and `P` and
 returns one of:
-  - A single `str | Content` part that will be rendered as a single user message
-  - A sequence of `str | Content` parts that will be rendered as a single user message
+  - A single `UserContent` part that will be rendered as a single user message
+  - A sequence of `UserContent` parts that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
 """
 
@@ -127,7 +125,7 @@ class AsyncContextContentPrompt(Protocol[P, DepsT]):
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> str | Content: ...
+    ) -> UserContent: ...
 
 
 class AsyncContextContentSequencePrompt(Protocol[P, DepsT]):
@@ -135,7 +133,7 @@ class AsyncContextContentSequencePrompt(Protocol[P, DepsT]):
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Sequence[str | Content]: ...
+    ) -> Sequence[UserContent]: ...
 
 
 AsyncContextPrompt: TypeAlias = (
@@ -147,8 +145,8 @@ AsyncContextPrompt: TypeAlias = (
 
 An `AsyncContextPrompt` function takes input arguments `Context[DepsT]` and `P` and
 returns one of:
-  - A single `str | Content` part that will be rendered as a single user message
-  - A sequence of `str | Content` parts that will be rendered as a single user message
+  - A single `UserContent` part that will be rendered as a single user message
+  - A sequence of `UserContent` parts that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
 """
 
@@ -159,8 +157,8 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], str | Content]
-        | Callable[Concatenate[Context[DepsT], P], Sequence[str | Content]]
+        fn: Callable[Concatenate[Context[DepsT], P], UserContent]
+        | Callable[Concatenate[Context[DepsT], P], Sequence[UserContent]]
         | Callable[Concatenate[Context[DepsT], P], list[Message]],
     ) -> ContextMessagesPrompt[P, DepsT]:
         """Decorator for creating context prompts."""
@@ -169,8 +167,8 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], Awaitable[Content]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[str | Content]]]
+        fn: Callable[Concatenate[Context[DepsT], P], Awaitable[UserContent]]
+        | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[UserContent]]]
         | Callable[Concatenate[Context[DepsT], P], Awaitable[list[Message]]],
     ) -> AsyncContextMessagesPrompt[P, DepsT]:
         """Decorator for creating async context prompts."""
@@ -179,8 +177,8 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[P, str | Content]
-        | Callable[P, Sequence[str | Content]]
+        fn: Callable[P, UserContent]
+        | Callable[P, Sequence[UserContent]]
         | Callable[P, list[Message]],
     ) -> MessagesPrompt[P]:
         """Decorator for creating prompts."""
@@ -189,8 +187,8 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[P, Awaitable[Content]]
-        | Callable[P, Awaitable[Sequence[str | Content]]]
+        fn: Callable[P, Awaitable[UserContent]]
+        | Callable[P, Awaitable[Sequence[UserContent]]]
         | Callable[P, Awaitable[list[Message]]],
     ) -> AsyncMessagesPrompt[P]:
         """Decorator for creating async prompts."""
@@ -198,17 +196,17 @@ class PromptDecorator(Protocol[DepsT]):
 
     def __call__(
         self,
-        fn: Callable[P, str | Content]
-        | Callable[P, Sequence[str | Content]]
+        fn: Callable[P, UserContent]
+        | Callable[P, Sequence[UserContent]]
         | Callable[P, list[Message]]
-        | Callable[P, Awaitable[Content]]
-        | Callable[P, Awaitable[Sequence[str | Content]]]
+        | Callable[P, Awaitable[UserContent]]
+        | Callable[P, Awaitable[Sequence[UserContent]]]
         | Callable[P, Awaitable[list[Message]]]
-        | Callable[Concatenate[Context[DepsT], P], str | Content]
-        | Callable[Concatenate[Context[DepsT], P], Sequence[str | Content]]
+        | Callable[Concatenate[Context[DepsT], P], UserContent]
+        | Callable[Concatenate[Context[DepsT], P], Sequence[UserContent]]
         | Callable[Concatenate[Context[DepsT], P], list[Message]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[Content]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[str | Content]]]
+        | Callable[Concatenate[Context[DepsT], P], Awaitable[UserContent]]
+        | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[UserContent]]]
         | Callable[Concatenate[Context[DepsT], P], Awaitable[list[Message]]],
     ) -> (
         MessagesPrompt[P]

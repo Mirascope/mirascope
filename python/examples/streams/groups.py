@@ -18,7 +18,7 @@ for group in stream.groups():
     if group.type == "text":
         print("  Text content:")
         for chunk in group:
-            print(chunk.delta, end="", flush=True)
+            print(chunk, end="", flush=True)
         print("")  # Newline after text
 
     elif group.type == "image":

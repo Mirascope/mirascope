@@ -29,21 +29,20 @@ from .calls import (
 )
 from .clients import BaseClient, BaseParams
 from .content import (
+    AssistantContent,
     Audio,
     AudioChunk,
-    Content,
     ContentChunk,
     Document,
     Image,
     ImageChunk,
     ImageUrl,
-    Text,
-    TextChunk,
     Thinking,
     ThinkingChunk,
     ToolCall,
     ToolCallChunk,
     ToolOutput,
+    UserContent,
 )
 from .context import Context, context
 from .exceptions import (
@@ -58,7 +57,7 @@ from .exceptions import (
     ServerError,
     TimeoutError,
 )
-from .messages import Message
+from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
 from .response_formatting import ResponseFormat
@@ -78,6 +77,8 @@ __all__ = [
     "LLM",
     "APIError",
     "Agent",
+    "AssistantContent",
+    "AssistantMessage",
     "AsyncAgent",
     "AsyncCall",
     "AsyncStream",
@@ -93,7 +94,6 @@ __all__ = [
     "BaseStream",
     "Call",
     "ConnectionError",
-    "Content",
     "ContentChunk",
     "Context",
     "Document",
@@ -112,8 +112,7 @@ __all__ = [
     "StructuredAgent",
     "StructuredCall",
     "StructuredStream",
-    "Text",
-    "TextChunk",
+    "SystemMessage",
     "Thinking",
     "ThinkingChunk",
     "TimeoutError",
@@ -122,6 +121,8 @@ __all__ = [
     "ToolCallChunk",
     "ToolDef",
     "ToolOutput",
+    "UserContent",
+    "UserMessage",
     "agent",
     "agents",
     "call",

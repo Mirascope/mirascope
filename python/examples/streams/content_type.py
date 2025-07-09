@@ -9,9 +9,12 @@ def recommend_book(genre: str):
 stream = recommend_book.stream("fantasy")
 
 for chunk in stream:
-    print(f"Chunk type: {chunk.type}")
-    # "ChunkStart", "ChunkEnd", "TextChunk", "ImageChunk", etc
-    if chunk.type != "chunk_start" and chunk.type != "chunk_end":
-        print(chunk.delta)
-    if chunk.type == "audio_chunk":
-        print(chunk.delta_transcript)
+    if isinstance(chunk, str):
+        print(chunk)
+    else:
+        print(f"Chunk type: {chunk.type}")
+        # "ChunkStart", "ChunkEnd", "TextChunk", "ImageChunk", etc
+        if chunk.type != "chunk_start" and chunk.type != "chunk_end":
+            print(chunk.delta)
+        if chunk.type == "audio_chunk":
+            print(chunk.delta_transcript)

@@ -3,7 +3,7 @@
 from collections.abc import Callable, Sequence
 from typing import Any, Literal, Protocol, TypeVar, overload
 
-from ..content import Content
+from ..content import AssistantContent
 
 T = TypeVar("T", bound=object)
 CovariantT = TypeVar("CovariantT", covariant=True)
@@ -45,7 +45,9 @@ class ContentResponseFormatDef(Protocol[CovariantT]):
     """Protocol for defining a content mode response format."""
 
     @classmethod
-    def parse(cls, content: Content | Sequence[Content]) -> CovariantT:
+    def parse(
+        cls, content: AssistantContent | Sequence[AssistantContent]
+    ) -> CovariantT:
         """Parse a response into an instance of the class.
 
         Args:
@@ -119,7 +121,7 @@ def response_format(
     By default, the decorator requires the decorated class has a `parse` classmethod.
     The single argument of this method determines how to set the call parameters for
     structuring the response, which must be one of:
-        - `content: Content | Sequence[Content]` for structuring the content itself
+        - `content: AssistantContent | Sequence[AssistantContent]` for structuring the content itself
         - `json: dict[str, Any]` for structuring the response using JSON mode
         - `args: dict[str, Any]` for structuring the response using tool mode
 
@@ -164,7 +166,7 @@ def response_format(
             author: str
 
             @classmethod
-            def parse(cls, content: Content | Sequence[Content]) -> Book:
+            def parse(cls, content: AssistantContent | Sequence[AssistantContent]) -> Book:
                 """FORMATTING INSTRUCTIONS:
 
                 ```plaintext
