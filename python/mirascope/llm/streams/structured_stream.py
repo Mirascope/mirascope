@@ -7,13 +7,9 @@ responses as they are generated, rather than waiting for the complete response.
 
 from collections.abc import Iterator
 
-from typing_extensions import TypeVar
-
 from ..content import ContentChunk
-from ..types import DepsT
+from ..types import DepsT, FormatT
 from .base import BaseStream
-
-FormatT = TypeVar("FormatT", bound=object | None, default=None)
 
 
 class StructuredStream(BaseStream[DepsT, FormatT]):

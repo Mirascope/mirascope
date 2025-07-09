@@ -9,8 +9,6 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Generic
 
-from typing_extensions import TypeVar
-
 from ..content import AssistantContent, Audio, Image, Thinking, ToolCall
 from ..context import Context
 from ..messages import Message
@@ -23,9 +21,7 @@ if TYPE_CHECKING:
         REGISTERED_LLMS,
     )
 
-from ..types import DepsT
-
-FormatT = TypeVar("FormatT", bound=object | None, default=None)
+from ..types import DepsT, FormatT
 
 
 @dataclass

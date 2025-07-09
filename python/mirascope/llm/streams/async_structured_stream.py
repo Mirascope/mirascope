@@ -2,13 +2,9 @@
 
 from collections.abc import AsyncIterator
 
-from typing_extensions import TypeVar
-
 from ..content import ContentChunk
-from ..types import DepsT
+from ..types import DepsT, FormatT
 from .base import BaseStream
-
-FormatT = TypeVar("FormatT", bound=object | None, default=None)
 
 
 class AsyncStructuredStream(BaseStream[DepsT, FormatT]):

@@ -3,13 +3,9 @@
 from decimal import Decimal
 from typing import Generic
 
-from typing_extensions import TypeVar
-
 from ..context import Context
 from ..responses import FinishReason, Response, Usage
-from ..types import DepsT
-
-FormatT = TypeVar("FormatT", bound=object | None, default=None)
+from ..types import DepsT, FormatT
 
 
 class BaseStream(Generic[DepsT, FormatT]):
