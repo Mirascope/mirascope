@@ -1,14 +1,24 @@
 """Base interface for streaming responses from LLMs."""
 
 from decimal import Decimal
+from typing import Generic
 
+from typing_extensions import TypeVar
+
+from ..context import Context
 from ..responses import FinishReason, Response, Usage
 
+DepsT = TypeVar("DepsT", default=None)
+FormatT = TypeVar("FormatT", bound=object | None, default=None)
 
-class BaseStream:
+
+class BaseStream(Generic[DepsT, FormatT]):
     """Base class for streaming responses from LLMs.
     Provides common metadata fields that are populated as the stream is consumed.
     """
+
+    context: Context[DepsT]
+    """The context used to generate this stream."""
 
     finish_reason: FinishReason | None
     """The reason why the LLM finished generating a response, available after the stream completes."""
@@ -19,7 +29,7 @@ class BaseStream:
     cost: Decimal | None
     """The cost reflecting all chunks processed so far. Updates as chunks are consumed."""
 
-    def to_response(self) -> Response:
+    def to_response(self) -> Response[DepsT, FormatT]:
         """Convert the stream to a complete response.
 
         This method consumes the stream and aggregates all chunks into a single response

@@ -21,22 +21,24 @@ class ContextCall(BaseContextCall[P, Prompt, DepsT]):
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Response:
+    ) -> Response[DepsT]:
         """Generates a response using the LLM."""
         raise NotImplementedError()
 
     async def call_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Response:
+    ) -> Response[DepsT]:
         """Generates an asynchronous response using the LLM."""
         raise NotImplementedError()
 
-    def stream(self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs) -> Stream:
+    def stream(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> Stream[DepsT]:
         """Generates a streaming response using the LLM."""
         raise NotImplementedError()
 
     async def stream_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStream:
+    ) -> AsyncStream[DepsT]:
         """Generates an asynchronous streaming response using the LLM."""
         raise NotImplementedError()

@@ -1,16 +1,17 @@
 """Interfaces for asynchronous streaming structured responses from LLMs."""
 
 from collections.abc import AsyncIterator
-from typing import Generic
 
 from typing_extensions import TypeVar
 
 from ..content import ContentChunk
+from .base import BaseStream
 
-T = TypeVar("T", bound=object | None, default=None)
+DepsT = TypeVar("DepsT", default=None)
+FormatT = TypeVar("FormatT", bound=object | None, default=None)
 
 
-class AsyncStructuredStream(Generic[T]):
+class AsyncStructuredStream(BaseStream[DepsT, FormatT]):
     """An asynchronous stream of partial structured outputs from an LLM.
 
     This class supports async iteration to process structured outputs as they arrive
