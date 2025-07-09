@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass

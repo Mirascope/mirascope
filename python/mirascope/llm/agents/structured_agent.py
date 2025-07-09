@@ -12,11 +12,11 @@ from ..streams import (
     AsyncStructuredStream,
     StructuredStream,
 )
+from ..types import DepsT
 from .base_structured_agent import (
     BaseStructuredAgent,
 )
 
-DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", bound=object | None, default=None)
 
 

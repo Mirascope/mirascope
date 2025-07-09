@@ -10,8 +10,8 @@ from typing_extensions import TypeVar
 from ..context import Context
 from ..models import LLM
 from ..tools import ToolDef
+from ..types import DepsT
 
-DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", bound=object | None, default=None)
 
 

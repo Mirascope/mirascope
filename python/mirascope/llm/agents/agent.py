@@ -3,15 +3,12 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from typing_extensions import TypeVar
-
 from ..content import UserContent
 from ..context import Context
 from ..responses import Response
 from ..streams import AsyncStream, Stream
+from ..types import DepsT
 from .base_agent import BaseAgent
-
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass

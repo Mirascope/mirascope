@@ -11,11 +11,11 @@ from ..context import Context
 from ..prompts import Prompt
 from ..responses import Response
 from ..streams import AsyncStructuredStream, StructuredStream
+from ..types import DepsT
 from .base_structured_context_call import BaseStructuredContextCall
 
 P = ParamSpec("P")
 T = TypeVar("T", bound=object | None, default=None)
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass

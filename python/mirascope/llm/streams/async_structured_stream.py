@@ -5,9 +5,9 @@ from collections.abc import AsyncIterator
 from typing_extensions import TypeVar
 
 from ..content import ContentChunk
+from ..types import DepsT
 from .base import BaseStream
 
-DepsT = TypeVar("DepsT", default=None)
 FormatT = TypeVar("FormatT", bound=object | None, default=None)
 
 

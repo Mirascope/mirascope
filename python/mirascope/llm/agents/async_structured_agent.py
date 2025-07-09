@@ -9,9 +9,9 @@ from ..content import UserContent
 from ..context import Context
 from ..responses import Response
 from ..streams import AsyncStructuredStream
+from ..types import DepsT
 from .base_structured_agent import BaseStructuredAgent
 
-DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", bound=object | None, default=None)
 
 

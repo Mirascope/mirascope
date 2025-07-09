@@ -13,13 +13,12 @@ from typing_extensions import TypeVar
 
 from ..content import ToolOutput
 from ..context import Context
-from ..types import Jsonable
+from ..types import DepsT, Jsonable
 from .base_tool import BaseTool
 from .context_tool_def import ContextToolDef
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass

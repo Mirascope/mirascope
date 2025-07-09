@@ -19,9 +19,10 @@ if TYPE_CHECKING:
         REGISTERED_LLMS,
     )
 
+from ..types import DepsT
+
 NoneType = type(None)
 P = ParamSpec("P")
-DepsT = TypeVar("DepsT", default=None)
 T = TypeVar("T", bound=object | None, default=None)
 
 

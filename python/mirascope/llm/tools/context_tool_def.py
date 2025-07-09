@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Concatenate, Generic, ParamSpec, TypeGuard
 from typing_extensions import TypeVar
 
 from ..context import Context
-from ..types import Jsonable
+from ..types import DepsT, Jsonable
 from .base_tool import BaseTool
 from .base_tool_def import BaseToolDef
 
@@ -18,7 +18,6 @@ if TYPE_CHECKING:
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass

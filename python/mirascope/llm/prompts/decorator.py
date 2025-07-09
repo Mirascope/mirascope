@@ -3,14 +3,12 @@
 from collections.abc import Awaitable, Callable, Sequence
 from typing import Concatenate, ParamSpec, Protocol, TypeAlias, overload
 
-from typing_extensions import TypeVar
-
 from ..content import UserContent
 from ..context import Context
 from ..messages.message import Message
+from ..types import DepsT
 
 P = ParamSpec("P")
-DepsT = TypeVar("DepsT", default=None)
 
 
 class MessagesPrompt(Protocol[P]):

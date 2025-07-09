@@ -17,11 +17,11 @@ from ..streams import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
+from ..types import DepsT
 from .base import BaseClient
 from .register import ANTHROPIC_REGISTERED_LLMS
 
 T = TypeVar("T", bound=object | None, default=None)
-DepsT = TypeVar("DepsT", default=None)
 
 AnthropicMessage: TypeAlias = Message | MessageParam
 

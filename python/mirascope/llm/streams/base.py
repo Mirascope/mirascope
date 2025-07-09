@@ -7,8 +7,8 @@ from typing_extensions import TypeVar
 
 from ..context import Context
 from ..responses import FinishReason, Response, Usage
+from ..types import DepsT
 
-DepsT = TypeVar("DepsT", default=None)
 FormatT = TypeVar("FormatT", bound=object | None, default=None)
 
 

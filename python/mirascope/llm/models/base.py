@@ -22,11 +22,12 @@ if TYPE_CHECKING:
     from ..clients import REGISTERED_LLMS
 
 
+from ..types import DepsT
+
 T = TypeVar("T", bound=object | None, default=None)
 MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="BaseParams")
 ClientT = TypeVar("ClientT", bound="BaseClient")
-DepsT = TypeVar("DepsT", default=None)
 
 
 class LLM(Generic[MessageT, ParamsT, ClientT]):

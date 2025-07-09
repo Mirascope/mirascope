@@ -23,7 +23,8 @@ if TYPE_CHECKING:
         REGISTERED_LLMS,
     )
 
-DepsT = TypeVar("DepsT", default=None)
+from ..types import DepsT
+
 FormatT = TypeVar("FormatT", bound=object | None, default=None)
 
 

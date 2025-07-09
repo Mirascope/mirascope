@@ -10,12 +10,11 @@ from typing_extensions import TypeVar
 from ..models import LLM
 from ..prompts import AsyncPrompt, Prompt
 from ..tools import ContextToolDef
-from ..types import Jsonable
+from ..types import DepsT, Jsonable
 
 P = ParamSpec("P")
 T = TypeVar("T", bound=object | None, default=None)
 PromptT = TypeVar("PromptT", bound=Prompt | AsyncPrompt)
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
