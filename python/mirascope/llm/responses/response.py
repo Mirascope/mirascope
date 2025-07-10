@@ -102,7 +102,7 @@ class Response(Generic[DepsT, FormatT]):
         """Converts a ToolCall into a Tool. May raise llm.ToolNotFoundError."""
         raise NotImplementedError()
 
-    def tools(self, tool_calls: list[ToolCall]) -> list[Tool]:
+    def tools(self, tool_calls: Sequence[ToolCall]) -> list[Tool]:
         """Converts a list of ToolCalls into a list of Tools. May raise llm.ToolNotFoundError."""
         raise NotImplementedError()
 
