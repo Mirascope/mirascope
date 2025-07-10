@@ -2,7 +2,9 @@
 
 from decimal import Decimal
 
+from ..content import ToolCall
 from ..responses import FinishReason, Response, Usage
+from ..tools import Tool
 
 
 class BaseStream:
@@ -38,4 +40,8 @@ class BaseStream:
                 collected.
 
         """
+        raise NotImplementedError()
+
+    def to_tool(self, tool_call: ToolCall) -> Tool:
+        """Converts a ToolCall into a Tool. May raise llm.ToolNotFoundError."""
         raise NotImplementedError()
