@@ -3,8 +3,10 @@
 from decimal import Decimal
 from typing import Generic
 
+from ..content import ToolCall
 from ..context import Context
 from ..responses import FinishReason, Response, Usage
+from ..tools import Tool
 from ..types import DepsT, FormatT
 
 
@@ -44,4 +46,8 @@ class BaseStream(Generic[DepsT, FormatT]):
                 collected.
 
         """
+        raise NotImplementedError()
+
+    def to_tool(self, tool_call: ToolCall) -> Tool:
+        """Converts a ToolCall into a Tool. May raise llm.ToolNotFoundError."""
         raise NotImplementedError()
