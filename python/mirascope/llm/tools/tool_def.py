@@ -6,7 +6,6 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeGuard
 
-from .base_tool import BaseTool
 from .base_tool_def import BaseToolDef
 
 if TYPE_CHECKING:
@@ -39,7 +38,7 @@ class ToolDef(BaseToolDef[P, ToolReturnT]):
         """
         return self.fn(*args, **kwargs)
 
-    def defines(self, tool: BaseTool) -> TypeGuard[Tool[P, ToolReturnT]]:
+    def defines(self, tool: Tool) -> TypeGuard[Tool[P, ToolReturnT]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific

@@ -8,11 +8,10 @@ from typing import TYPE_CHECKING, Concatenate, Generic, TypeGuard
 
 from ..context import Context
 from ..types import DepsT
-from .base_tool import BaseTool
 from .base_tool_def import BaseToolDef
 
 if TYPE_CHECKING:
-    from .context_tool import ContextTool
+    from .tool import Tool
 
 from ..types import P, ToolReturnT
 
@@ -43,7 +42,7 @@ class ContextToolDef(BaseToolDef[P, ToolReturnT], Generic[P, ToolReturnT, DepsT]
         """
         return self.fn(ctx, *args, **kwargs)
 
-    def defines(self, tool: BaseTool) -> TypeGuard[ContextTool[P, ToolReturnT, DepsT]]:
+    def defines(self, tool: Tool) -> TypeGuard[Tool[P, ToolReturnT]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific
