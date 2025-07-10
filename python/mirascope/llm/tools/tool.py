@@ -7,26 +7,38 @@ arguments provided by the LLM.
 """
 
 from dataclasses import dataclass
-from typing import ParamSpec, TypeVar
+from typing import Generic, ParamSpec
+
+from typing_extensions import TypeVar
 
 from ..content import ToolOutput
 from ..types import Jsonable
-from .base_tool import BaseTool
+from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
+DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class Tool(BaseTool[P, R]):
+class Tool(Generic[P, R, DepsT]):
     """Tool instance with arguments provided by an LLM.
 
     When an LLM uses a tool during a call, a Tool instance is created with the specific
     arguments provided by the LLM.
     """
 
-    tool_def: ToolDef[P, R]
+    name: str
+    """The name of the tool being called."""
+
+    args: dict[str, Jsonable]
+    """The arguments provided by the LLM for this tool call."""
+
+    id: str
+    """Unique identifier for this tool call."""
+
+    tool_def: ToolDef[P, R] | ContextToolDef[P, R, DepsT]
     """The ToolDef that defines the tool being called."""
 
     def call(self) -> ToolOutput[R]:
