@@ -53,6 +53,25 @@ class BaseStream(Generic[DepsT, FormatT]):
         """
         raise NotImplementedError()
 
+    def format(self) -> FormatT:
+        """Format the already-streamed content using the response format parser.
+
+        This method is only available if the call was created with a FormatT.
+        It will parse all of the already-processed stream content according to the
+        specified format, and return a partial structured object.
+
+        `stream.format()` is equivalent to calling `stream.to_response().format()`.
+
+        Returns:
+            The formatted response object of type T. May be a partial response
+            if the stream has not been exhausted.
+
+        Raises:
+            ValueError: If the response cannot be formatted according to the
+                specified format.
+        """
+        raise NotImplementedError()
+
     def tool(self, tool_call: ToolCall) -> Tool:
         """Converts a ToolCall into a Tool. May raise llm.ToolNotFoundError."""
         raise NotImplementedError()
