@@ -9,8 +9,6 @@ from ..context import Context
 from ..tools import ContextToolDef, ToolDef
 from .agent import Agent
 from .async_agent import AsyncAgent
-from .async_structured_agent import AsyncStructuredAgent
-from .structured_agent import StructuredAgent
 
 if TYPE_CHECKING:
     from ..clients import (
@@ -34,47 +32,26 @@ class AsyncSystemPrompt(Protocol[P, DepsT]):
     async def __call__(self, ctx: Context[DepsT]) -> str: ...
 
 
-class AgentDecorator(Protocol[DepsT]):
+class AgentDecorator(Protocol[DepsT, FormatT]):
     """Protocol for the `agent` decorator."""
 
     @overload
-    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> AsyncAgent[DepsT]:
+    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> AsyncAgent[DepsT, FormatT]:
         """Decorator for creating an async only agent."""
         ...
 
     @overload
-    def __call__(self, fn: SystemPrompt[P, DepsT]) -> Agent[DepsT]:
+    def __call__(self, fn: SystemPrompt[P, DepsT]) -> Agent[DepsT, FormatT]:
         """Decorator for creating an agent."""
         ...
 
     def __call__(
         self, fn: SystemPrompt[P, DepsT] | AsyncSystemPrompt[P, DepsT]
-    ) -> Agent[DepsT] | AsyncAgent[DepsT]:
+    ) -> Agent[DepsT, FormatT] | AsyncAgent[DepsT, FormatT]:
         """Decorator for creating an agent."""
         ...
 
 
-class StructuredAgentDecorator(Protocol[DepsT, FormatT]):
-    """Protocol for the `agent` decorator with a response format."""
-
-    @overload
-    def __call__(
-        self, fn: AsyncSystemPrompt[P, DepsT]
-    ) -> StructuredAgent[DepsT, FormatT]:
-        """Decorator for creating an async only structured agent."""
-        ...
-
-    @overload
-    def __call__(self, fn: SystemPrompt[P, DepsT]) -> StructuredAgent[DepsT, FormatT]:
-        """Decorator for creating a structured agent."""
-        ...
-
-    def __call__(
-        self,
-        fn: SystemPrompt[P, DepsT] | AsyncSystemPrompt[P, DepsT],
-    ) -> StructuredAgent[DepsT, FormatT] | AsyncStructuredAgent[DepsT, FormatT]:
-        """Decorator for creating a structured agent."""
-        ...
 
 
 # @overload
@@ -86,7 +63,7 @@ class StructuredAgentDecorator(Protocol[DepsT, FormatT]):
 #     response_format: None = None,
 #     client: AnthropicClient | None = None,
 #     **params: Unpack[AnthropicParams],
-# ) -> AgentDecorator[DepsT]:
+# ) -> AgentDecorator[DepsT, None]:
 #     """Overload for Anthropic agents."""
 #     ...
 
@@ -114,7 +91,7 @@ class StructuredAgentDecorator(Protocol[DepsT, FormatT]):
 #     response_format: None = None,
 #     client: GoogleClient | None = None,
 #     **params: Unpack[GoogleParams],
-# ) -> AgentDecorator[DepsT]:
+# ) -> AgentDecorator[DepsT, None]:
 #     """Overload for Google agents."""
 #     ...
 
@@ -142,7 +119,7 @@ class StructuredAgentDecorator(Protocol[DepsT, FormatT]):
 #     response_format: None = None,
 #     client: OpenAIClient | None = None,
 #     **params: Unpack[OpenAIParams],
-# ) -> AgentDecorator[DepsT]:
+# ) -> AgentDecorator[DepsT, None]:
 #     """Overload for OpenAI agents."""
 #     ...
 
@@ -170,7 +147,7 @@ def agent(
     response_format: None = None,
     # client: Client | None = None,
     # **params: Unpack[Params],
-) -> AgentDecorator[DepsT]:
+) -> AgentDecorator[DepsT, None]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -184,7 +161,7 @@ def agent(
     response_format: type[FormatT],
     # client: Client | None = None,
     # **params: Unpack[Params],
-) -> StructuredAgentDecorator[DepsT, FormatT]:
+) -> AgentDecorator[DepsT, FormatT]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -197,7 +174,7 @@ def agent(
     response_format: type[FormatT] | None = None,
     # client: Client | None = None,
     # **params: Unpack[Params],
-) -> AgentDecorator[DepsT] | StructuredAgentDecorator[DepsT, FormatT]:
+) -> AgentDecorator[DepsT, None] | AgentDecorator[DepsT, FormatT]:
     """Decorator for creating an agent or structured agent.
 
     Args:

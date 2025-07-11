@@ -8,11 +8,11 @@ from typing import Generic
 from ..context import Context
 from ..models import LLM
 from ..tools import ToolDef
-from ..types import DepsT
+from ..types import DepsT, FormatT
 
 
 @dataclass
-class BaseAgent(Generic[DepsT], ABC):
+class BaseAgent(Generic[DepsT, FormatT], ABC):
     """Agent class for generating responses using LLMs with tools."""
 
     ctx: Context[DepsT]
@@ -20,6 +20,9 @@ class BaseAgent(Generic[DepsT], ABC):
 
     tools: Sequence[ToolDef] | None
     """The tools available to the agent, if any."""
+
+    response_format: type[FormatT] | None
+    """The response format for the generated response."""
 
     model: LLM
     """The default model the agent will use if not specified through context."""

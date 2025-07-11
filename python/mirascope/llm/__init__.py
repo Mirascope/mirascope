@@ -19,7 +19,7 @@ from . import (
     tools,
     types,
 )
-from .agents import Agent, AsyncAgent, AsyncStructuredAgent, StructuredAgent, agent
+from .agents import Agent, AsyncAgent, agent
 from .calls import (
     AsyncCall,
     Call,
@@ -80,7 +80,6 @@ __all__ = [
     "AsyncCall",
     "AsyncStream",
     "AsyncStream",
-    "AsyncStructuredAgent",
     "Audio",
     "AudioChunk",
     "AuthenticationError",
@@ -106,7 +105,6 @@ __all__ = [
     "ServerError",
     "Stream",
     "Stream",
-    "StructuredAgent",
     "SystemMessage",
     "Thinking",
     "ThinkingChunk",
