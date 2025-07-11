@@ -15,10 +15,9 @@ from ..streams import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
-from ..types import FormatT
+from ..types import FormatT, ProviderMessageT
 from .register import REGISTERED_LLMS
 
-MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="BaseParams")
 DepsT = TypeVar("DepsT")
 LLMT = TypeVar("LLMT", bound=REGISTERED_LLMS)
@@ -53,7 +52,7 @@ class BaseParams(TypedDict, total=False):
     """Stop sequence(s) to end generation."""
 
 
-class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
+class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
@@ -65,7 +64,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
     ) -> Response:
@@ -78,7 +77,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
     ) -> Response:
@@ -90,7 +89,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -104,7 +103,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -117,7 +116,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
     ) -> Response:
@@ -130,7 +129,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
     ) -> Response:
@@ -142,7 +141,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -156,7 +155,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -169,7 +168,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
     ) -> Stream:
@@ -182,7 +181,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
     ) -> Stream:
@@ -194,7 +193,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -208,7 +207,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -221,7 +220,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         params: ParamsT | None = None,
     ) -> AsyncStream:
@@ -234,7 +233,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         params: ParamsT | None = None,
     ) -> AsyncStream:
@@ -246,7 +245,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -260,7 +259,7 @@ class BaseClient(Generic[MessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,

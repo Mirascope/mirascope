@@ -17,6 +17,7 @@ from ..streams import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
+from ..types import ProviderMessageT
 
 if TYPE_CHECKING:
     from ..clients import REGISTERED_LLMS
@@ -24,12 +25,11 @@ if TYPE_CHECKING:
 
 from ..types import DepsT, FormatT
 
-MessageT = TypeVar("MessageT")
 ParamsT = TypeVar("ParamsT", bound="BaseParams")
 ClientT = TypeVar("ClientT", bound="BaseClient")
 
 
-class LLM(Generic[MessageT, ParamsT, ClientT]):
+class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
     """The unified LLM interface that delegates to provider-specific clients.
 
     This class provides a consistent interface for interacting with language models
@@ -62,7 +62,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
@@ -75,7 +75,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
@@ -88,7 +88,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -101,7 +101,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -113,7 +113,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef]
         | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
         | None = None,
@@ -128,7 +128,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
@@ -141,7 +141,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
@@ -154,7 +154,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -167,7 +167,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -179,7 +179,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef]
         | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
         | None = None,
@@ -194,7 +194,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
@@ -207,7 +207,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
@@ -220,7 +220,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -233,7 +233,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -245,7 +245,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef]
         | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
         | None = None,
@@ -260,7 +260,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
@@ -273,7 +273,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
@@ -286,7 +286,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -299,7 +299,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
@@ -311,7 +311,7 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef]
         | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
         | None = None,
