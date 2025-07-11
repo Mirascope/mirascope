@@ -6,9 +6,8 @@ from dataclasses import dataclass
 from typing import Generic
 
 from ..models import LLM
-from ..prompts import PromptT
 from ..tools import ToolDef
-from ..types import Jsonable, P
+from ..types import Jsonable, P, PromptT
 
 
 @dataclass

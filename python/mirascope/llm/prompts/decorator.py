@@ -3,8 +3,6 @@
 from collections.abc import Awaitable, Callable, Sequence
 from typing import Concatenate, Protocol, TypeAlias, overload
 
-from typing_extensions import TypeVar
-
 from ..content import UserContent
 from ..context import Context
 from ..messages.message import Message
@@ -68,15 +66,6 @@ An `AsyncPrompt` function takes input arguments `P` and returns one of:
   - A single `UserContent` part that will be rendered as a single user message
   - A sequence of `UserContent` parts that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
-"""
-
-
-PromptT = TypeVar("PromptT", bound=Prompt | AsyncPrompt)
-"""Type variable for prompt types.
-
-This TypeVar represents either synchronous Prompt or asynchronous AsyncPrompt
-function types. It's used in generic classes and functions that work with
-both prompt variants.
 """
 
 
