@@ -1,0 +1,23 @@
+from dataclasses import dataclass
+
+from mirascope import llm
+
+
+@dataclass
+class Book:
+    title: str
+    author: str
+
+
+@llm.call("openai:gpt-4o-mini", response_format=Book)
+def recommend_book(genre: str):
+    return f"Recommend a {genre} book."
+
+
+def main():
+    response: llm.Response[None, Book] = recommend_book("fantasy")
+    book: Book = response.format()
+    print(book)
+
+
+main()
