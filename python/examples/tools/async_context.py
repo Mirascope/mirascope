@@ -29,8 +29,7 @@ async def main():
         while tool_call := response.tool_call:
             print(f"Tool call: {tool_call.name}")
             # Tool call: available_books
-            tool = response.tool(tool_call)
-            output = tool.call()
+            output = librarian.call_tool(ctx, tool_call)
             print(f"Tool returned: {output.value}")
             # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
             response = await librarian.resume_async(response, output)

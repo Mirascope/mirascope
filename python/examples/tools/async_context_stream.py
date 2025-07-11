@@ -34,8 +34,7 @@ async def main():
                         print(chunk)
                 if group.type == "tool_call":
                     tool_call = await group.collect()
-                    tool = stream.tool(tool_call)
-                    tool_output = tool.call()
+                    tool_output = librarian.call_tool(ctx, tool_call)
             if tool_output:
                 stream = librarian.resume_stream_async(stream, tool_output)
             else:

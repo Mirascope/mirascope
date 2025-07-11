@@ -8,7 +8,7 @@ from typing import Generic
 from ..models import LLM
 from ..prompts import PromptT
 from ..response_formatting import FormatT
-from ..tools import ToolDef
+from ..tools import Tool
 from ..types import Jsonable, P
 
 
@@ -19,7 +19,7 @@ class BaseCall(Generic[P, PromptT, FormatT], ABC):
     model: LLM
     """The LLM model used for generating responses."""
 
-    tools: Sequence[ToolDef[..., Jsonable]] | None
+    tools: Sequence[Tool[..., Jsonable]] | None
     """The tools to be used with the LLM."""
 
     response_format: type[FormatT] | None

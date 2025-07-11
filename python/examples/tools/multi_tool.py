@@ -32,9 +32,7 @@ def librarian():
 def main():
     response: llm.Response = librarian()
     while tool_calls := response.tool_calls:
-        tools = response.tools(tool_calls)
-        outputs: list[llm.ToolOutput] = [tool.call() for tool in tools]
-
+        outputs = librarian.call_tools(tool_calls)
         response = librarian.resume(response, outputs)
 
     print(response)

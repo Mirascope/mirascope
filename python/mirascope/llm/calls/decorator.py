@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Protocol, overload
+from typing import TYPE_CHECKING, Protocol, overload
 
 from typing_extensions import Unpack
 
@@ -14,7 +14,8 @@ from ..prompts import (
     ContextPrompt,
     Prompt,
 )
-from ..tools import ContextToolDef, ToolDef
+from ..tools import ContextTool, Tool
+from ..types import Jsonable
 from .async_call import AsyncCall
 from .async_context_call import AsyncContextCall
 from .call import Call
@@ -94,7 +95,7 @@ def call(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
     deps_type: type[None] | None = None,
-    tools: Sequence[ToolDef] | None = None,
+    tools: Sequence[Tool] | None = None,
     response_format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
@@ -108,7 +109,7 @@ def call(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT],
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
@@ -122,7 +123,7 @@ def call(
     model: GOOGLE_REGISTERED_LLMS,
     *,
     deps_type: type[None] | None = None,
-    tools: Sequence[ToolDef] | None = None,
+    tools: Sequence[Tool] | None = None,
     response_format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
@@ -136,7 +137,7 @@ def call(
     model: GOOGLE_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT],
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
@@ -150,7 +151,7 @@ def call(
     model: OPENAI_REGISTERED_LLMS,
     *,
     deps_type: type[None] | None = None,
-    tools: Sequence[ToolDef] | None = None,
+    tools: Sequence[Tool] | None = None,
     response_format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
@@ -164,7 +165,7 @@ def call(
     model: OPENAI_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT],
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
@@ -178,7 +179,7 @@ def call(
     model: REGISTERED_LLMS,
     *,
     deps_type: type[None] | None = None,
-    tools: Sequence[ToolDef] | None = None,
+    tools: Sequence[Tool] | None = None,
     response_format: type[FormatT] | None = None,
     client: None,
     **params: Unpack[BaseParams],
@@ -192,7 +193,7 @@ def call(
     model: REGISTERED_LLMS,
     *,
     deps_type: type[DepsT],
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: None,
     **params: Unpack[BaseParams],
@@ -205,8 +206,8 @@ def call(
     model: REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] | type[None] | None = None,
-    tools: Sequence[ToolDef]
-    | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
+    tools: Sequence[Tool]
+    | Sequence[Tool | ContextTool[..., Jsonable, DepsT]]
     | None = None,
     response_format: type[FormatT] | None = None,
     client: BaseClient | None = None,

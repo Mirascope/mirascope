@@ -67,7 +67,7 @@ from .streams import (
     BaseStream,
     Stream,
 )
-from .tools import Tool, ToolDef
+from .tools import Tool
 from .tools.decorator import tool
 
 __all__ = [
@@ -110,9 +110,9 @@ __all__ = [
     "ThinkingChunk",
     "TimeoutError",
     "Tool",
+    "Tool",
     "ToolCall",
     "ToolCallChunk",
-    "ToolDef",
     "ToolNotFoundError",
     "ToolOutput",
     "UserContent",

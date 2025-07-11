@@ -14,7 +14,7 @@ from ..streams import (
     AsyncStream,
     Stream,
 )
-from ..tools import ContextToolDef, ToolDef
+from ..tools import ContextTool, Tool
 from .base import BaseClient
 from .register import GOOGLE_REGISTERED_LLMS
 
@@ -33,7 +33,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
     ) -> Response[None, None]:
         raise NotImplementedError
@@ -44,7 +44,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
         params: GoogleParams | None = None,
     ) -> Response[DepsT, None]:
         raise NotImplementedError
@@ -54,7 +54,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Response[None, FormatT]:
@@ -66,7 +66,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -77,7 +77,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
     ) -> Response[None, None]:
         raise NotImplementedError
@@ -88,7 +88,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
         params: GoogleParams | None = None,
     ) -> Response[DepsT, None]:
         raise NotImplementedError
@@ -98,7 +98,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Response[None, FormatT]:
@@ -110,7 +110,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -121,7 +121,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
     ) -> Stream[None, None]:
         raise NotImplementedError
@@ -132,7 +132,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
         params: GoogleParams | None = None,
     ) -> Stream[DepsT, None]:
         raise NotImplementedError
@@ -142,7 +142,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Stream[None, FormatT]:
@@ -154,7 +154,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Stream[DepsT, FormatT]:
@@ -165,7 +165,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
     ) -> AsyncStream[None, None]:
         raise NotImplementedError
@@ -176,7 +176,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
         params: GoogleParams | None = None,
     ) -> AsyncStream[DepsT, None]:
         raise NotImplementedError
@@ -186,7 +186,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         *,
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> AsyncStream[None, FormatT]:
@@ -198,7 +198,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> AsyncStream[DepsT, FormatT]:

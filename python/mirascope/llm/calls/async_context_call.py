@@ -3,13 +3,14 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from ..content import UserContent
+from ..content import ToolCall, ToolOutput, UserContent
 from ..context import Context, DepsT
 from ..prompts import AsyncPrompt
 from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream
-from ..types import P
+from ..tools import ContextTool
+from ..types import Jsonable, P
 from .base_context_call import BaseContextCall
 
 
@@ -77,4 +78,30 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT, FormatT]):
         content: UserContent | Sequence[UserContent],
     ) -> AsyncStream[DepsT, FormatT]:
         """Generate a new async stream by continuing from a previous output, plus new user content."""
+        raise NotImplementedError()
+
+    async def call_tool(self, ctx: Context[DepsT], tool_call: ToolCall) -> ToolOutput:
+        """Call the tool specified by the LLM, returning a ToolOutput.
+
+        May raise llm.ToolNotFoundError if there is no tool matching that name.
+        May raise an exception from the tool call or tool validation."""
+        raise NotImplementedError()
+
+    async def call_tools(self, ctx: Context[DepsT], tool_calls: Sequence[ToolCall]) -> list[ToolOutput]:
+        """Call the tools specified by the LLM, returning a list of ToolOutputs.
+
+        May raise llm.ToolNotFoundError if there is no tool matching that name.
+        May raise an exception from the tool call or tool validation."""
+        raise NotImplementedError()
+
+    def get_tool(self, tool_call: ToolCall) -> ContextTool[..., Jsonable, DepsT]:
+        """Get the tool definition for the given tool call.
+
+        May raise llm.ToolNotFoundError if there is no tool matching that name."""
+        raise NotImplementedError()
+
+    def get_tools(self, tool_calls: Sequence[ToolCall]) -> list[ContextTool[..., Jsonable, DepsT]]:
+        """Get the tool definitions for the given tool calls.
+
+        May raise llm.ToolNotFoundError if there is no tool matching that name."""
         raise NotImplementedError()

@@ -43,8 +43,7 @@ def main():
                 tool_calls.append(tool_call)
         if not tool_calls:
             break
-        tools = stream.tools(tool_calls)
-        outputs = [tool.call() for tool in tools]
+        outputs = librarian.call_tools(tool_calls)
         stream = librarian.resume_stream(stream, outputs)
 
 

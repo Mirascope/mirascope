@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING, Any, Generic
 from ..content import AssistantContent, Audio, Image, Thinking, ToolCall
 from ..context import Context
 from ..messages import Message
-from ..tools import Tool
 from .finish_reason import FinishReason
 from .usage import Usage
 
@@ -97,14 +96,6 @@ class Response(Generic[DepsT, FormatT]):
     @property
     def thinking(self) -> Thinking | None:
         """Returns the first thinking in the response content, if any."""
-        raise NotImplementedError()
-
-    def tool(self, tool_call: ToolCall) -> Tool:
-        """Converts a ToolCall into a Tool. May raise llm.ToolNotFoundError."""
-        raise NotImplementedError()
-
-    def tools(self, tool_calls: Sequence[ToolCall]) -> list[Tool]:
-        """Converts a list of ToolCalls into a list of Tools. May raise llm.ToolNotFoundError."""
         raise NotImplementedError()
 
     def format(self) -> FormatT:

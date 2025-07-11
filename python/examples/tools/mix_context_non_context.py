@@ -36,7 +36,7 @@ def main():
     with llm.context(deps=library) as ctx:
         response: llm.Response[Library] = librarian(ctx, "fantasy")
         while tool_calls := response.tool_calls:
-            outputs = [tool.call() for tool in response.tools(tool_calls)]
+            outputs = librarian.call_tools(ctx, tool_calls)
             response = librarian.resume(response, outputs)
 
         print(response)

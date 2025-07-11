@@ -1,17 +1,19 @@
 """The Tools module for LLMs."""
 
-from .base_tool_def import BaseToolDef
-from .context_tool_def import ContextToolDef
+from .async_context_tool import AsyncContextTool
+from .async_tool import AsyncTool
+from .base_tool import BaseTool
+from .context_tool import ContextTool
 from .decorator import ContextToolDecorator, ToolDecorator, tool
 from .tool import Tool
-from .tool_def import ToolDef
 
 __all__ = [
-    "BaseToolDef",
+    "AsyncContextTool",
+    "AsyncTool",
+    "BaseTool",
+    "ContextTool",
     "ContextToolDecorator",
-    "ContextToolDef",
     "Tool",
     "ToolDecorator",
-    "ToolDef",
     "tool",
 ]

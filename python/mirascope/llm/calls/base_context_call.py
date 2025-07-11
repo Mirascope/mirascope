@@ -9,7 +9,7 @@ from ..context import DepsT
 from ..models import LLM
 from ..prompts import PromptT
 from ..response_formatting import FormatT
-from ..tools import ContextToolDef
+from ..tools import ContextTool
 from ..types import Jsonable, P
 
 
@@ -20,7 +20,7 @@ class BaseContextCall(Generic[P, PromptT, DepsT, FormatT], ABC):
     model: LLM
     """The LLM model used for generating responses."""
 
-    tools: Sequence[ContextToolDef[..., Jsonable, DepsT]] | None
+    tools: Sequence[ContextTool[..., Jsonable, DepsT]] | None
     """The tools to be used with the LLM."""
 
     response_format: type[FormatT] | None

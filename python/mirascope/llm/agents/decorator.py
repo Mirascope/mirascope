@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Protocol, overload
+from typing import TYPE_CHECKING, Protocol, overload
 
 from typing_extensions import Unpack
 
 from ..clients import BaseClient, BaseParams
 from ..context import Context
-from ..tools import ContextToolDef, ToolDef
+from ..tools import ContextTool, Tool
+from ..types import Jsonable
 from .agent import Agent
 from .async_agent import AsyncAgent
 
@@ -71,7 +72,7 @@ def agent(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
@@ -85,7 +86,7 @@ def agent(
     model: GOOGLE_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
@@ -99,7 +100,7 @@ def agent(
     model: OPENAI_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
@@ -113,7 +114,7 @@ def agent(
     model: REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
@@ -126,7 +127,7 @@ def agent(
     model: REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
