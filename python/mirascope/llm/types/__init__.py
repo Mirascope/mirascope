@@ -3,8 +3,6 @@
 from .dataclass import Dataclass
 from .jsonable import Jsonable
 from .type_vars import (
-    AssistantContentT,
-    ChunkT,
     CovariantT,
     JsonableCovariantT,
     JsonableT,
@@ -12,8 +10,6 @@ from .type_vars import (
 )
 
 __all__ = [
-    "AssistantContentT",
-    "ChunkT",
     "CovariantT",
     "Dataclass",
     "Jsonable",
