@@ -1,19 +1,17 @@
 """The `llm.response_format` decorator for defining response formats as classes."""
 
 from collections.abc import Callable, Sequence
-from typing import Any, Literal, Protocol, TypeVar, overload
+from typing import Any, Literal, Protocol, overload
 
 from ..content import AssistantContent
-
-T = TypeVar("T", bound=object)
-CovariantT = TypeVar("CovariantT", covariant=True)
+from ..types import FormatCovariantT, RequiredFormatT
 
 
-class JsonResponseFormatDef(Protocol[CovariantT]):
+class JsonResponseFormatDef(Protocol[FormatCovariantT]):
     """Protocol for defining a JSON mode response format."""
 
     @classmethod
-    def parse(cls, json: dict[str, Any]) -> CovariantT:
+    def parse(cls, json: dict[str, Any]) -> FormatCovariantT:
         """Parse a JSON response into an instance of the class.
 
         Args:
@@ -25,11 +23,11 @@ class JsonResponseFormatDef(Protocol[CovariantT]):
         ...
 
 
-class ToolResponseFormatDef(Protocol[CovariantT]):
+class ToolResponseFormatDef(Protocol[FormatCovariantT]):
     """Protocol for defining a tool mode response format."""
 
     @classmethod
-    def parse(cls, args: dict[str, Any]) -> CovariantT:
+    def parse(cls, args: dict[str, Any]) -> FormatCovariantT:
         """Parse a tool call response into an instance of the class.
 
         Args:
@@ -41,13 +39,13 @@ class ToolResponseFormatDef(Protocol[CovariantT]):
         ...
 
 
-class ContentResponseFormatDef(Protocol[CovariantT]):
+class ContentResponseFormatDef(Protocol[FormatCovariantT]):
     """Protocol for defining a content mode response format."""
 
     @classmethod
     def parse(
         cls, content: AssistantContent | Sequence[AssistantContent]
-    ) -> CovariantT:
+    ) -> FormatCovariantT:
         """Parse a response into an instance of the class.
 
         Args:
@@ -62,11 +60,11 @@ class ContentResponseFormatDef(Protocol[CovariantT]):
 @overload
 def response_format(
     __cls: type[
-        JsonResponseFormatDef[T]
-        | ToolResponseFormatDef[T]
-        | ContentResponseFormatDef[T]
+        JsonResponseFormatDef[RequiredFormatT]
+        | ToolResponseFormatDef[RequiredFormatT]
+        | ContentResponseFormatDef[RequiredFormatT]
     ],
-) -> type[T]:
+) -> type[RequiredFormatT]:
     """Overload for no arguments, which requires a parser classmethod."""
     ...
 
@@ -77,8 +75,12 @@ def response_format(
     parser: None = None,
     strict: bool = False,
 ) -> Callable[
-    [JsonResponseFormatDef[T] | ToolResponseFormatDef[T] | ContentResponseFormatDef[T]],
-    type[T],
+    [
+        JsonResponseFormatDef[RequiredFormatT]
+        | ToolResponseFormatDef[RequiredFormatT]
+        | ContentResponseFormatDef[RequiredFormatT]
+    ],
+    type[RequiredFormatT],
 ]:
     """Overload for no default parser, which requires a parser classmethod."""
     ...
@@ -89,7 +91,7 @@ def response_format(
     *,
     parser: Literal["json", "tool"],
     strict: bool = False,
-) -> Callable[[type[T]], type[T]]:
+) -> Callable[[type[RequiredFormatT]], type[RequiredFormatT]]:
     """Overload for setting a default parser."""
     ...
 
@@ -100,16 +102,16 @@ def response_format(
     parser: Literal["json", "tool"] | None = None,
     strict: bool = False,
 ) -> (
-    T
+    RequiredFormatT
     | Callable[
         [
-            JsonResponseFormatDef[T]
-            | ToolResponseFormatDef[T]
-            | ContentResponseFormatDef[T]
+            JsonResponseFormatDef[RequiredFormatT]
+            | ToolResponseFormatDef[RequiredFormatT]
+            | ContentResponseFormatDef[RequiredFormatT]
         ],
-        type[T],
+        type[RequiredFormatT],
     ]
-    | Callable[[type[T]], type[T]]
+    | Callable[[type[RequiredFormatT]], type[RequiredFormatT]]
 ):
     '''Decorator that defines a structured response format for LLM outputs.
 

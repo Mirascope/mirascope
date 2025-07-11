@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING, overload
 
 from typing_extensions import Unpack
 
-from ..clients import BaseClient
-from .base import LLM, BaseParams
+from ..clients import BaseClient, BaseParams
+from .base import LLM
 
 if TYPE_CHECKING:
     from ..clients import (

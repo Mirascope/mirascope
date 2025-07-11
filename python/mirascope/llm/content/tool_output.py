@@ -1,15 +1,13 @@
 """The `ToolOutput` content class."""
 
 from dataclasses import dataclass
-from typing import Generic, Literal, TypeVar
+from typing import Generic, Literal
 
-from ..types import Jsonable
-
-R = TypeVar("R", bound=Jsonable)
+from ..types import ToolReturnT
 
 
 @dataclass(kw_only=True)
-class ToolOutput(Generic[R]):
+class ToolOutput(Generic[ToolReturnT]):
     """Tool output content for a message.
 
     Represents the output from a tool call. This is part of a user message's
@@ -21,5 +19,5 @@ class ToolOutput(Generic[R]):
     id: str
     """The ID of the tool call that this output is for."""
 
-    value: R
+    value: ToolReturnT
     """The output value from the tool call."""

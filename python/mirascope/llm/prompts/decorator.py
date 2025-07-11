@@ -1,16 +1,12 @@
 """The `prompt` decorator for writing messages as string templates."""
 
 from collections.abc import Awaitable, Callable, Sequence
-from typing import Concatenate, ParamSpec, Protocol, TypeAlias, overload
-
-from typing_extensions import TypeVar
+from typing import Concatenate, Protocol, TypeAlias, overload
 
 from ..content import UserContent
 from ..context import Context
 from ..messages.message import Message
-
-P = ParamSpec("P")
-DepsT = TypeVar("DepsT", default=None)
+from ..types import DepsT, P
 
 
 class MessagesPrompt(Protocol[P]):

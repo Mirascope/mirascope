@@ -1,59 +1,58 @@
 """The `ResponseFormat` class for defining how to structure an LLM response."""
 
 from dataclasses import dataclass
-from typing import Any, Generic, Literal, Protocol, TypeVar, runtime_checkable
+from typing import Any, Generic, Literal, Protocol, runtime_checkable
 
-T = TypeVar("T", bound=object)
-CovariantT = TypeVar("CovariantT", covariant=True)
+from ..types import FormatCovariantT, RequiredFormatT
 
 
-class JsonParserFn(Protocol[CovariantT]):
+class JsonParserFn(Protocol[FormatCovariantT]):
     """Protocol for a JSON mode response format parser."""
 
-    def __call__(self, json: dict[str, Any]) -> CovariantT:
+    def __call__(self, json: dict[str, Any]) -> FormatCovariantT:
         """Parse a JSON response into an instance of the class.
 
         Args:
             json: The JSON response from the LLM.
 
         Returns:
-            An instance of the class `CovariantT`.
+            An instance of the class `FormatCovariantT`.
         """
         ...
 
 
-class ToolParserFn(Protocol[CovariantT]):
+class ToolParserFn(Protocol[FormatCovariantT]):
     """Protocol for a tool mode response format parser."""
 
-    def __call__(self, args: dict[str, Any]) -> CovariantT:
+    def __call__(self, args: dict[str, Any]) -> FormatCovariantT:
         """Parse a tool call response into an instance of the class.
 
         Args:
             args: The arguments generated for the tool call.
 
         Returns:
-            An instance of the class `CovariantT`.
+            An instance of the class `FormatCovariantT`.
         """
         ...
 
 
-class TextParserFn(Protocol[CovariantT]):
+class TextParserFn(Protocol[FormatCovariantT]):
     """Protocol for a text mode response format parser."""
 
-    def __call__(self, text: str) -> CovariantT:
+    def __call__(self, text: str) -> FormatCovariantT:
         """Parse a text response into an instance of the class.
 
         Args:
             text: The text response from the LLM.
 
         Returns:
-            An instance of the class `CovariantT`.
+            An instance of the class `FormatCovariantT`.
         """
         ...
 
 
 @dataclass
-class ResponseFormat(Generic[T]):
+class ResponseFormat(Generic[RequiredFormatT]):
     """Class representing a structured output format for LLM responses.
 
     A ResponseFormat defines how LLM responses should be structured and parsed.
@@ -82,7 +81,7 @@ class ResponseFormat(Generic[T]):
                 llm.messages.user(f"Recommend a {genre} book.")
             ]
 
-        response: llm.Response[Book] = recommend_book("fantasy")
+        response: llm.Response[None, Book] = recommend_book("fantasy")
         book: Book = response.format()
         print(f"{book.title} by {book.author}")
         ```
@@ -91,7 +90,11 @@ class ResponseFormat(Generic[T]):
     schema: dict[str, Any]
     """The original class definition before being decorated."""
 
-    parser: JsonParserFn[T] | ToolParserFn[T] | TextParserFn[T]
+    parser: (
+        JsonParserFn[RequiredFormatT]
+        | ToolParserFn[RequiredFormatT]
+        | TextParserFn[RequiredFormatT]
+    )
     """The parser for formatting the response."""
 
     mode: Literal["json", "tool", "text"]
@@ -105,8 +108,8 @@ class ResponseFormat(Generic[T]):
 
 
 @runtime_checkable
-class Formattable(Protocol[T]):
+class Formattable(Protocol[RequiredFormatT]):
     """Protocol for classes that have been decorated with `@response_format()`."""
 
-    __response_format__: ResponseFormat[T]
+    __response_format__: ResponseFormat[RequiredFormatT]
     """The `ResponseFormat` instance constructed by the `@response_format()` decorator."""

@@ -1,12 +1,9 @@
 """Base classes for streaming content groups."""
 
 from collections.abc import AsyncIterator, Iterator
-from typing import Generic, TypeVar
+from typing import Generic
 
-from ..content import AssistantContent
-
-ChunkT = TypeVar("ChunkT")
-AssistantContentT = TypeVar("AssistantContentT", bound=AssistantContent)
+from ..types import AssistantContentT, ChunkT
 
 
 class BaseGroup(Generic[ChunkT, AssistantContentT]):

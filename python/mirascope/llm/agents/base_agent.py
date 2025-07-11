@@ -5,13 +5,10 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
 
-from typing_extensions import TypeVar
-
 from ..context import Context
 from ..models import LLM
 from ..tools import ToolDef
-
-DepsT = TypeVar("DepsT", default=None)
+from ..types import DepsT
 
 
 @dataclass

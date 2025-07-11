@@ -2,12 +2,16 @@
 
 from collections.abc import AsyncIterator
 
+from typing_extensions import TypeVar
+
 from ..content import ContentChunk
 from .base import BaseStream
 from .group_types import AsyncGroup
 
+DepsT = TypeVar("DepsT", default=None)
 
-class AsyncStream(BaseStream):
+
+class AsyncStream(BaseStream[DepsT, None]):
     """An asynchronous stream of response chunks from an LLM.
 
     This class supports async iteration to process chunks as they arrive from the model.

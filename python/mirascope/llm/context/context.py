@@ -6,12 +6,10 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from typing import Generic
 
-from typing_extensions import TypeVar
-
 from ..messages import Message
+from ..types import DepsT
 
 NoneType = type(None)
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass

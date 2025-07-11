@@ -5,9 +5,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Generic, overload
 
-from typing_extensions import TypeVar
-
-from ..clients.base import BaseClient, BaseParams
 from ..context import Context
 from ..responses import Response
 from ..streams import (
@@ -17,19 +14,16 @@ from ..streams import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
+from ..types import ClientT, ParamsT, ProviderMessageT
 
 if TYPE_CHECKING:
     from ..clients import REGISTERED_LLMS
 
 
-T = TypeVar("T", bound=object | None, default=None)
-MessageT = TypeVar("MessageT")
-ParamsT = TypeVar("ParamsT", bound="BaseParams")
-ClientT = TypeVar("ClientT", bound="BaseClient")
-DepsT = TypeVar("DepsT", default=None)
+from ..types import DepsT, FormatT
 
 
-class LLM(Generic[MessageT, ParamsT, ClientT]):
+class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
     """The unified LLM interface that delegates to provider-specific clients.
 
     This class provides a consistent interface for interacting with language models
@@ -62,11 +56,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> Response:
+    ) -> Response[None, None]:
         """Overload for standard call."""
         ...
 
@@ -75,11 +69,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> Response:
+    ) -> Response[DepsT, None]:
         """Overload for standard context call."""
         ...
 
@@ -88,11 +82,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type[T],
+        response_format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[T]:
+    ) -> Response[None, FormatT]:
         """Overload for calls when a response format is specified."""
         ...
 
@@ -101,11 +95,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
-        response_format: type[T],
+        response_format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[T]:
+    ) -> Response[DepsT, FormatT]:
         """Overload for calls when a response format is specified."""
         ...
 
@@ -113,13 +107,13 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef]
         | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
         | None = None,
-        response_format: type[T] | None = None,
+        response_format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> Response | Response[T]:
+    ) -> Response[DepsT, FormatT]:
         """Generate a response using the model."""
         ...
 
@@ -128,11 +122,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> Response:
+    ) -> Response[None, None]:
         """Overload for standard async call."""
         ...
 
@@ -141,11 +135,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> Response:
+    ) -> Response[DepsT, None]:
         """Overload for standard async context call."""
         ...
 
@@ -154,11 +148,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type[T],
+        response_format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[T]:
+    ) -> Response[None, FormatT]:
         """Overload for async calls when a response format is specified."""
         ...
 
@@ -167,11 +161,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
-        response_format: type[T],
+        response_format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[T]:
+    ) -> Response[DepsT, FormatT]:
         """Overload for async context calls when a response format is specified."""
         ...
 
@@ -179,13 +173,13 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef]
         | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
         | None = None,
-        response_format: type[T] | None = None,
+        response_format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> Response | Response[T]:
+    ) -> Response[DepsT, FormatT]:
         """Generate a response asynchronously using the model."""
         ...
 
@@ -194,11 +188,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> Stream:
+    ) -> Stream[None]:
         """Overload for standard streaming."""
         ...
 
@@ -207,11 +201,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> Stream:
+    ) -> Stream[DepsT]:
         """Overload for standard context streaming."""
         ...
 
@@ -220,11 +214,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type[T],
+        response_format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> StructuredStream[T]:
+    ) -> StructuredStream[None, FormatT]:
         """Overload for structured streaming."""
         ...
 
@@ -233,11 +227,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
-        response_format: type[T],
+        response_format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> StructuredStream[T]:
+    ) -> StructuredStream[DepsT, FormatT]:
         """Overload for context structured streaming."""
         ...
 
@@ -245,13 +239,13 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: Sequence[MessageT],
+        messages: Sequence[ProviderMessageT],
         tools: Sequence[ToolDef]
         | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
         | None = None,
-        response_format: type[T] | None = None,
+        response_format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> Stream | StructuredStream[T]:
+    ) -> Stream[DepsT] | StructuredStream[DepsT, FormatT]:
         """Stream a response using the model."""
         ...
 
@@ -260,11 +254,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStream:
+    ) -> AsyncStream[None]:
         """Overload for standard async streaming."""
         ...
 
@@ -273,11 +267,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStream:
+    ) -> AsyncStream[DepsT]:
         """Overload for standard async context streaming."""
         ...
 
@@ -286,11 +280,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: None = None,
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef] | None = None,
-        response_format: type[T],
+        response_format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> AsyncStructuredStream[T]:
+    ) -> AsyncStructuredStream[None, FormatT]:
         """Overload for async structured streaming."""
         ...
 
@@ -299,11 +293,11 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT],
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
-        response_format: type[T],
+        response_format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> AsyncStructuredStream[T]:
+    ) -> AsyncStructuredStream[DepsT, FormatT]:
         """Overload for async context structured streaming."""
         ...
 
@@ -311,12 +305,12 @@ class LLM(Generic[MessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: list[MessageT],
+        messages: list[ProviderMessageT],
         tools: Sequence[ToolDef]
         | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
         | None = None,
-        response_format: type[T] | None = None,
+        response_format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStream | AsyncStructuredStream[T]:
+    ) -> AsyncStream[DepsT] | AsyncStructuredStream[DepsT, FormatT]:
         """Stream a response asynchronously using the model."""
         ...
