@@ -3,17 +3,10 @@
 from collections.abc import Callable
 from typing import Protocol, overload
 
-from typing_extensions import TypeVar
-
 from ..context import Context
-from ..types import P, ToolCovariantT, ToolReturnT
+from ..types import DepsT, P, ToolCovariantT, ToolReturnT
 from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef
-
-NoneType = type(None)
-
-
-DepsT = TypeVar("DepsT")
 
 
 class ToolFn(Protocol[P, ToolCovariantT]):
@@ -24,7 +17,7 @@ class ToolFn(Protocol[P, ToolCovariantT]):
         ...
 
 
-class ContextToolFn(Protocol[DepsT, P, ToolCovariantT]):
+class ContextToolFn(Protocol[P, ToolCovariantT, DepsT]):
     """Protocol for the context tool function."""
 
     def __call__(
@@ -46,7 +39,7 @@ class ContextToolDecorator(Protocol[DepsT]):
     """Protocol for the context tool decorator."""
 
     def __call__(
-        self, fn: ContextToolFn[DepsT, P, ToolReturnT]
+        self, fn: ContextToolFn[P, ToolReturnT, DepsT]
     ) -> ContextToolDef[P, ToolReturnT, DepsT]:
         """Call the decorator with a function."""
         ...
