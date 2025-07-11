@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, ParamSpec, TypeGuard
 from typing_extensions import TypeVar
 
 from ..types import Jsonable
-from .base_tool import BaseTool
 from .base_tool_def import BaseToolDef
 
 if TYPE_CHECKING:
@@ -44,7 +43,7 @@ class ToolDef(BaseToolDef[P, R]):
         """
         return self.fn(*args, **kwargs)
 
-    def defines(self, tool: BaseTool) -> TypeGuard[Tool[P, R]]:
+    def defines(self, tool: Tool) -> TypeGuard[Tool[P, R]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific

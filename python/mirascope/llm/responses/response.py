@@ -13,6 +13,7 @@ from typing_extensions import TypeVar
 
 from ..content import AssistantContent, Audio, Image, Thinking, ToolCall
 from ..messages import Message
+from ..tools import Tool
 from .finish_reason import FinishReason
 from .usage import Usage
 
@@ -67,11 +68,11 @@ class Response(Generic[T]):
     cost: Decimal | None
     """The cost of the request to the LLM, if available."""
 
-    tools: Sequence[ToolCall]
+    tool_calls: Sequence[ToolCall]
     """The tools the LLM wants called on its behalf, if any."""
 
     @property
-    def tool(self) -> ToolCall | None:
+    def tool_call(self) -> ToolCall | None:
         """Returns the first tool used in the response, if any."""
         raise NotImplementedError()
 
@@ -93,6 +94,14 @@ class Response(Generic[T]):
     @property
     def thinking(self) -> Thinking | None:
         """Returns the first thinking in the response content, if any."""
+        raise NotImplementedError()
+
+    def tool(self, tool_call: ToolCall) -> Tool:
+        """Converts a ToolCall into a Tool. May raise llm.ToolNotFoundError."""
+        raise NotImplementedError()
+
+    def tools(self, tool_calls: list[ToolCall]) -> list[Tool]:
+        """Converts a list of ToolCalls into a list of Tools. May raise llm.ToolNotFoundError."""
         raise NotImplementedError()
 
     def format(self) -> T:

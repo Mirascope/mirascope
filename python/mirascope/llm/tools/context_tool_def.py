@@ -4,17 +4,14 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Concatenate, Generic, ParamSpec, TypeGuard
+from typing import Concatenate, Generic, ParamSpec, TypeGuard
 
 from typing_extensions import TypeVar
 
 from ..context import Context
 from ..types import Jsonable
-from .base_tool import BaseTool
 from .base_tool_def import BaseToolDef
-
-if TYPE_CHECKING:
-    from .context_tool import ContextTool
+from .tool import Tool
 
 P = ParamSpec("P")
 R = TypeVar("R", bound=Jsonable)
@@ -45,7 +42,7 @@ class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
         """
         return self.fn(ctx, *args, **kwargs)
 
-    def defines(self, tool: BaseTool) -> TypeGuard[ContextTool[P, R, DepsT]]:
+    def defines(self, tool: Tool) -> TypeGuard[Tool[P, R, DepsT]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific

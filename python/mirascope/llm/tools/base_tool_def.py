@@ -1,7 +1,7 @@
 """The `BaseToolDef` class for defining tools that LLMs can request be called."""
 
 from dataclasses import dataclass
-from typing import Any, Generic, ParamSpec
+from typing import Generic, ParamSpec
 
 from typing_extensions import TypeVar
 
@@ -28,7 +28,7 @@ class BaseToolDef(Generic[P, R]):
     description: str
     """Description of what the tool does, extracted from the function's docstring."""
 
-    parameters: dict[str, Any]
+    parameters: dict[str, Jsonable]
     """JSON Schema describing the parameters accepted by the tool."""
 
     strict: bool
