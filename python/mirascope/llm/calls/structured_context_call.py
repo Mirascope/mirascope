@@ -7,7 +7,7 @@ from ..content import UserContent
 from ..context import Context
 from ..prompts import Prompt
 from ..responses import Response
-from ..streams import AsyncStructuredStream, StructuredStream
+from ..streams import AsyncStream, Stream
 from ..types import DepsT, FormatT, P
 from .base_structured_context_call import BaseStructuredContextCall
 
@@ -36,13 +36,13 @@ class StructuredContextCall(BaseStructuredContextCall[P, Prompt, FormatT, DepsT]
 
     def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> StructuredStream[DepsT, FormatT]:
+    ) -> Stream[DepsT, FormatT]:
         """Generates a streaming structured response using the LLM."""
         raise NotImplementedError()
 
     async def stream_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStructuredStream[DepsT, FormatT]:
+    ) -> AsyncStream[DepsT, FormatT]:
         """Generates an asynchronous streaming structured response using the LLM."""
         raise NotImplementedError()
 
@@ -66,7 +66,7 @@ class StructuredContextCall(BaseStructuredContextCall[P, Prompt, FormatT, DepsT]
         self,
         response: Response[DepsT, FormatT],
         content: UserContent | Sequence[UserContent],
-    ) -> StructuredStream[DepsT, FormatT]:
+    ) -> Stream[DepsT, FormatT]:
         """Generate a new stream by continuing from a previous response, plus new user content."""
         raise NotImplementedError()
 
@@ -74,6 +74,6 @@ class StructuredContextCall(BaseStructuredContextCall[P, Prompt, FormatT, DepsT]
         self,
         response: Response[DepsT, FormatT],
         content: UserContent | Sequence[UserContent],
-    ) -> AsyncStructuredStream[DepsT, FormatT]:
+    ) -> AsyncStream[DepsT, FormatT]:
         """Generate a new async stream by continuing from a previous response, plus new user content."""
         raise NotImplementedError()

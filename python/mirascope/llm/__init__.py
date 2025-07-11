@@ -66,10 +66,8 @@ from .response_formatting.decorator import response_format
 from .responses import Response
 from .streams import (
     AsyncStream,
-    AsyncStructuredStream,
     BaseStream,
     Stream,
-    StructuredStream,
 )
 from .tools import Tool, ToolDef
 from .tools.decorator import tool
@@ -83,9 +81,9 @@ __all__ = [
     "AsyncAgent",
     "AsyncCall",
     "AsyncStream",
+    "AsyncStream",
     "AsyncStructuredAgent",
     "AsyncStructuredCall",
-    "AsyncStructuredStream",
     "Audio",
     "AudioChunk",
     "AuthenticationError",
@@ -110,9 +108,9 @@ __all__ = [
     "ResponseFormat",
     "ServerError",
     "Stream",
+    "Stream",
     "StructuredAgent",
     "StructuredCall",
-    "StructuredStream",
     "SystemMessage",
     "Thinking",
     "ThinkingChunk",

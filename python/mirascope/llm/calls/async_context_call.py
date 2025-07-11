@@ -36,13 +36,13 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT]):
 
     async def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStream[DepsT]:
+    ) -> AsyncStream[DepsT, None]:
         """Generates a streaming response using the LLM asynchronously."""
         raise NotImplementedError()
 
     async def stream_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStream[DepsT]:
+    ) -> AsyncStream[DepsT, None]:
         """Generates an asynchronous streaming response using the LLM."""
         return await self.stream(ctx, *args, **kwargs)
 
@@ -66,7 +66,7 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT]):
         self,
         response: Response[DepsT, None],
         content: UserContent | Sequence[UserContent],
-    ) -> AsyncStream[DepsT]:
+    ) -> AsyncStream[DepsT, None]:
         """Generate a new stream by continuing from a previous response, plus new user content."""
         raise NotImplementedError()
 
@@ -74,6 +74,6 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT]):
         self,
         response: Response[DepsT, None],
         content: UserContent | Sequence[UserContent],
-    ) -> AsyncStream[DepsT]:
+    ) -> AsyncStream[DepsT, None]:
         """Generate a new async stream by continuing from a previous response, plus new user content."""
         raise NotImplementedError()

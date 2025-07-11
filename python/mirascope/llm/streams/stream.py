@@ -2,16 +2,13 @@
 
 from collections.abc import Iterator
 
-from typing_extensions import TypeVar
-
 from ..content import ContentChunk
+from ..types import DepsT, FormatT
 from .base import BaseStream
 from .group_types import Group
 
-DepsT = TypeVar("DepsT", default=None)
 
-
-class Stream(BaseStream[DepsT, None]):
+class Stream(BaseStream[DepsT, FormatT]):
     """A synchronous stream of response chunks from an LLM.
 
     This class supports iteration to process chunks as they arrive from the model.

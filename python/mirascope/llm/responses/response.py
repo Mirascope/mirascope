@@ -109,7 +109,7 @@ class Response(Generic[DepsT, FormatT]):
     def format(self) -> FormatT:
         """Format the response according to the response format parser.
 
-        This method is only available if the call was created with a T.
+        This method is only available if the call was created with a FormatT.
         It will parse the response content according to the specified format and return
         a structured object.
 
