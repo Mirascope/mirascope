@@ -13,22 +13,26 @@ from .base_structured_call import BaseStructuredCall
 class AsyncStructuredCall(BaseStructuredCall[P, AsyncPrompt, FormatT]):
     """A class for generating structured responses using LLMs asynchronously."""
 
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[FormatT]:
+    async def __call__(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> Response[None, FormatT]:
         """Generates a structured response using the LLM asynchronously."""
         raise NotImplementedError()
 
-    async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response[FormatT]:
+    async def call_async(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> Response[None, FormatT]:
         """Generates an asynchronous structured response using the LLM."""
         return await self(*args, **kwargs)
 
     async def stream(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStructuredStream[FormatT]:
+    ) -> AsyncStructuredStream[None, FormatT]:
         """Generates a streaming structured response using the LLM asynchronously."""
         raise NotImplementedError()
 
     async def stream_async(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStructuredStream[FormatT]:
+    ) -> AsyncStructuredStream[None, FormatT]:
         """Generates an asynchronous streaming structured response using the LLM."""
         return await self.stream(*args, **kwargs)

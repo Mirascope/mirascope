@@ -3,19 +3,16 @@
 This module provides interfaces for both synchronous and asynchronous streaming
 of responses from language models. Streaming allows for incremental processing of
 responses as they are generated, rather than waiting for the complete response.
-
-TODO: this interface is missing stuff from v1 like usage etc. that we collect during
-the stream for convenience (e.g. calling stream.cost after the stream is done).
 """
 
 from collections.abc import Iterator
-from typing import Generic
 
 from ..content import ContentChunk
-from ..types import FormatT
+from ..types import DepsT, FormatT
+from .base import BaseStream
 
 
-class StructuredStream(Generic[FormatT]):
+class StructuredStream(BaseStream[DepsT, FormatT]):
     """A synchronous stream of partial structured outputs from an LLM.
 
     This class supports iteration to process structured outputs as they arrive from the

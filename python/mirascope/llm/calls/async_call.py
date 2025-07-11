@@ -13,18 +13,22 @@ from .base_call import BaseCall
 class AsyncCall(BaseCall[P, AsyncPrompt]):
     """A class for generating responses using LLMs asynchronously."""
 
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response:
+    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[None, None]:
         """Generates a response using the LLM asynchronously."""
         raise NotImplementedError()
 
-    async def call_async(self, *args: P.args, **kwargs: P.kwargs) -> Response:
+    async def call_async(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> Response[None, None]:
         """Generates an asynchronous response using the LLM."""
         return await self(*args, **kwargs)
 
-    async def stream(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream:
+    async def stream(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream[None]:
         """Generates a streaming response using the LLM asynchronously."""
         raise NotImplementedError()
 
-    async def stream_async(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream:
+    async def stream_async(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncStream[None]:
         """Generates an asynchronous streaming response using the LLM."""
         return await self.stream(*args, **kwargs)

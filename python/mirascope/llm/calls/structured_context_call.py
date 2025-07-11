@@ -16,24 +16,24 @@ class StructuredContextCall(BaseStructuredContextCall[P, Prompt, FormatT, DepsT]
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Response[FormatT]:
+    ) -> Response[DepsT, FormatT]:
         """Generates a structured response using the LLM."""
         raise NotImplementedError()
 
     async def call_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Response[FormatT]:
+    ) -> Response[DepsT, FormatT]:
         """Generates an asynchronous structured response using the LLM."""
         raise NotImplementedError()
 
     def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> StructuredStream[FormatT]:
+    ) -> StructuredStream[DepsT, FormatT]:
         """Generates a streaming structured response using the LLM."""
         raise NotImplementedError()
 
     async def stream_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStructuredStream[FormatT]:
+    ) -> AsyncStructuredStream[DepsT, FormatT]:
         """Generates an asynchronous streaming structured response using the LLM."""
         raise NotImplementedError()
