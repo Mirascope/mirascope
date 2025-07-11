@@ -22,9 +22,7 @@ from . import (
 from .agents import Agent, AsyncAgent, AsyncStructuredAgent, StructuredAgent, agent
 from .calls import (
     AsyncCall,
-    AsyncStructuredCall,
     Call,
-    StructuredCall,
     call,
 )
 from .clients import BaseClient, BaseParams
@@ -83,7 +81,6 @@ __all__ = [
     "AsyncStream",
     "AsyncStream",
     "AsyncStructuredAgent",
-    "AsyncStructuredCall",
     "Audio",
     "AudioChunk",
     "AuthenticationError",
@@ -110,7 +107,6 @@ __all__ = [
     "Stream",
     "Stream",
     "StructuredAgent",
-    "StructuredCall",
     "SystemMessage",
     "Thinking",
     "ThinkingChunk",

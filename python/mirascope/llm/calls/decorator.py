@@ -17,12 +17,8 @@ from ..prompts import (
 from ..tools import ContextToolDef, ToolDef
 from .async_call import AsyncCall
 from .async_context_call import AsyncContextCall
-from .async_structured_call import AsyncStructuredCall
-from .async_structured_context_call import AsyncStructuredContextCall
 from .call import Call
 from .context_call import ContextCall
-from .structured_call import StructuredCall
-from .structured_context_call import StructuredContextCall
 
 if TYPE_CHECKING:
     from ..clients import (
@@ -42,18 +38,18 @@ if TYPE_CHECKING:
 from ..types import DepsT, FormatT, P
 
 
-class CallDecorator(Protocol):
+class CallDecorator(Protocol[FormatT]):
     """A decorator for generating responses using LLMs."""
 
     @overload
     def __call__(
         self, fn: AsyncPrompt[P] | AsyncContextPrompt[P, None]
-    ) -> AsyncCall[P]:
+    ) -> AsyncCall[P, FormatT]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: Prompt[P] | ContextPrompt[P, None]) -> Call[P]:
+    def __call__(self, fn: Prompt[P] | ContextPrompt[P, None]) -> Call[P, FormatT]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
@@ -63,78 +59,32 @@ class CallDecorator(Protocol):
         | ContextPrompt[P, None]
         | AsyncPrompt[P]
         | AsyncContextPrompt[P, None],
-    ) -> Call[P] | AsyncCall[P]:
+    ) -> Call[P, FormatT] | AsyncCall[P, FormatT]:
         """Decorates a function to generate responses using LLMs."""
         ...
 
 
-class ContextCallDecorator(Protocol[DepsT]):
+class ContextCallDecorator(Protocol[DepsT, FormatT]):
     """A decorator for generating responses using LLMs."""
 
     @overload
-    def __call__(self, fn: AsyncContextPrompt[P, DepsT]) -> AsyncContextCall[P, DepsT]:
+    def __call__(self, fn: AsyncContextPrompt[P, DepsT]) -> AsyncContextCall[P, DepsT, FormatT]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: ContextPrompt[P, DepsT]) -> ContextCall[P, DepsT]:
+    def __call__(self, fn: ContextPrompt[P, DepsT]) -> ContextCall[P, DepsT, FormatT]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
         self,
         fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
-    ) -> ContextCall[P, DepsT] | AsyncContextCall[P, DepsT]:
+    ) -> ContextCall[P, DepsT, FormatT] | AsyncContextCall[P, DepsT, FormatT]:
         """Decorates a function to generate responses using LLMs."""
         ...
 
 
-class StructuredCallDecorator(Protocol[FormatT]):
-    """A decorator for generating responses using LLMs."""
-
-    @overload
-    def __call__(self, fn: AsyncPrompt[P]) -> AsyncStructuredCall[P, FormatT]:
-        """Decorates an asynchronous function to generate responses using LLMs."""
-        ...
-
-    @overload
-    def __call__(self, fn: Prompt[P]) -> StructuredCall[P, FormatT]:
-        """Decorates a synchronous function to generate responses using LLMs."""
-        ...
-
-    def __call__(
-        self, fn: Prompt[P] | AsyncPrompt[P]
-    ) -> StructuredCall[P, FormatT] | AsyncStructuredCall[P, FormatT]:
-        """Decorates a function to generate responses using LLMs."""
-        ...
-
-
-class StructuredContextCallDecorator(Protocol[FormatT, DepsT]):
-    """A decorator for generating responses using LLMs."""
-
-    @overload
-    def __call__(
-        self, fn: AsyncContextPrompt[P, DepsT]
-    ) -> AsyncStructuredContextCall[P, FormatT, DepsT]:
-        """Decorates an asynchronous function to generate responses using LLMs."""
-        ...
-
-    @overload
-    def __call__(
-        self, fn: ContextPrompt[P, DepsT]
-    ) -> StructuredContextCall[P, FormatT, DepsT]:
-        """Decorates a synchronous function to generate responses using LLMs."""
-        ...
-
-    def __call__(
-        self,
-        fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
-    ) -> (
-        StructuredContextCall[P, FormatT, DepsT]
-        | AsyncStructuredContextCall[P, FormatT, DepsT]
-    ):
-        """Decorates a function to generate responses using LLMs."""
-        ...
 
 
 @overload
@@ -146,7 +96,7 @@ def call(
     response_format: None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> CallDecorator:
+) -> CallDecorator[None]:
     """Overload for Anthropic generation."""
     ...
 
@@ -160,7 +110,7 @@ def call(
     response_format: None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> ContextCallDecorator[DepsT]:
+) -> ContextCallDecorator[DepsT, None]:
     """Overload for Anthropic contextual generation."""
     ...
 
@@ -174,7 +124,7 @@ def call(
     response_format: type[FormatT],
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> StructuredCallDecorator[FormatT]:
+) -> CallDecorator[FormatT]:
     """Overload for Anthropic structured generation."""
     ...
 
@@ -188,7 +138,7 @@ def call(
     response_format: type[FormatT],
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> StructuredContextCallDecorator[FormatT, DepsT]:
+) -> ContextCallDecorator[DepsT, FormatT]:
     """Overload for Anthropic structured contextual generation."""
     ...
 
@@ -202,7 +152,7 @@ def call(
     response_format: None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> CallDecorator:
+) -> CallDecorator[None]:
     """Overload for Google generation."""
     ...
 
@@ -216,7 +166,7 @@ def call(
     response_format: None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> ContextCallDecorator[DepsT]:
+) -> ContextCallDecorator[DepsT, None]:
     """Overload for Google contextual generation."""
     ...
 
@@ -230,7 +180,7 @@ def call(
     response_format: type[FormatT],
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> StructuredCallDecorator[FormatT]:
+) -> CallDecorator[FormatT]:
     """Overload for Google structured generation."""
     ...
 
@@ -244,7 +194,7 @@ def call(
     response_format: type[FormatT],
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> StructuredContextCallDecorator[FormatT, DepsT]:
+) -> ContextCallDecorator[DepsT, FormatT]:
     """Overload for Google structured contextual generation."""
     ...
 
@@ -258,7 +208,7 @@ def call(
     response_format: None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> CallDecorator:
+) -> CallDecorator[None]:
     """Overload for OpenAI generation."""
     ...
 
@@ -272,7 +222,7 @@ def call(
     response_format: None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> ContextCallDecorator[DepsT]:
+) -> ContextCallDecorator[DepsT, None]:
     """Overload for OpenAI contextual generation."""
     ...
 
@@ -286,7 +236,7 @@ def call(
     response_format: type[FormatT],
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> StructuredCallDecorator[FormatT]:
+) -> CallDecorator[FormatT]:
     """Overload for OpenAI structured generation."""
     ...
 
@@ -300,7 +250,7 @@ def call(
     response_format: type[FormatT],
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> StructuredContextCallDecorator[FormatT, DepsT]:
+) -> ContextCallDecorator[DepsT, FormatT]:
     """Overload for OpenAI structured contextual generation."""
     ...
 
@@ -314,7 +264,7 @@ def call(
     response_format: None = None,
     client: None,
     **params: Unpack[BaseParams],
-) -> CallDecorator:
+) -> CallDecorator[None]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -328,7 +278,7 @@ def call(
     response_format: None = None,
     client: None,
     **params: Unpack[BaseParams],
-) -> ContextCallDecorator[DepsT]:
+) -> ContextCallDecorator[DepsT, None]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -342,7 +292,7 @@ def call(
     response_format: type[FormatT],
     client: None,
     **params: Unpack[BaseParams],
-) -> StructuredCallDecorator[FormatT]:
+) -> CallDecorator[FormatT]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -356,7 +306,7 @@ def call(
     response_format: type[FormatT],
     client: None,
     **params: Unpack[BaseParams],
-) -> StructuredContextCallDecorator[FormatT, DepsT]:
+) -> ContextCallDecorator[DepsT, FormatT]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -372,10 +322,10 @@ def call(
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
 ) -> (
-    CallDecorator
-    | ContextCallDecorator[DepsT]
-    | StructuredCallDecorator[FormatT]
-    | StructuredContextCallDecorator[FormatT, DepsT]
+    CallDecorator[None]
+    | ContextCallDecorator[DepsT, None]
+    | CallDecorator[FormatT]
+    | ContextCallDecorator[DepsT, FormatT]
 ):
     """Returns a decorator for turning prompt template functions into generations.
 
