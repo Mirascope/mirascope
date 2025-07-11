@@ -12,14 +12,6 @@ This TypeVar represents the return type of tool functions, which must be
 serializable to JSON (bound to Jsonable) for LLM consumption.
 """
 
-FormatT = TypeVar("FormatT", bound=object | None, default=None)
-"""Type variable for structured response format types.
-
-This TypeVar represents the type of structured output format that LLM responses
-can be parsed into, such as Pydantic models, dataclasses, or custom classes.
-It can be None for unstructured responses and defaults to None when no specific
-format is required.
-"""
 
 P = ParamSpec("P")
 """Parameter specification for function signatures.

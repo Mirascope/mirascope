@@ -3,7 +3,8 @@
 from collections.abc import Iterator
 
 from ..content import ContentChunk
-from ..types import DepsT, FormatT
+from ..response_formatting import FormatT
+from ..types import DepsT
 from .base import BaseStream
 from .group_types import Group
 

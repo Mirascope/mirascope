@@ -7,8 +7,9 @@ from typing import Generic
 
 from ..context import Context
 from ..models import LLM
+from ..response_formatting import FormatT
 from ..tools import ToolDef
-from ..types import DepsT, FormatT
+from ..types import DepsT
 
 
 @dataclass

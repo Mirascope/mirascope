@@ -7,8 +7,9 @@ from typing import Generic
 
 from ..models import LLM
 from ..prompts import PromptT
+from ..response_formatting import FormatT
 from ..tools import ContextToolDef
-from ..types import DepsT, FormatT, Jsonable, P
+from ..types import DepsT, Jsonable, P
 
 
 @dataclass

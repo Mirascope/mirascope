@@ -5,9 +5,10 @@ from dataclasses import dataclass
 
 from ..content import UserContent
 from ..prompts import AsyncPrompt
+from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream
-from ..types import FormatT, P
+from ..types import P
 from .base_call import BaseCall
 
 

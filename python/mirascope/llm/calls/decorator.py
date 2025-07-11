@@ -35,7 +35,8 @@ if TYPE_CHECKING:
     )
 
 
-from ..types import DepsT, FormatT, P
+from ..response_formatting import FormatT
+from ..types import DepsT, P
 
 
 class CallDecorator(Protocol[FormatT]):

@@ -6,9 +6,10 @@ from dataclasses import dataclass
 from ..content import UserContent
 from ..context import Context
 from ..prompts import Prompt
+from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream, Stream
-from ..types import DepsT, FormatT, P
+from ..types import DepsT, P
 from .base_context_call import BaseContextCall
 
 

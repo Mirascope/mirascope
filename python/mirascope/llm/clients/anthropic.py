@@ -8,13 +8,14 @@ from anthropic.types import MessageParam
 from ..clients import BaseParams
 from ..context import Context
 from ..messages import Message
+from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import (
     AsyncStream,
     Stream,
 )
 from ..tools import ContextToolDef, ToolDef
-from ..types import DepsT, FormatT
+from ..types import DepsT
 from .base import BaseClient
 from .register import ANTHROPIC_REGISTERED_LLMS
 

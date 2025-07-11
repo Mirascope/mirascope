@@ -4,7 +4,8 @@ from collections.abc import Callable, Sequence
 from typing import Any, Literal, Protocol, overload
 
 from ..content import AssistantContent
-from ..types import FormatCovariantT, FormatT
+from ..types import FormatCovariantT
+from .response_format import FormatT
 
 
 class JsonResponseFormatDef(Protocol[FormatCovariantT]):

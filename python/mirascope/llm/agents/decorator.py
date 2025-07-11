@@ -15,7 +15,8 @@ if TYPE_CHECKING:
         REGISTERED_LLMS,
     )
 
-from ..types import DepsT, FormatT, P
+from ..response_formatting import FormatT
+from ..types import DepsT, P
 
 NoneType = type(None)
 
