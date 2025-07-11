@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Generic, TypedDict
+from typing import Any, Generic, TypedDict
+
+from typing_extensions import TypeVar
 
 from ..context import Context
 from ..responses import Response
@@ -13,9 +15,17 @@ from ..streams import (
     Stream,
 )
 from ..tools import ContextToolDef, ToolDef
+from ..types import DepsT, FormatT
+from .register import REGISTERED_LLMS
 
-if TYPE_CHECKING:
-    from ..types import LLMT, DepsT, FormatT, ParamsT, ProviderMessageT
+ProviderMessageT = TypeVar("ProviderMessageT")
+"""Type variable for an LLM that is usable by a specific LLM provider.
+
+May often be the union of generic `llm.Message` and a provider-specific message representation."""
+
+
+LLMT = TypeVar("LLMT", bound=REGISTERED_LLMS)
+"""Type variable for a registered LLM model. Will be a string of form provider:model_name."""
 
 
 class BaseParams(TypedDict, total=False):
@@ -45,6 +55,10 @@ class BaseParams(TypedDict, total=False):
 
     stop: str | list[str] | None
     """Stop sequence(s) to end generation."""
+
+
+ParamsT = TypeVar("ParamsT", bound="BaseParams")
+"""Type variable for LLM parameters. May be provider specific."""
 
 
 class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
@@ -261,3 +275,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
     ) -> AsyncStream[DepsT, FormatT]:
         """Stream a structured context response asynchronously."""
         ...
+
+
+ClientT = TypeVar("ClientT", bound=BaseClient)
+"""Type variable for an LLM client."""

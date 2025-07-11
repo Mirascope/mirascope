@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Generic, overload
 
+from ..clients import ClientT, ParamsT, ProviderMessageT
 from ..context import Context
 from ..responses import Response
 from ..streams import (
@@ -12,7 +13,6 @@ from ..streams import (
     Stream,
 )
 from ..tools import ContextToolDef, ToolDef
-from ..types import ClientT, ParamsT, ProviderMessageT
 
 if TYPE_CHECKING:
     from ..clients import REGISTERED_LLMS
