@@ -96,7 +96,7 @@ class Response(Generic[T]):
         """Returns the first thinking in the response content, if any."""
         raise NotImplementedError()
 
-    def to_tool(self, tool_call: ToolCall) -> Tool:
+    def tool(self, tool_call: ToolCall) -> Tool:
         """Converts a ToolCall into a Tool. May raise llm.ToolNotFoundError."""
         raise NotImplementedError()
 
