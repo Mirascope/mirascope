@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Any, Generic, Literal, Protocol, runtime_checkable
 
-from ..types import FormatCovariantT, RequiredFormatT
+from ..types import FormatCovariantT, FormatT
 
 
 class JsonParserFn(Protocol[FormatCovariantT]):
@@ -52,7 +52,7 @@ class TextParserFn(Protocol[FormatCovariantT]):
 
 
 @dataclass
-class ResponseFormat(Generic[RequiredFormatT]):
+class ResponseFormat(Generic[FormatT]):
     """Class representing a structured output format for LLM responses.
 
     A ResponseFormat defines how LLM responses should be structured and parsed.
@@ -90,11 +90,7 @@ class ResponseFormat(Generic[RequiredFormatT]):
     schema: dict[str, Any]
     """The original class definition before being decorated."""
 
-    parser: (
-        JsonParserFn[RequiredFormatT]
-        | ToolParserFn[RequiredFormatT]
-        | TextParserFn[RequiredFormatT]
-    )
+    parser: JsonParserFn[FormatT] | ToolParserFn[FormatT] | TextParserFn[FormatT]
     """The parser for formatting the response."""
 
     mode: Literal["json", "tool", "text"]
@@ -108,8 +104,8 @@ class ResponseFormat(Generic[RequiredFormatT]):
 
 
 @runtime_checkable
-class Formattable(Protocol[RequiredFormatT]):
+class Formattable(Protocol[FormatT]):
     """Protocol for classes that have been decorated with `@response_format()`."""
 
-    __response_format__: ResponseFormat[RequiredFormatT]
+    __response_format__: ResponseFormat[FormatT]
     """The `ResponseFormat` instance constructed by the `@response_format()` decorator."""

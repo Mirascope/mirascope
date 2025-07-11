@@ -21,14 +21,6 @@ It can be None for unstructured responses and defaults to None when no specific
 format is required.
 """
 
-RequiredFormatT = TypeVar("RequiredFormatT", bound=object)
-"""Type variable for non-optional response format types.
-
-This TypeVar represents the type of structured output format that LLM responses
-can be parsed into, such as Pydantic models, dataclasses, or custom classes.
-Unlike FormatT, RequiredFormatT is used in cases where a format is mandatory (not None).
-"""
-
 P = ParamSpec("P")
 """Parameter specification for function signatures.
 
