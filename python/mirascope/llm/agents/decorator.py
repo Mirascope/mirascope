@@ -41,7 +41,7 @@ class AgentDecorator(Protocol[DepsT]):
     """Protocol for the `agent` decorator."""
 
     @overload
-    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> Agent[DepsT]:
+    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> AsyncAgent[DepsT]:
         """Decorator for creating an async only agent."""
         ...
 
