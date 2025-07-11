@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Protocol, overload
 
-from typing_extensions import TypeVar, Unpack
+from typing_extensions import Unpack
 
 from ..clients import BaseClient, BaseParams
 from ..prompts import (
@@ -41,33 +41,28 @@ if TYPE_CHECKING:
 
 from ..types import DepsT, FormatT, P
 
-NoneType = type(None)
-
-
-NoDepsT = TypeVar("NoDepsT", bound=None)
-
 
 class CallDecorator(Protocol):
     """A decorator for generating responses using LLMs."""
 
     @overload
     def __call__(
-        self, fn: AsyncPrompt[P] | AsyncContextPrompt[P, NoDepsT]
+        self, fn: AsyncPrompt[P] | AsyncContextPrompt[P, None]
     ) -> AsyncCall[P]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
     @overload
-    def __call__(self, fn: Prompt[P] | ContextPrompt[P, NoDepsT]) -> Call[P]:
+    def __call__(self, fn: Prompt[P] | ContextPrompt[P, None]) -> Call[P]:
         """Decorates a synchronous function to generate responses using LLMs."""
         ...
 
     def __call__(
         self,
         fn: Prompt[P]
-        | ContextPrompt[P, NoDepsT]
+        | ContextPrompt[P, None]
         | AsyncPrompt[P]
-        | AsyncContextPrompt[P, NoDepsT],
+        | AsyncContextPrompt[P, None],
     ) -> Call[P] | AsyncCall[P]:
         """Decorates a function to generate responses using LLMs."""
         ...
