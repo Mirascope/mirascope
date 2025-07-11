@@ -11,13 +11,13 @@ from typing import Generic
 
 from ..content import ToolOutput
 from ..context import DepsT
-from ..types import Jsonable, P, ToolReturnT
+from ..types import Jsonable, JsonableT, P
 from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef
 
 
 @dataclass
-class Tool(Generic[P, ToolReturnT, DepsT]):
+class Tool(Generic[P, JsonableT, DepsT]):
     """Tool instance with arguments provided by an LLM.
 
     When an LLM uses a tool during a call, a Tool instance is created with the specific
@@ -33,11 +33,11 @@ class Tool(Generic[P, ToolReturnT, DepsT]):
     id: str
     """Unique identifier for this tool call."""
 
-    tool_def: ToolDef[P, ToolReturnT] | ContextToolDef[P, ToolReturnT, DepsT]
+    tool_def: ToolDef[P, JsonableT] | ContextToolDef[P, JsonableT, DepsT]
 
     """The ToolDef that defines the tool being called."""
 
-    def call(self) -> ToolOutput[ToolReturnT]:
+    def call(self) -> ToolOutput[JsonableT]:
         """Execute the tool with the arguments provided by the LLM.
 
         Returns:

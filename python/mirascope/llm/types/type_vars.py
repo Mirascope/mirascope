@@ -5,13 +5,6 @@ from typing_extensions import ParamSpec, TypeVar
 from ..content import AssistantContent, ContentChunk
 from .jsonable import Jsonable
 
-ToolReturnT = TypeVar("ToolReturnT", bound=Jsonable)
-"""Type variable for tool output types.
-
-This TypeVar represents the return type of tool functions, which must be
-serializable to JSON (bound to Jsonable) for LLM consumption.
-"""
-
 P = ParamSpec("P")
 """Parameter specification for function signatures.
 
@@ -21,23 +14,18 @@ It captures both positional and keyword arguments (*args, **kwargs) while
 maintaining their original types.
 """
 
+JsonableT = TypeVar("JsonableT", bound=Jsonable)
+"""Type variable for tool output types.
 
-FormatCovariantT = TypeVar("FormatCovariantT", covariant=True)
-"""Type variable for covariant response format types.
-
-This TypeVar is used in response formatting protocols where the type parameter
-should be covariant, meaning a Protocol[Derived] is considered a subtype of
-Protocol[Base] when Derived is a subtype of Base. Used in parser protocols
-for response format types.
+This TypeVar represents the return type of tool functions, which must be
+serializable to JSON (bound to Jsonable) for LLM consumption.
 """
 
-ToolCovariantT = TypeVar("ToolCovariantT", covariant=True, bound=Jsonable)
-"""Type variable for covariant tool return types.
+CovariantT = TypeVar("CovariantT", covariant=True)
+"""Type variable for covariant types."""
 
-This TypeVar is used in tool protocols where the type parameter should be
-covariant and bound to Jsonable, ensuring tool return types are JSON-serializable.
-Used in tool function protocols and decorators.
-"""
+JsonableCovariantT = TypeVar("JsonableCovariantT", covariant=True, bound=Jsonable)
+"""Type variable for covariant types that are Jsonable."""
 
 ChunkT = TypeVar("ChunkT", bound=ContentChunk)
 """Type variable for a chunk of streamed content."""

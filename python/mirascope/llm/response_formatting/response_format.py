@@ -5,7 +5,7 @@ from typing import Any, Generic, Literal, Protocol, runtime_checkable
 
 from typing_extensions import TypeVar
 
-from ..types import FormatCovariantT
+from ..types import CovariantT
 
 FormatT = TypeVar("FormatT", bound=object | None, default=None)
 """Type variable for structured response format types.
@@ -17,10 +17,10 @@ format is required.
 """
 
 
-class JsonParserFn(Protocol[FormatCovariantT]):
+class JsonParserFn(Protocol[CovariantT]):
     """Protocol for a JSON mode response format parser."""
 
-    def __call__(self, json: dict[str, Any]) -> FormatCovariantT:
+    def __call__(self, json: dict[str, Any]) -> CovariantT:
         """Parse a JSON response into an instance of the class.
 
         Args:
@@ -32,10 +32,10 @@ class JsonParserFn(Protocol[FormatCovariantT]):
         ...
 
 
-class ToolParserFn(Protocol[FormatCovariantT]):
+class ToolParserFn(Protocol[CovariantT]):
     """Protocol for a tool mode response format parser."""
 
-    def __call__(self, args: dict[str, Any]) -> FormatCovariantT:
+    def __call__(self, args: dict[str, Any]) -> CovariantT:
         """Parse a tool call response into an instance of the class.
 
         Args:
@@ -47,10 +47,10 @@ class ToolParserFn(Protocol[FormatCovariantT]):
         ...
 
 
-class TextParserFn(Protocol[FormatCovariantT]):
+class TextParserFn(Protocol[CovariantT]):
     """Protocol for a text mode response format parser."""
 
-    def __call__(self, text: str) -> FormatCovariantT:
+    def __call__(self, text: str) -> CovariantT:
         """Parse a text response into an instance of the class.
 
         Args:

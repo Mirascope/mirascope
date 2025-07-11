@@ -11,11 +11,11 @@ from .base_tool_def import BaseToolDef
 if TYPE_CHECKING:
     from .tool import Tool
 
-from ..types import P, ToolReturnT
+from ..types import JsonableT, P
 
 
 @dataclass
-class ToolDef(BaseToolDef[P, ToolReturnT]):
+class ToolDef(BaseToolDef[P, JsonableT]):
     """Protocol defining a tool that can be used by LLMs.
 
     A ToolDef represents a function that can be called by an LLM during a call.
@@ -24,10 +24,10 @@ class ToolDef(BaseToolDef[P, ToolReturnT]):
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    fn: Callable[P, ToolReturnT]
+    fn: Callable[P, JsonableT]
     """The function that implements the tool's functionality."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> ToolReturnT:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> JsonableT:
         """Call the tool with the provided arguments.
 
         Args:
@@ -38,7 +38,7 @@ class ToolDef(BaseToolDef[P, ToolReturnT]):
         """
         return self.fn(*args, **kwargs)
 
-    def defines(self, tool: Tool) -> TypeGuard[Tool[P, ToolReturnT]]:
+    def defines(self, tool: Tool) -> TypeGuard[Tool[P, JsonableT]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific

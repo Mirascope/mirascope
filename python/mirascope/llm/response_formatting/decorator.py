@@ -4,15 +4,15 @@ from collections.abc import Callable, Sequence
 from typing import Any, Literal, Protocol, overload
 
 from ..content import AssistantContent
-from ..types import FormatCovariantT
+from ..types import CovariantT
 from .response_format import FormatT
 
 
-class JsonResponseFormatDef(Protocol[FormatCovariantT]):
+class JsonResponseFormatDef(Protocol[CovariantT]):
     """Protocol for defining a JSON mode response format."""
 
     @classmethod
-    def parse(cls, json: dict[str, Any]) -> FormatCovariantT:
+    def parse(cls, json: dict[str, Any]) -> CovariantT:
         """Parse a JSON response into an instance of the class.
 
         Args:
@@ -24,11 +24,11 @@ class JsonResponseFormatDef(Protocol[FormatCovariantT]):
         ...
 
 
-class ToolResponseFormatDef(Protocol[FormatCovariantT]):
+class ToolResponseFormatDef(Protocol[CovariantT]):
     """Protocol for defining a tool mode response format."""
 
     @classmethod
-    def parse(cls, args: dict[str, Any]) -> FormatCovariantT:
+    def parse(cls, args: dict[str, Any]) -> CovariantT:
         """Parse a tool call response into an instance of the class.
 
         Args:
@@ -40,13 +40,13 @@ class ToolResponseFormatDef(Protocol[FormatCovariantT]):
         ...
 
 
-class ContentResponseFormatDef(Protocol[FormatCovariantT]):
+class ContentResponseFormatDef(Protocol[CovariantT]):
     """Protocol for defining a content mode response format."""
 
     @classmethod
     def parse(
         cls, content: AssistantContent | Sequence[AssistantContent]
-    ) -> FormatCovariantT:
+    ) -> CovariantT:
         """Parse a response into an instance of the class.
 
         Args:

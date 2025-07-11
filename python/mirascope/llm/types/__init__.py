@@ -5,19 +5,19 @@ from .jsonable import Jsonable
 from .type_vars import (
     AssistantContentT,
     ChunkT,
-    FormatCovariantT,
+    CovariantT,
+    JsonableCovariantT,
+    JsonableT,
     P,
-    ToolCovariantT,
-    ToolReturnT,
 )
 
 __all__ = [
     "AssistantContentT",
     "ChunkT",
+    "CovariantT",
     "Dataclass",
-    "FormatCovariantT",
     "Jsonable",
+    "JsonableCovariantT",
+    "JsonableT",
     "P",
-    "ToolCovariantT",
-    "ToolReturnT",
 ]
