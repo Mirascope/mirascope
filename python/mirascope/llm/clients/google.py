@@ -160,7 +160,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
     ) -> Stream[DepsT, FormatT]:
         raise NotImplementedError
 
-    async def stream_async(
+    def stream_async(
         self,
         *,
         model: GOOGLE_REGISTERED_LLMS,
@@ -170,7 +170,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
     ) -> AsyncStream[None, None]:
         raise NotImplementedError
 
-    async def context_stream_async(
+    def context_stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -181,7 +181,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
     ) -> AsyncStream[DepsT, None]:
         raise NotImplementedError
 
-    async def structured_stream_async(
+    def structured_stream_async(
         self,
         *,
         model: GOOGLE_REGISTERED_LLMS,
@@ -192,7 +192,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
     ) -> AsyncStream[None, FormatT]:
         raise NotImplementedError
 
-    async def structured_context_stream_async(
+    def structured_context_stream_async(
         self,
         *,
         ctx: Context[DepsT],

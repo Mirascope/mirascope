@@ -162,7 +162,7 @@ class AnthropicClient(
     ) -> Stream[DepsT, FormatT]:
         raise NotImplementedError
 
-    async def stream_async(
+    def stream_async(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
@@ -172,7 +172,7 @@ class AnthropicClient(
     ) -> AsyncStream[None, None]:
         raise NotImplementedError
 
-    async def context_stream_async(
+    def context_stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -183,7 +183,7 @@ class AnthropicClient(
     ) -> AsyncStream[DepsT, None]:
         raise NotImplementedError
 
-    async def structured_stream_async(
+    def structured_stream_async(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
@@ -194,7 +194,7 @@ class AnthropicClient(
     ) -> AsyncStream[None, FormatT]:
         raise NotImplementedError
 
-    async def structured_context_stream_async(
+    def structured_context_stream_async(
         self,
         *,
         ctx: Context[DepsT],

@@ -211,7 +211,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         ...
 
     @abstractmethod
-    async def stream_async(
+    def stream_async(
         self,
         *,
         model: LLMT,
@@ -223,7 +223,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         ...
 
     @abstractmethod
-    async def context_stream_async(
+    def context_stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -236,7 +236,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         ...
 
     @abstractmethod
-    async def structured_stream_async(
+    def structured_stream_async(
         self,
         *,
         model: LLMT,
@@ -249,7 +249,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         ...
 
     @abstractmethod
-    async def structured_context_stream_async(
+    def structured_context_stream_async(
         self,
         *,
         ctx: Context[DepsT],

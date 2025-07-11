@@ -248,7 +248,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         ...
 
     @overload
-    async def stream_async(
+    def stream_async(
         self,
         *,
         ctx: None = None,
@@ -261,7 +261,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         ...
 
     @overload
-    async def stream_async(
+    def stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -274,7 +274,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         ...
 
     @overload
-    async def stream_async(
+    def stream_async(
         self,
         *,
         ctx: None = None,
@@ -287,7 +287,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         ...
 
     @overload
-    async def stream_async(
+    def stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -299,7 +299,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         """Overload for async context structured streaming."""
         ...
 
-    async def stream_async(
+    def stream_async(
         self,
         *,
         ctx: Context[DepsT] | None = None,

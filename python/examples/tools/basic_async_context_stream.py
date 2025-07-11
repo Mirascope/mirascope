@@ -25,7 +25,7 @@ def librarian(ctx: llm.Context[Library], genre: str):
 
 async def main():
     with llm.context(deps=library) as ctx:
-        stream: llm.AsyncStream[Library] = await librarian.stream_async(ctx, "fantasy")
+        stream: llm.AsyncStream[Library] = librarian.stream_async(ctx, "fantasy")
         while True:
             tool_output: llm.ToolOutput | None = None
             async for group in stream.groups():
