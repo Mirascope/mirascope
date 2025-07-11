@@ -1,12 +1,10 @@
 """The `llm.response_format` decorator for defining response formats as classes."""
 
 from collections.abc import Callable, Sequence
-from typing import Any, Literal, Protocol, TypeVar, overload
+from typing import Any, Literal, Protocol, overload
 
 from ..content import AssistantContent
-from ..types import RequiredFormatT
-
-CovariantT = TypeVar("CovariantT", covariant=True)
+from ..types import CovariantT, RequiredFormatT
 
 
 class JsonResponseFormatDef(Protocol[CovariantT]):

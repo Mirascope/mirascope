@@ -44,3 +44,12 @@ This TypeVar is used throughout the LLM module to represent the type of
 dependencies that are present in `llm.Context`. 
 It defaults to None when no dependencies are needed.
 """
+
+CovariantT = TypeVar("CovariantT", covariant=True)
+"""Type variable for covariant type parameters.
+
+This TypeVar is used in protocols and generic classes where the type parameter
+should be covariant, meaning a Protocol[Derived] is considered a subtype of
+Protocol[Base] when Derived is a subtype of Base. Commonly used in parser
+protocols and other contexts where type variance is important.
+"""

@@ -1,11 +1,9 @@
 """The `ResponseFormat` class for defining how to structure an LLM response."""
 
 from dataclasses import dataclass
-from typing import Any, Generic, Literal, Protocol, TypeVar, runtime_checkable
+from typing import Any, Generic, Literal, Protocol, runtime_checkable
 
-from ..types import RequiredFormatT
-
-CovariantT = TypeVar("CovariantT", covariant=True)
+from ..types import CovariantT, RequiredFormatT
 
 
 class JsonParserFn(Protocol[CovariantT]):
