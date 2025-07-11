@@ -3,50 +3,50 @@
 from dataclasses import dataclass
 from typing import Any, Generic, Literal, Protocol, runtime_checkable
 
-from ..types import CovariantT, RequiredFormatT
+from ..types import FormatCovariantT, RequiredFormatT
 
 
-class JsonParserFn(Protocol[CovariantT]):
+class JsonParserFn(Protocol[FormatCovariantT]):
     """Protocol for a JSON mode response format parser."""
 
-    def __call__(self, json: dict[str, Any]) -> CovariantT:
+    def __call__(self, json: dict[str, Any]) -> FormatCovariantT:
         """Parse a JSON response into an instance of the class.
 
         Args:
             json: The JSON response from the LLM.
 
         Returns:
-            An instance of the class `CovariantT`.
+            An instance of the class `FormatCovariantT`.
         """
         ...
 
 
-class ToolParserFn(Protocol[CovariantT]):
+class ToolParserFn(Protocol[FormatCovariantT]):
     """Protocol for a tool mode response format parser."""
 
-    def __call__(self, args: dict[str, Any]) -> CovariantT:
+    def __call__(self, args: dict[str, Any]) -> FormatCovariantT:
         """Parse a tool call response into an instance of the class.
 
         Args:
             args: The arguments generated for the tool call.
 
         Returns:
-            An instance of the class `CovariantT`.
+            An instance of the class `FormatCovariantT`.
         """
         ...
 
 
-class TextParserFn(Protocol[CovariantT]):
+class TextParserFn(Protocol[FormatCovariantT]):
     """Protocol for a text mode response format parser."""
 
-    def __call__(self, text: str) -> CovariantT:
+    def __call__(self, text: str) -> FormatCovariantT:
         """Parse a text response into an instance of the class.
 
         Args:
             text: The text response from the LLM.
 
         Returns:
-            An instance of the class `CovariantT`.
+            An instance of the class `FormatCovariantT`.
         """
         ...
 

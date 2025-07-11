@@ -5,20 +5,25 @@ from .dataclass import Dataclass
 from .jsonable import Jsonable
 from .prompts import PromptT
 from .type_vars import (
-    CovariantT,
+    AssistantContentT,
+    ChunkT,
     DepsT,
+    FormatCovariantT,
     FormatT,
     P,
     RequiredFormatT,
+    ToolCovariantT,
     ToolReturnT,
 )
 
 __all__ = [
     "LLMT",
+    "AssistantContentT",
+    "ChunkT",
     "ClientT",
-    "CovariantT",
     "Dataclass",
     "DepsT",
+    "FormatCovariantT",
     "FormatT",
     "Jsonable",
     "P",
@@ -27,5 +32,6 @@ __all__ = [
     "ProviderMessageT",
     "RequiredFormatT",
     "RequiredFormatT",
+    "ToolCovariantT",
     "ToolReturnT",
 ]

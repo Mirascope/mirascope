@@ -6,31 +6,30 @@ from typing import Protocol, overload
 from typing_extensions import TypeVar
 
 from ..context import Context
-from ..types import Jsonable, P, ToolReturnT
+from ..types import P, ToolCovariantT, ToolReturnT
 from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef
 
 NoneType = type(None)
 
 
-CovariantR = TypeVar("CovariantR", covariant=True, bound=Jsonable)
 DepsT = TypeVar("DepsT")
 
 
-class ToolFn(Protocol[P, CovariantR]):
+class ToolFn(Protocol[P, ToolCovariantT]):
     """Protocol for the tool function."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> CovariantR:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> ToolCovariantT:
         """Call the function with the given arguments."""
         ...
 
 
-class ContextToolFn(Protocol[DepsT, P, CovariantR]):
+class ContextToolFn(Protocol[DepsT, P, ToolCovariantT]):
     """Protocol for the context tool function."""
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> CovariantR:
+    ) -> ToolCovariantT:
         """Call the function with the given arguments."""
         ...
 

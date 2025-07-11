@@ -2,6 +2,7 @@
 
 from typing_extensions import ParamSpec, TypeVar
 
+from ..content import AssistantContent, ContentChunk
 from .jsonable import Jsonable
 
 ToolReturnT = TypeVar("ToolReturnT", bound=Jsonable)
@@ -45,11 +46,22 @@ dependencies that are present in `llm.Context`.
 It defaults to None when no dependencies are needed.
 """
 
-CovariantT = TypeVar("CovariantT", covariant=True)
-"""Type variable for covariant type parameters.
+FormatCovariantT = TypeVar("FormatCovariantT", covariant=True)
+"""Type variable for covariant response format types.
 
-This TypeVar is used in protocols and generic classes where the type parameter
+This TypeVar is used in response formatting protocols where the type parameter
 should be covariant, meaning a Protocol[Derived] is considered a subtype of
-Protocol[Base] when Derived is a subtype of Base. Commonly used in parser
-protocols and other contexts where type variance is important.
+Protocol[Base] when Derived is a subtype of Base. Used in parser protocols
+for response format types.
 """
+
+ToolCovariantT = TypeVar("ToolCovariantT", covariant=True, bound=Jsonable)
+"""Type variable for covariant tool return types.
+
+This TypeVar is used in tool protocols where the type parameter should be
+covariant and bound to Jsonable, ensuring tool return types are JSON-serializable.
+Used in tool function protocols and decorators.
+"""
+
+ChunkT = TypeVar("ChunkT", bound=ContentChunk)
+AssistantContentT = TypeVar("AssistantContentT", bound=AssistantContent)
