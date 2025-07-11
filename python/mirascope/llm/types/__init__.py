@@ -2,7 +2,7 @@
 
 from .dataclass import Dataclass
 from .jsonable import Jsonable
-from .type_vars import DepsT, FormatT, P, ResponseFormatT, ToolReturnT
+from .type_vars import DepsT, FormatT, P, RequiredFormatT, ToolReturnT
 
 __all__ = [
     "Dataclass",
@@ -10,6 +10,6 @@ __all__ = [
     "FormatT",
     "Jsonable",
     "P",
-    "ResponseFormatT",
+    "RequiredFormatT",
     "ToolReturnT",
 ]
