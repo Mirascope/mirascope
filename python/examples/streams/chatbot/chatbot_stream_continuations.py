@@ -21,7 +21,7 @@ def main():
                 print(chunk, flush=True, end=None)
             print("")
             user_input = input("[YOU]: ")
-            stream = sazed.resume_stream(stream.to_response(), user_input)
+            stream = sazed.resume_stream(stream, user_input)
     except KeyboardInterrupt:
         print("[SAZED]: Goodbye")
         exit(0)

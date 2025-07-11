@@ -8,7 +8,7 @@ from ..context import Context, DepsT
 from ..prompts import Prompt
 from ..response_formatting import FormatT
 from ..responses import Response
-from ..streams import AsyncStream, Stream
+from ..streams import AsyncStream, BaseStream, Stream
 from ..types import P
 from .base_context_call import BaseContextCall
 
@@ -49,32 +49,32 @@ class ContextCall(BaseContextCall[P, Prompt, DepsT, FormatT]):
 
     def resume(
         self,
-        response: Response[DepsT, FormatT],
+        output: Response[DepsT, FormatT] | BaseStream[DepsT, FormatT],
         content: UserContent | Sequence[UserContent],
     ) -> Response[DepsT, FormatT]:
-        """Generate a new response by continuing from a previous response, plus new user content."""
+        """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
     async def resume_async(
         self,
-        response: Response[DepsT, FormatT],
+        output: Response[DepsT, FormatT] | BaseStream[DepsT, FormatT],
         content: UserContent | Sequence[UserContent],
     ) -> Response[DepsT, FormatT]:
-        """Generate a new response asynchronously by continuing from a previous response, plus new user content."""
+        """Generate a new response asynchronously by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
     def resume_stream(
         self,
-        response: Response[DepsT, FormatT],
+        output: Response[DepsT, FormatT] | BaseStream[DepsT, FormatT],
         content: UserContent | Sequence[UserContent],
     ) -> Stream[DepsT, FormatT]:
-        """Generate a new stream by continuing from a previous response, plus new user content."""
+        """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
     def resume_stream_async(
         self,
-        response: Response[DepsT, FormatT],
+        output: Response[DepsT, FormatT] | BaseStream[DepsT, FormatT],
         content: UserContent | Sequence[UserContent],
     ) -> AsyncStream[DepsT, FormatT]:
-        """Generate a new async stream by continuing from a previous response, plus new user content."""
+        """Generate a new async stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()

@@ -37,9 +37,7 @@ async def main():
                     tool = stream.tool(tool_call)
                     tool_output = tool.call()
             if tool_output:
-                stream = librarian.resume_stream_async(
-                    stream.to_response(), tool_output
-                )
+                stream = librarian.resume_stream_async(stream, tool_output)
             else:
                 break
 

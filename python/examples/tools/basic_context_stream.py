@@ -36,7 +36,7 @@ def main():
             if tool_call:
                 tool = stream.tool(tool_call)
                 tool_output = tool.call()
-                stream = librarian.resume_stream(stream.to_response(), tool_output)
+                stream = librarian.resume_stream(stream, tool_output)
             else:
                 break
 
