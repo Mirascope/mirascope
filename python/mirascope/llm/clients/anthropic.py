@@ -5,9 +5,9 @@ from typing import Any, TypeAlias
 
 from anthropic.types import MessageParam
 
+from ..clients import BaseParams
 from ..context import Context
 from ..messages import Message
-from ..models.base import BaseParams
 from ..responses import Response
 from ..streams import (
     AsyncStream,

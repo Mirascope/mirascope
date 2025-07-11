@@ -53,9 +53,3 @@ should be covariant, meaning a Protocol[Derived] is considered a subtype of
 Protocol[Base] when Derived is a subtype of Base. Commonly used in parser
 protocols and other contexts where type variance is important.
 """
-
-
-ProviderMessageT = TypeVar("ProviderMessageT")
-"""Type variable for an LLM that is usable by a specific LLM provider.
-
-May often be the union of generic `llm.Message` and a provider-specific message representation."""

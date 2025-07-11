@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Any, Generic, TypedDict, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar
 
 from ..context import Context
 from ..responses import Response
@@ -15,12 +15,11 @@ from ..streams import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
-from ..types import FormatT, ProviderMessageT
-from .register import REGISTERED_LLMS
 
-ParamsT = TypeVar("ParamsT", bound="BaseParams")
+if TYPE_CHECKING:
+    from ..types import LLMT, FormatT, ParamsT, ProviderMessageT
+
 DepsT = TypeVar("DepsT")
-LLMT = TypeVar("LLMT", bound=REGISTERED_LLMS)
 
 
 class BaseParams(TypedDict, total=False):

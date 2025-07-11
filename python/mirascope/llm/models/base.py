@@ -5,9 +5,6 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Generic, overload
 
-from typing_extensions import TypeVar
-
-from ..clients.base import BaseClient, BaseParams
 from ..context import Context
 from ..responses import Response
 from ..streams import (
@@ -17,16 +14,13 @@ from ..streams import (
     StructuredStream,
 )
 from ..tools import ContextToolDef, ToolDef
-from ..types import ProviderMessageT
+from ..types import ClientT, ParamsT, ProviderMessageT
 
 if TYPE_CHECKING:
     from ..clients import REGISTERED_LLMS
 
 
 from ..types import DepsT, FormatT
-
-ParamsT = TypeVar("ParamsT", bound="BaseParams")
-ClientT = TypeVar("ClientT", bound="BaseClient")
 
 
 class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
