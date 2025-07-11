@@ -4,11 +4,10 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 from ..content import UserContent
-from ..context import Context
+from ..context import Context, DepsT
 from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream
-from ..types import DepsT
 from .base_agent import BaseAgent
 
 

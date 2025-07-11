@@ -12,7 +12,6 @@ This TypeVar represents the return type of tool functions, which must be
 serializable to JSON (bound to Jsonable) for LLM consumption.
 """
 
-
 P = ParamSpec("P")
 """Parameter specification for function signatures.
 
@@ -22,13 +21,6 @@ It captures both positional and keyword arguments (*args, **kwargs) while
 maintaining their original types.
 """
 
-DepsT = TypeVar("DepsT", default=None)
-"""Type variable for dependency injection in `llm.Context`.
-
-This TypeVar is used throughout the LLM module to represent the type of
-dependencies that are present in `llm.Context`. 
-It defaults to None when no dependencies are needed.
-"""
 
 FormatCovariantT = TypeVar("FormatCovariantT", covariant=True)
 """Type variable for covariant response format types.

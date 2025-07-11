@@ -4,9 +4,9 @@ from collections.abc import Awaitable, Callable, Sequence
 from typing import Concatenate, Protocol, TypeAlias, TypeVar, overload
 
 from ..content import UserContent
-from ..context import Context
+from ..context import Context, DepsT
 from ..messages.message import Message
-from ..types import DepsT, P
+from ..types import P
 
 
 class MessagesPrompt(Protocol[P]):

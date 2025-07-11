@@ -21,8 +21,8 @@ if TYPE_CHECKING:
         REGISTERED_LLMS,
     )
 
+from ..context import DepsT
 from ..response_formatting import FormatT
-from ..types import DepsT
 
 
 @dataclass

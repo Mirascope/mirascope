@@ -3,8 +3,8 @@
 from collections.abc import AsyncIterator
 
 from ..content import ContentChunk
+from ..context import DepsT
 from ..response_formatting import FormatT
-from ..types import DepsT
 from .base import BaseStream
 from .group_types import AsyncGroup
 

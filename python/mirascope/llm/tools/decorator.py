@@ -3,8 +3,8 @@
 from collections.abc import Callable
 from typing import Protocol, overload
 
-from ..context import Context
-from ..types import DepsT, P, ToolCovariantT, ToolReturnT
+from ..context import Context, DepsT
+from ..types import P, ToolCovariantT, ToolReturnT
 from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef
 

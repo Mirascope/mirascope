@@ -18,8 +18,8 @@ if TYPE_CHECKING:
     from ..clients import REGISTERED_LLMS
 
 
+from ..context import DepsT
 from ..response_formatting import FormatT
-from ..types import DepsT
 
 
 class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):

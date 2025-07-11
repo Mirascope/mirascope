@@ -6,8 +6,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Concatenate, Generic, TypeGuard
 
-from ..context import Context
-from ..types import DepsT, P, ToolReturnT
+from ..context import Context, DepsT
+from ..types import P, ToolReturnT
 from .base_tool_def import BaseToolDef
 from .tool import Tool
 

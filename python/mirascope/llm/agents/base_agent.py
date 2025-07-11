@@ -5,11 +5,10 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
 
-from ..context import Context
+from ..context import Context, DepsT
 from ..models import LLM
 from ..response_formatting import FormatT
 from ..tools import ToolDef
-from ..types import DepsT
 
 
 @dataclass

@@ -15,8 +15,9 @@ if TYPE_CHECKING:
         REGISTERED_LLMS,
     )
 
+from ..context import DepsT
 from ..response_formatting import FormatT
-from ..types import DepsT, P
+from ..types import P
 
 NoneType = type(None)
 
@@ -51,8 +52,6 @@ class AgentDecorator(Protocol[DepsT, FormatT]):
     ) -> Agent[DepsT, FormatT] | AsyncAgent[DepsT, FormatT]:
         """Decorator for creating an agent."""
         ...
-
-
 
 
 # @overload

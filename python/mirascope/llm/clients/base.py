@@ -8,7 +8,7 @@ from typing import Any, Generic, TypedDict
 
 from typing_extensions import TypeVar
 
-from ..context import Context
+from ..context import Context, DepsT
 from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import (
@@ -16,7 +16,6 @@ from ..streams import (
     Stream,
 )
 from ..tools import ContextToolDef, ToolDef
-from ..types import DepsT
 from .register import REGISTERED_LLMS
 
 ProviderMessageT = TypeVar("ProviderMessageT")

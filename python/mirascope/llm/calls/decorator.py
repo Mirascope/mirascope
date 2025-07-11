@@ -35,8 +35,9 @@ if TYPE_CHECKING:
     )
 
 
+from ..context import DepsT
 from ..response_formatting import FormatT
-from ..types import DepsT, P
+from ..types import P
 
 
 class CallDecorator(Protocol[FormatT]):
@@ -69,7 +70,9 @@ class ContextCallDecorator(Protocol[DepsT, FormatT]):
     """A decorator for generating responses using LLMs."""
 
     @overload
-    def __call__(self, fn: AsyncContextPrompt[P, DepsT]) -> AsyncContextCall[P, DepsT, FormatT]:
+    def __call__(
+        self, fn: AsyncContextPrompt[P, DepsT]
+    ) -> AsyncContextCall[P, DepsT, FormatT]:
         """Decorates an asynchronous function to generate responses using LLMs."""
         ...
 
@@ -84,8 +87,6 @@ class ContextCallDecorator(Protocol[DepsT, FormatT]):
     ) -> ContextCall[P, DepsT, FormatT] | AsyncContextCall[P, DepsT, FormatT]:
         """Decorates a function to generate responses using LLMs."""
         ...
-
-
 
 
 @overload

@@ -10,7 +10,8 @@ from dataclasses import dataclass
 from typing import Generic
 
 from ..content import ToolOutput
-from ..types import DepsT, Jsonable, P, ToolReturnT
+from ..context import DepsT
+from ..types import Jsonable, P, ToolReturnT
 from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef
 

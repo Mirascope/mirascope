@@ -5,11 +5,12 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
 
+from ..context import DepsT
 from ..models import LLM
 from ..prompts import PromptT
 from ..response_formatting import FormatT
 from ..tools import ContextToolDef
-from ..types import DepsT, Jsonable, P
+from ..types import Jsonable, P
 
 
 @dataclass
