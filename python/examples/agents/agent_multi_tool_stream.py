@@ -15,23 +15,17 @@ def deep_research(topic: str) -> str:
 
 @llm.agent(model="openai:gpt-4o-mini", tools=[consult_knowledge, deep_research])
 def sazed(ctx: llm.Context):
-    return "You are an insightful and helpful agent named Sazed. You prioritize..."
+    return "You are an insightful and helpful agent named Sazed."
 
 
 def main():
-    user_input = input("What would you like to chat with Sazed about? ")
-    stream: llm.Stream = sazed.stream(user_input)
-    try:
-        while True:
-            print("[SAZED]: ", flush=True, end="")
-            for chunk in stream:
-                print(chunk, flush=True, end="")
-            print("")
-            user_input = input("[YOU]: ")
-            stream = sazed.stream(user_input)
-    except KeyboardInterrupt:
-        print("[SAZED]: Goodbye")
-        exit(0)
+    while True:
+        user_input = input("[USER]: ")
+        stream = sazed.stream(user_input)
+        print("[SAZED]: ", flush=True, end="")
+        for chunk in stream:
+            print(chunk, flush=True, end="")
+        print("")
 
 
 main()

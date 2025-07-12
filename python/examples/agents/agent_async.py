@@ -11,20 +11,14 @@ def consult_knowledge(subject: str) -> str:
 
 @llm.agent(model="openai:gpt-4o-mini", tools=[consult_knowledge])
 def sazed(ctx: llm.Context):
-    return "You are an insightful and helpful agent named Sazed. You prioritize..."
+    return "You are an insightful and helpful agent named Sazed."
 
 
 async def main():
-    user_input = input("What would you like to chat with Sazed about? ")
-    response: llm.Response = await sazed.run_async(user_input)
-    try:
-        while True:
-            print("[SAZED]: ", response.text)
-            user_input = input("[YOU]: ")
-            response = await sazed.run_async(user_input)
-    except KeyboardInterrupt:
-        print("[SAZED]: Goodbye")
-        exit(0)
+    while True:
+        user_input = input("[USER]: ")
+        response = await sazed.run_async(user_input)
+        print("[SAZED]: ", response.text)
 
 
 if __name__ == "__main__":

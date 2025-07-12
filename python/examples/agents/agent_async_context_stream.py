@@ -17,25 +17,19 @@ def consult_knowledge(ctx: llm.Context[Knowledge], subject: str) -> str:
 
 @llm.agent(model="openai:gpt-4o-mini", deps_type=Knowledge, tools=[consult_knowledge])
 def sazed(ctx: llm.Context[Knowledge]):
-    return "You are an insightful and helpful agent named Sazed. You prioritize..."
+    return "You are an insightful and helpful agent named Sazed."
 
 
 async def main():
     knowledge = Knowledge(repository="...")
     with llm.context(deps=knowledge) as ctx:
-        user_input = input("What would you like to chat with Sazed about? ")
-        stream: llm.AsyncStream[Knowledge] = sazed.stream_async(user_input, ctx=ctx)
-        try:
-            while True:
-                print("[SAZED]: ", flush=True, end="")
-                async for chunk in stream:
-                    print(chunk, flush=True, end="")
-                print("")
-                user_input = input("[YOU]: ")
-                stream = sazed.stream_async(user_input, ctx=ctx)
-        except KeyboardInterrupt:
-            print("[SAZED]: Goodbye")
-            exit(0)
+        while True:
+            user_input = input("[USER]: ")
+            stream = sazed.stream_async(user_input, ctx=ctx)
+            print("[SAZED]: ", flush=True, end="")
+            async for chunk in stream:
+                print(chunk, flush=True, end="")
+            print("")
 
 
 if __name__ == "__main__":

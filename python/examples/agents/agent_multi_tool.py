@@ -15,20 +15,14 @@ def deep_research(topic: str) -> str:
 
 @llm.agent(model="openai:gpt-4o-mini", tools=[consult_knowledge, deep_research])
 def sazed(ctx: llm.Context):
-    return "You are an insightful and helpful agent named Sazed. You prioritize..."
+    return "You are an insightful and helpful agent named Sazed."
 
 
 def main():
-    user_input = input("What would you like to chat with Sazed about? ")
-    response: llm.Response = sazed(user_input)
-    try:
-        while True:
-            print("[SAZED]: ", response.text)
-            user_input = input("[YOU]: ")
-            response = sazed(user_input)
-    except KeyboardInterrupt:
-        print("[SAZED]: Goodbye")
-        exit(0)
+    while True:
+        user_input = input("[USER]: ")
+        response = sazed(user_input)
+        print("[SAZED]: ", response.text)
 
 
 main()
