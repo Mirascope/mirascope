@@ -1,10 +1,20 @@
 """The `ResponseFormat` class for defining how to structure an LLM response."""
 
 from dataclasses import dataclass
-from typing import Any, Generic, Literal, Protocol, TypeVar, runtime_checkable
+from typing import Any, Generic, Literal, Protocol, runtime_checkable
 
-T = TypeVar("T", bound=object)
-CovariantT = TypeVar("CovariantT", covariant=True)
+from typing_extensions import TypeVar
+
+from ..types import CovariantT
+
+FormatT = TypeVar("FormatT", bound=object | None, default=None)
+"""Type variable for structured response format types.
+
+This TypeVar represents the type of structured output format that LLM responses
+can be parsed into, such as Pydantic models, dataclasses, or custom classes.
+It can be None for unstructured responses and defaults to None when no specific
+format is required.
+"""
 
 
 class JsonParserFn(Protocol[CovariantT]):
@@ -17,7 +27,7 @@ class JsonParserFn(Protocol[CovariantT]):
             json: The JSON response from the LLM.
 
         Returns:
-            An instance of the class `CovariantT`.
+            An instance of the class `FormatCovariantT`.
         """
         ...
 
@@ -32,7 +42,7 @@ class ToolParserFn(Protocol[CovariantT]):
             args: The arguments generated for the tool call.
 
         Returns:
-            An instance of the class `CovariantT`.
+            An instance of the class `FormatCovariantT`.
         """
         ...
 
@@ -47,13 +57,13 @@ class TextParserFn(Protocol[CovariantT]):
             text: The text response from the LLM.
 
         Returns:
-            An instance of the class `CovariantT`.
+            An instance of the class `FormatCovariantT`.
         """
         ...
 
 
 @dataclass
-class ResponseFormat(Generic[T]):
+class ResponseFormat(Generic[FormatT]):
     """Class representing a structured output format for LLM responses.
 
     A ResponseFormat defines how LLM responses should be structured and parsed.
@@ -82,7 +92,7 @@ class ResponseFormat(Generic[T]):
                 llm.messages.user(f"Recommend a {genre} book.")
             ]
 
-        response: llm.Response[Book] = recommend_book("fantasy")
+        response: llm.Response[None, Book] = recommend_book("fantasy")
         book: Book = response.format()
         print(f"{book.title} by {book.author}")
         ```
@@ -91,7 +101,7 @@ class ResponseFormat(Generic[T]):
     schema: dict[str, Any]
     """The original class definition before being decorated."""
 
-    parser: JsonParserFn[T] | ToolParserFn[T] | TextParserFn[T]
+    parser: JsonParserFn[FormatT] | ToolParserFn[FormatT] | TextParserFn[FormatT]
     """The parser for formatting the response."""
 
     mode: Literal["json", "tool", "text"]
@@ -105,8 +115,8 @@ class ResponseFormat(Generic[T]):
 
 
 @runtime_checkable
-class Formattable(Protocol[T]):
+class Formattable(Protocol[FormatT]):
     """Protocol for classes that have been decorated with `@response_format()`."""
 
-    __response_format__: ResponseFormat[T]
+    __response_format__: ResponseFormat[FormatT]
     """The `ResponseFormat` instance constructed by the `@response_format()` decorator."""

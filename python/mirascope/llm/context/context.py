@@ -10,8 +10,13 @@ from typing_extensions import TypeVar
 
 from ..messages import Message
 
-NoneType = type(None)
 DepsT = TypeVar("DepsT", default=None)
+"""Type variable for dependency injection in `llm.Context`.
+
+This TypeVar is used throughout the LLM module to represent the type of
+dependencies that are present in `llm.Context`. 
+It defaults to None when no dependencies are needed.
+"""
 
 
 @dataclass

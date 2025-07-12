@@ -19,12 +19,10 @@ from . import (
     tools,
     types,
 )
-from .agents import Agent, AsyncAgent, AsyncStructuredAgent, StructuredAgent, agent
+from .agents import Agent, AsyncAgent, agent
 from .calls import (
     AsyncCall,
-    AsyncStructuredCall,
     Call,
-    StructuredCall,
     call,
 )
 from .clients import BaseClient, BaseParams
@@ -66,10 +64,8 @@ from .response_formatting.decorator import response_format
 from .responses import Response
 from .streams import (
     AsyncStream,
-    AsyncStructuredStream,
     BaseStream,
     Stream,
-    StructuredStream,
 )
 from .tools import Tool, ToolDef
 from .tools.decorator import tool
@@ -83,9 +79,7 @@ __all__ = [
     "AsyncAgent",
     "AsyncCall",
     "AsyncStream",
-    "AsyncStructuredAgent",
-    "AsyncStructuredCall",
-    "AsyncStructuredStream",
+    "AsyncStream",
     "Audio",
     "AudioChunk",
     "AuthenticationError",
@@ -110,9 +104,7 @@ __all__ = [
     "ResponseFormat",
     "ServerError",
     "Stream",
-    "StructuredAgent",
-    "StructuredCall",
-    "StructuredStream",
+    "Stream",
     "SystemMessage",
     "Thinking",
     "ThinkingChunk",

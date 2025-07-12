@@ -1,36 +1,28 @@
 """The `llm.tool` decorator for turning functions into tools."""
 
 from collections.abc import Callable
-from typing import ParamSpec, Protocol, overload
+from typing import Protocol, overload
 
-from typing_extensions import TypeVar
-
-from ..context import Context
-from ..types import Jsonable
+from ..context import Context, DepsT
+from ..types import JsonableCovariantT, JsonableT, P
 from .context_tool_def import ContextToolDef
 from .tool_def import ToolDef
 
-NoneType = type(None)
-P = ParamSpec("P")
-R = TypeVar("R", bound=Jsonable)
-CovariantR = TypeVar("CovariantR", covariant=True, bound=Jsonable)
-DepsT = TypeVar("DepsT")
 
-
-class ToolFn(Protocol[P, CovariantR]):
+class ToolFn(Protocol[P, JsonableCovariantT]):
     """Protocol for the tool function."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> CovariantR:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> JsonableCovariantT:
         """Call the function with the given arguments."""
         ...
 
 
-class ContextToolFn(Protocol[DepsT, P, CovariantR]):
+class ContextToolFn(Protocol[P, JsonableCovariantT, DepsT]):
     """Protocol for the context tool function."""
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> CovariantR:
+    ) -> JsonableCovariantT:
         """Call the function with the given arguments."""
         ...
 
@@ -38,7 +30,7 @@ class ContextToolFn(Protocol[DepsT, P, CovariantR]):
 class ToolDecorator(Protocol):
     """Protocol for the tool decorator."""
 
-    def __call__(self, fn: ToolFn[P, R]) -> ToolDef[P, R]:
+    def __call__(self, fn: ToolFn[P, JsonableT]) -> ToolDef[P, JsonableT]:
         """Call the decorator with a function."""
         ...
 
@@ -46,13 +38,15 @@ class ToolDecorator(Protocol):
 class ContextToolDecorator(Protocol[DepsT]):
     """Protocol for the context tool decorator."""
 
-    def __call__(self, fn: ContextToolFn[DepsT, P, R]) -> ContextToolDef[P, R, DepsT]:
+    def __call__(
+        self, fn: ContextToolFn[P, JsonableT, DepsT]
+    ) -> ContextToolDef[P, JsonableT, DepsT]:
         """Call the decorator with a function."""
         ...
 
 
 @overload
-def tool(__fn: ToolFn[P, R]) -> ToolDef[P, R]:
+def tool(__fn: ToolFn[P, JsonableT]) -> ToolDef[P, JsonableT]:
     """Overload for no arguments, which uses default settings."""
     ...
 
@@ -72,11 +66,11 @@ def tool(
 
 
 def tool(
-    __fn: Callable[P, R] | None = None,
+    __fn: Callable[P, JsonableT] | None = None,
     *,
     deps_type: type[DepsT] | type[None] | None = None,
     strict: bool = False,
-) -> ToolDef[P, R] | ToolDecorator | ContextToolDecorator[DepsT]:
+) -> ToolDef[P, JsonableT] | ToolDecorator | ContextToolDecorator[DepsT]:
     '''Decorator that turns a function into a tool definition.
 
     This decorator creates a `ToolDef` that can be used with `llm.call`.

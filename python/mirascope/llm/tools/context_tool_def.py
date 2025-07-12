@@ -4,22 +4,16 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Concatenate, Generic, ParamSpec, TypeGuard
+from typing import Concatenate, Generic, TypeGuard
 
-from typing_extensions import TypeVar
-
-from ..context import Context
-from ..types import Jsonable
+from ..context import Context, DepsT
+from ..types import JsonableT, P
 from .base_tool_def import BaseToolDef
 from .tool import Tool
 
-P = ParamSpec("P")
-R = TypeVar("R", bound=Jsonable)
-DepsT = TypeVar("DepsT", default=None)
-
 
 @dataclass
-class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
+class ContextToolDef(BaseToolDef[P, JsonableT], Generic[P, JsonableT, DepsT]):
     """Protocol defining a tool that can be used by LLMs.
 
     A ToolDef represents a function that can be called by an LLM during a call.
@@ -28,10 +22,12 @@ class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    fn: Callable[Concatenate[Context[DepsT], P], R]
+    fn: Callable[Concatenate[Context[DepsT], P], JsonableT]
     """The function that implements the tool's functionality."""
 
-    def __call__(self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs) -> R:
+    def __call__(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> JsonableT:
         """Call the tool with the provided arguments.
 
         Args:
@@ -42,7 +38,7 @@ class ContextToolDef(BaseToolDef[P, R], Generic[P, R, DepsT]):
         """
         return self.fn(ctx, *args, **kwargs)
 
-    def defines(self, tool: Tool) -> TypeGuard[Tool[P, R, DepsT]]:
+    def defines(self, tool: Tool) -> TypeGuard[Tool[P, JsonableT, DepsT]]:
         """Check if this ToolDef matches a specific Tool instance.
 
         This method is used to ensure that the ToolDef was created from a specific

@@ -1,16 +1,12 @@
 """The `prompt` decorator for writing messages as string templates."""
 
 from collections.abc import Awaitable, Callable, Sequence
-from typing import Concatenate, ParamSpec, Protocol, TypeAlias, overload
-
-from typing_extensions import TypeVar
+from typing import Concatenate, Protocol, TypeAlias, TypeVar, overload
 
 from ..content import UserContent
-from ..context import Context
+from ..context import Context, DepsT
 from ..messages.message import Message
-
-P = ParamSpec("P")
-DepsT = TypeVar("DepsT", default=None)
+from ..types import P
 
 
 class MessagesPrompt(Protocol[P]):
@@ -148,6 +144,14 @@ returns one of:
   - A single `UserContent` part that will be rendered as a single user message
   - A sequence of `UserContent` parts that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
+"""
+
+PromptT = TypeVar("PromptT", bound=Prompt | AsyncPrompt)
+"""Type variable for prompt types.
+
+This TypeVar represents either synchronous Prompt or asynchronous AsyncPrompt
+function types. It's used in generic classes and functions that work with
+both prompt variants.
 """
 
 
