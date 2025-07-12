@@ -56,9 +56,8 @@ class BaseStream(Generic[DepsT, FormatT]):
     def format(self) -> FormatT:
         """Format the already-streamed content using the response format parser.
 
-        This method is only available if the call was created with a FormatT.
-        It will parse all of the already-processed stream content according to the
-        specified format, and return a partial structured object.
+        It will parse the response content according to the specified format (if present)
+        and return a structured object. Returns None if there was no format.
 
         `stream.format()` is equivalent to calling `stream.to_response().format()`.
 
