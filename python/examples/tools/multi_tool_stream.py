@@ -41,12 +41,11 @@ def main():
             if group.type == "tool_call":
                 tool_call = group.collect()
                 tool_calls.append(tool_call)
-        if tool_calls:
-            tools = stream.tools(tool_calls)
-            outputs = [tool.call() for tool in tools]
-            stream = librarian.resume_stream(stream, outputs)
-        else:
+        if not tool_calls:
             break
+        tools = stream.tools(tool_calls)
+        outputs = [tool.call() for tool in tools]
+        stream = librarian.resume_stream(stream, outputs)
 
 
 if __name__ == "__main__":

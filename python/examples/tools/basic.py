@@ -9,7 +9,7 @@ def available_books() -> list[str]:
 
 @llm.call(model="openai:gpt-4o-mini", tools=[available_books])
 def librarian(genre: str):
-    return f"Recommend an available book in {genre}"
+    return f"Recommend a {genre} book that's available to rent."
 
 
 def main():

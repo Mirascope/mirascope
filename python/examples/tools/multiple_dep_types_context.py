@@ -5,10 +5,10 @@ from mirascope import llm
 
 @dataclass
 class Library:
-    available_books: list[str]
+    books: list[str]
 
 
-library = Library(available_books=["Mistborn", "Gödel, Escher, Bach", "Dune"])
+library = Library(books=["Mistborn", "Gödel, Escher, Bach", "Dune"])
 
 
 @dataclass
@@ -34,7 +34,7 @@ meta_library = MetaLibrary(library=library, secret_library=secret_library)
 @llm.tool(deps_type=MetaLibrary)
 def available_books(ctx: llm.Context[MetaLibrary]) -> list[str]:
     """List the available books in the library."""
-    return ctx.deps.library.available_books
+    return ctx.deps.library.books
 
 
 # NOTE / TODO: It would be nice if we could define the tools in terms of their logical dep,
