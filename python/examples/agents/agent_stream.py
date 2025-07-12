@@ -7,13 +7,14 @@ def sazed(ctx: llm.Context):
 
 
 def main():
-    while True:
-        user_input = input("[USER]: ")
-        stream = sazed.stream(user_input)
-        print("[SAZED]: ", flush=True, end="")
-        for chunk in stream:
-            print(chunk, flush=True, end="")
-        print("")
+    with llm.context() as ctx:
+        while True:
+            user_input = input("[USER]: ")
+            stream = sazed.stream(user_input, ctx=ctx)
+            print("[SAZED]: ", flush=True, end="")
+            for chunk in stream:
+                print(chunk, flush=True, end="")
+            print("")
 
 
 main()
