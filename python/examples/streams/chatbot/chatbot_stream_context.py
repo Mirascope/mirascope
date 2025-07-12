@@ -1,32 +1,24 @@
 from mirascope import llm
 
-SYSTEM_MESSAGE = "You are an insightful chatbot named Sazed. You prioritize..."
-
 
 @llm.call(model="openai:gpt-4o-mini")
 def sazed(ctx: llm.Context, query: str):
     return [
-        llm.messages.system(SYSTEM_MESSAGE),
+        llm.messages.system("You are an insightful and helpful chatbot named Sazed."),
         *ctx.messages,  # Automatically filters out system message
         query,
     ]
 
 
 def main():
-    user_input = input("What would you like to chat with Sazed about?")
     with llm.context() as ctx:
-        stream: llm.Stream = sazed.stream(ctx, user_input)
-        try:
-            while True:
-                print("[SAZED]:", flush=True, end=None)
-                for chunk in stream:
-                    print(chunk, flush=True, end=None)
-                print("")
-                user_input = input("[YOU]: ")
-                stream = sazed.stream(ctx, user_input)
-        except KeyboardInterrupt:
-            print("[SAZED]: Goodbye")
-            exit(0)
+        while True:
+            user_input = input("[USER]:")
+            stream = sazed.stream(ctx, user_input)
+            print("[SAZED]:", flush=True, end=None)
+            for chunk in stream:
+                print(chunk, flush=True, end=None)
+            print("")
 
 
 main()
