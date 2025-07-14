@@ -5,6 +5,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Protocol, overload
 
+from typing_extensions import Unpack
+
+from ..clients import BaseClient, BaseParams
 from ..context import Context
 from ..tools import ContextToolDef, ToolDef
 from .agent import Agent
@@ -12,7 +15,16 @@ from .async_agent import AsyncAgent
 
 if TYPE_CHECKING:
     from ..clients import (
+        ANTHROPIC_REGISTERED_LLMS,
+        GOOGLE_REGISTERED_LLMS,
+        OPENAI_REGISTERED_LLMS,
         REGISTERED_LLMS,
+        AnthropicClient,
+        AnthropicParams,
+        GoogleClient,
+        GoogleParams,
+        OpenAIClient,
+        OpenAIParams,
     )
 
 from ..context import DepsT
@@ -54,101 +66,45 @@ class AgentDecorator(Protocol[DepsT, FormatT]):
         ...
 
 
-# @overload
-# def agent(
-#     model: ANTHROPIC_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: None = None,
-#     client: AnthropicClient | None = None,
-#     **params: Unpack[AnthropicParams],
-# ) -> AgentDecorator[DepsT, None]:
-#     """Overload for Anthropic agents."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: ANTHROPIC_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: type[T],
-#     client: AnthropicClient | None = None,
-#     **params: Unpack[AnthropicParams],
-# ) -> StructuredAgentDecorator[DepsT, T]:
-#     """Overload for Anthropic agents with response format."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: GOOGLE_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: None = None,
-#     client: GoogleClient | None = None,
-#     **params: Unpack[GoogleParams],
-# ) -> AgentDecorator[DepsT, None]:
-#     """Overload for Google agents."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: GOOGLE_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: type[T],
-#     client: GoogleClient | None = None,
-#     **params: Unpack[GoogleParams],
-# ) -> StructuredAgentDecorator[DepsT, T]:
-#     """Overload for Google agents with response format."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: OPENAI_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: None = None,
-#     client: OpenAIClient | None = None,
-#     **params: Unpack[OpenAIParams],
-# ) -> AgentDecorator[DepsT, None]:
-#     """Overload for OpenAI agents."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: OPENAI_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: type[T],
-#     client: OpenAIClient | None = None,
-#     **params: Unpack[OpenAIParams],
-# ) -> StructuredAgentDecorator[DepsT, T]:
-#     """Overload for OpenAI agents with response format."""
-#     ...
+@overload
+def agent(
+    model: ANTHROPIC_REGISTERED_LLMS,
+    *,
+    deps_type: type[DepsT] = NoneType,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    response_format: type[FormatT] | None = None,
+    client: AnthropicClient | None = None,
+    **params: Unpack[AnthropicParams],
+) -> AgentDecorator[DepsT, FormatT]:
+    """Overload for Anthropic agents with response format."""
+    ...
 
 
 @overload
 def agent(
-    model: REGISTERED_LLMS,
+    model: GOOGLE_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: None = None,
-    # client: Client | None = None,
-    # **params: Unpack[Params],
-) -> AgentDecorator[DepsT, None]:
-    """Overload for all registered models so that autocomplete works."""
+    response_format: type[FormatT] | None = None,
+    client: GoogleClient | None = None,
+    **params: Unpack[GoogleParams],
+) -> AgentDecorator[DepsT, FormatT]:
+    """Overload for Google agents with response format."""
+    ...
+
+
+@overload
+def agent(
+    model: OPENAI_REGISTERED_LLMS,
+    *,
+    deps_type: type[DepsT] = NoneType,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    response_format: type[FormatT] | None = None,
+    client: OpenAIClient | None = None,
+    **params: Unpack[OpenAIParams],
+) -> AgentDecorator[DepsT, FormatT]:
+    """Overload for OpenAI agents with response format."""
     ...
 
 
@@ -158,9 +114,9 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[FormatT],
-    # client: Client | None = None,
-    # **params: Unpack[Params],
+    response_format: type[FormatT] | None = None,
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
 ) -> AgentDecorator[DepsT, FormatT]:
     """Overload for all registered models so that autocomplete works."""
     ...
@@ -172,8 +128,8 @@ def agent(
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
-    # client: Client | None = None,
-    # **params: Unpack[Params],
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
 ) -> AgentDecorator[DepsT, None] | AgentDecorator[DepsT, FormatT]:
     """Decorator for creating an agent or structured agent.
 
@@ -186,6 +142,6 @@ def agent(
         **params: Additional parameters for the model.
 
     Returns:
-        An instance of `AgentDecorator` or `StructuredAgentDecorator`.
+        An instance of `AgentDecorator` or `AgentDecorator`.
     """
     raise NotImplementedError()
