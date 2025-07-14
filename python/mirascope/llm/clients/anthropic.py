@@ -162,7 +162,7 @@ class AnthropicClient(
     ) -> Stream[DepsT, FormatT]:
         raise NotImplementedError
 
-    def stream_async(
+    async def stream_async(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,

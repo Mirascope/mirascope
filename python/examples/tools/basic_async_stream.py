@@ -16,7 +16,7 @@ def librarian(genre: str):
 
 
 async def main():
-    stream: llm.AsyncStream = librarian.stream("fantasy")
+    stream: llm.AsyncStream = await librarian.stream("fantasy")
     while True:
         tool_call: llm.ToolCall | None = None
         async for group in stream.groups():
@@ -28,7 +28,7 @@ async def main():
         if not tool_call:
             break
         tool_output = await librarian.call_tool(tool_call)
-        stream = librarian.resume_stream(stream, tool_output)
+        stream = await librarian.resume_stream(stream, tool_output)
 
 
 if __name__ == "__main__":

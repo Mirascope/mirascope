@@ -160,7 +160,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
     ) -> Stream[DepsT, FormatT]:
         raise NotImplementedError
 
-    def stream_async(
+    async def stream_async(
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,

@@ -9,7 +9,7 @@ async def recommend_book(genre: str) -> str:
 
 
 async def main():
-    stream = recommend_book.stream("fantasy")
+    stream = await recommend_book.stream("fantasy")
     async for chunk in stream:
         print(chunk, end="", flush=True)
 

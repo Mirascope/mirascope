@@ -225,7 +225,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         ...
 
     @abstractmethod
-    def stream_async(
+    async def stream_async(
         self,
         *,
         model: LLMT,

@@ -33,11 +33,13 @@ class AsyncCall(BaseCall[P, AsyncPrompt, FormatT]):
         """Generates an asynchronous response using the LLM."""
         raise NotImplementedError()
 
-    def stream(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream[None, FormatT]:
+    async def stream(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncStream[None, FormatT]:
         """Generates a streaming response using the LLM asynchronously."""
         raise NotImplementedError()
 
-    def stream_async(
+    async def stream_async(
         self, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStream[None, FormatT]:
         """Generates an asynchronous streaming response using the LLM."""
@@ -59,7 +61,7 @@ class AsyncCall(BaseCall[P, AsyncPrompt, FormatT]):
         """Generate a new response asynchronously by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
-    def resume_stream(
+    async def resume_stream(
         self,
         output: Response[None, FormatT] | BaseStream[None, FormatT],
         content: UserContent | Sequence[UserContent],
@@ -67,7 +69,7 @@ class AsyncCall(BaseCall[P, AsyncPrompt, FormatT]):
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
-    def resume_stream_async(
+    async def resume_stream_async(
         self,
         output: Response[None, FormatT] | BaseStream[None, FormatT],
         content: UserContent | Sequence[UserContent],

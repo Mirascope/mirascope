@@ -14,7 +14,7 @@ def generate_book(genre: str):
 
 
 async def main():
-    stream = generate_book.stream_async("fantasy")
+    stream: llm.AsyncStream = await generate_book.stream_async("fantasy")
 
     async for group in stream.groups():
         if group.type == "text":

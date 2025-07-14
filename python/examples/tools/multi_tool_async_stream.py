@@ -35,7 +35,7 @@ def librarian():
 
 
 async def main():
-    stream: llm.AsyncStream = librarian.stream()
+    stream: llm.AsyncStream = await librarian.stream()
     while True:
         tool_calls: list[llm.ToolCall] = []
         outputs: list[llm.ToolOutput] = []
@@ -49,7 +49,7 @@ async def main():
         if not tool_calls:
             break
         outputs = await librarian.call_tools(tool_calls)
-        stream = librarian.resume_stream(stream, outputs)
+        stream = await librarian.resume_stream(stream, outputs)
 
 
 if __name__ == "__main__":

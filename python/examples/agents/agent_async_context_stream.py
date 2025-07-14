@@ -25,7 +25,7 @@ async def main():
     with llm.context(deps=knowledge) as ctx:
         while True:
             user_input = input("[USER]: ")
-            stream = sazed.stream_async(user_input, ctx=ctx)
+            stream = await sazed.stream_async(user_input, ctx=ctx)
             print("[SAZED]: ", flush=True, end="")
             async for chunk in stream:
                 print(chunk, flush=True, end="")

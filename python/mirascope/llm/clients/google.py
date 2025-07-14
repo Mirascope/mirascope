@@ -160,7 +160,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
     ) -> Stream[DepsT, FormatT]:
         raise NotImplementedError
 
-    def stream_async(
+    async def stream_async(
         self,
         *,
         model: GOOGLE_REGISTERED_LLMS,
