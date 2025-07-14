@@ -95,35 +95,7 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: None = None,
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
-) -> CallDecorator[None]:
-    """Overload for Anthropic generation."""
-    ...
-
-
-@overload
-def call(
-    model: ANTHROPIC_REGISTERED_LLMS,
-    *,
-    deps_type: type[DepsT],
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: None = None,
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
-) -> ContextCallDecorator[DepsT, None]:
-    """Overload for Anthropic contextual generation."""
-    ...
-
-
-@overload
-def call(
-    model: ANTHROPIC_REGISTERED_LLMS,
-    *,
-    deps_type: type[None] | None = None,
-    tools: Sequence[ToolDef] | None = None,
-    response_format: type[FormatT],
+    response_format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> CallDecorator[FormatT]:
@@ -137,7 +109,7 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[FormatT],
+    response_format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> ContextCallDecorator[DepsT, FormatT]:
@@ -151,35 +123,7 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: None = None,
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
-) -> CallDecorator[None]:
-    """Overload for Google generation."""
-    ...
-
-
-@overload
-def call(
-    model: GOOGLE_REGISTERED_LLMS,
-    *,
-    deps_type: type[DepsT],
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: None = None,
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
-) -> ContextCallDecorator[DepsT, None]:
-    """Overload for Google contextual generation."""
-    ...
-
-
-@overload
-def call(
-    model: GOOGLE_REGISTERED_LLMS,
-    *,
-    deps_type: type[None] | None = None,
-    tools: Sequence[ToolDef] | None = None,
-    response_format: type[FormatT],
+    response_format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> CallDecorator[FormatT]:
@@ -193,7 +137,7 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[FormatT],
+    response_format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> ContextCallDecorator[DepsT, FormatT]:
@@ -207,35 +151,7 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: None = None,
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
-) -> CallDecorator[None]:
-    """Overload for OpenAI generation."""
-    ...
-
-
-@overload
-def call(
-    model: OPENAI_REGISTERED_LLMS,
-    *,
-    deps_type: type[DepsT],
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: None = None,
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
-) -> ContextCallDecorator[DepsT, None]:
-    """Overload for OpenAI contextual generation."""
-    ...
-
-
-@overload
-def call(
-    model: OPENAI_REGISTERED_LLMS,
-    *,
-    deps_type: type[None] | None = None,
-    tools: Sequence[ToolDef] | None = None,
-    response_format: type[FormatT],
+    response_format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> CallDecorator[FormatT]:
@@ -249,7 +165,7 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[FormatT],
+    response_format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> ContextCallDecorator[DepsT, FormatT]:
@@ -263,35 +179,7 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: Sequence[ToolDef] | None = None,
-    response_format: None = None,
-    client: None,
-    **params: Unpack[BaseParams],
-) -> CallDecorator[None]:
-    """Overload for all registered models so that autocomplete works."""
-    ...
-
-
-@overload
-def call(
-    model: REGISTERED_LLMS,
-    *,
-    deps_type: type[DepsT],
-    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: None = None,
-    client: None,
-    **params: Unpack[BaseParams],
-) -> ContextCallDecorator[DepsT, None]:
-    """Overload for all registered models so that autocomplete works."""
-    ...
-
-
-@overload
-def call(
-    model: REGISTERED_LLMS,
-    *,
-    deps_type: type[None] | None = None,
-    tools: Sequence[ToolDef] | None = None,
-    response_format: type[FormatT],
+    response_format: type[FormatT] | None = None,
     client: None,
     **params: Unpack[BaseParams],
 ) -> CallDecorator[FormatT]:
@@ -305,7 +193,7 @@ def call(
     *,
     deps_type: type[DepsT],
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[FormatT],
+    response_format: type[FormatT] | None = None,
     client: None,
     **params: Unpack[BaseParams],
 ) -> ContextCallDecorator[DepsT, FormatT]:
