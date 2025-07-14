@@ -56,9 +56,6 @@ async def main():
             books: list[str] = output.value
             print(f"Available books: {books}")
             response = await librarian.resume(response, output)
-        else:
-            # This will never happen
-            raise ValueError(f"Unexpected tool: {tool}")
 
     print(response)
 
