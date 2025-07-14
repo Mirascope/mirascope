@@ -3,26 +3,35 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, ParamSpec, Protocol, overload
+from typing import TYPE_CHECKING, Any, Protocol, overload
 
-from typing_extensions import TypeVar
+from typing_extensions import Unpack
 
+from ..clients import BaseClient, BaseParams
 from ..context import Context
 from ..tools import ContextToolDef, ToolDef
 from .agent import Agent
 from .async_agent import AsyncAgent
-from .async_structured_agent import AsyncStructuredAgent
-from .structured_agent import StructuredAgent
 
 if TYPE_CHECKING:
     from ..clients import (
+        ANTHROPIC_REGISTERED_LLMS,
+        GOOGLE_REGISTERED_LLMS,
+        OPENAI_REGISTERED_LLMS,
         REGISTERED_LLMS,
+        AnthropicClient,
+        AnthropicParams,
+        GoogleClient,
+        GoogleParams,
+        OpenAIClient,
+        OpenAIParams,
     )
 
+from ..context import DepsT
+from ..response_formatting import FormatT
+from ..types import P
+
 NoneType = type(None)
-P = ParamSpec("P")
-DepsT = TypeVar("DepsT", default=None)
-T = TypeVar("T", bound=object | None, default=None)
 
 
 class SystemPrompt(Protocol[P, DepsT]):
@@ -37,142 +46,65 @@ class AsyncSystemPrompt(Protocol[P, DepsT]):
     async def __call__(self, ctx: Context[DepsT]) -> str: ...
 
 
-class AgentDecorator(Protocol[DepsT]):
+class AgentDecorator(Protocol[DepsT, FormatT]):
     """Protocol for the `agent` decorator."""
 
     @overload
-    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> AsyncAgent[DepsT]:
+    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> AsyncAgent[DepsT, FormatT]:
         """Decorator for creating an async only agent."""
         ...
 
     @overload
-    def __call__(self, fn: SystemPrompt[P, DepsT]) -> Agent[DepsT]:
+    def __call__(self, fn: SystemPrompt[P, DepsT]) -> Agent[DepsT, FormatT]:
         """Decorator for creating an agent."""
         ...
 
     def __call__(
         self, fn: SystemPrompt[P, DepsT] | AsyncSystemPrompt[P, DepsT]
-    ) -> Agent[DepsT] | AsyncAgent[DepsT]:
+    ) -> Agent[DepsT, FormatT] | AsyncAgent[DepsT, FormatT]:
         """Decorator for creating an agent."""
         ...
 
 
-class StructuredAgentDecorator(Protocol[DepsT, T]):
-    """Protocol for the `agent` decorator with a response format."""
-
-    @overload
-    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> StructuredAgent[DepsT, T]:
-        """Decorator for creating an async only structured agent."""
-        ...
-
-    @overload
-    def __call__(self, fn: SystemPrompt[P, DepsT]) -> StructuredAgent[DepsT, T]:
-        """Decorator for creating a structured agent."""
-        ...
-
-    def __call__(
-        self,
-        fn: SystemPrompt[P, DepsT] | AsyncSystemPrompt[P, DepsT],
-    ) -> StructuredAgent[DepsT, T] | AsyncStructuredAgent[DepsT, T]:
-        """Decorator for creating a structured agent."""
-        ...
-
-
-# @overload
-# def agent(
-#     model: ANTHROPIC_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: None = None,
-#     client: AnthropicClient | None = None,
-#     **params: Unpack[AnthropicParams],
-# ) -> AgentDecorator[DepsT]:
-#     """Overload for Anthropic agents."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: ANTHROPIC_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: type[T],
-#     client: AnthropicClient | None = None,
-#     **params: Unpack[AnthropicParams],
-# ) -> StructuredAgentDecorator[DepsT, T]:
-#     """Overload for Anthropic agents with response format."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: GOOGLE_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: None = None,
-#     client: GoogleClient | None = None,
-#     **params: Unpack[GoogleParams],
-# ) -> AgentDecorator[DepsT]:
-#     """Overload for Google agents."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: GOOGLE_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: type[T],
-#     client: GoogleClient | None = None,
-#     **params: Unpack[GoogleParams],
-# ) -> StructuredAgentDecorator[DepsT, T]:
-#     """Overload for Google agents with response format."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: OPENAI_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: None = None,
-#     client: OpenAIClient | None = None,
-#     **params: Unpack[OpenAIParams],
-# ) -> AgentDecorator[DepsT]:
-#     """Overload for OpenAI agents."""
-#     ...
-
-
-# @overload
-# def agent(
-#     model: OPENAI_REGISTERED_LLMS,
-#     *,
-#     deps_type: type[DepsT] = NoneType,
-#     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-#     response_format: type[T],
-#     client: OpenAIClient | None = None,
-#     **params: Unpack[OpenAIParams],
-# ) -> StructuredAgentDecorator[DepsT, T]:
-#     """Overload for OpenAI agents with response format."""
-#     ...
+@overload
+def agent(
+    model: ANTHROPIC_REGISTERED_LLMS,
+    *,
+    deps_type: type[DepsT] = NoneType,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    response_format: type[FormatT] | None = None,
+    client: AnthropicClient | None = None,
+    **params: Unpack[AnthropicParams],
+) -> AgentDecorator[DepsT, FormatT]:
+    """Overload for Anthropic agents with response format."""
+    ...
 
 
 @overload
 def agent(
-    model: REGISTERED_LLMS,
+    model: GOOGLE_REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: None = None,
-    # client: Client | None = None,
-    # **params: Unpack[Params],
-) -> AgentDecorator[DepsT]:
-    """Overload for all registered models so that autocomplete works."""
+    response_format: type[FormatT] | None = None,
+    client: GoogleClient | None = None,
+    **params: Unpack[GoogleParams],
+) -> AgentDecorator[DepsT, FormatT]:
+    """Overload for Google agents with response format."""
+    ...
+
+
+@overload
+def agent(
+    model: OPENAI_REGISTERED_LLMS,
+    *,
+    deps_type: type[DepsT] = NoneType,
+    tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
+    response_format: type[FormatT] | None = None,
+    client: OpenAIClient | None = None,
+    **params: Unpack[OpenAIParams],
+) -> AgentDecorator[DepsT, FormatT]:
+    """Overload for OpenAI agents with response format."""
     ...
 
 
@@ -182,10 +114,10 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T],
-    # client: Client | None = None,
-    # **params: Unpack[Params],
-) -> StructuredAgentDecorator[DepsT, T]:
+    response_format: type[FormatT] | None = None,
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
+) -> AgentDecorator[DepsT, FormatT]:
     """Overload for all registered models so that autocomplete works."""
     ...
 
@@ -195,10 +127,10 @@ def agent(
     *,
     deps_type: type[DepsT] = NoneType,
     tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]] | None = None,
-    response_format: type[T] | None = None,
-    # client: Client | None = None,
-    # **params: Unpack[Params],
-) -> AgentDecorator[DepsT] | StructuredAgentDecorator[DepsT, T]:
+    response_format: type[FormatT] | None = None,
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
+) -> AgentDecorator[DepsT, None] | AgentDecorator[DepsT, FormatT]:
     """Decorator for creating an agent or structured agent.
 
     Args:
@@ -210,6 +142,6 @@ def agent(
         **params: Additional parameters for the model.
 
     Returns:
-        An instance of `AgentDecorator` or `StructuredAgentDecorator`.
+        An instance of `AgentDecorator` or `AgentDecorator`.
     """
     raise NotImplementedError()

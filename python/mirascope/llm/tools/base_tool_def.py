@@ -1,19 +1,13 @@
 """The `BaseToolDef` class for defining tools that LLMs can request be called."""
 
 from dataclasses import dataclass
-from typing import Generic, ParamSpec
+from typing import Generic
 
-from typing_extensions import TypeVar
-
-from ..types import Jsonable
-
-P = ParamSpec("P")
-R = TypeVar("R", bound=Jsonable)
-DepsT = TypeVar("DepsT", default=None)
+from ..types import Jsonable, JsonableT, P
 
 
 @dataclass
-class BaseToolDef(Generic[P, R]):
+class BaseToolDef(Generic[P, JsonableT]):
     """Base class defining a tool that can be used by LLMs.
 
     A ToolDef represents a function that can be called by an LLM during a call.

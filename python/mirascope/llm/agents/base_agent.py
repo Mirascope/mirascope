@@ -5,17 +5,14 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
 
-from typing_extensions import TypeVar
-
-from ..context import Context
+from ..context import Context, DepsT
 from ..models import LLM
+from ..response_formatting import FormatT
 from ..tools import ToolDef
-
-DepsT = TypeVar("DepsT", default=None)
 
 
 @dataclass
-class BaseAgent(Generic[DepsT], ABC):
+class BaseAgent(Generic[DepsT, FormatT], ABC):
     """Agent class for generating responses using LLMs with tools."""
 
     ctx: Context[DepsT]
@@ -23,6 +20,9 @@ class BaseAgent(Generic[DepsT], ABC):
 
     tools: Sequence[ToolDef] | None
     """The tools available to the agent, if any."""
+
+    response_format: type[FormatT] | None
+    """The response format for the generated response."""
 
     model: LLM
     """The default model the agent will use if not specified through context."""

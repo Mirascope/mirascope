@@ -1,12 +1,11 @@
 """The `llm.response_format` decorator for defining response formats as classes."""
 
 from collections.abc import Callable, Sequence
-from typing import Any, Literal, Protocol, TypeVar, overload
+from typing import Any, Literal, Protocol, overload
 
 from ..content import AssistantContent
-
-T = TypeVar("T", bound=object)
-CovariantT = TypeVar("CovariantT", covariant=True)
+from ..types import CovariantT
+from .response_format import FormatT
 
 
 class JsonResponseFormatDef(Protocol[CovariantT]):
@@ -62,11 +61,11 @@ class ContentResponseFormatDef(Protocol[CovariantT]):
 @overload
 def response_format(
     __cls: type[
-        JsonResponseFormatDef[T]
-        | ToolResponseFormatDef[T]
-        | ContentResponseFormatDef[T]
+        JsonResponseFormatDef[FormatT]
+        | ToolResponseFormatDef[FormatT]
+        | ContentResponseFormatDef[FormatT]
     ],
-) -> type[T]:
+) -> type[FormatT]:
     """Overload for no arguments, which requires a parser classmethod."""
     ...
 
@@ -77,8 +76,12 @@ def response_format(
     parser: None = None,
     strict: bool = False,
 ) -> Callable[
-    [JsonResponseFormatDef[T] | ToolResponseFormatDef[T] | ContentResponseFormatDef[T]],
-    type[T],
+    [
+        JsonResponseFormatDef[FormatT]
+        | ToolResponseFormatDef[FormatT]
+        | ContentResponseFormatDef[FormatT]
+    ],
+    type[FormatT],
 ]:
     """Overload for no default parser, which requires a parser classmethod."""
     ...
@@ -89,7 +92,7 @@ def response_format(
     *,
     parser: Literal["json", "tool"],
     strict: bool = False,
-) -> Callable[[type[T]], type[T]]:
+) -> Callable[[type[FormatT]], type[FormatT]]:
     """Overload for setting a default parser."""
     ...
 
@@ -100,16 +103,16 @@ def response_format(
     parser: Literal["json", "tool"] | None = None,
     strict: bool = False,
 ) -> (
-    T
+    FormatT
     | Callable[
         [
-            JsonResponseFormatDef[T]
-            | ToolResponseFormatDef[T]
-            | ContentResponseFormatDef[T]
+            JsonResponseFormatDef[FormatT]
+            | ToolResponseFormatDef[FormatT]
+            | ContentResponseFormatDef[FormatT]
         ],
-        type[T],
+        type[FormatT],
     ]
-    | Callable[[type[T]], type[T]]
+    | Callable[[type[FormatT]], type[FormatT]]
 ):
     '''Decorator that defines a structured response format for LLM outputs.
 

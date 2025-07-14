@@ -1,0 +1,17 @@
+from mirascope import llm
+
+
+@llm.agent(model="openai:gpt-4o-mini")
+def sazed(ctx: llm.Context):
+    return "You are an insightful and helpful agent named Sazed."
+
+
+def main():
+    with llm.context() as ctx:
+        while True:
+            user_input = input("[USER]: ")
+            response = sazed(user_input, ctx=ctx)
+            print("[SAZED]: ", response)
+
+
+main()
