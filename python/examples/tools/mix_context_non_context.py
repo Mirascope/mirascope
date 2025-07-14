@@ -40,7 +40,7 @@ def main():
             response = librarian.resume(response, outputs)
 
         print(response)
-        # "I recommend Mistborn, by Brandon Sanderson..."
+        # > I recommend Mistborn, by Brandon Sanderson...
 
 
 if __name__ == "__main__":

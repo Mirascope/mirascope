@@ -41,7 +41,7 @@ async def main():
         response = await librarian.resume_async(response, output)
 
     print(response)
-    # "I recommend Mistborn, by Brandon Sanderson..."
+    # > I recommend Mistborn, by Brandon Sanderson...
 
 
 if __name__ == "__main__":

@@ -25,11 +25,10 @@ async def main():
                     print(chunk)
             if group.type == "tool_call":
                 tool_call = await group.collect()
-        if tool_call:
-            tool_output = await librarian.call_tool(tool_call)
-            stream = librarian.resume_stream(stream, tool_output)
-        else:
+        if not tool_call:
             break
+        tool_output = await librarian.call_tool(tool_call)
+        stream = librarian.resume_stream(stream, tool_output)
 
 
 if __name__ == "__main__":
