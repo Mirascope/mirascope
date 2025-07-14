@@ -1,7 +1,7 @@
 """Google client implementation."""
 
 from collections.abc import Sequence
-from typing import Any, TypeAlias
+from typing import TypeAlias
 
 from google.genai.types import ContentDict, FunctionResponse
 
@@ -15,6 +15,7 @@ from ..streams import (
     Stream,
 )
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
+from ..types import Jsonable
 from .base import BaseClient
 from .register import GOOGLE_REGISTERED_LLMS
 
@@ -44,7 +45,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
     ) -> Response[DepsT, None]:
         raise NotImplementedError
@@ -66,7 +67,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -88,7 +89,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
     ) -> Response[DepsT, None]:
         raise NotImplementedError
@@ -110,7 +111,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -132,7 +133,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
     ) -> Stream[DepsT, None]:
         raise NotImplementedError
@@ -154,7 +155,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Stream[DepsT, FormatT]:
@@ -176,7 +177,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
     ) -> AsyncStream[DepsT, None]:
         raise NotImplementedError
@@ -198,7 +199,7 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         ctx: Context[DepsT],
         model: GOOGLE_REGISTERED_LLMS,
         messages: Sequence[GoogleMessage],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> AsyncStream[DepsT, FormatT]:

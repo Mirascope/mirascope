@@ -1,7 +1,7 @@
 """Anthropic client implementation."""
 
 from collections.abc import Sequence
-from typing import Any, TypeAlias
+from typing import TypeAlias
 
 from anthropic.types import MessageParam
 
@@ -15,6 +15,7 @@ from ..streams import (
     Stream,
 )
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
+from ..types import Jsonable
 from .base import BaseClient
 from .register import ANTHROPIC_REGISTERED_LLMS
 
@@ -46,7 +47,7 @@ class AnthropicClient(
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
     ) -> Response[DepsT, None]:
         raise NotImplementedError
@@ -68,7 +69,7 @@ class AnthropicClient(
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -90,7 +91,7 @@ class AnthropicClient(
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
     ) -> Response[DepsT, None]:
         raise NotImplementedError
@@ -112,7 +113,7 @@ class AnthropicClient(
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -134,7 +135,7 @@ class AnthropicClient(
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
     ) -> Stream[DepsT, None]:
         raise NotImplementedError
@@ -156,7 +157,7 @@ class AnthropicClient(
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> Stream[DepsT, FormatT]:
@@ -178,7 +179,7 @@ class AnthropicClient(
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
     ) -> AsyncStream[DepsT, None]:
         raise NotImplementedError
@@ -200,7 +201,7 @@ class AnthropicClient(
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
         messages: Sequence[AnthropicMessage],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> AsyncStream[DepsT, FormatT]:
