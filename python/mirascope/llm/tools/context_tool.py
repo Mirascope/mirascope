@@ -1,4 +1,4 @@
-"""The `ContextToolDef` class for defining tools that LLMs can request be called."""
+"""The `ContextTool` class for defining tools that LLMs can request be called."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ class ContextTool(
 ):
     """Protocol defining a tool that can be used by LLMs.
 
-    A ToolDef represents a function that can be called by an LLM during a call.
+    A Tool represents a function that can be called by an LLM during a call.
     It includes metadata like name, description, and parameter schema.
 
     This class is not instantiated directly but created by the `@tool()` decorator.
