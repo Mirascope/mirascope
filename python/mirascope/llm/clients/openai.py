@@ -14,7 +14,7 @@ from ..streams import (
     AsyncStream,
     Stream,
 )
-from ..tools import ContextTool, Tool
+from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from .base import BaseClient
 from .register import OPENAI_REGISTERED_LLMS
 
@@ -77,7 +77,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
     ) -> Response[None, None]:
         raise NotImplementedError
@@ -88,7 +88,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
         params: OpenAIParams | None = None,
     ) -> Response[DepsT, None]:
         raise NotImplementedError
@@ -98,7 +98,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         response_format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> Response[None, FormatT]:
@@ -110,7 +110,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
         response_format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -165,40 +165,40 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
     ) -> AsyncStream[None, None]:
         raise NotImplementedError
 
-    def context_stream_async(
+    async def context_stream_async(
         self,
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
         params: OpenAIParams | None = None,
     ) -> AsyncStream[DepsT, None]:
         raise NotImplementedError
 
-    def structured_stream_async(
+    async def structured_stream_async(
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         response_format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> AsyncStream[None, FormatT]:
         raise NotImplementedError
 
-    def structured_context_stream_async(
+    async def structured_context_stream_async(
         self,
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
         messages: Sequence[OpenAIMessage],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
         response_format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> AsyncStream[DepsT, FormatT]:

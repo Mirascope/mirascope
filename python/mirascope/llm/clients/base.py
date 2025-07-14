@@ -15,7 +15,7 @@ from ..streams import (
     AsyncStream,
     Stream,
 )
-from ..tools import ContextTool, Tool
+from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from .register import REGISTERED_LLMS
 
 ProviderMessageT = TypeVar("ProviderMessageT")
@@ -126,7 +126,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         model: LLMT,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
     ) -> Response[None, None]:
         """Generate a standard response asynchronously."""
@@ -139,7 +139,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         ctx: Context[DepsT],
         model: LLMT,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
         params: ParamsT | None = None,
     ) -> Response[DepsT, None]:
         """Generate a context response asynchronously."""
@@ -151,7 +151,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         model: LLMT,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Response[None, FormatT]:
@@ -165,7 +165,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         ctx: Context[DepsT],
         model: LLMT,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -230,32 +230,32 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         model: LLMT,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
     ) -> AsyncStream[None, None]:
         """Stream a standard response asynchronously."""
         ...
 
     @abstractmethod
-    def context_stream_async(
+    async def context_stream_async(
         self,
         *,
         ctx: Context[DepsT],
         model: LLMT,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
         params: ParamsT | None = None,
     ) -> AsyncStream[DepsT, None]:
         """Stream a context response asynchronously."""
         ...
 
     @abstractmethod
-    def structured_stream_async(
+    async def structured_stream_async(
         self,
         *,
         model: LLMT,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> AsyncStream[None, FormatT]:
@@ -263,13 +263,13 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         ...
 
     @abstractmethod
-    def structured_context_stream_async(
+    async def structured_context_stream_async(
         self,
         *,
         ctx: Context[DepsT],
         model: LLMT,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[Tool | ContextTool[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Any, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> AsyncStream[DepsT, FormatT]:
