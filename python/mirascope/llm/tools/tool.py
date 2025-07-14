@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 from ..content import ToolCall, ToolOutput
 from ..types import JsonableCovariantT, P
+from .async_tool import AsyncTool
 from .base_tool import BaseTool
 
 
@@ -25,4 +26,8 @@ class Tool(BaseTool[P, JsonableCovariantT]):
 
     def call(self, call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Call the tool using an LLM-provided ToolCall."""
+        raise NotImplementedError()
+
+    def to_async(self) -> AsyncTool:
+        """Convert this tool into an async tool for usage alongside other async tools."""
         raise NotImplementedError()

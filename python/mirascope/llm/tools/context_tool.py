@@ -9,6 +9,7 @@ from typing import Concatenate, Generic
 from ..content import ToolCall, ToolOutput
 from ..context import Context, DepsT
 from ..types import JsonableCovariantT, P
+from .async_context_tool import AsyncContextTool
 from .base_tool import BaseTool
 
 
@@ -31,4 +32,8 @@ class ContextTool(
         self, ctx: Context[DepsT], call: ToolCall
     ) -> ToolOutput[JsonableCovariantT]:
         """Call the tool using an LLM-provided ToolCall."""
+        raise NotImplementedError()
+
+    def to_async(self) -> AsyncContextTool[P, JsonableCovariantT, DepsT]:
+        """Convert this tool into an async tool for usage alongside other async tools."""
         raise NotImplementedError()

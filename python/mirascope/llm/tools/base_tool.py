@@ -27,3 +27,10 @@ class BaseTool(Generic[P, JsonableCovariantT]):
 
     strict: bool
     """Whether the tool should use strict mode when supported by the model."""
+
+    def __eq__(self, other: object) -> bool:
+        """Tools are equal if they represent the same logical tool.
+
+        A sync tool and its async wrapper (from .to_async()) are considered equal.
+        """
+        raise NotImplementedError()
