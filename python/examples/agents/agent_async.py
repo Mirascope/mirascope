@@ -19,7 +19,7 @@ async def main():
         while True:
             user_input = input("[USER]: ")
             response = await sazed.run_async(user_input, ctx=ctx)
-            print("[SAZED]: ", response.text)
+            print("[SAZED]: ", response)
 
 
 if __name__ == "__main__":

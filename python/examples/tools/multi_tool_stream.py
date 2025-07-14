@@ -10,18 +10,18 @@ def available_genres() -> list[str]:
 @llm.tool()
 def books_in_genre(genre: str) -> list[str]:
     """List the available books in a given genre."""
-    if genre == "fantasy":
-        return ["Mistborn", "The Name of the Wind", "Lord of the Rings"]
-    elif genre == "scifi":
-        return ["Dune", "Foundation", "The Player of Games"]
-    elif genre == "philosophy":
-        return [
+    books = {
+        "fantasy": ["Mistborn", "The Name of the Wind", "Lord of the Rings"],
+        "scifi": ["Dune", "Foundation", "The Player of Games"],
+        "philosophy": [
             "Gödel, Escher, Bach",
             "Man's Search for Meaning",
             "The Consolations of Philosophy",
-        ]
-    else:
-        raise KeyError()
+        ],
+    }
+    return books.get(
+        genre, [f"Error: Genre '{genre}' not found in library. Expected 'fantasy', 'scifi', or 'philosophy'"]
+    )
 
 
 @llm.call(model="openai:gpt-4o-mini", tools=[available_genres, books_in_genre])

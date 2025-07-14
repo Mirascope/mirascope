@@ -13,7 +13,7 @@ def main():
     user_input = input("[USER]: ")
     response: llm.Response = sazed(user_input)
     while True:
-        print("[SAZED]: ", response.text)
+        print("[SAZED]: ", response)
         user_input = input("[USER]: ")
         response = sazed.resume(response, user_input)
 

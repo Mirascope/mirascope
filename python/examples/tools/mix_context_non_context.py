@@ -39,8 +39,8 @@ def main():
             outputs = [tool.call() for tool in response.tools(tool_calls)]
             response = librarian.resume(response, outputs)
 
-        print(response.text)
-        "I recommend Mistborn, by Brandon Sanderson..."
+        print(response)
+        # "I recommend Mistborn, by Brandon Sanderson..."
 
 
 if __name__ == "__main__":

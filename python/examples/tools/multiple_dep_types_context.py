@@ -28,18 +28,12 @@ class MetaLibrary:
 meta_library = MetaLibrary(library=library, secret_library=secret_library)
 
 
-# NOTE / TODO: It would be nice if we could define the tools in terms of their logical dep,
-# and have a composition pattern, rather than needing to redefine the tools in terms of
-# the composed dep.
 @llm.tool(deps_type=MetaLibrary)
 def available_books(ctx: llm.Context[MetaLibrary]) -> list[str]:
     """List the available books in the library."""
     return ctx.deps.library.books
 
 
-# NOTE / TODO: It would be nice if we could define the tools in terms of their logical dep,
-# and have a composition pattern, rather than needing to redefine the tools in terms of
-# the composed dep.
 @llm.tool(deps_type=MetaLibrary)
 def secret_book(ctx: llm.Context[MetaLibrary]) -> str:
     """The special book from the secret library"""
@@ -67,8 +61,8 @@ def main():
             # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
             response = librarian.resume(response, output)
 
-        print(response.text)
-        "I recommend Mistborn, by Brandon Sanderson..."
+        print(response)
+        # "I recommend Mistborn, by Brandon Sanderson..."
 
 
 if __name__ == "__main__":

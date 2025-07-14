@@ -23,7 +23,7 @@ def main():
         while True:
             user_input = input("[USER]: ")
             response = sazed(user_input, ctx=ctx)
-            print("[SAZED]: ", response.text)
+            print("[SAZED]: ", response)
 
 
 main()

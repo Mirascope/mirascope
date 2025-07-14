@@ -12,12 +12,10 @@ def sazed(ctx: llm.Context, query: str):
 
 def main():
     with llm.context() as ctx:
-        user_input = input("[USER]: ")
-        response: llm.Response = sazed(ctx, user_input)
         while True:
-            print("[SAZED]: ", response.text)
             user_input = input("[USER]: ")
-            response = sazed(ctx, user_input)
+            response: llm.Response = sazed(ctx, user_input)
+            print("[SAZED]: ", response)
 
 
 main()

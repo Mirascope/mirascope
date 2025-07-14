@@ -50,7 +50,7 @@ def main():
             output = tool.call()
             response = librarian.resume(response, output)
 
-    print(response.text)
+    print(response)
 
 
 if __name__ == "__main__":

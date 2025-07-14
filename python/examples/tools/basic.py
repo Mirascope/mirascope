@@ -23,8 +23,8 @@ def main():
         # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
         response = librarian.resume(response, output)
 
-    print(response.text)
-    "I recommend Mistborn, by Brandon Sanderson..."
+    print(response)
+    # "I recommend Mistborn, by Brandon Sanderson..."
 
 
 if __name__ == "__main__":

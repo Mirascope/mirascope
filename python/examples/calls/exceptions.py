@@ -8,7 +8,7 @@ def recommend_book(genre: str) -> str:
 
 try:
     response = recommend_book("fantasy")
-    print(response.text)
+    print(response)
 except llm.RateLimitError as e:
     print(f"Rate limit exceeded: {e}")
     print(f"Original provider error: {e.original_exception}")

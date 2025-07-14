@@ -341,7 +341,7 @@ def call(
             return f"Answer this question: {question}"
 
         response: llm.Response = answer_question("What is the capital of France?")
-        print(response.text)
+        print(response)
         ```
     """
     raise NotImplementedError()
