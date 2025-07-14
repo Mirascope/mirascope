@@ -34,19 +34,19 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT, FormatT]):
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> Response[DepsT, FormatT]:
         """Generates an asynchronous response using the LLM."""
-        return await self(ctx, *args, **kwargs)
+        raise NotImplementedError()
 
-    async def stream(
+    def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStream[DepsT, FormatT]:
         """Generates a streaming response using the LLM asynchronously."""
         raise NotImplementedError()
 
-    async def stream_async(
+    def stream_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStream[DepsT, FormatT]:
         """Generates an asynchronous streaming response using the LLM."""
-        return await self.stream(ctx, *args, **kwargs)
+        raise NotImplementedError()
 
     async def resume(
         self,
@@ -64,7 +64,7 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT, FormatT]):
         """Generate a new response asynchronously by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
-    async def resume_stream(
+    def resume_stream(
         self,
         output: Response[DepsT, FormatT] | BaseStream[DepsT, FormatT],
         content: UserContent | Sequence[UserContent],
@@ -72,7 +72,7 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT, FormatT]):
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
-    async def resume_stream_async(
+    def resume_stream_async(
         self,
         output: Response[DepsT, FormatT] | BaseStream[DepsT, FormatT],
         content: UserContent | Sequence[UserContent],
@@ -87,7 +87,9 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT, FormatT]):
         May raise an exception from the tool call or tool validation."""
         raise NotImplementedError()
 
-    async def call_tools(self, ctx: Context[DepsT], tool_calls: Sequence[ToolCall]) -> list[ToolOutput]:
+    async def call_tools(
+        self, ctx: Context[DepsT], tool_calls: Sequence[ToolCall]
+    ) -> list[ToolOutput]:
         """Call the tools specified by the LLM, returning a list of ToolOutputs.
 
         May raise llm.ToolNotFoundError if there is no tool matching that name.
@@ -100,7 +102,9 @@ class AsyncContextCall(BaseContextCall[P, AsyncPrompt, DepsT, FormatT]):
         May raise llm.ToolNotFoundError if there is no tool matching that name."""
         raise NotImplementedError()
 
-    def get_tools(self, tool_calls: Sequence[ToolCall]) -> list[ContextTool[..., Jsonable, DepsT]]:
+    def get_tools(
+        self, tool_calls: Sequence[ToolCall]
+    ) -> list[ContextTool[..., Jsonable, DepsT]]:
         """Get the tool definitions for the given tool calls.
 
         May raise llm.ToolNotFoundError if there is no tool matching that name."""

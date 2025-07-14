@@ -14,7 +14,7 @@ from ..prompts import (
     ContextPrompt,
     Prompt,
 )
-from ..tools import ContextTool, Tool
+from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ..types import Jsonable
 from .async_call import AsyncCall
 from .async_context_call import AsyncContextCall
@@ -90,6 +90,57 @@ class ContextCallDecorator(Protocol[DepsT, FormatT]):
         ...
 
 
+class AsyncCallDecorator(Protocol[FormatT]):
+    """A decorator for generating async responses using LLMs with async tools."""
+
+    @overload
+    def __call__(
+        self, fn: AsyncPrompt[P] | AsyncContextPrompt[P, None]
+    ) -> AsyncCall[P, FormatT]:
+        """Decorates an asynchronous function to generate responses using LLMs."""
+        ...
+
+    @overload
+    def __call__(self, fn: Prompt[P] | ContextPrompt[P, None]) -> AsyncCall[P, FormatT]:
+        """Decorates a synchronous function to generate async responses using LLMs."""
+        ...
+
+    def __call__(
+        self,
+        fn: Prompt[P]
+        | ContextPrompt[P, None]
+        | AsyncPrompt[P]
+        | AsyncContextPrompt[P, None],
+    ) -> AsyncCall[P, FormatT]:
+        """Decorates a function to generate async responses using LLMs."""
+        ...
+
+
+class AsyncContextCallDecorator(Protocol[DepsT, FormatT]):
+    """A decorator for generating async contextual responses using LLMs with async tools."""
+
+    @overload
+    def __call__(
+        self, fn: AsyncContextPrompt[P, DepsT]
+    ) -> AsyncContextCall[P, DepsT, FormatT]:
+        """Decorates an asynchronous function to generate responses using LLMs."""
+        ...
+
+    @overload
+    def __call__(
+        self, fn: ContextPrompt[P, DepsT]
+    ) -> AsyncContextCall[P, DepsT, FormatT]:
+        """Decorates a synchronous function to generate async responses using LLMs."""
+        ...
+
+    def __call__(
+        self,
+        fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
+    ) -> AsyncContextCall[P, DepsT, FormatT]:
+        """Decorates a function to generate async responses using LLMs."""
+        ...
+
+
 @overload
 def call(
     model: ANTHROPIC_REGISTERED_LLMS,
@@ -115,6 +166,34 @@ def call(
     **params: Unpack[AnthropicParams],
 ) -> ContextCallDecorator[DepsT, FormatT]:
     """Overload for Anthropic structured contextual generation."""
+    ...
+
+
+@overload
+def call(
+    model: ANTHROPIC_REGISTERED_LLMS,
+    *,
+    deps_type: type[None] | None = None,
+    tools: Sequence[AsyncTool],
+    response_format: type[FormatT] | None = None,
+    client: AnthropicClient | None = None,
+    **params: Unpack[AnthropicParams],
+) -> AsyncCallDecorator[FormatT]:
+    """Overload for Anthropic generation with async tools."""
+    ...
+
+
+@overload
+def call(
+    model: ANTHROPIC_REGISTERED_LLMS,
+    *,
+    deps_type: type[DepsT],
+    tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+    response_format: type[FormatT] | None = None,
+    client: AnthropicClient | None = None,
+    **params: Unpack[AnthropicParams],
+) -> AsyncContextCallDecorator[DepsT, FormatT]:
+    """Overload for Anthropic contextual generation with async tools."""
     ...
 
 
@@ -148,6 +227,34 @@ def call(
 
 @overload
 def call(
+    model: GOOGLE_REGISTERED_LLMS,
+    *,
+    deps_type: type[None] | None = None,
+    tools: Sequence[AsyncTool],
+    response_format: type[FormatT] | None = None,
+    client: GoogleClient | None = None,
+    **params: Unpack[GoogleParams],
+) -> AsyncCallDecorator[FormatT]:
+    """Overload for Google generation with async tools."""
+    ...
+
+
+@overload
+def call(
+    model: GOOGLE_REGISTERED_LLMS,
+    *,
+    deps_type: type[DepsT],
+    tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+    response_format: type[FormatT] | None = None,
+    client: GoogleClient | None = None,
+    **params: Unpack[GoogleParams],
+) -> AsyncContextCallDecorator[DepsT, FormatT]:
+    """Overload for Google contextual generation with async tools."""
+    ...
+
+
+@overload
+def call(
     model: OPENAI_REGISTERED_LLMS,
     *,
     deps_type: type[None] | None = None,
@@ -176,6 +283,34 @@ def call(
 
 @overload
 def call(
+    model: OPENAI_REGISTERED_LLMS,
+    *,
+    deps_type: type[None] | None = None,
+    tools: Sequence[AsyncTool],
+    response_format: type[FormatT] | None = None,
+    client: OpenAIClient | None = None,
+    **params: Unpack[OpenAIParams],
+) -> AsyncCallDecorator[FormatT]:
+    """Overload for OpenAI generation with async tools."""
+    ...
+
+
+@overload
+def call(
+    model: OPENAI_REGISTERED_LLMS,
+    *,
+    deps_type: type[DepsT],
+    tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+    response_format: type[FormatT] | None = None,
+    client: OpenAIClient | None = None,
+    **params: Unpack[OpenAIParams],
+) -> AsyncContextCallDecorator[DepsT, FormatT]:
+    """Overload for OpenAI contextual generation with async tools."""
+    ...
+
+
+@overload
+def call(
     model: REGISTERED_LLMS,
     *,
     deps_type: type[None] | None = None,
@@ -185,6 +320,20 @@ def call(
     **params: Unpack[BaseParams],
 ) -> CallDecorator[FormatT]:
     """Overload for all registered models so that autocomplete works."""
+    ...
+
+
+@overload
+def call(
+    model: REGISTERED_LLMS,
+    *,
+    deps_type: type[None] | None = None,
+    tools: Sequence[AsyncTool],
+    response_format: type[FormatT] | None = None,
+    client: None,
+    **params: Unpack[BaseParams],
+) -> AsyncCallDecorator[FormatT]:
+    """Overload for all registered models with async tools."""
     ...
 
 
@@ -202,12 +351,28 @@ def call(
     ...
 
 
+@overload
+def call(
+    model: REGISTERED_LLMS,
+    *,
+    deps_type: type[DepsT],
+    tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+    response_format: type[FormatT] | None = None,
+    client: None,
+    **params: Unpack[BaseParams],
+) -> AsyncContextCallDecorator[DepsT, FormatT]:
+    """Overload for all registered models with async context tools."""
+    ...
+
+
 def call(
     model: REGISTERED_LLMS,
     *,
     deps_type: type[DepsT] | type[None] | None = None,
     tools: Sequence[Tool]
     | Sequence[Tool | ContextTool[..., Jsonable, DepsT]]
+    | Sequence[AsyncTool]
+    | Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]]
     | None = None,
     response_format: type[FormatT] | None = None,
     client: BaseClient | None = None,
@@ -217,6 +382,10 @@ def call(
     | ContextCallDecorator[DepsT, None]
     | CallDecorator[FormatT]
     | ContextCallDecorator[DepsT, FormatT]
+    | AsyncCallDecorator[None]
+    | AsyncContextCallDecorator[DepsT, None]
+    | AsyncCallDecorator[FormatT]
+    | AsyncContextCallDecorator[DepsT, FormatT]
 ):
     """Returns a decorator for turning prompt template functions into generations.
 

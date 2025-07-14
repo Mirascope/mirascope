@@ -13,8 +13,9 @@ library = Library(books=["Mistborn", "Gödel, Escher, Bach", "Dune"])
 
 
 @llm.tool(deps_type=Library)
-def available_books(ctx: llm.Context[Library]) -> list[str]:
+async def available_books(ctx: llm.Context[Library]) -> list[str]:
     """List the available books in the library."""
+    await asyncio.sleep(0.1)  # Simulate fetching from database
     return ctx.deps.books
 
 
@@ -25,7 +26,7 @@ def librarian(ctx: llm.Context[Library], genre: str):
 
 async def main():
     with llm.context(deps=library) as ctx:
-        stream: llm.AsyncStream[Library] = librarian.stream_async(ctx, "fantasy")
+        stream: llm.AsyncStream[Library] = librarian.stream(ctx, "fantasy")
         while True:
             tool_output: llm.ToolOutput | None = None
             async for group in stream.groups():
@@ -34,7 +35,7 @@ async def main():
                         print(chunk)
                 if group.type == "tool_call":
                     tool_call = await group.collect()
-                    tool_output = librarian.call_tool(ctx, tool_call)
+                    tool_output = await librarian.call_tool(ctx, tool_call)
             if tool_output:
                 stream = librarian.resume_stream_async(stream, tool_output)
             else:

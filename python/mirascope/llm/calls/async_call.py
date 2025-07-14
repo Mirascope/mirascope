@@ -17,7 +17,9 @@ from .base_call import BaseCall
 class AsyncCall(BaseCall[P, AsyncPrompt, FormatT]):
     """A class for generating responses using LLMs asynchronously."""
 
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[None, FormatT]:
+    async def __call__(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> Response[None, FormatT]:
         """Generates a response using the LLM asynchronously."""
         raise NotImplementedError()
 
@@ -29,40 +31,46 @@ class AsyncCall(BaseCall[P, AsyncPrompt, FormatT]):
         self, *args: P.args, **kwargs: P.kwargs
     ) -> Response[None, FormatT]:
         """Generates an asynchronous response using the LLM."""
-        return await self(*args, **kwargs)
+        raise NotImplementedError()
 
-    async def stream(
-        self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStream[None, FormatT]:
+    def stream(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream[None, FormatT]:
         """Generates a streaming response using the LLM asynchronously."""
         raise NotImplementedError()
 
-    async def stream_async(
+    def stream_async(
         self, *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStream[None, FormatT]:
         """Generates an asynchronous streaming response using the LLM."""
-        return await self.stream(*args, **kwargs)
+        raise NotImplementedError()
 
     async def resume(
-        self, output: Response[None, FormatT] | BaseStream[None, FormatT], content: UserContent | Sequence[UserContent]
+        self,
+        output: Response[None, FormatT] | BaseStream[None, FormatT],
+        content: UserContent | Sequence[UserContent],
     ) -> Response[None, FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
     async def resume_async(
-        self, output: Response[None, FormatT] | BaseStream[None, FormatT], content: UserContent | Sequence[UserContent]
+        self,
+        output: Response[None, FormatT] | BaseStream[None, FormatT],
+        content: UserContent | Sequence[UserContent],
     ) -> Response[None, FormatT]:
         """Generate a new response asynchronously by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
-    async def resume_stream(
-        self, output: Response[None, FormatT] | BaseStream[None, FormatT], content: UserContent | Sequence[UserContent]
+    def resume_stream(
+        self,
+        output: Response[None, FormatT] | BaseStream[None, FormatT],
+        content: UserContent | Sequence[UserContent],
     ) -> AsyncStream[None, FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
-    async def resume_stream_async(
-        self, output: Response[None, FormatT] | BaseStream[None, FormatT], content: UserContent | Sequence[UserContent]
+    def resume_stream_async(
+        self,
+        output: Response[None, FormatT] | BaseStream[None, FormatT],
+        content: UserContent | Sequence[UserContent],
     ) -> AsyncStream[None, FormatT]:
         """Generate a new async stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
