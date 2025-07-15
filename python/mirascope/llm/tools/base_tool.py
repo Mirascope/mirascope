@@ -28,9 +28,18 @@ class BaseTool(Generic[P, JsonableCovariantT]):
     strict: bool
     """Whether the tool should use strict mode when supported by the model."""
 
-    def __eq__(self, other: object) -> bool:
-        """Tools are equal if they represent the same logical tool.
+    # def defines(self, tool: "BaseTool") -> TypeGuard["BaseTool[P, JsonableT]"]:
+    #     """Check if this ToolDef matches a specific Tool instance.
 
-        A sync tool and its async wrapper (from .to_async()) are considered equal.
-        """
-        raise NotImplementedError()
+    #     This method is used to ensure that the ToolDef was created from a specific
+    #     function, allowing for type-safe access to the return value when calling
+    #     the tool.
+
+    #     Args:
+    #         tool: The Tool instance to compare against.
+
+    #     Returns:
+    #         True if the ToolDef defines the Tool instance, False otherwise.
+    #     """
+    #     # Check if `self.fn` defines the given `tool`
+    #     raise NotImplementedError()

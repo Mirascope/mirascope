@@ -28,7 +28,7 @@ def main():
         while tool_call := response.tool_call:
             print(f"Tool call: {tool_call.name}")
             # Tool call: available_books
-            output = librarian.call_tool(ctx, tool_call)
+            output = librarian.tools.call(ctx, tool_call)
             print(f"Tool returned: {output.value}")
             # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
             response = librarian.resume(response, output)

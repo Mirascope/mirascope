@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 
 from mirascope import llm
 
@@ -16,23 +17,24 @@ async def book_rating(title: str) -> float:
     return 4.2
 
 
-@llm.call(model="openai:gpt-4o-mini", tools=[available_books.to_async(), book_rating])
+@llm.call(model="openai:gpt-4o-mini", tools=[available_books, book_rating])
 def librarian(genre: str):
-    return f"Recommend an available book in {genre}"
+    return f"Recommend an available book in {genre}, along with its rating."
 
 
 async def main():
-    response: llm.Response = await librarian("fantasy")
-    while tool_call := response.tool_call:
-        print(f"Tool call: {tool_call.name}")
-        # Tool call: available_books
-        output = await librarian.call_tool(tool_call)
-        print(f"Tool returned: {output.value}")
-        # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
-        response = await librarian.resume_async(response, output)
+    response: llm.Response = librarian("fantasy")
+    while tool_calls := response.tool_calls:
+        tool_outputs = []
+        for call in tool_calls:
+            output = librarian.tools.call(call)
+            if inspect.isawaitable(output):
+                output = await output
+            tool_outputs.append(output)
+        response = librarian.resume(response, tool_outputs)
 
     print(response)
-    # > I recommend Mistborn, by Brandon Sanderson...
+    # > I recommend Mistborn, by Brandon Sanderson, with a rating of 4.2...
 
 
 if __name__ == "__main__":

@@ -20,7 +20,10 @@ def books_in_genre(genre: str) -> list[str]:
         ],
     }
     return books.get(
-        genre, [f"Error: Genre '{genre}' not found in library. Expected 'fantasy', 'scifi', or 'philosophy'"]
+        genre,
+        [
+            f"Error: Genre '{genre}' not found in library. Expected 'fantasy', 'scifi', or 'philosophy'"
+        ],
     )
 
 
@@ -32,7 +35,6 @@ def librarian():
 def main():
     stream: llm.Stream = librarian.stream()
     while True:
-        tool_calls: list[llm.ToolCall] = []
         outputs: list[llm.ToolOutput] = []
         for group in stream.groups():
             if group.type == "text":
@@ -40,10 +42,9 @@ def main():
                     print(chunk)
             if group.type == "tool_call":
                 tool_call = group.collect()
-                tool_calls.append(tool_call)
-        if not tool_calls:
+                outputs.append(librarian.tools.call(tool_call))
+        if not outputs:
             break
-        outputs = librarian.call_tools(tool_calls)
         stream = librarian.resume_stream(stream, outputs)
 
 

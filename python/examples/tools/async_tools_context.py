@@ -26,20 +26,17 @@ def librarian(ctx: llm.Context[Library], genre: str):
 
 async def main():
     with llm.context(deps=library) as ctx:
-        stream: llm.AsyncStream[Library] = await librarian.stream(ctx, "fantasy")
-        while True:
-            tool_output: llm.ToolOutput | None = None
-            async for group in stream.groups():
-                if group.type == "text":
-                    async for chunk in group:
-                        print(chunk)
-                if group.type == "tool_call":
-                    tool_call = await group.collect()
-                    tool_output = await librarian.call_tool(ctx, tool_call)
-            if tool_output:
-                stream = await librarian.resume_stream(stream, tool_output)
-            else:
-                break
+        response: llm.Response[Library] = librarian.call(ctx, "fantasy")
+        while tool_call := response.tool_call:
+            print(f"Tool call: {tool_call.name}")
+            # Tool call: available_books
+            output = await librarian.tools.call(ctx, tool_call)
+            print(f"Tool returned: {output.value}")
+            # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
+            response = librarian.resume(response, output)
+
+        print(response)
+        # > I recommend Mistborn, by Brandon Sanderson...
 
 
 if __name__ == "__main__":

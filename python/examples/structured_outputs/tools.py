@@ -33,7 +33,7 @@ def recommend_book(genre: str):
 def main():
     response: llm.Response[None, Book] = recommend_book("fantasy")
     while tool_call := response.tool_call:
-        output = recommend_book.call_tool(tool_call)
+        output = recommend_book.tools.call(tool_call)
         response = recommend_book.resume(response, output)
     # Now that we have text response, format it
     # TODO: Discuss how we want to implement response.format

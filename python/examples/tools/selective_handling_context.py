@@ -46,7 +46,7 @@ def main():
         response: llm.Response[Library] = librarian(ctx)
         while tool_call := response.tool_call:
             print(f"Tool call: {tool_call.name}")
-            tool = librarian.get_tool(tool_call)
+            tool = librarian.tools.get(tool_call)
 
             if tool == reserve_book:
                 output = reserve_book.call(ctx, tool_call)

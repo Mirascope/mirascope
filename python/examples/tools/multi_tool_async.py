@@ -35,10 +35,10 @@ def librarian():
 
 
 async def main():
-    response: llm.Response = await librarian()
+    response: llm.Response = librarian()
     while tool_calls := response.tool_calls:
-        output = await librarian.call_tools(tool_calls)
-        response = await librarian.resume_async(response, output)
+        outputs = await asyncio.gather(*[librarian.tools.call(tc) for tc in tool_calls])
+        response = librarian.resume(response, outputs)
 
     print(response)
     # > I recommend Mistborn, by Brandon Sanderson...

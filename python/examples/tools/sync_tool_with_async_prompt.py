@@ -17,9 +17,8 @@ async def librarian(genre: str):
 async def main():
     response: llm.Response = await librarian("fantasy")
     while tool_call := response.tool_call:
-        # Tool is sync, but use await because the call class is async
-        output = await librarian.call_tool(tool_call)
-        response = await librarian.resume_async(response, output)
+        output = librarian.tools.call(tool_call)
+        response = await librarian.resume(response, output)
 
     print(response)
     # > I recommend Mistborn, by Brandon Sanderson...

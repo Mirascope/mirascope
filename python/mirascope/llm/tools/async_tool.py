@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from typing import TypeGuard
 
 from ..content import ToolCall, ToolOutput
 from ..types import JsonableCovariantT, P
@@ -25,4 +26,11 @@ class AsyncTool(BaseTool[P, JsonableCovariantT]):
 
     async def call(self, call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Call the tool using an LLM-provided ToolCall."""
+        raise NotImplementedError()
+
+    def defines(self, other: BaseTool) -> TypeGuard[AsyncTool[P, JsonableCovariantT]]:
+        """Check if this AsyncTool equals another tool.
+
+        When True, narrows the type of `other` to AsyncTool[P, JsonableCovariantT].
+        """
         raise NotImplementedError()

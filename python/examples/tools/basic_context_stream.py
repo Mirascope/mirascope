@@ -36,7 +36,7 @@ def main():
             if not tool_call:
                 break
 
-            tool_output = librarian.call_tool(ctx, tool_call)
+            tool_output = librarian.tools.call(ctx, tool_call)
             stream = librarian.resume_stream(stream, tool_output)
 
 

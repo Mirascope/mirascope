@@ -1,4 +1,5 @@
 import asyncio
+from collections.abc import Awaitable
 
 from mirascope import llm
 
@@ -30,26 +31,26 @@ async def books_in_genre(genre: str) -> list[str]:
 
 
 @llm.call(model="openai:gpt-4o-mini", tools=[available_genres, books_in_genre])
-def librarian():
+async def librarian():
     return "Recommend one available book for each supported genre"
 
 
 async def main():
     stream: llm.AsyncStream = await librarian.stream()
     while True:
-        tool_calls: list[llm.ToolCall] = []
-        outputs: list[llm.ToolOutput] = []
+        outputs: list[Awaitable[llm.ToolOutput]] = []
         async for group in stream.groups():
             if group.type == "text":
                 async for chunk in group:
                     print(chunk)
             if group.type == "tool_call":
                 tool_call = await group.collect()
-                tool_calls.append(tool_call)
-        if not tool_calls:
+                outputs.append(librarian.tools.call(tool_call))
+        if not outputs:
             break
-        outputs = await librarian.call_tools(tool_calls)
-        stream = await librarian.resume_stream(stream, outputs)
+
+        results = await asyncio.gather(*outputs)
+        stream = await librarian.resume_stream(stream, results)
 
 
 if __name__ == "__main__":

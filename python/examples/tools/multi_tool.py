@@ -20,7 +20,10 @@ def books_in_genre(genre: str) -> list[str]:
         ],
     }
     return books.get(
-        genre, [f"Error: Genre '{genre}' not found in library. Expected 'fantasy', 'scifi', or 'philosophy'"]
+        genre,
+        [
+            f"Error: Genre '{genre}' not found in library. Expected 'fantasy', 'scifi', or 'philosophy'"
+        ],
     )
 
 
@@ -32,7 +35,7 @@ def librarian():
 def main():
     response: llm.Response = librarian()
     while tool_calls := response.tool_calls:
-        outputs = librarian.call_tools(tool_calls)
+        outputs = [librarian.tools.call(tc) for tc in tool_calls]
         response = librarian.resume(response, outputs)
 
     print(response)

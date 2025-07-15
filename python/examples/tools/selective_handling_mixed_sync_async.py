@@ -34,28 +34,25 @@ def librarian():
 
 
 async def main():
-    response: llm.Response = await librarian()
+    response: llm.Response = librarian()
 
     while tool_call := response.tool_call:
         print(f"Tool call: {tool_call.name}")
-        tool = librarian.get_tool(tool_call)
+        tool = librarian.tools.get(tool_call)
 
         if tool == reserve_book:
-            output = tool.call(tool_call)
+            output = await reserve_book.call(tool_call)
             reservation: BookReservation = output.value
             print("📚 Book reserved! Confirmation details:")
             print(f"   Reservation ID: {reservation.reservation_id}")
             print(f"   Book: {reservation.title}")
 
-            response = await librarian.resume(response, output)
-        elif (
-            # This works even though we used available_books.to_async(), due to __eq__ override
-            tool == available_books
-        ):
-            output = tool.call(tool_call)
+            response = librarian.resume(response, output)
+        elif tool == available_books:
+            output = available_books.call(tool_call)
             books: list[str] = output.value
             print(f"Available books: {books}")
-            response = await librarian.resume(response, output)
+            response = librarian.resume(response, output)
 
     print(response)
 

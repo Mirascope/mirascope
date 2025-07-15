@@ -16,19 +16,19 @@ def librarian(genre: str):
 
 
 async def main():
-    stream: llm.AsyncStream = await librarian.stream("fantasy")
+    stream: llm.Stream = librarian.stream("fantasy")
     while True:
         tool_call: llm.ToolCall | None = None
-        async for group in stream.groups():
+        for group in stream.groups():
             if group.type == "text":
-                async for chunk in group:
+                for chunk in group:
                     print(chunk)
             if group.type == "tool_call":
-                tool_call = await group.collect()
+                tool_call = group.collect()
         if not tool_call:
             break
-        tool_output = await librarian.call_tool(tool_call)
-        stream = await librarian.resume_stream(stream, tool_output)
+        tool_output = await librarian.tools.call(tool_call)
+        stream = librarian.resume_stream(stream, tool_output)
 
 
 if __name__ == "__main__":

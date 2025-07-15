@@ -39,7 +39,7 @@ async def reserve_book(ctx: llm.Context[Library], title: str) -> BookReservation
 @llm.call(
     model="openai:gpt-4o-mini",
     deps_type=Library,
-    tools=[available_books.to_async(), reserve_book],
+    tools=[available_books, reserve_book],
 )
 def librarian(ctx: llm.Context[Library]):
     return "Help the user check book availability and make reservations."
@@ -47,11 +47,11 @@ def librarian(ctx: llm.Context[Library]):
 
 async def main():
     with llm.context(deps=library) as ctx:
-        response: llm.Response[Library, None] = await librarian(ctx)
+        response: llm.Response[Library, None] = librarian(ctx)
 
         while tool_call := response.tool_call:
             print(f"Tool call: {tool_call.name}")
-            tool = librarian.get_tool(tool_call)
+            tool = librarian.tools.get(tool_call)
 
             if tool == reserve_book:
                 output = await reserve_book.call(ctx, tool_call)
@@ -60,7 +60,7 @@ async def main():
                 print(f"   Reservation ID: {reservation.reservation_id}")
                 print(f"   Book: {reservation.title}")
 
-                response = await librarian.resume(response, output)
+                response = librarian.resume(response, output)
             elif (
                 # This works even though we used available_books.to_async(), due to __eq__ override
                 tool == available_books
@@ -68,7 +68,7 @@ async def main():
                 output = available_books.call(ctx, tool_call)
                 books: list[str] = output.value
                 print(f"Available books: {books}")
-                response = await librarian.resume(response, output)
+                response = librarian.resume(response, output)
 
         print(response)
 

@@ -36,9 +36,9 @@ def main():
 
     while tool_call := response.tool_call:
         print(f"Tool call: {tool_call.name}")
-        tool = librarian.get_tool(tool_call)
+        tool = librarian.tools.get(tool_call)
 
-        if tool == reserve_book:
+        if reserve_book.defines(tool):
             output = tool.call(tool_call)
             reservation: BookReservation = output.value
             print("📚 Book reserved! Confirmation details:")
@@ -46,7 +46,7 @@ def main():
             print(f"   Book: {reservation.title}")
 
             response = librarian.resume(response, output)
-        else:
+        elif available_books.defines(tool):
             output = tool.call(tool_call)
             response = librarian.resume(response, output)
 
