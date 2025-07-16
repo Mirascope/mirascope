@@ -2,6 +2,7 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Generic
 
 from ..content import UserContent
 from ..context import Context, DepsT
@@ -9,14 +10,19 @@ from ..prompts import AsyncPrompt
 from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream
-from ..tools import ContextToolT
+from ..tools import ContextToolkit, ContextToolT
 from ..types import P
-from .base_context_call import BaseContextCall
+from .base_call import BaseCall
 
 
 @dataclass
-class AsyncContextCall(BaseContextCall[P, AsyncPrompt, ContextToolT, DepsT, FormatT]):
+class AsyncContextCall(
+    BaseCall[P, AsyncPrompt, FormatT], Generic[P, ContextToolT, DepsT, FormatT]
+):
     """A class for generating responses using LLMs asynchronously."""
+
+    toolkit: ContextToolkit[ContextToolT, DepsT]
+    """The toolkit of tools associated with this call."""
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs

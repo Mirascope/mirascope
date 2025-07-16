@@ -2,20 +2,24 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Generic
 
 from ..content import UserContent
 from ..prompts import AsyncPrompt
 from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream
-from ..tools import ToolT
+from ..tools import Toolkit, ToolT
 from ..types import P
 from .base_call import BaseCall
 
 
 @dataclass
-class AsyncCall(BaseCall[P, AsyncPrompt, ToolT, FormatT]):
+class AsyncCall(BaseCall[P, AsyncPrompt, FormatT], Generic[P, ToolT, FormatT]):
     """A class for generating responses using LLMs asynchronously."""
+
+    toolkit: Toolkit[ToolT]
+    """The toolkit of tools associated with this call."""
 
     async def __call__(
         self, *args: P.args, **kwargs: P.kwargs

@@ -2,20 +2,24 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Generic
 
 from ..content import UserContent
 from ..prompts import Prompt
 from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream, Stream
-from ..tools import ToolT
+from ..tools import Toolkit, ToolT
 from ..types import P
 from .base_call import BaseCall
 
 
 @dataclass
-class Call(BaseCall[P, Prompt, ToolT, FormatT]):
+class Call(BaseCall[P, Prompt, FormatT], Generic[P, ToolT, FormatT]):
     """A class for generating responses using LLMs."""
+
+    toolkit: Toolkit[ToolT]
+    """The toolkit of tools associated with this call."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[None, FormatT]:
         """Generates a response using the LLM."""
