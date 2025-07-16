@@ -3,13 +3,13 @@ import asyncio
 from mirascope import llm
 
 
-@llm.tool()
+@llm.tool
 def get_basic_info(subject: str) -> str:
     """Get basic information about a subject."""
     return f"Basic information about {subject}"
 
 
-@llm.tool()
+@llm.tool
 async def consult_knowledge(subject: str) -> str:
     """Consult knowledge about a specific subject."""
     await asyncio.sleep(0.1)  # Simulate fetching from database

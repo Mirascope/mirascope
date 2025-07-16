@@ -3,12 +3,12 @@ from dataclasses import dataclass
 from mirascope import llm
 
 
-@llm.tool()
+@llm.tool
 def in_library() -> list[str]:
     return ["Dune", "The Name of the Wind", "Mistborn"]
 
 
-@llm.tool()
+@llm.tool
 def lookup_isbn(book_title: str) -> str:
     isbns = {
         "Dune": "9780593099322",

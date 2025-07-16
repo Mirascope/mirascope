@@ -1,7 +1,7 @@
 from mirascope import llm
 
 
-@llm.tool()
+@llm.tool
 def consult_knowledge(subject: str) -> str:
     raise NotImplementedError()
 

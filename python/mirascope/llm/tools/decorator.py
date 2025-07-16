@@ -156,7 +156,7 @@ def tool(
         ```python
         from mirascope import llm
 
-        @llm.tool()
+        @llm.tool
         def available_books() -> list[str]:
             """Returns the list of available books."""
             return ["The Name of the Wind"]
