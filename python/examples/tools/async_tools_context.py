@@ -25,18 +25,18 @@ async def librarian(ctx: llm.Context[Library], genre: str):
 
 
 async def main():
-    with llm.context(deps=library) as ctx:
-        response: llm.Response[Library] = await librarian.call(ctx, "fantasy")
-        while tool_call := response.tool_call:
-            print(f"Tool call: {tool_call.name}")
-            # Tool call: available_books
-            output = await librarian.toolkit.call(ctx, tool_call)
-            print(f"Tool returned: {output.value}")
-            # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
-            response = await librarian.resume(response, output)
+    ctx = llm.Context(deps=library)
+    response: llm.Response[Library] = await librarian.call(ctx, "fantasy")
+    while tool_call := response.tool_call:
+        print(f"Tool call: {tool_call.name}")
+        # Tool call: available_books
+        output = await librarian.toolkit.call(ctx, tool_call)
+        print(f"Tool returned: {output.value}")
+        # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
+        response = await librarian.resume(response, output)
 
-        print(response)
-        # > I recommend Mistborn, by Brandon Sanderson...
+    print(response)
+    # > I recommend Mistborn, by Brandon Sanderson...
 
 
 if __name__ == "__main__":

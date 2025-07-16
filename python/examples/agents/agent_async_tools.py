@@ -16,11 +16,11 @@ def sazed(ctx: llm.Context):
 
 
 async def main():
-    with llm.context() as ctx:
-        response: llm.Response = await sazed("Tell me about allomancy", ctx=ctx)
+    ctx = llm.Context()
+    response: llm.Response = await sazed("Tell me about allomancy", ctx=ctx)
 
-        print(response)
-        # > Based on my knowledge consultation, allomancy is...
+    print(response)
+    # > Based on my knowledge consultation, allomancy is...
 
 
 if __name__ == "__main__":

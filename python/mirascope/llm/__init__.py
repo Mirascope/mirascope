@@ -42,7 +42,7 @@ from .content import (
     ToolOutput,
     UserContent,
 )
-from .context import Context, context
+from .context import Context
 from .exceptions import (
     APIError,
     AuthenticationError,
@@ -122,7 +122,6 @@ __all__ = [
     "call",
     "calls",
     "content",
-    "context",
     "exceptions",
     "messages",
     "model",

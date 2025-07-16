@@ -16,12 +16,12 @@ def sazed(ctx: llm.Context):
 
 
 async def main():
-    with llm.context() as ctx:
-        stream = await sazed.stream("Tell me about allomancy", ctx=ctx)
-        async for chunk in stream:
-            print(chunk, end="", flush=True)
-        print()
-        # > Based on my knowledge consultation, allomancy is...
+    ctx = llm.Context()
+    stream = await sazed.stream("Tell me about allomancy", ctx=ctx)
+    async for chunk in stream:
+        print(chunk, end="", flush=True)
+    print()
+    # > Based on my knowledge consultation, allomancy is...
 
 
 if __name__ == "__main__":
