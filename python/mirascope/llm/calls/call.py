@@ -11,11 +11,13 @@ from ..responses import Response
 from ..streams import AsyncStream, BaseStream, Stream
 from ..tools import Toolkit, ToolT
 from ..types import P
-from .base_call import BaseCall
+from .base_call import BaseAsyncCall, BaseSyncCall
 
 
 @dataclass
-class Call(BaseCall[P, Prompt, Toolkit[ToolT], FormatT], Generic[P, ToolT, FormatT]):
+class Call(
+    BaseSyncCall[P, Prompt, Toolkit[ToolT], FormatT, None], Generic[P, ToolT, FormatT]
+):
     """A class for generating responses using LLMs."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[None, FormatT]:
@@ -42,42 +44,11 @@ class Call(BaseCall[P, Prompt, Toolkit[ToolT], FormatT], Generic[P, ToolT, Forma
         """Generates an asynchronous streaming response using the LLM."""
         raise NotImplementedError()
 
-    def resume(
-        self,
-        output: Response[None, FormatT] | BaseStream[None, FormatT],
-        content: UserContent | Sequence[UserContent],
-    ) -> Response[None, FormatT]:
-        """Generate a new response by continuing from a previous output, plus new user content."""
-        raise NotImplementedError()
-
-    async def resume_async(
-        self,
-        output: Response[None, FormatT] | BaseStream[None, FormatT],
-        content: UserContent | Sequence[UserContent],
-    ) -> Response[None, FormatT]:
-        """Generate a new response asynchronously by continuing from a previous output, plus new user content."""
-        raise NotImplementedError()
-
-    def resume_stream(
-        self,
-        output: Response[None, FormatT] | BaseStream[None, FormatT],
-        content: UserContent | Sequence[UserContent],
-    ) -> Stream[None, FormatT]:
-        """Generate a new stream by continuing from a previous output, plus new user content."""
-        raise NotImplementedError()
-
-    async def resume_stream_async(
-        self,
-        output: Response[None, FormatT] | BaseStream[None, FormatT],
-        content: UserContent | Sequence[UserContent],
-    ) -> AsyncStream[None, FormatT]:
-        """Generate a new async stream by continuing from a previous output, plus new user content."""
-        raise NotImplementedError()
-
 
 @dataclass
 class AsyncCall(
-    BaseCall[P, AsyncPrompt, Toolkit[ToolT], FormatT], Generic[P, ToolT, FormatT]
+    BaseAsyncCall[P, AsyncPrompt, Toolkit[ToolT], FormatT, None],
+    Generic[P, ToolT, FormatT],
 ):
     """A class for generating responses using LLMs asynchronously."""
 
