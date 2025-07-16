@@ -1,28 +1,12 @@
-from collections.abc import Awaitable
 from typing import Any
 
 from typing_extensions import TypeVar
 
-from ..content import ToolOutput
 from ..types import Jsonable
 from .async_context_tool import AsyncContextTool
 from .async_tool import AsyncTool
 from .context_tool import ContextTool
 from .tool import Tool
-
-SyncToolReturnT = TypeVar(
-    "SyncToolReturnT",
-    bound=Jsonable,
-)
-AsyncToolReturnT = TypeVar(
-    "AsyncToolReturnT",
-    bound=Jsonable,
-)
-
-ToolOutputT = TypeVar(
-    "ToolOutputT",
-    bound=ToolOutput | Awaitable[ToolOutput],
-)
 
 ToolT = TypeVar(
     "ToolT",
@@ -36,6 +20,16 @@ ContextToolT = TypeVar(
     | AsyncTool[..., Jsonable]
     | AsyncContextTool[..., Jsonable, Any],
     covariant=True,
+)
+AgentToolT = TypeVar(
+    "AgentToolT",
+    bound=Tool[..., Jsonable]
+    | ContextTool[..., Jsonable, Any]
+    | AsyncTool[..., Jsonable]
+    | AsyncContextTool[..., Jsonable, Any]
+    | None,
+    covariant=True,
+    default=None,
 )
 
 T = TypeVar("T", bound=Jsonable, covariant=True)

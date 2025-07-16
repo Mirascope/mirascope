@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Protocol, overload
 
 from typing_extensions import Unpack
 
 from ..clients import BaseClient, BaseParams
 from ..context import Context
-from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
+from ..tools import (
+    AgentToolT,
+    ContextTool,
+    Tool,
+)
 from ..types import Jsonable
 from .agent import Agent
 from .async_agent import AsyncAgent
@@ -47,17 +50,41 @@ class AsyncSystemPrompt(Protocol[P, DepsT]):
     async def __call__(self, ctx: Context[DepsT]) -> str: ...
 
 
-class AgentDecorator(Protocol[DepsT, FormatT]):
+class AgentDecorator(Protocol[AgentToolT, DepsT, FormatT]):
     """Protocol for the `agent` decorator."""
 
     @overload
-    def __call__(self, fn: AsyncSystemPrompt[P, DepsT]) -> AsyncAgent[DepsT, FormatT]:
-        """Decorator for creating an async only agent."""
+    def __call__(
+        self: AgentDecorator[None, DepsT, FormatT],
+        fn: SystemPrompt[P, DepsT],
+    ) -> Agent[DepsT, FormatT]:
+        """Decorator for creating a sync agent with no tools."""
         ...
 
     @overload
-    def __call__(self, fn: SystemPrompt[P, DepsT]) -> Agent[DepsT, FormatT]:
-        """Decorator for creating an agent."""
+    def __call__(
+        self: AgentDecorator[
+            Tool[..., Jsonable] | ContextTool[..., Jsonable, DepsT], DepsT, FormatT
+        ],
+        fn: SystemPrompt[P, DepsT],
+    ) -> Agent[DepsT, FormatT]:
+        """Decorator for creating an sync agent with sync tools."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: AsyncSystemPrompt[P, DepsT],
+    ) -> AsyncAgent[DepsT, FormatT]:
+        """Decorator for creating an async only agent with async prompt."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: SystemPrompt[P, DepsT],
+    ) -> AsyncAgent[DepsT, FormatT]:
+        """Decorator for creating an async agent from sync function with async tools."""
         ...
 
     def __call__(
@@ -91,13 +118,13 @@ class AsyncAgentDecorator(Protocol[DepsT, FormatT]):
 def agent(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
+    tools: None = None,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> AgentDecorator[DepsT, FormatT]:
-    """Overload for Anthropic agents with response format."""
+) -> AgentDecorator[None, DepsT, FormatT]:
+    """Overload for Anthropic agents with no tools."""
     ...
 
 
@@ -105,13 +132,13 @@ def agent(
 def agent(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
+    tools: list[AgentToolT],
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
     response_format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> AsyncAgentDecorator[DepsT, FormatT]:
-    """Overload for Anthropic agents with async tools."""
+) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+    """Overload for Anthropic agents with tools."""
     ...
 
 
@@ -119,13 +146,13 @@ def agent(
 def agent(
     model: GOOGLE_REGISTERED_LLMS,
     *,
+    tools: None = None,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> AgentDecorator[DepsT, FormatT]:
-    """Overload for Google agents with response format."""
+) -> AgentDecorator[None, DepsT, FormatT]:
+    """Overload for Google agents with no tools."""
     ...
 
 
@@ -133,13 +160,13 @@ def agent(
 def agent(
     model: GOOGLE_REGISTERED_LLMS,
     *,
+    tools: list[AgentToolT],
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
     response_format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> AsyncAgentDecorator[DepsT, FormatT]:
-    """Overload for Google agents with async tools."""
+) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+    """Overload for Google agents with tools."""
     ...
 
 
@@ -147,13 +174,13 @@ def agent(
 def agent(
     model: OPENAI_REGISTERED_LLMS,
     *,
+    tools: None = None,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> AgentDecorator[DepsT, FormatT]:
-    """Overload for OpenAI agents with response format."""
+) -> AgentDecorator[None, DepsT, FormatT]:
+    """Overload for OpenAI agents with no tools."""
     ...
 
 
@@ -161,13 +188,13 @@ def agent(
 def agent(
     model: OPENAI_REGISTERED_LLMS,
     *,
+    tools: list[AgentToolT],
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
     response_format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> AsyncAgentDecorator[DepsT, FormatT]:
-    """Overload for OpenAI agents with async tools."""
+) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+    """Overload for OpenAI agents with tools."""
     ...
 
 
@@ -175,13 +202,13 @@ def agent(
 def agent(
     model: REGISTERED_LLMS,
     *,
+    tools: None = None,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]] | None = None,
     response_format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
-) -> AgentDecorator[DepsT, FormatT]:
-    """Overload for all registered models so that autocomplete works."""
+) -> AgentDecorator[None, DepsT, FormatT]:
+    """Overload for agents with no tools."""
     ...
 
 
@@ -189,30 +216,25 @@ def agent(
 def agent(
     model: REGISTERED_LLMS,
     *,
+    tools: list[AgentToolT],
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
     response_format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
-) -> AsyncAgentDecorator[DepsT, FormatT]:
-    """Overload for all registered models with async tools."""
+) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+    """Overload for agents with tools."""
     ...
 
 
 def agent(
     model: REGISTERED_LLMS,
     *,
+    tools: list[AgentToolT] | None = None,
     deps_type: type[DepsT] = NoneType,
-    tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]]
-    | Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]]
-    | None = None,
     response_format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
-) -> (
-    AgentDecorator[DepsT, FormatT]
-    | AsyncAgentDecorator[DepsT, FormatT]
-):
+) -> AgentDecorator[AgentToolT, DepsT, FormatT] | AgentDecorator[None, DepsT, FormatT]:
     """Decorator for creating an agent or structured agent.
 
     Args:
