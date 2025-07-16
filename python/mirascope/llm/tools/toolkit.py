@@ -20,10 +20,12 @@ class Toolkit(Generic[ToolT]):
     def call(
         self: "Toolkit[Tool[..., ToolReturnT]]", tool_call: ToolCall
     ) -> ToolOutput[ToolReturnT]: ...
+
     @overload
     def call(
         self: "Toolkit[AsyncTool[..., AsyncToolReturnT]]", tool_call: ToolCall
     ) -> Awaitable[ToolOutput[AsyncToolReturnT]]: ...
+
     @overload
     def call(
         self: "Toolkit[Tool[..., ToolReturnT] | AsyncTool[...,AsyncToolReturnT]]",

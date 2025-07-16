@@ -25,12 +25,14 @@ class ContextToolkit(Generic[ContextToolT, DepsT]):
         ctx: Context[DepsT],
         tool_call: ToolCall,
     ) -> ToolOutput[ToolReturnT]: ...
+
     @overload
     def call(
         self: "ContextToolkit[AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
         ctx: Context[DepsT],
         tool_call: ToolCall,
     ) -> Awaitable[ToolOutput[AsyncToolReturnT]]: ...
+
     @overload
     def call(
         self: "ContextToolkit[Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT] | AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
