@@ -22,11 +22,11 @@ def sazed(ctx: llm.Context[Knowledge]):
 
 async def main():
     knowledge = Knowledge(repository="...")
-    with llm.context(deps=knowledge) as ctx:
-        while True:
-            user_input = input("[USER]: ")
-            response = await sazed.run_async(user_input, ctx=ctx)
-            print("[SAZED]: ", response)
+    ctx = llm.Context(deps=knowledge)
+    while True:
+        user_input = input("[USER]: ")
+        response = await sazed.run_async(user_input, ctx=ctx)
+        print("[SAZED]: ", response)
 
 
 if __name__ == "__main__":

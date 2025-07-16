@@ -50,18 +50,18 @@ def librarian(ctx: llm.Context[MetaLibrary], genre: str):
 
 
 def main():
-    with llm.context(deps=meta_library) as ctx:
-        response: llm.Response[MetaLibrary] = librarian(ctx, "fantasy")
-        while tool_call := response.tool_call:
-            print(f"Tool call: {tool_call.name}")
-            # Tool call: available_books
-            output = librarian.toolkit.call(ctx, tool_call)
-            print(f"Tool returned: {output.value}")
-            # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
-            response = librarian.resume(response, output)
+    ctx = llm.Context(deps=meta_library)
+    response: llm.Response[MetaLibrary] = librarian(ctx, "fantasy")
+    while tool_call := response.tool_call:
+        print(f"Tool call: {tool_call.name}")
+        # Tool call: available_books
+        output = librarian.toolkit.call(ctx, tool_call)
+        print(f"Tool returned: {output.value}")
+        # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
+        response = librarian.resume(response, output)
 
-        print(response)
-        # > I recommend Mistborn, by Brandon Sanderson...
+    print(response)
+    # > I recommend Mistborn, by Brandon Sanderson...
 
 
 if __name__ == "__main__":

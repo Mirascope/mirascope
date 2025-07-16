@@ -42,25 +42,25 @@ def librarian(ctx: llm.Context[Library]):
 
 
 def main():
-    with llm.context(deps=library) as ctx:
-        response: llm.Response[Library] = librarian(ctx)
-        while tool_call := response.tool_call:
-            print(f"Tool call: {tool_call.name}")
-            tool = librarian.toolkit.get(tool_call)
+    ctx = llm.Context(deps=library)
+    response: llm.Response[Library] = librarian(ctx)
+    while tool_call := response.tool_call:
+        print(f"Tool call: {tool_call.name}")
+        tool = librarian.toolkit.get(tool_call)
 
-            if reserve_book.defines(tool):
-                output = tool.call(ctx, tool_call)
-                reservation: BookReservation = output.value
-                print("📚 Book reserved! Confirmation details:")
-                print(f"   Reservation ID: {reservation.reservation_id}")
-                print(f"   Book: {reservation.title}")
+        if reserve_book.defines(tool):
+            output = tool.call(ctx, tool_call)
+            reservation: BookReservation = output.value
+            print("📚 Book reserved! Confirmation details:")
+            print(f"   Reservation ID: {reservation.reservation_id}")
+            print(f"   Book: {reservation.title}")
 
-                response = librarian.resume(response, output)
-            else:
-                output = tool.call(ctx, tool_call)
-                response = librarian.resume(response, output)
+            response = librarian.resume(response, output)
+        else:
+            output = tool.call(ctx, tool_call)
+            response = librarian.resume(response, output)
 
-        print(response)
+    print(response)
 
 
 if __name__ == "__main__":

@@ -24,10 +24,10 @@ def recommend_book(ctx: llm.Context[Library], genre: str):
 
 def main():
     library = Library(available_books=["Mistborn", "Dune", "The Name of the Wind"])
-    with llm.context(deps=library) as ctx:
-        response: llm.Response[Library, Book] = recommend_book(ctx, "fantasy")
-        book: Book = response.format()
-        print(book)
+    ctx = llm.Context(deps=library)
+    response: llm.Response[Library, Book] = recommend_book(ctx, "fantasy")
+    book: Book = response.format()
+    print(book)
 
 
 main()

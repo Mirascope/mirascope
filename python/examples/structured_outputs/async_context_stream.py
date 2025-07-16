@@ -25,13 +25,13 @@ def recommend_book(ctx: llm.Context[Library], genre: str):
 
 async def main():
     library = Library(available_books=["Mistborn", "Dune", "The Name of the Wind"])
-    with llm.context(deps=library) as ctx:
-        stream: llm.AsyncStream[Library, Book] = await recommend_book.stream_async(
-            ctx, "fantasy"
-        )
-        async for _ in stream:
-            partial_book: Book = stream.format()
-            print(partial_book)
+    ctx = llm.Context(deps=library)
+    stream: llm.AsyncStream[Library, Book] = await recommend_book.stream_async(
+        ctx, "fantasy"
+    )
+    async for _ in stream:
+        partial_book: Book = stream.format()
+        print(partial_book)
 
 
 asyncio.run(main())

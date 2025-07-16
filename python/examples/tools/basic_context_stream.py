@@ -23,21 +23,21 @@ def librarian(ctx: llm.Context[Library], genre: str):
 
 
 def main():
-    with llm.context(deps=library) as ctx:
-        stream: llm.Stream[Library] = librarian.stream(ctx, "fantasy")
-        while True:
-            tool_call: llm.ToolCall | None = None
-            for group in stream.groups():
-                if group.type == "text":
-                    for chunk in group:
-                        print(chunk)
-                if group.type == "tool_call":
-                    tool_call = group.collect()
-            if not tool_call:
-                break
+    ctx = llm.Context(deps=library)
+    stream: llm.Stream[Library] = librarian.stream(ctx, "fantasy")
+    while True:
+        tool_call: llm.ToolCall | None = None
+        for group in stream.groups():
+            if group.type == "text":
+                for chunk in group:
+                    print(chunk)
+            if group.type == "tool_call":
+                tool_call = group.collect()
+        if not tool_call:
+            break
 
-            tool_output = librarian.toolkit.call(ctx, tool_call)
-            stream = librarian.resume_stream(stream, tool_output)
+        tool_output = librarian.toolkit.call(ctx, tool_call)
+        stream = librarian.resume_stream(stream, tool_output)
 
 
 if __name__ == "__main__":

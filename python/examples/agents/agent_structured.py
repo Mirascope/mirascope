@@ -23,14 +23,14 @@ def sazed(ctx: llm.Context):
 
 
 def main():
-    with llm.context() as ctx:
-        while True:
-            user_input = input("[USER]: ")
-            response = sazed(user_input, ctx=ctx)
-            structured_response: AgentResponse = response.format()
-            print(
-                f"[SAZED]: {structured_response.message} (Confidence: {structured_response.confidence}%)"
-            )
+    ctx = llm.Context()
+    while True:
+        user_input = input("[USER]: ")
+        response = sazed(user_input, ctx=ctx)
+        structured_response: AgentResponse = response.format()
+        print(
+            f"[SAZED]: {structured_response.message} (Confidence: {structured_response.confidence}%)"
+        )
 
 
 main()

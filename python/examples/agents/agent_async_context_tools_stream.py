@@ -23,12 +23,12 @@ def sazed(ctx: llm.Context[Knowledge]):
 
 async def main():
     knowledge = Knowledge(repository="The Steel Ministry Archives")
-    with llm.context(deps=knowledge) as ctx:
-        stream = await sazed.stream("Tell me about allomancy", ctx=ctx)
-        async for chunk in stream:
-            print(chunk, end="", flush=True)
-        print()
-        # > Based on my knowledge consultation, allomancy is...
+    ctx = llm.Context(deps=knowledge)
+    stream = await sazed.stream("Tell me about allomancy", ctx=ctx)
+    async for chunk in stream:
+        print(chunk, end="", flush=True)
+    print()
+    # > Based on my knowledge consultation, allomancy is...
 
 
 if __name__ == "__main__":

@@ -19,11 +19,11 @@ def sazed(ctx: llm.Context):
 
 
 def main():
-    with llm.context() as ctx:
-        while True:
-            user_input = input("[USER]: ")
-            response = sazed(user_input, ctx=ctx)
-            print("[SAZED]: ", response)
+    ctx = llm.Context()
+    while True:
+        user_input = input("[USER]: ")
+        response = sazed(user_input, ctx=ctx)
+        print("[SAZED]: ", response)
 
 
 main()

@@ -25,21 +25,20 @@ async def librarian(ctx: llm.Context[Library], genre: str):
 
 
 async def main():
-    with llm.context(deps=library) as ctx:
-        stream: llm.AsyncStream[Library] = await librarian.stream(ctx, "fantasy")
-        while True:
-            tool_output: llm.ToolOutput | None = None
-            async for group in stream.groups():
-                if group.type == "text":
-                    async for chunk in group:
-                        print(chunk)
-                if group.type == "tool_call":
-                    tool_call = await group.collect()
-                    tool_output = await librarian.toolkit.call(ctx, tool_call)
-            if tool_output:
-                stream = await librarian.resume_stream(stream, tool_output)
-            else:
-                break
+    ctx = llm.Context(deps=library)
+    stream: llm.AsyncStream[Library] = await librarian.stream(ctx, "fantasy")
+    while True:
+        tool_output: llm.ToolOutput | None = None
+        async for group in stream.groups():
+            if group.type == "text":
+                async for chunk in group:
+                    print(chunk)
+            if group.type == "tool_call":
+                tool_call = await group.collect()
+                tool_output = await librarian.toolkit.call(ctx, tool_call)
+        if not tool_output:
+            break
+        stream = await librarian.resume_stream(stream, tool_output)
 
 
 if __name__ == "__main__":

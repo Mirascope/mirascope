@@ -15,14 +15,14 @@ def sazed(ctx: llm.Context):
 
 
 async def main():
-    with llm.context() as ctx:
-        while True:
-            user_input = input("[USER]: ")
-            stream = await sazed.stream_async(user_input, ctx=ctx)
-            print("[SAZED]: ", flush=True, end="")
-            async for chunk in stream:
-                print(chunk, flush=True, end="")
-            print("")
+    ctx = llm.Context()
+    while True:
+        user_input = input("[USER]: ")
+        stream = await sazed.stream_async(user_input, ctx=ctx)
+        print("[SAZED]: ", flush=True, end="")
+        async for chunk in stream:
+            print(chunk, flush=True, end="")
+        print("")
 
 
 if __name__ == "__main__":

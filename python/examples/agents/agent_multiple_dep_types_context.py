@@ -50,11 +50,11 @@ def sazed(ctx: llm.Context[MetaKnowledge]):
 
 
 def main():
-    with llm.context(deps=meta_knowledge) as ctx:
-        while True:
-            user_input = input("[USER]: ")
-            response = sazed(user_input, ctx=ctx)
-            print("[SAZED]: ", response)
+    ctx = llm.Context(deps=meta_knowledge)
+    while True:
+        user_input = input("[USER]: ")
+        response = sazed(user_input, ctx=ctx)
+        print("[SAZED]: ", response)
 
 
 main()

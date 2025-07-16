@@ -22,14 +22,14 @@ def sazed(ctx: llm.Context[Knowledge]):
 
 async def main():
     knowledge = Knowledge(repository="...")
-    with llm.context(deps=knowledge) as ctx:
-        while True:
-            user_input = input("[USER]: ")
-            stream = await sazed.stream_async(user_input, ctx=ctx)
-            print("[SAZED]: ", flush=True, end="")
-            async for chunk in stream:
-                print(chunk, flush=True, end="")
-            print("")
+    ctx = llm.Context(deps=knowledge)
+    while True:
+        user_input = input("[USER]: ")
+        stream = await sazed.stream_async(user_input, ctx=ctx)
+        print("[SAZED]: ", flush=True, end="")
+        async for chunk in stream:
+            print(chunk, flush=True, end="")
+        print("")
 
 
 if __name__ == "__main__":
