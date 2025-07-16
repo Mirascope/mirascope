@@ -36,10 +36,9 @@ async def main():
             if group.type == "tool_call":
                 tool_call = await group.collect()
                 tool_output = await librarian.toolkit.call(ctx, tool_call)
-        if tool_output:
-            stream = await librarian.resume_stream(stream, tool_output)
-        else:
+        if not tool_output:
             break
+        stream = await librarian.resume_stream(stream, tool_output)
 
 
 if __name__ == "__main__":
