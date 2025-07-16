@@ -28,7 +28,7 @@ def general_wisdom() -> str:
     deps_type=Knowledge,
     tools=[consult_knowledge, general_wisdom],
 )
-def sazed(ctx: llm.Context[Knowledge]):
+def sazed():
     return "You are an insightful and helpful agent named Sazed."
 
 

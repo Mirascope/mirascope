@@ -16,8 +16,7 @@ def sazed(ctx: llm.Context):
 
 
 async def main():
-    ctx = llm.Context()
-    response: llm.Response = await sazed("Tell me about allomancy", ctx=ctx)
+    response: llm.Response = await sazed("Tell me about allomancy")
 
     print(response)
     # > Based on my knowledge consultation, allomancy is...

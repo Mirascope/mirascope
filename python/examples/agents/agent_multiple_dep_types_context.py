@@ -45,7 +45,7 @@ def secret_wisdom(ctx: llm.Context[MetaKnowledge]) -> str:
     deps_type=MetaKnowledge,
     tools=[consult_knowledge, secret_wisdom],
 )
-def sazed(ctx: llm.Context[MetaKnowledge]):
+def sazed():
     return "You are an insightful and helpful agent named Sazed."
 
 
