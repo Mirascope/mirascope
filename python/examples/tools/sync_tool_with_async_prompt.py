@@ -18,7 +18,7 @@ async def librarian(genre: str):
 async def main():
     response: llm.Response = await librarian("fantasy")
     while tool_call := response.tool_call:
-        output = await librarian.tools.call(tool_call)
+        output = await librarian.toolkit.call(tool_call)
         response = await librarian.resume(response, output)
 
     print(response)

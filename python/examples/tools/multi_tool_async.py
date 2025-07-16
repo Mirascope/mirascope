@@ -38,7 +38,7 @@ async def main():
     response: llm.Response = await librarian()
     while tool_calls := response.tool_calls:
         outputs = await asyncio.gather(
-            *[librarian.tools.call(tool_call) for tool_call in tool_calls]
+            *[librarian.toolkit.call(tool_call) for tool_call in tool_calls]
         )
         response = await librarian.resume(response, outputs)
 

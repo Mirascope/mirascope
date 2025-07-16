@@ -45,7 +45,7 @@ def main():
             break
 
         print(f"\nTool call: {tool_call.name}")
-        tool = librarian.tools.get(tool_call)
+        tool = librarian.toolkit.get(tool_call)
 
         if reserve_book.defines(tool):
             output = tool.call(tool_call)

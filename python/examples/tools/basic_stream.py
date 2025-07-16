@@ -24,7 +24,7 @@ def main():
                 tool_call = group.collect()
         if not tool_call:
             break
-        tool_output = librarian.tools.call(tool_call)
+        tool_output = librarian.toolkit.call(tool_call)
         stream = librarian.resume_stream(stream, tool_output)
 
 

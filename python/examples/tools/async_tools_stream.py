@@ -27,7 +27,7 @@ async def main():
                 tool_call = await group.collect()
         if not tool_call:
             break
-        tool_output = await librarian.tools.call(tool_call)
+        tool_output = await librarian.toolkit.call(tool_call)
         stream = await librarian.resume_stream(stream, tool_output)
 
 

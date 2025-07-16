@@ -27,7 +27,7 @@ async def main():
     while tool_calls := response.tool_calls:
         tool_outputs = []
         for call in tool_calls:
-            output = librarian.tools.call(call)
+            output = librarian.toolkit.call(call)
             if inspect.isawaitable(output):
                 output = await output
             tool_outputs.append(output)

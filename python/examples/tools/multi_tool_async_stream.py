@@ -45,7 +45,7 @@ async def main():
                     print(chunk)
             if group.type == "tool_call":
                 tool_call = await group.collect()
-                outputs.append(librarian.tools.call(tool_call))
+                outputs.append(librarian.toolkit.call(tool_call))
         if not outputs:
             break
 

@@ -18,7 +18,7 @@ class BaseCall(Generic[P, PromptT, ToolT, FormatT], ABC):
     model: LLM
     """The LLM model used for generating responses."""
 
-    tools: Toolkit[ToolT]
+    toolkit: Toolkit[ToolT]
 
     response_format: type[FormatT] | None
     """The response format for the generated response."""

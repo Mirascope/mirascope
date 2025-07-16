@@ -19,7 +19,7 @@ class BaseContextCall(Generic[P, PromptT, ContextToolT, DepsT, FormatT], ABC):
     model: LLM
     """The LLM model used for generating responses."""
 
-    tools: ContextToolkit[ContextToolT, DepsT]
+    toolkit: ContextToolkit[ContextToolT, DepsT]
 
     response_format: type[FormatT] | None
     """The response format for the generated response."""
