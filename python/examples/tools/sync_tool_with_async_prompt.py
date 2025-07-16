@@ -4,8 +4,9 @@ from mirascope import llm
 
 
 @llm.tool()
-def available_books() -> list[str]:
+async def available_books() -> list[str]:
     """List the available books in the library."""
+    await asyncio.sleep(0.1)  # Simulate fetching from database
     return ["Mistborn", "Gödel, Escher, Bach", "Dune"]
 
 
@@ -17,7 +18,7 @@ async def librarian(genre: str):
 async def main():
     response: llm.Response = await librarian("fantasy")
     while tool_call := response.tool_call:
-        output = librarian.tools.call(tool_call)
+        output = await librarian.tools.call(tool_call)
         response = await librarian.resume(response, output)
 
     print(response)

@@ -20,24 +20,24 @@ async def available_books(ctx: llm.Context[Library]) -> list[str]:
 
 
 @llm.call(model="openai:gpt-4o-mini", deps_type=Library, tools=[available_books])
-def librarian(ctx: llm.Context[Library], genre: str):
+async def librarian(ctx: llm.Context[Library], genre: str):
     return f"Recommend an available book in {genre}"
 
 
 async def main():
     with llm.context(deps=library) as ctx:
-        stream: llm.Stream[Library] = librarian.stream(ctx, "fantasy")
+        stream: llm.AsyncStream[Library] = await librarian.stream(ctx, "fantasy")
         while True:
             tool_output: llm.ToolOutput | None = None
-            for group in stream.groups():
+            async for group in stream.groups():
                 if group.type == "text":
-                    for chunk in group:
+                    async for chunk in group:
                         print(chunk)
                 if group.type == "tool_call":
-                    tool_call = group.collect()
+                    tool_call = await group.collect()
                     tool_output = await librarian.tools.call(ctx, tool_call)
             if tool_output:
-                stream = librarian.resume_stream(stream, tool_output)
+                stream = await librarian.resume_stream(stream, tool_output)
             else:
                 break
 

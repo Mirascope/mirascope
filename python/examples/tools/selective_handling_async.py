@@ -30,12 +30,12 @@ async def reserve_book(title: str) -> BookReservation:
 
 
 @llm.call(model="openai:gpt-4o-mini", tools=[available_books, reserve_book])
-def librarian():
+async def librarian():
     return "Help the user check book availability and make reservations."
 
 
 async def main():
-    response: llm.Response = librarian()
+    response: llm.Response = await librarian()
 
     while tool_call := response.tool_call:
         print(f"Tool call: {tool_call.name}")
@@ -48,10 +48,10 @@ async def main():
             print(f"   Reservation ID: {reservation.reservation_id}")
             print(f"   Book: {reservation.title}")
 
-            response = librarian.resume(response, output)
+            response = await librarian.resume(response, output)
         else:
             output = await tool.call(tool_call)
-            response = librarian.resume(response, output)
+            response = await librarian.resume(response, output)
 
     print(response)
 

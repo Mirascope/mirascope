@@ -20,20 +20,20 @@ async def available_books(ctx: llm.Context[Library]) -> list[str]:
 
 
 @llm.call(model="openai:gpt-4o-mini", deps_type=Library, tools=[available_books])
-def librarian(ctx: llm.Context[Library], genre: str):
+async def librarian(ctx: llm.Context[Library], genre: str):
     return f"Recommend an available book in {genre}"
 
 
 async def main():
     with llm.context(deps=library) as ctx:
-        response: llm.Response[Library] = librarian.call(ctx, "fantasy")
+        response: llm.Response[Library] = await librarian.call(ctx, "fantasy")
         while tool_call := response.tool_call:
             print(f"Tool call: {tool_call.name}")
             # Tool call: available_books
             output = await librarian.tools.call(ctx, tool_call)
             print(f"Tool returned: {output.value}")
             # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
-            response = librarian.resume(response, output)
+            response = await librarian.resume(response, output)
 
         print(response)
         # > I recommend Mistborn, by Brandon Sanderson...

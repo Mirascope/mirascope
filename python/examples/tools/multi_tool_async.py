@@ -30,15 +30,17 @@ async def books_in_genre(genre: str) -> list[str]:
 
 
 @llm.call(model="openai:gpt-4o-mini", tools=[available_genres, books_in_genre])
-def librarian():
+async def librarian():
     return "Recommend one available book for each supported genre"
 
 
 async def main():
-    response: llm.Response = librarian()
+    response: llm.Response = await librarian()
     while tool_calls := response.tool_calls:
-        outputs = await asyncio.gather(*[librarian.tools.call(tc) for tc in tool_calls])
-        response = librarian.resume(response, outputs)
+        outputs = await asyncio.gather(
+            *[librarian.tools.call(tool_call) for tool_call in tool_calls]
+        )
+        response = await librarian.resume(response, outputs)
 
     print(response)
     # > I recommend Mistborn, by Brandon Sanderson...
