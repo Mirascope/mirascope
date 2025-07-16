@@ -1,49 +1,53 @@
-"""Tool interface for LLM interactions.
+"""The `Tool` class for defining tools that LLMs can request be called."""
 
-This module defines interfaces for tools that can be used by LLMs during a call.
-Tools are defined using the `@tool()` decorator which creates a `ToolDef`. When an
-LLM uses a tool during a call, a `Tool` instance is created with the specific
-arguments provided by the LLM.
-"""
+from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Generic
+from typing import TypeVar
 
-from ..content import ToolOutput
-from ..context import DepsT
-from ..types import Jsonable, JsonableT, P
-from .context_tool_def import ContextToolDef
-from .tool_def import ToolDef
+from ..content import ToolCall, ToolOutput
+from ..types import Jsonable, JsonableCovariantT, P
+from .base_tool import BaseTool
+
+ToolT = TypeVar(
+    "ToolT",
+    bound="Tool[..., Jsonable] | AsyncTool[..., Jsonable]",
+    covariant=True,
+)
 
 
 @dataclass
-class Tool(Generic[P, JsonableT, DepsT]):
-    """Tool instance with arguments provided by an LLM.
+class Tool(BaseTool[P, JsonableCovariantT]):
+    """Protocol defining a tool that can be used by LLMs.
 
-    When an LLM uses a tool during a call, a Tool instance is created with the specific
-    arguments provided by the LLM.
+    A Tool represents a function that can be called by an LLM during a call.
+    It includes metadata like name, description, and parameter schema.
+
+    This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    name: str
-    """The name of the tool being called."""
+    fn: Callable[P, JsonableCovariantT]
+    """The function that implements the tool's functionality."""
 
-    args: dict[str, Jsonable]
-    """The arguments provided by the LLM for this tool call."""
+    def call(self, call: ToolCall) -> ToolOutput[JsonableCovariantT]:
+        """Call the tool using an LLM-provided ToolCall."""
+        raise NotImplementedError()
 
-    id: str
-    """Unique identifier for this tool call."""
 
-    tool_def: ToolDef[P, JsonableT] | ContextToolDef[P, JsonableT, DepsT]
+@dataclass
+class AsyncTool(BaseTool[P, JsonableCovariantT]):
+    """Protocol defining an async tool that can be used by LLMs.
 
-    """The ToolDef that defines the tool being called."""
+    An AsyncTool represents an async function that can be called by an LLM during a call.
+    It includes metadata like name, description, and parameter schema.
 
-    def call(self) -> ToolOutput[JsonableT]:
-        """Execute the tool with the arguments provided by the LLM.
+    This class is not instantiated directly but created by the `@tool()` decorator.
+    """
 
-        Returns:
-            The `ToolOutput` result of executing the tool with the provided arguments.
+    fn: Callable[P, Awaitable[JsonableCovariantT]]
+    """The async function that implements the tool's functionality."""
 
-        Raises:
-            InvalidArgumentsError: If the arguments provided by the LLM are invalid.
-        """
+    async def call(self, call: ToolCall) -> ToolOutput[JsonableCovariantT]:
+        """Call the tool using an LLM-provided ToolCall."""
         raise NotImplementedError()

@@ -36,11 +36,11 @@ def main():
     with llm.context(deps=library) as ctx:
         response: llm.Response[Library] = librarian(ctx, "fantasy")
         while tool_calls := response.tool_calls:
-            outputs = [tool.call() for tool in response.tools(tool_calls)]
+            outputs = [librarian.toolkit.call(ctx, call) for call in tool_calls]
             response = librarian.resume(response, outputs)
 
         print(response)
-        # "I recommend Mistborn, by Brandon Sanderson..."
+        # > I recommend Mistborn, by Brandon Sanderson...
 
 
 if __name__ == "__main__":

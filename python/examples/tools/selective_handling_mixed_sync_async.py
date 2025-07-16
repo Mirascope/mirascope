@@ -1,3 +1,4 @@
+import asyncio
 import json
 from dataclasses import dataclass
 
@@ -20,9 +21,10 @@ def available_books() -> list[str]:
 
 
 @llm.tool()
-def reserve_book(title: str) -> BookReservation:
+async def reserve_book(title: str) -> BookReservation:
     """Reserve a book for the user."""
     reservation_id = "abcd-1234..."
+    await asyncio.sleep(0.1)  # Simulate writing to database
     return BookReservation(reservation_id=reservation_id, title=title)
 
 
@@ -31,7 +33,7 @@ def librarian():
     return "Help the user check book availability and make reservations."
 
 
-def main():
+async def main():
     response: llm.Response = librarian()
 
     while tool_call := response.tool_call:
@@ -39,19 +41,21 @@ def main():
         tool = librarian.toolkit.get(tool_call)
 
         if reserve_book.defines(tool):
-            output = tool.call(tool_call)
+            output = await tool.call(tool_call)
             reservation: BookReservation = output.value
             print("📚 Book reserved! Confirmation details:")
             print(f"   Reservation ID: {reservation.reservation_id}")
             print(f"   Book: {reservation.title}")
 
             response = librarian.resume(response, output)
-        elif available_books.defines(tool):
-            output = tool.call(tool_call)
+        elif tool == available_books:
+            output = available_books.call(tool_call)
+            books: list[str] = output.value
+            print(f"Available books: {books}")
             response = librarian.resume(response, output)
 
     print(response)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

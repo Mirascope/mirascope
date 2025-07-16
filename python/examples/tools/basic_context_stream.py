@@ -33,12 +33,11 @@ def main():
                         print(chunk)
                 if group.type == "tool_call":
                     tool_call = group.collect()
-            if tool_call:
-                tool = stream.tool(tool_call)
-                tool_output = tool.call()
-                stream = librarian.resume_stream(stream, tool_output)
-            else:
+            if not tool_call:
                 break
+
+            tool_output = librarian.toolkit.call(ctx, tool_call)
+            stream = librarian.resume_stream(stream, tool_output)
 
 
 if __name__ == "__main__":

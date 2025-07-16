@@ -4,9 +4,10 @@ from mirascope import llm
 
 
 @llm.tool()
-def consult_knowledge(subject: str) -> str:
+async def consult_knowledge(subject: str) -> str:
     """Consult knowledge about a specific subject."""
-    raise NotImplementedError()
+    await asyncio.sleep(0.1)  # Simulate fetching from database
+    return f"I have found comprehensive information about {subject}."
 
 
 @llm.agent(model="openai:gpt-4o-mini", tools=[consult_knowledge])
@@ -16,13 +17,10 @@ def sazed(ctx: llm.Context):
 
 async def main():
     with llm.context() as ctx:
-        while True:
-            user_input = input("[USER]: ")
-            stream = await sazed.stream_async(user_input, ctx=ctx)
-            print("[SAZED]: ", flush=True, end="")
-            async for chunk in stream:
-                print(chunk, flush=True, end="")
-            print("")
+        response: llm.Response = await sazed("Tell me about allomancy", ctx=ctx)
+
+        print(response)
+        # > Based on my knowledge consultation, allomancy is...
 
 
 if __name__ == "__main__":

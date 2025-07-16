@@ -4,18 +4,19 @@ from mirascope import llm
 
 
 @llm.tool()
-def available_books() -> list[str]:
+async def available_books() -> list[str]:
     """List the available books in the library."""
+    await asyncio.sleep(0.1)  # Simulate fetching from database
     return ["Mistborn", "Gödel, Escher, Bach", "Dune"]
 
 
 @llm.call(model="openai:gpt-4o-mini", tools=[available_books])
-def librarian(genre: str):
+async def librarian(genre: str):
     return f"Recommend an available book in {genre}"
 
 
 async def main():
-    stream: llm.AsyncStream = librarian.stream_async("fantasy")
+    stream: llm.AsyncStream = await librarian.stream("fantasy")
     while True:
         tool_call: llm.ToolCall | None = None
         async for group in stream.groups():
@@ -26,9 +27,8 @@ async def main():
                 tool_call = await group.collect()
         if not tool_call:
             break
-        tool = stream.tool(tool_call)
-        tool_output = tool.call()
-        stream = librarian.resume_stream_async(stream.to_response(), tool_output)
+        tool_output = await librarian.toolkit.call(tool_call)
+        stream = await librarian.resume_stream(stream, tool_output)
 
 
 if __name__ == "__main__":

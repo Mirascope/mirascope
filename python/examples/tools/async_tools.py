@@ -4,29 +4,29 @@ from mirascope import llm
 
 
 @llm.tool()
-def available_books() -> list[str]:
+async def available_books() -> list[str]:
     """List the available books in the library."""
+    await asyncio.sleep(0.1)  # Simulate fetching from database
     return ["Mistborn", "Gödel, Escher, Bach", "Dune"]
 
 
 @llm.call(model="openai:gpt-4o-mini", tools=[available_books])
-def librarian(genre: str):
+async def librarian(genre: str):
     return f"Recommend an available book in {genre}"
 
 
 async def main():
-    response: llm.Response = await librarian.call_async("fantasy")
+    response: llm.Response = await librarian("fantasy")
     while tool_call := response.tool_call:
         print(f"Tool call: {tool_call.name}")
         # Tool call: available_books
-        tool = response.tool(tool_call)
-        output = tool.call()
+        output = await librarian.toolkit.call(tool_call)
         print(f"Tool returned: {output.value}")
         # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
-        response = await librarian.resume_async(response, output)
+        response = await librarian.resume(response, output)
 
     print(response)
-    # "I recommend Mistborn, by Brandon Sanderson..."
+    # > I recommend Mistborn, by Brandon Sanderson...
 
 
 if __name__ == "__main__":

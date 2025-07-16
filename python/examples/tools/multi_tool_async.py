@@ -1,14 +1,16 @@
+import asyncio
+
 from mirascope import llm
 
 
 @llm.tool()
-def available_genres() -> list[str]:
+async def available_genres() -> list[str]:
     """List the available genres in the library."""
     return ["fantasy", "scifi", "philosophy"]
 
 
 @llm.tool()
-def books_in_genre(genre: str) -> list[str]:
+async def books_in_genre(genre: str) -> list[str]:
     """List the available books in a given genre."""
     books = {
         "fantasy": ["Mistborn", "The Name of the Wind", "Lord of the Rings"],
@@ -28,25 +30,21 @@ def books_in_genre(genre: str) -> list[str]:
 
 
 @llm.call(model="openai:gpt-4o-mini", tools=[available_genres, books_in_genre])
-def librarian():
+async def librarian():
     return "Recommend one available book for each supported genre"
 
 
-def main():
-    stream: llm.Stream = librarian.stream()
-    while True:
-        outputs: list[llm.ToolOutput] = []
-        for group in stream.groups():
-            if group.type == "text":
-                for chunk in group:
-                    print(chunk)
-            if group.type == "tool_call":
-                tool_call = group.collect()
-                outputs.append(librarian.toolkit.call(tool_call))
-        if not outputs:
-            break
-        stream = librarian.resume_stream(stream, outputs)
+async def main():
+    response: llm.Response = await librarian()
+    while tool_calls := response.tool_calls:
+        outputs = await asyncio.gather(
+            *[librarian.toolkit.call(tool_call) for tool_call in tool_calls]
+        )
+        response = await librarian.resume(response, outputs)
+
+    print(response)
+    # > I recommend Mistborn, by Brandon Sanderson...
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

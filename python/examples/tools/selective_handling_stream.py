@@ -43,20 +43,20 @@ def main():
                 tool_call = group.collect()
         if not tool_call:
             break
-        
+
         print(f"\nTool call: {tool_call.name}")
-        tool = stream.tool(tool_call)
-        
+        tool = librarian.toolkit.get(tool_call)
+
         if reserve_book.defines(tool):
-            output = tool.call()
+            output = tool.call(tool_call)
             reservation: BookReservation = output.value
             print("📚 Book reserved! Confirmation details:")
             print(f"   Reservation ID: {reservation.reservation_id}")
             print(f"   Book: {reservation.title}")
-            
+
             stream = librarian.resume_stream(stream, output)
         else:
-            output = tool.call()
+            output = tool.call(tool_call)
             stream = librarian.resume_stream(stream, output)
 
 

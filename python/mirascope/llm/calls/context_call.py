@@ -2,6 +2,7 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Generic
 
 from ..content import UserContent
 from ..context import Context, DepsT
@@ -9,12 +10,16 @@ from ..prompts import Prompt
 from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream, Stream
+from ..tools import ContextToolkit, ContextToolT
 from ..types import P
-from .base_context_call import BaseContextCall
+from .base_call import BaseCall
 
 
 @dataclass
-class ContextCall(BaseContextCall[P, Prompt, DepsT, FormatT]):
+class ContextCall(
+    BaseCall[P, Prompt, ContextToolkit[ContextToolT, DepsT], FormatT],
+    Generic[P, ContextToolT, DepsT, FormatT],
+):
     """A class for generating responses using LLMs."""
 
     def __call__(
@@ -41,7 +46,7 @@ class ContextCall(BaseContextCall[P, Prompt, DepsT, FormatT]):
         """Generates a streaming response using the LLM."""
         raise NotImplementedError()
 
-    def stream_async(
+    async def stream_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> AsyncStream[DepsT, FormatT]:
         """Generates an asynchronous streaming response using the LLM."""
@@ -71,7 +76,7 @@ class ContextCall(BaseContextCall[P, Prompt, DepsT, FormatT]):
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
-    def resume_stream_async(
+    async def resume_stream_async(
         self,
         output: Response[DepsT, FormatT] | BaseStream[DepsT, FormatT],
         content: UserContent | Sequence[UserContent],

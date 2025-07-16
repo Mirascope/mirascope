@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Generic, overload
+from typing import TYPE_CHECKING, Generic, overload
 
 from ..clients import ClientT, ParamsT, ProviderMessageT
 from ..context import Context
@@ -12,14 +12,14 @@ from ..streams import (
     AsyncStream,
     Stream,
 )
-from ..tools import ContextToolDef, ToolDef
+from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 if TYPE_CHECKING:
     from ..clients import REGISTERED_LLMS
 
-
 from ..context import DepsT
 from ..response_formatting import FormatT
+from ..types import Jsonable
 
 
 class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
@@ -56,7 +56,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: None = None,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Response[None, None]:
@@ -69,7 +69,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: Context[DepsT],
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Response[DepsT, None]:
@@ -82,7 +82,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: None = None,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Response[None, FormatT]:
@@ -95,7 +95,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: Context[DepsT],
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -107,8 +107,8 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: Context[DepsT] | None = None,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef]
-        | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
+        tools: Sequence[Tool]
+        | Sequence[Tool | ContextTool[..., Jsonable, DepsT]]
         | None = None,
         response_format: type[FormatT] | None = None,
         params: ParamsT | None = None,
@@ -122,7 +122,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: None = None,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Response[None, None]:
@@ -135,7 +135,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: Context[DepsT],
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Response[DepsT, None]:
@@ -148,7 +148,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: None = None,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Response[None, FormatT]:
@@ -161,7 +161,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: Context[DepsT],
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Response[DepsT, FormatT]:
@@ -173,8 +173,8 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: Context[DepsT] | None = None,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef]
-        | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
+        tools: Sequence[AsyncTool]
+        | Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]]
         | None = None,
         response_format: type[FormatT] | None = None,
         params: ParamsT | None = None,
@@ -188,7 +188,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: None = None,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Stream[None, None]:
@@ -201,7 +201,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: Context[DepsT],
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> Stream[DepsT, None]:
@@ -214,7 +214,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: None = None,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[Tool] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Stream[None, FormatT]:
@@ -227,7 +227,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: Context[DepsT],
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Stream[DepsT, FormatT]:
@@ -239,8 +239,8 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         *,
         ctx: Context[DepsT] | None = None,
         messages: Sequence[ProviderMessageT],
-        tools: Sequence[ToolDef]
-        | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
+        tools: Sequence[Tool]
+        | Sequence[Tool | ContextTool[..., Jsonable, DepsT]]
         | None = None,
         response_format: type[FormatT] | None = None,
         params: ParamsT | None = None,
@@ -249,12 +249,12 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         ...
 
     @overload
-    def stream_async(
+    async def stream_async(
         self,
         *,
         ctx: None = None,
         messages: list[ProviderMessageT],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> AsyncStream[None, None]:
@@ -262,12 +262,12 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         ...
 
     @overload
-    def stream_async(
+    async def stream_async(
         self,
         *,
         ctx: Context[DepsT],
         messages: list[ProviderMessageT],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         response_format: None = None,
         params: ParamsT | None = None,
     ) -> AsyncStream[DepsT, None]:
@@ -275,12 +275,12 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         ...
 
     @overload
-    def stream_async(
+    async def stream_async(
         self,
         *,
         ctx: None = None,
         messages: list[ProviderMessageT],
-        tools: Sequence[ToolDef] | None = None,
+        tools: Sequence[AsyncTool] | None = None,
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> AsyncStream[None, FormatT]:
@@ -288,25 +288,25 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         ...
 
     @overload
-    def stream_async(
+    async def stream_async(
         self,
         *,
         ctx: Context[DepsT],
         messages: list[ProviderMessageT],
-        tools: Sequence[ToolDef | ContextToolDef[..., Any, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         response_format: type[FormatT],
         params: ParamsT | None = None,
     ) -> AsyncStream[DepsT, FormatT]:
         """Overload for async context structured streaming."""
         ...
 
-    def stream_async(
+    async def stream_async(
         self,
         *,
         ctx: Context[DepsT] | None = None,
         messages: list[ProviderMessageT],
-        tools: Sequence[ToolDef]
-        | Sequence[ToolDef | ContextToolDef[..., Any, DepsT]]
+        tools: Sequence[AsyncTool]
+        | Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]]
         | None = None,
         response_format: type[FormatT] | None = None,
         params: ParamsT | None = None,
