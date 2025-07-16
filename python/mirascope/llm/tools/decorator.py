@@ -5,10 +5,8 @@ from typing import Protocol, overload
 
 from ..context import Context, DepsT
 from ..types import JsonableCovariantT, P
-from .async_context_tool import AsyncContextTool
-from .async_tool import AsyncTool
-from .context_tool import ContextTool
-from .tool import Tool
+from .context_tool import AsyncContextTool, ContextTool
+from .tool import AsyncTool, Tool
 
 
 class ToolFn(Protocol[P, JsonableCovariantT]):
@@ -91,12 +89,15 @@ class ContextToolDecorator(Protocol[DepsT]):
         ...
 
     def __call__(
-        self, fn: ContextToolFn[P, JsonableCovariantT, DepsT] | AsyncContextToolFn[P, JsonableCovariantT, DepsT]
-    ) -> ContextTool[P, JsonableCovariantT, DepsT] | AsyncContextTool[P, JsonableCovariantT, DepsT]:
+        self,
+        fn: ContextToolFn[P, JsonableCovariantT, DepsT]
+        | AsyncContextToolFn[P, JsonableCovariantT, DepsT],
+    ) -> (
+        ContextTool[P, JsonableCovariantT, DepsT]
+        | AsyncContextTool[P, JsonableCovariantT, DepsT]
+    ):
         """Call the decorator with a function."""
         ...
-
-
 
 
 @overload
@@ -126,7 +127,9 @@ def tool(
 
 
 def tool(
-    __fn: Callable[P, JsonableCovariantT] | Callable[P, Awaitable[JsonableCovariantT]] | None = None,
+    __fn: Callable[P, JsonableCovariantT]
+    | Callable[P, Awaitable[JsonableCovariantT]]
+    | None = None,
     *,
     deps_type: type[DepsT] | type[None] | None = None,
     strict: bool = False,

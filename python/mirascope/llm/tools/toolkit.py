@@ -5,17 +5,18 @@ from typing import Any, Generic, TypeVar, overload
 from ..content import ToolCall, ToolOutput
 from ..context import Context, DepsT
 from ..types import Jsonable
-from .async_context_tool import AsyncContextTool
-from .async_tool import AsyncTool
-from .context_tool import ContextTool
-from .tool import Tool
-from .tool_typevars import AsyncToolReturnT, ContextToolT, ToolReturnT, ToolT
+from .context_tool import AsyncContextTool, ContextTool, ContextToolT
+from .tool import AsyncTool, Tool, ToolT
 
 ToolkitT = TypeVar(
     "ToolkitT",
-    bound="Toolkit[Tool | AsyncTool] | ContextToolkit[Tool | AsyncTool | ContextTool | AsyncContextTool, Any]",
+    bound="Toolkit[Tool | AsyncTool]"
+    | "ContextToolkit[Tool | AsyncTool | ContextTool | AsyncContextTool, Any]",
     covariant=True,
 )
+
+ToolReturnT = TypeVar("ToolReturnT", bound=Jsonable, covariant=True)
+AsyncToolReturnT = TypeVar("AsyncToolReturnT", bound=Jsonable, covariant=True)
 
 
 @dataclass(kw_only=True)
