@@ -9,7 +9,7 @@ from .async_context_tool import AsyncContextTool
 from .async_tool import AsyncTool
 from .context_tool import ContextTool
 from .tool import Tool
-from .tool_typevars import AT, ContextToolT, T
+from .tool_typevars import AsyncToolReturnT, ContextToolT, ToolReturnT
 
 
 @dataclass(kw_only=True)
@@ -21,22 +21,22 @@ class ContextToolkit(Generic[ContextToolT, DepsT]):
 
     @overload
     def call(
-        self: "ContextToolkit[Tool[..., T] | ContextTool[..., T, DepsT], DepsT]",
+        self: "ContextToolkit[Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT], DepsT]",
         ctx: Context[DepsT],
         tool_call: ToolCall,
-    ) -> ToolOutput[T]: ...
+    ) -> ToolOutput[ToolReturnT]: ...
     @overload
     def call(
-        self: "ContextToolkit[AsyncTool[..., AT] | AsyncContextTool[..., AT, DepsT], DepsT]",
+        self: "ContextToolkit[AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
         ctx: Context[DepsT],
         tool_call: ToolCall,
-    ) -> Awaitable[ToolOutput[AT]]: ...
+    ) -> Awaitable[ToolOutput[AsyncToolReturnT]]: ...
     @overload
     def call(
-        self: "ContextToolkit[Tool[..., T] | ContextTool[..., T, DepsT] | AsyncTool[..., AT] | AsyncContextTool[..., AT, DepsT], DepsT]",
+        self: "ContextToolkit[Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT] | AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
         ctx: Context[DepsT],
         tool_call: ToolCall,
-    ) -> ToolOutput[T] | Awaitable[ToolOutput[AT]]: ...
+    ) -> ToolOutput[ToolReturnT] | Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
     def call(
         self, ctx: Context[DepsT], tool_call: ToolCall

@@ -32,5 +32,5 @@ AgentToolT = TypeVar(
     default=None,
 )
 
-T = TypeVar("T", bound=Jsonable, covariant=True)
-AT = TypeVar("AT", bound=Jsonable, covariant=True)
+ToolReturnT = TypeVar("ToolReturnT", bound=Jsonable, covariant=True)
+AsyncToolReturnT = TypeVar("AsyncToolReturnT", bound=Jsonable, covariant=True)

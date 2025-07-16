@@ -6,7 +6,7 @@ from ..content import ToolCall, ToolOutput
 from ..types import Jsonable
 from .async_tool import AsyncTool
 from .tool import Tool
-from .tool_typevars import AT, T, ToolT
+from .tool_typevars import AsyncToolReturnT, ToolReturnT, ToolT
 
 
 @dataclass(kw_only=True)
@@ -17,15 +17,18 @@ class Toolkit(Generic[ToolT]):
         raise NotImplementedError()
 
     @overload
-    def call(self: "Toolkit[Tool[..., T]]", tool_call: ToolCall) -> ToolOutput[T]: ...
+    def call(
+        self: "Toolkit[Tool[..., ToolReturnT]]", tool_call: ToolCall
+    ) -> ToolOutput[ToolReturnT]: ...
     @overload
     def call(
-        self: "Toolkit[AsyncTool[..., AT]]", tool_call: ToolCall
-    ) -> Awaitable[ToolOutput[AT]]: ...
+        self: "Toolkit[AsyncTool[..., AsyncToolReturnT]]", tool_call: ToolCall
+    ) -> Awaitable[ToolOutput[AsyncToolReturnT]]: ...
     @overload
     def call(
-        self: "Toolkit[Tool[..., T] | AsyncTool[...,AT]]", tool_call: ToolCall
-    ) -> ToolOutput[T] | Awaitable[ToolOutput[AT]]: ...
+        self: "Toolkit[Tool[..., ToolReturnT] | AsyncTool[...,AsyncToolReturnT]]",
+        tool_call: ToolCall,
+    ) -> ToolOutput[ToolReturnT] | Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
     def call(
         self, tool_call: ToolCall
