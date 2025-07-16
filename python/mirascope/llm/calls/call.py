@@ -15,11 +15,8 @@ from .base_call import BaseCall
 
 
 @dataclass
-class Call(BaseCall[P, Prompt, FormatT], Generic[P, ToolT, FormatT]):
+class Call(BaseCall[P, Prompt, Toolkit[ToolT], FormatT], Generic[P, ToolT, FormatT]):
     """A class for generating responses using LLMs."""
-
-    toolkit: Toolkit[ToolT]
-    """The toolkit of tools associated with this call."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[None, FormatT]:
         """Generates a response using the LLM."""

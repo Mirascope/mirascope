@@ -17,12 +17,10 @@ from .base_call import BaseCall
 
 @dataclass
 class ContextCall(
-    BaseCall[P, Prompt, FormatT], Generic[P, ContextToolT, DepsT, FormatT]
+    BaseCall[P, Prompt, ContextToolkit[ContextToolT, DepsT], FormatT],
+    Generic[P, ContextToolT, DepsT, FormatT],
 ):
     """A class for generating responses using LLMs."""
-
-    toolkit: ContextToolkit[ContextToolT, DepsT]
-    """The toolkit of tools associated with this call."""
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs

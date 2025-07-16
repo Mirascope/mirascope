@@ -15,11 +15,10 @@ from .base_call import BaseCall
 
 
 @dataclass
-class AsyncCall(BaseCall[P, AsyncPrompt, FormatT], Generic[P, ToolT, FormatT]):
+class AsyncCall(
+    BaseCall[P, AsyncPrompt, Toolkit[ToolT], FormatT], Generic[P, ToolT, FormatT]
+):
     """A class for generating responses using LLMs asynchronously."""
-
-    toolkit: Toolkit[ToolT]
-    """The toolkit of tools associated with this call."""
 
     async def __call__(
         self, *args: P.args, **kwargs: P.kwargs

@@ -17,7 +17,8 @@ from .base_call import BaseCall
 
 @dataclass
 class AsyncContextCall(
-    BaseCall[P, AsyncPrompt, FormatT], Generic[P, ContextToolT, DepsT, FormatT]
+    BaseCall[P, AsyncPrompt, ContextToolkit[ContextToolT, DepsT], FormatT],
+    Generic[P, ContextToolT, DepsT, FormatT],
 ):
     """A class for generating responses using LLMs asynchronously."""
 
