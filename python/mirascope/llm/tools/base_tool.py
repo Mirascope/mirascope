@@ -1,7 +1,9 @@
 """The `BaseTool` class for defining tools that LLMs can request be called."""
 
 from dataclasses import dataclass
-from typing import Generic
+from typing import Generic, TypeGuard
+
+from typing_extensions import Self
 
 from ..types import Jsonable, JsonableCovariantT, P
 
@@ -28,18 +30,17 @@ class BaseTool(Generic[P, JsonableCovariantT]):
     strict: bool
     """Whether the tool should use strict mode when supported by the model."""
 
-    # def defines(self, tool: "BaseTool") -> TypeGuard["BaseTool[P, JsonableT]"]:
-    #     """Check if this ToolDef matches a specific Tool instance.
+    def defines(self, tool: "BaseTool") -> TypeGuard[Self]:
+        """Check if this ToolDef matches a specific Tool instance.
 
-    #     This method is used to ensure that the ToolDef was created from a specific
-    #     function, allowing for type-safe access to the return value when calling
-    #     the tool.
+        This method is used to ensure that the ToolDef was created from a specific
+        function, allowing for type-safe access to the return value when calling
+        the tool.
 
-    #     Args:
-    #         tool: The Tool instance to compare against.
+        Args:
+            tool: The Tool instance to compare against.
 
-    #     Returns:
-    #         True if the ToolDef defines the Tool instance, False otherwise.
-    #     """
-    #     # Check if `self.fn` defines the given `tool`
-    #     raise NotImplementedError()
+        Returns:
+            True if the ToolDef defines the Tool instance, False otherwise.
+        """
+        raise NotImplementedError()

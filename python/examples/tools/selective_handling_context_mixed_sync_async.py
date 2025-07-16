@@ -53,8 +53,8 @@ async def main():
             print(f"Tool call: {tool_call.name}")
             tool = librarian.tools.get(tool_call)
 
-            if tool == reserve_book:
-                output = await reserve_book.call(ctx, tool_call)
+            if reserve_book.defines(tool):
+                output = await tool.call(ctx, tool_call)
                 reservation: BookReservation = output.value
                 print("📚 Book reserved! Confirmation details:")
                 print(f"   Reservation ID: {reservation.reservation_id}")

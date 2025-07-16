@@ -28,7 +28,7 @@ async def reserve_book(title: str) -> BookReservation:
     return BookReservation(reservation_id=reservation_id, title=title)
 
 
-@llm.call(model="openai:gpt-4o-mini", tools=[available_books.to_async(), reserve_book])
+@llm.call(model="openai:gpt-4o-mini", tools=[available_books, reserve_book])
 def librarian():
     return "Help the user check book availability and make reservations."
 
@@ -40,8 +40,8 @@ async def main():
         print(f"Tool call: {tool_call.name}")
         tool = librarian.tools.get(tool_call)
 
-        if tool == reserve_book:
-            output = await reserve_book.call(tool_call)
+        if reserve_book.defines(tool):
+            output = await tool.call(tool_call)
             reservation: BookReservation = output.value
             print("📚 Book reserved! Confirmation details:")
             print(f"   Reservation ID: {reservation.reservation_id}")

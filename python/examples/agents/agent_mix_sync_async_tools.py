@@ -16,7 +16,7 @@ async def consult_knowledge(subject: str) -> str:
     return f"I have found comprehensive information about {subject}."
 
 
-@llm.agent(model="openai:gpt-4o-mini", tools=[get_basic_info.to_async(), consult_knowledge])
+@llm.agent(model="openai:gpt-4o-mini", tools=[get_basic_info, consult_knowledge])
 def sazed(ctx: llm.Context):
     return "You are an insightful and helpful agent named Sazed."
 
