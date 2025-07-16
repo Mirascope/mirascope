@@ -14,8 +14,7 @@ from ..tools import (
     Tool,
 )
 from ..types import Jsonable
-from .agent import Agent
-from .async_agent import AsyncAgent
+from .agent import Agent, AsyncAgent
 
 if TYPE_CHECKING:
     from ..clients import (
