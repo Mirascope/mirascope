@@ -22,14 +22,14 @@ def librarian(genre: str):
     return f"Recommend an available book in {genre}, along with its rating."
 
 
-async def main():
+def main():
     response: llm.Response = librarian("fantasy")
     while tool_calls := response.tool_calls:
         tool_outputs = []
         for call in tool_calls:
             output = librarian.toolkit.call(call)
             if inspect.isawaitable(output):
-                output = await output
+                output = asyncio.wait_for(output, timeout=1000)
             tool_outputs.append(output)
         response = librarian.resume(response, tool_outputs)
 
@@ -38,4 +38,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
