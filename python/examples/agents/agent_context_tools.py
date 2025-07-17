@@ -14,7 +14,7 @@ def consult_knowledge(ctx: llm.Context[Knowledge], subject: str) -> str:
 
 
 @llm.agent(model="openai:gpt-4o-mini", deps_type=Knowledge, tools=[consult_knowledge])
-def sazed(ctx: llm.Context[Knowledge]):
+def sazed():
     return "You are an insightful and helpful agent named Sazed."
 
 

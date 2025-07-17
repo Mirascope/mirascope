@@ -7,11 +7,8 @@ def sazed():
 
 
 def main():
-    ctx = llm.Context()
-    while True:
-        user_input = input("[USER]: ")
-        response = sazed(user_input, ctx=ctx)
-        print("[SAZED]: ", response)
+    response: llm.Response = sazed("Help me understand allomancy")
+    print(response)
 
 
 main()

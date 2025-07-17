@@ -11,13 +11,12 @@ async def consult_knowledge(subject: str) -> str:
 
 
 @llm.agent(model="openai:gpt-4o-mini", tools=[consult_knowledge])
-def sazed(ctx: llm.Context):
+def sazed():
     return "You are an insightful and helpful agent named Sazed."
 
 
 async def main():
-    ctx = llm.Context()
-    stream = await sazed.stream("Tell me about allomancy", ctx=ctx)
+    stream = await sazed.stream("Tell me about allomancy")
     async for chunk in stream:
         print(chunk, end="", flush=True)
     print()
