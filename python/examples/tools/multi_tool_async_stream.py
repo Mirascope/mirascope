@@ -4,13 +4,13 @@ from collections.abc import Awaitable
 from mirascope import llm
 
 
-@llm.tool()
+@llm.tool
 async def available_genres() -> list[str]:
     """List the available genres in the library."""
     return ["fantasy", "scifi", "philosophy"]
 
 
-@llm.tool()
+@llm.tool
 async def books_in_genre(genre: str) -> list[str]:
     """List the available books in a given genre."""
     books = {

@@ -1,7 +1,7 @@
 from mirascope import llm
 
 
-@llm.tool()
+@llm.tool
 def consult_coppermind(subject: str) -> str:
     """Consult a mysterious knowledge source."""
     return f"Exploring the coppermind for ${subject}, you find..."

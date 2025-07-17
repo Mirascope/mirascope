@@ -9,7 +9,7 @@ class AgentResponse:
     confidence: int
 
 
-@llm.tool()
+@llm.tool
 def consult_knowledge(subject: str) -> str:
     """Consult knowledge about a specific subject."""
     raise NotImplementedError()

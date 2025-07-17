@@ -3,7 +3,7 @@ import asyncio
 from mirascope import llm
 
 
-@llm.tool()
+@llm.tool
 async def available_books() -> list[str]:
     """List the available books in the library."""
     await asyncio.sleep(0.1)  # Simulate fetching from database

@@ -14,13 +14,13 @@ class BookReservation:
         return json.dumps({"reservation_id": self.reservation_id, "title": self.title})
 
 
-@llm.tool()
+@llm.tool
 def available_books() -> list[str]:
     """List all books available in the library."""
     return ["Mistborn", "Gödel, Escher, Bach", "Dune"]
 
 
-@llm.tool()
+@llm.tool
 async def reserve_book(title: str) -> BookReservation:
     """Reserve a book for the user."""
     reservation_id = "abcd-1234..."

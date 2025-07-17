@@ -4,7 +4,7 @@ from mirascope import llm
 class Knowledge: ...
 
 
-@llm.tool()
+@llm.tool
 def consult_coppermind(ctx: llm.Context[Knowledge], subject: str) -> str:
     """Consult a mysterious knowledge source."""
     return f"Exploring the coppermind for ${subject}, you find..."

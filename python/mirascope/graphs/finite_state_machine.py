@@ -225,14 +225,14 @@ class FiniteStateMachine(Generic[DepsT]):
 
 
         @machine.node()
-        @llm.tool()
+        @llm.tool
         def all_books(ctx: g.RunContext[Library]) -> list[Book]:
             """Returns the titles of all books the library owns."""
             return ctx.deps.all_books
 
 
         @machine.node()
-        @llm.tool()
+        @llm.tool
         def book_is_available(ctx: g.RunContext[Library], title: str) -> str:
             """Returns the author of the book with the given title."""
             return ctx.deps.available_books[title]

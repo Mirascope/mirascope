@@ -17,7 +17,7 @@ def available_books(ctx: llm.Context[Library]) -> list[str]:
     return ctx.deps.books
 
 
-@llm.tool()
+@llm.tool
 def hardcoded_extra_book() -> str:
     """The special book that is always available, regardless of context"""
     return "The Hitchhiker's Guide to the Galaxy"

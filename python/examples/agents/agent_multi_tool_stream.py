@@ -1,13 +1,13 @@
 from mirascope import llm
 
 
-@llm.tool()
+@llm.tool
 def consult_knowledge(subject: str) -> str:
     """Consult knowledge about a specific subject."""
     raise NotImplementedError()
 
 
-@llm.tool()
+@llm.tool
 def deep_research(topic: str) -> str:
     """Perform deep research on a specific topic."""
     raise NotImplementedError()

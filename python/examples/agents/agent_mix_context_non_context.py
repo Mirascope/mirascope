@@ -17,7 +17,7 @@ def consult_knowledge(ctx: llm.Context[Knowledge], subject: str) -> str:
     raise NotImplementedError()
 
 
-@llm.tool()
+@llm.tool
 def general_wisdom() -> str:
     """Access general wisdom that is always available, regardless of context."""
     return "Life before death, ..."

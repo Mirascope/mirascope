@@ -1,7 +1,7 @@
 from mirascope import llm
 
 
-@llm.tool()
+@llm.tool
 def available_books() -> list[str]:
     """List the available books in the library."""
     return ["Mistborn", "Gödel, Escher, Bach", "Dune"]
