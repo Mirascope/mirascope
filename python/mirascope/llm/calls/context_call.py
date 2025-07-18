@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from typing import Generic
 
 from ..context import Context, DepsT
+from ..formats import FormatT
 from ..prompts import AsyncPrompt, Prompt
-from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream, Stream
 from ..tools import ContextToolkit, ContextToolT

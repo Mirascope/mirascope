@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     )
 
 from ..context import DepsT
-from ..response_formatting import FormatT
+from ..formats import FormatT
 
 
 @dataclass

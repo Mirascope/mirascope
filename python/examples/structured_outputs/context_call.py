@@ -14,7 +14,7 @@ class Book:
     author: str
 
 
-@llm.call("openai:gpt-4o-mini", response_format=Book, deps_type=Library)
+@llm.call("openai:gpt-4o-mini", format=Book, deps_type=Library)
 def recommend_book(ctx: llm.Context[Library], genre: str):
     return f"""
     Recommend a {genre} book.

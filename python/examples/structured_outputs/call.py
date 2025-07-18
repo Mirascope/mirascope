@@ -9,7 +9,7 @@ class Book:
     author: str
 
 
-@llm.call("openai:gpt-4o-mini", response_format=Book)
+@llm.call("openai:gpt-4o-mini", format=Book)
 def recommend_book(genre: str):
     return f"Recommend a {genre} book."
 

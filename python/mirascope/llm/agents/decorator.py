@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     )
 
 from ..context import DepsT
-from ..response_formatting import FormatT
+from ..formats import FormatT
 from ..types import P
 
 NoneType = type(None)
@@ -143,7 +143,7 @@ def agent(
     *,
     tools: None = None,
     deps_type: type[DepsT] = NoneType,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> AgentDecorator[None, DepsT, FormatT]:
@@ -157,7 +157,7 @@ def agent(
     *,
     tools: list[AgentToolT],
     deps_type: type[DepsT] = NoneType,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
@@ -171,7 +171,7 @@ def agent(
     *,
     tools: None = None,
     deps_type: type[DepsT] = NoneType,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> AgentDecorator[None, DepsT, FormatT]:
@@ -185,7 +185,7 @@ def agent(
     *,
     tools: list[AgentToolT],
     deps_type: type[DepsT] = NoneType,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
@@ -199,7 +199,7 @@ def agent(
     *,
     tools: None = None,
     deps_type: type[DepsT] = NoneType,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> AgentDecorator[None, DepsT, FormatT]:
@@ -213,7 +213,7 @@ def agent(
     *,
     tools: list[AgentToolT],
     deps_type: type[DepsT] = NoneType,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
@@ -227,7 +227,7 @@ def agent(
     *,
     tools: None = None,
     deps_type: type[DepsT] = NoneType,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
 ) -> AgentDecorator[None, DepsT, FormatT]:
@@ -241,7 +241,7 @@ def agent(
     *,
     tools: list[AgentToolT],
     deps_type: type[DepsT] = NoneType,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
 ) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
@@ -254,7 +254,7 @@ def agent(
     *,
     tools: list[AgentToolT] | None = None,
     deps_type: type[DepsT] = NoneType,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
 ) -> AgentDecorator[AgentToolT, DepsT, FormatT] | AgentDecorator[None, DepsT, FormatT]:
@@ -264,7 +264,7 @@ def agent(
         model: The model to use for the agent.
         deps_type: The type of dependencies for the agent, injected into the context.
         tools: The tools available to the agent.
-        response_format: The response format type for the agent.
+        format: The response format type for the agent.
         client: The client to use for the agent.
         **params: Additional parameters for the model.
 

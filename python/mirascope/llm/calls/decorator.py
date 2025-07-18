@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
 
 from ..context import DepsT
-from ..response_formatting import FormatT
+from ..formats import FormatT
 from ..types import P
 
 
@@ -158,7 +158,7 @@ def call(
     *,
     tools: list[ToolT] | None = None,
     deps_type: type[None] | None = None,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> CallDecorator[ToolT, FormatT]:
@@ -172,7 +172,7 @@ def call(
     *,
     tools: list[ToolT] | None = None,
     deps_type: type[DepsT],
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> ContextCallDecorator[ToolT, DepsT, FormatT]:
@@ -186,7 +186,7 @@ def call(
     *,
     tools: list[ToolT] | None = None,
     deps_type: type[None] | None = None,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> CallDecorator[ToolT, FormatT]:
@@ -200,7 +200,7 @@ def call(
     *,
     tools: list[ToolT] | None = None,
     deps_type: type[DepsT],
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> ContextCallDecorator[ToolT, DepsT, FormatT]:
@@ -214,7 +214,7 @@ def call(
     *,
     tools: list[ToolT] | None = None,
     deps_type: type[None] | None = None,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> CallDecorator[ToolT, FormatT]:
@@ -228,7 +228,7 @@ def call(
     *,
     tools: list[ToolT] | None = None,
     deps_type: type[DepsT],
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> ContextCallDecorator[ToolT, DepsT, FormatT]:
@@ -242,7 +242,7 @@ def call(
     *,
     deps_type: type[None] | None = None,
     tools: list[ToolT] | None = None,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: None = None,
     **params: Unpack[BaseParams],
 ) -> CallDecorator[ToolT, FormatT]:
@@ -256,7 +256,7 @@ def call(
     *,
     tools: list[ContextToolT] | None = None,
     deps_type: type[DepsT],
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: None = None,
     **params: Unpack[BaseParams],
 ) -> ContextCallDecorator[ContextToolT, DepsT, FormatT]:
@@ -269,7 +269,7 @@ def call(
     *,
     tools: list[ToolT] | list[ContextToolT] | None = None,
     deps_type: type[DepsT] | type[None] | None = None,
-    response_format: type[FormatT] | None = None,
+    format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
 ) -> CallDecorator[ToolT, FormatT] | ContextCallDecorator[ContextToolT, DepsT, FormatT]:

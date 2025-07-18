@@ -7,9 +7,9 @@ from typing import Generic
 
 from ..content import UserContent
 from ..context import DepsT
+from ..formats import FormatT
 from ..models import LLM
 from ..prompts import PromptT
-from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream, Stream
 from ..tools import ToolkitT
@@ -26,7 +26,7 @@ class BaseCall(Generic[P, PromptT, ToolkitT, FormatT], ABC):
     toolkit: ToolkitT
     """The toolkit containing this call's tools."""
 
-    response_format: type[FormatT] | None
+    format: type[FormatT] | None
     """The response format for the generated response."""
 
     fn: PromptT

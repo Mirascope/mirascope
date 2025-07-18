@@ -15,9 +15,7 @@ def consult_knowledge(subject: str) -> str:
     raise NotImplementedError()
 
 
-@llm.agent(
-    model="openai:gpt-4o-mini", tools=[consult_knowledge], response_format=AgentResponse
-)
+@llm.agent(model="openai:gpt-4o-mini", tools=[consult_knowledge], format=AgentResponse)
 def sazed():
     return "You are an insightful and helpful agent named Sazed."
 

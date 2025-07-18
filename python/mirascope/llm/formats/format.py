@@ -1,4 +1,4 @@
-"""The `ResponseFormat` class for defining how to structure an LLM response."""
+"""The `Format` class for defining how to structure an LLM response."""
 
 from dataclasses import dataclass
 from typing import Any, Generic, Literal, Protocol, runtime_checkable
@@ -63,29 +63,29 @@ class TextParserFn(Protocol[CovariantT]):
 
 
 @dataclass
-class ResponseFormat(Generic[FormatT]):
+class Format(Generic[FormatT]):
     """Class representing a structured output format for LLM responses.
 
-    A ResponseFormat defines how LLM responses should be structured and parsed.
+    A Format defines how LLM responses should be structured and parsed.
     It includes metadata about the format mode, whether to use strict validation,
     and the schema for the expected output.
 
     This class is not instantiated directly but is created by applying the
-    `@response_format()` decorator to a class definition.
+    `@format()` decorator to a class definition.
 
-    When decorated with `@response_format()`, the class retains its original
-    fields and constructor, while adding the ResponseFormat functionality:
+    When decorated with `@format()`, the class retains its original
+    fields and constructor, while adding the Format functionality:
 
     Example:
         ```python
         from mirascope import llm
 
-        @llm.response_format()
+        @llm.format()
         class Book:
             title: str
             author: str
 
-        @llm.call("openai:gpt-4o", response_format=Book)
+        @llm.call("openai:gpt-4o", format=Book)
         def recommend_book(genre: str) -> list[llm.Message]:
             return [
                 llm.messages.system("You are a helpful assistant."),
@@ -116,7 +116,7 @@ class ResponseFormat(Generic[FormatT]):
 
 @runtime_checkable
 class Formattable(Protocol[FormatT]):
-    """Protocol for classes that have been decorated with `@response_format()`."""
+    """Protocol for classes that have been decorated with `@format()`."""
 
-    __response_format__: ResponseFormat[FormatT]
-    """The `ResponseFormat` instance constructed by the `@response_format()` decorator."""
+    __response_format__: Format[FormatT]
+    """The `Format` instance constructed by the `@format()` decorator."""
