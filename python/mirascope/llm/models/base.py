@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..clients import REGISTERED_LLMS
 
 from ..context import DepsT
-from ..formats import FormatT
+from ..formatting import FormatT
 from ..types import Jsonable
 
 

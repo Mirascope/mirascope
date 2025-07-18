@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+
+from pydantic import BaseModel
 
 from mirascope import llm
 
 
-@dataclass
-class AgentResponse:
+class AgentResponse(BaseModel):
     message: str
     confidence: int
 

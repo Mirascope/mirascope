@@ -1,5 +1,8 @@
 import asyncio
+import contextlib
 from dataclasses import dataclass
+
+from pydantic import BaseModel
 
 from mirascope import llm
 
@@ -9,10 +12,10 @@ class Library:
     available_books: list[str]
 
 
-@dataclass
-class Book:
+class Book(BaseModel):
     title: str
     author: str
+    themes: list[str]
 
 
 @llm.call("openai:gpt-4o-mini", format=Book, deps_type=Library)
@@ -30,8 +33,14 @@ async def main():
         ctx, "fantasy"
     )
     async for _ in stream:
-        partial_book: Book = stream.format()
-        print(partial_book)
+        partial_book: Book | None = None
+        with contextlib.suppress(Exception):
+            partial_book = stream.format()
+        if partial_book is not None:
+            print("Partial book: ", partial_book)
+
+    book: Book = stream.format()
+    print("Book: ", book)
 
 
 asyncio.run(main())

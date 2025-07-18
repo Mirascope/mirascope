@@ -10,7 +10,7 @@ from . import (
     calls,
     content,
     exceptions,
-    formats,
+    formatting,
     messages,
     models,
     prompts,
@@ -56,7 +56,7 @@ from .exceptions import (
     TimeoutError,
     ToolNotFoundError,
 )
-from .formats import Format, format
+from .formatting import Format, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
@@ -123,7 +123,7 @@ __all__ = [
     "content",
     "exceptions",
     "format",
-    "formats",
+    "formatting",
     "messages",
     "model",
     "models",

@@ -7,7 +7,7 @@ from openai.types.chat import ChatCompletionMessageParam
 
 from ..clients import BaseParams
 from ..context import Context, DepsT
-from ..formats import FormatT
+from ..formatting import FormatT
 from ..messages import Message
 from ..responses import Response
 from ..streams import (

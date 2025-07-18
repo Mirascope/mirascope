@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from pydantic import BaseModel
+
 from mirascope import llm
 
 
@@ -8,10 +10,10 @@ class Library:
     available_books: list[str]
 
 
-@dataclass
-class Book:
+class Book(BaseModel):
     title: str
     author: str
+    themes: list[str]
 
 
 @llm.call("openai:gpt-4o-mini", format=Book, deps_type=Library)

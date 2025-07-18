@@ -7,7 +7,7 @@ from typing import Generic, overload
 
 from ..content import UserContent
 from ..context import Context, DepsT
-from ..formats import FormatT
+from ..formatting import FormatT
 from ..models import LLM
 from ..responses import Response
 from ..streams import AsyncStream, Stream
