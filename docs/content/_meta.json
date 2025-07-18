@@ -12,6 +12,10 @@
             "label": "Welcome"
           },
           {
+            "slug": "examples",
+            "label": "Examples (For LLMs)"
+          },
+          {
             "slug": "learn",
             "label": "Learn",
             "children": [
