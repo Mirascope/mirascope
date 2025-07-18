@@ -4,7 +4,7 @@ from collections.abc import Iterator
 
 from ..content import ContentChunk
 from ..context import DepsT
-from ..response_formatting import FormatT
+from ..formats import FormatT
 from .base import BaseStream
 from .group_types import Group
 

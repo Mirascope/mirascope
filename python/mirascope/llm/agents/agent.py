@@ -7,8 +7,8 @@ from typing import Generic, overload
 
 from ..content import UserContent
 from ..context import Context, DepsT
+from ..formats import FormatT
 from ..models import LLM
-from ..response_formatting import FormatT
 from ..responses import Response
 from ..streams import AsyncStream, Stream
 from ..tools import Tool
@@ -24,7 +24,7 @@ class BaseAgent(Generic[DepsT, FormatT], ABC):
     tools: Sequence[Tool] | None
     """The tools available to the agent, if any."""
 
-    response_format: type[FormatT] | None
+    format: type[FormatT] | None
     """The response format for the generated response."""
 
     model: LLM

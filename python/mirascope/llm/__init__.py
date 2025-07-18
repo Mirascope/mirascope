@@ -10,10 +10,10 @@ from . import (
     calls,
     content,
     exceptions,
+    formats,
     messages,
     models,
     prompts,
-    response_formatting,
     responses,
     streams,
     tools,
@@ -56,11 +56,10 @@ from .exceptions import (
     TimeoutError,
     ToolNotFoundError,
 )
+from .formats import Format, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
-from .response_formatting import ResponseFormat
-from .response_formatting.decorator import response_format
 from .responses import Response
 from .streams import (
     AsyncStream,
@@ -92,6 +91,7 @@ __all__ = [
     "ContentChunk",
     "Context",
     "Document",
+    "Format",
     "Image",
     "ImageChunk",
     "ImageUrl",
@@ -101,7 +101,6 @@ __all__ = [
     "PermissionError",
     "RateLimitError",
     "Response",
-    "ResponseFormat",
     "ServerError",
     "Stream",
     "Stream",
@@ -123,12 +122,12 @@ __all__ = [
     "calls",
     "content",
     "exceptions",
+    "format",
+    "formats",
     "messages",
     "model",
     "models",
     "prompts",
-    "response_format",
-    "response_formatting",
     "responses",
     "streams",
     "tool",

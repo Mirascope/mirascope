@@ -1,14 +1,14 @@
-"""The `llm.response_format` decorator for defining response formats as classes."""
+"""The `llm.format` decorator for defining response formats as classes."""
 
 from collections.abc import Callable, Sequence
 from typing import Any, Literal, Protocol, overload
 
 from ..content import AssistantContent
 from ..types import CovariantT
-from .response_format import FormatT
+from .format import FormatT
 
 
-class JsonResponseFormatDef(Protocol[CovariantT]):
+class JsonFormatDef(Protocol[CovariantT]):
     """Protocol for defining a JSON mode response format."""
 
     @classmethod
@@ -24,7 +24,7 @@ class JsonResponseFormatDef(Protocol[CovariantT]):
         ...
 
 
-class ToolResponseFormatDef(Protocol[CovariantT]):
+class ToolFormatDef(Protocol[CovariantT]):
     """Protocol for defining a tool mode response format."""
 
     @classmethod
@@ -40,7 +40,7 @@ class ToolResponseFormatDef(Protocol[CovariantT]):
         ...
 
 
-class ContentResponseFormatDef(Protocol[CovariantT]):
+class ContentFormatDef(Protocol[CovariantT]):
     """Protocol for defining a content mode response format."""
 
     @classmethod
@@ -59,11 +59,9 @@ class ContentResponseFormatDef(Protocol[CovariantT]):
 
 
 @overload
-def response_format(
+def format(
     __cls: type[
-        JsonResponseFormatDef[FormatT]
-        | ToolResponseFormatDef[FormatT]
-        | ContentResponseFormatDef[FormatT]
+        JsonFormatDef[FormatT] | ToolFormatDef[FormatT] | ContentFormatDef[FormatT]
     ],
 ) -> type[FormatT]:
     """Overload for no arguments, which requires a parser classmethod."""
@@ -71,16 +69,12 @@ def response_format(
 
 
 @overload
-def response_format(
+def format(
     *,
     parser: None = None,
     strict: bool = False,
 ) -> Callable[
-    [
-        JsonResponseFormatDef[FormatT]
-        | ToolResponseFormatDef[FormatT]
-        | ContentResponseFormatDef[FormatT]
-    ],
+    [JsonFormatDef[FormatT] | ToolFormatDef[FormatT] | ContentFormatDef[FormatT]],
     type[FormatT],
 ]:
     """Overload for no default parser, which requires a parser classmethod."""
@@ -88,7 +82,7 @@ def response_format(
 
 
 @overload
-def response_format(
+def format(
     *,
     parser: Literal["json", "tool"],
     strict: bool = False,
@@ -97,7 +91,7 @@ def response_format(
     ...
 
 
-def response_format(
+def format(
     __cls=None,
     *,
     parser: Literal["json", "tool"] | None = None,
@@ -105,11 +99,7 @@ def response_format(
 ) -> (
     FormatT
     | Callable[
-        [
-            JsonResponseFormatDef[FormatT]
-            | ToolResponseFormatDef[FormatT]
-            | ContentResponseFormatDef[FormatT]
-        ],
+        [JsonFormatDef[FormatT] | ToolFormatDef[FormatT] | ContentFormatDef[FormatT]],
         type[FormatT],
     ]
     | Callable[[type[FormatT]], type[FormatT]]
@@ -118,7 +108,7 @@ def response_format(
 
     This decorator operates as a dataclass transformation so that the original class
     retains its original behavior and typing. At definition time, the decorator will
-    set the `__response_format__: ResponseFormat` attribute on the class, which is used
+    set the `__response_format__: Format` attribute on the class, which is used
     downstream to determine how to parse the LLM response.
 
     By default, the decorator requires the decorated class has a `parse` classmethod.
@@ -139,7 +129,7 @@ def response_format(
             Default is False.
 
     Returns:
-        A decorator function that converts the class into a `ResponseFormat`.
+        A decorator function that converts the class into a `Format`.
 
     Example:
 
@@ -148,7 +138,7 @@ def response_format(
         ```python
         from mirascope import llm
 
-        @llm.response_format(parser="json")
+        @llm.format(parser="json")
         class Book:
             title: str
             author: str
@@ -163,7 +153,7 @@ def response_format(
 
         from mirascope import llm
 
-        @llm.response_format
+        @llm.format
         class Book:
             title: str
             author: str
