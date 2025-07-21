@@ -1,10 +1,9 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 from mirascope import llm
 
 
-@dataclass
-class Book:
+class Book(BaseModel):
     title: str
     author: str
 

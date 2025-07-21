@@ -9,7 +9,7 @@ from typing import Generic, TypedDict
 from typing_extensions import TypeVar
 
 from ..context import Context, DepsT
-from ..formats import FormatT
+from ..formatting import FormatT
 from ..responses import Response
 from ..streams import (
     AsyncStream,

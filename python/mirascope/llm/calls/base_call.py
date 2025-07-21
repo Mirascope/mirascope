@@ -7,7 +7,7 @@ from typing import Generic
 
 from ..content import UserContent
 from ..context import DepsT
-from ..formats import FormatT
+from ..formatting import FormatT
 from ..models import LLM
 from ..prompts import PromptT
 from ..responses import Response
