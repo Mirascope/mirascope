@@ -5,6 +5,22 @@ import { $ } from 'bun';
 const files = process.argv.slice(2);
 
 try {
+  // Check if any template files or examples directory changed
+  const hasTemplateChanges = files.some(file => 
+    file.includes('template.j2') || 
+    file.includes('examples/') ||
+    file.includes('scripts/regenerate_examples.py')
+  );
+  
+  // Regenerate examples if templates changed
+  if (hasTemplateChanges) {
+    console.log('Template or example files changed, regenerating examples...');
+    await $`uv run scripts/regenerate_examples.py`.cwd('./python');
+    
+    // Stage any newly generated files
+    await $`git add examples/`.cwd('./python');
+  }
+  
   // Run ruff on specific files (ruff supports individual files)
   if (files.length > 0) {
     await $`uv run ruff check --fix ${files}`.cwd('./python');
