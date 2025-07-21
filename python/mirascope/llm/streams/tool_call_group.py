@@ -15,7 +15,6 @@ class ToolCallGroup(BaseGroup[ToolCallChunk, ToolCall]):
         raise NotImplementedError()
 
 
-
 class AsyncToolCallGroup(BaseAsyncGroup[ToolCallChunk, ToolCall]):
     """Async group for streaming tool call content chunks."""
 
@@ -23,4 +22,3 @@ class AsyncToolCallGroup(BaseAsyncGroup[ToolCallChunk, ToolCall]):
     def type(self) -> Literal["tool_call"]:
         """The type identifier for tool call groups."""
         raise NotImplementedError()
-

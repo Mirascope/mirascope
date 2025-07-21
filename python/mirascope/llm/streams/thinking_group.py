@@ -15,7 +15,6 @@ class ThinkingGroup(BaseGroup[ThinkingChunk, Thinking]):
         raise NotImplementedError()
 
 
-
 class AsyncThinkingGroup(BaseAsyncGroup[ThinkingChunk, Thinking]):
     """Async group for streaming thinking content chunks."""
 
@@ -23,4 +22,3 @@ class AsyncThinkingGroup(BaseAsyncGroup[ThinkingChunk, Thinking]):
     def type(self) -> Literal["thinking"]:
         """The type identifier for thinking groups."""
         raise NotImplementedError()
-
