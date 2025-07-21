@@ -28,7 +28,7 @@ def recommend_book(ctx: llm.Context[Library], genre: str):
 def main():
     library = Library(available_books=["Mistborn", "Dune", "The Name of the Wind"])
     ctx = llm.Context(deps=library)
-    stream: llm.Stream[Library, Book] = recommend_book.stream(ctx, "fantasy")
+    stream: llm.Stream[Book] = recommend_book.stream(ctx, "fantasy")
     for _ in stream:
         partial_book: Book | None = None
         with contextlib.suppress(Exception):

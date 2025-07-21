@@ -47,7 +47,7 @@ def librarian(ctx: llm.Context[Library]):
 
 async def main():
     ctx = llm.Context(deps=library)
-    response: llm.Response[Library, None] = librarian(ctx)
+    response: llm.Response = librarian(ctx)
 
     while tool_call := response.tool_call:
         print(f"Tool call: {tool_call.name}")
@@ -60,7 +60,7 @@ async def main():
             print(f"   Reservation ID: {reservation.reservation_id}")
             print(f"   Book: {reservation.title}")
 
-            response = librarian.resume(response, output)
+            response = librarian.resume(ctx, response, output)
         elif (
             # This works even though we used available_books.to_async(), due to __eq__ override
             tool == available_books
@@ -68,7 +68,7 @@ async def main():
             output = available_books.call(ctx, tool_call)
             books: list[str] = output.value
             print(f"Available books: {books}")
-            response = librarian.resume(response, output)
+            response = librarian.resume(ctx, response, output)
 
     print(response)
 

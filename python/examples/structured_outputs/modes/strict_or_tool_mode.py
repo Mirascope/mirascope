@@ -17,7 +17,7 @@ def recommend_book(genre: str):
 
 
 def main():
-    response: llm.Response[None, Book] = recommend_book("fantasy")
+    response: llm.Response[Book] = recommend_book("fantasy")
     book: Book = response.format()
 
     print(f"Title: {book.title}")

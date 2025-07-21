@@ -53,7 +53,7 @@ def summarize_book(title: str, author: str):
 
 
 def main():
-    response: llm.Response[None, Book] = summarize_book(
+    response: llm.Response[Book] = summarize_book(
         "The Name of the Wind", "Patrick Rothfuss"
     )
     book: Book = response.format()

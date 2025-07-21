@@ -24,7 +24,7 @@ def librarian(ctx: llm.Context[Library], genre: str):
 
 def main():
     ctx = llm.Context(deps=library)
-    stream: llm.Stream[Library] = librarian.stream(ctx, "fantasy")
+    stream: llm.Stream = librarian.stream(ctx, "fantasy")
     while True:
         tool_call: llm.ToolCall | None = None
         for group in stream.groups():
@@ -37,7 +37,7 @@ def main():
             break
 
         tool_output = librarian.toolkit.call(ctx, tool_call)
-        stream = librarian.resume_stream(stream, tool_output)
+        stream = librarian.resume_stream(ctx, stream, tool_output)
 
 
 if __name__ == "__main__":

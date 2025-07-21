@@ -29,9 +29,7 @@ def recommend_book(ctx: llm.Context[Library], genre: str):
 async def main():
     library = Library(available_books=["Mistborn", "Dune", "The Name of the Wind"])
     ctx = llm.Context(deps=library)
-    stream: llm.AsyncStream[Library, Book] = await recommend_book.stream_async(
-        ctx, "fantasy"
-    )
+    stream: llm.AsyncStream[Book] = await recommend_book.stream_async(ctx, "fantasy")
     async for _ in stream:
         partial_book: Book | None = None
         with contextlib.suppress(Exception):

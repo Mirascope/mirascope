@@ -24,14 +24,14 @@ def librarian(ctx: llm.Context[Library], genre: str):
 
 def main():
     ctx = llm.Context(deps=library)
-    response: llm.Response[Library] = librarian(ctx, "fantasy")
+    response: llm.Response = librarian(ctx, "fantasy")
     while tool_call := response.tool_call:
         print(f"Tool call: {tool_call.name}")
         # Tool call: available_books
         output = librarian.toolkit.call(ctx, tool_call)
         print(f"Tool returned: {output.value}")
         # Tool returned: ["Mistborn", "Gödel, Escher, Bach", "Dune"]
-        response = librarian.resume(response, output)
+        response = librarian.resume(ctx, response, output)
 
     print(response)
     # > I recommend Mistborn, by Brandon Sanderson...

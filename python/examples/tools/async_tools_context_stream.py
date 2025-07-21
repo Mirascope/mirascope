@@ -26,7 +26,7 @@ async def librarian(ctx: llm.Context[Library], genre: str):
 
 async def main():
     ctx = llm.Context(deps=library)
-    stream: llm.AsyncStream[Library] = await librarian.stream(ctx, "fantasy")
+    stream: llm.AsyncStream = await librarian.stream(ctx, "fantasy")
     while True:
         tool_output: llm.ToolOutput | None = None
         async for group in stream.groups():
@@ -38,7 +38,7 @@ async def main():
                 tool_output = await librarian.toolkit.call(ctx, tool_call)
         if not tool_output:
             break
-        stream = await librarian.resume_stream(stream, tool_output)
+        stream = await librarian.resume_stream(ctx, stream, tool_output)
 
 
 if __name__ == "__main__":
