@@ -1,0 +1,44 @@
+{# Shared macros for example templates #}
+
+{%- macro context_imports() -%}
+{%- if use_context %}
+from dataclasses import dataclass
+
+{% endif -%}
+{%- endmacro -%}
+
+{%- macro async_imports() -%}
+{%- if use_async %}
+import asyncio
+
+{% endif -%}
+{%- endmacro -%}
+
+{%- macro async_prefix() -%}
+{%- if use_async %}async {% endif -%}
+{%- endmacro -%}
+
+{%- macro await_prefix() -%}
+{%- if use_async %}await {% endif -%}
+{%- endmacro -%}
+
+{%- macro fn_def(name, args="") -%}
+{%- if use_async %}async {% endif %}def {{ name }}({{ args }}):
+{%- endmacro -%}
+
+{%- macro agent_type() -%}
+{%- if use_async %}llm.AsyncAgent{% else %}llm.Agent{% endif -%}
+{%- endmacro -%}
+
+{%- macro stream_type() -%}
+{%- if use_async %}llm.AsyncStream{% else %}llm.Stream{% endif -%}
+{%- endmacro -%}
+
+{%- macro main_block() -%}
+{%- if use_async %}
+if __name__ == "__main__":
+    asyncio.run(main())
+{%- else %}
+main()
+{%- endif -%}
+{%- endmacro -%}

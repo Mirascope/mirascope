@@ -52,6 +52,12 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: Verify examples match templates
+        run: |
+          uv run scripts/regenerate_examples.py
+          git diff --exit-code examples/
+        shell: bash
+
       - name: Run Ruff
         run: uv run ruff check . && uv run ruff format --check .
 
