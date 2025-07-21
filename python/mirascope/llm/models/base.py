@@ -59,7 +59,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[Tool] | None = None,
         format: None = None,
         params: ParamsT | None = None,
-    ) -> Response[None, None]:
+    ) -> Response[None]:
         """Overload for standard call."""
         ...
 
@@ -72,7 +72,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: None = None,
         params: ParamsT | None = None,
-    ) -> Response[DepsT, None]:
+    ) -> Response[None]:
         """Overload for standard context call."""
         ...
 
@@ -85,7 +85,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[None, FormatT]:
+    ) -> Response[FormatT]:
         """Overload for calls when a response format is specified."""
         ...
 
@@ -98,7 +98,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[DepsT, FormatT]:
+    ) -> Response[FormatT]:
         """Overload for calls when a response format is specified."""
         ...
 
@@ -112,7 +112,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         | None = None,
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> Response[DepsT, FormatT]:
+    ) -> Response[FormatT]:
         """Generate a response using the model."""
         ...
 
@@ -125,7 +125,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
         params: ParamsT | None = None,
-    ) -> Response[None, None]:
+    ) -> Response[None]:
         """Overload for standard async call."""
         ...
 
@@ -138,7 +138,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: None = None,
         params: ParamsT | None = None,
-    ) -> Response[DepsT, None]:
+    ) -> Response[None]:
         """Overload for standard async context call."""
         ...
 
@@ -151,7 +151,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[None, FormatT]:
+    ) -> Response[FormatT]:
         """Overload for async calls when a response format is specified."""
         ...
 
@@ -164,7 +164,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[DepsT, FormatT]:
+    ) -> Response[FormatT]:
         """Overload for async context calls when a response format is specified."""
         ...
 
@@ -178,7 +178,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         | None = None,
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> Response[DepsT, FormatT]:
+    ) -> Response[FormatT]:
         """Generate a response asynchronously using the model."""
         ...
 
@@ -191,7 +191,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[Tool] | None = None,
         format: None = None,
         params: ParamsT | None = None,
-    ) -> Stream[None, None]:
+    ) -> Stream[None]:
         """Overload for standard streaming."""
         ...
 
@@ -204,7 +204,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: None = None,
         params: ParamsT | None = None,
-    ) -> Stream[DepsT, None]:
+    ) -> Stream[None]:
         """Overload for standard context streaming."""
         ...
 
@@ -217,7 +217,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Stream[None, FormatT]:
+    ) -> Stream[FormatT]:
         """Overload for structured streaming."""
         ...
 
@@ -230,7 +230,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Stream[DepsT, FormatT]:
+    ) -> Stream[FormatT]:
         """Overload for context structured streaming."""
         ...
 
@@ -244,7 +244,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         | None = None,
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> Stream[DepsT, None] | Stream[DepsT, FormatT]:
+    ) -> Stream[None] | Stream[FormatT]:
         """Stream a response using the model."""
         ...
 
@@ -257,7 +257,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStream[None, None]:
+    ) -> AsyncStream[None]:
         """Overload for standard async streaming."""
         ...
 
@@ -270,7 +270,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStream[DepsT, None]:
+    ) -> AsyncStream[None]:
         """Overload for standard async context streaming."""
         ...
 
@@ -283,7 +283,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> AsyncStream[None, FormatT]:
+    ) -> AsyncStream[FormatT]:
         """Overload for async structured streaming."""
         ...
 
@@ -296,7 +296,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> AsyncStream[DepsT, FormatT]:
+    ) -> AsyncStream[FormatT]:
         """Overload for async context structured streaming."""
         ...
 
@@ -310,6 +310,6 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         | None = None,
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStream[DepsT, None] | AsyncStream[DepsT, FormatT]:
+    ) -> AsyncStream[None] | AsyncStream[FormatT]:
         """Stream a response asynchronously using the model."""
         ...

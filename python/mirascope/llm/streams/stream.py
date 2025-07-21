@@ -3,13 +3,12 @@
 from collections.abc import Iterator
 
 from ..content import ContentChunk
-from ..context import DepsT
 from ..formatting import FormatT
 from .base import BaseStream
 from .group_types import Group
 
 
-class Stream(BaseStream[DepsT, FormatT]):
+class Stream(BaseStream[FormatT]):
     """A synchronous stream of response chunks from an LLM.
 
     This class supports iteration to process chunks as they arrive from the model.

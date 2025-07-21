@@ -17,7 +17,7 @@ def recommend_book(genre: str):
 
 
 def main():
-    response: llm.Response[None, Book] = recommend_book("fantasy")
+    response: llm.Response[Book] = recommend_book("fantasy")
     # Model returns a tool call, but we translate it into text content
     assert response.tool_call is None
     book: Book = response.format()

@@ -34,10 +34,10 @@ def librarian(ctx: llm.Context[Library], genre: str):
 
 def main():
     ctx = llm.Context(deps=library)
-    response: llm.Response[Library] = librarian(ctx, "fantasy")
+    response: llm.Response = librarian(ctx, "fantasy")
     while tool_calls := response.tool_calls:
         outputs = [librarian.toolkit.call(ctx, call) for call in tool_calls]
-        response = librarian.resume(response, outputs)
+        response = librarian.resume(ctx, response, outputs)
 
     print(response)
     # > I recommend Mistborn, by Brandon Sanderson...

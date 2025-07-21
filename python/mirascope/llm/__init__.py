@@ -21,8 +21,6 @@ from . import (
 )
 from .agents import Agent, AsyncAgent, agent
 from .calls import (
-    AsyncCall,
-    Call,
     call,
 )
 from .clients import BaseClient, BaseParams
@@ -76,7 +74,6 @@ __all__ = [
     "AssistantContent",
     "AssistantMessage",
     "AsyncAgent",
-    "AsyncCall",
     "AsyncStream",
     "AsyncStream",
     "Audio",
@@ -86,7 +83,6 @@ __all__ = [
     "BaseClient",
     "BaseParams",
     "BaseStream",
-    "Call",
     "ConnectionError",
     "ContentChunk",
     "Context",

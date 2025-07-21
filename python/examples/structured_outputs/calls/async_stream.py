@@ -18,7 +18,7 @@ def recommend_book(genre: str):
 
 
 async def main():
-    stream: llm.AsyncStream[None, Book] = await recommend_book.stream_async("fantasy")
+    stream: llm.AsyncStream[Book] = await recommend_book.stream_async("fantasy")
     async for _ in stream:
         partial_book: Book | None = None
         with contextlib.suppress(Exception):

@@ -77,7 +77,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         messages: Sequence[ProviderMessageT],
         tools: Sequence[Tool] | None = None,
         params: ParamsT | None = None,
-    ) -> Response[None, None]:
+    ) -> Response[None]:
         """Generate a standard response."""
         ...
 
@@ -90,7 +90,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         messages: Sequence[ProviderMessageT],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: ParamsT | None = None,
-    ) -> Response[DepsT, None]:
+    ) -> Response[None]:
         """Generate a context response with context tools."""
         ...
 
@@ -103,7 +103,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[None, FormatT]:
+    ) -> Response[FormatT]:
         """Generate a structured response."""
         ...
 
@@ -117,7 +117,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[DepsT, FormatT]:
+    ) -> Response[FormatT]:
         """Generate a structured context response."""
         ...
 
@@ -129,7 +129,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         messages: Sequence[ProviderMessageT],
         tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
-    ) -> Response[None, None]:
+    ) -> Response[None]:
         """Generate a standard response asynchronously."""
         ...
 
@@ -142,7 +142,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         messages: Sequence[ProviderMessageT],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: ParamsT | None = None,
-    ) -> Response[DepsT, None]:
+    ) -> Response[None]:
         """Generate a context response asynchronously."""
         ...
 
@@ -155,7 +155,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[None, FormatT]:
+    ) -> Response[FormatT]:
         """Generate a structured response asynchronously."""
         ...
 
@@ -169,7 +169,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[DepsT, FormatT]:
+    ) -> Response[FormatT]:
         """Generate a structured context response asynchronously."""
         ...
 
@@ -181,7 +181,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         messages: Sequence[ProviderMessageT],
         tools: Sequence[Tool] | None = None,
         params: ParamsT | None = None,
-    ) -> Stream[None, None]:
+    ) -> Stream[None]:
         """Stream a standard response."""
         ...
 
@@ -194,7 +194,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         messages: Sequence[ProviderMessageT],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: ParamsT | None = None,
-    ) -> Stream[DepsT, None]:
+    ) -> Stream[None]:
         """Stream a context response."""
         ...
 
@@ -207,7 +207,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Stream[None, FormatT]:
+    ) -> Stream[FormatT]:
         """Stream a structured response."""
         ...
 
@@ -221,7 +221,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Stream[DepsT, FormatT]:
+    ) -> Stream[FormatT]:
         """Stream a structured context response."""
         ...
 
@@ -233,7 +233,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         messages: Sequence[ProviderMessageT],
         tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStream[None, None]:
+    ) -> AsyncStream[None]:
         """Stream a standard response asynchronously."""
         ...
 
@@ -246,7 +246,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         messages: Sequence[ProviderMessageT],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: ParamsT | None = None,
-    ) -> AsyncStream[DepsT, None]:
+    ) -> AsyncStream[None]:
         """Stream a context response asynchronously."""
         ...
 
@@ -259,7 +259,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> AsyncStream[None, FormatT]:
+    ) -> AsyncStream[FormatT]:
         """Stream a structured response asynchronously."""
         ...
 
@@ -273,7 +273,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> AsyncStream[DepsT, FormatT]:
+    ) -> AsyncStream[FormatT]:
         """Stream a structured context response asynchronously."""
         ...
 

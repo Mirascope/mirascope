@@ -17,7 +17,7 @@ def recommend_book(genre: str):
 
 
 def main():
-    stream: llm.Stream[None, Book] = recommend_book.stream("fantasy")
+    stream: llm.Stream[Book] = recommend_book.stream("fantasy")
     for _ in stream:
         partial_book: Book | None = None
         with contextlib.suppress(Exception):

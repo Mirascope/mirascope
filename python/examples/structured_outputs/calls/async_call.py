@@ -17,7 +17,7 @@ def recommend_book(genre: str):
 
 
 async def main():
-    response: llm.Response[None, Book] = await recommend_book.call_async("fantasy")
+    response: llm.Response[Book] = await recommend_book.call_async("fantasy")
     book: Book = response.format()
     print(book)
 

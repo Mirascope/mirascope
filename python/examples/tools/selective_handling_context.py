@@ -43,7 +43,7 @@ def librarian(ctx: llm.Context[Library]):
 
 def main():
     ctx = llm.Context(deps=library)
-    response: llm.Response[Library] = librarian(ctx)
+    response: llm.Response = librarian(ctx)
     while tool_call := response.tool_call:
         print(f"Tool call: {tool_call.name}")
         tool = librarian.toolkit.get(tool_call)
@@ -55,10 +55,10 @@ def main():
             print(f"   Reservation ID: {reservation.reservation_id}")
             print(f"   Book: {reservation.title}")
 
-            response = librarian.resume(response, output)
+            response = librarian.resume(ctx, response, output)
         else:
             output = tool.call(ctx, tool_call)
-            response = librarian.resume(response, output)
+            response = librarian.resume(ctx, response, output)
 
     print(response)
 

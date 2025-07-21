@@ -17,7 +17,7 @@ def sazed():
 
 def main():
     ctx = llm.Context(deps=Knowledge())
-    response: llm.Response[Knowledge] = sazed("Help me understand allomancy", ctx=ctx)
+    response: llm.Response = sazed("Help me understand allomancy", ctx=ctx)
     print(response)
 
 

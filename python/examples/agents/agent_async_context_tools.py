@@ -24,9 +24,7 @@ def sazed(ctx: llm.Context[Knowledge]):
 async def main():
     knowledge = Knowledge(repository="The Steel Ministry Archives")
     ctx = llm.Context(deps=knowledge)
-    response: llm.Response[Knowledge] = await sazed(
-        "Tell me about allomancy", ctx=ctx
-    )
+    response: llm.Response = await sazed("Tell me about allomancy", ctx=ctx)
 
     print(response)
     # > Based on my knowledge consultation, allomancy is...
