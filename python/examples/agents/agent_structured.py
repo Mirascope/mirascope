@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 
 from mirascope import llm

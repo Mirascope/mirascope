@@ -53,7 +53,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Run Ruff
-        run: uv run ruff check .
+        run: uv run ruff check . && uv run ruff format --check .
 
       - name: Run Pyright
         run: uv run pyright .

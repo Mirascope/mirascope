@@ -15,7 +15,6 @@ class AudioGroup(BaseGroup[AudioChunk, Audio]):
         raise NotImplementedError()
 
 
-
 class AsyncAudioGroup(BaseAsyncGroup[AudioChunk, Audio]):
     """Async group for streaming audio content chunks."""
 
@@ -23,4 +22,3 @@ class AsyncAudioGroup(BaseAsyncGroup[AudioChunk, Audio]):
     def type(self) -> Literal["audio"]:
         """The type identifier for audio groups."""
         raise NotImplementedError()
-

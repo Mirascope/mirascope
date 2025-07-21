@@ -8,6 +8,7 @@ try {
   // Run ruff on specific files (ruff supports individual files)
   if (files.length > 0) {
     await $`uv run ruff check --fix ${files}`.cwd('./python');
+    await $`uv run ruff format ${files}`.cwd('./python');
   }
   
   // Run pyright on the whole project (doesn't work well with individual files)

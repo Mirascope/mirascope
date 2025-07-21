@@ -15,7 +15,6 @@ class ImageGroup(BaseGroup[ImageChunk, Image]):
         raise NotImplementedError()
 
 
-
 class AsyncImageGroup(BaseAsyncGroup[ImageChunk, Image]):
     """Async group for streaming image content chunks."""
 
@@ -23,4 +22,3 @@ class AsyncImageGroup(BaseAsyncGroup[ImageChunk, Image]):
     def type(self) -> Literal["image"]:
         """The type identifier for image groups."""
         raise NotImplementedError()
-
