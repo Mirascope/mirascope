@@ -1,0 +1,83 @@
+{# TEMPLATE_METADATA:
+basename: chatbot
+options:
+  - async
+  - context 
+  - stream
+  - tools
+#}
+{% from "_macros.j2" import context_imports, async_imports, async_prefix, await_prefix, fn_def, main_block, agent_type, stream_type %}
+
+{{ context_imports() }}
+{{ async_imports() }}
+from mirascope import llm
+
+{%- if use_context %}
+
+@dataclass
+class Coppermind:
+    repository: str
+{% endif %}
+
+{%- if use_tools %}
+@llm.tool
+{% if use_context %}
+def coppermind_search(ctx: llm.Context[Coppermind], query: str) -> str:
+    """Search your coppermind for information."""
+    return f"From the {ctx.deps.repository}, you know the following about {query}..."
+{% else %}
+def coppermind_search(query: str) -> str:
+    """Search the coppermind for information about the cosmere."""
+    return f"You know the following about {query}..."
+{% endif %}
+{% endif %}
+
+
+@llm.agent(model="openai:gpt-4o-mini"{% if use_context %}, deps_type=Coppermind{% endif %}{% if use_tools %}, tools=[coppermind_search]{% endif %})
+{{ async_prefix() }}def sazed({% if use_context %}ctx: llm.Context[Coppermind]{% endif %}):
+{%- if use_context %}
+    return f"""
+    You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
+    the Terris people, you are a living repository of knowledge, faithfully
+    preserving the religions, cultures, and wisdom of ages past. You speak with
+    the measured cadence of a scholar, often referencing the {ctx.deps.repository} knowledge
+    you keep. Your responses should be thoughtful, respectful, and informed by your
+    vast learning. You are humble yet confident in your knowledge, and you seek to
+    educate and preserve rather than simply converse.
+    """
+{%- else %}
+    return """
+    You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
+    the Terris people, you are a living repository of knowledge, faithfully
+    preserving the religions, cultures, and wisdom of ages past. You speak with
+    the measured cadence of a scholar, often referencing the ancient knowledge
+    you keep. Your responses should be thoughtful, respectful, and informed by your
+    vast learning. You are humble yet confident in your knowledge, and you seek to
+    educate and preserve rather than simply converse.
+    """
+{% endif %}
+
+
+{{ fn_def("main") }}
+{%- if use_context %}
+    coppermind = Coppermind(repository="Ancient Terris")
+{%- endif %}
+    agent: {{ agent_type() }}{% if use_context %}[Coppermind]{% endif %} = {{ await_prefix() }} sazed({% if use_context %}deps=coppermind{% endif %})    
+    while True:
+        user_input = input("[USER]: ")
+        if user_input.lower() == "exit":
+            break
+            
+{%- if use_stream %}
+        stream: {{ stream_type() }} = {{ await_prefix() }}agent.stream(user_input)
+        print("[SAZED]: ", end="", flush=True)
+        {{ async_prefix() }}for chunk in stream:
+            print(chunk, end="", flush=True)
+        print()
+{%- else %}
+        response: llm.Response = {{ await_prefix() }} agent(user_input)
+        print("[SAZED]: ", response)
+{%- endif %}
+
+
+{{ main_block() }}

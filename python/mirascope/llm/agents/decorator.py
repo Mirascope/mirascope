@@ -14,7 +14,7 @@ from ..tools import (
     Tool,
 )
 from ..types import Jsonable
-from .agent import Agent, AsyncAgent
+from .agent_template import AgentTemplate, AsyncAgentTemplate
 
 if TYPE_CHECKING:
     from ..clients import (
@@ -68,7 +68,7 @@ class AgentDecorator(Protocol[AgentToolT, DepsT, FormatT]):
     def __call__(
         self: AgentDecorator[None, DepsT, FormatT],
         fn: SystemPrompt[P] | ContextSystemPrompt[P, DepsT],
-    ) -> Agent[DepsT, FormatT]:
+    ) -> AgentTemplate[DepsT, FormatT]:
         """Decorator for creating a sync agent with no tools."""
         ...
 
@@ -78,7 +78,7 @@ class AgentDecorator(Protocol[AgentToolT, DepsT, FormatT]):
             Tool[..., Jsonable] | ContextTool[..., Jsonable, DepsT], DepsT, FormatT
         ],
         fn: SystemPrompt[P] | ContextSystemPrompt[P, DepsT],
-    ) -> Agent[DepsT, FormatT]:
+    ) -> AgentTemplate[DepsT, FormatT]:
         """Decorator for creating an sync agent with sync tools."""
         ...
 
@@ -86,7 +86,7 @@ class AgentDecorator(Protocol[AgentToolT, DepsT, FormatT]):
     def __call__(
         self,
         fn: AsyncSystemPrompt[P] | AsyncContextSystemPrompt[P, DepsT],
-    ) -> AsyncAgent[DepsT, FormatT]:
+    ) -> AsyncAgentTemplate[DepsT, FormatT]:
         """Decorator for creating an async only agent with async prompt."""
         ...
 
@@ -94,7 +94,7 @@ class AgentDecorator(Protocol[AgentToolT, DepsT, FormatT]):
     def __call__(
         self,
         fn: SystemPrompt[P] | ContextSystemPrompt[P, DepsT],
-    ) -> AsyncAgent[DepsT, FormatT]:
+    ) -> AsyncAgentTemplate[DepsT, FormatT]:
         """Decorator for creating an async agent from sync function with async tools."""
         ...
 
@@ -104,7 +104,7 @@ class AgentDecorator(Protocol[AgentToolT, DepsT, FormatT]):
         | ContextSystemPrompt[P, DepsT]
         | AsyncSystemPrompt[P]
         | AsyncContextSystemPrompt[P, DepsT],
-    ) -> Agent[DepsT, FormatT] | AsyncAgent[DepsT, FormatT]:
+    ) -> AgentTemplate[DepsT, FormatT] | AsyncAgentTemplate[DepsT, FormatT]:
         """Decorator for creating an agent."""
         ...
 
@@ -115,14 +115,14 @@ class AsyncAgentDecorator(Protocol[DepsT, FormatT]):
     @overload
     def __call__(
         self, fn: AsyncSystemPrompt[P] | AsyncContextSystemPrompt[P, DepsT]
-    ) -> AsyncAgent[DepsT, FormatT]:
+    ) -> AsyncAgentTemplate[DepsT, FormatT]:
         """Decorator for creating an async only agent."""
         ...
 
     @overload
     def __call__(
         self, fn: SystemPrompt[P] | ContextSystemPrompt[P, DepsT]
-    ) -> AsyncAgent[DepsT, FormatT]:
+    ) -> AsyncAgentTemplate[DepsT, FormatT]:
         """Decorator for creating an async agent from sync function."""
         ...
 
@@ -132,7 +132,7 @@ class AsyncAgentDecorator(Protocol[DepsT, FormatT]):
         | ContextSystemPrompt[P, DepsT]
         | AsyncSystemPrompt[P]
         | AsyncContextSystemPrompt[P, DepsT],
-    ) -> AsyncAgent[DepsT, FormatT]:
+    ) -> AsyncAgentTemplate[DepsT, FormatT]:
         """Decorator for creating an async agent."""
         ...
 
