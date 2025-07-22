@@ -7,9 +7,10 @@ including methods for formatting the response according to a specified format.
 from collections.abc import Sequence
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Generic
+from typing import TYPE_CHECKING, Any, Generic, Literal, overload
 
 from ..content import AssistantContent, Audio, Image, Thinking, ToolCall
+from ..formatting import FormatT, Partial
 from ..messages import Message
 from .finish_reason import FinishReason
 from .usage import Usage
@@ -18,8 +19,6 @@ if TYPE_CHECKING:
     from ..clients import (
         REGISTERED_LLMS,
     )
-
-from ..formatting import FormatT
 
 
 @dataclass
@@ -93,11 +92,28 @@ class Response(Generic[FormatT]):
         """Returns the first thinking in the response content, if any."""
         raise NotImplementedError()
 
-    def format(self) -> FormatT:
+    @overload
+    def format(self, partial: Literal[True]) -> Partial[FormatT]:
+        """Format the response into a Partial[BaseModel] (with optional fields).
+
+        This is useful in the case where a partially-concluded stream has been
+        converted to a response via `stream.to_response()`, in which case the
+        structured output may only be partially available."""
+        ...
+
+    @overload
+    def format(self, partial: Literal[False] = False) -> FormatT:
+        """Format the response into a Pydantic BaseModel."""
+        ...
+
+    def format(self, partial: bool = False) -> FormatT | Partial[FormatT]:
         """Format the response according to the response format parser.
 
         It will parse the response content according to the specified format (if present)
         and return a structured object. Returns None if there was no format.
+
+        When called with `partial=True`, it will return a partial of the model, with all
+        fields optional.
 
         Returns:
             The formatted response object of type T.
