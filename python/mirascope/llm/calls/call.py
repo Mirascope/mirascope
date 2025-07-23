@@ -9,7 +9,7 @@ from ..formatting import FormatT
 from ..prompts import AsyncPrompt, Prompt
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream, Stream
-from ..tools import ToolT
+from ..tools import ToolT, ToolT_
 from ..types import P
 from .base_call import BaseCall
 
@@ -46,6 +46,10 @@ class Call(BaseCall[P, Prompt, ToolT, FormatT], Generic[P, ToolT, FormatT]):
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
+    def add_tools(self, tools: Sequence[ToolT_]) -> "Call[P, ToolT | ToolT_, FormatT]":
+        """Creates a new Call with additional tools."""
+        raise NotImplementedError()
+
 
 @dataclass
 class AsyncCall(
@@ -80,4 +84,10 @@ class AsyncCall(
         content: UserContent | Sequence[UserContent],
     ) -> AsyncStream[FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
+        raise NotImplementedError()
+
+    def add_tools(
+        self, tools: Sequence[ToolT_]
+    ) -> "AsyncCall[P, ToolT | ToolT_, FormatT]":
+        """Creates a new AsyncCall with additional tools."""
         raise NotImplementedError()

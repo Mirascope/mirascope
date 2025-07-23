@@ -6,7 +6,12 @@
 import { writeFileSync, readdirSync, unlinkSync } from "fs";
 import { join, dirname, relative } from "path";
 import { spawn } from "child_process";
-import { ExampleGenerator, type ExampleOptions } from "./example_generator.ts";
+import {
+  ExampleGenerator,
+  filenameForOptions,
+  allOptions,
+  type ExampleOptions,
+} from "./example_generator.ts";
 
 function getAllCombinations(options: string[]): string[][] {
   const allCombos: string[][] = [];
@@ -74,29 +79,9 @@ async function main(): Promise<void> {
       unlinkSync(join(outputDir, file));
     }
   }
-
-  // Generate all combinations
-  const availableOptions = [
-    "async",
-    "stream",
-    "context",
-    "tools",
-    "agent",
-    "structured",
-  ];
-  const combinations = getAllCombinations(availableOptions);
   const generatedFiles: string[] = [];
-
-  for (const combo of combinations) {
-    const filename = getFilename("sazed", combo);
-    const options: ExampleOptions = {
-      async: combo.includes("async"),
-      stream: combo.includes("stream"),
-      context: combo.includes("context"),
-      tools: combo.includes("tools"),
-      agent: combo.includes("agent"),
-      structured: combo.includes("structured"),
-    };
+  for (const options of allOptions()) {
+    const filename = filenameForOptions(options);
 
     const generator = new ExampleGenerator(options);
     const content = generator.generate();

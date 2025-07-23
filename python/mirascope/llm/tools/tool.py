@@ -16,6 +16,12 @@ ToolT = TypeVar(
     covariant=True,
 )
 
+ToolT_ = TypeVar(
+    "ToolT_",
+    bound="Tool[..., Jsonable] | AsyncTool[..., Jsonable]",
+    covariant=True,
+)
+
 
 @dataclass
 class Tool(BaseTool[P, JsonableCovariantT]):

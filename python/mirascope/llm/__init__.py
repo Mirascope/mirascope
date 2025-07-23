@@ -11,6 +11,7 @@ from . import (
     content,
     exceptions,
     formatting,
+    mcp,
     messages,
     models,
     prompts,
@@ -55,6 +56,7 @@ from .exceptions import (
     ToolNotFoundError,
 )
 from .formatting import Format, Partial, format
+from .mcp import MCPClient
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt

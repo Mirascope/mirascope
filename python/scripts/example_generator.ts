@@ -5,6 +5,54 @@ export interface ExampleOptions {
   tools: boolean;
   agent: boolean;
   structured: boolean;
+  mcp: boolean;
+}
+
+export function allOptions(): ExampleOptions[] {
+  const bools = [false, true];
+  const results: ExampleOptions[] = [];
+
+  for (const async of bools) {
+    for (const stream of bools) {
+      for (const tools of bools) {
+        for (const agent of bools) {
+          for (const context of bools) {
+            for (const structured of bools) {
+              for (const mcp of bools) {
+                // skip invalid combo
+                if (mcp && !async) continue;
+                results.push({
+                  async,
+                  stream,
+                  context,
+                  tools,
+                  agent,
+                  structured,
+                  mcp,
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return results;
+}
+
+export function filenameForOptions(opts: ExampleOptions): string {
+  const parts: string[] = ["sazed"];
+
+  if (opts.async) parts.push("async");
+  if (opts.stream) parts.push("stream");
+  if (opts.tools) parts.push("tools");
+  if (opts.agent) parts.push("agent");
+  if (opts.context) parts.push("context");
+  if (opts.structured) parts.push("structured");
+  if (opts.mcp) parts.push("mcp");
+
+  return `${parts.join("_")}.py`;
 }
 
 export class ExampleGenerator implements ExampleOptions {
@@ -14,9 +62,13 @@ export class ExampleGenerator implements ExampleOptions {
   tools: boolean;
   agent: boolean;
   structured: boolean;
+  mcp: boolean;
 
   constructor(private options: ExampleOptions) {
     Object.assign(this, options);
+    if (this.mcp && !this.async) {
+      throw new Error("MCP requires async");
+    }
   }
 
   generate(): string {
@@ -24,7 +76,7 @@ export class ExampleGenerator implements ExampleOptions {
 ${this.function_decorator}
 ${this.function_def}
 
-${this.main_function}${this.invoke_main}
+${this.setup_mcp}${this.main_function}${this.invoke_main}
 `;
   }
 
@@ -43,8 +95,16 @@ ${this.main_function}${this.invoke_main}
       imports += "\n";
     }
 
+    if (this.mcp) {
+      imports += `
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client\n`;
+    }
     if (this.structured) {
-      imports += "from pydantic import BaseModel\n\n";
+      imports += "from pydantic import BaseModel\n";
+    }
+    if (this.mcp || this.structured) {
+      imports += "\n";
     }
 
     imports += "from mirascope import llm\n\n";
@@ -119,6 +179,10 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
     return this.async ? "async " : "";
   }
 
+  private get _mcp(): string {
+    return this.mcp ? "_mcp " : "";
+  }
+
   private get stream_type(): string {
     const base = this.async ? "llm.AsyncStream" : "llm.Stream";
     return this.structured ? `${base}[KeeperEntry]` : base;
@@ -154,6 +218,27 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
     }
   }
 
+  private get setup_mcp(): string {
+    if (!this.mcp) {
+      return "";
+    }
+    return `
+async def setup_mcp() -> llm.MCPClient:
+    """Setup MCP connection for the Coppermind archive."""
+    server_params = StdioServerParameters(
+        command="npx",
+        args=["@modelcontextprotocol/server-filesystem", "./coppermind"]
+    )
+
+    try:
+        async with stdio_client(server_params) as (read, write):
+            session = ClientSession(read, write)
+            await session.initialize()
+            return llm.MCPClient(session)
+    except Exception as e:
+        raise RuntimeError(f"Failed to initialize MCP session: {e}")\n\n`;
+  }
+
   private get main_function(): string {
     let result = `
 ${this._async}def main():`;
@@ -167,10 +252,17 @@ ${this._async}def main():`;
       }
     }
 
+    if (this.mcp) {
+      result += `
+    mcp = await setup_mcp()
+    sazed_mcp = sazed.add_tools(await mcp.list_tools())
+    `;
+    }
+
     if (this.agent) {
       const deps_arg = this.context ? "deps=coppermind" : "";
       result += `
-    agent: ${this.agent_type} = ${this._await}sazed(${deps_arg})`;
+    agent: ${this.agent_type} = ${this._await}sazed${this._mcp}(${deps_arg})`;
     }
 
     result += `
@@ -213,8 +305,7 @@ ${indent}print()`;
   private get_stream_logic(): string {
     const call_target = this.agent
       ? "agent.stream("
-      : "sazed.stream(" + this.ctx_arg;
-
+      : `sazed${this._mcp}.stream(` + this.ctx_arg;
     let result = `
     stream: ${this.stream_type} = ${this._await}${call_target}query)`;
 
@@ -232,7 +323,7 @@ ${this.print_stream("                ", "group")}
       }tool_call))
         if not outputs:
             break
-        stream = ${this._await}sazed.resume_stream(${
+        stream = ${this._await}sazed${this._mcp}.resume_stream(${
         this.ctx_arg
       }stream, outputs)`;
     } else {
@@ -247,17 +338,19 @@ ${this.print_stream("    ", "stream")}`;
     const response_type = this.structured
       ? "llm.Response[KeeperEntry]"
       : "llm.Response";
-    const call_target = this.agent ? "agent(" : "sazed(" + this.ctx_arg;
+    const call_target = this.agent
+      ? "agent("
+      : `sazed${this._mcp}(` + this.ctx_arg;
     let result = `
     response: ${response_type} = ${this._await}${call_target}query)`;
 
-    if (this.tools && !this.agent) {
+    if ((this.tools || this.mcp) && !this.agent) {
       const gather = this.async ? "await asyncio.gather(*" : "";
       const gather_close = this.async ? ")" : "";
       result += `
     while tool_calls := response.tool_calls:
-        outputs: list[llm.ToolOutput] = ${gather}[sazed.toolkit.call(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}
-        response = ${this._await}sazed.resume(${this.ctx_arg}response, outputs)`;
+        outputs: list[llm.ToolOutput] = ${gather}[sazed${this._mcp}.toolkit.call(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}
+        response = ${this._await}sazed${this._mcp}.resume(${this.ctx_arg}response, outputs)`;
     }
 
     if (this.structured) {

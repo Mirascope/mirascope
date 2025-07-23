@@ -10,7 +10,7 @@ from ..formatting import FormatT
 from ..prompts import Prompt
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream, Stream
-from ..tools import ContextToolT
+from ..tools import ContextToolT, ContextToolT_
 from ..types import P
 from .base_call import BaseContextCall
 
@@ -58,6 +58,12 @@ class ContextCall(
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
+    def add_tools(
+        self, tools: Sequence[ContextToolT_]
+    ) -> "ContextCall[P, ContextToolT | ContextToolT_, DepsT, FormatT]":
+        """Creates a new ContextCall with additional tools."""
+        raise NotImplementedError()
+
 
 @dataclass
 class AsyncContextCall(
@@ -100,4 +106,10 @@ class AsyncContextCall(
         content: UserContent | Sequence[UserContent],
     ) -> AsyncStream[FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
+        raise NotImplementedError()
+
+    def add_tools(
+        self, tools: Sequence[ContextToolT_]
+    ) -> "AsyncContextCall[P, ContextToolT | ContextToolT_, DepsT, FormatT]":
+        """Creates a new AsyncContextCall with additional tools."""
         raise NotImplementedError()

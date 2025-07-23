@@ -22,6 +22,14 @@ ContextToolT = TypeVar(
     | "AsyncContextTool[..., Jsonable, Any]",
     covariant=True,
 )
+ContextToolT_ = TypeVar(
+    "ContextToolT_",
+    bound=Tool[..., Jsonable]
+    | "ContextTool[..., Jsonable, Any]"
+    | AsyncTool[..., Jsonable]
+    | "AsyncContextTool[..., Jsonable, Any]",
+    covariant=True,
+)
 AgentToolT = TypeVar(
     "AgentToolT",
     bound=Tool[..., Jsonable]
