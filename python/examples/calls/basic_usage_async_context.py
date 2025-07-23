@@ -19,7 +19,7 @@ async def recommend_book(genre: str, ctx: llm.Context[UserProfile]) -> str:
 async def main():
     profile = UserProfile(favorite_author="Brandon Sanderson")
     ctx = llm.Context(deps=profile)
-    response: llm.Response = await recommend_book.call("fantasy", ctx=ctx)
+    response: llm.Response = await recommend_book("fantasy", ctx=ctx)
     print(response.content)
 
 

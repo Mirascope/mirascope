@@ -7,7 +7,7 @@ def recommend_book(genre: str) -> str:
 
 
 def main():
-    response: llm.Response = recommend_book.call("fantasy")
+    response: llm.Response = recommend_book("fantasy")
     print(response.content)
 
 

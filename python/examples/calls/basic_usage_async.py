@@ -9,7 +9,7 @@ async def recommend_book(genre: str) -> str:
 
 
 async def main():
-    response: llm.Response = await recommend_book.call("fantasy")
+    response: llm.Response = await recommend_book("fantasy")
     print(response.content)
 
 

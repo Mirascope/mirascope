@@ -32,9 +32,9 @@ class UserProfile:
     ctx = llm.Context(deps=profile)
 {%- endif %}
 {%- if use_context %}
-    response: llm.Response = {{ await_prefix() }}recommend_book.call("fantasy", ctx=ctx)
+    response: llm.Response = {{ await_prefix() }}recommend_book("fantasy", ctx=ctx)
 {%- else %}
-    response: llm.Response = {{ await_prefix() }}recommend_book.call("fantasy")
+    response: llm.Response = {{ await_prefix() }}recommend_book("fantasy")
 {%- endif %}
     print(response.content)
 
