@@ -1,9 +1,9 @@
 """Base interface for streaming responses from LLMs."""
 
 from decimal import Decimal
-from typing import Generic
+from typing import Generic, Literal, overload
 
-from ..formatting import FormatT
+from ..formatting import FormatT, Partial
 from ..responses import FinishReason, Response, Usage
 
 
@@ -24,35 +24,40 @@ class BaseStream(Generic[FormatT]):
     def to_response(self) -> Response[FormatT]:
         """Convert the stream to a complete response.
 
-        This method consumes the stream and aggregates all chunks into a single response
-        object, providing access to metadata like usage statistics and the complete
-        response content.
+        This method converts all the already-streamed content into a response object.
+        Content that has not yet been iterated over will not be included, even if the
+        stream is not exhausted.
 
         The Response is reconstructed on a best-effort basis, but it may not exactly
         match the response that would have been generated if not using streaming.
 
         Returns:
             A Response object containing the aggregated stream data.
-
-        Raises:
-            ValueError: If the stream has not been fully exhausted before calling this method.
-                The stream must be completely iterated through to ensure all data is
-                collected.
-
         """
         raise NotImplementedError()
 
-    def format(self) -> FormatT:
+    @overload
+    def format(self, partial: Literal[True]) -> Partial[FormatT]:
+        """Format the response into a Partial[BaseModel] (with optional fields)."""
+        ...
+
+    @overload
+    def format(self, partial: Literal[False] = False) -> FormatT:
+        """Format the response into a Pydantic BaseModel."""
+        ...
+
+    def format(self, partial: bool = False) -> FormatT | Partial[FormatT]:
         """Format the already-streamed content using the response format parser.
 
         It will parse the response content according to the specified format (if present)
         and return a structured object. Returns None if there was no format.
 
-        `stream.format()` is equivalent to calling `stream.to_response().format()`.
+        When called with `partial=True`, it will return a partial of the model, with all
+        fields optional. This is most useful for generating partial structured outputs
+        while the content is still streaming.
 
         Returns:
-            The formatted response object of type T. May be a partial response
-            if the stream has not been exhausted.
+            The formatted response model.
 
         Raises:
             ValueError: If the response cannot be formatted according to the

@@ -1,5 +1,4 @@
 import asyncio
-import contextlib
 
 from pydantic import BaseModel
 
@@ -20,11 +19,8 @@ def recommend_book(genre: str):
 async def main():
     stream: llm.AsyncStream[Book] = await recommend_book.stream_async("fantasy")
     async for _ in stream:
-        partial_book: Book | None = None
-        with contextlib.suppress(Exception):
-            partial_book = stream.format()
-        if partial_book is not None:
-            print("Partial book: ", partial_book)
+        partial_book: llm.Partial[Book] = stream.format(partial=True)
+        print("Partial book: ", partial_book)
 
     book: Book = stream.format()
     print("Book: ", book)

@@ -1,5 +1,3 @@
-import contextlib
-
 from pydantic import BaseModel
 
 from mirascope import llm
@@ -19,11 +17,8 @@ def recommend_book(genre: str):
 def main():
     stream: llm.Stream[Book] = recommend_book.stream("fantasy")
     for _ in stream:
-        partial_book: Book | None = None
-        with contextlib.suppress(Exception):
-            partial_book = stream.format()
-        if partial_book is not None:
-            print("Partial book: ", partial_book)
+        partial_book: llm.Partial[Book] = stream.format(partial=True)
+        print("Partial book: ", partial_book)
 
     book: Book = stream.format()
     print("Book: ", book)

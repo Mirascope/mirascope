@@ -9,6 +9,7 @@ from .decorator import (
     format,
 )
 from .from_call_args import FromCallArgs
+from .partial import Partial
 from .types import Format, FormatT, Formattable, FormattingMode
 
 __all__ = [
@@ -17,5 +18,6 @@ __all__ = [
     "Formattable",
     "FormattingMode",
     "FromCallArgs",
+    "Partial",
     "format",
 ]

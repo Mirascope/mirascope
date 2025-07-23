@@ -54,7 +54,7 @@ from .exceptions import (
     TimeoutError,
     ToolNotFoundError,
 )
-from .formatting import Format, format
+from .formatting import Format, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
@@ -94,6 +94,7 @@ __all__ = [
     "Message",
     "MirascopeError",
     "NotFoundError",
+    "Partial",
     "PermissionError",
     "RateLimitError",
     "Response",
