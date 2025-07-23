@@ -52,9 +52,12 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Verify examples match templates
         run: |
-          uv run scripts/regenerate_examples.py
+          bun run scripts/regenerate_examples.ts
           git diff --exit-code examples/
         shell: bash
 
