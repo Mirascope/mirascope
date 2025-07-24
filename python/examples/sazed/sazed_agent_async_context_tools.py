@@ -9,7 +9,7 @@ class Coppermind:
     repository: str
 
 
-@llm.tool
+@llm.context_tool
 async def search_coppermind(ctx: llm.Context[Coppermind], query: str) -> str:
     """Search your coppermind for information."""
     return (

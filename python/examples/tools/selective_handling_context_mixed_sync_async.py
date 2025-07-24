@@ -22,13 +22,13 @@ class Library:
 library = Library(books=["Mistborn", "Gödel, Escher, Bach", "Dune"])
 
 
-@llm.tool(deps_type=Library)
+@llm.context_tool(deps_type=Library)
 def available_books(ctx: llm.Context[Library]) -> list[str]:
     """List all books available in the library."""
     return ["Mistborn", "Gödel, Escher, Bach", "Dune"]
 
 
-@llm.tool(deps_type=Library)
+@llm.context_tool(deps_type=Library)
 async def reserve_book(ctx: llm.Context[Library], title: str) -> BookReservation:
     """Reserve a book for the user."""
     reservation_id = "abcd-1234..."
@@ -36,7 +36,7 @@ async def reserve_book(ctx: llm.Context[Library], title: str) -> BookReservation
     return BookReservation(reservation_id=reservation_id, title=title)
 
 
-@llm.call(
+@llm.context_call(
     model="openai:gpt-4o-mini",
     deps_type=Library,
     tools=[available_books, reserve_book],

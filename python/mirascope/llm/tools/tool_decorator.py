@@ -3,9 +3,8 @@
 from collections.abc import Awaitable, Callable
 from typing import Protocol, overload
 
-from ..context import Context, DepsT
+from ..context import DepsT
 from ..types import JsonableCovariantT, P
-from .context_tool import AsyncContextTool, ContextTool
 from .tool import AsyncTool, Tool
 
 
@@ -17,31 +16,11 @@ class ToolFn(Protocol[P, JsonableCovariantT]):
         ...
 
 
-class ContextToolFn(Protocol[P, JsonableCovariantT, DepsT]):
-    """Protocol for the context tool function."""
-
-    def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> JsonableCovariantT:
-        """Call the function with the given arguments."""
-        ...
-
-
 class AsyncToolFn(Protocol[P, JsonableCovariantT]):
     """Protocol for the async tool function."""
 
     def __call__(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> Awaitable[JsonableCovariantT]:
-        """Call the function with the given arguments."""
-        ...
-
-
-class AsyncContextToolFn(Protocol[P, JsonableCovariantT, DepsT]):
-    """Protocol for the async context tool function."""
-
-    def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> Awaitable[JsonableCovariantT]:
         """Call the function with the given arguments."""
         ...
@@ -71,35 +50,6 @@ class ToolDecorator(Protocol):
         ...
 
 
-class ContextToolDecorator(Protocol[DepsT]):
-    """Protocol for the context tool decorator."""
-
-    @overload
-    def __call__(
-        self, fn: ContextToolFn[P, JsonableCovariantT, DepsT]
-    ) -> ContextTool[P, JsonableCovariantT, DepsT]:
-        """Call the decorator with a sync function."""
-        ...
-
-    @overload
-    def __call__(
-        self, fn: AsyncContextToolFn[P, JsonableCovariantT, DepsT]
-    ) -> AsyncContextTool[P, JsonableCovariantT, DepsT]:
-        """Call the decorator with an async function."""
-        ...
-
-    def __call__(
-        self,
-        fn: ContextToolFn[P, JsonableCovariantT, DepsT]
-        | AsyncContextToolFn[P, JsonableCovariantT, DepsT],
-    ) -> (
-        ContextTool[P, JsonableCovariantT, DepsT]
-        | AsyncContextTool[P, JsonableCovariantT, DepsT]
-    ):
-        """Call the decorator with a function."""
-        ...
-
-
 @overload
 def tool(__fn: ToolFn[P, JsonableCovariantT]) -> Tool[P, JsonableCovariantT]:
     """Overload for no arguments, which uses default settings."""
@@ -118,14 +68,6 @@ def tool(*, deps_type: type[None] | None = None, strict: bool = False) -> ToolDe
     ...
 
 
-@overload
-def tool(
-    *, deps_type: type[DepsT], strict: bool = False
-) -> ContextToolDecorator[DepsT]:
-    """Overload for tools with context."""
-    ...
-
-
 def tool(
     __fn: Callable[P, JsonableCovariantT]
     | Callable[P, Awaitable[JsonableCovariantT]]
@@ -133,12 +75,7 @@ def tool(
     *,
     deps_type: type[DepsT] | type[None] | None = None,
     strict: bool = False,
-) -> (
-    Tool[P, JsonableCovariantT]
-    | AsyncTool[P, JsonableCovariantT]
-    | ToolDecorator
-    | ContextToolDecorator[DepsT]
-):
+) -> Tool[P, JsonableCovariantT] | AsyncTool[P, JsonableCovariantT] | ToolDecorator:
     '''Decorator that turns a function into a tool definition.
 
     This decorator creates a `Tool` that can be used with `llm.call`.

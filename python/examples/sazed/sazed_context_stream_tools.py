@@ -8,7 +8,7 @@ class Coppermind:
     repository: str
 
 
-@llm.tool
+@llm.context_tool
 def search_coppermind(ctx: llm.Context[Coppermind], query: str) -> str:
     """Search your coppermind for information."""
     return (
@@ -16,7 +16,9 @@ def search_coppermind(ctx: llm.Context[Coppermind], query: str) -> str:
     )
 
 
-@llm.call(model="openai:gpt-4o-mini", deps_type=Coppermind, tools=[search_coppermind])
+@llm.context_call(
+    model="openai:gpt-4o-mini", deps_type=Coppermind, tools=[search_coppermind]
+)
 def sazed(ctx: llm.Context[Coppermind], query: str):
     system_prompt = f"""
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of

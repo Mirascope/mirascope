@@ -81,7 +81,7 @@ class Coppermind:
       ? `You consult ${repository}, and recall the following about {query}...`
       : `You recall the following about {query}...`;
     return `
-@llm.tool
+@llm.${this.context ? "context_" : ""}tool
 ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
     """Search your coppermind for information."""
     return f"${message}"\n\n`;
@@ -139,7 +139,11 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
     const tools_param = this.tools ? ", tools=[search_coppermind]" : "";
     const deps_param = this.context ? ", deps_type=Coppermind" : "";
     const format_param = this.structured ? ", format=KeeperEntry" : "";
-    const decorator = this.agent ? "agent" : "call";
+    const decorator = this.agent
+      ? "agent"
+      : this.context
+      ? "context_call"
+      : "call";
     return `@llm.${decorator}(model="openai:gpt-4o-mini"${deps_param}${tools_param}${format_param})`;
   }
 

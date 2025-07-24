@@ -2,8 +2,9 @@
 
 from .base_tool import BaseTool
 from .context_tool import AgentToolT, AsyncContextTool, ContextTool, ContextToolT
-from .decorator import ContextToolDecorator, ToolDecorator, tool
+from .context_tool_decorator import ContextToolDecorator, context_tool
 from .tool import AsyncTool, Tool, ToolT
+from .tool_decorator import ToolDecorator, tool
 from .toolkit import ContextToolkit, Toolkit, ToolkitT
 
 __all__ = [
@@ -20,5 +21,6 @@ __all__ = [
     "ToolT",
     "Toolkit",
     "ToolkitT",
+    "context_tool",
     "tool",
 ]

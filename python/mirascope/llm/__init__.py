@@ -20,9 +20,7 @@ from . import (
     types,
 )
 from .agents import Agent, AsyncAgent, agent
-from .calls import (
-    call,
-)
+from .calls import call, context_call
 from .clients import BaseClient, BaseParams
 from .content import (
     AssistantContent,
@@ -64,8 +62,7 @@ from .streams import (
     BaseStream,
     Stream,
 )
-from .tools import Tool
-from .tools.decorator import tool
+from .tools import Tool, context_tool, tool
 
 __all__ = [
     "LLM",
@@ -118,6 +115,8 @@ __all__ = [
     "call",
     "calls",
     "content",
+    "context_call",
+    "context_tool",
     "exceptions",
     "format",
     "formatting",
