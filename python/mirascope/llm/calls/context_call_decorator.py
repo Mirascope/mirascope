@@ -7,23 +7,14 @@ from typing import TYPE_CHECKING, Protocol, overload
 from typing_extensions import Unpack
 
 from ..clients import (
-    AnthropicClient,
-    AnthropicParams,
     BaseClient,
     BaseParams,
-    GoogleClient,
-    GoogleParams,
-    OpenAIClient,
-    OpenAIParams,
 )
 from ..prompts import (
     AsyncContextPrompt,
     ContextPrompt,
 )
-from ..tools import (
-    ContextToolT,
-    ToolT,
-)
+from ..tools import ContextToolT, OptionalContextToolT, ToolT
 from .context_call import AsyncContextCall, ContextCall
 
 if TYPE_CHECKING:
@@ -32,6 +23,12 @@ if TYPE_CHECKING:
         GOOGLE_REGISTERED_LLMS,
         OPENAI_REGISTERED_LLMS,
         REGISTERED_LLMS,
+        AnthropicClient,
+        AnthropicParams,
+        GoogleClient,
+        GoogleParams,
+        OpenAIClient,
+        OpenAIParams,
     )
 
 
@@ -45,24 +42,25 @@ class ContextCallDecorator(Protocol[ContextToolT, DepsT, FormatT]):
 
     @overload
     def __call__(
-        self, fn: AsyncContextPrompt[P, DepsT]
-    ) -> AsyncContextCall[P, ContextToolT, DepsT, FormatT]:
+        self, fn: AsyncContextPrompt[P, DepsT, OptionalContextToolT]
+    ) -> AsyncContextCall[P, ContextToolT, OptionalContextToolT, DepsT, FormatT]:
         """Decorate an async context prompt into an AsyncContextCall."""
         ...
 
     @overload
     def __call__(
-        self, fn: ContextPrompt[P, DepsT]
-    ) -> ContextCall[P, ContextToolT, DepsT, FormatT]:
+        self, fn: ContextPrompt[P, DepsT, OptionalContextToolT]
+    ) -> ContextCall[P, ContextToolT, OptionalContextToolT, DepsT, FormatT]:
         """Decorate a context prompt into a ContextCall."""
         ...
 
     def __call__(
         self,
-        fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
+        fn: ContextPrompt[P, DepsT, OptionalContextToolT]
+        | AsyncContextPrompt[P, DepsT, OptionalContextToolT],
     ) -> (
-        ContextCall[P, ContextToolT, DepsT, FormatT]
-        | AsyncContextCall[P, ContextToolT, DepsT, FormatT]
+        ContextCall[P, ContextToolT, OptionalContextToolT, DepsT, FormatT]
+        | AsyncContextCall[P, ContextToolT, OptionalContextToolT, DepsT, FormatT]
     ):
         """Decorates a context prompt into a ContextCall."""
         ...
@@ -72,12 +70,12 @@ class ContextCallDecorator(Protocol[ContextToolT, DepsT, FormatT]):
 def context_call(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
-    tools: list[ToolT] | None = None,
+    tools: list[ContextToolT] | None = None,
     deps_type: type[DepsT] | None = None,
     format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> ContextCallDecorator[ToolT, DepsT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, DepsT, FormatT]:
     """Decorate a context prompt into a ContextCall using Anthropic models."""
     ...
 
@@ -86,12 +84,12 @@ def context_call(
 def context_call(
     model: GOOGLE_REGISTERED_LLMS,
     *,
-    tools: list[ToolT] | None = None,
+    tools: list[ContextToolT] | None = None,
     deps_type: type[DepsT] | None = None,
     format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> ContextCallDecorator[ToolT, DepsT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, DepsT, FormatT]:
     """Decorate a context prompt into a ContextCall using Google models."""
     ...
 
@@ -100,12 +98,12 @@ def context_call(
 def context_call(
     model: OPENAI_REGISTERED_LLMS,
     *,
-    tools: list[ToolT] | None = None,
+    tools: list[ContextToolT] | None = None,
     deps_type: type[DepsT] | None = None,
     format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> ContextCallDecorator[ToolT, DepsT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, DepsT, FormatT]:
     """Decorate a context prompt into a ContextCall using OpenAI models."""
     ...
 
@@ -129,6 +127,7 @@ def context_call(
     *,
     tools: list[ToolT] | list[ContextToolT] | None = None,
     deps_type: type[DepsT] | type[None] | None = None,
+    ctx_tool: type[OptionalContextToolT] | type[None] | None = None,
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],

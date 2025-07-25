@@ -6,6 +6,7 @@ from typing import Generic
 from typing_extensions import TypeVar
 
 from ..messages import Message
+from ..tools import OptionalContextToolT
 
 DepsT = TypeVar("DepsT", default=None)
 """Type variable for dependency injection in `llm.Context`.
@@ -17,7 +18,7 @@ It defaults to None when no dependencies are needed.
 
 
 @dataclass
-class Context(Generic[DepsT]):
+class Context(Generic[DepsT, OptionalContextToolT]):
     """Context for LLM calls.
 
     This class provides a context for LLM calls, including the model,
@@ -25,13 +26,21 @@ class Context(Generic[DepsT]):
     """
 
     def __init__(
-        self, *, messages: list[Message] | None = None, deps: DepsT = None
+        self,
+        *,
+        messages: list[Message] | None = None,
+        deps: DepsT = None,
+        tools: list[OptionalContextToolT] | None = None,
     ) -> None:
         self.messages = messages or []
         self.deps = deps
+        self.tools = tools or []
 
     messages: list[Message]
     """The array of messages that have been sent so far (i.e. history)."""
 
     deps: DepsT
     """The dependencies needed for a call."""
+
+    tools: list[OptionalContextToolT]
+    """The tools that are added by the context."""

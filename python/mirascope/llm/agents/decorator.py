@@ -9,8 +9,8 @@ from typing_extensions import Unpack
 from ..clients import BaseClient, BaseParams
 from ..context import Context
 from ..tools import (
-    AgentToolT,
     ContextTool,
+    OptionalContextToolT,
     Tool,
 )
 from ..types import Jsonable
@@ -61,7 +61,7 @@ class AsyncContextSystemPrompt(Protocol[P, DepsT]):
     async def __call__(self, ctx: Context[DepsT]) -> str: ...
 
 
-class AgentDecorator(Protocol[AgentToolT, DepsT, FormatT]):
+class AgentDecorator(Protocol[OptionalContextToolT, DepsT, FormatT]):
     """Protocol for the `agent` decorator."""
 
     @overload
@@ -155,12 +155,12 @@ def agent(
 def agent(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
-    tools: list[AgentToolT],
+    tools: list[OptionalContextToolT],
     deps_type: type[DepsT] = NoneType,
     format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+) -> AgentDecorator[OptionalContextToolT, DepsT, FormatT]:
     """Overload for Anthropic agents with tools."""
     ...
 
@@ -183,12 +183,12 @@ def agent(
 def agent(
     model: GOOGLE_REGISTERED_LLMS,
     *,
-    tools: list[AgentToolT],
+    tools: list[OptionalContextToolT],
     deps_type: type[DepsT] = NoneType,
     format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+) -> AgentDecorator[OptionalContextToolT, DepsT, FormatT]:
     """Overload for Google agents with tools."""
     ...
 
@@ -211,12 +211,12 @@ def agent(
 def agent(
     model: OPENAI_REGISTERED_LLMS,
     *,
-    tools: list[AgentToolT],
+    tools: list[OptionalContextToolT],
     deps_type: type[DepsT] = NoneType,
     format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+) -> AgentDecorator[OptionalContextToolT, DepsT, FormatT]:
     """Overload for OpenAI agents with tools."""
     ...
 
@@ -239,12 +239,12 @@ def agent(
 def agent(
     model: REGISTERED_LLMS,
     *,
-    tools: list[AgentToolT],
+    tools: list[OptionalContextToolT],
     deps_type: type[DepsT] = NoneType,
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
-) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+) -> AgentDecorator[OptionalContextToolT, DepsT, FormatT]:
     """Overload for agents with tools."""
     ...
 
@@ -252,12 +252,15 @@ def agent(
 def agent(
     model: REGISTERED_LLMS,
     *,
-    tools: list[AgentToolT] | None = None,
+    tools: list[OptionalContextToolT] | None = None,
     deps_type: type[DepsT] = NoneType,
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
-) -> AgentDecorator[AgentToolT, DepsT, FormatT] | AgentDecorator[None, DepsT, FormatT]:
+) -> (
+    AgentDecorator[OptionalContextToolT, DepsT, FormatT]
+    | AgentDecorator[None, DepsT, FormatT]
+):
     """Decorator for creating an agent or structured agent.
 
     Args:

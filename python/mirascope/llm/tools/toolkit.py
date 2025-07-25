@@ -5,7 +5,12 @@ from typing import Any, Generic, TypeVar, overload
 from ..content import ToolCall, ToolOutput
 from ..context import Context, DepsT
 from ..types import Jsonable
-from .context_tool import AsyncContextTool, ContextTool, ContextToolT
+from .context_tool import (
+    AsyncContextTool,
+    ContextTool,
+    ContextToolT,
+    OptionalContextToolT,
+)
 from .tool import AsyncTool, Tool, ToolT
 
 ToolkitT = TypeVar(
@@ -52,31 +57,57 @@ class Toolkit(Generic[ToolT]):
 class ContextToolkit(Generic[ContextToolT, DepsT]):
     tools: list[ContextToolT]
 
-    def get(self, tool_call: ToolCall) -> ContextToolT:
+    @overload
+    def get(self, ctx: Context[DepsT, None], tool_call: ToolCall) -> ContextToolT:
+        raise NotImplementedError()
+
+    @overload
+    def get(
+        self, ctx: Context[DepsT, OptionalContextToolT], tool_call: ToolCall
+    ) -> ContextToolT | OptionalContextToolT:
+        raise NotImplementedError()
+
+    def get(
+        self, ctx: Context[DepsT, OptionalContextToolT], tool_call: ToolCall
+    ) -> ContextToolT | OptionalContextToolT:
         raise NotImplementedError()
 
     @overload
     def call(
         self: "ContextToolkit[Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT], DepsT]",
-        ctx: Context[DepsT],
+        ctx: Context[
+            DepsT, Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT] | None
+        ],
         tool_call: ToolCall,
     ) -> ToolOutput[ToolReturnT]: ...
 
     @overload
     def call(
         self: "ContextToolkit[AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
-        ctx: Context[DepsT],
+        ctx: Context[
+            DepsT,
+            AsyncTool[..., AsyncToolReturnT]
+            | AsyncContextTool[..., AsyncToolReturnT, DepsT]
+            | None,
+        ],
         tool_call: ToolCall,
     ) -> Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
     @overload
     def call(
         self: "ContextToolkit[Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT] | AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
-        ctx: Context[DepsT],
+        ctx: Context[
+            DepsT,
+            Tool[..., ToolReturnT]
+            | ContextTool[..., ToolReturnT, DepsT]
+            | AsyncTool[..., AsyncToolReturnT]
+            | AsyncContextTool[..., AsyncToolReturnT, DepsT]
+            | None,
+        ],
         tool_call: ToolCall,
     ) -> ToolOutput[ToolReturnT] | Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
     def call(
-        self, ctx: Context[DepsT], tool_call: ToolCall
+        self, ctx: Context[DepsT, OptionalContextToolT], tool_call: ToolCall
     ) -> ToolOutput[Jsonable] | Awaitable[ToolOutput[Jsonable]]:
         raise NotImplementedError()

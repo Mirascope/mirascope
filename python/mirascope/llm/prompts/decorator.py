@@ -6,6 +6,7 @@ from typing import Concatenate, Protocol, TypeAlias, TypeVar, overload
 from ..content import UserContent
 from ..context import Context, DepsT
 from ..messages.message import Message
+from ..tools import ContravariantContextToolT, InvariantContextToolT
 from ..types import P
 
 
@@ -32,6 +33,7 @@ Prompt: TypeAlias = ContentPrompt[P] | ContentSequencePrompt[P] | MessagesPrompt
 
 A `Prompt` function takes input arguments `P` and returns one of:
   - A single `UserContent` part that will be rendered as a single user message
+  
   - A sequence of `UserContent` parts that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
 """
@@ -69,34 +71,43 @@ An `AsyncPrompt` function takes input arguments `P` and returns one of:
 """
 
 
-class ContextMessagesPrompt(Protocol[P, DepsT]):
+class ContextMessagesPrompt(Protocol[P, DepsT, ContravariantContextToolT]):
     """Protocol for a context prompt function that returns a list of messages."""
 
     def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+        self,
+        ctx: Context[DepsT, ContravariantContextToolT],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> list[Message]: ...
 
 
-class ContextContentPrompt(Protocol[P, DepsT]):
+class ContextContentPrompt(Protocol[P, DepsT, ContravariantContextToolT]):
     """Protocol for a context Prompt function that returns a single content part."""
 
     def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+        self,
+        ctx: Context[DepsT, ContravariantContextToolT],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> UserContent: ...
 
 
-class ContextContentSequencePrompt(Protocol[P, DepsT]):
+class ContextContentSequencePrompt(Protocol[P, DepsT, ContravariantContextToolT]):
     """Protocol for a context prompt function that returns a content parts sequence."""
 
     def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+        self,
+        ctx: Context[DepsT, ContravariantContextToolT],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Sequence[UserContent]: ...
 
 
 ContextPrompt: TypeAlias = (
-    ContextContentPrompt[P, DepsT]
-    | ContextContentSequencePrompt[P, DepsT]
-    | ContextMessagesPrompt[P, DepsT]
+    ContextContentPrompt[P, DepsT, ContravariantContextToolT]
+    | ContextContentSequencePrompt[P, DepsT, ContravariantContextToolT]
+    | ContextMessagesPrompt[P, DepsT, ContravariantContextToolT]
 )
 """A context Prompt function.
 
@@ -108,34 +119,43 @@ returns one of:
 """
 
 
-class AsyncContextMessagesPrompt(Protocol[P, DepsT]):
+class AsyncContextMessagesPrompt(Protocol[P, DepsT, ContravariantContextToolT]):
     """Protocol for a context prompt function that returns a list of messages."""
 
     async def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+        self,
+        ctx: Context[DepsT, ContravariantContextToolT],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> list[Message]: ...
 
 
-class AsyncContextContentPrompt(Protocol[P, DepsT]):
+class AsyncContextContentPrompt(Protocol[P, DepsT, ContravariantContextToolT]):
     """Protocol for a context prompt function that returns a single content part."""
 
     async def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+        self,
+        ctx: Context[DepsT, ContravariantContextToolT],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> UserContent: ...
 
 
-class AsyncContextContentSequencePrompt(Protocol[P, DepsT]):
+class AsyncContextContentSequencePrompt(Protocol[P, DepsT, ContravariantContextToolT]):
     """Protocol for a context prompt function that returns a content parts sequence."""
 
     async def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+        self,
+        ctx: Context[DepsT, ContravariantContextToolT],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Sequence[UserContent]: ...
 
 
 AsyncContextPrompt: TypeAlias = (
-    AsyncContextContentPrompt[P, DepsT]
-    | AsyncContextContentSequencePrompt[P, DepsT]
-    | AsyncContextMessagesPrompt[P, DepsT]
+    AsyncContextContentPrompt[P, DepsT, ContravariantContextToolT]
+    | AsyncContextContentSequencePrompt[P, DepsT, ContravariantContextToolT]
+    | AsyncContextMessagesPrompt[P, DepsT, ContravariantContextToolT]
 )
 """An asynchronous context Prompt function.
 
@@ -155,26 +175,40 @@ both prompt variants.
 """
 
 
-class PromptDecorator(Protocol[DepsT]):
+class PromptDecorator(Protocol[DepsT, InvariantContextToolT]):
     """Protocol for the `prompt` decorator when used without a template."""
 
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], UserContent]
-        | Callable[Concatenate[Context[DepsT], P], Sequence[UserContent]]
-        | Callable[Concatenate[Context[DepsT], P], list[Message]],
-    ) -> ContextMessagesPrompt[P, DepsT]:
+        fn: Callable[Concatenate[Context[DepsT, InvariantContextToolT], P], UserContent]
+        | Callable[
+            Concatenate[Context[DepsT, InvariantContextToolT], P],
+            Sequence[UserContent],
+        ]
+        | Callable[
+            Concatenate[Context[DepsT, InvariantContextToolT], P], list[Message]
+        ],
+    ) -> ContextMessagesPrompt[P, DepsT, InvariantContextToolT]:
         """Decorator for creating context prompts."""
         ...
 
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], Awaitable[UserContent]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[UserContent]]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[list[Message]]],
-    ) -> AsyncContextMessagesPrompt[P, DepsT]:
+        fn: Callable[
+            Concatenate[Context[DepsT, InvariantContextToolT], P],
+            Awaitable[UserContent],
+        ]
+        | Callable[
+            Concatenate[Context[DepsT, InvariantContextToolT], P],
+            Awaitable[Sequence[UserContent]],
+        ]
+        | Callable[
+            Concatenate[Context[DepsT, InvariantContextToolT], P],
+            Awaitable[list[Message]],
+        ],
+    ) -> AsyncContextMessagesPrompt[P, DepsT, InvariantContextToolT]:
         """Decorator for creating async context prompts."""
         ...
 
@@ -206,30 +240,46 @@ class PromptDecorator(Protocol[DepsT]):
         | Callable[P, Awaitable[UserContent]]
         | Callable[P, Awaitable[Sequence[UserContent]]]
         | Callable[P, Awaitable[list[Message]]]
-        | Callable[Concatenate[Context[DepsT], P], UserContent]
-        | Callable[Concatenate[Context[DepsT], P], Sequence[UserContent]]
-        | Callable[Concatenate[Context[DepsT], P], list[Message]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[UserContent]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[UserContent]]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[list[Message]]],
+        | Callable[
+            Concatenate[Context[DepsT, ContravariantContextToolT], P], UserContent
+        ]
+        | Callable[
+            Concatenate[Context[DepsT, ContravariantContextToolT], P],
+            Sequence[UserContent],
+        ]
+        | Callable[
+            Concatenate[Context[DepsT, ContravariantContextToolT], P], list[Message]
+        ]
+        | Callable[
+            Concatenate[Context[DepsT, ContravariantContextToolT], P],
+            Awaitable[UserContent],
+        ]
+        | Callable[
+            Concatenate[Context[DepsT, ContravariantContextToolT], P],
+            Awaitable[Sequence[UserContent]],
+        ]
+        | Callable[
+            Concatenate[Context[DepsT, ContravariantContextToolT], P],
+            Awaitable[list[Message]],
+        ],
     ) -> (
         MessagesPrompt[P]
         | AsyncMessagesPrompt[P]
-        | ContextMessagesPrompt[P, DepsT]
-        | AsyncContextMessagesPrompt[P, DepsT]
+        | ContextMessagesPrompt[P, DepsT, ContravariantContextToolT]
+        | AsyncContextMessagesPrompt[P, DepsT, ContravariantContextToolT]
     ):
         """Decorator for creating a prompt."""
         ...
 
 
-class PromptTemplateDecorator(Protocol[DepsT]):
+class PromptTemplateDecorator(Protocol[DepsT, InvariantContextToolT]):
     """Protocol for the `prompt` decorator when used with a template."""
 
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], None],
-    ) -> ContextMessagesPrompt[P, DepsT]:
+        fn: Callable[Concatenate[Context[DepsT, InvariantContextToolT], P], None],
+    ) -> ContextMessagesPrompt[P, DepsT, InvariantContextToolT]:
         """Decorator for creating context prompts from template functions."""
         ...
 
@@ -244,8 +294,10 @@ class PromptTemplateDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
-    ) -> AsyncContextMessagesPrompt[P, DepsT]:
+        fn: Callable[
+            Concatenate[Context[DepsT, InvariantContextToolT], P], Awaitable[None]
+        ],
+    ) -> AsyncContextMessagesPrompt[P, DepsT, InvariantContextToolT]:
         """Decorator for creating async context prompts from template functions."""
         ...
 
@@ -261,13 +313,15 @@ class PromptTemplateDecorator(Protocol[DepsT]):
         self,
         fn: Callable[P, None]
         | Callable[P, Awaitable[None]]
-        | Callable[Concatenate[Context[DepsT], P], None]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[None]],
+        | Callable[Concatenate[Context[DepsT, InvariantContextToolT], P], None]
+        | Callable[
+            Concatenate[Context[DepsT, InvariantContextToolT], P], Awaitable[None]
+        ],
     ) -> (
         MessagesPrompt[P]
         | AsyncMessagesPrompt[P]
-        | ContextMessagesPrompt[P, DepsT]
-        | AsyncContextMessagesPrompt[P, DepsT]
+        | ContextMessagesPrompt[P, DepsT, InvariantContextToolT]
+        | AsyncContextMessagesPrompt[P, DepsT, InvariantContextToolT]
     ):
         """Decorator for creating a prompt from a template function."""
         ...

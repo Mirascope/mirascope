@@ -62,7 +62,14 @@ from .streams import (
     BaseStream,
     Stream,
 )
-from .tools import Tool, context_tool, tool
+from .tools import (
+    AsyncContextTool,
+    AsyncTool,
+    ContextTool,
+    Tool,
+    context_tool,
+    tool,
+)
 
 __all__ = [
     "LLM",
@@ -71,8 +78,10 @@ __all__ = [
     "AssistantContent",
     "AssistantMessage",
     "AsyncAgent",
+    "AsyncContextTool",
     "AsyncStream",
     "AsyncStream",
+    "AsyncTool",
     "Audio",
     "AudioChunk",
     "AuthenticationError",
@@ -83,6 +92,7 @@ __all__ = [
     "ConnectionError",
     "ContentChunk",
     "Context",
+    "ContextTool",
     "Document",
     "Format",
     "Image",

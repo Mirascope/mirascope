@@ -51,7 +51,7 @@ async def main():
 
     while tool_call := response.tool_call:
         print(f"Tool call: {tool_call.name}")
-        tool = librarian.toolkit.get(tool_call)
+        tool = librarian.toolkit.get(ctx, tool_call)
 
         if reserve_book.defines(tool):
             output = await tool.call(ctx, tool_call)
