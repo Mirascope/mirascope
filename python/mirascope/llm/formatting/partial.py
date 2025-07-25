@@ -48,7 +48,7 @@ class Partial(Generic[FormatT]):
         """
         raise TypeError(f"Cannot subclass {cls.__module__}.Partial")
 
-    def __class_getitem__(  # type: ignore[override]
+    def __class_getitem__(
         cls,
         wrapped_class: type[FormatT],
     ) -> type[FormatT]:

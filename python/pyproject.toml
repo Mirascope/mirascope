@@ -129,6 +129,7 @@ known-first-party = ['mirascope', 'tests', 'examples']
 exclude = [".venv", "docs/node_modules", "build"]
 venvPath = "."
 venv = ".venv"
+reportUnnecessaryTypeIgnoreComment = "error"
 
 [tool.codespell]
 skip = [".git", "*.lock"]
