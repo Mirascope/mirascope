@@ -5,25 +5,32 @@ export interface ExampleOptions {
   tools: boolean;
   agent: boolean;
   structured: boolean;
+  mcp: boolean;
 }
 
 export function allOptions(): ExampleOptions[] {
   const bools = [false, true];
   const results: ExampleOptions[] = [];
-  for (const agent of bools) {
-    for (const context of bools) {
-      for (const structured of bools) {
-        for (const tools of bools) {
-          for (const stream of bools) {
-            for (const async of bools) {
-              results.push({
-                async,
-                stream,
-                context,
-                tools,
-                agent,
-                structured,
-              });
+  for (const mcp of bools) {
+    for (const agent of bools) {
+      for (const context of bools) {
+        for (const structured of bools) {
+          for (const tools of bools) {
+            for (const stream of bools) {
+              for (const async of bools) {
+                if (mcp && (!async || context || tools || agent)) {
+                  continue;
+                }
+                results.push({
+                  async,
+                  stream,
+                  context,
+                  tools,
+                  agent,
+                  structured,
+                  mcp,
+                });
+              }
             }
           }
         }
@@ -41,6 +48,8 @@ export function filenameForOptions(opts: ExampleOptions): string {
   if (opts.agent) parts.push("agent");
   if (opts.context) parts.push("context");
   if (opts.structured) parts.push("structured");
+  if (opts.mcp) parts.push("mcp");
+
   return `${parts.join("_")}.py`;
 }
 
@@ -58,6 +67,17 @@ export class ExampleGenerator implements ExampleOptions {
   }
 
   generate(): string {
+    if (this.mcp && (this.context || this.tools)) {
+      throw new Error(
+        "Examples currently treat MCP as a replacement for Coppermind context/tools."
+      );
+    }
+    if (this.mcp && !this.async) {
+      throw new Error("MCP example must be async.");
+    }
+    if (this.mcp && this.agent) {
+      throw new Error("MCP + Agent integration not yet added.");
+    }
     return `${this.imports}${this.format_def}${this.coppermind_def}${this.tool_def}
 ${this.function_decorator}
 ${this.function_def}
@@ -109,7 +129,9 @@ class Coppermind:
 
   private ctx_argdef(trailingComma = false): string {
     const suffix = trailingComma ? ", " : "";
-    return this.context ? `ctx: llm.Context[Coppermind]${suffix}` : "";
+    const deps = this.mcp ? "[None, llm.AsyncTool]" : "[Coppermind]";
+
+    return this.context || this.mcp ? `ctx: llm.Context${deps}${suffix}` : "";
   }
 
   private get tool_def(): string {
@@ -142,7 +164,7 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
   }
 
   private get ctx_arg(): string {
-    return this.context ? "ctx, " : "";
+    return this.context || this.mcp ? "ctx, " : "";
   }
 
   private get ctx_type(): string {
@@ -179,7 +201,7 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
     const format_param = this.structured ? ", format=KeeperEntry" : "";
     const decorator = this.agent
       ? "agent"
-      : this.context
+      : this.context || this.mcp
       ? "context_call"
       : "call";
     return `@llm.${decorator}(model="openai:gpt-4o-mini"${deps_param}${tools_param}${format_param})`;
@@ -197,10 +219,16 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
   }
 
   private get main_function(): string {
+    let mcp_indent = this.mcp ? "    " : "";
     let result = `
 ${this._async}def main():`;
 
-    if (this.context) {
+    if (this.mcp) {
+      result += `
+    async with llm.mcp.streamablehttp_client("localhost:8080/coppermind") as mcp_client:
+        coppermind_tools = await mcp_client.list_tools()
+        ctx = llm.Context(tools=coppermind_tools)`;
+    } else if (this.context) {
       result += `
     coppermind = Coppermind(repository="Ancient Terris")`;
       if (!this.agent) {
@@ -212,16 +240,16 @@ ${this._async}def main():`;
     if (this.agent) {
       const deps_arg = this.context ? "deps=coppermind" : "";
       result += `
-    agent: ${this.agent_type} = ${this._await}sazed(${deps_arg})`;
+${mcp_indent}    agent: ${this.agent_type} = ${this._await}sazed(${deps_arg})`;
     }
 
     result += `
-    query = "What are the Kandra?"`;
+${mcp_indent}    query = "What are the Kandra?"`;
 
     if (this.stream) {
-      result += this.get_stream_logic();
+      result += this.get_stream_logic(mcp_indent);
     } else {
-      result += this.get_response_logic();
+      result += this.get_response_logic(mcp_indent);
     }
 
     return result;
@@ -252,63 +280,63 @@ ${indent}print()`;
     return result;
   }
 
-  private get_stream_logic(): string {
+  private get_stream_logic(indent: string): string {
     const call_target = this.agent
       ? "agent.stream("
       : "sazed.stream(" + this.ctx_arg;
 
     let result = `
-    stream: ${this.stream_type} = ${this._await}${call_target}query)`;
+${indent}    stream: ${this.stream_type} = ${this._await}${call_target}query)`;
 
     if (this.tools && !this.agent) {
       result += `
-    while True:
-        outputs: list[llm.ToolOutput] = []
-        ${this._async}for group in stream.groups():
-            if group.type == "text":
-${this.print_stream("                ", "group")}
-            if group.type == "tool_call":
-                tool_call = ${this._await}group.collect()
-                outputs.append(${this._await}sazed.toolkit.call(${
+${indent}    while True:
+${indent}        outputs: list[llm.ToolOutput] = []
+${indent}        ${this._async}for group in stream.groups():
+${indent}            if group.type == "text":
+${this.print_stream("                " + indent, "group")}
+${indent}            if group.type == "tool_call":
+${indent}                tool_call = ${this._await}group.collect()
+${indent}                outputs.append(${this._await}sazed.toolkit.call(${
         this.ctx_arg
       }tool_call))
-        if not outputs:
-            break
-        stream = ${this._await}sazed.resume_stream(${
+${indent}        if not outputs:
+${indent}            break
+${indent}        stream = ${this._await}sazed.resume_stream(${
         this.ctx_arg
       }stream, outputs)`;
     } else {
       result += `
-${this.print_stream("    ", "stream")}`;
+${this.print_stream("    " + indent, "stream")}`;
     }
 
     return result;
   }
 
-  private get_response_logic(): string {
+  private get_response_logic(indent: string): string {
     const response_type = this.structured
       ? "llm.Response[KeeperEntry]"
       : "llm.Response";
     const call_target = this.agent ? "agent(" : "sazed(" + this.ctx_arg;
     let result = `
-    response: ${response_type} = ${this._await}${call_target}query)`;
+${indent}    response: ${response_type} = ${this._await}${call_target}query)`;
 
     if (this.tools && !this.agent) {
       const gather = this.async ? "await asyncio.gather(*" : "";
       const gather_close = this.async ? ")" : "";
       result += `
-    while tool_calls := response.tool_calls:
-        outputs: list[llm.ToolOutput] = ${gather}[sazed.toolkit.call(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}
-        response = ${this._await}sazed.resume(${this.ctx_arg}response, outputs)`;
+${indent}    while tool_calls := response.tool_calls:
+${indent}        outputs: list[llm.ToolOutput] = ${gather}[sazed.toolkit.call(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}
+${indent}        response = ${this._await}sazed.resume(${this.ctx_arg}response, outputs)`;
     }
 
     if (this.structured) {
       result += `
-    entry: KeeperEntry = response.format()
-    print(entry)`;
+${indent}    entry: KeeperEntry = response.format()
+${indent}    print(entry)`;
     } else {
       result += `
-    print(response.text)`;
+${indent}    print(response.text)`;
     }
 
     return result;
