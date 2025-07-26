@@ -28,7 +28,7 @@ class AsyncContextToolFn(Protocol[P, JsonableCovariantT, DepsT]):
         ...
 
 
-class ContextToolDecorator(Protocol[DepsT]):
+class ContextToolDecorator:
     """Protocol for the context tool decorator."""
 
     @overload
@@ -74,9 +74,7 @@ def context_tool(
 
 
 @overload
-def context_tool(
-    *, deps_type: type[DepsT], strict: bool = False
-) -> ContextToolDecorator[DepsT]:
+def context_tool(*, strict: bool = False) -> ContextToolDecorator:
     """Overload for producing the decorator."""
     ...
 
@@ -91,7 +89,7 @@ def context_tool(
 ) -> (
     ContextTool[P, JsonableCovariantT, DepsT]
     | AsyncContextTool[P, JsonableCovariantT, DepsT]
-    | ContextToolDecorator[DepsT]
+    | ContextToolDecorator
 ):
     '''Decorator that turns a function into a tool definition.
 

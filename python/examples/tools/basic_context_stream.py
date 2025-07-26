@@ -11,15 +11,13 @@ class Library:
 library = Library(books=["Mistborn", "Gödel, Escher, Bach", "Dune"])
 
 
-@llm.context_tool(deps_type=Library)
+@llm.context_tool()
 def available_books(ctx: llm.Context[Library]) -> list[str]:
     """List the available books in the library."""
     return ctx.deps.books
 
 
-@llm.context_call(
-    model="openai:gpt-4o-mini", deps_type=Library, tools=[available_books]
-)
+@llm.context_call(model="openai:gpt-4o-mini", tools=[available_books])
 def librarian(ctx: llm.Context[Library], genre: str):
     return f"Recommend an available book in {genre}"
 
