@@ -7,9 +7,12 @@ content arrays that can include text, images, audio, documents, and tool interac
 
 from .message import (
     AssistantMessage,
+    AssistantMessagePromotable,
     Message,
     SystemMessage,
+    SystemMessagePromotable,
     UserMessage,
+    UserMessagePromotable,
     assistant,
     system,
     user,
@@ -17,9 +20,12 @@ from .message import (
 
 __all__ = [
     "AssistantMessage",
+    "AssistantMessagePromotable",
     "Message",
     "SystemMessage",
+    "SystemMessagePromotable",
     "UserMessage",
+    "UserMessagePromotable",
     "assistant",
     "system",
     "user",

@@ -1,11 +1,10 @@
 """The `prompt` decorator for writing messages as string templates."""
 
-from collections.abc import Awaitable, Callable, Sequence
+from collections.abc import Awaitable, Callable
 from typing import Concatenate, Protocol, TypeAlias, TypeVar, overload
 
-from ..content import UserContent
 from ..context import Context, DepsT
-from ..messages.message import Message
+from ..messages import Message, UserMessagePromotable
 from ..types import P
 
 
@@ -16,23 +15,16 @@ class MessagesPrompt(Protocol[P]):
 
 
 class ContentPrompt(Protocol[P]):
-    """Protocol for a Prompt function that returns a single content part."""
+    """Protocol for a Prompt function that returns content for a single user message."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> UserContent: ...
-
-
-class ContentSequencePrompt(Protocol[P]):
-    """Protocol for a prompt function that returns a content parts sequence."""
-
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[UserContent]: ...
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> UserMessagePromotable: ...
 
 
-Prompt: TypeAlias = ContentPrompt[P] | ContentSequencePrompt[P] | MessagesPrompt[P]
+Prompt: TypeAlias = ContentPrompt[P] | MessagesPrompt[P]
 """A function that can be promoted to a prompt.
 
 A `Prompt` function takes input arguments `P` and returns one of:
-  - A single `UserContent` part that will be rendered as a single user message
-  - A sequence of `UserContent` parts that will be rendered as a single user message
+  - `UserMessagePromotable` content that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
 """
 
@@ -44,27 +36,18 @@ class AsyncMessagesPrompt(Protocol[P]):
 
 
 class AsyncContentPrompt(Protocol[P]):
-    """Protocol for a prompt function that returns a single content part."""
-
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> UserContent: ...
-
-
-class AsyncContentSequencePrompt(Protocol[P]):
-    """Protocol for a prompt function that returns a content parts sequence."""
+    """Protocol for a prompt function that returns content for a single user message."""
 
     async def __call__(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> Sequence[UserContent]: ...
+    ) -> UserMessagePromotable: ...
 
 
-AsyncPrompt: TypeAlias = (
-    AsyncContentPrompt[P] | AsyncContentSequencePrompt[P] | AsyncMessagesPrompt[P]
-)
+AsyncPrompt: TypeAlias = AsyncContentPrompt[P] | AsyncMessagesPrompt[P]
 """An asynchronous Prompt function.
 
 An `AsyncPrompt` function takes input arguments `P` and returns one of:
-  - A single `UserContent` part that will be rendered as a single user message
-  - A sequence of `UserContent` parts that will be rendered as a single user message
+  - `UserMessagePromotable` content that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
 """
 
@@ -78,32 +61,24 @@ class ContextMessagesPrompt(Protocol[P, DepsT]):
 
 
 class ContextContentPrompt(Protocol[P, DepsT]):
-    """Protocol for a context Prompt function that returns a single content part."""
+    """Protocol for a context Prompt function that returns content for a single user message."""
 
     def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> UserContent: ...
-
-
-class ContextContentSequencePrompt(Protocol[P, DepsT]):
-    """Protocol for a context prompt function that returns a content parts sequence."""
-
-    def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Sequence[UserContent]: ...
+        self,
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> UserMessagePromotable: ...
 
 
 ContextPrompt: TypeAlias = (
-    ContextContentPrompt[P, DepsT]
-    | ContextContentSequencePrompt[P, DepsT]
-    | ContextMessagesPrompt[P, DepsT]
+    ContextContentPrompt[P, DepsT] | ContextMessagesPrompt[P, DepsT]
 )
 """A context Prompt function.
 
 A `ContextPrompt` function takes input arguments `Context[DepsT]` and `P` and
 returns one of:
-  - A single `UserContent` part that will be rendered as a single user message
-  - A sequence of `UserContent` parts that will be rendered as a single user message
+  - `UserMessagePromotable` content that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
 """
 
@@ -117,32 +92,24 @@ class AsyncContextMessagesPrompt(Protocol[P, DepsT]):
 
 
 class AsyncContextContentPrompt(Protocol[P, DepsT]):
-    """Protocol for a context prompt function that returns a single content part."""
+    """Protocol for a context prompt function that returns content for a single user message."""
 
     async def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> UserContent: ...
-
-
-class AsyncContextContentSequencePrompt(Protocol[P, DepsT]):
-    """Protocol for a context prompt function that returns a content parts sequence."""
-
-    async def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Sequence[UserContent]: ...
+        self,
+        ctx: Context[DepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> UserMessagePromotable: ...
 
 
 AsyncContextPrompt: TypeAlias = (
-    AsyncContextContentPrompt[P, DepsT]
-    | AsyncContextContentSequencePrompt[P, DepsT]
-    | AsyncContextMessagesPrompt[P, DepsT]
+    AsyncContextContentPrompt[P, DepsT] | AsyncContextMessagesPrompt[P, DepsT]
 )
 """An asynchronous context Prompt function.
 
 An `AsyncContextPrompt` function takes input arguments `Context[DepsT]` and `P` and
 returns one of:
-  - A single `UserContent` part that will be rendered as a single user message
-  - A sequence of `UserContent` parts that will be rendered as a single user message
+  - `UserMessagePromotable` content that will be rendered as a single user message
   - A list of `Message` objects that will be rendered as-is
 """
 
@@ -161,8 +128,7 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], UserContent]
-        | Callable[Concatenate[Context[DepsT], P], Sequence[UserContent]]
+        fn: Callable[Concatenate[Context[DepsT], P], UserMessagePromotable]
         | Callable[Concatenate[Context[DepsT], P], list[Message]],
     ) -> ContextMessagesPrompt[P, DepsT]:
         """Decorator for creating context prompts."""
@@ -171,9 +137,14 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], Awaitable[UserContent]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[UserContent]]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[list[Message]]],
+        fn: Callable[
+            Concatenate[Context[DepsT], P],
+            Awaitable[UserMessagePromotable],
+        ]
+        | Callable[
+            Concatenate[Context[DepsT], P],
+            Awaitable[list[Message]],
+        ],
     ) -> AsyncContextMessagesPrompt[P, DepsT]:
         """Decorator for creating async context prompts."""
         ...
@@ -181,9 +152,7 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[P, UserContent]
-        | Callable[P, Sequence[UserContent]]
-        | Callable[P, list[Message]],
+        fn: Callable[P, UserMessagePromotable] | Callable[P, list[Message]],
     ) -> MessagesPrompt[P]:
         """Decorator for creating prompts."""
         ...
@@ -191,8 +160,7 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[P, Awaitable[UserContent]]
-        | Callable[P, Awaitable[Sequence[UserContent]]]
+        fn: Callable[P, Awaitable[UserMessagePromotable]]
         | Callable[P, Awaitable[list[Message]]],
     ) -> AsyncMessagesPrompt[P]:
         """Decorator for creating async prompts."""
@@ -200,18 +168,23 @@ class PromptDecorator(Protocol[DepsT]):
 
     def __call__(
         self,
-        fn: Callable[P, UserContent]
-        | Callable[P, Sequence[UserContent]]
+        fn: Callable[P, UserMessagePromotable]
         | Callable[P, list[Message]]
-        | Callable[P, Awaitable[UserContent]]
-        | Callable[P, Awaitable[Sequence[UserContent]]]
+        | Callable[P, Awaitable[UserMessagePromotable]]
         | Callable[P, Awaitable[list[Message]]]
-        | Callable[Concatenate[Context[DepsT], P], UserContent]
-        | Callable[Concatenate[Context[DepsT], P], Sequence[UserContent]]
+        | Callable[
+            Concatenate[Context[DepsT], P],
+            UserMessagePromotable,
+        ]
         | Callable[Concatenate[Context[DepsT], P], list[Message]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[UserContent]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[Sequence[UserContent]]]
-        | Callable[Concatenate[Context[DepsT], P], Awaitable[list[Message]]],
+        | Callable[
+            Concatenate[Context[DepsT], P],
+            Awaitable[UserMessagePromotable],
+        ]
+        | Callable[
+            Concatenate[Context[DepsT], P],
+            Awaitable[list[Message]],
+        ],
     ) -> (
         MessagesPrompt[P]
         | AsyncMessagesPrompt[P]
@@ -300,10 +273,10 @@ def prompt(
     returns messages based on the spec.
 
     Without a spec string, it returns a PromptFunctionalDecorator, which
-    transforms a Prompt (a function returning either content, content sequence,
-    or messages) into a PromptTemplate. The resulting prompt template either promotes
-    the content / content sequence into a list containing a single user message with
-    that content, or passes along the messages returned by the decorated function.
+    transforms a Prompt (a function returning either message content, or messages) into
+    a PromptTemplate. The resulting prompt template either promotes the content into a
+    list containing a single user message, or passes along the messages returned by the
+    decorated function.
 
     Args:
         spec: A string spec with placeholders using `{{ variable_name }}`

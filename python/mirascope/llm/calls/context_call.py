@@ -1,12 +1,11 @@
 """The ContextCall module for generating responses using LLMs with context."""
 
-from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
 
-from ..content import UserContent
 from ..context import Context, DepsT
 from ..formatting import FormatT
+from ..messages import UserMessagePromotable
 from ..prompts import Prompt
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream, Stream
@@ -44,7 +43,7 @@ class ContextCall(
         self,
         ctx: Context[DepsT],
         output: Response[FormatT] | BaseStream[FormatT],
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -53,7 +52,7 @@ class ContextCall(
         self,
         ctx: Context[DepsT],
         output: Response[FormatT] | BaseStream[FormatT],
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> Stream[FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -88,7 +87,7 @@ class AsyncContextCall(
         self,
         ctx: Context[DepsT],
         output: Response[FormatT] | BaseStream[FormatT],
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -97,7 +96,7 @@ class AsyncContextCall(
         self,
         ctx: Context[DepsT],
         output: Response[FormatT] | BaseStream[FormatT],
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> AsyncStream[FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()

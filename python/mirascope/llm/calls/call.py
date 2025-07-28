@@ -1,11 +1,10 @@
 """The Call module for generating responses using LLMs."""
 
-from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
 
-from ..content import UserContent
 from ..formatting import FormatT
+from ..messages import UserMessagePromotable
 from ..prompts import AsyncPrompt, Prompt
 from ..responses import Response
 from ..streams import AsyncStream, BaseStream, Stream
@@ -33,7 +32,7 @@ class Call(BaseCall[P, Prompt, ToolT, FormatT], Generic[P, ToolT, FormatT]):
     def resume(
         self,
         output: Response[FormatT] | BaseStream[FormatT],
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -41,7 +40,7 @@ class Call(BaseCall[P, Prompt, ToolT, FormatT], Generic[P, ToolT, FormatT]):
     def resume_stream(
         self,
         output: Response[FormatT] | BaseStream[FormatT],
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> Stream[FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -69,7 +68,7 @@ class AsyncCall(
     async def resume(
         self,
         output: Response[FormatT] | BaseStream[FormatT],
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -77,7 +76,7 @@ class AsyncCall(
     async def resume_stream(
         self,
         output: Response[FormatT] | BaseStream[FormatT],
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> AsyncStream[FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()

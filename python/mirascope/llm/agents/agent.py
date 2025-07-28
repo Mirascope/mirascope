@@ -5,13 +5,16 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
 
-from ..content import UserContent
 from ..context import Context, DepsT
 from ..formatting import FormatT
+from ..messages import UserMessagePromotable
 from ..models import LLM
 from ..responses import Response
 from ..streams import AsyncStream, Stream
 from ..tools import Tool
+
+# TODO(@dandelion): Revisit Agent API for consistency on "run" vs "call", and on
+# having clear arg types for query (vs UserMessagePromotable which may be opaque)
 
 
 @dataclass
@@ -32,7 +35,7 @@ class BaseAgent(Generic[DepsT, FormatT], ABC):
 
     async def run_async(
         self,
-        query: UserContent | Sequence[UserContent],
+        query: UserMessagePromotable,
         *,
         ctx: Context[DepsT] | None = None,
     ) -> Response[FormatT]:
@@ -41,7 +44,7 @@ class BaseAgent(Generic[DepsT, FormatT], ABC):
 
     async def stream_async(
         self,
-        query: UserContent | Sequence[UserContent],
+        query: UserMessagePromotable,
         *,
         ctx: Context[DepsT] | None = None,
     ) -> AsyncStream[FormatT] | AsyncStream[FormatT]:
@@ -55,7 +58,7 @@ class Agent(BaseAgent[DepsT, FormatT]):
 
     def __call__(
         self,
-        query: UserContent | Sequence[UserContent],
+        query: UserMessagePromotable,
         *,
         ctx: Context[DepsT] | None = None,
     ) -> Response[FormatT]:
@@ -64,7 +67,7 @@ class Agent(BaseAgent[DepsT, FormatT]):
 
     def call(
         self,
-        query: UserContent | Sequence[UserContent],
+        query: UserMessagePromotable,
         *,
         ctx: Context[DepsT] | None = None,
     ) -> Response[FormatT]:
@@ -73,7 +76,7 @@ class Agent(BaseAgent[DepsT, FormatT]):
 
     def stream(
         self,
-        query: UserContent | Sequence[UserContent],
+        query: UserMessagePromotable,
         *,
         ctx: Context[DepsT] | None = None,
     ) -> Stream[FormatT] | Stream[FormatT]:
@@ -87,7 +90,7 @@ class AsyncAgent(BaseAgent[DepsT, FormatT]):
 
     async def __call__(
         self,
-        query: UserContent | Sequence[UserContent],
+        query: UserMessagePromotable,
         *,
         ctx: Context[DepsT] | None = None,
     ) -> Response[FormatT]:
@@ -96,7 +99,7 @@ class AsyncAgent(BaseAgent[DepsT, FormatT]):
 
     async def call(
         self,
-        query: UserContent | Sequence[UserContent],
+        query: UserMessagePromotable,
         *,
         ctx: Context[DepsT] | None = None,
     ) -> Response[FormatT]:
@@ -105,7 +108,7 @@ class AsyncAgent(BaseAgent[DepsT, FormatT]):
 
     async def stream(
         self,
-        query: UserContent | Sequence[UserContent],
+        query: UserMessagePromotable,
         *,
         ctx: Context[DepsT] | None = None,
     ) -> AsyncStream[FormatT] | AsyncStream[FormatT]:

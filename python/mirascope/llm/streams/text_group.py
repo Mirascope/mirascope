@@ -2,10 +2,11 @@
 
 from typing import Literal
 
+from ..content import Text, TextChunk
 from .groups import BaseAsyncGroup, BaseGroup
 
 
-class TextGroup(BaseGroup[str, str]):
+class TextGroup(BaseGroup[TextChunk, Text]):
     """Group for streaming text content chunks."""
 
     @property
@@ -14,7 +15,7 @@ class TextGroup(BaseGroup[str, str]):
         raise NotImplementedError()
 
 
-class AsyncTextGroup(BaseAsyncGroup[str, str]):
+class AsyncTextGroup(BaseAsyncGroup[TextChunk, Text]):
     """Async group for streaming text content chunks."""
 
     @property
