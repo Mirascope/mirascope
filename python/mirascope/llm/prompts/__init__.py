@@ -5,6 +5,9 @@ python functions.
 """
 
 from .decorator import (
+    prompt,
+)
+from .types import (
     AsyncContextMessagesPrompt,
     AsyncContextPrompt,
     AsyncMessagesPrompt,
@@ -14,7 +17,6 @@ from .decorator import (
     MessagesPrompt,
     Prompt,
     PromptT,
-    prompt,
 )
 
 __all__ = [
