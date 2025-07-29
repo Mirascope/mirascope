@@ -7,6 +7,43 @@ export interface ExampleOptions {
   structured: boolean;
 }
 
+export function allOptions(): ExampleOptions[] {
+  const bools = [false, true];
+  const results: ExampleOptions[] = [];
+  for (const agent of bools) {
+    for (const context of bools) {
+      for (const structured of bools) {
+        for (const tools of bools) {
+          for (const stream of bools) {
+            for (const async of bools) {
+              results.push({
+                async,
+                stream,
+                context,
+                tools,
+                agent,
+                structured,
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+  return results;
+}
+
+export function filenameForOptions(opts: ExampleOptions): string {
+  const parts: string[] = ["sazed"];
+  if (opts.async) parts.push("async");
+  if (opts.stream) parts.push("stream");
+  if (opts.tools) parts.push("tools");
+  if (opts.agent) parts.push("agent");
+  if (opts.context) parts.push("context");
+  if (opts.structured) parts.push("structured");
+  return `${parts.join("_")}.py`;
+}
+
 export class ExampleGenerator implements ExampleOptions {
   async: boolean;
   stream: boolean;
@@ -14,6 +51,7 @@ export class ExampleGenerator implements ExampleOptions {
   tools: boolean;
   agent: boolean;
   structured: boolean;
+  mcp: boolean;
 
   constructor(private options: ExampleOptions) {
     Object.assign(this, options);
