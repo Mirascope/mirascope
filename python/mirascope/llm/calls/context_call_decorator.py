@@ -40,7 +40,7 @@ from ..formatting import FormatT
 from ..types import P
 
 
-class ContextCallDecorator(Protocol[ContextToolT, DepsT, FormatT]):
+class ContextCallDecorator(Protocol[ContextToolT, FormatT]):
     """A decorator for converting context prompts to context calls."""
 
     @overload
@@ -72,12 +72,11 @@ class ContextCallDecorator(Protocol[ContextToolT, DepsT, FormatT]):
 def context_call(
     model: ANTHROPIC_REGISTERED_LLMS,
     *,
-    tools: list[ToolT] | None = None,
-    deps_type: type[DepsT] | None = None,
+    tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> ContextCallDecorator[ToolT, DepsT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, FormatT]:
     """Decorate a context prompt into a ContextCall using Anthropic models."""
     ...
 
@@ -86,12 +85,11 @@ def context_call(
 def context_call(
     model: GOOGLE_REGISTERED_LLMS,
     *,
-    tools: list[ToolT] | None = None,
-    deps_type: type[DepsT] | None = None,
+    tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> ContextCallDecorator[ToolT, DepsT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, FormatT]:
     """Decorate a context prompt into a ContextCall using Google models."""
     ...
 
@@ -100,12 +98,11 @@ def context_call(
 def context_call(
     model: OPENAI_REGISTERED_LLMS,
     *,
-    tools: list[ToolT] | None = None,
-    deps_type: type[DepsT] | None = None,
+    tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> ContextCallDecorator[ToolT, DepsT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, FormatT]:
     """Decorate a context prompt into a ContextCall using OpenAI models."""
     ...
 
@@ -115,11 +112,10 @@ def context_call(
     model: REGISTERED_LLMS,
     *,
     tools: list[ContextToolT] | None = None,
-    deps_type: type[DepsT] | None = None,
     format: type[FormatT] | None = None,
     client: None = None,
     **params: Unpack[BaseParams],
-) -> ContextCallDecorator[ContextToolT, DepsT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, FormatT]:
     """Decorate a context prompt into a ContextCall using any registered model."""
     ...
 
@@ -132,7 +128,7 @@ def context_call(
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
-) -> ContextCallDecorator[ContextToolT, DepsT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, FormatT]:
     """Returns a decorator for turning context prompts into ContextCalls.
 
     Example:

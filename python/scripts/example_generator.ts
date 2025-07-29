@@ -175,7 +175,8 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
 
   private get function_decorator(): string {
     const tools_param = this.tools ? ", tools=[search_coppermind]" : "";
-    const deps_param = this.context ? ", deps_type=Coppermind" : "";
+    const deps_param =
+      this.context && this.agent ? ", deps_type=Coppermind" : "";
     const format_param = this.structured ? ", format=KeeperEntry" : "";
     const decorator = this.agent
       ? "agent"

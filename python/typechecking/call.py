@@ -1,7 +1,6 @@
 from mirascope import llm
 
 from .utils import (
-    Deps,
     async_context_prompt,
     async_context_prompt_deps,
     async_prompt,
@@ -40,15 +39,9 @@ def test_context_call_deps_matches_prompt_deps():
     # Good: Context call (no deps) with context prompt (no deps)
     expect_context_call(llm.context_call("openai:gpt-4o-mini")(context_prompt))
 
-    # Type error: context call (no deps) but prompt has deps
-    llm.context_call("openai:gpt-4o-mini")(context_prompt_deps)  # type: ignore[reportCallIssue]
-
-    # Type error: Context call (with deps) but prompt has no deps
-    llm.context_call("openai:gpt-4o-mini", deps_type=Deps)(context_prompt)  # type: ignore[reportCallIssue]
-
     # Good: Match deps type between decorator and prompt
     expect_context_call_deps(
-        llm.context_call("openai:gpt-4o-mini", deps_type=Deps)(context_prompt_deps)
+        llm.context_call("openai:gpt-4o-mini")(context_prompt_deps)
     )
 
     expect_async_context_call(
@@ -56,26 +49,16 @@ def test_context_call_deps_matches_prompt_deps():
     )
 
 
-def test_async_context_call_deps_matches_prompt_deps():
+def test_async_context_call_deps():
     """Verify that @llm.context_call matches DepsT with its prompt (async edition)"""
 
     # Type error: Cannot use context call with non-context prompt
     llm.context_call("openai:gpt-4o-mini")(async_prompt)  # type: ignore[reportCallIssue]
 
-    # Good: Context call (no deps) with context prompt (no deps)
     expect_async_context_call(
         llm.context_call("openai:gpt-4o-mini")(async_context_prompt)
     )
 
-    # Type error: context call (no deps) but prompt has deps
-    llm.context_call("openai:gpt-4o-mini")(async_context_prompt_deps)  # type: ignore[reportCallIssue]
-
-    # Type error: Context call (with deps) but prompt has no deps
-    llm.context_call("openai:gpt-4o-mini", deps_type=Deps)(async_context_prompt)  # type: ignore[reportCallIssue]
-
-    # Good: Match deps type between decorator and prompt
     expect_async_context_call_deps(
-        llm.context_call("openai:gpt-4o-mini", deps_type=Deps)(
-            async_context_prompt_deps
-        )
+        llm.context_call("openai:gpt-4o-mini")(async_context_prompt_deps)
     )
