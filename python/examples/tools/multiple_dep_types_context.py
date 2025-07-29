@@ -28,19 +28,19 @@ class MetaLibrary:
 meta_library = MetaLibrary(library=library, secret_library=secret_library)
 
 
-@llm.tool(deps_type=MetaLibrary)
+@llm.context_tool(deps_type=MetaLibrary)
 def available_books(ctx: llm.Context[MetaLibrary]) -> list[str]:
     """List the available books in the library."""
     return ctx.deps.library.books
 
 
-@llm.tool(deps_type=MetaLibrary)
+@llm.context_tool(deps_type=MetaLibrary)
 def secret_book(ctx: llm.Context[MetaLibrary]) -> str:
     """The special book from the secret library"""
     return ctx.deps.secret_library.special_book
 
 
-@llm.call(
+@llm.context_call(
     model="openai:gpt-4o-mini",
     deps_type=MetaLibrary,
     tools=[available_books, secret_book],

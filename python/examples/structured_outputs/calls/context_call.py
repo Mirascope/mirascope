@@ -16,7 +16,7 @@ class Book(BaseModel):
     themes: list[str]
 
 
-@llm.call("openai:gpt-4o-mini", format=Book, deps_type=Library)
+@llm.context_call("openai:gpt-4o-mini", format=Book, deps_type=Library)
 def recommend_book(ctx: llm.Context[Library], genre: str):
     return f"""
     Recommend a {genre} book.
