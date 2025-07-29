@@ -58,7 +58,7 @@ def main():
 
             response = librarian.resume(ctx, response, output)
         else:
-            output = tool.call(ctx, tool_call)
+            output = librarian.toolkit.call(ctx, tool_call)
             response = librarian.resume(ctx, response, output)
 
     print(response)

@@ -8,11 +8,7 @@ from typing_extensions import Unpack
 
 from ..clients import BaseClient, BaseParams
 from ..context import Context
-from ..tools import (
-    AgentToolT,
-    ContextTool,
-    Tool,
-)
+from ..tools import AgentToolT, AsyncContextTool, AsyncTool, ContextTool, Tool
 from ..types import Jsonable
 from .agent_template import AgentTemplate, AsyncAgentTemplate
 
@@ -230,13 +226,57 @@ def agent(
 def agent(
     model: REGISTERED_LLMS,
     *,
-    tools: list[AgentToolT],
+    tools: list[Tool[..., Jsonable] | ContextTool[..., Jsonable, DepsT]],
     deps_type: type[DepsT] = NoneType,
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
-) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
-    """Overload for agents with tools."""
+) -> AgentDecorator[
+    Tool[..., Jsonable] | ContextTool[..., Jsonable, DepsT], DepsT, FormatT
+]:
+    """Overload for agents with sync tools."""
+    ...
+
+
+@overload
+def agent(
+    model: REGISTERED_LLMS,
+    *,
+    tools: list[AsyncTool[..., Jsonable] | AsyncContextTool[..., Jsonable, DepsT]],
+    deps_type: type[DepsT] = NoneType,
+    format: type[FormatT] | None = None,
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
+) -> AgentDecorator[
+    AsyncTool[..., Jsonable] | AsyncContextTool[..., Jsonable, DepsT], DepsT, FormatT
+]:
+    """Overload for agents with async tools."""
+    ...
+
+
+@overload
+def agent(
+    model: REGISTERED_LLMS,
+    *,
+    tools: list[
+        Tool[..., Jsonable]
+        | ContextTool[..., Jsonable, DepsT]
+        | AsyncTool[..., Jsonable]
+        | AsyncContextTool[..., Jsonable, DepsT]
+    ],
+    deps_type: type[DepsT] = NoneType,
+    format: type[FormatT] | None = None,
+    client: BaseClient | None = None,
+    **params: Unpack[BaseParams],
+) -> AgentDecorator[
+    Tool[..., Jsonable]
+    | ContextTool[..., Jsonable, DepsT]
+    | AsyncTool[..., Jsonable]
+    | AsyncContextTool[..., Jsonable, DepsT],
+    DepsT,
+    FormatT,
+]:
+    """Overload for agents with mixed sync and async tools."""
     ...
 
 

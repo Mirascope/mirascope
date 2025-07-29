@@ -1,22 +1,24 @@
+from collections.abc import Awaitable
+
+from typing_extensions import assert_type
+
 from mirascope import llm
 
 from .utils import (
-    async_context_prompt,
     async_context_prompt_deps,
     async_prompt,
+    async_tool,
     context_prompt,
     context_prompt_deps,
     expect_async_call,
-    expect_async_context_call,
-    expect_async_context_call_deps,
     expect_call,
-    expect_context_call,
-    expect_context_call_deps,
     prompt,
+    tool,
+    tool_call,
 )
 
 
-def test_non_context_calls():
+def test_call():
     """Verify that @llm.call works as expected"""
     # Verify that regular prompts become regular calls,
     expect_call(llm.call("openai:gpt-4o-mini")(prompt))
@@ -30,35 +32,41 @@ def test_non_context_calls():
     expect_call(deceptive_call)
 
 
-def test_context_call_deps_matches_prompt_deps():
-    """Verify that @llm.context_call matches DepsT with its prompt"""
+async def test_tool_type_propagation():
+    """Test sync/async tool distinction makes it thru call"""
+    stk = llm.call("openai:gpt-4o-mini", tools=[tool])(context_prompt_deps).toolkit
 
-    # Type error: Cannot use context call with non-context prompt
-    llm.context_call("openai:gpt-4o-mini")(prompt)  # type: ignore[reportCallIssue]
+    assert_type(stk.call(tool_call()), llm.ToolOutput[int])
 
-    # Good: Context call (no deps) with context prompt (no deps)
-    expect_context_call(llm.context_call("openai:gpt-4o-mini")(context_prompt))
+    atk = llm.call("openai:gpt-4o-mini", tools=[async_tool])(
+        context_prompt_deps
+    ).toolkit
+    assert_type(await atk.call(tool_call()), llm.ToolOutput[int])
 
-    # Good: Match deps type between decorator and prompt
-    expect_context_call_deps(
-        llm.context_call("openai:gpt-4o-mini")(context_prompt_deps)
+    mtk = llm.call("openai:gpt-4o-mini", tools=[tool, async_tool])(
+        context_prompt_deps
+    ).toolkit
+    assert_type(
+        mtk.call(tool_call()), llm.ToolOutput[int] | Awaitable[llm.ToolOutput[int]]
     )
 
-    expect_async_context_call(
-        llm.context_call("openai:gpt-4o-mini")(async_context_prompt)
-    )
 
+async def test_tool_type_propagation_async_prompt():
+    """Test sync/async tool distinction makes it thru call with async prompt"""
+    stk = llm.call("openai:gpt-4o-mini", tools=[tool])(
+        async_context_prompt_deps
+    ).toolkit
 
-def test_async_context_call_deps():
-    """Verify that @llm.context_call matches DepsT with its prompt (async edition)"""
+    assert_type(stk.call(tool_call()), llm.ToolOutput[int])
 
-    # Type error: Cannot use context call with non-context prompt
-    llm.context_call("openai:gpt-4o-mini")(async_prompt)  # type: ignore[reportCallIssue]
+    atk = llm.call("openai:gpt-4o-mini", tools=[async_tool])(
+        async_context_prompt_deps
+    ).toolkit
+    assert_type(await atk.call(tool_call()), llm.ToolOutput[int])
 
-    expect_async_context_call(
-        llm.context_call("openai:gpt-4o-mini")(async_context_prompt)
-    )
-
-    expect_async_context_call_deps(
-        llm.context_call("openai:gpt-4o-mini")(async_context_prompt_deps)
+    mtk = llm.call("openai:gpt-4o-mini", tools=[tool, async_tool])(
+        async_context_prompt_deps
+    ).toolkit
+    assert_type(
+        mtk.call(tool_call()), llm.ToolOutput[int] | Awaitable[llm.ToolOutput[int]]
     )

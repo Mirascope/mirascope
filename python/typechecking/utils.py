@@ -66,6 +66,15 @@ async def async_context_tool_deps(ctx: llm.Context[Deps]) -> int:
     return 43
 
 
+@llm.context_tool
+def tool_other_deps(ctx: llm.Context[OtherDeps]):
+    return 41
+
+
+def tool_call() -> llm.ToolCall:
+    raise NotImplementedError()
+
+
 def expect_call(x: llm.calls.Call): ...
 def expect_context_call(x: llm.calls.ContextCall): ...
 def expect_context_call_deps(x: llm.calls.ContextCall[..., Any, Deps]): ...
