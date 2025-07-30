@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Literal, TypeAlias
 
-from ..content import AssistantContent, UserContent
+from ..content import AssistantContent, SystemContent, UserContent
 
 
 @dataclass(kw_only=True)
@@ -14,7 +14,7 @@ class SystemMessage:
     """A system message that sets context and instructions for the conversation."""
 
     role: Literal["system"] = "system"
-    content: str
+    content: SystemContent
 
 
 @dataclass(kw_only=True)
@@ -57,48 +57,61 @@ Example:
     ```
 """
 
+UserMessagePromotable: TypeAlias = str | UserContent | Sequence[str | UserContent]
+"""Type alias for content that can fit into a User message."""
 
-def system(content: str) -> SystemMessage:
+AssistantMessagePromotable: TypeAlias = (
+    str | AssistantContent | Sequence[str | AssistantContent]
+)
+"""Type alias for content that can fit into an Assistant message."""
+
+SystemMessagePromotable: TypeAlias = str | SystemContent
+"""Type alias for content that can fit into a System message."""
+
+
+def system(content: SystemMessagePromotable) -> SystemMessage:
     """Creates a system message.
 
     Args:
-        content: The content of the message, which must be a string.
+        content: The content of the message, which must be a string or Text content.
 
     Returns:
         A SystemMessage.
     """
-    return SystemMessage(content=content)
+    raise NotImplementedError()
 
 
 def user(
-    content: UserContent | Sequence[UserContent], *, name: str | None = None
+    content: UserMessagePromotable,
+    *,
+    name: str | None = None,
 ) -> UserMessage:
     """Creates a user message.
 
     Args:
-        content: The content of the message, which can be `llm.UserContent`, or a sequence of user content pieces.
+        content: The content of the message, which can be str or any `llm.UserContent`,
+            or a sequence of such user content pieces.
         name: Optional name to identify a specific user in multi-party conversations.
 
     Returns:
         A UserMessage.
     """
-    if not isinstance(content, Sequence) or isinstance(content, str):
-        content = [content]
-    return UserMessage(content=content, name=name)
+    raise NotImplementedError()
 
 
 def assistant(
-    content: AssistantContent | Sequence[AssistantContent], *, name: str | None = None
+    content: AssistantMessagePromotable,
+    *,
+    name: str | None = None,
 ) -> AssistantMessage:
     """Creates an assistant message.
 
     Args:
-        content: The content of the message, which can be llm.AssistantContent, or a sequence of assistant content pieces.
+        content: The content of the message, which can be str or any llm.AssistantContent,
+            or a sequence of assistant content pieces.
         name: Optional name to identify a specific assistant in multi-party conversations.
 
     Returns:
         An AssistantMessage.
     """
-    if not isinstance(content, Sequence) or isinstance(content, str):
-        content = [content]
-    return AssistantMessage(content=content, name=name)
+    raise NotImplementedError()

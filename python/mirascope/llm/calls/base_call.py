@@ -1,13 +1,12 @@
 """The `BaseCall` class for LLM calls."""
 
 from abc import ABC
-from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic
 
-from ..content import UserContent
 from ..context import Context, DepsT
 from ..formatting import FormatT
+from ..messages import UserMessagePromotable
 from ..models import LLM
 from ..prompts import PromptT
 from ..responses import Response
@@ -40,7 +39,7 @@ class BaseCall(
     async def resume_async(
         self,
         output: Response[FormatT] | BaseStream,
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response asynchronously by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -48,7 +47,7 @@ class BaseCall(
     async def resume_stream_async(
         self,
         output: Response[FormatT] | BaseStream,
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> AsyncStream[FormatT]:
         """Generate a new async stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -85,7 +84,7 @@ class BaseContextCall(
         self,
         ctx: Context[DepsT],
         output: Response[FormatT] | BaseStream,
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response asynchronously by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -94,7 +93,7 @@ class BaseContextCall(
         self,
         ctx: Context[DepsT],
         output: Response[FormatT] | BaseStream,
-        content: UserContent | Sequence[UserContent],
+        content: UserMessagePromotable,
     ) -> AsyncStream[FormatT]:
         """Generate a new async stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
