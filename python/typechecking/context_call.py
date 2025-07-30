@@ -91,18 +91,19 @@ async def test_tool_type_propagation():
     ).toolkit
 
     ctx = llm.Context(deps=Deps())
-    assert_type(stk.call(ctx, tool_call()), llm.ToolOutput[int])
+    assert_type(stk.execute(ctx, tool_call()), llm.ToolOutput[int])
 
     atk = llm.context_call("openai:gpt-4o-mini", tools=[async_tool])(
         context_prompt_deps
     ).toolkit
-    assert_type(await atk.call(ctx, tool_call()), llm.ToolOutput[int])
+    assert_type(await atk.execute(ctx, tool_call()), llm.ToolOutput[int])
 
     mtk = llm.context_call("openai:gpt-4o-mini", tools=[context_tool_deps, async_tool])(
         context_prompt_deps
     ).toolkit
     assert_type(
-        mtk.call(ctx, tool_call()), llm.ToolOutput[int] | Awaitable[llm.ToolOutput[int]]
+        mtk.execute(ctx, tool_call()),
+        llm.ToolOutput[int] | Awaitable[llm.ToolOutput[int]],
     )
 
 
@@ -113,16 +114,17 @@ async def test_tool_type_propagation_async_prompt():
     ).toolkit
 
     ctx = llm.Context(deps=Deps())
-    assert_type(stk.call(ctx, tool_call()), llm.ToolOutput[int])
+    assert_type(stk.execute(ctx, tool_call()), llm.ToolOutput[int])
 
     atk = llm.context_call("openai:gpt-4o-mini", tools=[async_tool])(
         async_context_prompt_deps
     ).toolkit
-    assert_type(await atk.call(ctx, tool_call()), llm.ToolOutput[int])
+    assert_type(await atk.execute(ctx, tool_call()), llm.ToolOutput[int])
 
     mtk = llm.context_call("openai:gpt-4o-mini", tools=[context_tool_deps, async_tool])(
         async_context_prompt_deps
     ).toolkit
     assert_type(
-        mtk.call(ctx, tool_call()), llm.ToolOutput[int] | Awaitable[llm.ToolOutput[int]]
+        mtk.execute(ctx, tool_call()),
+        llm.ToolOutput[int] | Awaitable[llm.ToolOutput[int]],
     )

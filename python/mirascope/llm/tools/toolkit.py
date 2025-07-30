@@ -27,22 +27,22 @@ class Toolkit(Generic[ToolT]):
         raise NotImplementedError()
 
     @overload
-    def call(
+    def execute(
         self: "Toolkit[Tool[..., ToolReturnT]]", tool_call: ToolCall
     ) -> ToolOutput[ToolReturnT]: ...
 
     @overload
-    def call(
+    def execute(
         self: "Toolkit[AsyncTool[..., AsyncToolReturnT]]", tool_call: ToolCall
     ) -> Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
     @overload
-    def call(
+    def execute(
         self: "Toolkit[Tool[..., ToolReturnT] | AsyncTool[...,AsyncToolReturnT]]",
         tool_call: ToolCall,
     ) -> ToolOutput[ToolReturnT] | Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
-    def call(
+    def execute(
         self, tool_call: ToolCall
     ) -> ToolOutput[Jsonable] | Awaitable[ToolOutput[Jsonable]] | None:
         raise NotImplementedError()
@@ -56,27 +56,27 @@ class ContextToolkit(Generic[ContextToolT, DepsT]):
         raise NotImplementedError()
 
     @overload
-    def call(
+    def execute(
         self: "ContextToolkit[Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT], DepsT]",
         ctx: Context[DepsT],
         tool_call: ToolCall,
     ) -> ToolOutput[ToolReturnT]: ...
 
     @overload
-    def call(
+    def execute(
         self: "ContextToolkit[AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
         ctx: Context[DepsT],
         tool_call: ToolCall,
     ) -> Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
     @overload
-    def call(
+    def execute(
         self: "ContextToolkit[Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT] | AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
         ctx: Context[DepsT],
         tool_call: ToolCall,
     ) -> ToolOutput[ToolReturnT] | Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
-    def call(
+    def execute(
         self, ctx: Context[DepsT], tool_call: ToolCall
     ) -> ToolOutput[Jsonable] | Awaitable[ToolOutput[Jsonable]]:
         raise NotImplementedError()

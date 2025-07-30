@@ -30,7 +30,10 @@ class Tool(BaseTool[P, JsonableCovariantT]):
     fn: Callable[P, JsonableCovariantT]
     """The function that implements the tool's functionality."""
 
-    def call(self, call: ToolCall) -> ToolOutput[JsonableCovariantT]:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> JsonableCovariantT:
+        return self.fn(*args, **kwargs)
+
+    def execute(self, call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Call the tool using an LLM-provided ToolCall."""
         raise NotImplementedError()
 
@@ -48,6 +51,11 @@ class AsyncTool(BaseTool[P, JsonableCovariantT]):
     fn: Callable[P, Awaitable[JsonableCovariantT]]
     """The async function that implements the tool's functionality."""
 
-    async def call(self, call: ToolCall) -> ToolOutput[JsonableCovariantT]:
+    def __call__(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> Awaitable[JsonableCovariantT]:
+        return self.fn(*args, **kwargs)
+
+    async def execute(self, call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Call the tool using an LLM-provided ToolCall."""
         raise NotImplementedError()

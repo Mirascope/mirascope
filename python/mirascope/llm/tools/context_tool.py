@@ -49,7 +49,12 @@ class ContextTool(
     fn: Callable[Concatenate[Context[DepsT], P], JsonableCovariantT]
     """The function that implements the tool's functionality."""
 
-    def call(
+    def __call__(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> JsonableCovariantT:
+        return self.fn(ctx, *args, **kwargs)
+
+    def execute(
         self, ctx: Context[DepsT], call: ToolCall
     ) -> ToolOutput[JsonableCovariantT]:
         """Call the tool using an LLM-provided ToolCall."""
@@ -71,7 +76,12 @@ class AsyncContextTool(
     fn: Callable[Concatenate[Context[DepsT], P], Awaitable[JsonableCovariantT]]
     """The async function that implements the tool's functionality."""
 
-    async def call(
+    def __call__(
+        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+    ) -> Awaitable[JsonableCovariantT]:
+        return self.fn(ctx, *args, **kwargs)
+
+    async def execute(
         self, ctx: Context[DepsT], call: ToolCall
     ) -> ToolOutput[JsonableCovariantT]:
         """Call the tool using an LLM-provided ToolCall."""
