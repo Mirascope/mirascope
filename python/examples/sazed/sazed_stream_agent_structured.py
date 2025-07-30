@@ -26,7 +26,7 @@ def sazed():
 def main():
     agent: llm.Agent[None, KeeperEntry] = sazed()
     query = "What are the Kandra?"
-    stream: llm.Stream[KeeperEntry] = agent.stream(query)
+    stream: llm.StreamResponse[KeeperEntry] = agent.stream(query)
     for _ in stream:
         partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
         print("[Partial]: ", partial_entry, flush=True)

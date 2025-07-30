@@ -36,7 +36,7 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.AsyncStream[KeeperEntry] = await sazed.stream(ctx, query)
+    stream: llm.AsyncStreamResponse[KeeperEntry] = await sazed.stream(ctx, query)
     async for _ in stream:
         partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
         print("[Partial]: ", partial_entry, flush=True)

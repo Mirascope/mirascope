@@ -26,7 +26,7 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     agent: llm.AsyncAgent[Coppermind] = await sazed(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.AsyncStream = await agent.stream(query)
+    stream: llm.AsyncStreamResponse = await agent.stream(query)
     async for chunk in stream:
         print(chunk, flush=True, end="")
     print()

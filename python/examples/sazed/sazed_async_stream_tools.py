@@ -25,7 +25,7 @@ async def sazed(query: str):
 
 async def main():
     query = "What are the Kandra?"
-    stream: llm.AsyncStream = await sazed.stream(query)
+    stream: llm.AsyncStreamResponse = await sazed.stream(query)
     while True:
         outputs: list[llm.ToolOutput] = []
         async for group in stream.groups():

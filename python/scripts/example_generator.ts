@@ -158,7 +158,7 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
   }
 
   private get stream_type(): string {
-    const base = this.async ? "llm.AsyncStream" : "llm.Stream";
+    const base = this.async ? "llm.AsyncStreamResponse" : "llm.StreamResponse";
     return this.structured ? `${base}[KeeperEntry]` : base;
   }
 

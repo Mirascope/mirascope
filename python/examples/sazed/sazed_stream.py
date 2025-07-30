@@ -17,7 +17,7 @@ def sazed(query: str):
 
 def main():
     query = "What are the Kandra?"
-    stream: llm.Stream = sazed.stream(query)
+    stream: llm.StreamResponse = sazed.stream(query)
     for chunk in stream:
         print(chunk, flush=True, end="")
     print()

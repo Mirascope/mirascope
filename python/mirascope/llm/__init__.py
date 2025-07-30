@@ -59,12 +59,7 @@ from .formatting import Format, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
-from .responses import Response
-from .streams import (
-    AsyncStream,
-    BaseStream,
-    Stream,
-)
+from .responses import AsyncStreamResponse, BaseStreamResponse, Response, StreamResponse
 from .tools import Tool, context_tool, tool
 
 __all__ = [
@@ -76,15 +71,15 @@ __all__ = [
     "AssistantMessage",
     "AsyncAgent",
     "AsyncAgentTemplate",
-    "AsyncStream",
-    "AsyncStream",
+    "AsyncStreamResponse",
+    "AsyncStreamResponse",
     "Audio",
     "AudioChunk",
     "AuthenticationError",
     "BadRequestError",
     "BaseClient",
     "BaseParams",
-    "BaseStream",
+    "BaseStreamResponse",
     "ConnectionError",
     "ContentChunk",
     "Context",
@@ -101,8 +96,8 @@ __all__ = [
     "RateLimitError",
     "Response",
     "ServerError",
-    "Stream",
-    "Stream",
+    "StreamResponse",
+    "StreamResponse",
     "SystemMessage",
     "Text",
     "TextChunk",

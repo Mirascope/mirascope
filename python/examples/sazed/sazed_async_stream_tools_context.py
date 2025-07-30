@@ -35,7 +35,7 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.AsyncStream = await sazed.stream(ctx, query)
+    stream: llm.AsyncStreamResponse = await sazed.stream(ctx, query)
     while True:
         outputs: list[llm.ToolOutput] = []
         async for group in stream.groups():

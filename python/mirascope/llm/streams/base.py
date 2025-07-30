@@ -6,7 +6,7 @@ from ..formatting import FormatT, Partial
 from ..responses import FinishReason, Response, Usage
 
 
-class BaseStream(Generic[FormatT]):
+class BaseStreamResponse(Generic[FormatT]):
     """Base class for streaming responses from LLMs.
     Provides common metadata fields that are populated as the stream is consumed.
     """

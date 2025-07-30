@@ -34,7 +34,7 @@ async def sazed():
 async def main():
     agent: llm.AsyncAgent[None, KeeperEntry] = await sazed()
     query = "What are the Kandra?"
-    stream: llm.AsyncStream[KeeperEntry] = await agent.stream(query)
+    stream: llm.AsyncStreamResponse[KeeperEntry] = await agent.stream(query)
     async for _ in stream:
         partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
         print("[Partial]: ", partial_entry, flush=True)

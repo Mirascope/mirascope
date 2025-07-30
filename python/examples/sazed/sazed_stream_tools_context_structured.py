@@ -45,7 +45,7 @@ def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.Stream[KeeperEntry] = sazed.stream(ctx, query)
+    stream: llm.StreamResponse[KeeperEntry] = sazed.stream(ctx, query)
     while True:
         outputs: list[llm.ToolOutput] = []
         for group in stream.groups():

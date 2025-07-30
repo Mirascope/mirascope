@@ -23,7 +23,7 @@ def sazed(query: str):
 
 def main():
     query = "What are the Kandra?"
-    stream: llm.Stream = sazed.stream(query)
+    stream: llm.StreamResponse = sazed.stream(query)
     while True:
         outputs: list[llm.ToolOutput] = []
         for group in stream.groups():
