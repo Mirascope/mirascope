@@ -20,7 +20,7 @@ from . import (
     tools,
     types,
 )
-from .agents import Agent, AsyncAgent, agent
+from .agents import Agent, AgentTemplate, AsyncAgent, AsyncAgentTemplate, agent
 from .calls import call, context_call
 from .clients import BaseClient, BaseParams
 from .content import (
@@ -71,9 +71,11 @@ __all__ = [
     "LLM",
     "APIError",
     "Agent",
+    "AgentTemplate",
     "AssistantContent",
     "AssistantMessage",
     "AsyncAgent",
+    "AsyncAgentTemplate",
     "AsyncStream",
     "AsyncStream",
     "Audio",

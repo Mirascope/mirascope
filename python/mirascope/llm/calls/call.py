@@ -12,6 +12,9 @@ from ..tools import ToolT
 from ..types import P
 from .base_call import BaseCall
 
+# TODO(@dandelion): Revisit resume API to have clear arg types for content
+# (vs UserMessagePromotable which may be opaque), and rename `output` arg
+
 
 @dataclass
 class Call(BaseCall[P, Prompt, ToolT, FormatT], Generic[P, ToolT, FormatT]):

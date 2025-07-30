@@ -10,24 +10,32 @@ from .decorator import (
 from .types import (
     AsyncContextMessagesPrompt,
     AsyncContextPrompt,
+    AsyncContextSystemPrompt,
     AsyncMessagesPrompt,
     AsyncPrompt,
+    AsyncSystemPrompt,
     ContextMessagesPrompt,
     ContextPrompt,
+    ContextSystemPrompt,
     MessagesPrompt,
     Prompt,
     PromptT,
+    SystemPrompt,
 )
 
 __all__ = [
     "AsyncContextMessagesPrompt",
     "AsyncContextPrompt",
+    "AsyncContextSystemPrompt",
     "AsyncMessagesPrompt",
     "AsyncPrompt",
+    "AsyncSystemPrompt",
     "ContextMessagesPrompt",
     "ContextPrompt",
+    "ContextSystemPrompt",
     "MessagesPrompt",
     "Prompt",
     "PromptT",
+    "SystemPrompt",
     "prompt",
 ]
