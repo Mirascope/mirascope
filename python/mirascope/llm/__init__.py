@@ -26,11 +26,8 @@ from .clients import BaseClient, BaseParams
 from .content import (
     AssistantContent,
     Audio,
-    AudioChunk,
-    ContentChunk,
     Document,
     Image,
-    ImageChunk,
     ImageUrl,
     Text,
     TextChunk,
@@ -59,12 +56,8 @@ from .formatting import Format, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
-from .responses import Response
-from .streams import (
-    AsyncStream,
-    BaseStream,
-    Stream,
-)
+from .responses import Response, StreamResponse
+from .streams import AsyncStream, Stream
 from .tools import Tool, context_tool, tool
 
 __all__ = [
@@ -77,21 +70,16 @@ __all__ = [
     "AsyncAgent",
     "AsyncAgentTemplate",
     "AsyncStream",
-    "AsyncStream",
     "Audio",
-    "AudioChunk",
     "AuthenticationError",
     "BadRequestError",
     "BaseClient",
     "BaseParams",
-    "BaseStream",
     "ConnectionError",
-    "ContentChunk",
     "Context",
     "Document",
     "Format",
     "Image",
-    "ImageChunk",
     "ImageUrl",
     "Message",
     "MirascopeError",
@@ -102,7 +90,8 @@ __all__ = [
     "Response",
     "ServerError",
     "Stream",
-    "Stream",
+    "StreamResponse",
+    "StreamResponse",
     "SystemMessage",
     "Text",
     "TextChunk",

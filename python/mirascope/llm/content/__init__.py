@@ -1,15 +1,15 @@
 """The `llm.messages.content` module."""
 
-from .audio import Audio, AudioChunk
-from .chunk_boundary import ChunkEnd, ChunkStart
+from .audio import Audio
+from .boundary_chunk import EndChunk, StartChunk, StreamableContentType
 from .content import (
     AssistantContent,
-    ContentChunk,
+    Chunk,
     SystemContent,
     UserContent,
 )
 from .document import Document
-from .image import Image, ImageChunk, ImageUrl
+from .image import Image, ImageUrl
 from .text import Text, TextChunk
 from .thinking import Thinking, ThinkingChunk
 from .tool_call import ToolCall, ToolCallChunk
@@ -18,14 +18,13 @@ from .tool_output import ToolOutput
 __all__ = [
     "AssistantContent",
     "Audio",
-    "AudioChunk",
-    "ChunkEnd",
-    "ChunkStart",
-    "ContentChunk",
+    "Chunk",
     "Document",
+    "EndChunk",
     "Image",
-    "ImageChunk",
     "ImageUrl",
+    "StartChunk",
+    "StreamableContentType",
     "SystemContent",
     "Text",
     "TextChunk",

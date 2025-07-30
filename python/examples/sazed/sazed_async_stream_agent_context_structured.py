@@ -35,12 +35,11 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     agent: llm.AsyncAgent[Coppermind, KeeperEntry] = await sazed(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.AsyncStream[KeeperEntry] = await agent.stream(query)
-    async for _ in stream:
-        partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
-        print("[Partial]: ", partial_entry, flush=True)
-    entry: KeeperEntry = stream.format()
-    print("[Final]: ", entry)
+    response: llm.StreamResponse[llm.AsyncStream, KeeperEntry] = await agent.stream(
+        query
+    )
+    async for chunk in await response.structured_stream():
+        print("[Partial]: ", chunk, flush=True)
 
 
 if __name__ == "__main__":

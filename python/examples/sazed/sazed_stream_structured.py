@@ -26,12 +26,9 @@ def sazed(query: str):
 
 def main():
     query = "What are the Kandra?"
-    stream: llm.Stream[KeeperEntry] = sazed.stream(query)
-    for _ in stream:
-        partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
-        print("[Partial]: ", partial_entry, flush=True)
-    entry: KeeperEntry = stream.format()
-    print("[Final]: ", entry)
+    response: llm.StreamResponse[llm.Stream, KeeperEntry] = sazed.stream(query)
+    for chunk in response.structured_stream():
+        print("[Partial]: ", chunk, flush=True)
 
 
 main()

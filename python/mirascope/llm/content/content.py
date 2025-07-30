@@ -1,35 +1,23 @@
 from typing import TypeAlias
 
-from .audio import Audio, AudioChunk, AudioUrl
-from .chunk_boundary import ChunkEnd, ChunkStart
+from .audio import Audio, AudioUrl
 from .document import Document
-from .image import Image, ImageChunk, ImageUrl
+from .image import Image, ImageUrl
 from .text import Text, TextChunk
 from .thinking import Thinking, ThinkingChunk
 from .tool_call import ToolCall, ToolCallChunk
 from .tool_output import ToolOutput
 
+SystemContent: TypeAlias = Text
+"""Content parts that can be included in a SystemMessage."""
+
 UserContent: TypeAlias = (
     Text | Image | ImageUrl | Audio | AudioUrl | Document | ToolOutput
 )
-"""Content types that can be included in a UserMessage."""
+"""Content parts that can be included in a UserMessage."""
 
+AssistantContent: TypeAlias = Text | ToolCall | Thinking
+"""Content parts that can be included in an AssistantMessage."""
 
-AssistantContent: TypeAlias = Text | Image | Audio | ToolCall | Thinking
-"""Content types that can be included in an AssistantMessage."""
-
-
-SystemContent: TypeAlias = Text
-"""Content types that can be included in a SystemMessage."""
-
-
-ContentChunk: TypeAlias = (
-    TextChunk
-    | ImageChunk
-    | AudioChunk
-    | ToolCallChunk
-    | ThinkingChunk
-    | ChunkStart
-    | ChunkEnd
-)
-"""Content chunk types that may be emitted by Streams."""
+Chunk: TypeAlias = TextChunk | ToolCallChunk | ThinkingChunk
+"""Chunk of AssistantContent for inclusion in Streams."""

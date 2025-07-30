@@ -33,10 +33,9 @@ def main():
     coppermind = Coppermind(repository="Ancient Terris")
     agent: llm.Agent[Coppermind] = sazed(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.Stream = agent.stream(query)
-    for chunk in stream:
+    response: llm.StreamResponse = agent.stream(query)
+    for chunk in response.text_stream():
         print(chunk, flush=True, end="")
-    print()
 
 
 main()

@@ -35,20 +35,17 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.AsyncStream = await sazed.stream(ctx, query)
+    response: llm.StreamResponse[llm.AsyncStream] = await sazed.stream(ctx, query)
     while True:
-        outputs: list[llm.ToolOutput] = []
-        async for group in stream.groups():
-            if group.type == "text":
-                async for chunk in group:
-                    print(chunk, flush=True, end="")
-                print()
-            if group.type == "tool_call":
-                tool_call = await group.collect()
-                outputs.append(await sazed.toolkit.execute(ctx, tool_call))
-        if not outputs:
+        async for chunk in await response.text_stream():
+            print(chunk, flush=True, end="")
+        tool_calls = response.tool_calls
+        if not tool_calls:
             break
-        stream = await sazed.resume_stream(ctx, stream, outputs)
+        outputs: list[llm.ToolOutput] = await asyncio.gather(
+            *[sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls]
+        )
+        response = await sazed.resume_stream(ctx, response, outputs)
 
 
 if __name__ == "__main__":

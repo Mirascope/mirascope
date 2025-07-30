@@ -7,8 +7,11 @@ from ..context import Context, DepsT
 from ..formatting import FormatT
 from ..messages import UserMessagePromotable
 from ..prompts import Prompt
-from ..responses import Response
-from ..streams import AsyncStream, BaseStream, Stream
+from ..responses import (
+    Response,
+    StreamResponse,
+)
+from ..streams import AsyncStream, Stream
 from ..tools import ContextToolT
 from ..types import P
 from .base_call import BaseContextCall
@@ -35,14 +38,16 @@ class ContextCall(
 
     def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Stream[FormatT]:
+    ) -> StreamResponse[Stream, FormatT]:
         """Generates a streaming response using the LLM."""
         raise NotImplementedError()
 
     def resume(
         self,
         ctx: Context[DepsT],
-        output: Response[FormatT] | BaseStream[FormatT],
+        response: Response[FormatT]
+        | StreamResponse[Stream, FormatT]
+        | StreamResponse[AsyncStream, FormatT],
         content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
@@ -51,9 +56,11 @@ class ContextCall(
     def resume_stream(
         self,
         ctx: Context[DepsT],
-        output: Response[FormatT] | BaseStream[FormatT],
+        response: Response[FormatT]
+        | StreamResponse[Stream, FormatT]
+        | StreamResponse[AsyncStream, FormatT],
         content: UserMessagePromotable,
-    ) -> Stream[FormatT]:
+    ) -> StreamResponse[Stream, FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
@@ -79,14 +86,16 @@ class AsyncContextCall(
 
     async def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStream[FormatT]:
+    ) -> StreamResponse[AsyncStream, FormatT]:
         """Generates a streaming response using the LLM asynchronously."""
         raise NotImplementedError()
 
     async def resume(
         self,
         ctx: Context[DepsT],
-        output: Response[FormatT] | BaseStream[FormatT],
+        response: Response[FormatT]
+        | StreamResponse[Stream, FormatT]
+        | StreamResponse[AsyncStream, FormatT],
         content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
@@ -95,8 +104,10 @@ class AsyncContextCall(
     async def resume_stream(
         self,
         ctx: Context[DepsT],
-        output: Response[FormatT] | BaseStream[FormatT],
+        response: Response[FormatT]
+        | StreamResponse[Stream, FormatT]
+        | StreamResponse[AsyncStream, FormatT],
         content: UserMessagePromotable,
-    ) -> AsyncStream[FormatT]:
+    ) -> StreamResponse[AsyncStream, FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
