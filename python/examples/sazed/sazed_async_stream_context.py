@@ -27,9 +27,9 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.AsyncStreamResponse = await sazed.stream(ctx, query)
-    async for chunk in stream:
-        print(chunk, flush=True, end="")
+    response: llm.AsyncStreamResponse = await sazed.stream(ctx, query)
+    async for partial in response.text():
+        print(partial.delta, flush=True, end="")
     print()
 
 

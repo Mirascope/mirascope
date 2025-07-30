@@ -227,21 +227,21 @@ ${this._async}def main():`;
   }
 
   private print_stream(indent: string, source: string): string {
-    const chunk_var = this.structured ? "_" : "chunk";
+    const chunk_var = this.structured ? "_" : "partial";
     let result = `${indent}${this._async}for ${chunk_var} in ${source}:`;
 
     if (this.structured) {
       result += `
-${indent}    partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
+${indent}    partial_entry: llm.Partial[KeeperEntry] = response.format(partial=True)
 ${indent}    print("[Partial]: ", partial_entry, flush=True)`;
     } else {
       result += `
-${indent}    print(chunk, flush=True, end="")`;
+${indent}    print(partial.delta, flush=True, end="")`;
     }
 
     if (this.structured) {
       result += `
-${indent}entry: KeeperEntry = stream.format()
+${indent}entry: KeeperEntry = response.format()
 ${indent}print("[Final]: ", entry)`;
     } else {
       result += `
@@ -257,28 +257,28 @@ ${indent}print()`;
       : "sazed.stream(" + this.ctx_arg;
 
     let result = `
-    stream: ${this.stream_type} = ${this._await}${call_target}query)`;
+    response: ${this.stream_type} = ${this._await}${call_target}query)`;
 
     if (this.tools && !this.agent) {
       result += `
     while True:
         outputs: list[llm.ToolOutput] = []
-        ${this._async}for group in stream.groups():
-            if group.type == "text":
-${this.print_stream("                ", "group")}
-            if group.type == "tool_call":
-                tool_call = ${this._await}group.collect()
+        ${this._async}for stream in response.content():
+            if stream.type == "text":
+${this.print_stream("                ", "stream")}
+            if stream.type == "tool_call":
+                tool_call = ${this._await}stream.collect()
                 outputs.append(${this._await}sazed.toolkit.execute(${
         this.ctx_arg
       }tool_call))
         if not outputs:
             break
-        stream = ${this._await}sazed.resume_stream(${
+        response = ${this._await}sazed.resume_stream(${
         this.ctx_arg
-      }stream, outputs)`;
+      }response, outputs)`;
     } else {
       result += `
-${this.print_stream("    ", "stream")}`;
+${this.print_stream("    ", "response.text()")}`;
     }
 
     return result;

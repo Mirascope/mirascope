@@ -1,10 +1,10 @@
 """Responses that stream content from LLMs."""
 
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncIterator, Iterator, Sequence
+from typing import Any
 
-from ..content import ContentChunk
+from ..content import AsyncStream, AsyncTextStream, Stream, TextStream
 from ..formatting import FormatT
-from ..streams import AsyncGroup, Group
 from .response import BR, Response
 
 
@@ -12,6 +12,9 @@ class BaseStreamResponse(BR[FormatT]):
     """Base class for streaming responses from LLMs.
     Provides common metadata fields that are populated as the stream is consumed.
     """
+
+    chunks: Sequence[Any]
+    """The raw, provider-specific chunks returned by the underlying LLM."""
 
     def to_response(self) -> Response[FormatT]:
         """Convert the stream to a complete response.
@@ -42,25 +45,33 @@ class StreamResponse(BaseStreamResponse[FormatT]):
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
-        stream = answer_question.stream("What is the capital of France?")
-    for chunk in stream:
-            print(chunk.content, end="", flush=True)
+        stream_response = answer_question.stream("What is the capital of France?")
+        for partial in stream_response.text():
+            print(partial.delta, end="", flush=True)
+        print() # Final flush
         ```
     """
 
-    def __iter__(self) -> Iterator[ContentChunk]:
-        """Iterate through the chunks of the stream.
+    def text(self, delimiter: str = "\n") -> TextStream:
+        """Provides a stream that iterates through all the text content of the StreamResponse.
 
-        Returns:
-            An iterator yielding ContentChunk objects.
+        If the response contains multiple text parts, they will be combined into a single
+        TextStream, with `delimiter` (which defaults to newline) separating the distinct
+        text parts.
+
+        If the response has no text parts, then the text stream will provide an single
+        partial with an empty string.
         """
         raise NotImplementedError()
 
-    def groups(self) -> Iterator[Group]:
-        """Iterate through grouped chunks of the stream.
+    def content(self) -> Iterator[Stream]:
+        """Iterate through the response's content, one stream at a time.
 
-        Returns:
-            An iterator yielding Group objects that contain related chunks.
+        Each content part in the response will correspond to one stream, which will yield
+        partials of that content as chunks come in from the underlying LLM.
+
+        Subsequent calls to `content` will create new iterators that restart iteration
+        from the beginning of the stream.
         """
         raise NotImplementedError()
 
@@ -84,18 +95,25 @@ class AsyncStreamResponse(BaseStreamResponse[FormatT]):
         ```
     """
 
-    def __aiter__(self) -> AsyncIterator[ContentChunk]:
-        """Iterate through the chunks of the stream asynchronously.
+    def text(self, delimiter: str = "\n") -> AsyncTextStream:
+        """Provides a stream that iterates through all the text content of the StreamResponse.
 
-        Returns:
-            An async iterator yielding ContentChunk objects.
+        If the response contains multiple text parts, they will be combined into a single
+        TextStream, with `delimiter` (which defaults to newline) separating the distinct
+        text parts.
+
+        If the response has no text parts, then the text stream will provide an single
+        partial with an empty string.
         """
         raise NotImplementedError()
 
-    def groups(self) -> AsyncIterator[AsyncGroup]:
-        """Iterate through grouped chunks of the stream asynchronously.
+    def content(self) -> AsyncIterator[AsyncStream]:
+        """Asynchronously iterate through the response's content, one stream at a time.
 
-        Returns:
-            An async iterator yielding AsyncGroup objects that contain related chunks.
+        Each content part in the response will correspond to one async stream, which will yield
+        partials of that content as chunks come in from the underlying LLM.
+
+        Subsequent calls to `content` will create new iterators that restart iteration
+        from the beginning of the stream.
         """
         raise NotImplementedError()

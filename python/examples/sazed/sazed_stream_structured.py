@@ -26,11 +26,11 @@ def sazed(query: str):
 
 def main():
     query = "What are the Kandra?"
-    stream: llm.StreamResponse[KeeperEntry] = sazed.stream(query)
-    for _ in stream:
-        partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
+    response: llm.StreamResponse[KeeperEntry] = sazed.stream(query)
+    for _ in response.text():
+        partial_entry: llm.Partial[KeeperEntry] = response.format(partial=True)
         print("[Partial]: ", partial_entry, flush=True)
-    entry: KeeperEntry = stream.format()
+    entry: KeeperEntry = response.format()
     print("[Final]: ", entry)
 
 

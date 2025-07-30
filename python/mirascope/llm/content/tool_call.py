@@ -27,10 +27,13 @@ class ToolCall:
 
 
 @dataclass(kw_only=True)
-class ToolCallChunk:
-    """Streaming tool call content chunk."""
+class ToolCallPartial:
+    """Partially reconstructed tool call content from chunk stream.
 
-    type: Literal["tool_call_chunk"] = "tool_call_chunk"
+    Contains both the accumulated arguments and the current delta for this update.
+    """
+
+    type: Literal["tool_call_partial"] = "tool_call_partial"
 
     id: str
     """A unique identifier for this tool call."""
@@ -38,12 +41,8 @@ class ToolCallChunk:
     name: str
     """The name of the tool to call."""
 
+    args: dict[str, Jsonable]
+    """The accumulated arguments parsed from all received JSON deltas."""
+
     delta: str
-    """The incremental delta to JSON arguments present in this particular chunk."""
-
-    final: bool
-    """Whether this is the final piece of content in its sequence. If true, this content's partial is finished generating."""
-
-    def __repr__(self) -> str:
-        """Strategic representation for clean default printing."""
-        return self.delta
+    """The incremental JSON delta added in this update."""

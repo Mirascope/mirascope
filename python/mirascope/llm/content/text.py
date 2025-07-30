@@ -14,17 +14,16 @@ class Text:
 
 
 @dataclass(kw_only=True)
-class TextChunk:
-    """Streaming text content chunk."""
+class TextPartial:
+    """Partially reconstructed text content from chunk stream.
 
-    type: Literal["text_chunk"] = "text_chunk"
+    Contains both the accumulated text and the current delta for this update.
+    """
+
+    type: Literal["text_partial"] = "text_partial"
+
+    text: str
+    """The accumulated text content from all received chunks."""
 
     delta: str
-    """The incremental text present in this particular chunk."""
-
-    final: bool
-    """Whether this is the final piece of content in its sequence. If true, this content's partial is finished generating."""
-
-    def __repr__(self) -> str:
-        """Strategic representation for clean default printing."""
-        return self.delta
+    """The incremental text added in the most recent chunk."""

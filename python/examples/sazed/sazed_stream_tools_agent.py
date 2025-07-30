@@ -23,9 +23,9 @@ def sazed():
 def main():
     agent: llm.Agent = sazed()
     query = "What are the Kandra?"
-    stream: llm.StreamResponse = agent.stream(query)
-    for chunk in stream:
-        print(chunk, flush=True, end="")
+    response: llm.StreamResponse = agent.stream(query)
+    for partial in response.text():
+        print(partial.delta, flush=True, end="")
     print()
 
 

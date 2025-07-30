@@ -34,20 +34,20 @@ def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.StreamResponse = sazed.stream(ctx, query)
+    response: llm.StreamResponse = sazed.stream(ctx, query)
     while True:
         outputs: list[llm.ToolOutput] = []
-        for group in stream.groups():
-            if group.type == "text":
-                for chunk in group:
-                    print(chunk, flush=True, end="")
+        for stream in response.content():
+            if stream.type == "text":
+                for partial in stream:
+                    print(partial.delta, flush=True, end="")
                 print()
-            if group.type == "tool_call":
-                tool_call = group.collect()
+            if stream.type == "tool_call":
+                tool_call = stream.collect()
                 outputs.append(sazed.toolkit.execute(ctx, tool_call))
         if not outputs:
             break
-        stream = sazed.resume_stream(ctx, stream, outputs)
+        response = sazed.resume_stream(ctx, response, outputs)
 
 
 main()

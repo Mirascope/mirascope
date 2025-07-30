@@ -32,24 +32,24 @@ def sazed(query: str):
 
 def main():
     query = "What are the Kandra?"
-    stream: llm.StreamResponse[KeeperEntry] = sazed.stream(query)
+    response: llm.StreamResponse[KeeperEntry] = sazed.stream(query)
     while True:
         outputs: list[llm.ToolOutput] = []
-        for group in stream.groups():
-            if group.type == "text":
-                for _ in group:
-                    partial_entry: llm.Partial[KeeperEntry] = stream.format(
+        for stream in response.content():
+            if stream.type == "text":
+                for _ in stream:
+                    partial_entry: llm.Partial[KeeperEntry] = response.format(
                         partial=True
                     )
                     print("[Partial]: ", partial_entry, flush=True)
-                entry: KeeperEntry = stream.format()
+                entry: KeeperEntry = response.format()
                 print("[Final]: ", entry)
-            if group.type == "tool_call":
-                tool_call = group.collect()
+            if stream.type == "tool_call":
+                tool_call = stream.collect()
                 outputs.append(sazed.toolkit.execute(tool_call))
         if not outputs:
             break
-        stream = sazed.resume_stream(stream, outputs)
+        response = sazed.resume_stream(response, outputs)
 
 
 main()

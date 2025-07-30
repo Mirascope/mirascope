@@ -28,11 +28,11 @@ async def sazed(query: str):
 
 async def main():
     query = "What are the Kandra?"
-    stream: llm.AsyncStreamResponse[KeeperEntry] = await sazed.stream(query)
-    async for _ in stream:
-        partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
+    response: llm.AsyncStreamResponse[KeeperEntry] = await sazed.stream(query)
+    async for _ in response.text():
+        partial_entry: llm.Partial[KeeperEntry] = response.format(partial=True)
         print("[Partial]: ", partial_entry, flush=True)
-    entry: KeeperEntry = stream.format()
+    entry: KeeperEntry = response.format()
     print("[Final]: ", entry)
 
 

@@ -108,7 +108,7 @@ class Response(BR[FormatT]):
         """Returns the response's textual content.
 
         If the response has multiple Text parts, they will be concatenated together
-        using delimiter (default newline).
+        using `delimiter` (default newline).
 
         If the response has no text content, an empty string is returned.
         """
