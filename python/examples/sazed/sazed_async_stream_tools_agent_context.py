@@ -17,7 +17,10 @@ async def search_coppermind(ctx: llm.Context[Coppermind], query: str) -> str:
     )
 
 
-@llm.agent(model="openai:gpt-4o-mini", tools=[search_coppermind])
+@llm.agent(
+    model="openai:gpt-4o-mini",
+    tools=[search_coppermind],
+)
 async def sazed(ctx: llm.Context[Coppermind]):
     return f"""
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
