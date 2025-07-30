@@ -14,10 +14,8 @@ from ..prompts import (
     AsyncContextPrompt,
     ContextPrompt,
 )
-from ..tools import (
-    ContextToolT,
-    ToolT,
-)
+from ..tools import AsyncContextTool, AsyncTool, ContextTool, ContextToolT, Tool
+from ..types import Jsonable
 from .context_call import AsyncContextCall, ContextCall
 
 if TYPE_CHECKING:
@@ -31,25 +29,48 @@ from ..formatting import FormatT
 from ..types import P
 
 
-class ContextCallDecorator(Protocol[ContextToolT, FormatT]):
+class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
     """A decorator for converting context prompts to context calls."""
 
     @overload
     def __call__(
-        self, fn: AsyncContextPrompt[P, DepsT]
+        self: ContextCallDecorator[
+            P,
+            Tool[..., Jsonable]
+            | AsyncTool[..., Jsonable]
+            | ContextTool[..., Jsonable, DepsT]
+            | AsyncContextTool[..., Jsonable, DepsT],
+            FormatT,
+        ],
+        fn: AsyncContextPrompt[P, DepsT],
     ) -> AsyncContextCall[P, ContextToolT, DepsT, FormatT]:
         """Decorate an async context prompt into an AsyncContextCall."""
         ...
 
     @overload
     def __call__(
-        self, fn: ContextPrompt[P, DepsT]
+        self: ContextCallDecorator[
+            P,
+            Tool[..., Jsonable]
+            | AsyncTool[..., Jsonable]
+            | ContextTool[..., Jsonable, DepsT]
+            | AsyncContextTool[..., Jsonable, DepsT],
+            FormatT,
+        ],
+        fn: ContextPrompt[P, DepsT],
     ) -> ContextCall[P, ContextToolT, DepsT, FormatT]:
         """Decorate a context prompt into a ContextCall."""
         ...
 
     def __call__(
-        self,
+        self: ContextCallDecorator[
+            P,
+            Tool[..., Jsonable]
+            | AsyncTool[..., Jsonable]
+            | ContextTool[..., Jsonable, DepsT]
+            | AsyncContextTool[..., Jsonable, DepsT],
+            FormatT,
+        ],
         fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
     ) -> (
         ContextCall[P, ContextToolT, DepsT, FormatT]
@@ -114,12 +135,12 @@ class ContextCallDecorator(Protocol[ContextToolT, FormatT]):
 def context_call(
     model: REGISTERED_LLMS,
     *,
-    tools: list[ToolT] | list[ContextToolT] | None = None,
+    tools: list[ContextToolT] | None = None,
     deps_type: type[DepsT] | type[None] | None = None,
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
-) -> ContextCallDecorator[ContextToolT, FormatT]:
+) -> ContextCallDecorator[..., ContextToolT, FormatT]:
     """Returns a decorator for turning context prompts into ContextCalls.
 
     Example:
