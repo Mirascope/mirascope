@@ -28,7 +28,7 @@ async def main():
     response: llm.Response = await sazed(query)
     while tool_calls := response.tool_calls:
         outputs: list[llm.ToolOutput] = await asyncio.gather(
-            *[sazed.toolkit.call(tool_call) for tool_call in tool_calls]
+            *[sazed.toolkit.execute(tool_call) for tool_call in tool_calls]
         )
         response = await sazed.resume(response, outputs)
     print(response.text)

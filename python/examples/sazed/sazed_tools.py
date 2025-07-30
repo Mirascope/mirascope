@@ -26,7 +26,7 @@ def main():
     response: llm.Response = sazed(query)
     while tool_calls := response.tool_calls:
         outputs: list[llm.ToolOutput] = [
-            sazed.toolkit.call(tool_call) for tool_call in tool_calls
+            sazed.toolkit.execute(tool_call) for tool_call in tool_calls
         ]
         response = sazed.resume(response, outputs)
     print(response.text)
