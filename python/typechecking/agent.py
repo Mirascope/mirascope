@@ -1,10 +1,7 @@
-from typing_extensions import assert_type
-
 from mirascope import llm
 
 from .utils import (
     Deps,
-    OtherDeps,
     async_prompt,
     async_tool,
     context_prompt,
@@ -18,49 +15,40 @@ from .utils import (
 
 
 def test_agent_prompt_deps():
-    llm.agent("openai:gpt-4o-mini")(prompt)
-    llm.agent("openai:gpt-4o-mini")(context_prompt)
-    llm.agent("openai:gpt-4o-mini", deps_type=Deps)(prompt)
-    llm.agent("openai:gpt-4o-mini", deps_type=Deps)(context_prompt_deps)
-
-    llm.agent("openai:gpt-4o-mini")(context_prompt_deps)  # type: ignore[reportCallIssue]
-    llm.agent("openai:gpt-4o-mini", deps_type=OtherDeps)(context_prompt_deps)  # type: ignore[reportCallIssue]
+    x1: llm.AgentTemplate[None] = llm.agent("openai:gpt-4o-mini")(prompt)  # noqa: F841
+    x2: llm.AgentTemplate[None] = llm.agent("openai:gpt-4o-mini")(context_prompt)  # noqa: F841
+    x3: llm.AgentTemplate[Deps] = llm.agent("openai:gpt-4o-mini")(context_prompt_deps)  # noqa: F841
 
 
 def test_sync_async_agent():
-    assert_type(llm.agent("openai:gpt-4o-mini")(prompt), llm.agents.AgentTemplate)
-    assert_type(
-        llm.agent("openai:gpt-4o-mini", tools=[tool])(prompt), llm.agents.AgentTemplate
-    )
-    assert_type(
-        llm.agent("openai:gpt-4o-mini", tools=[tool, async_tool])(prompt),
-        llm.agents.AsyncAgentTemplate,
-    )
-    assert_type(
-        llm.agent("openai:gpt-4o-mini", tools=[async_tool])(prompt),
-        llm.agents.AsyncAgentTemplate,
-    )
-    assert_type(
-        llm.agent("openai:gpt-4o-mini")(async_prompt),
-        llm.agents.AsyncAgentTemplate,
-    )
-    assert_type(
-        llm.agent("openai:gpt-4o-mini", tools=[tool])(async_prompt),
-        llm.agents.AsyncAgentTemplate,
+    def expect_sync(x: llm.AgentTemplate): ...
+    def expect_async(x: llm.AsyncAgentTemplate): ...
+
+    expect_sync(llm.agent("openai:gpt-4o-mini")(prompt))
+    expect_sync(llm.agent("openai:gpt-4o-mini", tools=[tool, async_tool])(prompt))
+
+    expect_async(llm.agent("openai:gpt-4o-mini")(async_prompt))
+    expect_async(
+        llm.agent("openai:gpt-4o-mini", tools=[tool, async_tool])(async_prompt)
     )
 
 
 def test_agent_tool_deps():
-    llm.agent("openai:gpt-4o-mini", tools=[context_tool], deps_type=type(None))(
+    x1: llm.AgentTemplate[None] = llm.agent("openai:gpt-4o-mini", tools=[context_tool])(  # noqa: F841
         context_prompt
     )
 
-    llm.agent("openai:gpt-4o-mini", tools=[context_tool_deps], deps_type=Deps)(
-        context_prompt_deps
+    x2: llm.AgentTemplate[Deps] = llm.agent(  # noqa: F841
+        "openai:gpt-4o-mini", tools=[context_tool_deps]
+    )(context_prompt_deps)
+
+    llm.AgentTemplate = llm.agent("openai:gpt-4o-mini", tools=[context_tool])(
+        context_prompt_deps  # type: ignore[reportCallIssue]
     )
-    llm.agent("openai:gpt-4o-mini", tools=[context_tool], deps_type=Deps)(  # type: ignore[reportCallIssue]
-        context_prompt_deps
+    llm.AgentTemplate = llm.agent("openai:gpt-4o-mini", tools=[tool_other_deps])(
+        context_prompt_deps  # type: ignore[reportCallIssue]
     )
-    llm.agent("openai:gpt-4o-mini", tools=[tool_other_deps], deps_type=Deps)(  # type: ignore[reportCallIssue]
-        context_prompt_deps
-    )
+
+    llm.AgentTemplate = llm.agent(
+        "openai:gpt-4o-mini", tools=[context_tool_deps, tool_other_deps]
+    )(context_prompt_deps)  # type: ignore[reportCallIssue]
