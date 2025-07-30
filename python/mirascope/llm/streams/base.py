@@ -1,6 +1,5 @@
 """Base interface for streaming responses from LLMs."""
 
-from decimal import Decimal
 from typing import Generic, Literal, overload
 
 from ..formatting import FormatT, Partial
@@ -17,9 +16,6 @@ class BaseStream(Generic[FormatT]):
 
     usage: Usage | None
     """The token usage statistics reflecting all chunks processed so far. Updates as chunks are consumed."""
-
-    cost: Decimal | None
-    """The cost reflecting all chunks processed so far. Updates as chunks are consumed."""
 
     def to_response(self) -> Response[FormatT]:
         """Convert the stream to a complete response.
