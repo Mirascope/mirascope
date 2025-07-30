@@ -7,14 +7,8 @@ from typing import TYPE_CHECKING, Protocol, overload
 from typing_extensions import Unpack
 
 from ..clients import (
-    AnthropicClient,
-    AnthropicParams,
     BaseClient,
     BaseParams,
-    GoogleClient,
-    GoogleParams,
-    OpenAIClient,
-    OpenAIParams,
 )
 from ..prompts import (
     AsyncPrompt,
@@ -27,9 +21,6 @@ from .call import AsyncCall, Call
 
 if TYPE_CHECKING:
     from ..clients import (
-        ANTHROPIC_REGISTERED_LLMS,
-        GOOGLE_REGISTERED_LLMS,
-        OPENAI_REGISTERED_LLMS,
         REGISTERED_LLMS,
     )
 
@@ -58,56 +49,56 @@ class CallDecorator(Protocol[ToolT, FormatT]):
         ...
 
 
-@overload
-def call(
-    model: ANTHROPIC_REGISTERED_LLMS,
-    *,
-    tools: list[ToolT] | None = None,
-    format: type[FormatT] | None = None,
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
-) -> CallDecorator[ToolT, FormatT]:
-    """Decorate a prompt into a Call using Anthropic models."""
-    ...
+# @overload
+# def call(
+#     model: ANTHROPIC_REGISTERED_LLMS,
+#     *,
+#     tools: list[ToolT] | None = None,
+#     format: type[FormatT] | None = None,
+#     client: AnthropicClient | None = None,
+#     **params: Unpack[AnthropicParams],
+# ) -> CallDecorator[ToolT, FormatT]:
+#     """Decorate a prompt into a Call using Anthropic models."""
+#     ...
 
 
-@overload
-def call(
-    model: GOOGLE_REGISTERED_LLMS,
-    *,
-    tools: list[ToolT] | None = None,
-    format: type[FormatT] | None = None,
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
-) -> CallDecorator[ToolT, FormatT]:
-    """Decorate a prompt into a Call using Google models."""
-    ...
+# @overload
+# def call(
+#     model: GOOGLE_REGISTERED_LLMS,
+#     *,
+#     tools: list[ToolT] | None = None,
+#     format: type[FormatT] | None = None,
+#     client: GoogleClient | None = None,
+#     **params: Unpack[GoogleParams],
+# ) -> CallDecorator[ToolT, FormatT]:
+#     """Decorate a prompt into a Call using Google models."""
+#     ...
 
 
-@overload
-def call(
-    model: OPENAI_REGISTERED_LLMS,
-    *,
-    tools: list[ToolT] | None = None,
-    format: type[FormatT] | None = None,
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
-) -> CallDecorator[ToolT, FormatT]:
-    """Decorate a prompt into a Call using OpenAI models."""
-    ...
+# @overload
+# def call(
+#     model: OPENAI_REGISTERED_LLMS,
+#     *,
+#     tools: list[ToolT] | None = None,
+#     format: type[FormatT] | None = None,
+#     client: OpenAIClient | None = None,
+#     **params: Unpack[OpenAIParams],
+# ) -> CallDecorator[ToolT, FormatT]:
+#     """Decorate a prompt into a Call using OpenAI models."""
+#     ...
 
 
-@overload
-def call(
-    model: REGISTERED_LLMS,
-    *,
-    tools: list[ToolT] | None = None,
-    format: type[FormatT] | None = None,
-    client: None = None,
-    **params: Unpack[BaseParams],
-) -> CallDecorator[ToolT, FormatT]:
-    """Decorate a prompt into a Call using any registered model."""
-    ...
+# @overload
+# def call(
+#     model: REGISTERED_LLMS,
+#     *,
+#     tools: list[ToolT] | None = None,
+#     format: type[FormatT] | None = None,
+#     client: None = None,
+#     **params: Unpack[BaseParams],
+# ) -> CallDecorator[ToolT, FormatT]:
+#     """Decorate a prompt into a Call using any registered model."""
+#     ...
 
 
 def call(

@@ -18,16 +18,7 @@ from .agent_template import AgentTemplate, AsyncAgentTemplate
 
 if TYPE_CHECKING:
     from ..clients import (
-        ANTHROPIC_REGISTERED_LLMS,
-        GOOGLE_REGISTERED_LLMS,
-        OPENAI_REGISTERED_LLMS,
         REGISTERED_LLMS,
-        AnthropicClient,
-        AnthropicParams,
-        GoogleClient,
-        GoogleParams,
-        OpenAIClient,
-        OpenAIParams,
     )
 
 from ..context import DepsT
@@ -137,88 +128,88 @@ class AsyncAgentDecorator(Protocol[DepsT, FormatT]):
         ...
 
 
-@overload
-def agent(
-    model: ANTHROPIC_REGISTERED_LLMS,
-    *,
-    tools: None = None,
-    deps_type: type[DepsT] = NoneType,
-    format: type[FormatT] | None = None,
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
-) -> AgentDecorator[None, DepsT, FormatT]:
-    """Overload for Anthropic agents with no tools."""
-    ...
+# @overload
+# def agent(
+#     model: ANTHROPIC_REGISTERED_LLMS,
+#     *,
+#     tools: None = None,
+#     deps_type: type[DepsT] = NoneType,
+#     format: type[FormatT] | None = None,
+#     client: AnthropicClient | None = None,
+#     **params: Unpack[AnthropicParams],
+# ) -> AgentDecorator[None, DepsT, FormatT]:
+#     """Overload for Anthropic agents with no tools."""
+#     ...
 
 
-@overload
-def agent(
-    model: ANTHROPIC_REGISTERED_LLMS,
-    *,
-    tools: list[AgentToolT],
-    deps_type: type[DepsT] = NoneType,
-    format: type[FormatT] | None = None,
-    client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
-) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
-    """Overload for Anthropic agents with tools."""
-    ...
+# @overload
+# def agent(
+#     model: ANTHROPIC_REGISTERED_LLMS,
+#     *,
+#     tools: list[AgentToolT],
+#     deps_type: type[DepsT] = NoneType,
+#     format: type[FormatT] | None = None,
+#     client: AnthropicClient | None = None,
+#     **params: Unpack[AnthropicParams],
+# ) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+#     """Overload for Anthropic agents with tools."""
+#     ...
 
 
-@overload
-def agent(
-    model: GOOGLE_REGISTERED_LLMS,
-    *,
-    tools: None = None,
-    deps_type: type[DepsT] = NoneType,
-    format: type[FormatT] | None = None,
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
-) -> AgentDecorator[None, DepsT, FormatT]:
-    """Overload for Google agents with no tools."""
-    ...
+# @overload
+# def agent(
+#     model: GOOGLE_REGISTERED_LLMS,
+#     *,
+#     tools: None = None,
+#     deps_type: type[DepsT] = NoneType,
+#     format: type[FormatT] | None = None,
+#     client: GoogleClient | None = None,
+#     **params: Unpack[GoogleParams],
+# ) -> AgentDecorator[None, DepsT, FormatT]:
+#     """Overload for Google agents with no tools."""
+#     ...
 
 
-@overload
-def agent(
-    model: GOOGLE_REGISTERED_LLMS,
-    *,
-    tools: list[AgentToolT],
-    deps_type: type[DepsT] = NoneType,
-    format: type[FormatT] | None = None,
-    client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
-) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
-    """Overload for Google agents with tools."""
-    ...
+# @overload
+# def agent(
+#     model: GOOGLE_REGISTERED_LLMS,
+#     *,
+#     tools: list[AgentToolT],
+#     deps_type: type[DepsT] = NoneType,
+#     format: type[FormatT] | None = None,
+#     client: GoogleClient | None = None,
+#     **params: Unpack[GoogleParams],
+# ) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+#     """Overload for Google agents with tools."""
+#     ...
 
 
-@overload
-def agent(
-    model: OPENAI_REGISTERED_LLMS,
-    *,
-    tools: None = None,
-    deps_type: type[DepsT] = NoneType,
-    format: type[FormatT] | None = None,
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
-) -> AgentDecorator[None, DepsT, FormatT]:
-    """Overload for OpenAI agents with no tools."""
-    ...
+# @overload
+# def agent(
+#     model: OPENAI_REGISTERED_LLMS,
+#     *,
+#     tools: None = None,
+#     deps_type: type[DepsT] = NoneType,
+#     format: type[FormatT] | None = None,
+#     client: OpenAIClient | None = None,
+#     **params: Unpack[OpenAIParams],
+# ) -> AgentDecorator[None, DepsT, FormatT]:
+#     """Overload for OpenAI agents with no tools."""
+#     ...
 
 
-@overload
-def agent(
-    model: OPENAI_REGISTERED_LLMS,
-    *,
-    tools: list[AgentToolT],
-    deps_type: type[DepsT] = NoneType,
-    format: type[FormatT] | None = None,
-    client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
-) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
-    """Overload for OpenAI agents with tools."""
-    ...
+# @overload
+# def agent(
+#     model: OPENAI_REGISTERED_LLMS,
+#     *,
+#     tools: list[AgentToolT],
+#     deps_type: type[DepsT] = NoneType,
+#     format: type[FormatT] | None = None,
+#     client: OpenAIClient | None = None,
+#     **params: Unpack[OpenAIParams],
+# ) -> AgentDecorator[AgentToolT, DepsT, FormatT]:
+#     """Overload for OpenAI agents with tools."""
+#     ...
 
 
 @overload
