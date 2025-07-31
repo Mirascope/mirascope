@@ -35,7 +35,7 @@ async def main():
                 print()
             if group.type == "tool_call":
                 tool_call = await group.collect()
-                outputs.append(await sazed.toolkit.call(tool_call))
+                outputs.append(await sazed.toolkit.execute(tool_call))
         if not outputs:
             break
         stream = await sazed.resume_stream(stream, outputs)

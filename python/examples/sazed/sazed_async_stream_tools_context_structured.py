@@ -60,7 +60,7 @@ async def main():
                 print("[Final]: ", entry)
             if group.type == "tool_call":
                 tool_call = await group.collect()
-                outputs.append(await sazed.toolkit.call(ctx, tool_call))
+                outputs.append(await sazed.toolkit.execute(ctx, tool_call))
         if not outputs:
             break
         stream = await sazed.resume_stream(ctx, stream, outputs)

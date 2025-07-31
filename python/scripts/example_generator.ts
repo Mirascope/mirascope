@@ -268,7 +268,7 @@ ${indent}print()`;
 ${this.print_stream("                ", "group")}
             if group.type == "tool_call":
                 tool_call = ${this._await}group.collect()
-                outputs.append(${this._await}sazed.toolkit.call(${
+                outputs.append(${this._await}sazed.toolkit.execute(${
         this.ctx_arg
       }tool_call))
         if not outputs:
@@ -297,7 +297,7 @@ ${this.print_stream("    ", "stream")}`;
       const gather_close = this.async ? ")" : "";
       result += `
     while tool_calls := response.tool_calls:
-        outputs: list[llm.ToolOutput] = ${gather}[sazed.toolkit.call(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}
+        outputs: list[llm.ToolOutput] = ${gather}[sazed.toolkit.execute(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}
         response = ${this._await}sazed.resume(${this.ctx_arg}response, outputs)`;
     }
 

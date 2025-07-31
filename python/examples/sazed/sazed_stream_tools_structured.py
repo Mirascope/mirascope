@@ -46,7 +46,7 @@ def main():
                 print("[Final]: ", entry)
             if group.type == "tool_call":
                 tool_call = group.collect()
-                outputs.append(sazed.toolkit.call(tool_call))
+                outputs.append(sazed.toolkit.execute(tool_call))
         if not outputs:
             break
         stream = sazed.resume_stream(stream, outputs)
