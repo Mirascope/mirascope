@@ -43,7 +43,7 @@ def main():
             sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls
         ]
         response = sazed.resume(ctx, response, outputs)
-    print(response.text)
+    print(response.pretty())
 
 
 main()

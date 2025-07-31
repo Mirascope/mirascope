@@ -14,7 +14,7 @@ Stream: TypeAlias = TextStream | ToolCallStream | ThinkingStream
 AsyncStream: TypeAlias = AsyncTextStream | AsyncToolCallStream | AsyncThinkingStream
 """An assistant content part that is delivered asynchronously and incrementally."""
 
-StreamT = TypeVar("StreamT", bound=Stream | AsyncStream, default=Stream)
+StreamT = TypeVar("StreamT", bound=Stream | AsyncStream, covariant=True, default=Stream)
 
 __all__ = [
     "AsyncStream",

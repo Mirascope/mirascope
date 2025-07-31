@@ -38,7 +38,7 @@ async def main():
     agent: llm.AsyncAgent[Coppermind] = await sazed(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.Response = await agent(query)
-    print(response.text)
+    print(response.pretty())
 
 
 if __name__ == "__main__":

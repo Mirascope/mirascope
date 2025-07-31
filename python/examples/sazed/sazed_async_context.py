@@ -28,7 +28,7 @@ async def main():
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.Response = await sazed(ctx, query)
-    print(response.text)
+    print(response.pretty())
 
 
 if __name__ == "__main__":

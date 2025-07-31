@@ -34,7 +34,7 @@ async def main():
             *[sazed.toolkit.execute(tool_call) for tool_call in tool_calls]
         )
         response = await sazed.resume(response, outputs)
-    print(response.text)
+    print(response.pretty())
 
 
 if __name__ == "__main__":

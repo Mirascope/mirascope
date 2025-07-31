@@ -3,10 +3,9 @@
 from .audio import Audio
 from .boundary_chunk import EndChunk, StartChunk, StreamableContentType
 from .content import (
-    AssistantContent,
+    AssistantContentPart,
     Chunk,
-    SystemContent,
-    UserContent,
+    UserContentPart,
 )
 from .document import Document
 from .image import Image, ImageUrl
@@ -16,7 +15,7 @@ from .tool_call import ToolCall, ToolCallChunk
 from .tool_output import ToolOutput
 
 __all__ = [
-    "AssistantContent",
+    "AssistantContentPart",
     "Audio",
     "Chunk",
     "Document",
@@ -25,7 +24,6 @@ __all__ = [
     "ImageUrl",
     "StartChunk",
     "StreamableContentType",
-    "SystemContent",
     "Text",
     "TextChunk",
     "Thinking",
@@ -33,5 +31,5 @@ __all__ = [
     "ToolCall",
     "ToolCallChunk",
     "ToolOutput",
-    "UserContent",
+    "UserContentPart",
 ]

@@ -45,9 +45,7 @@ class ContextCall(
     def resume(
         self,
         ctx: Context[DepsT],
-        response: Response[FormatT]
-        | StreamResponse[Stream, FormatT]
-        | StreamResponse[AsyncStream, FormatT],
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
         content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
@@ -56,9 +54,7 @@ class ContextCall(
     def resume_stream(
         self,
         ctx: Context[DepsT],
-        response: Response[FormatT]
-        | StreamResponse[Stream, FormatT]
-        | StreamResponse[AsyncStream, FormatT],
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
         content: UserMessagePromotable,
     ) -> StreamResponse[Stream, FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
@@ -93,9 +89,7 @@ class AsyncContextCall(
     async def resume(
         self,
         ctx: Context[DepsT],
-        response: Response[FormatT]
-        | StreamResponse[Stream, FormatT]
-        | StreamResponse[AsyncStream, FormatT],
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
         content: UserMessagePromotable,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
@@ -104,9 +98,7 @@ class AsyncContextCall(
     async def resume_stream(
         self,
         ctx: Context[DepsT],
-        response: Response[FormatT]
-        | StreamResponse[Stream, FormatT]
-        | StreamResponse[AsyncStream, FormatT],
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
         content: UserMessagePromotable,
     ) -> StreamResponse[AsyncStream, FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""

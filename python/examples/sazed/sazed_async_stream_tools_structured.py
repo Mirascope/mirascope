@@ -44,8 +44,7 @@ async def main():
     while True:
         async for chunk in await response.structured_stream():
             print("[Partial]: ", chunk, flush=True)
-        tool_calls = response.tool_calls
-        if not tool_calls:
+        if not (tool_calls := response.tool_calls):
             break
         outputs: list[llm.ToolOutput] = await asyncio.gather(
             *[sazed.toolkit.execute(tool_call) for tool_call in tool_calls]

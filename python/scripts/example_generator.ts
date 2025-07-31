@@ -254,7 +254,7 @@ ${this._async}def main():`;
   private print_stream(indent: string): string {
     const stream_target = this.structured
       ? `${this._await}response.structured_stream()`
-      : `${this._await}response.text_stream()`;
+      : `${this._await}response.pretty_stream()`;
     const stream_print = this.structured
       ? `print("[Partial]: ", chunk, flush=True)`
       : `print(chunk, flush=True, end="")`;
@@ -266,8 +266,7 @@ ${indent}        ${stream_print}`;
   private get tools_stream(): string {
     return `
     while True:${this.print_stream("    ")}
-        tool_calls = response.tool_calls
-        if not tool_calls:
+        if not (tool_calls := response.tool_calls):
             break
         ${this.gather_tools}
         response = ${this._await}sazed.resume_stream(${
@@ -304,7 +303,7 @@ ${indent}        ${stream_print}`;
     print(entry)`;
     } else {
       result += `
-    print(response.text)`;
+    print(response.pretty())`;
     }
 
     return result;

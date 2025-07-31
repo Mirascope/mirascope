@@ -37,7 +37,7 @@ def main():
     agent: llm.Agent[Coppermind] = sazed(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.Response = agent(query)
-    print(response.text)
+    print(response.pretty())
 
 
 main()

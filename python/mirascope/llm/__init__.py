@@ -24,7 +24,7 @@ from .agents import Agent, AgentTemplate, AsyncAgent, AsyncAgentTemplate, agent
 from .calls import call, context_call
 from .clients import BaseClient, BaseParams
 from .content import (
-    AssistantContent,
+    AssistantContentPart,
     Audio,
     Document,
     Image,
@@ -36,7 +36,7 @@ from .content import (
     ToolCall,
     ToolCallChunk,
     ToolOutput,
-    UserContent,
+    UserContentPart,
 )
 from .context import Context
 from .exceptions import (
@@ -65,7 +65,7 @@ __all__ = [
     "APIError",
     "Agent",
     "AgentTemplate",
-    "AssistantContent",
+    "AssistantContentPart",
     "AssistantMessage",
     "AsyncAgent",
     "AsyncAgentTemplate",
@@ -104,7 +104,7 @@ __all__ = [
     "ToolCallChunk",
     "ToolNotFoundError",
     "ToolOutput",
-    "UserContent",
+    "UserContentPart",
     "UserMessage",
     "agent",
     "agents",

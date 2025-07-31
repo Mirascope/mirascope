@@ -27,7 +27,7 @@ def main():
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.StreamResponse = sazed.stream(ctx, query)
-    for chunk in response.text_stream():
+    for chunk in response.pretty_stream():
         print(chunk, flush=True, end="")
 
 

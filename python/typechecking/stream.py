@@ -14,9 +14,8 @@ def async_stream_response() -> llm.StreamResponse[llm.AsyncStream]:
 
 
 def stream_type_safety():
-    text_stream: llm.streams.TextStream = stream_response().text_stream()
-    for chunk in text_stream:
-        assert_type(chunk, llm.content.TextChunk)
+    for chunk in stream_response().pretty_stream():
+        assert_type(chunk, str)
 
     streams: Iterator[llm.Stream] = stream_response().streams()
     for stream in streams:
@@ -38,11 +37,8 @@ def stream_type_safety():
 
 
 async def async_stream_type_safety():
-    text_stream: llm.streams.AsyncTextStream = (
-        await async_stream_response().text_stream()
-    )
-    async for chunk in text_stream:
-        assert_type(chunk, llm.content.TextChunk)
+    async for chunk in await async_stream_response().pretty_stream():
+        assert_type(chunk, str)
 
     streams: AsyncIterator[llm.AsyncStream] = await async_stream_response().streams()
     async for stream in streams:

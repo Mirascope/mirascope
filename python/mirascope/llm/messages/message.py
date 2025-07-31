@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Literal, TypeAlias
 
-from ..content import AssistantContent, SystemContent, UserContent
+from ..content import AssistantContentPart, Text, UserContentPart
 
 
 @dataclass(kw_only=True)
@@ -14,7 +14,7 @@ class SystemMessage:
     """A system message that sets context and instructions for the conversation."""
 
     role: Literal["system"] = "system"
-    content: SystemContent
+    content: Text
 
 
 @dataclass(kw_only=True)
@@ -22,7 +22,7 @@ class UserMessage:
     """A user message containing input from the user."""
 
     role: Literal["user"] = "user"
-    content: Sequence[UserContent]
+    content: Sequence[UserContentPart]
     name: str | None = None
 
 
@@ -31,7 +31,7 @@ class AssistantMessage:
     """An assistant message containing the model's response."""
 
     role: Literal["assistant"] = "assistant"
-    content: Sequence[AssistantContent]
+    content: Sequence[AssistantContentPart]
     name: str | None = None
 
 
@@ -57,15 +57,17 @@ Example:
     ```
 """
 
-UserMessagePromotable: TypeAlias = str | UserContent | Sequence[str | UserContent]
+UserMessagePromotable: TypeAlias = (
+    str | UserContentPart | Sequence[str | UserContentPart]
+)
 """Type alias for content that can fit into a User message."""
 
 AssistantMessagePromotable: TypeAlias = (
-    str | AssistantContent | Sequence[str | AssistantContent]
+    str | AssistantContentPart | Sequence[str | AssistantContentPart]
 )
 """Type alias for content that can fit into an Assistant message."""
 
-SystemMessagePromotable: TypeAlias = str | SystemContent
+SystemMessagePromotable: TypeAlias = str | Text
 """Type alias for content that can fit into a System message."""
 
 

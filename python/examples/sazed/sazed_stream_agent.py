@@ -18,7 +18,7 @@ def main():
     agent: llm.Agent = sazed()
     query = "What are the Kandra?"
     response: llm.StreamResponse = agent.stream(query)
-    for chunk in response.text_stream():
+    for chunk in response.pretty_stream():
         print(chunk, flush=True, end="")
 
 

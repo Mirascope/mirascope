@@ -26,7 +26,7 @@ def main():
     agent: llm.Agent[Coppermind] = sazed(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.StreamResponse = agent.stream(query)
-    for chunk in response.text_stream():
+    for chunk in response.pretty_stream():
         print(chunk, flush=True, end="")
 
 

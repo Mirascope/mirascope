@@ -18,7 +18,7 @@ def main():
     agent: llm.Agent = sazed()
     query = "What are the Kandra?"
     response: llm.Response = agent(query)
-    print(response.text)
+    print(response.pretty())
 
 
 main()
