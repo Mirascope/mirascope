@@ -20,7 +20,7 @@ To use streaming, first create a prompt and transform it into a [call](/docs/lea
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/streams/intro.py" />
+// CodeExample file="examples/streams/intro.py"
 </Tab>
 </TabbedSection>
 
@@ -37,7 +37,7 @@ Mirascope also provides `llm.ChunkStart` and `llm.ChunkEnd` chunks, which demarc
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/streams/content_type.py" />
+// CodeExample file="examples/streams/content_type.py"
 </Tab>
 </TabbedSection>
 
@@ -45,7 +45,7 @@ Note that for multimodal streams, the `ChunkStart` and `ChunkEnd` will print as 
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/streams/multimodal_print.py" />
+// CodeExample file="examples/streams/multimodal_print.py"
 </Tab>
 </TabbedSection>
 
@@ -56,7 +56,7 @@ For processing multimodal streams, Mirascope offers a more advanced `groups()` A
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/streams/groups.py" />
+// CodeExample file="examples/streams/groups.py"
 </Tab>
 </TabbedSection>
 
@@ -77,19 +77,19 @@ You can convert a stream to a standard response by calling [`Stream.to_response`
 Mirascope tries to match the reconstructed `llm.Response` with the corresponding non-streaming response. However, they might not be exactly the same.
 </Warning>
 
-<CodeExample file="examples/streams/to_response.py" />
+// CodeExample file="examples/streams/to_response.py"
 
 ### Monitoring Stream Usage & Cost
 
 Once a stream is complete, you can check its total usage and cost, as in the example below. These properties will not be available until the stream is exhausted.
 
-<CodeExample file="examples/streams/usage_and_cost.py" />
+// CodeExample file="examples/streams/usage_and_cost.py"
 
 ## Error Handling
 
 Error handling in streams is similar to [standard calls](/docs/learn/calls#error-handling). However, it's important to note that errors may occur during iteration rather than at the initial function call:
 
-<CodeExample file="examples/streams/error_handling.py" />
+// CodeExample file="examples/streams/error_handling.py"
 
 Note how we wrap the iteration loop in a try/except block to catch any errors that might occur during streaming. The initial response when calling `.stream()` will return an iterable, but any errors that occur during streaming will not happen until you actually iterate through it.
 
@@ -149,7 +149,7 @@ Async streams operate similarly to [async calls](/docs/learn/calls#async-calls).
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/streams/async_stream.py" />
+// CodeExample file="examples/streams/async_stream.py"
 </Tab>
 </TabbedSection>
 
@@ -157,7 +157,7 @@ If your prompt function itself is async, then `stream()` will be async, and will
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/streams/async_decorated.py" />
+// CodeExample file="examples/streams/async_decorated.py"
 </Tab>
 </TabbedSection>
 
@@ -168,7 +168,7 @@ The groups API works seamlessly with async streams. You use `async for` at both 
 
 <TabbedSection>
 <Tab value="Python">
-<CodeExample file="examples/streams/async_groups.py" />
+// CodeExample file="examples/streams/async_groups.py"
 </Tab>
 </TabbedSection>
 
