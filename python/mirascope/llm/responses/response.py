@@ -6,7 +6,6 @@ including methods for formatting the response according to a specified format.
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Generic, Literal, overload
 
 from ..content import AssistantContent, Audio, Image, Thinking, ToolCall
@@ -61,35 +60,18 @@ class Response(Generic[FormatT]):
     usage: Usage | None
     """The token usage statistics for the request to the LLM."""
 
-    cost: Decimal | None
-    """The cost of the request to the LLM, if available."""
-
     tool_calls: Sequence[ToolCall]
     """The tools the LLM wants called on its behalf, if any."""
 
     @property
-    def tool_call(self) -> ToolCall | None:
-        """Returns the first tool used in the response, if any."""
-        raise NotImplementedError()
+    def text(self, delimiter: str = "\n") -> str:
+        """Returns the response's textual content.
 
-    @property
-    def text(self) -> str | None:
-        """Returns the first text in the response content, if any."""
-        raise NotImplementedError()
+        If the response has multiple Text parts, they will be concatenated together
+        using delimiter (default newline).
 
-    @property
-    def image(self) -> Image | None:
-        """Returns the first image in the response content, if any."""
-        raise NotImplementedError()
-
-    @property
-    def audio(self) -> Audio | None:
-        """Returns the first audio in the response content, if any."""
-        raise NotImplementedError()
-
-    @property
-    def thinking(self) -> Thinking | None:
-        """Returns the first thinking in the response content, if any."""
+        If the response has no text content, an empty string is returned.
+        """
         raise NotImplementedError()
 
     @overload
