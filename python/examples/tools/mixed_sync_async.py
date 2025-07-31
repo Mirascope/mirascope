@@ -26,8 +26,8 @@ def main():
     response: llm.Response = librarian("fantasy")
     while tool_calls := response.tool_calls:
         tool_outputs = []
-        for call in tool_calls:
-            output = librarian.toolkit.call(call)
+        for tool_call in tool_calls:
+            output = librarian.toolkit.call(tool_call)
             if inspect.isawaitable(output):
                 output = asyncio.wait_for(output, timeout=1000)
             tool_outputs.append(output)

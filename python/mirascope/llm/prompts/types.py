@@ -125,3 +125,27 @@ This TypeVar represents either synchronous Prompt or asynchronous AsyncPrompt
 function types. It's used in generic classes and functions that work with
 both prompt variants.
 """
+
+
+class SystemPrompt(Protocol[P]):
+    """Protocol for a prompt template function that returns a system prompt as a string (no context)."""
+
+    def __call__(self) -> str: ...
+
+
+class ContextSystemPrompt(Protocol[P, DepsT]):
+    """Protocol for a prompt template function that returns a system prompt as a string (with context)."""
+
+    def __call__(self, ctx: Context[DepsT]) -> str: ...
+
+
+class AsyncSystemPrompt(Protocol[P]):
+    """Protocol for an async prompt template function that returns a system prompt as a string (no context)."""
+
+    async def __call__(self) -> str: ...
+
+
+class AsyncContextSystemPrompt(Protocol[P, DepsT]):
+    """Protocol for an async prompt template function that returns a system prompt as a string (with context)."""
+
+    async def __call__(self, ctx: Context[DepsT]) -> str: ...
