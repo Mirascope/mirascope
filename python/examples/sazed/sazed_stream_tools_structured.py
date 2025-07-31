@@ -40,8 +40,7 @@ def main():
     while True:
         for chunk in response.structured_stream():
             print("[Partial]: ", chunk, flush=True)
-        tool_calls = response.tool_calls
-        if not tool_calls:
+        if not (tool_calls := response.tool_calls):
             break
         outputs: list[llm.ToolOutput] = [
             sazed.toolkit.execute(tool_call) for tool_call in tool_calls

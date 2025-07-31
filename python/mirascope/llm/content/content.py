@@ -8,16 +8,13 @@ from .thinking import Thinking, ThinkingChunk
 from .tool_call import ToolCall, ToolCallChunk
 from .tool_output import ToolOutput
 
-SystemContent: TypeAlias = Text
-"""Content parts that can be included in a SystemMessage."""
-
-UserContent: TypeAlias = (
+UserContentPart: TypeAlias = (
     Text | Image | ImageUrl | Audio | AudioUrl | Document | ToolOutput
 )
 """Content parts that can be included in a UserMessage."""
 
-AssistantContent: TypeAlias = Text | ToolCall | Thinking
+AssistantContentPart: TypeAlias = Text | ToolCall | Thinking
 """Content parts that can be included in an AssistantMessage."""
 
-Chunk: TypeAlias = TextChunk | ToolCallChunk | ThinkingChunk
+AssistantContentChunk: TypeAlias = TextChunk | ToolCallChunk | ThinkingChunk
 """Chunk of AssistantContent for inclusion in Streams."""

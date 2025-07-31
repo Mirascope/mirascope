@@ -18,7 +18,7 @@ def sazed(query: str):
 def main():
     query = "What are the Kandra?"
     response: llm.Response = sazed(query)
-    print(response.text)
+    print(response.pretty())
 
 
 main()

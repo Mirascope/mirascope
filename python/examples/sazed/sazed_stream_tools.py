@@ -28,10 +28,9 @@ def main():
     query = "What are the Kandra?"
     response: llm.StreamResponse = sazed.stream(query)
     while True:
-        for chunk in response.text_stream():
+        for chunk in response.pretty_stream():
             print(chunk, flush=True, end="")
-        tool_calls = response.tool_calls
-        if not tool_calls:
+        if not (tool_calls := response.tool_calls):
             break
         outputs: list[llm.ToolOutput] = [
             sazed.toolkit.execute(tool_call) for tool_call in tool_calls

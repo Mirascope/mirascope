@@ -27,7 +27,7 @@ def main():
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.Response = sazed(ctx, query)
-    print(response.text)
+    print(response.pretty())
 
 
 main()

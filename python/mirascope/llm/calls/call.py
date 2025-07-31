@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Generic
 
 from ..formatting import FormatT
-from ..messages import UserMessagePromotable
+from ..messages import UserContent
 from ..prompts import AsyncPrompt, Prompt
 from ..responses import (
     Response,
@@ -39,20 +39,16 @@ class Call(BaseCall[P, Prompt, ToolT, FormatT], Generic[P, ToolT, FormatT]):
 
     def resume(
         self,
-        response: Response[FormatT]
-        | StreamResponse[Stream, FormatT]
-        | StreamResponse[AsyncStream, FormatT],
-        content: UserMessagePromotable,
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
     def resume_stream(
         self,
-        response: Response[FormatT]
-        | StreamResponse[Stream, FormatT]
-        | StreamResponse[AsyncStream, FormatT],
-        content: UserMessagePromotable,
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
     ) -> StreamResponse[Stream, FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -81,20 +77,16 @@ class AsyncCall(
 
     async def resume(
         self,
-        response: Response[FormatT]
-        | StreamResponse[Stream, FormatT]
-        | StreamResponse[AsyncStream, FormatT],
-        content: UserMessagePromotable,
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
     async def resume_stream(
         self,
-        response: Response[FormatT]
-        | StreamResponse[Stream, FormatT]
-        | StreamResponse[AsyncStream, FormatT],
-        content: UserMessagePromotable,
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
     ) -> StreamResponse[AsyncStream, FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()

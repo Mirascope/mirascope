@@ -40,10 +40,9 @@ async def main():
     query = "What are the Kandra?"
     response: llm.StreamResponse[llm.AsyncStream] = await sazed.stream(ctx, query)
     while True:
-        async for chunk in await response.text_stream():
+        async for chunk in await response.pretty_stream():
             print(chunk, flush=True, end="")
-        tool_calls = response.tool_calls
-        if not tool_calls:
+        if not (tool_calls := response.tool_calls):
             break
         outputs: list[llm.ToolOutput] = await asyncio.gather(
             *[sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls]

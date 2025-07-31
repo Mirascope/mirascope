@@ -4,12 +4,12 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator, Iterator
 from typing import Generic, TypeVar
 
-from ..content import AssistantContent, Chunk, StreamableContentType
+from ..content import AssistantContentChunk, AssistantContentPart, StreamableContentType
 
-ChunkT = TypeVar("ChunkT", bound=Chunk)
+ChunkT = TypeVar("ChunkT", bound=AssistantContentChunk)
 """Type variable for chunk types (e.g., TextChunk, ThinkingChunk, ToolCallChunk)."""
 
-ContentT = TypeVar("ContentT", bound=AssistantContent)
+ContentT = TypeVar("ContentT", bound=AssistantContentPart)
 """Type variable for final content types (e.g., Text, Thinking, ToolCall)."""
 
 ContentTypeT = TypeVar("ContentTypeT", bound=StreamableContentType)

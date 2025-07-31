@@ -20,7 +20,7 @@ async def main():
     agent: llm.AsyncAgent = await sazed()
     query = "What are the Kandra?"
     response: llm.Response = await agent(query)
-    print(response.text)
+    print(response.pretty())
 
 
 if __name__ == "__main__":

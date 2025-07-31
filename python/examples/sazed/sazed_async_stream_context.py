@@ -28,7 +28,7 @@ async def main():
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.StreamResponse[llm.AsyncStream] = await sazed.stream(ctx, query)
-    async for chunk in await response.text_stream():
+    async for chunk in await response.pretty_stream():
         print(chunk, flush=True, end="")
 
 
