@@ -22,6 +22,9 @@ class Audio:
 
     type: Literal["audio"] = "audio"
 
+    content_type: Literal["audio"] = "audio"
+    """The type of content being represented."""
+
     id: str | None = None
     """A unique identifier for this audio content. This is useful for tracking and referencing generated audio."""
 
@@ -69,6 +72,9 @@ class AudioUrl:
     """
 
     type: Literal["audio_url"] = "audio_url"
+
+    content_type: Literal["audio"] = "audio"
+    """The type of content being represented."""
 
     url: str
     """The audio url."""

@@ -24,6 +24,9 @@ class Image:
 
     type: Literal["image"] = "image"
 
+    content_type: Literal["image"] = "image"
+    """The type of content being represented."""
+
     id: str | None = None
     """A unique identifier for this image content. This is useful for tracking and referencing generated images."""
 
@@ -66,6 +69,9 @@ class ImageUrl:
     """
 
     type: Literal["image_url"] = "image_url"
+
+    content_type: Literal["image"] = "image"
+    """The type of content being represented."""
 
     url: str
     """The image url."""

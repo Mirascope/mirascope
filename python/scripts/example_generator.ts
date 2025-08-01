@@ -265,7 +265,24 @@ ${indent}        ${stream_print}`;
 
   private get tools_stream(): string {
     return `
-    while True:${this.print_stream("    ")}
+    while True:
+        streams = ${this._await}response.streams()
+        ${this._async}for stream in streams:
+            match stream.content_type:
+                case "tool_call":
+                    print(f"Calling tool{stream.tool_name} with args:")
+                    ${this._async}for chunk in stream:
+                        print(chunk.delta, flush=True, end="")
+                    print()
+                case "text":
+                    ${this._async}for ${
+      this.structured ? "_" : "chunk"
+    } in stream:
+                        ${
+                          !this.structured
+                            ? `print(chunk.delta, flush=True, end="")`
+                            : `print("[Partial]: ", response.format(partial=True), flush=True)`
+                        }
         if not (tool_calls := response.tool_calls):
             break
         ${this.gather_tools}

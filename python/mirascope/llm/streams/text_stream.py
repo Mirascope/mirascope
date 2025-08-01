@@ -7,15 +7,17 @@ from ..content import Text, TextChunk
 from .base_stream import BaseAsyncStream, BaseStream
 
 
-class TextStream(BaseStream[TextChunk, Text, Literal["text"]]):
+class TextStream(BaseStream[TextChunk, Text]):
     """Synchronous text stream implementation."""
 
     type: Literal["text_stream"] = "text_stream"
+    """The type identifier for text stream."""
 
-    @property
-    def content_type(self) -> Literal["text"]:
-        """The type of content this stream handles."""
-        return "text"
+    content_type: Literal["text"] = "text"
+    """The type of content this stream handles."""
+
+    partial_text: str
+    """The accumulated text content as chunks are received."""
 
     def __iter__(self) -> Iterator[TextChunk]:
         """Iterate over text chunks as they are received.
@@ -34,15 +36,17 @@ class TextStream(BaseStream[TextChunk, Text, Literal["text"]]):
         raise NotImplementedError()
 
 
-class AsyncTextStream(BaseAsyncStream[TextChunk, Text, Literal["text"]]):
+class AsyncTextStream(BaseAsyncStream[TextChunk, Text]):
     """Asynchronous text stream implementation."""
 
     type: Literal["async_text_stream"] = "async_text_stream"
+    """The type identifier for async text stream."""
 
-    @property
-    def content_type(self) -> Literal["text"]:
-        """The type of content this stream handles."""
-        return "text"
+    content_type: Literal["text"] = "text"
+    """The type of content this stream handles."""
+
+    partial_text: str
+    """The accumulated text content as chunks are received."""
 
     def __aiter__(self) -> AsyncIterator[TextChunk]:
         """Asynchronously iterate over text chunks as they are received.

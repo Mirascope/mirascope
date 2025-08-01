@@ -10,20 +10,41 @@ class Text:
 
     type: Literal["text"] = "text"
 
+    content_type: Literal["text"] = "text"
+    """The type of content being represented."""
+
     text: str
+    """The text content."""
+
+
+@dataclass(kw_only=True)
+class TextStartChunk:
+    """Represents the start of a text chunk stream."""
+
+    type: Literal["text_start_chunk"]
+
+    content_type: Literal["text"] = "text"
+    """The type of content reconstructed by this chunk."""
 
 
 @dataclass(kw_only=True)
 class TextChunk:
-    """Partially reconstructed text content from chunk stream.
-
-    Contains both the accumulated text and the current delta for this update.
-    """
+    """Represents an incremental text chunk in a stream."""
 
     type: Literal["text_chunk"] = "text_chunk"
 
-    text: str
-    """The accumulated text content from all received chunks."""
+    content_type: Literal["text"] = "text"
+    """The type of content reconstructed by this chunk."""
 
     delta: str
-    """The incremental text added in the most recent chunk."""
+    """The incremental text added in this chunk."""
+
+
+@dataclass(kw_only=True)
+class TextEndChunk:
+    """Represents the end of a text chunk stream."""
+
+    type: Literal["text_end_chunk"]
+
+    content_type: Literal["text"] = "text"
+    """The type of content reconstructed by this chunk."""
