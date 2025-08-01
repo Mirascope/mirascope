@@ -8,8 +8,7 @@ from typing import Literal
 class Thinking:
     """Thinking content for a message.
 
-    Represents the thinking or thought process of the assistant. This is part
-    of an assistant message's content.
+    Represents the thinking or thought process of the assistant.
     """
 
     type: Literal["thinking"] = "thinking"
@@ -26,19 +25,24 @@ class Thinking:
 
 @dataclass(kw_only=True)
 class ThinkingChunk:
-    """Streaming thinking content chunk."""
+    """A chunk of Thinking content.
+
+    Contains both the accumulated thoughts and the current delta for this update.
+    """
 
     type: Literal["thinking_chunk"] = "thinking_chunk"
 
-    id: str | None = None
-    """A unique identifier for this series of chunks, if available."""
+    id: str
+    """The id of the thinking content."""
+
+    thoughts: str
+    """The accumulated thoughts or reasoning from all received chunks."""
 
     delta: str
-    """The incremental thinking text present in this particular chunk."""
+    """The incremental thinking text added in this update.
+    
+    May be an empty string if the most recent chunk was providing the signature rather
+    than thinking content."""
 
-    final: bool
-    """Whether this is the final piece of content in its sequence. If true, this content's partial is finished generating."""
-
-    def __repr__(self) -> str:
-        """Strategic representation for clean default printing."""
-        return self.delta
+    redacted: bool = False
+    """Whether the thinking is redacted or not."""

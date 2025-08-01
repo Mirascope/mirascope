@@ -16,7 +16,11 @@ def search_coppermind(query: str) -> str:
     return f"You recall the following about {query}..."
 
 
-@llm.call(model="openai:gpt-4o-mini", tools=[search_coppermind], format=KeeperEntry)
+@llm.call(
+    model="openai:gpt-4o-mini",
+    tools=[search_coppermind],
+    format=KeeperEntry,
+)
 def sazed(query: str):
     system_prompt = """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
@@ -32,24 +36,16 @@ def sazed(query: str):
 
 def main():
     query = "What are the Kandra?"
-    stream: llm.Stream[KeeperEntry] = sazed.stream(query)
+    response: llm.StreamResponse[llm.Stream, KeeperEntry] = sazed.stream(query)
     while True:
-        outputs: list[llm.ToolOutput] = []
-        for group in stream.groups():
-            if group.type == "text":
-                for _ in group:
-                    partial_entry: llm.Partial[KeeperEntry] = stream.format(
-                        partial=True
-                    )
-                    print("[Partial]: ", partial_entry, flush=True)
-                entry: KeeperEntry = stream.format()
-                print("[Final]: ", entry)
-            if group.type == "tool_call":
-                tool_call = group.collect()
-                outputs.append(sazed.toolkit.execute(tool_call))
-        if not outputs:
+        for chunk in response.structured_stream():
+            print("[Partial]: ", chunk, flush=True)
+        if not (tool_calls := response.tool_calls):
             break
-        stream = sazed.resume_stream(stream, outputs)
+        outputs: list[llm.ToolOutput] = [
+            sazed.toolkit.execute(tool_call) for tool_call in tool_calls
+        ]
+        response = sazed.resume_stream(response, outputs)
 
 
 main()

@@ -3,7 +3,7 @@
 from typing import Protocol, TypeAlias, TypeVar
 
 from ..context import Context, DepsT
-from ..messages import Message, UserMessagePromotable
+from ..messages import Message, UserContent
 from ..types import P
 
 
@@ -16,7 +16,7 @@ class MessagesPrompt(Protocol[P]):
 class ContentPrompt(Protocol[P]):
     """Protocol for a Prompt function that returns content for a single user message."""
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> UserMessagePromotable: ...
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> UserContent: ...
 
 
 Prompt: TypeAlias = ContentPrompt[P] | MessagesPrompt[P]
@@ -37,9 +37,7 @@ class AsyncMessagesPrompt(Protocol[P]):
 class AsyncContentPrompt(Protocol[P]):
     """Protocol for a prompt function that returns content for a single user message."""
 
-    async def __call__(
-        self, *args: P.args, **kwargs: P.kwargs
-    ) -> UserMessagePromotable: ...
+    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> UserContent: ...
 
 
 AsyncPrompt: TypeAlias = AsyncContentPrompt[P] | AsyncMessagesPrompt[P]
@@ -70,7 +68,7 @@ class ContextContentPrompt(Protocol[P, DepsT]):
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> UserMessagePromotable: ...
+    ) -> UserContent: ...
 
 
 ContextPrompt: TypeAlias = (
@@ -104,7 +102,7 @@ class AsyncContextContentPrompt(Protocol[P, DepsT]):
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> UserMessagePromotable: ...
+    ) -> UserContent: ...
 
 
 AsyncContextPrompt: TypeAlias = (

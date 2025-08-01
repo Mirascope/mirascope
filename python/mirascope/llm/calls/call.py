@@ -4,10 +4,13 @@ from dataclasses import dataclass
 from typing import Generic
 
 from ..formatting import FormatT
-from ..messages import UserMessagePromotable
+from ..messages import UserContent
 from ..prompts import AsyncPrompt, Prompt
-from ..responses import Response
-from ..streams import AsyncStream, BaseStream, Stream
+from ..responses import (
+    Response,
+    StreamResponse,
+)
+from ..streams import AsyncStream, Stream
 from ..tools import ToolT
 from ..types import P
 from .base_call import BaseCall
@@ -28,23 +31,25 @@ class Call(BaseCall[P, Prompt, ToolT, FormatT], Generic[P, ToolT, FormatT]):
         """Generates a response using the LLM."""
         raise NotImplementedError()
 
-    def stream(self, *args: P.args, **kwargs: P.kwargs) -> Stream[FormatT]:
+    def stream(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> StreamResponse[Stream, FormatT]:
         """Generates a streaming response using the LLM."""
         raise NotImplementedError()
 
     def resume(
         self,
-        output: Response[FormatT] | BaseStream[FormatT],
-        content: UserMessagePromotable,
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
     def resume_stream(
         self,
-        output: Response[FormatT] | BaseStream[FormatT],
-        content: UserMessagePromotable,
-    ) -> Stream[FormatT]:
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
+    ) -> StreamResponse[Stream, FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
@@ -64,22 +69,24 @@ class AsyncCall(
         """Generates a response using the LLM asynchronously."""
         raise NotImplementedError()
 
-    async def stream(self, *args: P.args, **kwargs: P.kwargs) -> AsyncStream[FormatT]:
+    async def stream(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> StreamResponse[AsyncStream, FormatT]:
         """Generates a streaming response using the LLM asynchronously."""
         raise NotImplementedError()
 
     async def resume(
         self,
-        output: Response[FormatT] | BaseStream[FormatT],
-        content: UserMessagePromotable,
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
     ) -> Response[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
     async def resume_stream(
         self,
-        output: Response[FormatT] | BaseStream[FormatT],
-        content: UserMessagePromotable,
-    ) -> AsyncStream[FormatT]:
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
+    ) -> StreamResponse[AsyncStream, FormatT]:
         """Generate a new stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()

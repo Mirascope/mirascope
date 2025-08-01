@@ -6,11 +6,11 @@ from typing import Generic
 
 from ..context import Context, DepsT
 from ..formatting import FormatT
-from ..messages import UserMessagePromotable
+from ..messages import UserContent
 from ..models import LLM
 from ..prompts import PromptT
-from ..responses import Response
-from ..streams import AsyncStream, BaseStream
+from ..responses import Response, StreamResponse
+from ..streams import AsyncStream, Stream
 from ..tools import ContextToolkit, ContextToolT, Toolkit, ToolkitT, ToolT
 from ..types import P
 
@@ -38,17 +38,17 @@ class BaseCall(
 ):
     async def resume_async(
         self,
-        output: Response[FormatT] | BaseStream,
-        content: UserMessagePromotable,
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
     ) -> Response[FormatT]:
         """Generate a new response asynchronously by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
     async def resume_stream_async(
         self,
-        output: Response[FormatT] | BaseStream,
-        content: UserMessagePromotable,
-    ) -> AsyncStream[FormatT]:
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
+    ) -> StreamResponse[AsyncStream, FormatT]:
         """Generate a new async stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
@@ -58,7 +58,7 @@ class BaseCall(
 
     async def stream_async(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStream[FormatT]:
+    ) -> StreamResponse[AsyncStream, FormatT]:
         """Generates an asynchronous streaming response using the LLM."""
         raise NotImplementedError()
 
@@ -76,15 +76,15 @@ class BaseContextCall(
 
     async def stream_async(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStream[FormatT]:
+    ) -> StreamResponse[AsyncStream, FormatT]:
         """Generates an asynchronous streaming response using the LLM."""
         raise NotImplementedError()
 
     async def resume_async(
         self,
         ctx: Context[DepsT],
-        output: Response[FormatT] | BaseStream,
-        content: UserMessagePromotable,
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
     ) -> Response[FormatT]:
         """Generate a new response asynchronously by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
@@ -92,8 +92,8 @@ class BaseContextCall(
     async def resume_stream_async(
         self,
         ctx: Context[DepsT],
-        output: Response[FormatT] | BaseStream,
-        content: UserMessagePromotable,
-    ) -> AsyncStream[FormatT]:
+        response: Response[FormatT] | StreamResponse[Stream | AsyncStream, FormatT],
+        content: UserContent,
+    ) -> StreamResponse[AsyncStream, FormatT]:
         """Generate a new async stream by continuing from a previous output, plus new user content."""
         raise NotImplementedError()

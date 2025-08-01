@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 from typing import Concatenate, Protocol, overload
 
 from ..context import Context, DepsT
-from ..messages import Message, UserMessagePromotable
+from ..messages import Message, UserContent
 from ..types import P
 from .types import (
     AsyncContextMessagesPrompt,
@@ -20,7 +20,7 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[Concatenate[Context[DepsT], P], UserMessagePromotable]
+        fn: Callable[Concatenate[Context[DepsT], P], UserContent]
         | Callable[Concatenate[Context[DepsT], P], list[Message]],
     ) -> ContextMessagesPrompt[P, DepsT]:
         """Decorator for creating context prompts."""
@@ -31,7 +31,7 @@ class PromptDecorator(Protocol[DepsT]):
         self,
         fn: Callable[
             Concatenate[Context[DepsT], P],
-            Awaitable[UserMessagePromotable],
+            Awaitable[UserContent],
         ]
         | Callable[
             Concatenate[Context[DepsT], P],
@@ -44,7 +44,7 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[P, UserMessagePromotable] | Callable[P, list[Message]],
+        fn: Callable[P, UserContent] | Callable[P, list[Message]],
     ) -> MessagesPrompt[P]:
         """Decorator for creating prompts."""
         ...
@@ -52,26 +52,25 @@ class PromptDecorator(Protocol[DepsT]):
     @overload
     def __call__(
         self,
-        fn: Callable[P, Awaitable[UserMessagePromotable]]
-        | Callable[P, Awaitable[list[Message]]],
+        fn: Callable[P, Awaitable[UserContent]] | Callable[P, Awaitable[list[Message]]],
     ) -> AsyncMessagesPrompt[P]:
         """Decorator for creating async prompts."""
         ...
 
     def __call__(
         self,
-        fn: Callable[P, UserMessagePromotable]
+        fn: Callable[P, UserContent]
         | Callable[P, list[Message]]
-        | Callable[P, Awaitable[UserMessagePromotable]]
+        | Callable[P, Awaitable[UserContent]]
         | Callable[P, Awaitable[list[Message]]]
         | Callable[
             Concatenate[Context[DepsT], P],
-            UserMessagePromotable,
+            UserContent,
         ]
         | Callable[Concatenate[Context[DepsT], P], list[Message]]
         | Callable[
             Concatenate[Context[DepsT], P],
-            Awaitable[UserMessagePromotable],
+            Awaitable[UserContent],
         ]
         | Callable[
             Concatenate[Context[DepsT], P],

@@ -154,12 +154,18 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
   }
 
   private get _async(): string {
-    return this.async ? "async " : "";
+    return this.async ? `async ` : "";
   }
 
   private get stream_type(): string {
-    const base = this.async ? "llm.AsyncStream" : "llm.Stream";
-    return this.structured ? `${base}[KeeperEntry]` : base;
+    let generic = "";
+    let asyncPart = this.async ? "llm.AsyncStream" : "llm.Stream";
+    if (this.structured) {
+      generic = `[${asyncPart}, KeeperEntry]`;
+    } else if (this.async) {
+      generic = `[${asyncPart}]`;
+    }
+    return `llm.StreamResponse${generic}`;
   }
 
   private get agent_type(): string {
@@ -174,14 +180,16 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
   }
 
   private get function_decorator(): string {
-    const tools_param = this.tools ? ", tools=[search_coppermind]" : "";
-    const format_param = this.structured ? ", format=KeeperEntry" : "";
+    const tools_param = this.tools ? " tools=[search_coppermind]," : "";
+    const format_param = this.structured ? " format=KeeperEntry," : "";
+    const args =
+      tools_param || format_param ? `, ${tools_param}${format_param}` : "";
     const decorator = this.agent
       ? "agent"
       : this.context
       ? "context_call"
       : "call";
-    return `@llm.${decorator}(model="openai:gpt-4o-mini"${tools_param}${format_param})`;
+    return `@llm.${decorator}(model="openai:gpt-4o-mini"${args})`;
   }
 
   private get function_def(): string {
@@ -218,73 +226,61 @@ ${this._async}def main():`;
     query = "What are the Kandra?"`;
 
     if (this.stream) {
-      result += this.get_stream_logic();
+      result += this.stream_impl;
     } else {
-      result += this.get_response_logic();
+      result += this.response_impl;
     }
 
     return result;
   }
 
-  private print_stream(indent: string, source: string): string {
-    const chunk_var = this.structured ? "_" : "chunk";
-    let result = `${indent}${this._async}for ${chunk_var} in ${source}:`;
-
-    if (this.structured) {
-      result += `
-${indent}    partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
-${indent}    print("[Partial]: ", partial_entry, flush=True)`;
-    } else {
-      result += `
-${indent}    print(chunk, flush=True, end="")`;
-    }
-
-    if (this.structured) {
-      result += `
-${indent}entry: KeeperEntry = stream.format()
-${indent}print("[Final]: ", entry)`;
-    } else {
-      result += `
-${indent}print()`;
-    }
-
-    return result;
-  }
-
-  private get_stream_logic(): string {
+  private get stream_impl(): string {
     const call_target = this.agent
       ? "agent.stream("
       : "sazed.stream(" + this.ctx_arg;
 
     let result = `
-    stream: ${this.stream_type} = ${this._await}${call_target}query)`;
+    response: ${this.stream_type} = ${this._await}${call_target}query)`;
 
     if (this.tools && !this.agent) {
-      result += `
-    while True:
-        outputs: list[llm.ToolOutput] = []
-        ${this._async}for group in stream.groups():
-            if group.type == "text":
-${this.print_stream("                ", "group")}
-            if group.type == "tool_call":
-                tool_call = ${this._await}group.collect()
-                outputs.append(${this._await}sazed.toolkit.execute(${
-        this.ctx_arg
-      }tool_call))
-        if not outputs:
-            break
-        stream = ${this._await}sazed.resume_stream(${
-        this.ctx_arg
-      }stream, outputs)`;
+      result += this.tools_stream;
     } else {
-      result += `
-${this.print_stream("    ", "stream")}`;
+      result += this.print_stream("");
     }
 
     return result;
   }
 
-  private get_response_logic(): string {
+  private print_stream(indent: string): string {
+    const stream_target = this.structured
+      ? `${this._await}response.structured_stream()`
+      : `${this._await}response.pretty_stream()`;
+    const stream_print = this.structured
+      ? `print("[Partial]: ", chunk, flush=True)`
+      : `print(chunk, flush=True, end="")`;
+    return `
+${indent}    ${this._async}for chunk in ${stream_target}:
+${indent}        ${stream_print}`;
+  }
+
+  private get tools_stream(): string {
+    return `
+    while True:${this.print_stream("    ")}
+        if not (tool_calls := response.tool_calls):
+            break
+        ${this.gather_tools}
+        response = ${this._await}sazed.resume_stream(${
+      this.ctx_arg
+    }response, outputs)`;
+  }
+
+  private get gather_tools(): string {
+    const gather = this.async ? "await asyncio.gather(*" : "";
+    const gather_close = this.async ? ")" : "";
+    return `outputs: list[llm.ToolOutput] = ${gather}[sazed.toolkit.execute(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}`;
+  }
+
+  private get response_impl(): string {
     const response_type = this.structured
       ? "llm.Response[KeeperEntry]"
       : "llm.Response";
@@ -297,7 +293,7 @@ ${this.print_stream("    ", "stream")}`;
       const gather_close = this.async ? ")" : "";
       result += `
     while tool_calls := response.tool_calls:
-        outputs: list[llm.ToolOutput] = ${gather}[sazed.toolkit.execute(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}
+        ${this.gather_tools}
         response = ${this._await}sazed.resume(${this.ctx_arg}response, outputs)`;
     }
 
@@ -307,7 +303,7 @@ ${this.print_stream("    ", "stream")}`;
     print(entry)`;
     } else {
       result += `
-    print(response.text)`;
+    print(response.pretty())`;
     }
 
     return result;

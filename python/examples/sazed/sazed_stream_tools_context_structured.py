@@ -26,7 +26,9 @@ def search_coppermind(ctx: llm.Context[Coppermind], query: str) -> str:
 
 
 @llm.context_call(
-    model="openai:gpt-4o-mini", tools=[search_coppermind], format=KeeperEntry
+    model="openai:gpt-4o-mini",
+    tools=[search_coppermind],
+    format=KeeperEntry,
 )
 def sazed(ctx: llm.Context[Coppermind], query: str):
     system_prompt = f"""
@@ -45,24 +47,16 @@ def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.Stream[KeeperEntry] = sazed.stream(ctx, query)
+    response: llm.StreamResponse[llm.Stream, KeeperEntry] = sazed.stream(ctx, query)
     while True:
-        outputs: list[llm.ToolOutput] = []
-        for group in stream.groups():
-            if group.type == "text":
-                for _ in group:
-                    partial_entry: llm.Partial[KeeperEntry] = stream.format(
-                        partial=True
-                    )
-                    print("[Partial]: ", partial_entry, flush=True)
-                entry: KeeperEntry = stream.format()
-                print("[Final]: ", entry)
-            if group.type == "tool_call":
-                tool_call = group.collect()
-                outputs.append(sazed.toolkit.execute(ctx, tool_call))
-        if not outputs:
+        for chunk in response.structured_stream():
+            print("[Partial]: ", chunk, flush=True)
+        if not (tool_calls := response.tool_calls):
             break
-        stream = sazed.resume_stream(ctx, stream, outputs)
+        outputs: list[llm.ToolOutput] = [
+            sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls
+        ]
+        response = sazed.resume_stream(ctx, response, outputs)
 
 
 main()

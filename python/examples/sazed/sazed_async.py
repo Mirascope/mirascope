@@ -20,7 +20,7 @@ async def sazed(query: str):
 async def main():
     query = "What are the Kandra?"
     response: llm.Response = await sazed(query)
-    print(response.text)
+    print(response.pretty())
 
 
 if __name__ == "__main__":

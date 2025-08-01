@@ -9,7 +9,10 @@ async def search_coppermind(query: str) -> str:
     return f"You recall the following about {query}..."
 
 
-@llm.call(model="openai:gpt-4o-mini", tools=[search_coppermind])
+@llm.call(
+    model="openai:gpt-4o-mini",
+    tools=[search_coppermind],
+)
 async def sazed(query: str):
     system_prompt = """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
@@ -31,7 +34,7 @@ async def main():
             *[sazed.toolkit.execute(tool_call) for tool_call in tool_calls]
         )
         response = await sazed.resume(response, outputs)
-    print(response.text)
+    print(response.pretty())
 
 
 if __name__ == "__main__":

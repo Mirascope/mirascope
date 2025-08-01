@@ -12,7 +12,10 @@ class KeeperEntry(BaseModel):
     sources: list[str]
 
 
-@llm.agent(model="openai:gpt-4o-mini", format=KeeperEntry)
+@llm.agent(
+    model="openai:gpt-4o-mini",
+    format=KeeperEntry,
+)
 async def sazed():
     return """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of

@@ -16,7 +16,10 @@ def search_coppermind(ctx: llm.Context[Coppermind], query: str) -> str:
     )
 
 
-@llm.context_call(model="openai:gpt-4o-mini", tools=[search_coppermind])
+@llm.context_call(
+    model="openai:gpt-4o-mini",
+    tools=[search_coppermind],
+)
 def sazed(ctx: llm.Context[Coppermind], query: str):
     system_prompt = f"""
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
@@ -34,20 +37,16 @@ def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.Stream = sazed.stream(ctx, query)
+    response: llm.StreamResponse = sazed.stream(ctx, query)
     while True:
-        outputs: list[llm.ToolOutput] = []
-        for group in stream.groups():
-            if group.type == "text":
-                for chunk in group:
-                    print(chunk, flush=True, end="")
-                print()
-            if group.type == "tool_call":
-                tool_call = group.collect()
-                outputs.append(sazed.toolkit.execute(ctx, tool_call))
-        if not outputs:
+        for chunk in response.pretty_stream():
+            print(chunk, flush=True, end="")
+        if not (tool_calls := response.tool_calls):
             break
-        stream = sazed.resume_stream(ctx, stream, outputs)
+        outputs: list[llm.ToolOutput] = [
+            sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls
+        ]
+        response = sazed.resume_stream(ctx, response, outputs)
 
 
 main()

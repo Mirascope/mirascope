@@ -24,13 +24,10 @@ from .agents import Agent, AgentTemplate, AsyncAgent, AsyncAgentTemplate, agent
 from .calls import call, context_call
 from .clients import BaseClient, BaseParams
 from .content import (
-    AssistantContent,
+    AssistantContentPart,
     Audio,
-    AudioChunk,
-    ContentChunk,
     Document,
     Image,
-    ImageChunk,
     ImageUrl,
     Text,
     TextChunk,
@@ -39,7 +36,7 @@ from .content import (
     ToolCall,
     ToolCallChunk,
     ToolOutput,
-    UserContent,
+    UserContentPart,
 )
 from .context import Context
 from .exceptions import (
@@ -59,12 +56,8 @@ from .formatting import Format, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
-from .responses import Response
-from .streams import (
-    AsyncStream,
-    BaseStream,
-    Stream,
-)
+from .responses import Response, StreamResponse
+from .streams import AsyncStream, Stream
 from .tools import Tool, context_tool, tool
 
 __all__ = [
@@ -72,26 +65,21 @@ __all__ = [
     "APIError",
     "Agent",
     "AgentTemplate",
-    "AssistantContent",
+    "AssistantContentPart",
     "AssistantMessage",
     "AsyncAgent",
     "AsyncAgentTemplate",
     "AsyncStream",
-    "AsyncStream",
     "Audio",
-    "AudioChunk",
     "AuthenticationError",
     "BadRequestError",
     "BaseClient",
     "BaseParams",
-    "BaseStream",
     "ConnectionError",
-    "ContentChunk",
     "Context",
     "Document",
     "Format",
     "Image",
-    "ImageChunk",
     "ImageUrl",
     "Message",
     "MirascopeError",
@@ -102,7 +90,8 @@ __all__ = [
     "Response",
     "ServerError",
     "Stream",
-    "Stream",
+    "StreamResponse",
+    "StreamResponse",
     "SystemMessage",
     "Text",
     "TextChunk",
@@ -115,7 +104,7 @@ __all__ = [
     "ToolCallChunk",
     "ToolNotFoundError",
     "ToolOutput",
-    "UserContent",
+    "UserContentPart",
     "UserMessage",
     "agent",
     "agents",

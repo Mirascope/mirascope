@@ -1,32 +1,29 @@
-"""The Responses module for LLM responses."""
+"""Streaming response classes."""
 
-from .async_stream import AsyncStream
-from .audio_group import AsyncAudioGroup, AudioGroup
-from .base import BaseStream
-from .group_types import AsyncGroup, Group
-from .groups import BaseAsyncGroup, BaseGroup
-from .image_group import AsyncImageGroup, ImageGroup
-from .stream import Stream
-from .text_group import AsyncTextGroup, TextGroup
-from .thinking_group import AsyncThinkingGroup, ThinkingGroup
-from .tool_call_group import AsyncToolCallGroup, ToolCallGroup
+from typing import TypeAlias
+
+from typing_extensions import TypeVar
+
+from .text_stream import AsyncTextStream, TextStream
+from .thinking_stream import AsyncThinkingStream, ThinkingStream
+from .tool_call_stream import AsyncToolCallStream, ToolCallStream
+
+Stream: TypeAlias = TextStream | ToolCallStream | ThinkingStream
+"""An assistant content part that is delivered incrementally."""
+
+AsyncStream: TypeAlias = AsyncTextStream | AsyncToolCallStream | AsyncThinkingStream
+"""An assistant content part that is delivered asynchronously and incrementally."""
+
+StreamT = TypeVar("StreamT", bound=Stream | AsyncStream, covariant=True, default=Stream)
 
 __all__ = [
-    "AsyncAudioGroup",
-    "AsyncGroup",
-    "AsyncImageGroup",
     "AsyncStream",
-    "AsyncTextGroup",
-    "AsyncThinkingGroup",
-    "AsyncToolCallGroup",
-    "AudioGroup",
-    "BaseAsyncGroup",
-    "BaseGroup",
-    "BaseStream",
-    "Group",
-    "ImageGroup",
+    "AsyncTextStream",
+    "AsyncThinkingStream",
+    "AsyncToolCallStream",
     "Stream",
-    "TextGroup",
-    "ThinkingGroup",
-    "ToolCallGroup",
+    "StreamT",
+    "TextStream",
+    "ThinkingStream",
+    "ToolCallStream",
 ]

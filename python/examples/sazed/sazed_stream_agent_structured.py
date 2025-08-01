@@ -10,7 +10,10 @@ class KeeperEntry(BaseModel):
     sources: list[str]
 
 
-@llm.agent(model="openai:gpt-4o-mini", format=KeeperEntry)
+@llm.agent(
+    model="openai:gpt-4o-mini",
+    format=KeeperEntry,
+)
 def sazed():
     return """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
@@ -26,12 +29,9 @@ def sazed():
 def main():
     agent: llm.Agent[None, KeeperEntry] = sazed()
     query = "What are the Kandra?"
-    stream: llm.Stream[KeeperEntry] = agent.stream(query)
-    for _ in stream:
-        partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
-        print("[Partial]: ", partial_entry, flush=True)
-    entry: KeeperEntry = stream.format()
-    print("[Final]: ", entry)
+    response: llm.StreamResponse[llm.Stream, KeeperEntry] = agent.stream(query)
+    for chunk in response.structured_stream():
+        print("[Partial]: ", chunk, flush=True)
 
 
 main()

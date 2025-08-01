@@ -19,10 +19,9 @@ async def sazed():
 async def main():
     agent: llm.AsyncAgent = await sazed()
     query = "What are the Kandra?"
-    stream: llm.AsyncStream = await agent.stream(query)
-    async for chunk in stream:
+    response: llm.StreamResponse[llm.AsyncStream] = await agent.stream(query)
+    async for chunk in await response.pretty_stream():
         print(chunk, flush=True, end="")
-    print()
 
 
 if __name__ == "__main__":

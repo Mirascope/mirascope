@@ -9,7 +9,10 @@ async def search_coppermind(query: str) -> str:
     return f"You recall the following about {query}..."
 
 
-@llm.call(model="openai:gpt-4o-mini", tools=[search_coppermind])
+@llm.call(
+    model="openai:gpt-4o-mini",
+    tools=[search_coppermind],
+)
 async def sazed(query: str):
     system_prompt = """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
@@ -25,20 +28,16 @@ async def sazed(query: str):
 
 async def main():
     query = "What are the Kandra?"
-    stream: llm.AsyncStream = await sazed.stream(query)
+    response: llm.StreamResponse[llm.AsyncStream] = await sazed.stream(query)
     while True:
-        outputs: list[llm.ToolOutput] = []
-        async for group in stream.groups():
-            if group.type == "text":
-                async for chunk in group:
-                    print(chunk, flush=True, end="")
-                print()
-            if group.type == "tool_call":
-                tool_call = await group.collect()
-                outputs.append(await sazed.toolkit.execute(tool_call))
-        if not outputs:
+        async for chunk in await response.pretty_stream():
+            print(chunk, flush=True, end="")
+        if not (tool_calls := response.tool_calls):
             break
-        stream = await sazed.resume_stream(stream, outputs)
+        outputs: list[llm.ToolOutput] = await asyncio.gather(
+            *[sazed.toolkit.execute(tool_call) for tool_call in tool_calls]
+        )
+        response = await sazed.resume_stream(response, outputs)
 
 
 if __name__ == "__main__":

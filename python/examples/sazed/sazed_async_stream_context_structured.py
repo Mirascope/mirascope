@@ -18,7 +18,10 @@ class Coppermind:
     repository: str
 
 
-@llm.context_call(model="openai:gpt-4o-mini", format=KeeperEntry)
+@llm.context_call(
+    model="openai:gpt-4o-mini",
+    format=KeeperEntry,
+)
 async def sazed(ctx: llm.Context[Coppermind], query: str):
     system_prompt = f"""
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
@@ -36,12 +39,11 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    stream: llm.AsyncStream[KeeperEntry] = await sazed.stream(ctx, query)
-    async for _ in stream:
-        partial_entry: llm.Partial[KeeperEntry] = stream.format(partial=True)
-        print("[Partial]: ", partial_entry, flush=True)
-    entry: KeeperEntry = stream.format()
-    print("[Final]: ", entry)
+    response: llm.StreamResponse[llm.AsyncStream, KeeperEntry] = await sazed.stream(
+        ctx, query
+    )
+    async for chunk in await response.structured_stream():
+        print("[Partial]: ", chunk, flush=True)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,10 @@ async def search_coppermind(query: str) -> str:
     return f"You recall the following about {query}..."
 
 
-@llm.agent(model="openai:gpt-4o-mini", tools=[search_coppermind])
+@llm.agent(
+    model="openai:gpt-4o-mini",
+    tools=[search_coppermind],
+)
 async def sazed():
     return """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
@@ -26,7 +29,7 @@ async def main():
     agent: llm.AsyncAgent = await sazed()
     query = "What are the Kandra?"
     response: llm.Response = await agent(query)
-    print(response.text)
+    print(response.pretty())
 
 
 if __name__ == "__main__":

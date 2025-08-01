@@ -16,7 +16,11 @@ def search_coppermind(query: str) -> str:
     return f"You recall the following about {query}..."
 
 
-@llm.call(model="openai:gpt-4o-mini", tools=[search_coppermind], format=KeeperEntry)
+@llm.call(
+    model="openai:gpt-4o-mini",
+    tools=[search_coppermind],
+    format=KeeperEntry,
+)
 def sazed(query: str):
     system_prompt = """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
