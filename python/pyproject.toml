@@ -85,6 +85,7 @@ exclude = [
     "buck-out",
     "build",
     "venv",
+    ".coveragerc",
 ]
 line-length = 88
 target-version = "py310"
