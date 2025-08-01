@@ -4,62 +4,31 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Generic, TypedDict
+from typing import Generic
 
 from typing_extensions import TypeVar
 
-from ..context import Context, DepsT
-from ..formatting import FormatT
-from ..responses import (
+from ...context import Context, DepsT
+from ...formatting import FormatT
+from ...responses import (
     Response,
     StreamResponse,
 )
-from ..streams import AsyncStream, Stream
-from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
-from ..types import Jsonable
-from .register import REGISTERED_LLMS
+from ...streams import AsyncStream, Stream
+from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
+from ...types import Jsonable
+from ..registered_llms import LLMT
+from .params import ParamsT
+
+ClientT = TypeVar("ClientT", bound="BaseClient")
+"""Type variable for an LLM client."""
+
 
 ProviderMessageT = TypeVar("ProviderMessageT")
 """Type variable for an LLM that is usable by a specific LLM provider.
 
-May often be the union of generic `llm.Message` and a provider-specific message representation."""
-
-
-LLMT = TypeVar("LLMT", bound=REGISTERED_LLMS)
-"""Type variable for a registered LLM model. Will be a string of form provider:model_name."""
-
-
-class BaseParams(TypedDict, total=False):
-    """Common parameters shared across LLM providers.
-
-    Note: Each provider may handle these parameters differently or not support them at all.
-    Please check provider-specific documentation for parameter support and behavior.
-    """
-
-    temperature: float | None
-    """Controls randomness in the output (0.0 to 1.0)."""
-
-    max_tokens: int | None
-    """Maximum number of tokens to generate."""
-
-    top_p: float | None
-    """Nucleus sampling parameter (0.0 to 1.0)."""
-
-    frequency_penalty: float | None
-    """Penalizes frequent tokens (-2.0 to 2.0)."""
-
-    presence_penalty: float | None
-    """Penalizes tokens based on presence (-2.0 to 2.0)."""
-
-    seed: int | None
-    """Random seed for reproducibility."""
-
-    stop: str | list[str] | None
-    """Stop sequence(s) to end generation."""
-
-
-ParamsT = TypeVar("ParamsT", bound="BaseParams")
-"""Type variable for LLM parameters. May be provider specific."""
+May often be the union of generic `llm.Message` and a provider-specific message representation.
+"""
 
 
 class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
@@ -276,7 +245,3 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
     ) -> StreamResponse[AsyncStream, FormatT]:
         """Stream a structured context response asynchronously."""
         ...
-
-
-ClientT = TypeVar("ClientT", bound=BaseClient)
-"""Type variable for an LLM client."""
