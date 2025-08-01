@@ -19,7 +19,7 @@ class Thinking:
     signature: str | None
     """The signature of the thinking content, if available."""
 
-    thoughts: str
+    thinking: str
     """The thoughts or reasoning of the assistant."""
 
 

@@ -11,12 +11,11 @@ class ThinkingStream(BaseStream[ThinkingChunk, Thinking]):
     """Synchronous thinking stream implementation."""
 
     type: Literal["thinking_stream"] = "thinking_stream"
-    """The type identifier for thinking stream."""
 
     content_type: Literal["thinking"] = "thinking"
     """The type of content this stream handles."""
 
-    partial_thoughts: str
+    partial_thinking: str
     """The accumulated thinking content as chunks are received."""
 
     def __iter__(self) -> Iterator[ThinkingChunk]:
@@ -40,12 +39,11 @@ class AsyncThinkingStream(BaseAsyncStream[ThinkingChunk, Thinking]):
     """Asynchronous thinking stream implementation."""
 
     type: Literal["async_thinking_stream"] = "async_thinking_stream"
-    """The type identifier for async thinking stream."""
 
     content_type: Literal["thinking"] = "thinking"
     """The type of content this stream handles."""
 
-    partial_thoughts: str
+    partial_thinking: str
     """The accumulated thinking content as chunks are received."""
 
     def __aiter__(self) -> AsyncIterator[ThinkingChunk]:
