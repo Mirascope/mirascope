@@ -13,36 +13,47 @@ class Thinking:
 
     type: Literal["thinking"] = "thinking"
 
-    id: str
-    """The ID of the thinking content."""
+    content_type: Literal["thinking"] = "thinking"
+    """The type of content being represented."""
+
+    signature: str | None
+    """The signature of the thinking content, if available."""
 
     thoughts: str
     """The thoughts or reasoning of the assistant."""
 
-    redacted: bool = False
-    """Whether the thinking is redacted or not."""
+
+@dataclass(kw_only=True)
+class ThinkingStartChunk:
+    """Represents the start of a thinking chunk stream."""
+
+    type: Literal["thinking_start_chunk"]
+
+    content_type: Literal["thinking"] = "thinking"
+    """The type of content reconstructed by this chunk."""
 
 
 @dataclass(kw_only=True)
 class ThinkingChunk:
-    """A chunk of Thinking content.
+    """Represents an incremental thinking chunk in a stream."""
 
-    Contains both the accumulated thoughts and the current delta for this update.
-    """
+    type: Literal["thinking_chunk"]
 
-    type: Literal["thinking_chunk"] = "thinking_chunk"
-
-    id: str
-    """The id of the thinking content."""
-
-    thoughts: str
-    """The accumulated thoughts or reasoning from all received chunks."""
+    content_type: Literal["thinking"] = "thinking"
+    """The type of content reconstructed by this chunk."""
 
     delta: str
-    """The incremental thinking text added in this update.
-    
-    May be an empty string if the most recent chunk was providing the signature rather
-    than thinking content."""
+    """The incremental thoughts added in this chunk."""
 
-    redacted: bool = False
-    """Whether the thinking is redacted or not."""
+
+@dataclass(kw_only=True)
+class ThinkingEndChunk:
+    """Represents the end of a thinking chunk stream."""
+
+    type: Literal["thinking_end_chunk"]
+
+    content_type: Literal["thinking"] = "thinking"
+    """The type of content reconstructed by this chunk."""
+
+    signature: str | None
+    """The signature of the thinking content, if available."""

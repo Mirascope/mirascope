@@ -42,8 +42,17 @@ async def main():
         query
     )
     while True:
-        async for chunk in await response.structured_stream():
-            print("[Partial]: ", chunk, flush=True)
+        streams = await response.streams()
+        async for stream in streams:
+            match stream.content_type:
+                case "tool_call":
+                    print(f"Calling tool{stream.tool_name} with args:")
+                    async for chunk in stream:
+                        print(chunk.delta, flush=True, end="")
+                    print()
+                case "text":
+                    async for _ in stream:
+                        print("[Partial]: ", response.format(partial=True), flush=True)
         if not (tool_calls := response.tool_calls):
             break
         outputs: list[llm.ToolOutput] = await asyncio.gather(

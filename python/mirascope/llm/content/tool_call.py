@@ -16,6 +16,9 @@ class ToolCall:
 
     type: Literal["tool_call"] = "tool_call"
 
+    content_type: Literal["tool_call"] = "tool_call"
+    """The type of content being represented."""
+
     id: str
     """A unique identifier for this tool call."""
 
@@ -27,13 +30,13 @@ class ToolCall:
 
 
 @dataclass(kw_only=True)
-class ToolCallChunk:
-    """Partially reconstructed tool call content from chunk stream.
+class ToolCallStartChunk:
+    """Represents the start of a tool call chunk stream."""
 
-    Contains both the accumulated arguments and the current delta for this update.
-    """
+    type: Literal["tool_call_start_chunk"]
 
-    type: Literal["tool_call_chunk"] = "tool_call_chunk"
+    content_type: Literal["tool_call"] = "tool_call"
+    """The type of content reconstructed by this chunk."""
 
     id: str
     """A unique identifier for this tool call."""
@@ -41,8 +44,25 @@ class ToolCallChunk:
     name: str
     """The name of the tool to call."""
 
-    args: dict[str, Jsonable]
-    """The accumulated arguments parsed from all received JSON deltas."""
+
+@dataclass(kw_only=True)
+class ToolCallChunk:
+    """Represents an incremental tool call chunk in a stream."""
+
+    type: Literal["tool_call_chunk"]
+
+    content_type: Literal["tool_call"] = "tool_call"
+    """The type of content reconstructed by this chunk."""
 
     delta: str
-    """The incremental JSON delta added in this update."""
+    """The incremental json args added in this chunk."""
+
+
+@dataclass(kw_only=True)
+class ToolCallEndChunk:
+    """Represents the end of a tool call chunk stream."""
+
+    type: Literal["tool_call_end_chunk"]
+
+    content_type: Literal["tool_call"]
+    """The type of content reconstructed by this chunk."""

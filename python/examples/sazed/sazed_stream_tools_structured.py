@@ -38,8 +38,17 @@ def main():
     query = "What are the Kandra?"
     response: llm.StreamResponse[llm.Stream, KeeperEntry] = sazed.stream(query)
     while True:
-        for chunk in response.structured_stream():
-            print("[Partial]: ", chunk, flush=True)
+        streams = response.streams()
+        for stream in streams:
+            match stream.content_type:
+                case "tool_call":
+                    print(f"Calling tool{stream.tool_name} with args:")
+                    for chunk in stream:
+                        print(chunk.delta, flush=True, end="")
+                    print()
+                case "text":
+                    for _ in stream:
+                        print("[Partial]: ", response.format(partial=True), flush=True)
         if not (tool_calls := response.tool_calls):
             break
         outputs: list[llm.ToolOutput] = [

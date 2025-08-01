@@ -14,7 +14,10 @@ class ToolOutput(Generic[JsonableT]):
     content, typically following a tool call from the assistant.
     """
 
-    type: Literal["tool_response"] = "tool_response"
+    type: Literal["tool_output"] = "tool_output"
+
+    content_type: Literal["tool_output"] = "tool_output"
+    """The type of content being represented."""
 
     id: str
     """The ID of the tool call that this output is for."""
