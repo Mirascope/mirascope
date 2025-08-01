@@ -10,8 +10,7 @@ from .tool import AsyncTool, Tool, ToolT
 
 ToolkitT = TypeVar(
     "ToolkitT",
-    bound="Toolkit[Tool | AsyncTool]"
-    | "ContextToolkit[Tool | AsyncTool | ContextTool | AsyncContextTool, Any]",
+    bound="Toolkit[Tool | AsyncTool] | ContextToolkit[Tool | AsyncTool | ContextTool | AsyncContextTool, Any]",
     covariant=True,
 )
 

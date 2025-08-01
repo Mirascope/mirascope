@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class BaseResponse(Generic[FormatT]):
     """Base class for LLM responses."""
 
-    model: REGISTERED_LLMS
+    model: "REGISTERED_LLMS"
     """The model identifier that generated the response (e.g. "openai:gpt-4", "anthropic:claude-3-5-sonnet-latest")."""
 
     args: dict[str, Any]

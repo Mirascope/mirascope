@@ -67,6 +67,9 @@ jobs:
       - name: Run Pyright
         run: uv run pyright .
 
+      - name: Run Tests
+        run: uv run pytest tests/
+
       - name: Minimize uv cache
         run: uv cache prune --ci
 

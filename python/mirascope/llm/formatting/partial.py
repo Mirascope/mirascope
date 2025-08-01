@@ -53,5 +53,6 @@ class Partial(Generic[FormatT]):
         wrapped_class: type[FormatT],
     ) -> type[FormatT]:
         """Convert model to a partial model with all fields being optionals."""
-
-        raise NotImplementedError()
+        # TODO: Implement proper partial model generation
+        # For now, return the original class to avoid import errors
+        return wrapped_class
