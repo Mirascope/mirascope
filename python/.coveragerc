@@ -14,7 +14,6 @@ omit =
     mirascope/llm/mcp/*
     mirascope/llm/models/*
     mirascope/llm/prompts/*
-    mirascope/llm/responses/*
     mirascope/llm/streams/*
     mirascope/llm/tools/*
 
@@ -34,7 +33,7 @@ show_missing = True
 fail_under = 100
 
 # Exclude patterns from coverage analysis
-exclude_lines =
+exclude_also =
     pragma: no cover
     def __repr__
     if self.debug:
@@ -44,6 +43,8 @@ exclude_lines =
     if __name__ == .__main__.:
     class .*\bProtocol\):
     @(abc\.)?abstractmethod
+    if TYPE_CHECKING:
+    @overload
 
 [html]
 directory = htmlcov

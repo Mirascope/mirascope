@@ -11,3 +11,7 @@ class FinishReason(str, Enum):
 
     STOP = "stop"
     MAX_TOKENS = "max_tokens"
+    END_TURN = "end_turn"
+    TOOL_USE = "tool_use"
+    REFUSAL = "refusal"
+    UNKNOWN = "unknown"
