@@ -52,7 +52,7 @@ class ContextTool(
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> JsonableCovariantT:
-        return self.fn(ctx, *args, **kwargs)
+        raise NotImplementedError()
 
     def execute(
         self, ctx: Context[DepsT], tool_call: ToolCall
@@ -79,7 +79,7 @@ class AsyncContextTool(
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> Awaitable[JsonableCovariantT]:
-        return self.fn(ctx, *args, **kwargs)
+        raise NotImplementedError()
 
     async def execute(
         self, ctx: Context[DepsT], tool_call: ToolCall

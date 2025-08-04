@@ -27,8 +27,7 @@ class Context(Generic[DepsT]):
     def __init__(
         self, *, messages: list[Message] | None = None, deps: DepsT = None
     ) -> None:
-        self.messages = messages or []
-        self.deps = deps
+        raise NotImplementedError()
 
     messages: list[Message]
     """The array of messages that have been sent so far (i.e. history)."""

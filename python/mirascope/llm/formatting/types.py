@@ -71,7 +71,7 @@ class ResponseParseable(Protocol[P, CovariantT]):
         Returns:
             An instance of the class.
         """
-        ...
+        raise NotImplementedError()
 
 
 @dataclass

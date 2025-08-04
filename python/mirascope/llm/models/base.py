@@ -49,7 +49,7 @@ class LLM(Generic[ParamsT, ClientT]):
         client: ClientT | None = None,
     ) -> None:
         """Initializes an `LLM` instance."""
-        ...
+        raise NotImplementedError()
 
     def call(
         self,
@@ -63,7 +63,7 @@ class LLM(Generic[ParamsT, ClientT]):
         params: ParamsT | None = None,
     ) -> Response[FormatT]:
         """Generate a response using the model."""
-        ...
+        raise NotImplementedError()
 
     async def call_async(
         self,
@@ -77,7 +77,7 @@ class LLM(Generic[ParamsT, ClientT]):
         params: ParamsT | None = None,
     ) -> Response[FormatT]:
         """Generate a response asynchronously using the model."""
-        ...
+        raise NotImplementedError()
 
     def stream(
         self,
@@ -91,7 +91,7 @@ class LLM(Generic[ParamsT, ClientT]):
         params: ParamsT | None = None,
     ) -> StreamResponse[Stream, FormatT]:
         """Stream a response using the model."""
-        ...
+        raise NotImplementedError()
 
     async def stream_async(
         self,
@@ -105,4 +105,4 @@ class LLM(Generic[ParamsT, ClientT]):
         params: ParamsT | None = None,
     ) -> StreamResponse[AsyncStream, FormatT]:
         """Stream a response asynchronously using the model."""
-        ...
+        raise NotImplementedError()
