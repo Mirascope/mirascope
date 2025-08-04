@@ -1,6 +1,6 @@
 """Base client interfaces and types."""
 
-from .client import BaseClient, ClientT, ProviderMessageT
+from .client import BaseClient, ClientT
 from .params import BaseParams, ParamsT
 
 __all__ = [
@@ -8,5 +8,4 @@ __all__ = [
     "BaseParams",
     "ClientT",
     "ParamsT",
-    "ProviderMessageT",
 ]

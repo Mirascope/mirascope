@@ -5,8 +5,9 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Generic
 
-from ..clients import ClientT, ParamsT, ProviderMessageT
+from ..clients import ClientT, ParamsT
 from ..context import Context
+from ..messages import Message
 from ..responses import (
     Response,
     StreamResponse,
@@ -22,7 +23,7 @@ from ..formatting import FormatT
 from ..types import Jsonable
 
 
-class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
+class LLM(Generic[ParamsT, ClientT]):
     """The unified LLM interface that delegates to provider-specific clients.
 
     This class provides a consistent interface for interacting with language models
@@ -54,7 +55,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool]
         | Sequence[Tool | ContextTool[..., Jsonable, DepsT]]
         | None = None,
@@ -68,7 +69,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool]
         | Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]]
         | None = None,
@@ -82,7 +83,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool]
         | Sequence[Tool | ContextTool[..., Jsonable, DepsT]]
         | None = None,
@@ -96,7 +97,7 @@ class LLM(Generic[ProviderMessageT, ParamsT, ClientT]):
         self,
         *,
         ctx: Context[DepsT] | None = None,
-        messages: list[ProviderMessageT],
+        messages: list[Message],
         tools: Sequence[AsyncTool]
         | Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]]
         | None = None,
