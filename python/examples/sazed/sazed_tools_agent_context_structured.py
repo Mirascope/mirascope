@@ -26,7 +26,8 @@ def search_coppermind(ctx: llm.Context[Coppermind], query: str) -> str:
 
 
 @llm.agent(
-    model="openai:gpt-4o-mini",
+    provider="openai",
+    model="gpt-4o-mini",
     tools=[search_coppermind],
     format=KeeperEntry,
 )

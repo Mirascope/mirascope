@@ -19,7 +19,8 @@ class Coppermind:
 
 
 @llm.context_call(
-    model="openai:gpt-4o-mini",
+    provider="openai",
+    model="gpt-4o-mini",
     format=KeeperEntry,
 )
 async def sazed(ctx: llm.Context[Coppermind], query: str):

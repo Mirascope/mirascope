@@ -13,17 +13,17 @@ from ...streams import AsyncStream, Stream
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
 from ..base import BaseClient
+from .model import GoogleModel
 from .params import GoogleParams
-from .registered_llms import GOOGLE_REGISTERED_LLMS
 
 
-class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
+class GoogleClient(BaseClient[GoogleParams, GoogleModel]):
     """The client for the Google LLM model."""
 
     def call(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
@@ -34,7 +34,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
@@ -44,7 +44,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
     def structured_call(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -56,7 +56,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
@@ -67,7 +67,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
     async def call_async(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: GoogleParams | None = None,
@@ -78,7 +78,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
@@ -88,7 +88,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
     async def structured_call_async(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -100,7 +100,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
@@ -111,7 +111,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
     def stream(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
@@ -122,7 +122,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
@@ -132,7 +132,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
     def structured_stream(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -144,7 +144,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
@@ -155,7 +155,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
     async def stream_async(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: GoogleParams | None = None,
@@ -166,7 +166,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
@@ -176,7 +176,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
     async def structured_stream_async(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -188,7 +188,7 @@ class GoogleClient(BaseClient[GoogleParams, GOOGLE_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
+        model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],

@@ -92,7 +92,10 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
         ```python
         from mirascope import llm
 
-        @llm.call("openai:gpt-4o-mini")
+        @llm.call(
+            provider="openai",
+            model="gpt-4o-mini",
+        )
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 

@@ -18,7 +18,8 @@ class Coppermind:
 
 
 @llm.agent(
-    model="openai:gpt-4o-mini",
+    provider="openai",
+    model="gpt-4o-mini",
     format=KeeperEntry,
 )
 def sazed(ctx: llm.Context[Coppermind]):

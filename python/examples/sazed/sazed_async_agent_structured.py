@@ -13,7 +13,8 @@ class KeeperEntry(BaseModel):
 
 
 @llm.agent(
-    model="openai:gpt-4o-mini",
+    provider="openai",
+    model="gpt-4o-mini",
     format=KeeperEntry,
 )
 async def sazed():

@@ -14,12 +14,16 @@ class FromCallArgs:
 
     ```
     class Book(BaseModel):
-    title: Annotated[str, llm.formatting.FromCallArgs()]
-    author: Annotated[str, llm.formatting.FromCallArgs()]
-    summary: str
+        title: Annotated[str, llm.formatting.FromCallArgs()]
+        author: Annotated[str, llm.formatting.FromCallArgs()]
+        summary: str
 
 
-    @llm.call("openai:gpt-4o-mini", format=Book)
+    @llm.call(
+        provider="openai",
+        model="gpt-4o-mini",
+        format=Book,
+    )
     def summarize_book(title: str, author: str):
         return f"Summarize {title} by {author}."
     ```

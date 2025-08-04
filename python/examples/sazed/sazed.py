@@ -1,7 +1,10 @@
 from mirascope import llm
 
 
-@llm.call(model="openai:gpt-4o-mini")
+@llm.call(
+    provider="openai",
+    model="gpt-4o-mini",
+)
 def sazed(query: str):
     system_prompt = """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of

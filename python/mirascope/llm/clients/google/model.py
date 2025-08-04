@@ -2,5 +2,5 @@
 
 from typing import Literal, TypeAlias
 
-GOOGLE_REGISTERED_LLMS: TypeAlias = Literal["google:gemini-2.5-flash"]
+GoogleModel: TypeAlias = Literal["google:gemini-2.5-flash"] | str
 """The Google models registered with Mirascope."""

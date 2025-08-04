@@ -10,7 +10,8 @@ async def search_coppermind(query: str) -> str:
 
 
 @llm.call(
-    model="openai:gpt-4o-mini",
+    provider="openai",
+    model="gpt-4o-mini",
     tools=[search_coppermind],
 )
 async def sazed(query: str):

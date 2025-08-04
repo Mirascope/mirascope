@@ -10,15 +10,19 @@ from ..messages import Message
 
 if TYPE_CHECKING:
     from ..clients import (
-        REGISTERED_LLMS,
+        Model,
+        Provider,
     )
 
 
 class BaseResponse(ABC, Generic[FormatT]):
     """Base class for LLM responses."""
 
-    model: "REGISTERED_LLMS"
-    """The model identifier that generated the response (e.g. "openai:gpt-4", "anthropic:claude-3-5-sonnet-latest")."""
+    provider: "Provider"
+    """The provider that generated the response (e.g., "openai", "anthropic", "google")."""
+
+    model: "Model"
+    """The model identifier that generated the response (e.g., "gpt-4", "claude-3-5-sonnet-latest")."""
 
     messages: list[Message]
     """The message history, including the most recent assistant message."""
