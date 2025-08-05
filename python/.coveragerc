@@ -1,0 +1,49 @@
+[run]
+# Exclude modules from coverage tracking until they have full test coverage
+# Remove items from this list as we add comprehensive tests for each module
+# Goal: When this exclude list is empty, we have 100% coverage across the entire codebase
+omit = 
+    # LLM modules to exclude (remove as we add full test coverage)
+    mirascope/llm/agents/*
+    mirascope/llm/calls/*
+    mirascope/llm/clients/*
+    mirascope/llm/content/*
+    mirascope/llm/context/*
+    mirascope/llm/exceptions.py
+    mirascope/llm/formatting/*
+    mirascope/llm/mcp/*
+    mirascope/llm/models/*
+    mirascope/llm/prompts/*
+    mirascope/llm/responses/*
+    mirascope/llm/streams/*
+    mirascope/llm/tools/*
+
+    
+    # Exclude other top-level modules for now
+    mirascope/graphs/*
+    
+    # Exclude examples and tests from coverage
+    examples/*
+    tests/*
+
+[report]
+# Show lines that weren't covered
+show_missing = True
+
+# Fail if coverage is below 100% for tracked files
+fail_under = 100
+
+# Exclude patterns from coverage analysis
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
+
+[html]
+directory = htmlcov
