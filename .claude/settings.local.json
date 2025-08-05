@@ -27,7 +27,8 @@
       "WebFetch(domain:platform.openai.com)",
       "WebFetch(domain:ai.google.dev)",
       "WebFetch(domain:docs.anthropic.com)",
-      "WebFetch(domain:mirascope.com)"
+      "WebFetch(domain:mirascope.com)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }
