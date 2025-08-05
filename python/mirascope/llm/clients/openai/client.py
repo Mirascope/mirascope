@@ -1,29 +1,20 @@
 """OpenAI client implementation."""
 
 from collections.abc import Sequence
-from typing import TypeAlias
 
-from openai.types.chat import ChatCompletionMessageParam
-
-from ..clients import BaseParams
-from ..context import Context, DepsT
-from ..formatting import FormatT
-from ..messages import Message
-from ..responses import (
+from ...context import Context, DepsT
+from ...formatting import FormatT
+from ...responses import (
     Response,
     StreamResponse,
 )
-from ..streams import AsyncStream, Stream
-from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
-from ..types import Jsonable
-from .base import BaseClient
-from .register import OPENAI_REGISTERED_LLMS
-
-OpenAIMessage: TypeAlias = Message | ChatCompletionMessageParam
-
-
-class OpenAIParams(BaseParams, total=False):
-    """The parameters for the OpenAI LLM model."""
+from ...streams import AsyncStream, Stream
+from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
+from ...types import Jsonable
+from ..base import BaseClient
+from .message import OpenAIMessage
+from .params import OpenAIParams
+from .registered_llms import OPENAI_REGISTERED_LLMS
 
 
 class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLMS]):

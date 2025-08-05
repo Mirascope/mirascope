@@ -1,41 +1,34 @@
-"""Google client implementation."""
+"""Anthropic client implementation."""
 
 from collections.abc import Sequence
-from typing import TypeAlias
 
-from google.genai.types import ContentDict, FunctionResponse
-
-from ..clients import BaseParams
-from ..context import Context, DepsT
-from ..formatting import FormatT
-from ..messages import Message
-from ..responses import (
+from ...context import Context, DepsT
+from ...formatting import FormatT
+from ...responses import (
     Response,
     StreamResponse,
 )
-from ..streams import AsyncStream, Stream
-from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
-from ..types import Jsonable
-from .base import BaseClient
-from .register import GOOGLE_REGISTERED_LLMS
-
-GoogleMessage: TypeAlias = Message | ContentDict | FunctionResponse
-
-
-class GoogleParams(BaseParams, total=False):
-    """The parameters for the Google LLM model."""
+from ...streams import AsyncStream, Stream
+from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
+from ...types import Jsonable
+from ..base import BaseClient
+from .message import AnthropicMessage
+from .params import AnthropicParams
+from .registered_llms import ANTHROPIC_REGISTERED_LLMS
 
 
-class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLMS]):
-    """The client for the Google LLM model."""
+class AnthropicClient(
+    BaseClient[AnthropicMessage, AnthropicParams, ANTHROPIC_REGISTERED_LLMS]
+):
+    """The client for the Anthropic LLM model."""
 
     def call(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[Tool] | None = None,
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
 
@@ -43,21 +36,21 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
 
     def structured_call(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> Response[FormatT]:
         raise NotImplementedError
 
@@ -65,21 +58,21 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> Response[FormatT]:
         raise NotImplementedError
 
     async def call_async(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[AsyncTool] | None = None,
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
 
@@ -87,21 +80,21 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
 
     async def structured_call_async(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> Response[FormatT]:
         raise NotImplementedError
 
@@ -109,21 +102,21 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> Response[FormatT]:
         raise NotImplementedError
 
     def stream(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[Tool] | None = None,
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> StreamResponse[Stream, None]:
         raise NotImplementedError
 
@@ -131,21 +124,21 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> StreamResponse[Stream, None]:
         raise NotImplementedError
 
     def structured_stream(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> StreamResponse[Stream, FormatT]:
         raise NotImplementedError
 
@@ -153,21 +146,21 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> StreamResponse[Stream, FormatT]:
         raise NotImplementedError
 
     async def stream_async(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[AsyncTool] | None = None,
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> StreamResponse[AsyncStream, None]:
         raise NotImplementedError
 
@@ -175,21 +168,21 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> StreamResponse[AsyncStream, None]:
         raise NotImplementedError
 
     async def structured_stream_async(
         self,
         *,
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> StreamResponse[AsyncStream, FormatT]:
         raise NotImplementedError
 
@@ -197,10 +190,10 @@ class GoogleClient(BaseClient[GoogleMessage, GoogleParams, GOOGLE_REGISTERED_LLM
         self,
         *,
         ctx: Context[DepsT],
-        model: GOOGLE_REGISTERED_LLMS,
-        messages: Sequence[GoogleMessage],
+        model: ANTHROPIC_REGISTERED_LLMS,
+        messages: Sequence[AnthropicMessage],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
-        params: GoogleParams | None = None,
+        params: AnthropicParams | None = None,
     ) -> StreamResponse[AsyncStream, FormatT]:
         raise NotImplementedError
