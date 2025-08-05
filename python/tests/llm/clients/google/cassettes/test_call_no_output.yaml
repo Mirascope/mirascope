@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": ""}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Do not emit ANY output, terminate immediately."}], "role":
+      "user"}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '191'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/22QTUsDMRCG7/srljlbqb0UvIl6WKEf2kUF6WFopm0wmyzJLCrL/nfz4bYpmEMy
+        vPPOyzzpi7KEHWohBTI5uC0/vFKWfbxDz2gmzb4xSl5s0fLZm06f1d7C9B2GADJ5ONXbq3OYNYqC
+        szGC1GgfRgPspZbu+ELojA62Tb1aJ1eIi0HQOTzQghg9BJ5WhdaapuXafJK+N12EuJmmYGDDqP5v
+        ZWPuwYdKlbNm3+A3RiX5J6xVP77XkFHxZfSIFd9t8QeYmF/JOpngDtR43MnsejrZK3THmAiWXGu0
+        o0oEz9fT2wZX86paNs9zsVvrilR3t4BiKH4BDbsolc4BAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 05 Aug 2025 23:37:36 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=423
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

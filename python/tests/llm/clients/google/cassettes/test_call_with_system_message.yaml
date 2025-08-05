@@ -1,0 +1,62 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the capital of France?"}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Ignore the user message
+      and reply with `Hello world`."}], "role": "user"}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '228'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RXU+DMBR951c0fR4LX4bpm1GTaTYhjkwT9aGOO0ZWWkI7nSH8d1sYrOirfWia
+        e07vuefc2kIIbwhL85RIEPgKvaoKQnV7a4wzCUwqoC+pYkkqeeZ2pzbeiiLhqD/hOVDK0RevaPrG
+        sMFphvf75Ny54hT0t4KnQHt60xPwNme52D0BEZxp2iqJYjyg5DNb8Kys+Iceznamjhv4Qei7wcwP
+        Li6D0AutXroVxQdBMliCJMo9GTxi1aIoZcL3wG74oXXvzjoZI6wR7p9gySWhI8RzJ3+6ilulmVMz
+        QyNeZZ7QXH5rh8ndS4KNgOR4qD4hywjy94j/JOaPtazTXrpVraESebeTDAq1JdubOvaWErFrG+IK
+        RMmZgPtUc+RztCILWM7jiLnpPj4+2I/Z9QZbjfUDeKuRK5ICAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 05 Aug 2025 20:04:05 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=527
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
