@@ -13,7 +13,7 @@ class ToolFn(Protocol[P, JsonableCovariantT]):
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> JsonableCovariantT:
         """Call the function with the given arguments."""
-        ...
+        raise NotImplementedError()
 
 
 class AsyncToolFn(Protocol[P, JsonableCovariantT]):
@@ -23,7 +23,7 @@ class AsyncToolFn(Protocol[P, JsonableCovariantT]):
         self, *args: P.args, **kwargs: P.kwargs
     ) -> Awaitable[JsonableCovariantT]:
         """Call the function with the given arguments."""
-        ...
+        raise NotImplementedError()
 
 
 class ToolDecorator(Protocol):
@@ -47,7 +47,7 @@ class ToolDecorator(Protocol):
         self, fn: ToolFn[P, JsonableCovariantT] | AsyncToolFn[P, JsonableCovariantT]
     ) -> Tool[P, JsonableCovariantT] | AsyncTool[P, JsonableCovariantT]:
         """Call the decorator with a function."""
-        ...
+        raise NotImplementedError()
 
 
 @overload

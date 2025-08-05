@@ -46,7 +46,7 @@ class CallDecorator(Protocol[ToolT, FormatT]):
         self, fn: Prompt[P] | AsyncPrompt[P]
     ) -> Call[P, ToolT, FormatT] | AsyncCall[P, ToolT, FormatT]:
         """Decorates a prompt into a Call."""
-        ...
+        raise NotImplementedError()
 
 
 # @overload

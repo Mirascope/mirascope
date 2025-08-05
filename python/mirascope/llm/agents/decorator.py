@@ -72,7 +72,7 @@ class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
         | AsyncContextSystemPrompt[P, DepsT],
     ) -> AgentTemplate[DepsT, FormatT] | AsyncAgentTemplate[DepsT, FormatT]:
         """Decorator for creating an agent."""
-        ...
+        raise NotImplementedError()
 
 
 # @overload

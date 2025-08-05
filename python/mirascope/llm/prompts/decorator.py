@@ -83,7 +83,7 @@ class PromptDecorator(Protocol[DepsT]):
         | AsyncContextMessagesPrompt[P, DepsT]
     ):
         """Decorator for creating a prompt."""
-        ...
+        raise NotImplementedError()
 
 
 class PromptTemplateDecorator(Protocol[DepsT]):
@@ -134,7 +134,7 @@ class PromptTemplateDecorator(Protocol[DepsT]):
         | AsyncContextMessagesPrompt[P, DepsT]
     ):
         """Decorator for creating a prompt from a template function."""
-        ...
+        raise NotImplementedError()
 
 
 @overload

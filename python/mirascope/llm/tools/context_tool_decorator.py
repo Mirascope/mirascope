@@ -15,7 +15,7 @@ class ContextToolFn(Protocol[P, JsonableCovariantT, DepsT]):
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> JsonableCovariantT:
         """Call the function with the given arguments."""
-        ...
+        raise NotImplementedError()
 
 
 class AsyncContextToolFn(Protocol[P, JsonableCovariantT, DepsT]):
@@ -25,7 +25,7 @@ class AsyncContextToolFn(Protocol[P, JsonableCovariantT, DepsT]):
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> Awaitable[JsonableCovariantT]:
         """Call the function with the given arguments."""
-        ...
+        raise NotImplementedError()
 
 
 class ContextToolDecorator:
@@ -54,7 +54,7 @@ class ContextToolDecorator:
         | AsyncContextTool[P, JsonableCovariantT, DepsT]
     ):
         """Call the decorator with a function."""
-        ...
+        raise NotImplementedError()
 
 
 @overload

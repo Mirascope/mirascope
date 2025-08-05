@@ -122,9 +122,9 @@ def model(
         ```
     """
     raise NotImplementedError()
-    model = ...
-    token = MODEL_CONTEXT.set(model)  # need to construct model
-    try:
-        yield model
-    finally:
-        MODEL_CONTEXT.reset(token)
+    # model = ...
+    # token = MODEL_CONTEXT.set(model)  # need to construct model
+    # try:
+    #     yield model
+    # finally:
+    #     MODEL_CONTEXT.reset(token)

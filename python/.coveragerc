@@ -4,19 +4,9 @@
 # Goal: When this exclude list is empty, we have 100% coverage across the entire codebase
 omit = 
     # LLM modules to exclude (remove as we add full test coverage)
-    mirascope/llm/agents/*
-    mirascope/llm/calls/*
-    mirascope/llm/content/*
-    mirascope/llm/context/*
-    mirascope/llm/exceptions.py
-    mirascope/llm/formatting/*
-    mirascope/llm/mcp/*
-    mirascope/llm/models/*
-    mirascope/llm/prompts/*
-    mirascope/llm/streams/*
-    mirascope/llm/tools/*
+    mirascope/llm/mcp/client.py
+    mirascope/llm/formatting/partial.py
 
-    
     # Exclude other top-level modules for now
     mirascope/graphs/*
     

@@ -77,7 +77,7 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
         | AsyncContextCall[P, ContextToolT, DepsT, FormatT]
     ):
         """Decorates a context prompt into a ContextCall."""
-        ...
+        raise NotImplementedError()
 
 
 # @overload
