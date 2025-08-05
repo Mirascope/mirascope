@@ -4,10 +4,7 @@ from collections.abc import Sequence
 
 from ...context import Context, DepsT
 from ...formatting import FormatT
-from ...responses import (
-    Response,
-    StreamResponse,
-)
+from ...responses import Response, StreamResponse
 from ...streams import AsyncStream, Stream
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable

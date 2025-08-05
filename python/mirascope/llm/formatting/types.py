@@ -1,13 +1,16 @@
 """The `Format` class for defining how to structure an LLM response."""
 
 from dataclasses import dataclass
-from typing import Any, Generic, Literal, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Generic, Literal, Protocol, runtime_checkable
 
 from pydantic import BaseModel
 from typing_extensions import TypeVar
 
-from ..responses import Response
 from ..types import CovariantT, P
+
+if TYPE_CHECKING:
+    from ..responses import Response, StreamResponse
+    from ..streams import AsyncStream, Stream
 
 FormatT = TypeVar("FormatT", bound=BaseModel | None, default=None)
 """Type variable for structured response format types.
@@ -52,7 +55,12 @@ class ResponseParseable(Protocol[P, CovariantT]):
     """Protocol for defining a class with a custom parse classmethod."""
 
     @classmethod
-    def parse(cls, response: Response, *args: P.args, **kwargs: P.kwargs) -> CovariantT:
+    def parse(
+        cls,
+        response: "Response | StreamResponse[Stream | AsyncStream]",
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> CovariantT:
         """Parse an LLM response into an instance of the class.
 
         Args:

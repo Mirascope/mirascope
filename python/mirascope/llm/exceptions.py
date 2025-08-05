@@ -1,11 +1,10 @@
 """Mirascope exception hierarchy for unified error handling across providers."""
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-if TYPE_CHECKING:
-    from .clients import (
-        REGISTERED_LLMS,
-    )
+from .clients import (
+    REGISTERED_LLMS,
+)
 
 
 class MirascopeError(Exception):

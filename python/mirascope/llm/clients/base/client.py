@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Generic
+from typing import TYPE_CHECKING, Generic
 
 from typing_extensions import TypeVar
 
@@ -17,8 +17,13 @@ from ...responses import (
 from ...streams import AsyncStream, Stream
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
-from ..registered_llms import LLMT
 from .params import ParamsT
+
+if TYPE_CHECKING:
+    from ..registered_llms import LLMT
+else:
+    # Use a string bound to avoid circular import at runtime
+    LLMT = TypeVar("LLMT", bound=str)
 
 ClientT = TypeVar("ClientT", bound="BaseClient")
 """Type variable for an LLM client."""
