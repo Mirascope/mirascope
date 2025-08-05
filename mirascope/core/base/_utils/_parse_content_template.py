@@ -126,7 +126,9 @@ def _load_media(source: str | bytes) -> bytes:
         if isinstance(source, bytes | bytearray | memoryview):
             data = source
         elif source.startswith(("http://", "https://", "data:", "file://")):
-            with urllib.request.urlopen(source) as response:
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Mirascope'}
+            req = urllib.request.Request(source, headers=headers)
+            with urllib.request.urlopen(req) as response:
                 data = response.read()
         else:
             with open(source, "rb") as f:
