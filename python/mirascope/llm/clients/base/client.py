@@ -10,6 +10,7 @@ from typing_extensions import TypeVar
 
 from ...context import Context, DepsT
 from ...formatting import FormatT
+from ...messages import Message
 from ...responses import (
     Response,
     StreamResponse,
@@ -29,14 +30,7 @@ ClientT = TypeVar("ClientT", bound="BaseClient")
 """Type variable for an LLM client."""
 
 
-ProviderMessageT = TypeVar("ProviderMessageT")
-"""Type variable for an LLM that is usable by a specific LLM provider.
-
-May often be the union of generic `llm.Message` and a provider-specific message representation.
-"""
-
-
-class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
+class BaseClient(Generic[ParamsT, LLMT], ABC):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
@@ -48,7 +42,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: ParamsT | None = None,
     ) -> Response[None]:
@@ -61,7 +55,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: ParamsT | None = None,
     ) -> Response[None]:
@@ -73,7 +67,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
@@ -87,7 +81,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
@@ -100,7 +94,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
     ) -> Response[None]:
@@ -113,7 +107,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: ParamsT | None = None,
     ) -> Response[None]:
@@ -125,7 +119,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
@@ -139,7 +133,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
@@ -152,7 +146,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: ParamsT | None = None,
     ) -> StreamResponse[Stream, None]:
@@ -165,7 +159,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: ParamsT | None = None,
     ) -> StreamResponse[Stream, None]:
@@ -177,7 +171,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
@@ -191,7 +185,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
@@ -204,7 +198,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
     ) -> StreamResponse[AsyncStream, None]:
@@ -217,7 +211,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: ParamsT | None = None,
     ) -> StreamResponse[AsyncStream, None]:
@@ -229,7 +223,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         self,
         *,
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
@@ -243,7 +237,7 @@ class BaseClient(Generic[ProviderMessageT, ParamsT, LLMT], ABC):
         *,
         ctx: Context[DepsT],
         model: LLMT,
-        messages: Sequence[ProviderMessageT],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,

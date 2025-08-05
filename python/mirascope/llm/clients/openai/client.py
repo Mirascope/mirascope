@@ -4,6 +4,7 @@ from collections.abc import Sequence
 
 from ...context import Context, DepsT
 from ...formatting import FormatT
+from ...messages import Message
 from ...responses import (
     Response,
     StreamResponse,
@@ -12,19 +13,18 @@ from ...streams import AsyncStream, Stream
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
 from ..base import BaseClient
-from .message import OpenAIMessage
 from .params import OpenAIParams
 from .registered_llms import OPENAI_REGISTERED_LLMS
 
 
-class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLMS]):
+class OpenAIClient(BaseClient[OpenAIParams, OPENAI_REGISTERED_LLMS]):
     """The client for the OpenAI LLM model."""
 
     def call(
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: OpenAIParams | None = None,
     ) -> Response[None]:
@@ -35,7 +35,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: OpenAIParams | None = None,
     ) -> Response[None]:
@@ -45,7 +45,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: OpenAIParams | None = None,
@@ -57,7 +57,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
@@ -68,7 +68,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
     ) -> Response[None]:
@@ -79,7 +79,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: OpenAIParams | None = None,
     ) -> Response[None]:
@@ -89,7 +89,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: OpenAIParams | None = None,
@@ -101,7 +101,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
@@ -112,7 +112,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: OpenAIParams | None = None,
     ) -> StreamResponse[Stream, None]:
@@ -123,7 +123,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: OpenAIParams | None = None,
     ) -> StreamResponse[Stream, None]:
@@ -133,7 +133,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: OpenAIParams | None = None,
@@ -145,7 +145,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
@@ -156,7 +156,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
     ) -> StreamResponse[AsyncStream, None]:
@@ -167,7 +167,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: OpenAIParams | None = None,
     ) -> StreamResponse[AsyncStream, None]:
@@ -177,7 +177,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         self,
         *,
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: OpenAIParams | None = None,
@@ -189,7 +189,7 @@ class OpenAIClient(BaseClient[OpenAIMessage, OpenAIParams, OPENAI_REGISTERED_LLM
         *,
         ctx: Context[DepsT],
         model: OPENAI_REGISTERED_LLMS,
-        messages: Sequence[OpenAIMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,

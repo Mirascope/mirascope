@@ -4,26 +4,24 @@ from collections.abc import Sequence
 
 from ...context import Context, DepsT
 from ...formatting import FormatT
+from ...messages import Message
 from ...responses import Response, StreamResponse
 from ...streams import AsyncStream, Stream
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
 from ..base import BaseClient
-from .message import AnthropicMessage
 from .params import AnthropicParams
 from .registered_llms import ANTHROPIC_REGISTERED_LLMS
 
 
-class AnthropicClient(
-    BaseClient[AnthropicMessage, AnthropicParams, ANTHROPIC_REGISTERED_LLMS]
-):
+class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
     """The client for the Anthropic LLM model."""
 
     def call(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: AnthropicParams | None = None,
     ) -> Response[None]:
@@ -34,7 +32,7 @@ class AnthropicClient(
         *,
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
     ) -> Response[None]:
@@ -44,7 +42,7 @@ class AnthropicClient(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: AnthropicParams | None = None,
@@ -56,7 +54,7 @@ class AnthropicClient(
         *,
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: AnthropicParams | None = None,
@@ -67,7 +65,7 @@ class AnthropicClient(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: AnthropicParams | None = None,
     ) -> Response[None]:
@@ -78,7 +76,7 @@ class AnthropicClient(
         *,
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
     ) -> Response[None]:
@@ -88,7 +86,7 @@ class AnthropicClient(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: AnthropicParams | None = None,
@@ -100,7 +98,7 @@ class AnthropicClient(
         *,
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: AnthropicParams | None = None,
@@ -111,7 +109,7 @@ class AnthropicClient(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: AnthropicParams | None = None,
     ) -> StreamResponse[Stream, None]:
@@ -122,7 +120,7 @@ class AnthropicClient(
         *,
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
     ) -> StreamResponse[Stream, None]:
@@ -132,7 +130,7 @@ class AnthropicClient(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: AnthropicParams | None = None,
@@ -144,7 +142,7 @@ class AnthropicClient(
         *,
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: AnthropicParams | None = None,
@@ -155,7 +153,7 @@ class AnthropicClient(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: AnthropicParams | None = None,
     ) -> StreamResponse[AsyncStream, None]:
@@ -166,7 +164,7 @@ class AnthropicClient(
         *,
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
     ) -> StreamResponse[AsyncStream, None]:
@@ -176,7 +174,7 @@ class AnthropicClient(
         self,
         *,
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: AnthropicParams | None = None,
@@ -188,7 +186,7 @@ class AnthropicClient(
         *,
         ctx: Context[DepsT],
         model: ANTHROPIC_REGISTERED_LLMS,
-        messages: Sequence[AnthropicMessage],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: AnthropicParams | None = None,
