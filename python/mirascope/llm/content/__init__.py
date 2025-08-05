@@ -49,6 +49,7 @@ __all__ = [
     "AssistantContentPart",
     "Audio",
     "AudioUrl",
+    "ContentPart",
     "Document",
     "Image",
     "ImageUrl",

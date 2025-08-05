@@ -6,7 +6,6 @@ omit =
     # LLM modules to exclude (remove as we add full test coverage)
     mirascope/llm/agents/*
     mirascope/llm/calls/*
-    mirascope/llm/clients/*
     mirascope/llm/content/*
     mirascope/llm/context/*
     mirascope/llm/exceptions.py

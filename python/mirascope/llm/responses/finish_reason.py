@@ -10,8 +10,8 @@ class FinishReason(str, Enum):
     """
 
     STOP = "stop"
-    MAX_TOKENS = "max_tokens"
     END_TURN = "end_turn"
-    TOOL_USE = "tool_use"
+    MAX_TOKENS = "max_tokens"
     REFUSAL = "refusal"
+    TOOL_USE = "tool_use"
     UNKNOWN = "unknown"

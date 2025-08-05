@@ -53,7 +53,7 @@ from .formatting import Format, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
-from .responses import Response, StreamResponse
+from .responses import FinishReason, Response, StreamResponse
 from .streams import AsyncStream, Stream
 from .tools import Tool, context_tool, tool
 
@@ -75,6 +75,7 @@ __all__ = [
     "ConnectionError",
     "Context",
     "Document",
+    "FinishReason",
     "Format",
     "Image",
     "ImageUrl",
