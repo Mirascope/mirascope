@@ -18,6 +18,19 @@ UserContentPart: TypeAlias = (
 AssistantContentPart: TypeAlias = Text | ToolCall | Thinking
 """Content parts that can be included in an AssistantMessage."""
 
+ContentPart: TypeAlias = (
+    Text
+    | Image
+    | ImageUrl
+    | Audio
+    | AudioUrl
+    | Document
+    | ToolOutput
+    | ToolCall
+    | Thinking
+)
+"""Content parts that may be included in a Message."""
+
 AssistantContentChunk: TypeAlias = (
     TextStartChunk
     | TextChunk

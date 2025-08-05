@@ -42,8 +42,8 @@ Messages have a role (system, user, or assistant) and content that is a sequence
 of content parts. The content can include text, images, audio, documents, and
 tool interactions.
 
-For most use cases, prefer the convenience functions system(), user(), and
-assistant() instead of directly creating Message objects.
+For most use cases, prefer the convenience functions `system()`, `user()`, and
+`assistant()` instead of directly creating `Message` objects.
 
 Example:
 
@@ -58,27 +58,28 @@ Example:
 """
 
 UserContent: TypeAlias = str | UserContentPart | Sequence[str | UserContentPart]
-"""Type alias for content that can fit into a User message."""
+"""Type alias for content that can fit into a `UserMessage`."""
 
 AssistantContent: TypeAlias = (
     str | AssistantContentPart | Sequence[str | AssistantContentPart]
 )
-"""Type alias for content that can fit into an Assistant message."""
+"""Type alias for content that can fit into an `AssistantMessage`."""
 
 SystemContent: TypeAlias = str | Text
-"""Type alias for content that can fit into a System message."""
+"""Type alias for content that can fit into a `SystemMessage`."""
 
 
 def system(content: SystemContent) -> SystemMessage:
     """Creates a system message.
 
     Args:
-        content: The content of the message, which must be a string or Text content.
+        content: The content of the message, which must be a `str` or `Text` content.
 
     Returns:
-        A SystemMessage.
+        A `SystemMessage`.
     """
-    raise NotImplementedError()
+    promoted_content = Text(text=content) if isinstance(content, str) else content
+    return SystemMessage(content=promoted_content)
 
 
 def user(
@@ -89,14 +90,19 @@ def user(
     """Creates a user message.
 
     Args:
-        content: The content of the message, which can be str or any `llm.UserContent`,
+        content: The content of the message, which can be `str` or any `UserContent`,
             or a sequence of such user content pieces.
         name: Optional name to identify a specific user in multi-party conversations.
 
     Returns:
-        A UserMessage.
+        A `UserMessage`.
     """
-    raise NotImplementedError()
+    if isinstance(content, str) or not isinstance(content, Sequence):
+        content = [content]
+    promoted_content = [
+        Text(text=part) if isinstance(part, str) else part for part in content
+    ]
+    return UserMessage(content=promoted_content, name=name)
 
 
 def assistant(
@@ -107,11 +113,16 @@ def assistant(
     """Creates an assistant message.
 
     Args:
-        content: The content of the message, which can be str or any llm.AssistantContent,
+        content: The content of the message, which can be `str` or any `AssistantContent`,
             or a sequence of assistant content pieces.
         name: Optional name to identify a specific assistant in multi-party conversations.
 
     Returns:
-        An AssistantMessage.
+        An `AssistantMessage`.
     """
-    raise NotImplementedError()
+    if isinstance(content, str) or not isinstance(content, Sequence):
+        content = [content]
+    promoted_content = [
+        Text(text=part) if isinstance(part, str) else part for part in content
+    ]
+    return AssistantMessage(content=promoted_content, name=name)
