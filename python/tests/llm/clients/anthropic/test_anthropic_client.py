@@ -43,7 +43,7 @@ def test_call_simple_message(anthropic_client):
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
     response = anthropic_client.call(
-        model="anthropic:claude-3-5-sonnet-latest",
+        model="claude-3-5-sonnet-latest",
         messages=messages,
     )
 
@@ -86,7 +86,7 @@ def test_call_with_system_message(anthropic_client):
     ]
 
     response = anthropic_client.call(
-        model="anthropic:claude-3-5-sonnet-latest",
+        model="claude-3-5-sonnet-latest",
         messages=messages,
     )
 

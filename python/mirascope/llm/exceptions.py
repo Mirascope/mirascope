@@ -3,7 +3,8 @@
 from typing import Any
 
 from .clients import (
-    REGISTERED_LLMS,
+    Model,
+    Provider,
 )
 
 
@@ -11,7 +12,8 @@ class MirascopeError(Exception):
     """Base exception for all Mirascope errors."""
 
     original_exception: Exception | None
-    model: REGISTERED_LLMS | None
+    provider: Provider | None
+    model: Model | None
 
 
 class APIError(MirascopeError):

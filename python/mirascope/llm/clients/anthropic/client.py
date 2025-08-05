@@ -14,11 +14,11 @@ from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
 from ..base import BaseClient
 from .converter import AnthropicConverter
+from .models import AnthropicModel
 from .params import AnthropicParams
-from .registered_llms import ANTHROPIC_REGISTERED_LLMS
 
 
-class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
+class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel]):
     """The client for the Anthropic LLM model."""
 
     client: Anthropic
@@ -35,7 +35,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
     def call(
         self,
         *,
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: AnthropicParams | None = None,
@@ -46,9 +46,6 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        # Convert model to just the model name (remove "anthropic:" prefix if present)
-        model_name = model.split(":")[-1] if ":" in model else model
-
         # Convert messages to MessageParam format
         system_message, converted_messages = AnthropicConverter.encode_messages(
             messages
@@ -56,7 +53,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
 
         anthropic_response = self.client.messages.create(
             max_tokens=1024,
-            model=model_name,
+            model=model,
             messages=converted_messages,
             system=system_message or NotGiven(),
         )
@@ -69,6 +66,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         )
 
         return Response(
+            provider="anthropic",
             model=model,
             raw=anthropic_response,
             input_messages=messages,
@@ -80,7 +78,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
@@ -90,7 +88,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
     def structured_call(
         self,
         *,
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -102,7 +100,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
@@ -113,7 +111,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
     async def call_async(
         self,
         *,
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: AnthropicParams | None = None,
@@ -124,7 +122,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
@@ -134,7 +132,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
     async def structured_call_async(
         self,
         *,
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -146,7 +144,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
@@ -157,7 +155,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
     def stream(
         self,
         *,
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: AnthropicParams | None = None,
@@ -168,7 +166,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
@@ -178,7 +176,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
     def structured_stream(
         self,
         *,
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -190,7 +188,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
@@ -201,7 +199,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
     async def stream_async(
         self,
         *,
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: AnthropicParams | None = None,
@@ -212,7 +210,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: AnthropicParams | None = None,
@@ -222,7 +220,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
     async def structured_stream_async(
         self,
         *,
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -234,7 +232,7 @@ class AnthropicClient(BaseClient[AnthropicParams, ANTHROPIC_REGISTERED_LLMS]):
         self,
         *,
         ctx: Context[DepsT],
-        model: ANTHROPIC_REGISTERED_LLMS,
+        model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],

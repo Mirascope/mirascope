@@ -5,25 +5,27 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Literal, overload
 
 from typing_extensions import Unpack
 
-from ..clients import BaseClient, BaseParams
 from .base import LLM
 
 if TYPE_CHECKING:
     from ..clients import (
-        ANTHROPIC_REGISTERED_LLMS,
-        GOOGLE_REGISTERED_LLMS,
-        OPENAI_REGISTERED_LLMS,
-        REGISTERED_LLMS,
         AnthropicClient,
+        AnthropicModel,
         AnthropicParams,
+        BaseClient,
+        BaseParams,
         GoogleClient,
+        GoogleModel,
         GoogleParams,
+        Model,
         OpenAIClient,
+        OpenAIModel,
         OpenAIParams,
+        Provider,
     )
     from ..models import (
         Anthropic,
@@ -37,8 +39,9 @@ MODEL_CONTEXT: ContextVar[LLM | None] = ContextVar("MODEL_CONTEXT", default=None
 @overload
 @contextmanager
 def model(
-    id: ANTHROPIC_REGISTERED_LLMS,
     *,
+    provider: Literal["anthropic"],
+    model: AnthropicModel,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> Iterator[Anthropic]:
@@ -49,8 +52,9 @@ def model(
 @overload
 @contextmanager
 def model(
-    id: GOOGLE_REGISTERED_LLMS,
     *,
+    provider: Literal["google"],
+    model: GoogleModel,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> Iterator[Google]:
@@ -61,8 +65,9 @@ def model(
 @overload
 @contextmanager
 def model(
-    id: OPENAI_REGISTERED_LLMS,
     *,
+    provider: Literal["openai"],
+    model: OpenAIModel,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> Iterator[OpenAI]:
@@ -73,8 +78,9 @@ def model(
 @overload
 @contextmanager
 def model(
-    id: REGISTERED_LLMS,
     *,
+    provider: Provider,
+    model: Model,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
 ) -> Iterator[LLM]:
@@ -84,8 +90,9 @@ def model(
 
 @contextmanager
 def model(
-    id: REGISTERED_LLMS,
     *,
+    provider: Provider,
+    model: Model,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
 ) -> Iterator[LLM]:
@@ -98,7 +105,8 @@ def model(
     This is useful for overriding the default model at runtime.
 
     Args:
-        id: The id of the model in format "provider:name" (e.g., "openai:gpt-4").
+        provider: The name of the provider to use (e.g. "openai")
+        model: The name of the model to use, (e.g. "gpt-4o-mini")
         client: Optional custom client to use for API requests. If not provided, a
             default client will be created.
         **params: Optional parameters for the model (temperature, max_tokens, etc.).
@@ -111,12 +119,15 @@ def model(
         ```python
         from mirascope import llm
 
-        @llm.call("openai:gpt-4.1-nano")
+        @llm.call(
+            provider="openai",
+            model="gpt-4.1-nano",
+        )
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
         # Run the call with a different model from the default
-        with llm.model("anthropic:claude-3-5-sonnet-latest"):
+        with llm.model(provider="anthropic", model="claude-3-5-sonnet-latest"):
             response: llm.Response = answer_question("What is the capital of France?")
             print(response.content)
         ```

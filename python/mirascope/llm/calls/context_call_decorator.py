@@ -2,14 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, overload
+from typing import TYPE_CHECKING, Literal, Protocol, overload
 
 from typing_extensions import Unpack
 
-from ..clients import (
-    BaseClient,
-    BaseParams,
-)
 from ..prompts import (
     AsyncContextPrompt,
     ContextPrompt,
@@ -20,7 +16,19 @@ from .context_call import AsyncContextCall, ContextCall
 
 if TYPE_CHECKING:
     from ..clients import (
-        REGISTERED_LLMS,
+        AnthropicClient,
+        AnthropicModel,
+        AnthropicParams,
+        BaseClient,
+        BaseParams,
+        GoogleClient,
+        GoogleModel,
+        GoogleParams,
+        Model,
+        OpenAIClient,
+        OpenAIModel,
+        OpenAIParams,
+        Provider,
     )
 
 
@@ -80,63 +88,67 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
         raise NotImplementedError()
 
 
-# @overload
-# def context_call(
-#     model: ANTHROPIC_REGISTERED_LLMS,
-#     *,
-#     tools: list[ContextToolT] | None = None,
-#     format: type[FormatT] | None = None,
-#     client: AnthropicClient | None = None,
-#     **params: Unpack[AnthropicParams],
-# ) -> ContextCallDecorator[ContextToolT, FormatT]:
-#     """Decorate a context prompt into a ContextCall using Anthropic models."""
-#     ...
+@overload
+def context_call(
+    *,
+    provider: Literal["anthropic"],
+    model: AnthropicModel,
+    tools: list[ContextToolT] | None = None,
+    format: type[FormatT] | None = None,
+    client: AnthropicClient | None = None,
+    **params: Unpack[AnthropicParams],
+) -> ContextCallDecorator[..., ContextToolT, FormatT]:
+    """Decorate a context prompt into a ContextCall using Anthropic models."""
+    ...
 
 
-# @overload
-# def context_call(
-#     model: GOOGLE_REGISTERED_LLMS,
-#     *,
-#     tools: list[ContextToolT] | None = None,
-#     format: type[FormatT] | None = None,
-#     client: GoogleClient | None = None,
-#     **params: Unpack[GoogleParams],
-# ) -> ContextCallDecorator[ContextToolT, FormatT]:
-#     """Decorate a context prompt into a ContextCall using Google models."""
-#     ...
+@overload
+def context_call(
+    *,
+    provider: Literal["google"],
+    model: GoogleModel,
+    tools: list[ContextToolT] | None = None,
+    format: type[FormatT] | None = None,
+    client: GoogleClient | None = None,
+    **params: Unpack[GoogleParams],
+) -> ContextCallDecorator[..., ContextToolT, FormatT]:
+    """Decorate a context prompt into a ContextCall using Google models."""
+    ...
 
 
-# @overload
-# def context_call(
-#     model: OPENAI_REGISTERED_LLMS,
-#     *,
-#     tools: list[ContextToolT] | None = None,
-#     format: type[FormatT] | None = None,
-#     client: OpenAIClient | None = None,
-#     **params: Unpack[OpenAIParams],
-# ) -> ContextCallDecorator[ContextToolT, FormatT]:
-#     """Decorate a context prompt into a ContextCall using OpenAI models."""
-#     ...
+@overload
+def context_call(
+    *,
+    provider: Literal["openai"],
+    model: OpenAIModel,
+    tools: list[ContextToolT] | None = None,
+    format: type[FormatT] | None = None,
+    client: OpenAIClient | None = None,
+    **params: Unpack[OpenAIParams],
+) -> ContextCallDecorator[..., ContextToolT, FormatT]:
+    """Decorate a context prompt into a ContextCall using OpenAI models."""
+    ...
 
 
-# @overload
-# def context_call(
-#     model: REGISTERED_LLMS,
-#     *,
-#     tools: list[ContextToolT] | None = None,
-#     format: type[FormatT] | None = None,
-#     client: None = None,
-#     **params: Unpack[BaseParams],
-# ) -> ContextCallDecorator[ContextToolT, FormatT]:
-#     """Decorate a context prompt into a ContextCall using any registered model."""
-#     ...
+@overload
+def context_call(
+    *,
+    provider: Provider,
+    model: Model,
+    tools: list[ContextToolT] | None = None,
+    format: type[FormatT] | None = None,
+    client: None = None,
+    **params: Unpack[BaseParams],
+) -> ContextCallDecorator[..., ContextToolT, FormatT]:
+    """Decorate a context prompt into a ContextCall using any registered model."""
+    ...
 
 
 def context_call(
-    model: REGISTERED_LLMS,
     *,
+    provider: Provider,
+    model: Model,
     tools: list[ContextToolT] | None = None,
-    deps_type: type[DepsT] | type[None] | None = None,
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
@@ -158,7 +170,10 @@ def context_call(
 
         personality = Personality(vibe="snarky")
 
-        @llm.context_call("openai:gpt-4o-mini")
+        @llm.context_call(
+            provider="openai",
+            model="gpt-4o-mini",
+        )
         def answer_question(ctx: llm.Context[Personality], question: str) -> str:
             return f"Your vibe is {ctx.deps.vibe}. Answer this question: {question}. "
 

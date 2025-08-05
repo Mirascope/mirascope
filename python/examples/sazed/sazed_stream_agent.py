@@ -1,7 +1,10 @@
 from mirascope import llm
 
 
-@llm.agent(model="openai:gpt-4o-mini")
+@llm.agent(
+    provider="openai",
+    model="gpt-4o-mini",
+)
 def sazed():
     return """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of

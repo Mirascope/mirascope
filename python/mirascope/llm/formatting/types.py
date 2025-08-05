@@ -97,7 +97,11 @@ class Format(Generic[FormatT]):
           title: str
           author: str
 
-      @llm.call("openai:gpt-4o", format=Book)
+      @llm.call(
+          provider="openai",
+          model="gpt-4o-mini",
+          format=Book,
+      )
       def recommend_book(genre: str) -> list[llm.Message]:
           return [
               llm.messages.system("You are a helpful assistant."),

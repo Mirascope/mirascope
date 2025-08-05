@@ -10,7 +10,7 @@ from .base_response import BaseResponse
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
-    from ..clients import REGISTERED_LLMS
+    from ..clients import Model, Provider
 
 
 class Response(BaseResponse[FormatT]):
@@ -22,7 +22,8 @@ class Response(BaseResponse[FormatT]):
     def __init__(
         self,
         *,
-        model: "REGISTERED_LLMS",
+        provider: "Provider",
+        model: "Model",
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason,
@@ -37,6 +38,7 @@ class Response(BaseResponse[FormatT]):
             raw: The raw response from the LLM.
             finish_reason: The reason why the LLM finished generating a response.
         """
+        self.provider = provider
         self.model = model
         self.raw = raw
         self.finish_reason = finish_reason

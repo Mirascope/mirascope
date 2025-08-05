@@ -16,7 +16,7 @@ from ..streams import AsyncStream, Stream
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 if TYPE_CHECKING:
-    from ..clients import REGISTERED_LLMS
+    from ..clients import Model, Provider
 
 from ..context import DepsT
 from ..formatting import FormatT
@@ -31,8 +31,11 @@ class LLM(Generic[ParamsT, ClientT]):
     streaming, and async variants by delegating to the appropriate client methods.
     """
 
-    model: REGISTERED_LLMS
-    """The model being used (e.g. `openai:gpt-4o-mini`)"""
+    provider: Provider
+    """The provider being used (e.g. `openai`)."""
+
+    model: Model
+    """The model being used (e.g. `gpt-4o-mini`)."""
 
     params: ParamsT
     """The default parameters for the model (temperature, max_tokens, etc.)."""

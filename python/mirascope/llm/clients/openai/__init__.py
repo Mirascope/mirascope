@@ -1,7 +1,7 @@
 """OpenAI client implementation."""
 
 from .client import OpenAIClient
+from .models import OpenAIModel
 from .params import OpenAIParams
-from .registered_llms import OPENAI_REGISTERED_LLMS
 
-__all__ = ["OPENAI_REGISTERED_LLMS", "OpenAIClient", "OpenAIParams"]
+__all__ = ["OpenAIClient", "OpenAIModel", "OpenAIParams"]

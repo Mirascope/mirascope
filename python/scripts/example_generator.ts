@@ -182,14 +182,13 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
   private get function_decorator(): string {
     const tools_param = this.tools ? " tools=[search_coppermind]," : "";
     const format_param = this.structured ? " format=KeeperEntry," : "";
-    const args =
-      tools_param || format_param ? `, ${tools_param}${format_param}` : "";
+    const args = tools_param + format_param;
     const decorator = this.agent
       ? "agent"
       : this.context
       ? "context_call"
       : "call";
-    return `@llm.${decorator}(model="openai:gpt-4o-mini"${args})`;
+    return `@llm.${decorator}(provider="openai", model="gpt-4o-mini",${args})`;
   }
 
   private get function_def(): string {

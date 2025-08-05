@@ -21,7 +21,8 @@ def test_response_initialization_with_text_content():
 
     # Create response
     response = Response(
-        model="openai:gpt-4o-mini",
+        provider="openai",
+        model="gpt-4o-mini",
         input_messages=input_messages,
         assistant_message=assistant_message,
         raw={"test": "response"},
@@ -29,7 +30,8 @@ def test_response_initialization_with_text_content():
     )
 
     # Verify basic attributes
-    assert response.model == "openai:gpt-4o-mini"
+    assert response.provider == "openai"
+    assert response.model == "gpt-4o-mini"
     assert response.raw == {"test": "response"}
     assert response.finish_reason == FinishReason.END_TURN
 
@@ -63,7 +65,8 @@ def test_response_initialization_with_mixed_content():
 
     # Create response
     response = Response(
-        model="openai:gpt-4o-mini",
+        provider="openai",
+        model="gpt-4o-mini",
         input_messages=input_messages,
         assistant_message=assistant_message,
         raw={"test": "response"},
@@ -91,7 +94,8 @@ def test_response_initialization_with_empty_input_messages():
 
     # Create response with empty input messages
     response = Response(
-        model="openai:gpt-4o-mini",
+        provider="openai",
+        model="gpt-4o-mini",
         input_messages=[],
         assistant_message=assistant_message,
         raw={"test": "response"},
@@ -110,7 +114,8 @@ def test_response_format_method_not_implemented():
     assistant_message = llm.messages.assistant(text_content)
 
     response = Response(
-        model="openai:gpt-4o-mini",
+        provider="openai",
+        model="gpt-4o-mini",
         input_messages=[],
         assistant_message=assistant_message,
         raw={"test": "response"},
@@ -137,7 +142,8 @@ def test_response_with_different_finish_reasons():
 
     for finish_reason in finish_reasons:
         response = Response(
-            model="openai:gpt-4o-mini",
+            provider="openai",
+            model="gpt-4o-mini",
             input_messages=[],
             assistant_message=assistant_message,
             raw={"test": "response"},

@@ -2,14 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol, overload
+from typing import TYPE_CHECKING, Literal, Protocol, overload
 
 from typing_extensions import Unpack
 
-from ..clients import (
-    BaseClient,
-    BaseParams,
-)
 from ..prompts import (
     AsyncPrompt,
     Prompt,
@@ -21,7 +17,19 @@ from .call import AsyncCall, Call
 
 if TYPE_CHECKING:
     from ..clients import (
-        REGISTERED_LLMS,
+        AnthropicClient,
+        AnthropicModel,
+        AnthropicParams,
+        BaseClient,
+        BaseParams,
+        GoogleClient,
+        GoogleModel,
+        GoogleParams,
+        Model,
+        OpenAIClient,
+        OpenAIModel,
+        OpenAIParams,
+        Provider,
     )
 
 
@@ -49,61 +57,66 @@ class CallDecorator(Protocol[ToolT, FormatT]):
         raise NotImplementedError()
 
 
-# @overload
-# def call(
-#     model: ANTHROPIC_REGISTERED_LLMS,
-#     *,
-#     tools: list[ToolT] | None = None,
-#     format: type[FormatT] | None = None,
-#     client: AnthropicClient | None = None,
-#     **params: Unpack[AnthropicParams],
-# ) -> CallDecorator[ToolT, FormatT]:
-#     """Decorate a prompt into a Call using Anthropic models."""
-#     ...
+@overload
+def call(
+    *,
+    provider: Literal["anthropic"],
+    model: AnthropicModel,
+    tools: list[ToolT] | None = None,
+    format: type[FormatT] | None = None,
+    client: AnthropicClient | None = None,
+    **params: Unpack[AnthropicParams],
+) -> CallDecorator[ToolT, FormatT]:
+    """Decorate a prompt into a Call using Anthropic models."""
+    ...
 
 
-# @overload
-# def call(
-#     model: GOOGLE_REGISTERED_LLMS,
-#     *,
-#     tools: list[ToolT] | None = None,
-#     format: type[FormatT] | None = None,
-#     client: GoogleClient | None = None,
-#     **params: Unpack[GoogleParams],
-# ) -> CallDecorator[ToolT, FormatT]:
-#     """Decorate a prompt into a Call using Google models."""
-#     ...
+@overload
+def call(
+    *,
+    provider: Literal["google"],
+    model: GoogleModel,
+    tools: list[ToolT] | None = None,
+    format: type[FormatT] | None = None,
+    client: GoogleClient | None = None,
+    **params: Unpack[GoogleParams],
+) -> CallDecorator[ToolT, FormatT]:
+    """Decorate a prompt into a Call using Google models."""
+    ...
 
 
-# @overload
-# def call(
-#     model: OPENAI_REGISTERED_LLMS,
-#     *,
-#     tools: list[ToolT] | None = None,
-#     format: type[FormatT] | None = None,
-#     client: OpenAIClient | None = None,
-#     **params: Unpack[OpenAIParams],
-# ) -> CallDecorator[ToolT, FormatT]:
-#     """Decorate a prompt into a Call using OpenAI models."""
-#     ...
+@overload
+def call(
+    *,
+    provider: Literal["openai"],
+    model: OpenAIModel,
+    tools: list[ToolT] | None = None,
+    format: type[FormatT] | None = None,
+    client: OpenAIClient | None = None,
+    **params: Unpack[OpenAIParams],
+) -> CallDecorator[ToolT, FormatT]:
+    """Decorate a prompt into a Call using OpenAI models."""
+    ...
 
 
-# @overload
-# def call(
-#     model: REGISTERED_LLMS,
-#     *,
-#     tools: list[ToolT] | None = None,
-#     format: type[FormatT] | None = None,
-#     client: None = None,
-#     **params: Unpack[BaseParams],
-# ) -> CallDecorator[ToolT, FormatT]:
-#     """Decorate a prompt into a Call using any registered model."""
-#     ...
+@overload
+def call(
+    *,
+    provider: Provider,
+    model: Model,
+    tools: list[ToolT] | None = None,
+    format: type[FormatT] | None = None,
+    client: None = None,
+    **params: Unpack[BaseParams],
+) -> CallDecorator[ToolT, FormatT]:
+    """Decorate a prompt into a Call using any registered model."""
+    ...
 
 
 def call(
-    model: REGISTERED_LLMS,
     *,
+    provider: Provider,
+    model: Model,
     tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
@@ -116,7 +129,10 @@ def call(
         ```python
         from mirascope import llm
 
-        @llm.call("openai:gpt-4o-mini")
+        @llm.call(
+            provider="openai",
+            model="gpt-4o-mini",
+        )
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
