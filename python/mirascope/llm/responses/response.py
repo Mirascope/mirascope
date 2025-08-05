@@ -1,8 +1,16 @@
 """Concrete LLM response implementation."""
 
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any
+
+from ..content import Text, ToolCall
 from ..formatting import FormatT
+from ..messages import AssistantMessage, Message
 from .base_response import BaseResponse
 from .finish_reason import FinishReason
+
+if TYPE_CHECKING:
+    from ..clients import REGISTERED_LLMS
 
 
 class Response(BaseResponse[FormatT]):
@@ -10,3 +18,56 @@ class Response(BaseResponse[FormatT]):
 
     finish_reason: FinishReason
     """The reason why the LLM finished generating a response."""
+
+    def __init__(
+        self,
+        *,
+        model: "REGISTERED_LLMS",
+        input_messages: Sequence[Message],
+        assistant_message: AssistantMessage,
+        finish_reason: FinishReason,
+        raw: Any,  # noqa: ANN401
+    ) -> None:
+        """Initialize a Response.
+
+        Args:
+            model: The model identifier that generated the response.
+            input_messages: The message history before the final assistant message.
+            assistant_message: The final assistant message containing the response content.
+            raw: The raw response from the LLM.
+            finish_reason: The reason why the LLM finished generating a response.
+        """
+        self.model = model
+        self.raw = raw
+        self.finish_reason = finish_reason
+
+        self.messages = list(input_messages) + [assistant_message]
+        self.content = assistant_message.content
+
+        self.texts, self.tool_calls, self.thinkings = [], [], []
+        for part in self.content:
+            if isinstance(part, Text):
+                self.texts.append(part)
+            elif isinstance(part, ToolCall):
+                self.tool_calls.append(part)
+            else:
+                self.thinkings.append(part)
+
+    def format(self) -> FormatT:
+        """Format the response according to the response format parser.
+
+        It will parse the response content according to the specified format (if present)
+        and return a structured object.
+
+        Returns:
+            The formatted response object of type FormatT.
+
+        Raises:
+            ValueError: If the response cannot be formatted according to the
+                specified format.
+        """
+        raise NotImplementedError()
+
+    def pretty(self) -> str:
+        """Return a string representation of all response content."""
+        raise NotImplementedError()

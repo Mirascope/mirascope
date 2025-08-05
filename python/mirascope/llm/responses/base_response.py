@@ -1,13 +1,12 @@
 """Base interface for LLM responses."""
 
+from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Generic
 
 from ..content import AssistantContentPart, Text, Thinking, ToolCall
 from ..formatting import FormatT
 from ..messages import Message
-from .usage import Usage
 
 if TYPE_CHECKING:
     from ..clients import (
@@ -15,21 +14,14 @@ if TYPE_CHECKING:
     )
 
 
-@dataclass
-class BaseResponse(Generic[FormatT]):
+class BaseResponse(ABC, Generic[FormatT]):
     """Base class for LLM responses."""
 
     model: "REGISTERED_LLMS"
     """The model identifier that generated the response (e.g. "openai:gpt-4", "anthropic:claude-3-5-sonnet-latest")."""
 
-    args: dict[str, Any]
-    """The arguments used to generate the response."""
-
     messages: list[Message]
     """The message history, including the most recent assistant message."""
-
-    template: str | None
-    """The string template used to define the messages array, if any."""
 
     raw: Any
     """The raw response from the LLM."""
@@ -46,9 +38,7 @@ class BaseResponse(Generic[FormatT]):
     thinkings: Sequence[Thinking]
     """The thinking content in the generated response, if any."""
 
-    usage: Usage | None
-    """The token usage statistics for this response, if available."""
-
+    @abstractmethod
     def format(self) -> FormatT:
         """Format the response according to the response format parser.
 
