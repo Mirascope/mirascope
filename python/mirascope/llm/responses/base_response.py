@@ -60,4 +60,13 @@ class BaseResponse(ABC, Generic[FormatT]):
 
     def pretty(self) -> str:
         """Return a string representation of all response content."""
-        raise NotImplementedError()
+        if self.tool_calls:
+            raise NotImplementedError(
+                "Pretty printing with tool calls not yet implemented"
+            )
+        if self.thinkings:
+            raise NotImplementedError(
+                "Pretty printing with thinking content not yet implemented"
+            )
+
+        return "\n".join(text.text for text in self.texts)

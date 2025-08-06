@@ -69,7 +69,3 @@ class Response(BaseResponse[FormatT]):
                 specified format.
         """
         raise NotImplementedError()
-
-    def pretty(self) -> str:
-        """Return a string representation of all response content."""
-        raise NotImplementedError()

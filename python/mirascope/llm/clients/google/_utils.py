@@ -41,7 +41,7 @@ def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict
 def _decode_content_part(part: genai_types.Part) -> list[AssistantContentPart]:
     """Convert Google Part to mirascope AssistantContentPart."""
     if part.text:
-        return [Text(text=part.text)]
+        return [Text(text=part.text.strip("\n"))]
     elif part.video_metadata:
         raise NotImplementedError("Support for video metadata not implemented.")
     elif part.thought:

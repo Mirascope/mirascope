@@ -73,10 +73,10 @@ def test_call_simple_message(google_client):
             "finish_reason": FinishReason.END_TURN,
             "messages": [
                 UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
-                AssistantMessage(content=[Text(text="Hi!\n")]),
+                AssistantMessage(content=[Text(text="Hi!")]),
             ],
-            "content": [Text(text="Hi!\n")],
-            "texts": [Text(text="Hi!\n")],
+            "content": [Text(text="Hi!")],
+            "texts": [Text(text="Hi!")],
             "tool_calls": [],
             "thinkings": [],
         }
@@ -109,10 +109,10 @@ def test_call_with_system_message(google_client):
                     )
                 ),
                 UserMessage(content=[Text(text="What is the capital of France?")]),
-                AssistantMessage(content=[Text(text="Hello world\n")]),
+                AssistantMessage(content=[Text(text="Hello world")]),
             ],
-            "content": [Text(text="Hello world\n")],
-            "texts": [Text(text="Hello world\n")],
+            "content": [Text(text="Hello world")],
+            "texts": [Text(text="Hello world")],
             "tool_calls": [],
             "thinkings": [],
         }

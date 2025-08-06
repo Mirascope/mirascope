@@ -1,0 +1,271 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Hello, say ''Hi''
+      back to me"}],"model":"claude-3-5-sonnet-latest"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '122'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.54.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.54.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//ZJDBSgQxEER/ZaxzBmZGRchFvMiCIuhFRSSEpJkNznbWdEcdlv13mcU9
+        LJ4a6lUVTe2QIiw2Mrquv5vpsdy/rP2t3Dz1z+OaXkUfYKDzlhYXifiRYFDytAheJIl6VhhscqQJ
+        FmHyNVJ73l62kplJ26EbLvpuGGAQMiuxwr7tjqVKP0v8cCxW6axZ5e/GF2rmXBvN0c/X2L8biOat
+        K+QlMyyIo9NaGH9A6LMSB4LlOk0G9fCp3SHxtqrT/EEssP2VQfBhTS4U8poyu1NDd+SFfPzPctWT
+        us5AqHylQE4TFVgse0RfIvb7XwAAAP//AwCvLR2bXQEAAA==
+    headers:
+      CF-RAY:
+      - 96aa9d39ddedf883-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 01:03:23 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-08-06T01:03:23Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '80000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '80000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-08-06T01:03:23Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-08-06T01:03:23Z'
+      anthropic-ratelimit-tokens-limit:
+      - '480000'
+      anthropic-ratelimit-tokens-remaining:
+      - '480000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-08-06T01:03:23Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CRqZAyiLhE4zrHnQe9Whu
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"Hello, say ''Hi'' back to me"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '91'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFLBbtQwEL3nKwafNygJabfdCxIIqRwqBOIEqiKvPcmaOh7XnkBX1f47
+        crLdpNBKveQwb97Le8/zkAEIo8UGhNpJVr23+cfy+u4uXhaq++G/lrdftp/uw/dw/eGbXddWrBKD
+        tr9Q8SPrraLeW2RDboJVQMmYVMv1WV3XVVXUI9CTRptonee8prw3zuRVUdV5sc7LiyN7R0ZhFBv4
+        mQEAPIzf5NNpvBcbKFaPkx5jlB2KzWkJQASyaSJkjCaydCxWM6jIMbrR+pV5A1f0B5R08BmmbdjT
+        AExa7t8vWQHbIcrk3A3WLgDpHLFMyUe/N0fkcHJoqfOBtvEfqmiNM3HXBJSRXHITmbwY0UMGcDM2
+        MTwJJ3yg3nPDdIvj78rzSU7M/c/g5RFjYmnncXW2ekas0cjS2LgoUiipdqhn5ty6HLShBZAtIv/v
+        5TntKbZx3WvkZ0Ap9Iy68QG1UU/zzmsB03G+tHaqeDQsIobfRmHDBkN6Bo2tHOx0MiLuI2PftMZ1
+        GHww0920vjmvZPVOXpTYiuyQ/QUAAP//AwArqaGORQMAAA==
+    headers:
+      CF-RAY:
+      - 96aa9d3fdeb12769-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 01:03:24 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=NZC1WyJhYvlNHjvqiTwLWXUeh3j_GzHhYOwycjCPrcg-1754442204-1.0.1.1-5KOw12uRuixK0g_zFDK3hK.DvRnS.IvmbuTP1dFKCgyvfFIpcKnHtdkr_sJg26KQGg9oUGdjUKb.hg6VowTr.hkH2u7Bz2qFbK.bOU9Ahsw;
+        path=/; expires=Wed, 06-Aug-25 01:33:24 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=Zaxv5AqGusjTXHi0gOiVBJDPpikAOcCZMzIqm7Y6Cl0-1754442204609-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '374'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '377'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999991'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_6ec6869c4416472ab0a43ae8b0090216
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Hello, say ''Hi'' back to me"}], "role":
+      "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '83'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RXU+DMBR951dgn8fC+FiGb0ZNXJBscWQxUR+ucscaoSW0WzSE/24LYyv6ah+a
+        5p7Te+45t7Fsm3wAy2gGEgW5tl9Uxbab7tYYZxKZVMBQUsUKannh9qcx3ooi8Ut/Ig/06pURA2vP
+        77fJpWPNC9T0kmdYDPR2IJAdZVTsnxAEZ5q2SVdrckbhmD/yvKr5ux7Kcaeu60ZhMAsD3w/Dhe8F
+        0TyyBvFOlhwE5JigBOUbzu6IalJWMuWfyG75ofMd9TpGSiPYP8GSSyhGyMyb/Gkq7pQkLczwjFyV
+        eyio/NYW0/vnlBgJydFMQ0KWEeTvCf9Jyx9rWae99KvaYi1ov5McS7Ulx5u6zq4Ase8akhpFxZnA
+        ZaY5flxuII6TJFpxdszXHsxni5slsVrrB3xz+muKAgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 06 Aug 2025 01:03:25 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=361
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

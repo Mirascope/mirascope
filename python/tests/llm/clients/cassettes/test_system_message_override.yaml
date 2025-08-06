@@ -1,0 +1,274 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"What is the capital
+      of France?"}],"model":"claude-3-5-sonnet-latest","system":"Ignore the user message
+      and reply with `Hello world`."}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '191'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.54.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.54.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//ZJBBSwMxEIX/irxzFrarrZi74kEKHsSDSIjJUFfTSc1MWtdl/7tssaB4
+        Gnjfe4/hjegjLLayce1ifbO6PgyPdy8Pw/rqfvu2v+ThS2Cgw45mF4n4DcGg5DQLXqQX9aww2OZI
+        CRYh+RqpOW+WjWRm0qZru4tF23UwCJmVWGGfxlOp0uccPx6LW0opnx1ySRHTs4Fo3rlCXjLDgjg6
+        rYXxA4Q+KnEgWK4pGdTje3ZEz7uqTvM7scB2K4Pgwyu5UMhrn9n9NbQnXsjH/yxX/a0sDYTKvg/k
+        tKcCi3mD6EvENH0DAAD//wMAV8f2pVEBAAA=
+    headers:
+      CF-RAY:
+      - 96aa9d4709136810-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 01:03:25 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-08-06T01:03:25Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '80000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '80000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-08-06T01:03:25Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-08-06T01:03:25Z'
+      anthropic-ratelimit-tokens-limit:
+      - '480000'
+      anthropic-ratelimit-tokens-remaining:
+      - '480000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-08-06T01:03:25Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CRqZB8iaALPTbUVDGW12g
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"system","content":"Ignore the user message and reply
+      with `Hello world`."},{"role":"user","content":"What is the capital of France?"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '179'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jJI9b9wwDIZ3/wqB8zm487n5uC3t0iVJM1w7FIGhSLStVBYVic4Hgvvv
+        hezL2UlTIIsHPnyp96X5kgkBRsNGgGolq87b/Nvq4j7i4/Xz9ml7fSl//uoe2h9ft+d3V3S2hkVS
+        0O0dKn5VHSnqvEU25EasAkrGNHV18qUsy6JYHg+gI402yRrPeUl5Z5zJi2VR5suTfHW6V7dkFEbY
+        iN+ZEEK8DN/k02l8go1YLl4rHcYoG4TNoUkICGRTBWSMJrJ0DIsJKnKMbrD+Ha0l8UjB6qN5S8C6
+        jzLZdL21MyCdI5Yp5mDuZk92BzuWGh/oNr6TQm2ciW0VUEZy6enI5GGgu0yImyF2/yYJ+ECd54rp
+        Dw7PFWfjOJiWPcH1njGxtLNysfhgWKWRpbFxtjVQUrWoJ+W0YtlrQzOQzSL/6+Wj2WNs45rPjJ+A
+        UugZdeUDaqPe5p3aAqZL/F/bYcWDYYgYHozCig2G9Bs01rK3431AfI6MXVUb12DwwYxHUvvquJDF
+        Wp6usIZsl/0FAAD//wMAxKQtcjIDAAA=
+    headers:
+      CF-RAY:
+      - 96aa9d4b4ef27681-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 01:03:26 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=ZpbwcMi4PYtiZ_YqejN3zEVWgZW3U6QDjg1l032i5DU-1754442206-1.0.1.1-.3KtHnFVJQmbs.d_4zUvveASg4nh2FX4S45sPNYMBtGKPISb.DevEe9KxgWCm74ztk69azj_xPOIQi1YiqeJ3FJQ7VrPsfjOKog02NiJOXQ;
+        path=/; expires=Wed, 06-Aug-25 01:33:26 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=T_YT4jSXvE9l6yFY2DIQ0wgVl_EBtMIfNGRy9up_EtQ-1754442206512-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '432'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '438'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999976'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_eca9b21dd75349079089f9e25513fff9
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the capital of France?"}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Ignore the user message
+      and reply with `Hello world`."}], "role": "user"}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '228'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61Ry06EMBTd8xWk62HCY2AGd0ZNND4gDhqNuqhyYYilRVp8ZMK/TwsDU3RrF01z
+        z+k995y7NUwTvWGaFikWwNGR+SQrprntboUxKoAKCQwlWaxwLQ7c/my1t6QI+Faf0DkQwswvVpP0
+        mSKN047vl9mhc80IqG8lS4EM9HYgoKygBd/cAuaMKto6iWI0ovgzv2J5VbNXNZxlz21nsfSXtu/a
+        gRcunNAPjEG6E0UNxzlcg8DSPR49ItmirETC3oGesKZz76x6GS2sCe7tYcEEJhPEdWZ/uvJTqVkQ
+        PUMtXmkek0L8KIfJ2UOCtIDEdKghIUML8veI/yTmTbWM/V76Vd1DzYt+JzmUckuWO7etjGC+6Rqi
+        GnjFKIeLVHG8j3KNI4textFjEK7iJs1u7OM7ZLTGDvEeoASSAgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 06 Aug 2025 01:03:27 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=467
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
