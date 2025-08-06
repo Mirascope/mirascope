@@ -21,17 +21,20 @@ from ...types import Jsonable
 from .params import ParamsT
 
 ModelT = TypeVar("ModelT", bound=str)
+ProviderClientT = TypeVar("ProviderClientT")
 
 ClientT = TypeVar("ClientT", bound="BaseClient")
 """Type variable for an LLM client."""
 
 
-class BaseClient(Generic[ParamsT, ModelT], ABC):
+class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
     the need for complex overloads in provider implementations.
     """
+
+    client: ProviderClientT
 
     @abstractmethod
     def call(
