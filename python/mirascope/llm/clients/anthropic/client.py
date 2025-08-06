@@ -13,7 +13,8 @@ from ...streams import AsyncStream, Stream
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
 from ..base import BaseClient
-from .converter import AnthropicConverter
+from ..base import _utils as _base_utils
+from . import _utils
 from .models import AnthropicModel
 from .params import AnthropicParams
 
@@ -46,24 +47,17 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        # Convert messages to MessageParam format
-        system_message, converted_messages = AnthropicConverter.encode_messages(
+        system_message, remaining_messages = _base_utils.extract_system_message(
             messages
         )
 
         anthropic_response = self.client.messages.create(
             max_tokens=1024,
             model=model,
-            messages=converted_messages,
+            messages=_utils.encode_messages(remaining_messages),
             system=system_message or NotGiven(),
         )
-
-        finish_reason = AnthropicConverter.decode_finish_reason(
-            anthropic_response.stop_reason
-        )
-        assistant_message = AnthropicConverter.decode_assistant_message(
-            anthropic_response
-        )
+        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
 
         return Response(
             provider="anthropic",
