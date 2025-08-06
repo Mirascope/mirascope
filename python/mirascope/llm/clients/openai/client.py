@@ -21,10 +21,8 @@ from .models import OpenAIModel
 from .params import OpenAIParams
 
 
-class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel]):
+class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     """The client for the OpenAI LLM model."""
-
-    client: OpenAI
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | httpx.URL | None = None

@@ -18,10 +18,8 @@ from .models import AnthropicModel
 from .params import AnthropicParams
 
 
-class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel]):
+class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     """The client for the Anthropic LLM model."""
-
-    client: Anthropic
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | httpx.URL | None = None

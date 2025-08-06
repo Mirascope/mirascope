@@ -24,10 +24,8 @@ from .model import GoogleModel
 from .params import GoogleParams
 
 
-class GoogleClient(BaseClient[GoogleParams, GoogleModel]):
+class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     """The client for the Google LLM model."""
-
-    client: Client
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
