@@ -3,7 +3,6 @@
 import os
 
 import pytest
-from anthropic.types import Message, TextBlock, Usage
 from dotenv import load_dotenv
 from inline_snapshot import snapshot
 
@@ -48,32 +47,21 @@ def test_call_simple_message(anthropic_client):
     )
 
     assert isinstance(response, llm.responses.Response)
-
-    assert response.messages == snapshot(
-        [
-            UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
-            AssistantMessage(content=[Text(text="Hi! How are you today?")]),
-        ]
-    )
-    assert response.content == snapshot([Text(text="Hi! How are you today?")])
-    assert response.finish_reason == snapshot(FinishReason.END_TURN)
-
-    assert response.raw == snapshot(
-        Message(
-            id="msg_017D2Ft64FYt2ePjarbY9f1s",
-            content=[TextBlock(text="Hi! How are you today?", type="text")],
-            model="claude-3-5-sonnet-20241022",
-            role="assistant",
-            stop_reason="end_turn",
-            type="message",
-            usage=Usage(
-                cache_creation_input_tokens=0,
-                cache_read_input_tokens=0,
-                input_tokens=17,
-                output_tokens=10,
-                service_tier="standard",
-            ),
-        )
+    response.__dict__.pop("raw")
+    assert response.__dict__ == snapshot(
+        {
+            "provider": "anthropic",
+            "model": "claude-3-5-sonnet-latest",
+            "finish_reason": FinishReason.END_TURN,
+            "messages": [
+                UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
+                AssistantMessage(content=[Text(text="Hi! How are you today?")]),
+            ],
+            "content": [Text(text="Hi! How are you today?")],
+            "texts": [Text(text="Hi! How are you today?")],
+            "tool_calls": [],
+            "thinkings": [],
+        }
     )
 
 
@@ -91,35 +79,24 @@ def test_call_with_system_message(anthropic_client):
     )
 
     assert isinstance(response, llm.responses.Response)
-
-    assert response.messages == snapshot(
-        [
-            SystemMessage(
-                content=Text(
-                    text="Ignore the user message and reply with `Hello world`."
-                )
-            ),
-            UserMessage(content=[Text(text="What is the capital of France?")]),
-            AssistantMessage(content=[Text(text="Hello world")]),
-        ]
-    )
-    assert response.content == snapshot([Text(text="Hello world")])
-    assert response.finish_reason == snapshot(FinishReason.END_TURN)
-
-    assert response.raw == snapshot(
-        Message(
-            id="msg_01EbPjNBhocqRtYk5KHFStWx",
-            content=[TextBlock(text="Hello world", type="text")],
-            model="claude-3-5-sonnet-20241022",
-            role="assistant",
-            stop_reason="end_turn",
-            type="message",
-            usage=Usage(
-                cache_creation_input_tokens=0,
-                cache_read_input_tokens=0,
-                input_tokens=26,
-                output_tokens=5,
-                service_tier="standard",
-            ),
-        )
+    response.__dict__.pop("raw")
+    assert response.__dict__ == snapshot(
+        {
+            "provider": "anthropic",
+            "model": "claude-3-5-sonnet-latest",
+            "finish_reason": FinishReason.END_TURN,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="Ignore the user message and reply with `Hello world`."
+                    )
+                ),
+                UserMessage(content=[Text(text="What is the capital of France?")]),
+                AssistantMessage(content=[Text(text="Hello world")]),
+            ],
+            "content": [Text(text="Hello world")],
+            "texts": [Text(text="Hello world")],
+            "tool_calls": [],
+            "thinkings": [],
+        }
     )
