@@ -1,20 +1,38 @@
 """Responses that stream content from LLMs."""
 
 from collections.abc import AsyncIterator, Awaitable, Iterator, Sequence
-from typing import Any, Generic, Literal, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeAlias, overload
 
 from ..content import (
     AssistantContentChunk,
     AssistantContentPart,
     Text,
+    TextChunk,
+    TextEndChunk,
+    TextStartChunk,
     Thinking,
+    ThinkingChunk,
+    ThinkingEndChunk,
+    ThinkingStartChunk,
     ToolCall,
 )
 from ..formatting import FormatT, Partial
-from ..messages import Message
+from ..messages import AssistantMessage, Message
 from ..streams import AsyncStream, Stream, StreamT
 from .base_response import BaseResponse
-from .finish_reason import FinishReason
+
+if TYPE_CHECKING:
+    from ..clients import Model, Provider
+
+
+ChunkWithRaw: TypeAlias = tuple[AssistantContentChunk, Any]
+"""A chunk paired with its raw provider data."""
+
+ChunkIterator: TypeAlias = Iterator[ChunkWithRaw]
+"""Synchronous iterator yielding chunks with raw data."""
+
+AsyncChunkIterator: TypeAlias = AsyncIterator[ChunkWithRaw]
+"""Asynchronous iterator yielding chunks with raw data."""
 
 
 class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
@@ -153,11 +171,58 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
     to avoid partial thinking blocks in the response.
     """
 
-    finish_reason: FinishReason | None
-    """The reason why the LLM finished generating a response.
+    consumed: bool = False
+    """Whether the stream has been fully consumed.
     
-    Will be None until the stream has finished streaming completely.
+    This is True after all chunks have been processed from the underlying iterator.
+    When False, more content may be available by calling the stream methods.
     """
+
+    def __init__(
+        self,
+        *,
+        provider: "Provider",
+        model: "Model",
+        input_messages: Sequence[Message],
+        chunk_iterator: ChunkIterator | AsyncChunkIterator,
+    ) -> None:
+        """Initialize the StreamResponse.
+
+        Args:
+            provider: The provider name (e.g., "anthropic", "openai")
+            model: The model identifier
+            input_messages: The input messages that were sent to the LLM
+            chunk_iterator: Iterator that yields (AssistantContentChunk, raw_data) tuples
+
+        The StreamResponse will process the tuples to build the chunks and raw lists
+        as the stream is consumed.
+        """
+
+        self.provider = provider
+        self.model = model
+
+        # Internal-only lists which we mutate (append) during chunk processing
+        self._chunks: list[AssistantContentChunk] = []
+        self._content: list[AssistantContentPart] = []
+        self._texts: list[Text] = []
+        self._thinkings: list[Thinking] = []
+        self._tool_calls: list[ToolCall] = []
+        self._raw: list[Any] = []
+
+        # Externally-facing references typed as immutable Sequences
+        self.chunks = self._chunks
+        self.content = self._content
+        self.texts = self._texts
+        self.thinkings = self._thinkings
+        self.tool_calls = self._tool_calls
+        self.raw = self._raw
+
+        self.finish_reason = None  # TODO: Add support for finish reason to chunks
+
+        self.messages = list(input_messages) + [AssistantMessage(content=self._content)]
+
+        self._current_content: Text | Thinking | None = None
+        self._chunk_iterator = chunk_iterator
 
     @overload
     def pretty_stream(self: "StreamResponse[Stream, FormatT]") -> Iterator[str]:
@@ -223,14 +288,14 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
     def chunk_stream(
         self: "StreamResponse[Stream, FormatT]",
     ) -> Iterator[AssistantContentChunk]:
-        """Returns a sync iterator over raw assistant chunks."""
+        """Returns a sync iterator over content chunks."""
         ...
 
     @overload
     def chunk_stream(
         self: "StreamResponse[AsyncStream, FormatT]",
     ) -> Awaitable[AsyncIterator[AssistantContentChunk]]:
-        """Returns an async iterator over raw assistant chunks."""
+        """Returns an async iterator over content chunks."""
         ...
 
     def chunk_stream(
@@ -239,13 +304,13 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
         Iterator[AssistantContentChunk]
         | Awaitable[AsyncIterator[AssistantContentChunk]]
     ):
-        """Returns an iterator that yields raw assistant chunks as they are received.
+        """Returns an iterator that yields content chunks as they are received.
 
         The return type depends on the StreamT generic parameter:
         - For StreamResponse[Stream, FormatT]: returns Iterator[AssistantContentChunk] (synchronous)
         - For StreamResponse[AsyncStream, FormatT]: returns Awaitable[AsyncIterator[AssistantContentChunk]]
 
-        This provides access to the raw chunk data including start, delta, and end chunks
+        This provides access to the Mirascope chunk data including start, delta, and end chunks
         for each content type (text, thinking, tool_call). Unlike the streams() method
         that groups chunks by content part, this yields individual chunks as they arrive.
 
@@ -258,7 +323,124 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
         the LLM), it will proceed to consume it once it has iterated through all the
         cached chunks.
         """
-        raise NotImplementedError()
+        if isinstance(self._chunk_iterator, Iterator):
+            return self._sync_chunk_stream()
+        else:
+            return self._async_chunk_stream()
+
+    def _handle_chunk(self, chunk: AssistantContentChunk) -> None:
+        if chunk.content_type == "text":
+            self._handle_text_chunk(chunk)
+        elif chunk.content_type == "thinking":
+            self._handle_thinking_chunk(chunk)
+        else:
+            raise NotImplementedError
+
+        self._chunks.append(chunk)
+
+    def _handle_text_chunk(
+        self, chunk: TextStartChunk | TextChunk | TextEndChunk
+    ) -> None:
+        if chunk.type == "text_start_chunk":
+            if self._current_content:
+                raise RuntimeError(
+                    "Received text_start_chunk while processing another chunk"
+                )
+            self._current_content = Text(text="")
+            # Text gets included in content even when unfinished.
+            self._content.append(self._current_content)
+            self._texts.append(self._current_content)
+
+        elif chunk.type == "text_chunk":
+            if self._current_content is None or self._current_content.type != "text":
+                raise RuntimeError("Received text_chunk while not processing text.")
+            self._current_content.text += chunk.delta
+
+        elif chunk.type == "text_end_chunk":
+            if self._current_content is None or self._current_content.type != "text":
+                raise RuntimeError("Received text_end_chunk while not processing text.")
+            self._current_content = None
+
+    def _handle_thinking_chunk(
+        self, chunk: ThinkingStartChunk | ThinkingChunk | ThinkingEndChunk
+    ) -> None:
+        if chunk.type == "thinking_start_chunk":
+            if self._current_content:
+                raise RuntimeError(
+                    "Received thinking_start_chunk while processing another chunk"
+                )
+            new_thinking = Thinking(thinking="", signature=None)
+            self._current_content = new_thinking
+
+        elif chunk.type == "thinking_chunk":
+            if (
+                self._current_content is None
+                or self._current_content.type != "thinking"
+            ):
+                raise RuntimeError(
+                    "Received thinking_chunk while not processing thinking."
+                )
+            self._current_content.thinking += chunk.delta
+
+        elif chunk.type == "thinking_end_chunk":
+            if (
+                self._current_content is None
+                or self._current_content.type != "thinking"
+            ):
+                raise RuntimeError(
+                    "Received thinking_end_chunk while not processing thinking."
+                )
+            # Only add to content and thinkings when complete
+            self._current_content.signature = chunk.signature
+            self._content.append(self._current_content)
+            self._thinkings.append(self._current_content)
+            self._current_content = None
+
+    def _sync_chunk_stream(self) -> Iterator[AssistantContentChunk]:
+        """Synchronous implementation of chunk_stream."""
+        if not isinstance(self._chunk_iterator, Iterator):
+            raise TypeError(
+                "Expected Iterator for synchronous streaming"
+            )  # pragma: no cover
+
+        for chunk in self.chunks:
+            yield chunk
+
+        if self.consumed:
+            return
+
+        for chunk, raw_data in self._chunk_iterator:
+            self._handle_chunk(chunk)
+            self._raw.append(raw_data)
+            yield chunk
+
+        self.consumed = True
+
+    async def _async_chunk_stream(
+        self,
+    ) -> AsyncIterator[AssistantContentChunk]:
+        """Asynchronous implementation of chunk_stream."""
+
+        async def generator() -> AsyncIterator[AssistantContentChunk]:
+            if isinstance(self._chunk_iterator, Iterator):
+                raise TypeError(
+                    "Expected AsyncIterator for asynchronous streaming"
+                )  # pragma: no cover
+
+            for chunk in self.chunks:
+                yield chunk
+
+            if self.consumed:
+                return
+
+            async for chunk, raw_data in self._chunk_iterator:
+                self._handle_chunk(chunk)
+                self._raw.append(raw_data)
+                yield chunk
+
+            self.consumed = True
+
+        return generator()
 
     @overload
     def structured_stream(
