@@ -45,7 +45,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        system_message, remaining_messages = _base_utils.extract_system_message(
+        system_message_content, remaining_messages = _base_utils.extract_system_message(
             messages
         )
 
@@ -53,8 +53,9 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             max_tokens=1024,
             model=model,
             messages=_utils.encode_messages(remaining_messages),
-            system=system_message or NotGiven(),
+            system=system_message_content or NotGiven(),
         )
+
         assistant_message, finish_reason = _utils.decode_response(anthropic_response)
 
         return Response(

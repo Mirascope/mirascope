@@ -20,13 +20,13 @@ def extract_system_message(
     This is intended for use in clients where the system message is not included in the
     input messages, but passed as an additional argument or metadata.
     """
-    system_message = None
+    system_message_content = None
     remaining_messages = []
 
     for i, message in enumerate(messages):
         if message.role == "system":
             if i == 0:
-                system_message = message.content.text
+                system_message_content = message.content.text
             else:
                 logging.warning(
                     "Skipping system message at index %d because it is not the first message",
@@ -35,4 +35,4 @@ def extract_system_message(
         else:
             remaining_messages.append(message)
 
-    return system_message, remaining_messages
+    return system_message_content, remaining_messages

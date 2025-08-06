@@ -62,15 +62,14 @@ def encode_messages(
 
 def decode_response(
     response: anthropic_types.Message,
-) -> tuple[AssistantMessage, FinishReason]:
+) -> tuple[AssistantMessage, FinishReason | None]:
     """Convert Anthropic message to mirascope AssistantMessage."""
     assistant_message = assistant(
         content=[_decode_assistant_content(part) for part in response.content]
     )
-    if response.stop_reason:
-        finish_reason = ANTHROPIC_FINISH_REASON_MAP.get(
-            response.stop_reason, FinishReason.UNKNOWN
-        )
-    else:
-        finish_reason = FinishReason.UNKNOWN  # pragma: no cover
+    finish_reason = (
+        ANTHROPIC_FINISH_REASON_MAP.get(response.stop_reason, FinishReason.UNKNOWN)
+        if response.stop_reason
+        else None
+    )
     return assistant_message, finish_reason

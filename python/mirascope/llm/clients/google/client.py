@@ -55,14 +55,13 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        system_message, remaining_messages = _base_utils.extract_system_message(
+        system_message_content, remaining_messages = _base_utils.extract_system_message(
             messages
         )
 
         config = None
-        if system_message:
-            config = GenerateContentConfig(system_instruction=system_message)
-
+        if system_message_content:
+            config = GenerateContentConfig(system_instruction=system_message_content)
         google_response = self.client.models.generate_content(
             model=model,
             contents=_utils.encode_messages(remaining_messages),
