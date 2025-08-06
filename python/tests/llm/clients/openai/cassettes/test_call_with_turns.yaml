@@ -1,0 +1,112 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Be as concise as possible"},{"role":"user","content":"Recommend
+      a book"},{"role":"assistant","content":"What genre would you like?"},{"role":"user","content":"Something
+      about the fall of the Roman Empire"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '270'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4xTwU4bMRC95ytGvnAhKJtsCcqtammJWjhUcCpoNbFnswbbY9mTQoT492odYENL
+        pV72MG/e2zdvxo8jAGWNWoDSHYr20Y0/Vd/Pph9b/W07uVp6c3J+sby8Xdbd+cWymqnDnsGrW9Ly
+        wjrS7KMjsRx2sE6EQr1qNf9Q17Pjqp4UwLMh19PWUcY1j70NdjydTOvxZD6uTp7ZHVtNWS3g5wgA
+        4LF8e5/B0INaQNEqFU8545rU4rUJQCV2fUVhzjYLBlGHA6g5CIVifQmJNHtPwcC1uuwIzmwWTlvg
+        FqQj+Eza2UCAwcAXdO6l/oM9Bjj10Sa6VrDawqm5x2Tgq12tOBzBUg4yIGjXW9Bwz+kOpEMBekBv
+        A+Ui06IWThkcobFhDcKlTEX3IINm5zBmOtr3n6jdZOwzDBvn9gAMgQX7HZTkbp6Rp9esHK9j4lX+
+        g6paG2zumkSYOfS5ZOGoCvo0ArgpO9m8iVnFxD5KI3xH5Xd1tZNTwyUM4Oz4GRQWdEN9Pj98R60x
+        JGhd3tup0qg7MgNzOADcGMt7wGhv5r/NvKe9m9uG9f/ID4DWFIVMExMZq98OPLQl6t/Jv9peMy6G
+        Vab0y2pqxFLq92CoxY3bXa/K2yzkm9aGNaWY7O6E29gcT3E6w5OKWjV6Gv0GAAD//wMAUyWEntAD
+        AAA=
+    headers:
+      CF-RAY:
+      - 96aa09325ba7ebab-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 05 Aug 2025 23:22:21 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=P78ZrZ2dNJHIdcashzmgDd6OWUUGsXFnBnpKwyAHYTw-1754436141-1.0.1.1-Jm_elPXBCmQWj1nXY1bK.BhNK5gt4hu.izTXpzprdVIBJBlRrahNE7812o.D0bT7Gz3HHPm48r7tuwLHyImAFcKCCu7s9Uu1UqbZ.oqNEig;
+        path=/; expires=Tue, 05-Aug-25 23:52:21 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=Up529ouxp92ZKjy5ru2S0G4loKGbKlMM_AoEPlWg0gA-1754436141258-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '995'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '998'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999967'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_63fd442325b76a446c77646d5f308002
+    status:
+      code: 200
+      message: OK
+version: 1
