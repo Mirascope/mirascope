@@ -2,6 +2,12 @@
 
 from collections.abc import Sequence
 
+from google.genai import Client
+from google.genai.types import (
+    GenerateContentConfig,
+    HttpOptions,
+)
+
 from ...context import Context, DepsT
 from ...formatting import FormatT
 from ...messages import Message
@@ -13,12 +19,29 @@ from ...streams import AsyncStream, Stream
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
 from ..base import BaseClient
+from ..base import _utils as _base_utils
+from . import _utils
 from .model import GoogleModel
 from .params import GoogleParams
 
 
 class GoogleClient(BaseClient[GoogleParams, GoogleModel]):
     """The client for the Google LLM model."""
+
+    client: Client
+
+    def __init__(
+        self, *, api_key: str | None = None, base_url: str | None = None
+    ) -> None:
+        """Initialize the GoogleClient with optional API key and base URL.
+
+        If api_key is not set, Google will look for it in env as "GOOGLE_API_KEY".
+        """
+        http_options = None
+        if base_url:
+            http_options = HttpOptions(base_url=base_url)
+
+        self.client = Client(api_key=api_key, http_options=http_options)
 
     def call(
         self,
@@ -28,7 +51,36 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel]):
         tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
     ) -> Response[None]:
-        raise NotImplementedError
+        """Make a call to the Google GenAI API."""
+        if tools:
+            raise NotImplementedError("tool use not yet supported")
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        system_message, remaining_messages = _base_utils.extract_system_message(
+            messages
+        )
+
+        config = None
+        if system_message:
+            config = GenerateContentConfig(system_instruction=system_message)
+
+        google_response = self.client.models.generate_content(
+            model=model,
+            contents=_utils.encode_messages(remaining_messages),
+            config=config,
+        )
+
+        assistant_message, finish_reason = _utils.decode_response(google_response)
+
+        return Response(
+            provider="google",
+            model=model,
+            raw=google_response,
+            input_messages=messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+        )
 
     def context_call(
         self,

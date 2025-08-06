@@ -2,5 +2,14 @@
 
 from typing import Literal, TypeAlias
 
-GoogleModel: TypeAlias = Literal["google:gemini-2.5-flash"] | str
+GoogleModel: TypeAlias = (
+    Literal[
+        "gemini-2.5-pro",
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+    ]
+    | str
+)
 """The Google models registered with Mirascope."""
