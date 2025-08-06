@@ -84,9 +84,7 @@ def decode_response(response: ChatCompletion) -> tuple[AssistantMessage, FinishR
     assistant_message = assistant(
         content=[_decode_assistant_content(choice.message.content or "")]
     )
-    finish_reason = FinishReason.UNKNOWN
-    if choice.finish_reason:
-        finish_reason = OPENAI_FINISH_REASON_MAP.get(
-            choice.finish_reason, FinishReason.UNKNOWN
-        )
+    finish_reason = OPENAI_FINISH_REASON_MAP.get(
+        choice.finish_reason, FinishReason.UNKNOWN
+    )
     return assistant_message, finish_reason

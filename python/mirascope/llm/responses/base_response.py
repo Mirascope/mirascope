@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic
 from ..content import AssistantContentPart, Text, Thinking, ToolCall
 from ..formatting import FormatT
 from ..messages import Message
+from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
     from ..clients import (
@@ -41,6 +42,9 @@ class BaseResponse(ABC, Generic[FormatT]):
 
     thinkings: Sequence[Thinking]
     """The thinking content in the generated response, if any."""
+
+    finish_reason: FinishReason | None
+    """The reason why the LLM finished generating a response, if available."""
 
     @abstractmethod
     def format(self) -> FormatT:

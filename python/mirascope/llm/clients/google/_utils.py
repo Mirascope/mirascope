@@ -70,11 +70,23 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
         return None
 
 
+def _decode_candidate_content(
+    candidate: genai_types.Candidate,
+) -> Sequence[AssistantContentPart]:
+    """Returns a sequence of `AssistantContentPart` decoded from a google `Candidate`"""
+    content_parts = []
+    if candidate.content and candidate.content.parts:
+        for part in candidate.content.parts:
+            decoded_part = _decode_content_part(part)
+            if decoded_part:
+                content_parts.append(decoded_part)
+    return content_parts
+
+
 def _encode_message(
     message: UserMessage | AssistantMessage,
 ) -> genai_types.ContentDict:
     """Returns a Google `ContentDict` converted from a Mirascope `Message`"""
-
     return {
         "role": "model" if message.role == "assistant" else message.role,
         "parts": _encode_content(message.content),
@@ -90,24 +102,18 @@ def encode_messages(
 
 def decode_response(
     response: genai_types.GenerateContentResponse,
-) -> tuple[AssistantMessage, FinishReason]:
+) -> tuple[AssistantMessage, FinishReason | None]:
     """Returns an `AssistantMessage` and `FinishReason` extracted from a `GenerateContentResponse`"""
     if not response.candidates or not response.candidates[0].content:
         # Unclear under what circumstances this happens (if ever).
         # In testing, when generating no output at all, it creates a part with
         # no fields set.
         return assistant(content=[]), FinishReason.UNKNOWN  # pragma: no cover
-
     candidate = response.candidates[0]
-    content_parts = []
-    if candidate.content and candidate.content.parts:
-        for part in candidate.content.parts:
-            decoded_part = _decode_content_part(part)
-            if decoded_part:
-                content_parts.append(decoded_part)
-    assistant_message = assistant(content=content_parts)
-    if reason := candidate.finish_reason:
-        finish_reason = GOOGLE_FINISH_REASON_MAP.get(reason, FinishReason.UNKNOWN)
-    else:
-        finish_reason = FinishReason.UNKNOWN  # pragma: no cover
+    assistant_message = assistant(content=_decode_candidate_content(candidate))
+    finish_reason = (
+        GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason, FinishReason.UNKNOWN)
+        if candidate.finish_reason
+        else None
+    )
     return assistant_message, finish_reason
