@@ -149,7 +149,26 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         tools: Sequence[Tool] | None = None,
         params: OpenAIParams | None = None,
     ) -> StreamResponse[Stream, None]:
-        raise NotImplementedError
+        """Make a streaming call to the OpenAI API."""
+        if tools:
+            raise NotImplementedError("tool use not yet supported")
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        openai_stream = self.client.chat.completions.create(
+            model=model,
+            messages=_utils.encode_messages(messages),
+            stream=True,
+        )
+
+        return StreamResponse(
+            provider="openai",
+            model=model,
+            input_messages=messages,
+            chunk_iterator=_utils.convert_openai_stream_to_chunk_iterator(
+                openai_stream
+            ),
+        )
 
     def context_stream(
         self,
