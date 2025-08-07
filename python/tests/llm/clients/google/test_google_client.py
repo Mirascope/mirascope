@@ -15,6 +15,13 @@ from mirascope.llm import (
     Text,
     UserMessage,
 )
+from mirascope.llm.content import (
+    FinishReasonChunk,
+    TextChunk,
+    TextEndChunk,
+    TextStartChunk,
+)
+from tests.llm.responses._utils import stream_response_snapshot_dict
 
 
 @pytest.fixture(scope="module")
@@ -74,10 +81,10 @@ def test_call_simple_message(google_client):
             "finish_reason": FinishReason.END_TURN,
             "messages": [
                 UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
-                AssistantMessage(content=[Text(text="Hi!")]),
+                AssistantMessage(content=[Text(text="Hi!\n")]),
             ],
-            "content": [Text(text="Hi!")],
-            "texts": [Text(text="Hi!")],
+            "content": [Text(text="Hi!\n")],
+            "texts": [Text(text="Hi!\n")],
             "tool_calls": [],
             "thinkings": [],
         }
@@ -111,10 +118,10 @@ def test_call_with_system_message(google_client):
                     )
                 ),
                 UserMessage(content=[Text(text="What is the capital of France?")]),
-                AssistantMessage(content=[Text(text="Hello world")]),
+                AssistantMessage(content=[Text(text="Hello world\n")]),
             ],
-            "content": [Text(text="Hello world")],
-            "texts": [Text(text="Hello world")],
+            "content": [Text(text="Hello world\n")],
+            "texts": [Text(text="Hello world\n")],
             "tool_calls": [],
             "thinkings": [],
         }
@@ -152,5 +159,46 @@ def test_call_no_output(google_client):
             "texts": [],
             "tool_calls": [],
             "thinkings": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_stream_simple_message(google_client):
+    messages = [llm.messages.user("Hi! Please greet me back.")]
+
+    stream_response = google_client.stream(
+        model="gemini-2.0-flash",
+        messages=messages,
+    )
+
+    assert isinstance(stream_response, llm.responses.StreamResponse)
+    for _ in stream_response.chunk_stream():
+        ...
+
+    assert stream_response_snapshot_dict(stream_response) == snapshot(
+        {
+            "provider": "google",
+            "model": "gemini-2.0-flash",
+            "finish_reason": FinishReason.END_TURN,
+            "messages": [
+                UserMessage(content=[Text(text="Hi! Please greet me back.")]),
+                AssistantMessage(
+                    content=[Text(text="Hello there! It's nice to meet you! 😊\n")]
+                ),
+            ],
+            "content": [Text(text="Hello there! It's nice to meet you! 😊\n")],
+            "texts": [Text(text="Hello there! It's nice to meet you! 😊\n")],
+            "tool_calls": [],
+            "thinkings": [],
+            "consumed": True,
+            "chunks": [
+                TextStartChunk(type="text_start_chunk"),
+                TextChunk(delta="Hello"),
+                TextChunk(delta=" there! It"),
+                TextChunk(delta="'s nice to meet you! 😊\n"),
+                TextEndChunk(type="text_end_chunk"),
+                FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+            ],
         }
     )
