@@ -9,6 +9,7 @@ from mirascope import llm
 from mirascope.llm.content import (
     AssistantContentChunk,
     AssistantContentPart,
+    FinishReasonChunk,
     Text,
     TextChunk,
     TextEndChunk,
@@ -19,6 +20,7 @@ from mirascope.llm.content import (
     ThinkingStartChunk,
 )
 from mirascope.llm.responses import AsyncChunkIterator, ChunkIterator, StreamResponse
+from mirascope.llm.responses.finish_reason import FinishReason
 from mirascope.llm.streams import AsyncStream, Stream
 
 
@@ -442,6 +444,88 @@ class TestChunkProcessing:
                 stream_response, chunks[: i + 1], expected_content
             )
 
+    def test_sync_finish_reason_chunk_processing(
+        self,
+        example_text_chunks: list[AssistantContentChunk],
+        example_text: Text,
+    ) -> None:
+        """Test that FinishReasonChunk sets the finish_reason on the response with sync response."""
+        chunks = [
+            *example_text_chunks,
+            FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        assert stream_response.finish_reason is None
+
+        streamed_chunks = list(stream_response.chunk_stream())
+
+        assert stream_response.finish_reason == FinishReason.END_TURN
+        check_stream_response_consistency(stream_response, chunks, [example_text])
+        assert len(streamed_chunks) == 6  # 5 text chunks + 1 finish reason chunk
+        assert stream_response.consumed is True
+
+    @pytest.mark.asyncio
+    async def test_async_finish_reason_chunk_processing(
+        self,
+        example_text_chunks: list[AssistantContentChunk],
+        example_text: Text,
+    ) -> None:
+        """Test that FinishReasonChunk sets the finish_reason on the response with async response."""
+        chunks = [
+            *example_text_chunks,
+            FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+        ]
+        stream_response = create_async_stream_response(chunks)
+
+        assert stream_response.finish_reason is None
+
+        streamed_chunks = [
+            chunk async for chunk in await stream_response.chunk_stream()
+        ]
+
+        assert stream_response.finish_reason == FinishReason.END_TURN
+        check_stream_response_consistency(stream_response, chunks, [example_text])
+        assert len(streamed_chunks) == 6  # 5 text chunks + 1 finish reason chunk
+        assert stream_response.consumed is True
+
+    def test_sync_response_consumed(self) -> None:
+        """Test that response.consumed is set when the iterator is exhausted with sync response."""
+        stream_response = create_sync_stream_response(
+            [FinishReasonChunk(finish_reason=FinishReason.END_TURN)]
+        )
+        chunk_stream = stream_response.chunk_stream()
+
+        assert stream_response.finish_reason is None
+        assert stream_response.consumed is False
+
+        next(chunk_stream)
+        assert stream_response.finish_reason == FinishReason.END_TURN
+        assert stream_response.consumed is False
+
+        with pytest.raises(StopIteration):
+            next(chunk_stream)
+        assert stream_response.consumed is True
+
+    @pytest.mark.asyncio
+    async def test_async_response_consumed(self) -> None:
+        """Test that response.consumed is set when the iterator is exhausted with async response."""
+        stream_response = create_async_stream_response(
+            [FinishReasonChunk(finish_reason=FinishReason.END_TURN)]
+        )
+        chunk_stream = await stream_response.chunk_stream()
+
+        assert stream_response.finish_reason is None
+        assert stream_response.consumed is False
+
+        await anext(chunk_stream)
+        assert stream_response.finish_reason == FinishReason.END_TURN
+        assert stream_response.consumed is False
+
+        with pytest.raises(StopAsyncIteration):
+            await anext(chunk_stream)
+        assert stream_response.consumed is True
+
 
 class TestErrorHandling:
     """Test error handling in chunk processing."""
@@ -526,3 +610,44 @@ class TestErrorHandling:
 
             with pytest.raises(RuntimeError, match=expected_error):
                 [chunk async for chunk in await stream_response.chunk_stream()]
+
+    def test_sync_chunks_after_finish_reason(
+        self,
+        example_text_chunks: list[AssistantContentChunk],
+        example_thinking_chunks: list[AssistantContentChunk],
+        example_text: Text,
+    ) -> None:
+        """Test that chunks after finish reason raise RuntimeError with sync response."""
+        chunks = [
+            *example_text_chunks,
+            FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+            *example_thinking_chunks,
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        with pytest.raises(RuntimeError):
+            list(stream_response.chunk_stream())
+
+        assert stream_response.finish_reason == FinishReason.END_TURN
+        check_stream_response_consistency(stream_response, chunks[:6], [example_text])
+
+    @pytest.mark.asyncio
+    async def test_async_chunks_after_finish_reason(
+        self,
+        example_text_chunks: list[AssistantContentChunk],
+        example_thinking_chunks: list[AssistantContentChunk],
+        example_text: Text,
+    ) -> None:
+        """Test that chunks after finish reason raise RuntimeError with async response."""
+        chunks = [
+            *example_text_chunks,
+            FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+            *example_thinking_chunks,
+        ]
+        stream_response = create_async_stream_response(chunks)
+
+        with pytest.raises(RuntimeError):
+            [chunk async for chunk in await stream_response.chunk_stream()]
+
+        assert stream_response.finish_reason == FinishReason.END_TURN
+        check_stream_response_consistency(stream_response, chunks[:6], [example_text])

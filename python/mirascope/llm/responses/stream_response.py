@@ -329,7 +329,13 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
             return self._async_chunk_stream()
 
     def _handle_chunk(self, chunk: AssistantContentChunk) -> None:
-        if chunk.content_type == "text":
+        if self.finish_reason is not None:
+            raise RuntimeError(
+                f"Stream already finished with reason: {self.finish_reason}"
+            )
+        if chunk.type == "finish_reason_chunk":
+            self.finish_reason = chunk.finish_reason
+        elif chunk.content_type == "text":
             self._handle_text_chunk(chunk)
         elif chunk.content_type == "thinking":
             self._handle_thinking_chunk(chunk)
