@@ -20,7 +20,10 @@ from mirascope.llm.content import (
     TextEndChunk,
     TextStartChunk,
 )
-from tests.llm.responses._utils import stream_response_snapshot_dict
+from tests.llm.responses.utils import (
+    response_snapshot_dict,
+    stream_response_snapshot_dict,
+)
 
 
 @pytest.fixture(scope="module")
@@ -55,8 +58,7 @@ def test_call_simple_message(openai_client):
 
     assert isinstance(response, llm.responses.Response)
 
-    response.__dict__.pop("raw")
-    assert response.__dict__ == snapshot(
+    assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
@@ -92,8 +94,7 @@ def test_call_with_system_message(openai_client):
 
     assert isinstance(response, llm.responses.Response)
 
-    response.__dict__.pop("raw")
-    assert response.__dict__ == snapshot(
+    assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
@@ -132,8 +133,7 @@ def test_call_with_turns(openai_client):
 
     assert isinstance(response, llm.responses.Response)
 
-    response.__dict__.pop("raw")
-    assert response.__dict__ == snapshot(
+    assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
