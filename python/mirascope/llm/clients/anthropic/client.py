@@ -3,7 +3,7 @@
 from collections.abc import Sequence
 
 import httpx
-from anthropic import Anthropic, NotGiven
+from anthropic import Anthropic
 
 from ...context import Context, DepsT
 from ...formatting import FormatT
@@ -13,7 +13,6 @@ from ...streams import AsyncStream, Stream
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
 from ..base import BaseClient
-from ..base import _utils as _base_utils
 from . import _utils
 from .models import AnthropicModel
 from .params import AnthropicParams
@@ -45,15 +44,12 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        system_message_content, remaining_messages = _base_utils.extract_system_message(
-            messages
-        )
-
+        anthropic_messages, system = _utils.prepare_anthropic_request(messages)
         anthropic_response = self.client.messages.create(
             max_tokens=1024,
             model=model,
-            messages=_utils.encode_messages(remaining_messages),
-            system=system_message_content or NotGiven(),
+            messages=anthropic_messages,
+            system=system,
         )
 
         assistant_message, finish_reason = _utils.decode_response(anthropic_response)
@@ -159,15 +155,12 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        system_message_content, remaining_messages = _base_utils.extract_system_message(
-            messages
-        )
-
+        anthropic_messages, system = _utils.prepare_anthropic_request(messages)
         anthropic_stream = self.client.messages.stream(
             max_tokens=1024,
             model=model,
-            messages=_utils.encode_messages(remaining_messages),
-            system=system_message_content or NotGiven(),
+            messages=anthropic_messages,
+            system=system,
         )
 
         return StreamResponse(
