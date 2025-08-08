@@ -1,0 +1,215 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"What is 1337 *
+      4242? Please use the multiply_numbers tool."}],"model":"claude-3-5-sonnet-latest","tools":[{"name":"multiply_numbers","description":"Multiply
+      two numbers together.","input_schema":{"type":"object","properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '407'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.54.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.54.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//ZJHRT8IwEMb/leVefOnMGAjYN0I0SHgwMfKgMU3pTrbQtWN3Bcmy/91s
+        BhV9anrfd7+7r22gyEBCSVuVDBZH8zJelrScz6ar8dNhHe5vH+9AAJ8q7FxIpLcIAmpvu4ImKoi1
+        YxBQ+gwtSDBWhwzjYXwTk3cOOU6TdDRI0hQEGO8YHYN8bc5Qxo+uvT8kPFxZG+Voq+jkQ1QGy0Vl
+        TxHnnjByodxgTVGgwm0jzvHboM4Se2+voRU/eO+tCtQt3Sft7kElg+nueZabsJvtV5PlJl9ztnif
+        H0GA02Wf9Q+563dVYJANaJCD4XAiYANylI7Stn0TQOwrVaMm7y7H9gLhPqAzCNIFawWE/iFl8wVV
+        7HfoqKcJMNrkqEyNmgvv1KUjOes16uy/5gP/rkwnAgjrQ2FQcYE1SOj+K9N1Bm37CQAA//8DADBU
+        qyL9AQAA
+    headers:
+      CF-RAY:
+      - 96c1a5988e05ec9c-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 08 Aug 2025 20:08:41 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-08-08T20:08:38Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '80000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '80000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-08-08T20:08:41Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-08-08T20:08:38Z'
+      anthropic-ratelimit-tokens-limit:
+      - '480000'
+      anthropic-ratelimit-tokens-remaining:
+      - '480000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-08-08T20:08:38Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CRvr87UaLVJovfiEwh9cV
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"What is 1337 *
+      4242? Please use the multiply_numbers tool."},{"role":"assistant","content":[{"type":"text","text":"I''ll
+      help you multiply those numbers using the multiply_numbers tool."},{"type":"tool_use","id":"toolu_018kUAhcukAqL7JbhVtdHfCw","name":"multiply_numbers","input":{"a":1337,"b":4242}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_018kUAhcukAqL7JbhVtdHfCw","content":"42"}]}],"model":"claude-3-5-sonnet-latest","tools":[{"name":"multiply_numbers","description":"Multiply
+      two numbers together.","input_schema":{"type":"object","properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '760'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.54.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.54.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//ZJBRSwMxEIT/SpjnnFxz1wr5Az4L6oMiR8xt22BucyYbtZb+d7liQfFp
+        Yb6ZgZ0jwgiLqeyGdrVx2+7Rsfla3d6k7Wbq75P/eICGHGZaXFSK2xE0coqL4EoJRRwLNKY0UoSF
+        j66O1HTNuimJmaQxrelXrTHQ8ImFWGCfjpdSoc8lfj4Wd3tSmUqNotJWTTVKmOMh8E6tuu5avRxU
+        b3qjQlG9ucLpWaNImodMriSGBfE4SM2MH1DorRJ7guUao0Y9P2CPCDxXGSS9EhfYtek0vPN7Gnwm
+        JyHx8NfRXngmN/5nqcpvxRiNQvk9eBokUIbFstPo8ojT6RsAAP//AwBMuzd4dQEAAA==
+    headers:
+      CF-RAY:
+      - 96c1a5abde15ec9c-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 08 Aug 2025 20:08:42 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-08-08T20:08:42Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '80000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '80000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-08-08T20:08:42Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-08-08T20:08:41Z'
+      anthropic-ratelimit-tokens-limit:
+      - '480000'
+      anthropic-ratelimit-tokens-remaining:
+      - '480000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-08-08T20:08:42Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CRvr8LeLUygiLgkyAG4hk
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+version: 1
