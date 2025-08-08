@@ -3,7 +3,14 @@
 from functools import cached_property
 from typing import Any, ClassVar, cast
 
-from chromadb import Collection, EphemeralClient, HttpClient, Metadata, PersistentClient
+from chromadb import (
+    CloudClient,
+    Collection,
+    EphemeralClient,
+    HttpClient,
+    Metadata,
+    PersistentClient,
+)
 from chromadb.api import ClientAPI
 
 from ..base.document import Document
@@ -22,11 +29,24 @@ class ChromaVectorStore(BaseVectorStore):
     from mirascope.beta.rag import TextChunker
 
 
+    # Local persistent storage
     class MyStore(ChromaVectorStore):
         embedder = OpenAIEmbedder()
         chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
         index_name = "my-store-0001"
         client_settings = ChromaSettings()
+
+    # Cloud mode with CloudClient authentication
+    class MyCloudStore(ChromaVectorStore):
+        embedder = OpenAIEmbedder()
+        chunker = TextChunker(chunk_size=1000, chunk_overlap=200)
+        index_name = "my-cloud-store-0001"
+        client_settings = ChromaSettings(
+            mode="cloud",
+            api_key="your-api-key",
+            tenant="your-tenant",
+            database="your-database",
+        )
 
     my_store = MyStore()
     with open(f"{PATH_TO_FILE}") as file:
@@ -82,6 +102,10 @@ class ChromaVectorStore(BaseVectorStore):
             return HttpClient(**self.client_settings.kwargs())
         elif self.client_settings.mode == "ephemeral":
             return EphemeralClient(**self.client_settings.kwargs())
+        elif self.client_settings.mode == "cloud":
+            return CloudClient(**self.client_settings.kwargs())
+        else:
+            raise ValueError(f"Unsupported client mode: {self.client_settings.mode}")
 
     @cached_property
     def _index(self) -> Collection:
@@ -93,5 +117,5 @@ class ChromaVectorStore(BaseVectorStore):
 
         return self._client.create_collection(
             **vectorstore_params.kwargs(),
-            embedding_function=self.embedder,
+            embedding_function=self.embedder,  # type: ignore[arg-type]
         )

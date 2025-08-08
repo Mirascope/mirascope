@@ -2,9 +2,9 @@
 
 from typing import Any, Literal
 
-from chromadb import CollectionMetadata, Settings
+from chromadb import CollectionMetadata
 from chromadb.api.types import URI, Document, IDs, Loadable, Metadata
-from chromadb.config import DEFAULT_DATABASE, DEFAULT_TENANT
+from chromadb.config import DEFAULT_DATABASE, DEFAULT_TENANT, Settings
 from chromadb.types import Vector
 from pydantic import BaseModel, ConfigDict
 
@@ -29,7 +29,7 @@ class ChromaQueryResult(BaseModel):
 
 
 class ChromaSettings(BaseModel):
-    mode: Literal["http", "persistent", "ephemeral"] = "persistent"
+    mode: Literal["http", "persistent", "ephemeral", "cloud"] = "persistent"
     path: str = "./chroma"
     host: str = "localhost"
     port: int = 8000
@@ -38,17 +38,22 @@ class ChromaSettings(BaseModel):
     settings: Settings | None = None
     tenant: str = DEFAULT_TENANT
     database: str = DEFAULT_DATABASE
+    api_key: str | None = None
 
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     def kwargs(self) -> dict[str, Any]:
         """Returns all parameters for the index as a keyword arguments dictionary."""
         if self.mode == "http":
-            exclude = {"mode", "path"}
+            exclude = {"mode", "path", "api_key"}
         elif self.mode == "persistent":
-            exclude = {"mode", "host", "port", "ssl", "headers"}
+            exclude = {"mode", "host", "port", "ssl", "headers", "api_key"}
         elif self.mode == "ephemeral":
-            exclude = {"mode", "host", "port", "ssl", "headers", "path"}
+            exclude = {"mode", "host", "port", "ssl", "headers", "path", "api_key"}
+        elif self.mode == "cloud":
+            exclude = {"mode", "path", "host", "port", "ssl", "headers"}
+        else:
+            exclude = {"mode"}
         kwargs = {
             key: value
             for key, value in self.model_dump(exclude=exclude).items()
