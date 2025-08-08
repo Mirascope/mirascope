@@ -1,16 +1,22 @@
 """Google message types and conversion utilities."""
 
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 
 from google.genai import types as genai_types
+from google.genai.types import GenerateContentConfig
 
 from ...content import (
     AssistantContentPart,
     ContentPart,
+    FinishReasonChunk,
     Text,
+    TextChunk,
+    TextEndChunk,
+    TextStartChunk,
 )
-from ...messages import AssistantMessage, UserMessage, assistant
-from ...responses import FinishReason
+from ...messages import AssistantMessage, Message, UserMessage, assistant
+from ...responses import ChunkIterator, FinishReason
+from ..base import _utils as _base_utils
 
 GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
     "STOP": FinishReason.END_TURN,
@@ -41,7 +47,7 @@ def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict
 def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
     """Returns an `AssistantContentPart` (or `None`) decoded from a google `Part`"""
     if part.text:
-        return Text(text=part.text.strip("\n"))
+        return Text(text=part.text)
     elif part.video_metadata:
         raise NotImplementedError("Support for video metadata not implemented.")
     elif part.thought:
@@ -93,11 +99,25 @@ def _encode_message(
     }
 
 
-def encode_messages(
+def _encode_messages(
     messages: Sequence[UserMessage | AssistantMessage],
 ) -> genai_types.ContentListUnionDict:
     """Returns a `ContentListUnionDict` converted from a sequence of user or assistant `Messages`s"""
     return [_encode_message(message) for message in messages]
+
+
+def prepare_google_request(
+    messages: Sequence[Message],
+) -> tuple[genai_types.ContentListUnionDict, GenerateContentConfig | None]:
+    system_message_content, remaining_messages = _base_utils.extract_system_message(
+        messages
+    )
+
+    config = None
+    if system_message_content:
+        config = GenerateContentConfig(system_instruction=system_message_content)
+
+    return _encode_messages(remaining_messages), config
 
 
 def decode_response(
@@ -117,3 +137,35 @@ def decode_response(
         else None
     )
     return assistant_message, finish_reason
+
+
+def convert_google_stream_to_chunk_iterator(
+    google_stream: Iterator[genai_types.GenerateContentResponse],
+) -> ChunkIterator:
+    text_started = False
+
+    for chunk in google_stream:
+        candidate = chunk.candidates[0] if chunk.candidates else None
+        if not candidate or not candidate.content or not candidate.content.parts:
+            continue  # pragma: no cover
+
+        for part in candidate.content.parts:
+            if part.thought:
+                raise NotImplementedError
+
+            elif part.text:
+                if not text_started:
+                    yield TextStartChunk(type="text_start_chunk"), chunk
+                    text_started = True
+
+                yield TextChunk(type="text_chunk", delta=part.text), chunk
+
+        if candidate.finish_reason:
+            if text_started:
+                yield TextEndChunk(type="text_end_chunk"), chunk
+                text_started = False
+
+            finish_reason = GOOGLE_FINISH_REASON_MAP.get(
+                candidate.finish_reason, FinishReason.UNKNOWN
+            )
+            yield FinishReasonChunk(finish_reason=finish_reason), chunk

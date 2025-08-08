@@ -3,10 +3,7 @@
 from collections.abc import Sequence
 
 from google.genai import Client
-from google.genai.types import (
-    GenerateContentConfig,
-    HttpOptions,
-)
+from google.genai.types import HttpOptions
 
 from ...context import Context, DepsT
 from ...formatting import FormatT
@@ -19,7 +16,6 @@ from ...streams import AsyncStream, Stream
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
 from ..base import BaseClient
-from ..base import _utils as _base_utils
 from . import _utils
 from .model import GoogleModel
 from .params import GoogleParams
@@ -55,16 +51,10 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        system_message_content, remaining_messages = _base_utils.extract_system_message(
-            messages
-        )
-
-        config = None
-        if system_message_content:
-            config = GenerateContentConfig(system_instruction=system_message_content)
+        contents, config = _utils.prepare_google_request(messages)
         google_response = self.client.models.generate_content(
             model=model,
-            contents=_utils.encode_messages(remaining_messages),
+            contents=contents,
             config=config,
         )
 
@@ -165,7 +155,26 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
     ) -> StreamResponse[Stream, None]:
-        raise NotImplementedError
+        if tools:
+            raise NotImplementedError("tool use not yet supported")
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        contents, config = _utils.prepare_google_request(messages)
+        google_stream = self.client.models.generate_content_stream(
+            model=model,
+            contents=contents,
+            config=config,
+        )
+
+        return StreamResponse(
+            provider="google",
+            model=model,
+            input_messages=messages,
+            chunk_iterator=_utils.convert_google_stream_to_chunk_iterator(
+                google_stream
+            ),
+        )
 
     def context_stream(
         self,
