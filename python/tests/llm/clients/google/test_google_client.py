@@ -11,17 +11,6 @@ from mirascope import llm
 from tests import utils
 
 
-@pytest.fixture(scope="module")
-def vcr_config() -> dict:
-    """VCR configuration for Google API tests."""
-    return {
-        "record_mode": "once",
-        "match_on": ["method", "uri", "body"],
-        "filter_headers": ["authorization", "x-goog-api-key"],
-        "filter_post_data_parameters": [],
-    }
-
-
 @pytest.fixture
 def google_client() -> llm.GoogleClient:
     """Create a GoogleClient instance with appropriate API key."""

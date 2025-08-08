@@ -10,17 +10,6 @@ from mirascope import llm
 from tests import utils
 
 
-@pytest.fixture(scope="module")
-def vcr_config() -> dict:
-    """VCR configuration for OpenAI API tests."""
-    return {
-        "record_mode": "once",
-        "match_on": ["method", "uri", "body"],
-        "filter_headers": ["authorization"],
-        "filter_post_data_parameters": [],
-    }
-
-
 @pytest.fixture
 def openai_client() -> llm.OpenAIClient:
     """Create an OpenAIClient instance with appropriate API key."""

@@ -10,17 +10,6 @@ from mirascope import llm
 from tests import utils
 
 
-@pytest.fixture(scope="module")
-def vcr_config() -> dict:
-    """VCR configuration for Anthropic API tests."""
-    return {
-        "record_mode": "once",
-        "match_on": ["method", "uri", "body"],
-        "filter_headers": ["authorization", "x-api-key", "anthropic-organization-id"],
-        "filter_post_data_parameters": [],
-    }
-
-
 @pytest.fixture
 def anthropic_client() -> llm.AnthropicClient:
     """Create an AnthropicClient instance with appropriate API key."""
