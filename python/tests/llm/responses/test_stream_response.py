@@ -394,18 +394,18 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
 
 
 class ChunkProcessingFixtureRequest(pytest.FixtureRequest):
-    param: str
-    """The ID for the test case."""
+    param: ChunkProcessingTestCase
+    """The chunk processing test case."""
 
 
 @pytest.fixture(
-    params=CHUNK_PROCESSING_TEST_CASES.keys(),
+    params=list(CHUNK_PROCESSING_TEST_CASES.values()),
     ids=list(CHUNK_PROCESSING_TEST_CASES.keys()),
 )
 def chunk_processing_test_case(
     request: ChunkProcessingFixtureRequest,
 ) -> ChunkProcessingTestCase:
-    return CHUNK_PROCESSING_TEST_CASES[request.param]
+    return request.param
 
 
 class TestChunkProcessing:
@@ -525,91 +525,106 @@ class TestChunkProcessing:
         assert stream_response.consumed is True
 
 
+@dataclass
+class InvalidChunkSequenceTestCase:
+    chunks: list[llm.AssistantContentChunk]
+    expected_error: str
+
+
+INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
+    "text_chunk_without_start": InvalidChunkSequenceTestCase(
+        chunks=[llm.TextChunk(type="text_chunk", delta="Hello")],
+        expected_error="Received text_chunk while not processing text",
+    ),
+    "text_end_without_start": InvalidChunkSequenceTestCase(
+        chunks=[llm.TextEndChunk(type="text_end_chunk")],
+        expected_error="Received text_end_chunk while not processing text",
+    ),
+    "thinking_chunk_without_start": InvalidChunkSequenceTestCase(
+        chunks=[llm.ThinkingChunk(type="thinking_chunk", delta="Hello")],
+        expected_error="Received thinking_chunk while not processing thinking",
+    ),
+    "thinking_end_without_start": InvalidChunkSequenceTestCase(
+        chunks=[llm.ThinkingEndChunk(type="thinking_end_chunk", signature=None)],
+        expected_error="Received thinking_end_chunk while not processing thinking",
+    ),
+    "overlapping_text_then_thinking": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.ThinkingStartChunk(type="thinking_start_chunk"),
+        ],
+        expected_error="while processing another chunk",
+    ),
+    "overlapping_thinking_then_text": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.ThinkingStartChunk(type="thinking_start_chunk"),
+            llm.TextStartChunk(type="text_start_chunk"),
+        ],
+        expected_error="while processing another chunk",
+    ),
+    "text_end_without_matching_start": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.ThinkingStartChunk(type="thinking_start_chunk"),
+            llm.ThinkingChunk(type="thinking_chunk", delta="test"),
+            llm.TextEndChunk(type="text_end_chunk"),
+        ],
+        expected_error="Received text_end_chunk while not processing text",
+    ),
+    "thinking_end_without_matching_start": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(type="text_chunk", delta="test"),
+            llm.ThinkingEndChunk(type="thinking_end_chunk", signature=None),
+        ],
+        expected_error="Received thinking_end_chunk while not processing thinking",
+    ),
+}
+
+
+class InvalidChunkSequenceFixtureRequest(pytest.FixtureRequest):
+    param: InvalidChunkSequenceTestCase
+    """The invalid chunk sequence test case."""
+
+
+@pytest.fixture(
+    params=list(INVALID_CHUNK_SEQUENCE_TEST_CASES.values()),
+    ids=list(INVALID_CHUNK_SEQUENCE_TEST_CASES.keys()),
+)
+def invalid_chunk_sequence_test_case(
+    request: InvalidChunkSequenceFixtureRequest,
+) -> InvalidChunkSequenceTestCase:
+    return request.param
+
+
 class TestErrorHandling:
     """Test error handling in chunk processing."""
 
-    @pytest.fixture
-    def invalid_chunk_sequences(
-        self,
-    ) -> list[tuple[list[llm.AssistantContentChunk], str]]:
-        """Test cases for invalid chunk sequences."""
-        return [
-            # Text chunk without start
-            (
-                [llm.TextChunk(type="text_chunk", delta="Hello")],
-                "Received text_chunk while not processing text",
-            ),
-            # Text end without start or delta
-            (
-                [llm.TextEndChunk(type="text_end_chunk")],
-                "Received text_end_chunk while not processing text",
-            ),
-            # Thinking chunk without start
-            (
-                [llm.ThinkingChunk(type="thinking_chunk", delta="Hello")],
-                "Received thinking_chunk while not processing thinking",
-            ),
-            # Thinking end without start or delta
-            (
-                [llm.ThinkingEndChunk(type="thinking_end_chunk", signature=None)],
-                "Received thinking_end_chunk while not processing thinking",
-            ),
-            # Overlapping chunks - start text then start thinking
-            (
-                [
-                    llm.TextStartChunk(type="text_start_chunk"),
-                    llm.ThinkingStartChunk(type="thinking_start_chunk"),
-                ],
-                "while processing another chunk",
-            ),
-            # Overlapping chunks - start thinking then start text
-            (
-                [
-                    llm.ThinkingStartChunk(type="thinking_start_chunk"),
-                    llm.TextStartChunk(type="text_start_chunk"),
-                ],
-                "while processing another chunk",
-            ),
-            # Text end without matching start
-            (
-                [
-                    llm.ThinkingStartChunk(type="thinking_start_chunk"),
-                    llm.ThinkingChunk(type="thinking_chunk", delta="test"),
-                    llm.TextEndChunk(type="text_end_chunk"),
-                ],
-                "Received text_end_chunk while not processing text",
-            ),
-            # Thinking end without matching start
-            (
-                [
-                    llm.TextStartChunk(type="text_start_chunk"),
-                    llm.TextChunk(type="text_chunk", delta="test"),
-                    llm.ThinkingEndChunk(type="thinking_end_chunk", signature=None),
-                ],
-                "Received thinking_end_chunk while not processing thinking",
-            ),
-        ]
-
-    def test_sync_invalid_chunk_sequences(
-        self, invalid_chunk_sequences: list[tuple[list[llm.AssistantContentChunk], str]]
+    def test_sync_invalid_chunk_sequence(
+        self, invalid_chunk_sequence_test_case: InvalidChunkSequenceTestCase
     ) -> None:
         """Test error handling for invalid chunk sequences with sync response."""
-        for chunks, expected_error in invalid_chunk_sequences:
-            stream_response = create_sync_stream_response(chunks)
+        stream_response = create_sync_stream_response(
+            invalid_chunk_sequence_test_case.chunks
+        )
 
-            with pytest.raises(RuntimeError, match=expected_error):
-                list(stream_response.chunk_stream())
+        with pytest.raises(
+            RuntimeError, match=invalid_chunk_sequence_test_case.expected_error
+        ):
+            list(stream_response.chunk_stream())
 
     @pytest.mark.asyncio
-    async def test_async_invalid_chunk_sequences(
-        self, invalid_chunk_sequences: list[tuple[list[llm.AssistantContentChunk], str]]
+    async def test_async_invalid_chunk_sequence(
+        self, invalid_chunk_sequence_test_case: InvalidChunkSequenceTestCase
     ) -> None:
         """Test error handling for invalid chunk sequences with async response."""
-        for chunks, expected_error in invalid_chunk_sequences:
-            stream_response = create_async_stream_response(chunks)
+        stream_response = create_async_stream_response(
+            invalid_chunk_sequence_test_case.chunks
+        )
 
-            with pytest.raises(RuntimeError, match=expected_error):
-                [chunk async for chunk in await stream_response.chunk_stream()]
+        with pytest.raises(
+            RuntimeError, match=invalid_chunk_sequence_test_case.expected_error
+        ):
+            [chunk async for chunk in await stream_response.chunk_stream()]
 
     def test_sync_chunks_after_finish_reason(
         self,
