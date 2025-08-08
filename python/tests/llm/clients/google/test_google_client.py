@@ -28,7 +28,7 @@ from tests.llm.responses.utils import (
 
 
 @pytest.fixture(scope="module")
-def vcr_config():
+def vcr_config() -> dict:
     """VCR configuration for Google API tests."""
     return {
         "record_mode": "once",
@@ -39,7 +39,7 @@ def vcr_config():
 
 
 @pytest.fixture
-def google_client():
+def google_client() -> llm.clients.GoogleClient:
     """Create a GoogleClient instance with appropriate API key."""
     # Use real API key if available, otherwise dummy key for VCR tests
     load_dotenv()
@@ -47,7 +47,7 @@ def google_client():
     return llm.clients.GoogleClient(api_key=api_key)
 
 
-def test_custom_base_url():
+def test_custom_base_url() -> None:
     """Test that custom base URL is used for API requests."""
     example_url = "https://example.com"
 
@@ -66,7 +66,7 @@ def test_custom_base_url():
 
 
 @pytest.mark.vcr()
-def test_call_simple_message(google_client):
+def test_call_simple_message(google_client: llm.clients.GoogleClient) -> None:
     """Test basic call with a simple user message."""
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
@@ -94,7 +94,7 @@ def test_call_simple_message(google_client):
 
 
 @pytest.mark.vcr()
-def test_call_with_system_message(google_client):
+def test_call_with_system_message(google_client: llm.clients.GoogleClient) -> None:
     """Test call with system and user messages."""
     messages = [
         llm.messages.system("Ignore the user message and reply with `Hello world`."),
@@ -130,7 +130,7 @@ def test_call_with_system_message(google_client):
 
 
 @pytest.mark.vcr()
-def test_call_no_output(google_client):
+def test_call_no_output(google_client: llm.clients.GoogleClient) -> None:
     """Test call where assistant generates nothing."""
     messages = [
         llm.messages.system("Do not emit ANY output, terminate immediately."),
@@ -164,7 +164,7 @@ def test_call_no_output(google_client):
 
 
 @pytest.mark.vcr()
-def test_stream_simple_message(google_client):
+def test_stream_simple_message(google_client: llm.clients.GoogleClient) -> None:
     messages = [llm.messages.user("Hi! Please greet me back.")]
 
     stream_response = google_client.stream(

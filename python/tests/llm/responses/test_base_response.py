@@ -8,6 +8,6 @@ from mirascope.llm.responses.base_response import BaseResponse
 class TestBaseResponse:
     """Test BaseResponse ABC."""
 
-    def test_base_response_is_abc(self):
+    def test_base_response_is_abc(self) -> None:
         """Test that BaseResponse is an abstract base class."""
         assert issubclass(BaseResponse, ABC)
