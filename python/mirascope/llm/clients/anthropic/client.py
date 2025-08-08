@@ -44,11 +44,12 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        anthropic_messages, system = _utils.prepare_anthropic_request(messages)
+        message_params, system = _utils.prepare_anthropic_request(messages)
+
         anthropic_response = self.client.messages.create(
             max_tokens=1024,
             model=model,
-            messages=anthropic_messages,
+            messages=message_params,
             system=system,
         )
 
@@ -155,21 +156,24 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        anthropic_messages, system = _utils.prepare_anthropic_request(messages)
+        message_params, system = _utils.prepare_anthropic_request(messages)
+
         anthropic_stream = self.client.messages.stream(
             max_tokens=1024,
             model=model,
-            messages=anthropic_messages,
+            messages=message_params,
             system=system,
+        )
+
+        chunk_iterator = _utils.convert_anthropic_stream_to_chunk_iterator(
+            anthropic_stream
         )
 
         return StreamResponse(
             provider="anthropic",
             model=model,
             input_messages=messages,
-            chunk_iterator=_utils.convert_anthropic_stream_to_chunk_iterator(
-                anthropic_stream
-            ),
+            chunk_iterator=chunk_iterator,
         )
 
     def context_stream(

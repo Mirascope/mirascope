@@ -47,9 +47,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
+        message_params = _utils.encode_messages(messages)
+
         openai_response = self.client.chat.completions.create(
             model=model,
-            messages=_utils.encode_messages(messages),
+            messages=message_params,
         )
 
         assistant_message, finish_reason = _utils.decode_response(openai_response)
@@ -155,19 +157,21 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
+        message_params = _utils.encode_messages(messages)
+
         openai_stream = self.client.chat.completions.create(
             model=model,
-            messages=_utils.encode_messages(messages),
+            messages=message_params,
             stream=True,
         )
+
+        chunk_iterator = _utils.convert_openai_stream_to_chunk_iterator(openai_stream)
 
         return StreamResponse(
             provider="openai",
             model=model,
             input_messages=messages,
-            chunk_iterator=_utils.convert_openai_stream_to_chunk_iterator(
-                openai_stream
-            ),
+            chunk_iterator=chunk_iterator,
         )
 
     def context_stream(
