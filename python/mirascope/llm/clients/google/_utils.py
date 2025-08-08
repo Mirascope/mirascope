@@ -1,6 +1,7 @@
 """Google message types and conversion utilities."""
 
 from collections.abc import Iterator, Sequence
+from typing import Literal
 
 from google.genai import types as genai_types
 from google.genai.types import GenerateContentConfig
@@ -142,7 +143,7 @@ def decode_response(
 def convert_google_stream_to_chunk_iterator(
     google_stream: Iterator[genai_types.GenerateContentResponse],
 ) -> ChunkIterator:
-    text_started = False
+    current_content_type: Literal["text"] | None = None
 
     for chunk in google_stream:
         candidate = chunk.candidates[0] if chunk.candidates else None
@@ -154,16 +155,19 @@ def convert_google_stream_to_chunk_iterator(
                 raise NotImplementedError
 
             elif part.text:
-                if not text_started:
+                if current_content_type is None:
                     yield TextStartChunk(type="text_start_chunk"), chunk
-                    text_started = True
+                    current_content_type = "text"
+                elif current_content_type != "text":
+                    raise NotImplementedError
 
                 yield TextChunk(type="text_chunk", delta=part.text), chunk
 
         if candidate.finish_reason:
-            if text_started:
+            if current_content_type == "text":
                 yield TextEndChunk(type="text_end_chunk"), chunk
-                text_started = False
+            else:
+                raise NotImplementedError
 
             finish_reason = GOOGLE_FINISH_REASON_MAP.get(
                 candidate.finish_reason, FinishReason.UNKNOWN

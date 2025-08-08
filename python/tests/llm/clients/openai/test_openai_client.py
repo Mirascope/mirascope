@@ -213,6 +213,7 @@ def test_stream_simple_message(openai_client: llm.clients.OpenAIClient) -> None:
             "consumed": True,
             "chunks": [
                 TextStartChunk(type="text_start_chunk"),
+                TextChunk(delta=""),
                 TextChunk(delta="Hello"),
                 TextChunk(delta="!"),
                 TextChunk(delta=" I'm"),
