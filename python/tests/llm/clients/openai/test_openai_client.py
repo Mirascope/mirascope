@@ -14,6 +14,13 @@ from mirascope.llm import (
     Text,
     UserMessage,
 )
+from mirascope.llm.content import (
+    FinishReasonChunk,
+    TextChunk,
+    TextEndChunk,
+    TextStartChunk,
+)
+from tests.llm.responses._utils import stream_response_snapshot_dict
 
 
 @pytest.fixture(scope="module")
@@ -158,5 +165,72 @@ def test_call_with_turns(openai_client):
             ],
             "tool_calls": [],
             "thinkings": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_stream_simple_message(openai_client):
+    """Test basic streaming with a simple user message."""
+    messages = [llm.messages.user("Hi! Please greet me back.")]
+
+    stream_response = openai_client.stream(
+        model="gpt-4o-mini",
+        messages=messages,
+    )
+
+    assert isinstance(stream_response, llm.responses.StreamResponse)
+    for _ in stream_response.chunk_stream():
+        ...
+
+    assert stream_response_snapshot_dict(stream_response) == snapshot(
+        {
+            "provider": "openai",
+            "model": "gpt-4o-mini",
+            "finish_reason": FinishReason.END_TURN,
+            "messages": [
+                UserMessage(content=[Text(text="Hi! Please greet me back.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="Hello! I'm glad to hear from you. How can I assist you today?"
+                        )
+                    ]
+                ),
+            ],
+            "content": [
+                Text(
+                    text="Hello! I'm glad to hear from you. How can I assist you today?"
+                )
+            ],
+            "texts": [
+                Text(
+                    text="Hello! I'm glad to hear from you. How can I assist you today?"
+                )
+            ],
+            "tool_calls": [],
+            "thinkings": [],
+            "consumed": True,
+            "chunks": [
+                TextStartChunk(type="text_start_chunk"),
+                TextChunk(delta="Hello"),
+                TextChunk(delta="!"),
+                TextChunk(delta=" I'm"),
+                TextChunk(delta=" glad"),
+                TextChunk(delta=" to"),
+                TextChunk(delta=" hear"),
+                TextChunk(delta=" from"),
+                TextChunk(delta=" you"),
+                TextChunk(delta="."),
+                TextChunk(delta=" How"),
+                TextChunk(delta=" can"),
+                TextChunk(delta=" I"),
+                TextChunk(delta=" assist"),
+                TextChunk(delta=" you"),
+                TextChunk(delta=" today"),
+                TextChunk(delta="?"),
+                TextEndChunk(type="text_end_chunk"),
+                FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+            ],
         }
     )
