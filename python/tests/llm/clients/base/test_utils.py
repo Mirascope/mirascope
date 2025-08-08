@@ -10,7 +10,7 @@ from mirascope.llm.messages import (
 )
 
 
-def test_encode_messages_with_system_first():
+def test_encode_messages_with_system_first() -> None:
     """Test that system message is extracted when it's first."""
     messages = [
         system("You are a helpful assistant"),
@@ -25,7 +25,7 @@ def test_encode_messages_with_system_first():
     assert remaining_messages == messages[1:]
 
 
-def test_encode_messages_no_system():
+def test_encode_messages_no_system() -> None:
     """Test encoding messages when no system message is present."""
     messages = [
         user("Hello"),
@@ -38,7 +38,7 @@ def test_encode_messages_no_system():
     assert remaining_messages == messages
 
 
-def test_encode_messages_system_not_first_warns():
+def test_encode_messages_system_not_first_warns() -> None:
     """Test that system message not at index 0 is skipped with warning."""
     messages = [
         user("Hello"),
@@ -58,7 +58,7 @@ def test_encode_messages_system_not_first_warns():
     )
 
 
-def test_encode_messages_multiple_system_warns():
+def test_encode_messages_multiple_system_warns() -> None:
     """Test that multiple system messages warn for non-first ones."""
     messages = [
         system("First system message"),
@@ -84,7 +84,7 @@ def test_encode_messages_multiple_system_warns():
     )
 
 
-def test_encode_messages_empty_list():
+def test_encode_messages_empty_list() -> None:
     """Test encoding an empty message list."""
     messages = []
 

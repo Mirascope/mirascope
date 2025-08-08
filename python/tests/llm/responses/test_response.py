@@ -7,7 +7,7 @@ from mirascope.llm.responses import Response
 from mirascope.llm.responses.finish_reason import FinishReason
 
 
-def test_response_initialization_with_text_content():
+def test_response_initialization_with_text_content() -> None:
     """Test Response initialization with text content."""
     # Create input messages
     input_messages = [
@@ -49,7 +49,7 @@ def test_response_initialization_with_text_content():
     assert len(response.thinkings) == 0
 
 
-def test_response_initialization_with_mixed_content():
+def test_response_initialization_with_mixed_content() -> None:
     """Test Response initialization with mixed content types."""
     # Create input messages
     input_messages = [llm.messages.user("Use a tool and explain")]
@@ -86,7 +86,7 @@ def test_response_initialization_with_mixed_content():
     assert response.thinkings[0].thinking == "Let me think about this"
 
 
-def test_response_initialization_with_empty_input_messages():
+def test_response_initialization_with_empty_input_messages() -> None:
     """Test Response initialization with empty input messages."""
     # Create final assistant message
     text_content = [llm.Text(text="Hello!")]
@@ -107,7 +107,7 @@ def test_response_initialization_with_empty_input_messages():
     assert response.messages[0] == assistant_message
 
 
-def test_response_format_method_not_implemented():
+def test_response_format_method_not_implemented() -> None:
     """Test that Response.format() raises NotImplementedError."""
     # Create minimal response
     text_content = [llm.Text(text="Hello!")]
@@ -126,7 +126,7 @@ def test_response_format_method_not_implemented():
         response.format()
 
 
-def test_response_with_different_finish_reasons():
+def test_response_with_different_finish_reasons() -> None:
     """Test Response with different finish reasons."""
     text_content = [llm.Text(text="Response")]
     assistant_message = llm.messages.assistant(text_content)

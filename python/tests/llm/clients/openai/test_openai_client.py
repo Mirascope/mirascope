@@ -27,7 +27,7 @@ from tests.llm.responses.utils import (
 
 
 @pytest.fixture(scope="module")
-def vcr_config():
+def vcr_config() -> dict:
     """VCR configuration for OpenAI API tests."""
     return {
         "record_mode": "once",
@@ -38,7 +38,7 @@ def vcr_config():
 
 
 @pytest.fixture
-def openai_client():
+def openai_client() -> llm.clients.OpenAIClient:
     """Create an OpenAIClient instance with appropriate API key."""
     # Use real API key if available, otherwise dummy key for VCR tests
     load_dotenv()
@@ -47,7 +47,7 @@ def openai_client():
 
 
 @pytest.mark.vcr()
-def test_call_simple_message(openai_client):
+def test_call_simple_message(openai_client: llm.clients.OpenAIClient) -> None:
     """Test basic call with a simple user message."""
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
@@ -78,7 +78,7 @@ def test_call_simple_message(openai_client):
 
 
 @pytest.mark.vcr()
-def test_call_with_system_message(openai_client):
+def test_call_with_system_message(openai_client: llm.clients.OpenAIClient) -> None:
     """Test call with system and user messages."""
     messages = [
         llm.messages.system(
@@ -117,7 +117,7 @@ def test_call_with_system_message(openai_client):
 
 
 @pytest.mark.vcr()
-def test_call_with_turns(openai_client):
+def test_call_with_turns(openai_client: llm.clients.OpenAIClient) -> None:
     """Test basic call with a simple user message."""
     messages = [
         llm.messages.system("Be as concise as possible"),
@@ -170,7 +170,7 @@ def test_call_with_turns(openai_client):
 
 
 @pytest.mark.vcr()
-def test_stream_simple_message(openai_client):
+def test_stream_simple_message(openai_client: llm.clients.OpenAIClient) -> None:
     """Test basic streaming with a simple user message."""
     messages = [llm.messages.user("Hi! Please greet me back.")]
 

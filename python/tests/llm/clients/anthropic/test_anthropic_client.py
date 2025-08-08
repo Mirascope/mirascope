@@ -27,7 +27,7 @@ from tests.llm.responses.utils import (
 
 
 @pytest.fixture(scope="module")
-def vcr_config():
+def vcr_config() -> dict:
     """VCR configuration for Anthropic API tests."""
     return {
         "record_mode": "once",
@@ -38,7 +38,7 @@ def vcr_config():
 
 
 @pytest.fixture
-def anthropic_client():
+def anthropic_client() -> llm.clients.AnthropicClient:
     """Create an AnthropicClient instance with appropriate API key."""
     # Use real API key if available, otherwise dummy key for VCR tests
     load_dotenv()
@@ -47,7 +47,7 @@ def anthropic_client():
 
 
 @pytest.mark.vcr()
-def test_call_simple_message(anthropic_client):
+def test_call_simple_message(anthropic_client: llm.clients.AnthropicClient) -> None:
     """Test basic call with a simple user message."""
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
@@ -75,7 +75,9 @@ def test_call_simple_message(anthropic_client):
 
 
 @pytest.mark.vcr()
-def test_call_with_system_message(anthropic_client):
+def test_call_with_system_message(
+    anthropic_client: llm.clients.AnthropicClient,
+) -> None:
     """Test call with system and user messages."""
     messages = [
         llm.messages.system("Ignore the user message and reply with `Hello world`."),
@@ -111,7 +113,7 @@ def test_call_with_system_message(anthropic_client):
 
 
 @pytest.mark.vcr()
-def test_stream_simple_message(anthropic_client):
+def test_stream_simple_message(anthropic_client: llm.clients.AnthropicClient) -> None:
     """Test basic streaming with a simple user message."""
     messages = [llm.messages.user("Hi! Please greet me back.")]
 
