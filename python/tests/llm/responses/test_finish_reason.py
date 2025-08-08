@@ -2,7 +2,7 @@
 
 from enum import Enum
 
-from mirascope.llm.responses.finish_reason import FinishReason
+from mirascope import llm
 
 
 class TestFinishReason:
@@ -10,31 +10,31 @@ class TestFinishReason:
 
     def test_finish_reason_is_str_enum(self) -> None:
         """Test that FinishReason is a string enum."""
-        assert issubclass(FinishReason, str)
-        assert issubclass(FinishReason, Enum)
+        assert issubclass(llm.FinishReason, str)
+        assert issubclass(llm.FinishReason, Enum)
 
     def test_finish_reason_values(self) -> None:
         """Test all FinishReason values."""
-        assert FinishReason.STOP == "stop"
-        assert FinishReason.MAX_TOKENS == "max_tokens"
-        assert FinishReason.END_TURN == "end_turn"
-        assert FinishReason.TOOL_USE == "tool_use"
-        assert FinishReason.REFUSAL == "refusal"
-        assert FinishReason.UNKNOWN == "unknown"
+        assert llm.FinishReason.STOP == "stop"
+        assert llm.FinishReason.MAX_TOKENS == "max_tokens"
+        assert llm.FinishReason.END_TURN == "end_turn"
+        assert llm.FinishReason.TOOL_USE == "tool_use"
+        assert llm.FinishReason.REFUSAL == "refusal"
+        assert llm.FinishReason.UNKNOWN == "unknown"
 
     def test_finish_reason_membership(self) -> None:
         """Test FinishReason membership."""
         all_values = [
-            FinishReason.STOP,
-            FinishReason.MAX_TOKENS,
-            FinishReason.END_TURN,
-            FinishReason.TOOL_USE,
-            FinishReason.REFUSAL,
-            FinishReason.UNKNOWN,
+            llm.FinishReason.STOP,
+            llm.FinishReason.MAX_TOKENS,
+            llm.FinishReason.END_TURN,
+            llm.FinishReason.TOOL_USE,
+            llm.FinishReason.REFUSAL,
+            llm.FinishReason.UNKNOWN,
         ]
 
         for value in all_values:
-            assert value in FinishReason
+            assert value in llm.FinishReason
 
     def test_finish_reason_iteration(self) -> None:
         """Test iterating over FinishReason values."""
@@ -47,17 +47,17 @@ class TestFinishReason:
             "unknown",
         }
 
-        actual_values = {reason.value for reason in FinishReason}
+        actual_values = {reason.value for reason in llm.FinishReason}
         assert actual_values == expected_values
 
     def test_finish_reason_count(self) -> None:
         """Test FinishReason has expected number of values."""
-        assert len(FinishReason) == 6
+        assert len(llm.FinishReason) == 6
 
     def test_finish_reason_string_behavior(self) -> None:
         """Test FinishReason string behavior."""
         # Test that we can use FinishReason values as strings
-        reason = FinishReason.STOP
+        reason = llm.FinishReason.STOP
 
         assert str(reason) == "FinishReason.STOP"  # Enum string representation
         assert reason.value == "stop"  # The actual string value
@@ -69,16 +69,16 @@ class TestFinishReason:
 
     def test_finish_reason_from_string(self) -> None:
         """Test creating FinishReason from string."""
-        assert FinishReason("stop") == FinishReason.STOP
-        assert FinishReason("max_tokens") == FinishReason.MAX_TOKENS
-        assert FinishReason("end_turn") == FinishReason.END_TURN
-        assert FinishReason("tool_use") == FinishReason.TOOL_USE
-        assert FinishReason("refusal") == FinishReason.REFUSAL
-        assert FinishReason("unknown") == FinishReason.UNKNOWN
+        assert llm.FinishReason("stop") == llm.FinishReason.STOP
+        assert llm.FinishReason("max_tokens") == llm.FinishReason.MAX_TOKENS
+        assert llm.FinishReason("end_turn") == llm.FinishReason.END_TURN
+        assert llm.FinishReason("tool_use") == llm.FinishReason.TOOL_USE
+        assert llm.FinishReason("refusal") == llm.FinishReason.REFUSAL
+        assert llm.FinishReason("unknown") == llm.FinishReason.UNKNOWN
 
     def test_finish_reason_invalid_value(self) -> None:
         """Test creating FinishReason with invalid value raises ValueError."""
         import pytest
 
         with pytest.raises(ValueError):
-            FinishReason("invalid_reason")
+            llm.FinishReason("invalid_reason")

@@ -2,21 +2,17 @@
 
 from unittest.mock import patch
 
+from mirascope import llm
 from mirascope.llm.clients.base import _utils
-from mirascope.llm.messages import (
-    assistant,
-    system,
-    user,
-)
 
 
 def test_encode_messages_with_system_first() -> None:
     """Test that system message is extracted when it's first."""
     messages = [
-        system("You are a helpful assistant"),
-        user("Hello"),
-        assistant("Hi there"),
-        user("How are you?"),
+        llm.messages.system("You are a helpful assistant"),
+        llm.messages.user("Hello"),
+        llm.messages.assistant("Hi there"),
+        llm.messages.user("How are you?"),
     ]
 
     system_message, remaining_messages = _utils.extract_system_message(messages)
@@ -28,9 +24,9 @@ def test_encode_messages_with_system_first() -> None:
 def test_encode_messages_no_system() -> None:
     """Test encoding messages when no system message is present."""
     messages = [
-        user("Hello"),
-        assistant("Hi there"),
-        user("How are you?"),
+        llm.messages.user("Hello"),
+        llm.messages.assistant("Hi there"),
+        llm.messages.user("How are you?"),
     ]
     system_message, remaining_messages = _utils.extract_system_message(messages)
 
@@ -41,9 +37,9 @@ def test_encode_messages_no_system() -> None:
 def test_encode_messages_system_not_first_warns() -> None:
     """Test that system message not at index 0 is skipped with warning."""
     messages = [
-        user("Hello"),
-        system("You are a helpful assistant"),
-        assistant("Hi there"),
+        llm.messages.user("Hello"),
+        llm.messages.system("You are a helpful assistant"),
+        llm.messages.assistant("Hi there"),
     ]
 
     with patch("logging.warning") as mock_warning:
@@ -61,10 +57,10 @@ def test_encode_messages_system_not_first_warns() -> None:
 def test_encode_messages_multiple_system_warns() -> None:
     """Test that multiple system messages warn for non-first ones."""
     messages = [
-        system("First system message"),
-        user("Hello"),
-        system("Second system message"),
-        system("Third system message"),
+        llm.messages.system("First system message"),
+        llm.messages.user("Hello"),
+        llm.messages.system("Second system message"),
+        llm.messages.system("Third system message"),
     ]
 
     with patch("logging.warning") as mock_warning:

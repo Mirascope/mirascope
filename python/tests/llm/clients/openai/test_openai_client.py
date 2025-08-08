@@ -7,19 +7,6 @@ from dotenv import load_dotenv
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from mirascope.llm import (
-    AssistantMessage,
-    FinishReason,
-    SystemMessage,
-    Text,
-    UserMessage,
-)
-from mirascope.llm.content import (
-    FinishReasonChunk,
-    TextChunk,
-    TextEndChunk,
-    TextStartChunk,
-)
 from tests.llm.responses.utils import (
     response_snapshot_dict,
     stream_response_snapshot_dict,
@@ -38,16 +25,16 @@ def vcr_config() -> dict:
 
 
 @pytest.fixture
-def openai_client() -> llm.clients.OpenAIClient:
+def openai_client() -> llm.OpenAIClient:
     """Create an OpenAIClient instance with appropriate API key."""
     # Use real API key if available, otherwise dummy key for VCR tests
     load_dotenv()
     api_key = os.getenv("OPENAI_API_KEY") or "dummy-key-for-vcr-tests"
-    return llm.clients.OpenAIClient(api_key=api_key)
+    return llm.OpenAIClient(api_key=api_key)
 
 
 @pytest.mark.vcr()
-def test_call_simple_message(openai_client: llm.clients.OpenAIClient) -> None:
+def test_call_simple_message(openai_client: llm.OpenAIClient) -> None:
     """Test basic call with a simple user message."""
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
@@ -56,21 +43,21 @@ def test_call_simple_message(openai_client: llm.clients.OpenAIClient) -> None:
         messages=messages,
     )
 
-    assert isinstance(response, llm.responses.Response)
+    assert isinstance(response, llm.Response)
 
     assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
-                AssistantMessage(
-                    content=[Text(text="Hi! How can I assist you today?")]
+                llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
+                llm.AssistantMessage(
+                    content=[llm.Text(text="Hi! How can I assist you today?")]
                 ),
             ],
-            "content": [Text(text="Hi! How can I assist you today?")],
-            "texts": [Text(text="Hi! How can I assist you today?")],
+            "content": [llm.Text(text="Hi! How can I assist you today?")],
+            "texts": [llm.Text(text="Hi! How can I assist you today?")],
             "tool_calls": [],
             "thinkings": [],
         }
@@ -78,7 +65,7 @@ def test_call_simple_message(openai_client: llm.clients.OpenAIClient) -> None:
 
 
 @pytest.mark.vcr()
-def test_call_with_system_message(openai_client: llm.clients.OpenAIClient) -> None:
+def test_call_with_system_message(openai_client: llm.OpenAIClient) -> None:
     """Test call with system and user messages."""
     messages = [
         llm.messages.system(
@@ -92,24 +79,26 @@ def test_call_with_system_message(openai_client: llm.clients.OpenAIClient) -> No
         messages=messages,
     )
 
-    assert isinstance(response, llm.responses.Response)
+    assert isinstance(response, llm.Response)
 
     assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                SystemMessage(
-                    content=Text(
+                llm.SystemMessage(
+                    content=llm.Text(
                         text="You are a cat who can only meow, and does not know anything about geography."
                     )
                 ),
-                UserMessage(content=[Text(text="What is the capital of France?")]),
-                AssistantMessage(content=[Text(text="Meow!")]),
+                llm.UserMessage(
+                    content=[llm.Text(text="What is the capital of France?")]
+                ),
+                llm.AssistantMessage(content=[llm.Text(text="Meow!")]),
             ],
-            "content": [Text(text="Meow!")],
-            "texts": [Text(text="Meow!")],
+            "content": [llm.Text(text="Meow!")],
+            "texts": [llm.Text(text="Meow!")],
             "tool_calls": [],
             "thinkings": [],
         }
@@ -117,7 +106,7 @@ def test_call_with_system_message(openai_client: llm.clients.OpenAIClient) -> No
 
 
 @pytest.mark.vcr()
-def test_call_with_turns(openai_client: llm.clients.OpenAIClient) -> None:
+def test_call_with_turns(openai_client: llm.OpenAIClient) -> None:
     """Test basic call with a simple user message."""
     messages = [
         llm.messages.system("Be as concise as possible"),
@@ -131,35 +120,39 @@ def test_call_with_turns(openai_client: llm.clients.OpenAIClient) -> None:
         messages=messages,
     )
 
-    assert isinstance(response, llm.responses.Response)
+    assert isinstance(response, llm.Response)
 
     assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                SystemMessage(content=Text(text="Be as concise as possible")),
-                UserMessage(content=[Text(text="Recommend a book")]),
-                AssistantMessage(content=[Text(text="What genre would you like?")]),
-                UserMessage(
-                    content=[Text(text="Something about the fall of the Roman Empire")]
+                llm.SystemMessage(content=llm.Text(text="Be as concise as possible")),
+                llm.UserMessage(content=[llm.Text(text="Recommend a book")]),
+                llm.AssistantMessage(
+                    content=[llm.Text(text="What genre would you like?")]
                 ),
-                AssistantMessage(
+                llm.UserMessage(
                     content=[
-                        Text(
+                        llm.Text(text="Something about the fall of the Roman Empire")
+                    ]
+                ),
+                llm.AssistantMessage(
+                    content=[
+                        llm.Text(
                             text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
                         )
                     ]
                 ),
             ],
             "content": [
-                Text(
+                llm.Text(
                     text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
                 )
             ],
             "texts": [
-                Text(
+                llm.Text(
                     text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
                 )
             ],
@@ -170,7 +163,7 @@ def test_call_with_turns(openai_client: llm.clients.OpenAIClient) -> None:
 
 
 @pytest.mark.vcr()
-def test_stream_simple_message(openai_client: llm.clients.OpenAIClient) -> None:
+def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
     """Test basic streaming with a simple user message."""
     messages = [llm.messages.user("Hi! Please greet me back.")]
 
@@ -187,24 +180,24 @@ def test_stream_simple_message(openai_client: llm.clients.OpenAIClient) -> None:
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                UserMessage(content=[Text(text="Hi! Please greet me back.")]),
-                AssistantMessage(
+                llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
+                llm.AssistantMessage(
                     content=[
-                        Text(
+                        llm.Text(
                             text="Hello! I'm glad to hear from you. How can I assist you today?"
                         )
                     ]
                 ),
             ],
             "content": [
-                Text(
+                llm.Text(
                     text="Hello! I'm glad to hear from you. How can I assist you today?"
                 )
             ],
             "texts": [
-                Text(
+                llm.Text(
                     text="Hello! I'm glad to hear from you. How can I assist you today?"
                 )
             ],
@@ -212,26 +205,26 @@ def test_stream_simple_message(openai_client: llm.clients.OpenAIClient) -> None:
             "thinkings": [],
             "consumed": True,
             "chunks": [
-                TextStartChunk(type="text_start_chunk"),
-                TextChunk(delta=""),
-                TextChunk(delta="Hello"),
-                TextChunk(delta="!"),
-                TextChunk(delta=" I'm"),
-                TextChunk(delta=" glad"),
-                TextChunk(delta=" to"),
-                TextChunk(delta=" hear"),
-                TextChunk(delta=" from"),
-                TextChunk(delta=" you"),
-                TextChunk(delta="."),
-                TextChunk(delta=" How"),
-                TextChunk(delta=" can"),
-                TextChunk(delta=" I"),
-                TextChunk(delta=" assist"),
-                TextChunk(delta=" you"),
-                TextChunk(delta=" today"),
-                TextChunk(delta="?"),
-                TextEndChunk(type="text_end_chunk"),
-                FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextChunk(delta=""),
+                llm.TextChunk(delta="Hello"),
+                llm.TextChunk(delta="!"),
+                llm.TextChunk(delta=" I'm"),
+                llm.TextChunk(delta=" glad"),
+                llm.TextChunk(delta=" to"),
+                llm.TextChunk(delta=" hear"),
+                llm.TextChunk(delta=" from"),
+                llm.TextChunk(delta=" you"),
+                llm.TextChunk(delta="."),
+                llm.TextChunk(delta=" How"),
+                llm.TextChunk(delta=" can"),
+                llm.TextChunk(delta=" I"),
+                llm.TextChunk(delta=" assist"),
+                llm.TextChunk(delta=" you"),
+                llm.TextChunk(delta=" today"),
+                llm.TextChunk(delta="?"),
+                llm.TextEndChunk(type="text_end_chunk"),
+                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
     )

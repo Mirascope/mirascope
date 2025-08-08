@@ -8,6 +8,7 @@ code that works with multiple LLM providers without changing your application lo
 from . import (
     agents,
     calls,
+    clients,
     content,
     exceptions,
     formatting,
@@ -22,16 +23,27 @@ from . import (
 )
 from .agents import Agent, AgentTemplate, AsyncAgent, AsyncAgentTemplate, agent
 from .calls import call, context_call
-from .clients import BaseClient, BaseParams
+from .clients import AnthropicClient, GoogleClient, OpenAIClient
 from .content import (
+    AssistantContentChunk,
     AssistantContentPart,
     Audio,
     Document,
+    FinishReasonChunk,
     Image,
     ImageUrl,
     Text,
+    TextChunk,
+    TextEndChunk,
+    TextStartChunk,
     Thinking,
+    ThinkingChunk,
+    ThinkingEndChunk,
+    ThinkingStartChunk,
     ToolCall,
+    ToolCallChunk,
+    ToolCallEndChunk,
+    ToolCallStartChunk,
     ToolOutput,
     UserContentPart,
 )
@@ -53,7 +65,13 @@ from .formatting import Format, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
-from .responses import FinishReason, Response, StreamResponse
+from .responses import (
+    AsyncChunkIterator,
+    ChunkIterator,
+    FinishReason,
+    Response,
+    StreamResponse,
+)
 from .streams import AsyncStream, Stream
 from .tools import Tool, context_tool, tool
 
@@ -62,26 +80,31 @@ __all__ = [
     "APIError",
     "Agent",
     "AgentTemplate",
+    "AnthropicClient",
+    "AssistantContentChunk",
     "AssistantContentPart",
     "AssistantMessage",
     "AsyncAgent",
     "AsyncAgentTemplate",
+    "AsyncChunkIterator",
     "AsyncStream",
     "Audio",
     "AuthenticationError",
     "BadRequestError",
-    "BaseClient",
-    "BaseParams",
+    "ChunkIterator",
     "ConnectionError",
     "Context",
     "Document",
     "FinishReason",
+    "FinishReasonChunk",
     "Format",
+    "GoogleClient",
     "Image",
     "ImageUrl",
     "Message",
     "MirascopeError",
     "NotFoundError",
+    "OpenAIClient",
     "Partial",
     "PermissionError",
     "RateLimitError",
@@ -92,11 +115,20 @@ __all__ = [
     "StreamResponse",
     "SystemMessage",
     "Text",
+    "TextChunk",
+    "TextEndChunk",
+    "TextStartChunk",
     "Thinking",
+    "ThinkingChunk",
+    "ThinkingEndChunk",
+    "ThinkingStartChunk",
     "TimeoutError",
     "Tool",
     "Tool",
     "ToolCall",
+    "ToolCallChunk",
+    "ToolCallEndChunk",
+    "ToolCallStartChunk",
     "ToolNotFoundError",
     "ToolOutput",
     "UserContentPart",
@@ -105,6 +137,7 @@ __all__ = [
     "agents",
     "call",
     "calls",
+    "clients",
     "content",
     "context_call",
     "context_tool",

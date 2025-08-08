@@ -3,8 +3,6 @@
 import pytest
 
 from mirascope import llm
-from mirascope.llm.responses import Response
-from mirascope.llm.responses.finish_reason import FinishReason
 
 
 def test_response_initialization_with_text_content() -> None:
@@ -20,20 +18,20 @@ def test_response_initialization_with_text_content() -> None:
     assistant_message = llm.messages.assistant(text_content)
 
     # Create response
-    response = Response(
+    response = llm.Response(
         provider="openai",
         model="gpt-4o-mini",
         input_messages=input_messages,
         assistant_message=assistant_message,
         raw={"test": "response"},
-        finish_reason=FinishReason.END_TURN,
+        finish_reason=llm.FinishReason.END_TURN,
     )
 
     # Verify basic attributes
     assert response.provider == "openai"
     assert response.model == "gpt-4o-mini"
     assert response.raw == {"test": "response"}
-    assert response.finish_reason == FinishReason.END_TURN
+    assert response.finish_reason == llm.FinishReason.END_TURN
 
     # Verify messages are correctly combined
     assert len(response.messages) == 3
@@ -64,13 +62,13 @@ def test_response_initialization_with_mixed_content() -> None:
     assistant_message = llm.messages.assistant(mixed_content)
 
     # Create response
-    response = Response(
+    response = llm.Response(
         provider="openai",
         model="gpt-4o-mini",
         input_messages=input_messages,
         assistant_message=assistant_message,
         raw={"test": "response"},
-        finish_reason=FinishReason.TOOL_USE,
+        finish_reason=llm.FinishReason.TOOL_USE,
     )
 
     # Verify content extraction by type
@@ -93,13 +91,13 @@ def test_response_initialization_with_empty_input_messages() -> None:
     assistant_message = llm.messages.assistant(text_content)
 
     # Create response with empty input messages
-    response = Response(
+    response = llm.Response(
         provider="openai",
         model="gpt-4o-mini",
         input_messages=[],
         assistant_message=assistant_message,
         raw={"test": "response"},
-        finish_reason=FinishReason.END_TURN,
+        finish_reason=llm.FinishReason.END_TURN,
     )
 
     # Verify messages contain only the final message
@@ -113,13 +111,13 @@ def test_response_format_method_not_implemented() -> None:
     text_content = [llm.Text(text="Hello!")]
     assistant_message = llm.messages.assistant(text_content)
 
-    response = Response(
+    response = llm.Response(
         provider="openai",
         model="gpt-4o-mini",
         input_messages=[],
         assistant_message=assistant_message,
         raw={"test": "response"},
-        finish_reason=FinishReason.END_TURN,
+        finish_reason=llm.FinishReason.END_TURN,
     )
 
     with pytest.raises(NotImplementedError):
@@ -132,16 +130,16 @@ def test_response_with_different_finish_reasons() -> None:
     assistant_message = llm.messages.assistant(text_content)
 
     finish_reasons = [
-        FinishReason.END_TURN,
-        FinishReason.MAX_TOKENS,
-        FinishReason.STOP,
-        FinishReason.TOOL_USE,
-        FinishReason.REFUSAL,
-        FinishReason.UNKNOWN,
+        llm.FinishReason.END_TURN,
+        llm.FinishReason.MAX_TOKENS,
+        llm.FinishReason.STOP,
+        llm.FinishReason.TOOL_USE,
+        llm.FinishReason.REFUSAL,
+        llm.FinishReason.UNKNOWN,
     ]
 
     for finish_reason in finish_reasons:
-        response = Response(
+        response = llm.Response(
             provider="openai",
             model="gpt-4o-mini",
             input_messages=[],

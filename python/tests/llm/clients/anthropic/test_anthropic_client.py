@@ -7,19 +7,6 @@ from dotenv import load_dotenv
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from mirascope.llm import (
-    AssistantMessage,
-    FinishReason,
-    SystemMessage,
-    Text,
-    UserMessage,
-)
-from mirascope.llm.content import (
-    FinishReasonChunk,
-    TextChunk,
-    TextEndChunk,
-    TextStartChunk,
-)
 from tests.llm.responses.utils import (
     response_snapshot_dict,
     stream_response_snapshot_dict,
@@ -38,16 +25,16 @@ def vcr_config() -> dict:
 
 
 @pytest.fixture
-def anthropic_client() -> llm.clients.AnthropicClient:
+def anthropic_client() -> llm.AnthropicClient:
     """Create an AnthropicClient instance with appropriate API key."""
     # Use real API key if available, otherwise dummy key for VCR tests
     load_dotenv()
     api_key = os.getenv("ANTHROPIC_API_KEY") or "dummy-key-for-vcr-tests"
-    return llm.clients.AnthropicClient(api_key=api_key)
+    return llm.AnthropicClient(api_key=api_key)
 
 
 @pytest.mark.vcr()
-def test_call_simple_message(anthropic_client: llm.clients.AnthropicClient) -> None:
+def test_call_simple_message(anthropic_client: llm.AnthropicClient) -> None:
     """Test basic call with a simple user message."""
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
@@ -56,18 +43,18 @@ def test_call_simple_message(anthropic_client: llm.clients.AnthropicClient) -> N
         messages=messages,
     )
 
-    assert isinstance(response, llm.responses.Response)
+    assert isinstance(response, llm.Response)
     assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "anthropic",
             "model": "claude-3-5-sonnet-latest",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
-                AssistantMessage(content=[Text(text="Hi! How are you today?")]),
+                llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
+                llm.AssistantMessage(content=[llm.Text(text="Hi! How are you today?")]),
             ],
-            "content": [Text(text="Hi! How are you today?")],
-            "texts": [Text(text="Hi! How are you today?")],
+            "content": [llm.Text(text="Hi! How are you today?")],
+            "texts": [llm.Text(text="Hi! How are you today?")],
             "tool_calls": [],
             "thinkings": [],
         }
@@ -76,7 +63,7 @@ def test_call_simple_message(anthropic_client: llm.clients.AnthropicClient) -> N
 
 @pytest.mark.vcr()
 def test_call_with_system_message(
-    anthropic_client: llm.clients.AnthropicClient,
+    anthropic_client: llm.AnthropicClient,
 ) -> None:
     """Test call with system and user messages."""
     messages = [
@@ -89,23 +76,25 @@ def test_call_with_system_message(
         messages=messages,
     )
 
-    assert isinstance(response, llm.responses.Response)
+    assert isinstance(response, llm.Response)
     assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "anthropic",
             "model": "claude-3-5-sonnet-latest",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                SystemMessage(
-                    content=Text(
+                llm.SystemMessage(
+                    content=llm.Text(
                         text="Ignore the user message and reply with `Hello world`."
                     )
                 ),
-                UserMessage(content=[Text(text="What is the capital of France?")]),
-                AssistantMessage(content=[Text(text="Hello world")]),
+                llm.UserMessage(
+                    content=[llm.Text(text="What is the capital of France?")]
+                ),
+                llm.AssistantMessage(content=[llm.Text(text="Hello world")]),
             ],
-            "content": [Text(text="Hello world")],
-            "texts": [Text(text="Hello world")],
+            "content": [llm.Text(text="Hello world")],
+            "texts": [llm.Text(text="Hello world")],
             "tool_calls": [],
             "thinkings": [],
         }
@@ -113,7 +102,7 @@ def test_call_with_system_message(
 
 
 @pytest.mark.vcr()
-def test_stream_simple_message(anthropic_client: llm.clients.AnthropicClient) -> None:
+def test_stream_simple_message(anthropic_client: llm.AnthropicClient) -> None:
     """Test basic streaming with a simple user message."""
     messages = [llm.messages.user("Hi! Please greet me back.")]
 
@@ -130,28 +119,34 @@ def test_stream_simple_message(anthropic_client: llm.clients.AnthropicClient) ->
         {
             "provider": "anthropic",
             "model": "claude-3-5-sonnet-latest",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                UserMessage(content=[Text(text="Hi! Please greet me back.")]),
-                AssistantMessage(
+                llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
+                llm.AssistantMessage(
                     content=[
-                        Text(text="Hello! It's nice to meet you. How are you today?")
+                        llm.Text(
+                            text="Hello! It's nice to meet you. How are you today?"
+                        )
                     ]
                 ),
             ],
-            "content": [Text(text="Hello! It's nice to meet you. How are you today?")],
-            "texts": [Text(text="Hello! It's nice to meet you. How are you today?")],
+            "content": [
+                llm.Text(text="Hello! It's nice to meet you. How are you today?")
+            ],
+            "texts": [
+                llm.Text(text="Hello! It's nice to meet you. How are you today?")
+            ],
             "tool_calls": [],
             "thinkings": [],
             "consumed": True,
             "chunks": [
-                TextStartChunk(type="text_start_chunk"),
-                TextChunk(delta="Hello! It's nice"),
-                TextChunk(delta=" to meet you. How"),
-                TextChunk(delta=" are you today"),
-                TextChunk(delta="?"),
-                TextEndChunk(type="text_end_chunk"),
-                FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextChunk(delta="Hello! It's nice"),
+                llm.TextChunk(delta=" to meet you. How"),
+                llm.TextChunk(delta=" are you today"),
+                llm.TextChunk(delta="?"),
+                llm.TextEndChunk(type="text_end_chunk"),
+                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
     )

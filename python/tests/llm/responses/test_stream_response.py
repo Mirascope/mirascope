@@ -1,4 +1,4 @@
-"""Tests for StreamResponse class."""
+"""Tests for llm.StreamResponse class."""
 
 from collections.abc import AsyncIterator, Iterator
 from dataclasses import dataclass
@@ -6,36 +6,20 @@ from dataclasses import dataclass
 import pytest
 
 from mirascope import llm
-from mirascope.llm.content import (
-    AssistantContentChunk,
-    AssistantContentPart,
-    FinishReasonChunk,
-    Text,
-    TextChunk,
-    TextEndChunk,
-    TextStartChunk,
-    Thinking,
-    ThinkingChunk,
-    ThinkingEndChunk,
-    ThinkingStartChunk,
-)
-from mirascope.llm.responses import AsyncChunkIterator, ChunkIterator, StreamResponse
-from mirascope.llm.responses.finish_reason import FinishReason
-from mirascope.llm.streams import AsyncStream, Stream
 
 
 def create_sync_stream_response(
-    chunks: list[AssistantContentChunk],
-) -> StreamResponse[Stream]:
-    """Create a StreamResponse with a functioning iterator for testing."""
+    chunks: list[llm.AssistantContentChunk],
+) -> llm.StreamResponse[llm.Stream]:
+    """Create a llm.StreamResponse with a functioning iterator for testing."""
 
-    def sync_chunk_iter() -> ChunkIterator:
+    def sync_chunk_iter() -> llm.ChunkIterator:
         for chunk in chunks:
             yield chunk, f"raw_{chunk.type}"
 
     iterator = sync_chunk_iter()
 
-    response = StreamResponse(
+    response = llm.StreamResponse(
         provider="openai",
         model="gpt-4o-mini",
         input_messages=[llm.messages.user("Test")],
@@ -45,17 +29,17 @@ def create_sync_stream_response(
 
 
 def create_async_stream_response(
-    chunks: list[AssistantContentChunk],
-) -> StreamResponse[AsyncStream]:
-    """Create a StreamResponse with a functioning iterator for testing."""
+    chunks: list[llm.AssistantContentChunk],
+) -> llm.StreamResponse[llm.AsyncStream]:
+    """Create a llm.StreamResponse with a functioning iterator for testing."""
 
-    async def async_chunk_iter() -> AsyncChunkIterator:
+    async def async_chunk_iter() -> llm.AsyncChunkIterator:
         for chunk in chunks:
             yield chunk, f"raw_{chunk.type}"
 
     iterator = async_chunk_iter()
 
-    response = StreamResponse[AsyncStream](
+    response = llm.StreamResponse[llm.AsyncStream](
         provider="openai",
         model="gpt-4o-mini",
         input_messages=[llm.messages.user("Test")],
@@ -65,42 +49,42 @@ def create_async_stream_response(
 
 
 @pytest.fixture
-def example_text() -> Text:
-    return Text(text="Hello world")
+def example_text() -> llm.Text:
+    return llm.Text(text="Hello world")
 
 
 @pytest.fixture
-def example_thinking() -> Thinking:
-    return Thinking(thinking="Let me think...", signature="reasoning")
+def example_thinking() -> llm.Thinking:
+    return llm.Thinking(thinking="Let me think...", signature="reasoning")
 
 
 @pytest.fixture
-def example_text_chunks() -> list[AssistantContentChunk]:
+def example_text_chunks() -> list[llm.AssistantContentChunk]:
     """Create a complete text chunk sequence for testing."""
     return [
-        TextStartChunk(type="text_start_chunk"),
-        TextChunk(type="text_chunk", delta="Hello"),
-        TextChunk(type="text_chunk", delta=" "),
-        TextChunk(type="text_chunk", delta="world"),
-        TextEndChunk(type="text_end_chunk"),
+        llm.TextStartChunk(type="text_start_chunk"),
+        llm.TextChunk(type="text_chunk", delta="Hello"),
+        llm.TextChunk(type="text_chunk", delta=" "),
+        llm.TextChunk(type="text_chunk", delta="world"),
+        llm.TextEndChunk(type="text_end_chunk"),
     ]
 
 
 @pytest.fixture
-def example_thinking_chunks() -> list[AssistantContentChunk]:
+def example_thinking_chunks() -> list[llm.AssistantContentChunk]:
     """Create a complete thinking chunk sequence for testing."""
     return [
-        ThinkingStartChunk(type="thinking_start_chunk"),
-        ThinkingChunk(type="thinking_chunk", delta="Let me"),
-        ThinkingChunk(type="thinking_chunk", delta=" think..."),
-        ThinkingEndChunk(type="thinking_end_chunk", signature="reasoning"),
+        llm.ThinkingStartChunk(type="thinking_start_chunk"),
+        llm.ThinkingChunk(type="thinking_chunk", delta="Let me"),
+        llm.ThinkingChunk(type="thinking_chunk", delta=" think..."),
+        llm.ThinkingEndChunk(type="thinking_end_chunk", signature="reasoning"),
     ]
 
 
 def check_stream_response_consistency(
-    response: StreamResponse[Stream | AsyncStream],
-    chunks: list[AssistantContentChunk],
-    content: list[AssistantContentPart],
+    response: llm.StreamResponse[llm.Stream | llm.AsyncStream],
+    chunks: list[llm.AssistantContentChunk],
+    content: list[llm.AssistantContentPart],
 ) -> None:
     assert response.chunks == chunks, "response.chunks"
     expected_raw = [f"raw_{chunk.type}" for chunk in chunks]
@@ -120,8 +104,10 @@ def check_stream_response_consistency(
     assert assistant_message.content == content, "assistant_message.content"
 
 
-def test_sync_initialization(example_text_chunks: list[AssistantContentChunk]) -> None:
-    """Test StreamResponse initialization with sync iterator."""
+def test_sync_initialization(
+    example_text_chunks: list[llm.AssistantContentChunk],
+) -> None:
+    """Test llm.StreamResponse initialization with sync iterator."""
     stream_response = create_sync_stream_response(example_text_chunks)
 
     assert stream_response.provider == "openai"
@@ -135,9 +121,9 @@ def test_sync_initialization(example_text_chunks: list[AssistantContentChunk]) -
 
 @pytest.mark.asyncio
 async def test_async_initialization(
-    example_text_chunks: list[AssistantContentChunk],
+    example_text_chunks: list[llm.AssistantContentChunk],
 ) -> None:
-    """Test StreamResponse initialization with async iterator."""
+    """Test llm.StreamResponse initialization with async iterator."""
     stream_response = create_async_stream_response(example_text_chunks)
 
     assert stream_response.provider == "openai"
@@ -154,10 +140,10 @@ class TestChunkStream:
 
     def test_sync_basic_streaming(
         self,
-        example_text_chunks: list[AssistantContentChunk],
-        example_thinking_chunks: list[AssistantContentChunk],
-        example_text: Text,
-        example_thinking: Thinking,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_thinking_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
+        example_thinking: llm.Thinking,
     ) -> None:
         """Test streaming mixed chunk types with sync response."""
         chunks = [*example_text_chunks, *example_thinking_chunks]
@@ -174,10 +160,10 @@ class TestChunkStream:
     @pytest.mark.asyncio
     async def test_async_basic_streaming(
         self,
-        example_text_chunks: list[AssistantContentChunk],
-        example_thinking_chunks: list[AssistantContentChunk],
-        example_text: Text,
-        example_thinking: Thinking,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_thinking_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
+        example_thinking: llm.Thinking,
     ) -> None:
         """Test streaming mixed chunk types with async response."""
         chunks = [*example_text_chunks, *example_thinking_chunks]
@@ -194,7 +180,9 @@ class TestChunkStream:
         assert stream_response.consumed is True
 
     def test_sync_replay_functionality(
-        self, example_text_chunks: list[AssistantContentChunk], example_text: Text
+        self,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test that streaming can be replayed from cache with sync response."""
         stream_response = create_sync_stream_response(example_text_chunks)
@@ -211,7 +199,9 @@ class TestChunkStream:
 
     @pytest.mark.asyncio
     async def test_async_replay_functionality(
-        self, example_text_chunks: list[AssistantContentChunk], example_text: Text
+        self,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test that streaming can be replayed from cache with async response."""
         stream_response = create_async_stream_response(example_text_chunks)
@@ -227,7 +217,9 @@ class TestChunkStream:
         assert stream_response.consumed is True
 
     def test_sync_partial_iteration_and_resume(
-        self, example_text_chunks: list[AssistantContentChunk], example_text: Text
+        self,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test breaking iteration and resuming from cached state with sync response."""
         stream_response = create_sync_stream_response(example_text_chunks)
@@ -240,7 +232,7 @@ class TestChunkStream:
             break
 
         check_stream_response_consistency(
-            stream_response, partial_chunks, [Text(text="")]
+            stream_response, partial_chunks, [llm.Text(text="")]
         )
         assert stream_response.consumed is False
 
@@ -256,7 +248,9 @@ class TestChunkStream:
 
     @pytest.mark.asyncio
     async def test_async_partial_iteration_and_resume(
-        self, example_text_chunks: list[AssistantContentChunk], example_text: Text
+        self,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test breaking iteration and resuming from cached state with async response."""
         stream_response = create_async_stream_response(example_text_chunks)
@@ -269,7 +263,7 @@ class TestChunkStream:
             break
 
         check_stream_response_consistency(
-            stream_response, partial_chunks, [Text(text="")]
+            stream_response, partial_chunks, [llm.Text(text="")]
         )
         assert stream_response.consumed is False
 
@@ -284,7 +278,9 @@ class TestChunkStream:
         assert partial_chunks == example_text_chunks
 
     def test_sync_partial_iteration_and_restart(
-        self, example_text_chunks: list[AssistantContentChunk], example_text: Text
+        self,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test breaking iteration and restarting with sync response."""
         stream_response = create_sync_stream_response(example_text_chunks)
@@ -298,7 +294,7 @@ class TestChunkStream:
                 break
 
         check_stream_response_consistency(
-            stream_response, partial_chunks, [Text(text="Hello ")]
+            stream_response, partial_chunks, [llm.Text(text="Hello ")]
         )
         assert stream_response.consumed is False
 
@@ -313,7 +309,9 @@ class TestChunkStream:
 
     @pytest.mark.asyncio
     async def test_async_partial_iteration_and_restart(
-        self, example_text_chunks: list[AssistantContentChunk], example_text: Text
+        self,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test breaking iteration and restarting with async response."""
         stream_response = create_async_stream_response(example_text_chunks)
@@ -329,7 +327,7 @@ class TestChunkStream:
                 break
 
         check_stream_response_consistency(
-            stream_response, partial_chunks, [Text(text="Hello")]
+            stream_response, partial_chunks, [llm.Text(text="Hello")]
         )
         assert stream_response.consumed is False
 
@@ -345,51 +343,51 @@ class TestChunkStream:
 
 @dataclass
 class ChunkProcessingTestCase:
-    chunks: list[AssistantContentChunk]
-    expected_contents: list[list[AssistantContentPart]]
+    chunks: list[llm.AssistantContentChunk]
+    expected_contents: list[list[llm.AssistantContentPart]]
 
 
 CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
     "empty_text": ChunkProcessingTestCase(
         chunks=[
-            TextStartChunk(type="text_start_chunk"),
-            TextEndChunk(type="text_end_chunk"),
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextEndChunk(type="text_end_chunk"),
         ],
-        expected_contents=[[Text(text="")], [Text(text="")]],
+        expected_contents=[[llm.Text(text="")], [llm.Text(text="")]],
     ),
     "text_with_deltas": ChunkProcessingTestCase(
         chunks=[
-            TextStartChunk(type="text_start_chunk"),
-            TextChunk(type="text_chunk", delta="Hello"),
-            TextChunk(type="text_chunk", delta=" world"),
-            TextEndChunk(type="text_end_chunk"),
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(type="text_chunk", delta="Hello"),
+            llm.TextChunk(type="text_chunk", delta=" world"),
+            llm.TextEndChunk(type="text_end_chunk"),
         ],
         expected_contents=[
-            [Text(text="")],
-            [Text(text="Hello")],
-            [Text(text="Hello world")],
-            [Text(text="Hello world")],
+            [llm.Text(text="")],
+            [llm.Text(text="Hello")],
+            [llm.Text(text="Hello world")],
+            [llm.Text(text="Hello world")],
         ],
     ),
     "empty_thinking": ChunkProcessingTestCase(
         chunks=[
-            ThinkingStartChunk(type="thinking_start_chunk"),
-            ThinkingEndChunk(type="thinking_end_chunk", signature="thoughts"),
+            llm.ThinkingStartChunk(type="thinking_start_chunk"),
+            llm.ThinkingEndChunk(type="thinking_end_chunk", signature="thoughts"),
         ],
-        expected_contents=[[], [Thinking(thinking="", signature="thoughts")]],
+        expected_contents=[[], [llm.Thinking(thinking="", signature="thoughts")]],
     ),
     "thinking_with_deltas": ChunkProcessingTestCase(
         chunks=[
-            ThinkingStartChunk(type="thinking_start_chunk"),
-            ThinkingChunk(type="thinking_chunk", delta="Let me"),
-            ThinkingChunk(type="thinking_chunk", delta=" think..."),
-            ThinkingEndChunk(type="thinking_end_chunk", signature="reasoning"),
+            llm.ThinkingStartChunk(type="thinking_start_chunk"),
+            llm.ThinkingChunk(type="thinking_chunk", delta="Let me"),
+            llm.ThinkingChunk(type="thinking_chunk", delta=" think..."),
+            llm.ThinkingEndChunk(type="thinking_end_chunk", signature="reasoning"),
         ],
         expected_contents=[
             [],
             [],
             [],
-            [Thinking(thinking="Let me think...", signature="reasoning")],
+            [llm.Thinking(thinking="Let me think...", signature="reasoning")],
         ],
     ),
 }
@@ -446,13 +444,13 @@ class TestChunkProcessing:
 
     def test_sync_finish_reason_chunk_processing(
         self,
-        example_text_chunks: list[AssistantContentChunk],
-        example_text: Text,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test that FinishReasonChunk sets the finish_reason on the response with sync response."""
         chunks = [
             *example_text_chunks,
-            FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
         ]
         stream_response = create_sync_stream_response(chunks)
 
@@ -460,7 +458,7 @@ class TestChunkProcessing:
 
         streamed_chunks = list(stream_response.chunk_stream())
 
-        assert stream_response.finish_reason == FinishReason.END_TURN
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
         check_stream_response_consistency(stream_response, chunks, [example_text])
         assert len(streamed_chunks) == 6  # 5 text chunks + 1 finish reason chunk
         assert stream_response.consumed is True
@@ -468,13 +466,13 @@ class TestChunkProcessing:
     @pytest.mark.asyncio
     async def test_async_finish_reason_chunk_processing(
         self,
-        example_text_chunks: list[AssistantContentChunk],
-        example_text: Text,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test that FinishReasonChunk sets the finish_reason on the response with async response."""
         chunks = [
             *example_text_chunks,
-            FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
         ]
         stream_response = create_async_stream_response(chunks)
 
@@ -484,7 +482,7 @@ class TestChunkProcessing:
             chunk async for chunk in await stream_response.chunk_stream()
         ]
 
-        assert stream_response.finish_reason == FinishReason.END_TURN
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
         check_stream_response_consistency(stream_response, chunks, [example_text])
         assert len(streamed_chunks) == 6  # 5 text chunks + 1 finish reason chunk
         assert stream_response.consumed is True
@@ -492,7 +490,7 @@ class TestChunkProcessing:
     def test_sync_response_consumed(self) -> None:
         """Test that response.consumed is set when the iterator is exhausted with sync response."""
         stream_response = create_sync_stream_response(
-            [FinishReasonChunk(finish_reason=FinishReason.END_TURN)]
+            [llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN)]
         )
         chunk_stream = stream_response.chunk_stream()
 
@@ -500,7 +498,7 @@ class TestChunkProcessing:
         assert stream_response.consumed is False
 
         next(chunk_stream)
-        assert stream_response.finish_reason == FinishReason.END_TURN
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
         assert stream_response.consumed is False
 
         with pytest.raises(StopIteration):
@@ -511,7 +509,7 @@ class TestChunkProcessing:
     async def test_async_response_consumed(self) -> None:
         """Test that response.consumed is set when the iterator is exhausted with async response."""
         stream_response = create_async_stream_response(
-            [FinishReasonChunk(finish_reason=FinishReason.END_TURN)]
+            [llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN)]
         )
         chunk_stream = await stream_response.chunk_stream()
 
@@ -519,7 +517,7 @@ class TestChunkProcessing:
         assert stream_response.consumed is False
 
         await anext(chunk_stream)
-        assert stream_response.finish_reason == FinishReason.END_TURN
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
         assert stream_response.consumed is False
 
         with pytest.raises(StopAsyncIteration):
@@ -531,67 +529,69 @@ class TestErrorHandling:
     """Test error handling in chunk processing."""
 
     @pytest.fixture
-    def invalid_chunk_sequences(self) -> list[tuple[list[AssistantContentChunk], str]]:
+    def invalid_chunk_sequences(
+        self,
+    ) -> list[tuple[list[llm.AssistantContentChunk], str]]:
         """Test cases for invalid chunk sequences."""
         return [
             # Text chunk without start
             (
-                [TextChunk(type="text_chunk", delta="Hello")],
+                [llm.TextChunk(type="text_chunk", delta="Hello")],
                 "Received text_chunk while not processing text",
             ),
             # Text end without start or delta
             (
-                [TextEndChunk(type="text_end_chunk")],
+                [llm.TextEndChunk(type="text_end_chunk")],
                 "Received text_end_chunk while not processing text",
             ),
             # Thinking chunk without start
             (
-                [ThinkingChunk(type="thinking_chunk", delta="Hello")],
+                [llm.ThinkingChunk(type="thinking_chunk", delta="Hello")],
                 "Received thinking_chunk while not processing thinking",
             ),
             # Thinking end without start or delta
             (
-                [ThinkingEndChunk(type="thinking_end_chunk", signature=None)],
+                [llm.ThinkingEndChunk(type="thinking_end_chunk", signature=None)],
                 "Received thinking_end_chunk while not processing thinking",
             ),
             # Overlapping chunks - start text then start thinking
             (
                 [
-                    TextStartChunk(type="text_start_chunk"),
-                    ThinkingStartChunk(type="thinking_start_chunk"),
+                    llm.TextStartChunk(type="text_start_chunk"),
+                    llm.ThinkingStartChunk(type="thinking_start_chunk"),
                 ],
                 "while processing another chunk",
             ),
             # Overlapping chunks - start thinking then start text
             (
                 [
-                    ThinkingStartChunk(type="thinking_start_chunk"),
-                    TextStartChunk(type="text_start_chunk"),
+                    llm.ThinkingStartChunk(type="thinking_start_chunk"),
+                    llm.TextStartChunk(type="text_start_chunk"),
                 ],
                 "while processing another chunk",
             ),
             # Text end without matching start
             (
                 [
-                    ThinkingStartChunk(type="thinking_start_chunk"),
-                    ThinkingChunk(type="thinking_chunk", delta="test"),
-                    TextEndChunk(type="text_end_chunk"),
+                    llm.ThinkingStartChunk(type="thinking_start_chunk"),
+                    llm.ThinkingChunk(type="thinking_chunk", delta="test"),
+                    llm.TextEndChunk(type="text_end_chunk"),
                 ],
                 "Received text_end_chunk while not processing text",
             ),
             # Thinking end without matching start
             (
                 [
-                    TextStartChunk(type="text_start_chunk"),
-                    TextChunk(type="text_chunk", delta="test"),
-                    ThinkingEndChunk(type="thinking_end_chunk", signature=None),
+                    llm.TextStartChunk(type="text_start_chunk"),
+                    llm.TextChunk(type="text_chunk", delta="test"),
+                    llm.ThinkingEndChunk(type="thinking_end_chunk", signature=None),
                 ],
                 "Received thinking_end_chunk while not processing thinking",
             ),
         ]
 
     def test_sync_invalid_chunk_sequences(
-        self, invalid_chunk_sequences: list[tuple[list[AssistantContentChunk], str]]
+        self, invalid_chunk_sequences: list[tuple[list[llm.AssistantContentChunk], str]]
     ) -> None:
         """Test error handling for invalid chunk sequences with sync response."""
         for chunks, expected_error in invalid_chunk_sequences:
@@ -602,7 +602,7 @@ class TestErrorHandling:
 
     @pytest.mark.asyncio
     async def test_async_invalid_chunk_sequences(
-        self, invalid_chunk_sequences: list[tuple[list[AssistantContentChunk], str]]
+        self, invalid_chunk_sequences: list[tuple[list[llm.AssistantContentChunk], str]]
     ) -> None:
         """Test error handling for invalid chunk sequences with async response."""
         for chunks, expected_error in invalid_chunk_sequences:
@@ -613,14 +613,14 @@ class TestErrorHandling:
 
     def test_sync_chunks_after_finish_reason(
         self,
-        example_text_chunks: list[AssistantContentChunk],
-        example_thinking_chunks: list[AssistantContentChunk],
-        example_text: Text,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_thinking_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test that chunks after finish reason raise RuntimeError with sync response."""
         chunks = [
             *example_text_chunks,
-            FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             *example_thinking_chunks,
         ]
         stream_response = create_sync_stream_response(chunks)
@@ -628,20 +628,20 @@ class TestErrorHandling:
         with pytest.raises(RuntimeError):
             list(stream_response.chunk_stream())
 
-        assert stream_response.finish_reason == FinishReason.END_TURN
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
         check_stream_response_consistency(stream_response, chunks[:6], [example_text])
 
     @pytest.mark.asyncio
     async def test_async_chunks_after_finish_reason(
         self,
-        example_text_chunks: list[AssistantContentChunk],
-        example_thinking_chunks: list[AssistantContentChunk],
-        example_text: Text,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_thinking_chunks: list[llm.AssistantContentChunk],
+        example_text: llm.Text,
     ) -> None:
         """Test that chunks after finish reason raise RuntimeError with async response."""
         chunks = [
             *example_text_chunks,
-            FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             *example_thinking_chunks,
         ]
         stream_response = create_async_stream_response(chunks)
@@ -649,5 +649,5 @@ class TestErrorHandling:
         with pytest.raises(RuntimeError):
             [chunk async for chunk in await stream_response.chunk_stream()]
 
-        assert stream_response.finish_reason == FinishReason.END_TURN
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
         check_stream_response_consistency(stream_response, chunks[:6], [example_text])
