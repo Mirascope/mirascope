@@ -8,10 +8,7 @@ from dotenv import load_dotenv
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from tests.llm.responses.utils import (
-    response_snapshot_dict,
-    stream_response_snapshot_dict,
-)
+from tests import utils
 
 
 @pytest.fixture(scope="module")
@@ -63,7 +60,7 @@ def test_call_simple_message(google_client: llm.GoogleClient) -> None:
     )
 
     assert isinstance(response, llm.Response)
-    assert response_snapshot_dict(response) == snapshot(
+    assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
@@ -94,7 +91,7 @@ def test_call_with_system_message(google_client: llm.GoogleClient) -> None:
     )
 
     assert isinstance(response, llm.Response)
-    assert response_snapshot_dict(response) == snapshot(
+    assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
@@ -132,7 +129,7 @@ def test_call_no_output(google_client: llm.GoogleClient) -> None:
     )
 
     assert isinstance(response, llm.Response)
-    assert response_snapshot_dict(response) == snapshot(
+    assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
@@ -167,7 +164,7 @@ def test_stream_simple_message(google_client: llm.GoogleClient) -> None:
     for _ in stream_response.chunk_stream():
         ...
 
-    assert stream_response_snapshot_dict(stream_response) == snapshot(
+    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
