@@ -1,7 +1,7 @@
 """Typing for JSON serializable objects."""
 
 from collections.abc import Mapping, Sequence
-from typing import Protocol, TypeAlias
+from typing import Protocol, TypeAlias, TypeVar
 
 
 class JsonableObject(Protocol):
@@ -27,3 +27,15 @@ Jsonable: TypeAlias = (
     | JsonableObject
 )
 """Simple type alias for JSON-serializable types."""
+
+
+JsonableT = TypeVar("JsonableT", bound=Jsonable)
+"""Type variable for tool output types.
+
+This TypeVar represents the return type of tool functions, which must be
+serializable to JSON (bound to Jsonable) for LLM consumption.
+"""
+
+
+JsonableCovariantT = TypeVar("JsonableCovariantT", covariant=True, bound=Jsonable)
+"""Type variable for covariant types that are Jsonable."""
