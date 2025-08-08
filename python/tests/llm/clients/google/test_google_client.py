@@ -21,7 +21,10 @@ from mirascope.llm.content import (
     TextEndChunk,
     TextStartChunk,
 )
-from tests.llm.responses._utils import stream_response_snapshot_dict
+from tests.llm.responses.utils import (
+    response_snapshot_dict,
+    stream_response_snapshot_dict,
+)
 
 
 @pytest.fixture(scope="module")
@@ -73,8 +76,7 @@ def test_call_simple_message(google_client):
     )
 
     assert isinstance(response, llm.responses.Response)
-    response.__dict__.pop("raw")
-    assert response.__dict__ == snapshot(
+    assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
@@ -105,8 +107,7 @@ def test_call_with_system_message(google_client):
     )
 
     assert isinstance(response, llm.responses.Response)
-    response.__dict__.pop("raw")
-    assert response.__dict__ == snapshot(
+    assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
@@ -142,8 +143,7 @@ def test_call_no_output(google_client):
     )
 
     assert isinstance(response, llm.responses.Response)
-    response.__dict__.pop("raw")
-    assert response.__dict__ == snapshot(
+    assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
