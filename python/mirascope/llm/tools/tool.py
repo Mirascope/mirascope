@@ -19,7 +19,7 @@ ToolT = TypeVar(
 
 @dataclass
 class Tool(BaseTool[P, JsonableCovariantT]):
-    """Protocol defining a tool that can be used by LLMs.
+    """A tool that can be used by LLMs.
 
     A Tool represents a function that can be called by an LLM during a call.
     It includes metadata like name, description, and parameter schema.
@@ -31,16 +31,18 @@ class Tool(BaseTool[P, JsonableCovariantT]):
     """The function that implements the tool's functionality."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> JsonableCovariantT:
-        raise NotImplementedError()
+        """Call the underlying function directly."""
+        return self.fn(*args, **kwargs)
 
     def execute(self, tool_call: ToolCall) -> ToolOutput[JsonableCovariantT]:
-        """Call the tool using an LLM-provided ToolCall."""
-        raise NotImplementedError()
+        """Execute the tool using an LLM-provided ToolCall."""
+        result = self.fn(**tool_call.args)  # type: ignore[reportCallIssue]
+        return ToolOutput(id=tool_call.id, value=result)
 
 
 @dataclass
 class AsyncTool(BaseTool[P, JsonableCovariantT]):
-    """Protocol defining an async tool that can be used by LLMs.
+    """An async tool that can be used by LLMs.
 
     An AsyncTool represents an async function that can be called by an LLM during a call.
     It includes metadata like name, description, and parameter schema.
@@ -54,8 +56,10 @@ class AsyncTool(BaseTool[P, JsonableCovariantT]):
     def __call__(
         self, *args: P.args, **kwargs: P.kwargs
     ) -> Awaitable[JsonableCovariantT]:
-        raise NotImplementedError()
+        """Call the underlying async function directly."""
+        return self.fn(*args, **kwargs)
 
     async def execute(self, tool_call: ToolCall) -> ToolOutput[JsonableCovariantT]:
-        """Call the tool using an LLM-provided ToolCall."""
-        raise NotImplementedError()
+        """Execute the async tool using an LLM-provided ToolCall."""
+        result = await self.fn(**tool_call.args)  # type: ignore[reportCallIssue]
+        return ToolOutput(id=tool_call.id, value=result)

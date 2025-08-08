@@ -5,7 +5,8 @@ from typing import Generic, TypeGuard
 
 from typing_extensions import Self
 
-from ..types import Jsonable, JsonableCovariantT, P
+from ..types import JsonableCovariantT, P
+from .tool_schema import ToolParameterSchema, ToolSchema
 
 
 @dataclass
@@ -18,17 +19,28 @@ class BaseTool(Generic[P, JsonableCovariantT]):
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    name: str
-    """The name of the tool, used by the LLM to identify which tool to call."""
+    schema: ToolSchema
+    """The tool's schema containing name, description, parameters, and strict mode."""
 
-    description: str
-    """Description of what the tool does, extracted from the function's docstring."""
+    @property
+    def name(self) -> str:
+        """The name of the tool, used by the LLM to identify which tool to call."""
+        return self.schema.name
 
-    parameters: dict[str, Jsonable]
-    """JSON Schema describing the parameters accepted by the tool."""
+    @property
+    def description(self) -> str:
+        """Description of what the tool does, extracted from the function's docstring."""
+        return self.schema.description
 
-    strict: bool
-    """Whether the tool should use strict mode when supported by the model."""
+    @property
+    def parameters(self) -> ToolParameterSchema:
+        """JSON Schema describing the parameters accepted by the tool."""
+        return self.schema.parameters
+
+    @property
+    def strict(self) -> bool:
+        """Whether the tool should use strict mode when supported by the model."""
+        return self.schema.strict
 
     def defines(self, tool: "BaseTool") -> TypeGuard[Self]:
         """Check if this ToolDef matches a specific Tool instance.
