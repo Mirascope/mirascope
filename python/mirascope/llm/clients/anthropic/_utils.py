@@ -3,14 +3,19 @@
 from collections.abc import Sequence
 
 from anthropic import types as anthropic_types
+from anthropic.lib.streaming import MessageStreamManager
 
 from ...content import (
     AssistantContentPart,
     ContentPart,
+    FinishReasonChunk,
     Text,
+    TextChunk,
+    TextEndChunk,
+    TextStartChunk,
 )
 from ...messages import AssistantMessage, UserMessage, assistant
-from ...responses import FinishReason
+from ...responses import ChunkIterator, FinishReason
 
 ANTHROPIC_FINISH_REASON_MAP = {
     "end_turn": FinishReason.END_TURN,
@@ -73,3 +78,43 @@ def decode_response(
         else None
     )
     return assistant_message, finish_reason
+
+
+def convert_anthropic_stream_to_chunk_iterator(
+    anthropic_stream_manager: MessageStreamManager,
+) -> ChunkIterator:
+    """Returns a ChunkIterator converted from an Anthropic MessageStreamManager"""
+    current_block_type: str | None = None
+
+    with anthropic_stream_manager as stream:
+        for event in stream._raw_stream:
+            if event.type == "content_block_start":
+                content_block = event.content_block
+                current_block_type = content_block.type
+
+                if content_block.type == "text":
+                    yield TextStartChunk(type="text_start_chunk"), event
+                else:
+                    raise NotImplementedError
+
+            elif event.type == "content_block_delta":
+                delta = event.delta
+                if delta.type == "text_delta":
+                    yield TextChunk(type="text_chunk", delta=delta.text), event
+                else:
+                    raise NotImplementedError
+
+            elif event.type == "content_block_stop":
+                if current_block_type == "text":
+                    yield TextEndChunk(type="text_end_chunk"), event
+                else:
+                    raise NotImplementedError
+
+                current_block_type = None
+
+            elif event.type == "message_delta":
+                if event.delta.stop_reason:
+                    finish_reason = ANTHROPIC_FINISH_REASON_MAP.get(
+                        event.delta.stop_reason, FinishReason.UNKNOWN
+                    )
+                    yield FinishReasonChunk(finish_reason=finish_reason), event

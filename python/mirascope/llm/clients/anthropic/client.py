@@ -153,7 +153,31 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         tools: Sequence[Tool] | None = None,
         params: AnthropicParams | None = None,
     ) -> StreamResponse[Stream, None]:
-        raise NotImplementedError
+        """Make a streaming call to the Anthropic API."""
+        if tools:
+            raise NotImplementedError("tool use not yet supported")
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        system_message_content, remaining_messages = _base_utils.extract_system_message(
+            messages
+        )
+
+        anthropic_stream = self.client.messages.stream(
+            max_tokens=1024,
+            model=model,
+            messages=_utils.encode_messages(remaining_messages),
+            system=system_message_content or NotGiven(),
+        )
+
+        return StreamResponse(
+            provider="anthropic",
+            model=model,
+            input_messages=messages,
+            chunk_iterator=_utils.convert_anthropic_stream_to_chunk_iterator(
+                anthropic_stream
+            ),
+        )
 
     def context_stream(
         self,

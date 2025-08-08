@@ -14,6 +14,13 @@ from mirascope.llm import (
     Text,
     UserMessage,
 )
+from mirascope.llm.content import (
+    FinishReasonChunk,
+    TextChunk,
+    TextEndChunk,
+    TextStartChunk,
+)
+from tests.llm.responses._utils import stream_response_snapshot_dict
 
 
 @pytest.fixture(scope="module")
@@ -98,5 +105,50 @@ def test_call_with_system_message(anthropic_client):
             "texts": [Text(text="Hello world")],
             "tool_calls": [],
             "thinkings": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_stream_simple_message(anthropic_client):
+    """Test basic streaming with a simple user message."""
+    messages = [llm.messages.user("Hi! Please greet me back.")]
+
+    stream_response = anthropic_client.stream(
+        model="claude-3-5-sonnet-latest",
+        messages=messages,
+    )
+
+    assert isinstance(stream_response, llm.responses.StreamResponse)
+    for _ in stream_response.chunk_stream():
+        ...
+
+    assert stream_response_snapshot_dict(stream_response) == snapshot(
+        {
+            "provider": "anthropic",
+            "model": "claude-3-5-sonnet-latest",
+            "finish_reason": FinishReason.END_TURN,
+            "messages": [
+                UserMessage(content=[Text(text="Hi! Please greet me back.")]),
+                AssistantMessage(
+                    content=[
+                        Text(text="Hello! It's nice to meet you. How are you today?")
+                    ]
+                ),
+            ],
+            "content": [Text(text="Hello! It's nice to meet you. How are you today?")],
+            "texts": [Text(text="Hello! It's nice to meet you. How are you today?")],
+            "tool_calls": [],
+            "thinkings": [],
+            "consumed": True,
+            "chunks": [
+                TextStartChunk(type="text_start_chunk"),
+                TextChunk(delta="Hello! It's nice"),
+                TextChunk(delta=" to meet you. How"),
+                TextChunk(delta=" are you today"),
+                TextChunk(delta="?"),
+                TextEndChunk(type="text_end_chunk"),
+                FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+            ],
         }
     )
