@@ -10,7 +10,7 @@ from mirascope import llm
 
 
 def test_complex_tool_schema_snapshot() -> None:
-    """Test comprehensive tool with complex types generates expected schema."""
+    """Test comprehensive tool with complex types generates expected parameter schema."""
 
     class ExampleModel(BaseModel):
         """An example model for testing."""
@@ -35,54 +35,49 @@ def test_complex_tool_schema_snapshot() -> None:
         """
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.from_function(complex_tool)
+    schema = llm.tools.ToolSchema.create_schema(complex_tool)
 
-    assert schema.model_dump(by_alias=True, exclude_none=True) == snapshot(
+    assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
         {
-            "name": "complex_tool",
-            "description": "A comprehensive tool for testing schema generation.\n\nThis tool exercises various parameter types to ensure our schema\ngeneration handles complex cases correctly.",
-            "parameters": {
-                "properties": {
-                    "basic_param": {"title": "Basic Param", "type": "string"},
-                    "annotated_param": {
-                        "description": "An annotated integer parameter",
-                        "title": "Annotated Param",
-                        "type": "integer",
-                    },
-                    "model_param": {"$ref": "#/$defs/ExampleModel"},
-                    "optional_param": {
-                        "default": "default",
-                        "title": "Optional Param",
-                        "type": "string",
-                    },
-                    "union_param": {
-                        "anyOf": [{"type": "string"}, {"type": "integer"}],
-                        "default": "default_union",
-                        "title": "Union Param",
-                    },
+            "properties": {
+                "basic_param": {"title": "Basic Param", "type": "string"},
+                "annotated_param": {
+                    "description": "An annotated integer parameter",
+                    "title": "Annotated Param",
+                    "type": "integer",
                 },
-                "required": ["basic_param", "annotated_param", "model_param"],
-                "additionalProperties": False,
-                "$defs": {
-                    "ExampleModel": {
-                        "description": "An example model for testing.",
-                        "properties": {
-                            "id": {"title": "Id", "type": "integer"},
-                            "name": {"title": "Name", "type": "string"},
-                            "tags": {
-                                "default": [],
-                                "items": {"type": "string"},
-                                "title": "Tags",
-                                "type": "array",
-                            },
-                        },
-                        "required": ["id", "name"],
-                        "title": "ExampleModel",
-                        "type": "object",
-                    }
+                "model_param": {"$ref": "#/$defs/ExampleModel"},
+                "optional_param": {
+                    "default": "default",
+                    "title": "Optional Param",
+                    "type": "string",
+                },
+                "union_param": {
+                    "anyOf": [{"type": "string"}, {"type": "integer"}],
+                    "default": "default_union",
+                    "title": "Union Param",
                 },
             },
-            "strict": False,
+            "required": ["basic_param", "annotated_param", "model_param"],
+            "additionalProperties": False,
+            "$defs": {
+                "ExampleModel": {
+                    "description": "An example model for testing.",
+                    "properties": {
+                        "id": {"title": "Id", "type": "integer"},
+                        "name": {"title": "Name", "type": "string"},
+                        "tags": {
+                            "default": [],
+                            "items": {"type": "string"},
+                            "title": "Tags",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["id", "name"],
+                    "title": "ExampleModel",
+                    "type": "object",
+                }
+            },
         }
     )
 
@@ -94,8 +89,8 @@ def test_strict_mode() -> None:
         """A simple tool."""
         raise NotImplementedError
 
-    normal_schema = llm.tools.ToolSchema.from_function(simple_tool)
-    strict_schema = llm.tools.ToolSchema.from_function(simple_tool, strict=True)
+    normal_schema = llm.tools.ToolSchema.create_schema(simple_tool)
+    strict_schema = llm.tools.ToolSchema.create_schema(simple_tool, strict=True)
 
     assert normal_schema.strict is False
     assert strict_schema.strict is True
@@ -107,7 +102,7 @@ def test_default_description() -> None:
     def tool_no_docstring() -> str:
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.from_function(tool_no_docstring)
+    schema = llm.tools.ToolSchema.create_schema(tool_no_docstring)
     assert schema.description == "tool_no_docstring"
 
 
@@ -124,7 +119,7 @@ def test_docstring_cleaning() -> None:
         """
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.from_function(tool_with_multiline_docstring)
+    schema = llm.tools.ToolSchema.create_schema(tool_with_multiline_docstring)
     expected = "Long docstring.\n\nThis is a multiline docstring\nwith some indentation.\n\nIt should be cleaned up properly."
     assert schema.description == expected
 
@@ -136,7 +131,7 @@ def test_no_parameters() -> None:
         """A tool with no parameters."""
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.from_function(no_param_tool)
+    schema = llm.tools.ToolSchema.create_schema(no_param_tool)
 
     assert schema.parameters.properties == {}
     assert schema.parameters.required == []
@@ -155,8 +150,8 @@ def test_self_cls_parameters_skipped() -> None:
             """Class method."""
             raise NotImplementedError
 
-    instance_schema = llm.tools.ToolSchema.from_function(TestClass.instance_method)
-    class_schema = llm.tools.ToolSchema.from_function(TestClass.class_method)
+    instance_schema = llm.tools.ToolSchema.create_schema(TestClass.instance_method)
+    class_schema = llm.tools.ToolSchema.create_schema(TestClass.class_method)
 
     # Only the actual parameters should be present
     assert list(instance_schema.parameters.properties.keys()) == ["param"]
@@ -175,17 +170,12 @@ def test_annotated_without_field_info() -> None:
         """Tool with Annotated type but no Field annotation."""
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.from_function(tool_with_annotated_no_field)
-    assert schema.model_dump(by_alias=True, exclude_none=True) == snapshot(
+    schema = llm.tools.ToolSchema.create_schema(tool_with_annotated_no_field)
+    assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
         {
-            "name": "tool_with_annotated_no_field",
-            "description": "Tool with Annotated type but no Field annotation.",
-            "parameters": {
-                "properties": {"param": {"title": "Param", "type": "string"}},
-                "required": ["param"],
-                "additionalProperties": False,
-            },
-            "strict": False,
+            "properties": {"param": {"title": "Param", "type": "string"}},
+            "required": ["param"],
+            "additionalProperties": False,
         }
     )
 
@@ -203,4 +193,4 @@ def test_non_jsonable_parameter_raises_error() -> None:
         raise NotImplementedError
 
     with pytest.raises(PydanticSchemaGenerationError):
-        llm.tools.ToolSchema.from_function(tool_with_non_jsonable)
+        llm.tools.ToolSchema.create_schema(tool_with_non_jsonable)

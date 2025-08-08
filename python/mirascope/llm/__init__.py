@@ -73,7 +73,7 @@ from .responses import (
     StreamResponse,
 )
 from .streams import AsyncStream, Stream
-from .tools import Tool, context_tool, tool
+from .tools import AsyncContextTool, AsyncTool, ContextTool, Tool, context_tool, tool
 
 __all__ = [
     "LLM",
@@ -87,13 +87,16 @@ __all__ = [
     "AsyncAgent",
     "AsyncAgentTemplate",
     "AsyncChunkIterator",
+    "AsyncContextTool",
     "AsyncStream",
+    "AsyncTool",
     "Audio",
     "AuthenticationError",
     "BadRequestError",
     "ChunkIterator",
     "ConnectionError",
     "Context",
+    "ContextTool",
     "Document",
     "FinishReason",
     "FinishReasonChunk",

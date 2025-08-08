@@ -1,15 +1,25 @@
-"""Provider-agnostic tool schema representation."""
+"""The `ToolSchema` class for defining tools that LLMs can request be called."""
 
 from __future__ import annotations
 
 import inspect
-from collections.abc import Callable
-from typing import Annotated, Any, get_args, get_origin, get_type_hints
+from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
+from typing import (
+    Annotated,
+    Any,
+    Generic,
+    TypeGuard,
+    get_args,
+    get_origin,
+    get_type_hints,
+)
 
 from pydantic import BaseModel, Field, create_model
 from pydantic.fields import FieldInfo
+from typing_extensions import Self
 
-from ..types import Jsonable
+from ..types import Jsonable, JsonableCovariantT, P
 
 
 class ToolParameterSchema(BaseModel):
@@ -33,11 +43,14 @@ class ToolParameterSchema(BaseModel):
     """JSON Schema definitions for complex types referenced via $ref."""
 
 
-class ToolSchema(BaseModel):
-    """Provider-agnostic tool schema that encodes tool metadata.
+@dataclass
+class ToolSchema(Generic[P, JsonableCovariantT]):
+    """Base class defining a tool that can be used by LLMs.
 
-    This class represents the core tool information that underpins the various Tool
-    classes, and may be converted into a provider-specific representation.
+    A Tool represents a function that can be called by an LLM during a call.
+    It includes metadata like name, description, and parameter schema.
+
+    This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
     name: str
@@ -46,15 +59,18 @@ class ToolSchema(BaseModel):
     description: str
     """Description of what the tool does, extracted from the function's docstring."""
 
-    parameters: ToolParameterSchema = Field(default_factory=ToolParameterSchema)
+    parameters: ToolParameterSchema
     """JSON Schema describing the parameters accepted by the tool."""
 
-    strict: bool = False
+    strict: bool
     """Whether the tool should use strict mode when supported by the model."""
 
     @classmethod
-    def from_function(
-        cls, fn: Callable[..., Jsonable], *, strict: bool = False
+    def create_schema(
+        cls,
+        fn: Callable[..., Jsonable] | Callable[..., Awaitable[Jsonable]],
+        *,
+        strict: bool = False,
     ) -> ToolSchema:
         """Create a `ToolSchema` by inspecting a function and its docstring.
 
@@ -83,7 +99,6 @@ class ToolSchema(BaseModel):
             default = ... if param.default is inspect.Parameter.empty else param.default
 
             if get_origin(param_type) is Annotated:
-                # TODO: Consider handling FromCallArgs here for injecting call args into tools directly
                 args = get_args(param_type)
                 core_type = args[0]
 
@@ -116,6 +131,21 @@ class ToolSchema(BaseModel):
         if "$defs" in schema:
             parameters.defs = schema["$defs"]
 
-        return cls.model_construct(  # use model_construct to skip validation
+        return cls(
             name=name, description=description, parameters=parameters, strict=strict
         )
+
+    def defines(self, tool: ToolSchema) -> TypeGuard[Self]:
+        """Check if this ToolDef matches a specific Tool instance.
+
+        This method is used to ensure that the ToolDef was created from a specific
+        function, allowing for type-safe access to the return value when calling
+        the tool.
+
+        Args:
+            tool: The Tool instance to compare against.
+
+        Returns:
+            True if the ToolDef defines the Tool instance, False otherwise.
+        """
+        raise NotImplementedError()
