@@ -1,11 +1,13 @@
 """Types for the LLM module."""
 
 from .dataclass import Dataclass
-from .jsonable import Jsonable
-from .type_vars import (
-    CovariantT,
+from .jsonable import (
+    Jsonable,
     JsonableCovariantT,
     JsonableT,
+)
+from .type_vars import (
+    CovariantT,
     P,
 )
 
