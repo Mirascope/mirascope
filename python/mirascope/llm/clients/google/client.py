@@ -52,6 +52,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
             raise NotImplementedError("param use not yet supported")
 
         contents, config = _utils.prepare_google_request(messages)
+
         google_response = self.client.models.generate_content(
             model=model,
             contents=contents,
@@ -161,19 +162,20 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
             raise NotImplementedError("param use not yet supported")
 
         contents, config = _utils.prepare_google_request(messages)
+
         google_stream = self.client.models.generate_content_stream(
             model=model,
             contents=contents,
             config=config,
         )
 
+        chunk_iterator = _utils.convert_google_stream_to_chunk_iterator(google_stream)
+
         return StreamResponse(
             provider="google",
             model=model,
             input_messages=messages,
-            chunk_iterator=_utils.convert_google_stream_to_chunk_iterator(
-                google_stream
-            ),
+            chunk_iterator=chunk_iterator,
         )
 
     def context_stream(
