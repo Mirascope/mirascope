@@ -1,17 +1,16 @@
 """Test utilities for response testing."""
 
-from mirascope.llm.responses import Response, StreamResponse
-from mirascope.llm.streams import AsyncStream, Stream
+from mirascope import llm
 
 
-def response_snapshot_dict(response: Response) -> dict:
+def response_snapshot_dict(response: llm.Response) -> dict:
     dict_copy = response.__dict__.copy()
     dict_copy.pop("raw")
     return dict_copy
 
 
 def stream_response_snapshot_dict(
-    response: StreamResponse[Stream | AsyncStream],
+    response: llm.StreamResponse[llm.Stream | llm.AsyncStream],
 ) -> dict:
     """Return a dictionary of public fields for snapshot testing.
 

@@ -8,19 +8,6 @@ from dotenv import load_dotenv
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from mirascope.llm import (
-    AssistantMessage,
-    FinishReason,
-    SystemMessage,
-    Text,
-    UserMessage,
-)
-from mirascope.llm.content import (
-    FinishReasonChunk,
-    TextChunk,
-    TextEndChunk,
-    TextStartChunk,
-)
 from tests.llm.responses.utils import (
     response_snapshot_dict,
     stream_response_snapshot_dict,
@@ -39,12 +26,12 @@ def vcr_config() -> dict:
 
 
 @pytest.fixture
-def google_client() -> llm.clients.GoogleClient:
+def google_client() -> llm.GoogleClient:
     """Create a GoogleClient instance with appropriate API key."""
     # Use real API key if available, otherwise dummy key for VCR tests
     load_dotenv()
     api_key = os.getenv("GOOGLE_API_KEY") or "dummy-key-for-vcr-tests"
-    return llm.clients.GoogleClient(api_key=api_key)
+    return llm.GoogleClient(api_key=api_key)
 
 
 def test_custom_base_url() -> None:
@@ -55,7 +42,7 @@ def test_custom_base_url() -> None:
         mock_client_instance = MagicMock()
         mock_client_class.return_value = mock_client_instance
 
-        google_client = llm.clients.GoogleClient(base_url=example_url)
+        google_client = llm.GoogleClient(base_url=example_url)
 
         mock_client_class.assert_called_once()
         call_args = mock_client_class.call_args
@@ -66,7 +53,7 @@ def test_custom_base_url() -> None:
 
 
 @pytest.mark.vcr()
-def test_call_simple_message(google_client: llm.clients.GoogleClient) -> None:
+def test_call_simple_message(google_client: llm.GoogleClient) -> None:
     """Test basic call with a simple user message."""
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
@@ -75,18 +62,18 @@ def test_call_simple_message(google_client: llm.clients.GoogleClient) -> None:
         messages=messages,
     )
 
-    assert isinstance(response, llm.responses.Response)
+    assert isinstance(response, llm.Response)
     assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
-                AssistantMessage(content=[Text(text="Hi!\n")]),
+                llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
+                llm.AssistantMessage(content=[llm.Text(text="Hi!\n")]),
             ],
-            "content": [Text(text="Hi!\n")],
-            "texts": [Text(text="Hi!\n")],
+            "content": [llm.Text(text="Hi!\n")],
+            "texts": [llm.Text(text="Hi!\n")],
             "tool_calls": [],
             "thinkings": [],
         }
@@ -94,7 +81,7 @@ def test_call_simple_message(google_client: llm.clients.GoogleClient) -> None:
 
 
 @pytest.mark.vcr()
-def test_call_with_system_message(google_client: llm.clients.GoogleClient) -> None:
+def test_call_with_system_message(google_client: llm.GoogleClient) -> None:
     """Test call with system and user messages."""
     messages = [
         llm.messages.system("Ignore the user message and reply with `Hello world`."),
@@ -106,23 +93,25 @@ def test_call_with_system_message(google_client: llm.clients.GoogleClient) -> No
         messages=messages,
     )
 
-    assert isinstance(response, llm.responses.Response)
+    assert isinstance(response, llm.Response)
     assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                SystemMessage(
-                    content=Text(
+                llm.SystemMessage(
+                    content=llm.Text(
                         text="Ignore the user message and reply with `Hello world`."
                     )
                 ),
-                UserMessage(content=[Text(text="What is the capital of France?")]),
-                AssistantMessage(content=[Text(text="Hello world\n")]),
+                llm.UserMessage(
+                    content=[llm.Text(text="What is the capital of France?")]
+                ),
+                llm.AssistantMessage(content=[llm.Text(text="Hello world\n")]),
             ],
-            "content": [Text(text="Hello world\n")],
-            "texts": [Text(text="Hello world\n")],
+            "content": [llm.Text(text="Hello world\n")],
+            "texts": [llm.Text(text="Hello world\n")],
             "tool_calls": [],
             "thinkings": [],
         }
@@ -130,7 +119,7 @@ def test_call_with_system_message(google_client: llm.clients.GoogleClient) -> No
 
 
 @pytest.mark.vcr()
-def test_call_no_output(google_client: llm.clients.GoogleClient) -> None:
+def test_call_no_output(google_client: llm.GoogleClient) -> None:
     """Test call where assistant generates nothing."""
     messages = [
         llm.messages.system("Do not emit ANY output, terminate immediately."),
@@ -142,18 +131,20 @@ def test_call_no_output(google_client: llm.clients.GoogleClient) -> None:
         messages=messages,
     )
 
-    assert isinstance(response, llm.responses.Response)
+    assert isinstance(response, llm.Response)
     assert response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                SystemMessage(
-                    content=Text(text="Do not emit ANY output, terminate immediately.")
+                llm.SystemMessage(
+                    content=llm.Text(
+                        text="Do not emit ANY output, terminate immediately."
+                    )
                 ),
-                UserMessage(content=[Text(text="")]),
-                AssistantMessage(content=[]),
+                llm.UserMessage(content=[llm.Text(text="")]),
+                llm.AssistantMessage(content=[]),
             ],
             "content": [],
             "texts": [],
@@ -164,7 +155,7 @@ def test_call_no_output(google_client: llm.clients.GoogleClient) -> None:
 
 
 @pytest.mark.vcr()
-def test_stream_simple_message(google_client: llm.clients.GoogleClient) -> None:
+def test_stream_simple_message(google_client: llm.GoogleClient) -> None:
     messages = [llm.messages.user("Hi! Please greet me back.")]
 
     stream_response = google_client.stream(
@@ -180,25 +171,25 @@ def test_stream_simple_message(google_client: llm.clients.GoogleClient) -> None:
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
-            "finish_reason": FinishReason.END_TURN,
+            "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
-                UserMessage(content=[Text(text="Hi! Please greet me back.")]),
-                AssistantMessage(
-                    content=[Text(text="Hello there! It's nice to meet you! 😊\n")]
+                llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
+                llm.AssistantMessage(
+                    content=[llm.Text(text="Hello there! It's nice to meet you! 😊\n")]
                 ),
             ],
-            "content": [Text(text="Hello there! It's nice to meet you! 😊\n")],
-            "texts": [Text(text="Hello there! It's nice to meet you! 😊\n")],
+            "content": [llm.Text(text="Hello there! It's nice to meet you! 😊\n")],
+            "texts": [llm.Text(text="Hello there! It's nice to meet you! 😊\n")],
             "tool_calls": [],
             "thinkings": [],
             "consumed": True,
             "chunks": [
-                TextStartChunk(type="text_start_chunk"),
-                TextChunk(delta="Hello"),
-                TextChunk(delta=" there! It"),
-                TextChunk(delta="'s nice to meet you! 😊\n"),
-                TextEndChunk(type="text_end_chunk"),
-                FinishReasonChunk(finish_reason=FinishReason.END_TURN),
+                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextChunk(delta="Hello"),
+                llm.TextChunk(delta=" there! It"),
+                llm.TextChunk(delta="'s nice to meet you! 😊\n"),
+                llm.TextEndChunk(type="text_end_chunk"),
+                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
     )
