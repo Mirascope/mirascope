@@ -1,6 +1,9 @@
 """Tests for Response class."""
 
+import inspect
+
 import pytest
+from inline_snapshot import snapshot
 
 from mirascope import llm
 
@@ -148,3 +151,103 @@ def test_response_with_different_finish_reasons() -> None:
             finish_reason=finish_reason,
         )
         assert response.finish_reason == finish_reason
+
+
+def test_empty_response_pretty() -> None:
+    """Test pretty representation of an empty response."""
+    assistant_message = llm.messages.assistant(content=[])
+
+    response = llm.Response(
+        provider="openai",
+        model="test-model",
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        raw=None,
+    )
+
+    assert response.pretty() == snapshot("**[No Content]**")
+
+
+def test_text_only_response_pretty() -> None:
+    """Test pretty representation of a text-only response."""
+    assistant_message = llm.messages.assistant(
+        content=[llm.Text(text="Hello! How can I help you today?")]
+    )
+
+    response = llm.Response(
+        provider="openai",
+        model="test-model",
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        raw=None,
+    )
+
+    assert response.pretty() == snapshot("Hello! How can I help you today?")
+
+
+def test_mixed_content_response_pretty() -> None:
+    """Test pretty representation of a response with all content types."""
+    assistant_message = llm.messages.assistant(
+        content=[
+            llm.Text(text="I need to calculate something for you."),
+            llm.Thinking(
+                thinking="Let me think about this calculation step by step...",
+                signature="math_helper_v1",
+            ),
+            llm.ToolCall(
+                id="call_abc123", name="multiply_numbers", args={"a": 1337, "b": 4242}
+            ),
+        ]
+    )
+
+    response = llm.Response(
+        provider="openai",
+        model="test-model",
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.TOOL_USE,
+        raw=None,
+    )
+
+    assert response.pretty() == snapshot(
+        inspect.cleandoc("""
+            I need to calculate something for you.
+
+            **Thinking:**
+              Let me think about this calculation step by step...
+
+            **ToolCall (multiply_numbers):** {'a': 1337, 'b': 4242}
+        """)
+    )
+
+
+def test_multiple_text_response_pretty() -> None:
+    """Test pretty representation of a response with multiple text parts."""
+    assistant_message = llm.messages.assistant(
+        content=[
+            llm.Text(text="Here's the first part."),
+            llm.Text(text="And here's the second part."),
+            llm.Text(text="Finally, the third part."),
+        ]
+    )
+
+    response = llm.Response(
+        provider="openai",
+        model="test-model",
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        raw=None,
+    )
+
+    assert response.pretty() == snapshot(
+        inspect.cleandoc("""
+            Here's the first part.
+
+            And here's the second part.
+
+            Finally, the third part.
+        """)
+    )
