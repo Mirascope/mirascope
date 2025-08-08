@@ -1,5 +1,6 @@
 """The `llm.tool` decorator for turning functions into tools."""
 
+import inspect
 from collections.abc import Awaitable, Callable
 from typing import Protocol, overload
 
@@ -48,6 +49,26 @@ class ToolDecorator(Protocol):
     ) -> Tool[P, JsonableCovariantT] | AsyncTool[P, JsonableCovariantT]:
         """Call the decorator with a function."""
         raise NotImplementedError()
+
+
+def _tool_decorator(strict: bool) -> ToolDecorator:
+    @overload
+    def decorator(fn: ToolFn[P, JsonableCovariantT]) -> Tool[P, JsonableCovariantT]: ...
+
+    @overload
+    def decorator(
+        fn: AsyncToolFn[P, JsonableCovariantT],
+    ) -> AsyncTool[P, JsonableCovariantT]: ...
+
+    def decorator(
+        fn: ToolFn[P, JsonableCovariantT] | AsyncToolFn[P, JsonableCovariantT],
+    ) -> Tool[P, JsonableCovariantT] | AsyncTool[P, JsonableCovariantT]:
+        if inspect.iscoroutinefunction(fn):
+            return AsyncTool.from_function(fn, strict=strict)
+        else:
+            return Tool.from_function(fn, strict=strict)
+
+    return decorator
 
 
 @overload
@@ -99,4 +120,8 @@ def tool(
             return ["The Name of the Wind"]
         ```
     '''
-    raise NotImplementedError()
+
+    decorator = _tool_decorator(strict)
+    if __fn is None:
+        return decorator
+    return decorator(__fn)
