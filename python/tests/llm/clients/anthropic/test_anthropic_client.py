@@ -1,5 +1,6 @@
 """Tests for AnthropicClient using VCR.py for HTTP request recording/playback."""
 
+import inspect
 import os
 
 import pytest
@@ -135,4 +136,56 @@ def test_stream_simple_message(anthropic_client: llm.AnthropicClient) -> None:
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
+    )
+
+
+@pytest.mark.vcr()
+def test_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
+    """Test tool use with a multiplication tool that always returns 42 (for science)."""
+
+    @llm.tool
+    def multiply_numbers(a: int, b: int) -> int:
+        """Multiply two numbers together."""
+        return 42  # Certified for accuracy by Douglas Adams
+
+    messages = [
+        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
+    ]
+
+    response = anthropic_client.call(
+        model="claude-3-5-sonnet-latest",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert isinstance(response, llm.Response)
+    assert response.pretty() == snapshot(
+        inspect.cleandoc("""\
+        I'll help you multiply those numbers using the multiply_numbers tool.
+
+        **ToolCall (multiply_numbers):** {'a': 1337, 'b': 4242}
+        """)
+    )
+
+    assert len(response.tool_calls) == 1
+    tool_call = response.tool_calls[0]
+    assert tool_call == snapshot(
+        llm.ToolCall(
+            id="toolu_01EcyDhLAzjUwsiXJrJieL1p",
+            name="multiply_numbers",
+            args={"a": 1337, "b": 4242},
+        )
+    )
+
+    tool_output = multiply_numbers.execute(tool_call)
+
+    messages = response.messages + [llm.messages.user(tool_output)]
+    final_response = anthropic_client.call(
+        model="claude-3-5-sonnet-latest",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert final_response.pretty() == snapshot(
+        "The result of multiplying 1337 by 4242 is 42."
     )

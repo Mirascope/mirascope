@@ -39,18 +39,19 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> Response[None]:
         """Make a call to the Anthropic API."""
-        if tools:
-            raise NotImplementedError("tool use not yet supported")
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        message_params, system = _utils.prepare_anthropic_request(messages)
+        message_params, system, tool_params = _utils.prepare_anthropic_request(
+            messages, tools
+        )
 
         anthropic_response = self.client.messages.create(
             max_tokens=1024,
             model=model,
             messages=message_params,
             system=system,
+            tools=tool_params,
         )
 
         assistant_message, finish_reason = _utils.decode_response(anthropic_response)
@@ -156,7 +157,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        message_params, system = _utils.prepare_anthropic_request(messages)
+        message_params, system, _ = _utils.prepare_anthropic_request(messages)
 
         anthropic_stream = self.client.messages.stream(
             max_tokens=1024,
