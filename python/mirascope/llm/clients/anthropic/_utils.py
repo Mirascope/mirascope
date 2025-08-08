@@ -2,6 +2,7 @@
 
 from collections.abc import Sequence
 
+from anthropic import NotGiven
 from anthropic import types as anthropic_types
 from anthropic.lib.streaming import MessageStreamManager
 
@@ -14,8 +15,9 @@ from ...content import (
     TextEndChunk,
     TextStartChunk,
 )
-from ...messages import AssistantMessage, UserMessage, assistant
+from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import ChunkIterator, FinishReason
+from ..base import _utils as _base_utils
 
 ANTHROPIC_FINISH_REASON_MAP = {
     "end_turn": FinishReason.END_TURN,
@@ -47,7 +49,7 @@ def _decode_assistant_content(
         )
 
 
-def encode_messages(
+def _encode_messages(
     messages: Sequence[UserMessage | AssistantMessage],
 ) -> Sequence[anthropic_types.MessageParam]:
     """Convert user or assistant `Message`s to Anthropic `MessageParam` format.
@@ -63,6 +65,15 @@ def encode_messages(
         {"role": message.role, "content": _encode_content(message.content)}
         for message in messages
     ]
+
+
+def prepare_anthropic_request(
+    messages: Sequence[Message],
+) -> tuple[Sequence[anthropic_types.MessageParam], str | NotGiven]:
+    system_message_content, remaining_messages = _base_utils.extract_system_message(
+        messages
+    )
+    return _encode_messages(remaining_messages), system_message_content or NotGiven()
 
 
 def decode_response(
