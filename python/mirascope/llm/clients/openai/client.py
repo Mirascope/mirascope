@@ -42,16 +42,15 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         params: OpenAIParams | None = None,
     ) -> Response[None]:
         """Make a call to the OpenAI ChatCompletions API."""
-        if tools:
-            raise NotImplementedError("tool use not yet supported")
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        message_params = _utils.encode_messages(messages)
+        message_params, tool_params = _utils.prepare_openai_request(messages, tools)
 
         openai_response = self.client.chat.completions.create(
             model=model,
             messages=message_params,
+            tools=tool_params,
         )
 
         assistant_message, finish_reason = _utils.decode_response(openai_response)
@@ -157,7 +156,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        message_params = _utils.encode_messages(messages)
+        message_params, _ = _utils.prepare_openai_request(messages)
 
         openai_stream = self.client.chat.completions.create(
             model=model,

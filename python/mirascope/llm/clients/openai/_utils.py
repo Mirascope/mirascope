@@ -1,29 +1,25 @@
 """OpenAI message types and conversion utilities."""
 
+import json
 from collections.abc import Sequence
+from functools import lru_cache
 from typing import Literal
 
-from openai import Stream
-from openai.types.chat import (
-    ChatCompletion,
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionChunk,
-    ChatCompletionMessageParam,
-    ChatCompletionSystemMessageParam,
-    ChatCompletionUserMessageParam,
-)
+from openai import NotGiven, Stream
+from openai.types import chat as openai_types
 
 from ...content import (
     AssistantContentPart,
-    ContentPart,
     FinishReasonChunk,
     Text,
     TextChunk,
     TextEndChunk,
     TextStartChunk,
+    ToolCall,
 )
-from ...messages import AssistantMessage, Message, assistant
+from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import ChunkIterator, FinishReason
+from ...tools import Tool
 
 OPENAI_FINISH_REASON_MAP = {
     "stop": FinishReason.END_TURN,
@@ -34,63 +30,161 @@ OPENAI_FINISH_REASON_MAP = {
 }
 
 
-def _encode_content(
-    content: Sequence[ContentPart],
-) -> str:
-    """Convert mirascope content to OpenAI content format."""
-    if len(content) == 1 and content[0].type == "text":
-        return content[0].text
-    raise NotImplementedError("Only single-content text responses are supported.")
+def _encode_user_message(
+    message: UserMessage,
+) -> list[openai_types.ChatCompletionMessageParam]:
+    """Convert Mirascope `UserMessage` to a list of OpenAI `ChatCompletionMessageParam`."""
+
+    message_params: list[openai_types.ChatCompletionMessageParam] = []
+    for part in message.content:
+        if part.type == "text":
+            message_params.append(
+                openai_types.ChatCompletionUserMessageParam(
+                    role="user",
+                    content=part.text,
+                )
+            )
+        elif part.type == "tool_output":
+            message_params.append(
+                openai_types.ChatCompletionToolMessageParam(
+                    role="tool",
+                    content=str(part.value),
+                    tool_call_id=part.id,
+                )
+            )
+        else:
+            raise NotImplementedError
+
+    return message_params
 
 
-def _decode_assistant_content(
-    content: str,
-) -> AssistantContentPart:
-    """Convert OpenAI content to mirascope AssistantContentPart."""
-    return Text(text=content)
+def _encode_assistant_message(
+    message: AssistantMessage,
+) -> openai_types.ChatCompletionAssistantMessageParam:
+    """Convert Mirascope `AssistantMessage` to OpenAI `ChatCompletionAssistantMessageParam`."""
+
+    text_params: list[openai_types.ChatCompletionContentPartTextParam] = []
+    tool_call_params: list[openai_types.ChatCompletionMessageToolCallParam] = []
+    for part in message.content:
+        if part.type == "text":
+            text_params.append(
+                openai_types.ChatCompletionContentPartTextParam(
+                    text=part.text, type="text"
+                )
+            )
+        elif part.type == "tool_call":
+            tool_call_params.append(
+                openai_types.ChatCompletionMessageToolCallParam(
+                    id=part.id,
+                    type="function",
+                    function={"name": part.name, "arguments": json.dumps(part.args)},
+                )
+            )
+        else:
+            raise NotImplementedError
+
+    content: str | list[openai_types.ChatCompletionContentPartTextParam] | None = None
+    if len(text_params) == 1:
+        content = text_params[0]["text"]
+    elif text_params:
+        content = text_params
+
+    message_params = {
+        "role": "assistant",
+        "content": content,
+    }
+    if tool_call_params:
+        message_params["tool_calls"] = tool_call_params
+
+    return openai_types.ChatCompletionAssistantMessageParam(**message_params)
 
 
-def _encode_message(message: Message) -> ChatCompletionMessageParam:
+def _encode_message(message: Message) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert a Mirascope `Message` to OpenAI `ChatCompletionMessageParam` format.
 
     Args:
         message: A Mirascope message (system, user, or assistant)
 
     Returns:
-        A list containing a single OpenAI `ChatCompletionMessageParam`
+        A list of OpenAI `ChatCompletionMessageParam` (may be multiple for tool outputs)
     """
     if message.role == "system":
-        return ChatCompletionSystemMessageParam(
-            role="system", content=message.content.text
-        )
-
+        return [
+            openai_types.ChatCompletionSystemMessageParam(
+                role="system", content=message.content.text
+            )
+        ]
     elif message.role == "user":
-        return ChatCompletionUserMessageParam(
-            role="user", content=_encode_content(message.content)
-        )
-
+        return _encode_user_message(message)
     elif message.role == "assistant":
-        return ChatCompletionAssistantMessageParam(
-            role="assistant", content=_encode_content(message.content)
-        )
-
+        return [_encode_assistant_message(message)]
     else:
         raise ValueError(f"Unsupported role: {message.role}")  # pragma: no cover
 
 
-def encode_messages(
+def _decode_assistant_message(
+    message: openai_types.ChatCompletionMessage,
+) -> AssistantMessage:
+    parts: list[AssistantContentPart] = []
+    if message.content:
+        parts.append(Text(text=message.content))
+    if message.tool_calls:
+        for tool_call in message.tool_calls:
+            parts.append(
+                ToolCall(
+                    id=tool_call.id,
+                    name=tool_call.function.name,
+                    args=json.loads(tool_call.function.arguments),
+                )
+            )
+
+    return AssistantMessage(content=parts)
+
+
+@lru_cache(maxsize=128)
+def _convert_tool_to_tool_param(tool: Tool) -> openai_types.ChatCompletionToolParam:
+    """Convert a single Mirascope `Tool` to OpenAI ChatCompletionToolParam with caching."""
+    schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
+    schema_dict["type"] = "object"
+    return openai_types.ChatCompletionToolParam(
+        type="function",
+        function={
+            "name": tool.name,
+            "description": tool.description,
+            "parameters": schema_dict,
+            "strict": tool.strict,
+        },
+    )
+
+
+def prepare_openai_request(
     messages: Sequence[Message],
-) -> Sequence[ChatCompletionMessageParam]:
-    """Convert a sequence of Mirascope `Message` to OpenAI `ChatCompletionmessageParam`."""
-    return [_encode_message(message) for message in messages]
+    tools: Sequence[Tool] | None = None,
+) -> tuple[
+    Sequence[openai_types.ChatCompletionMessageParam],
+    Sequence[openai_types.ChatCompletionToolParam] | NotGiven,
+]:
+    """Prepare OpenAI API request parameters."""
+    openai_tools = (
+        [_convert_tool_to_tool_param(tool) for tool in tools] if tools else NotGiven()
+    )
+
+    encoded_messages: list[openai_types.ChatCompletionMessageParam] = []
+    for message in messages:
+        encoded_messages.extend(_encode_message(message))
+
+    return (
+        encoded_messages,
+        openai_tools,
+    )
 
 
-def decode_response(response: ChatCompletion) -> tuple[AssistantMessage, FinishReason]:
+def decode_response(
+    response: openai_types.ChatCompletion,
+) -> tuple[AssistantMessage, FinishReason]:
     """Convert OpenAI ChatCompletion to mirascope AssistantMessage."""
     choice = response.choices[0]
-    assistant_message = assistant(
-        content=[_decode_assistant_content(choice.message.content or "")]
-    )
+    assistant_message = _decode_assistant_message(choice.message)
     finish_reason = OPENAI_FINISH_REASON_MAP.get(
         choice.finish_reason, FinishReason.UNKNOWN
     )
@@ -98,7 +192,7 @@ def decode_response(response: ChatCompletion) -> tuple[AssistantMessage, FinishR
 
 
 def convert_openai_stream_to_chunk_iterator(
-    openai_stream: Stream[ChatCompletionChunk],
+    openai_stream: Stream[openai_types.ChatCompletionChunk],
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from an OpenAI Stream[ChatCompletionChunk]"""
     current_content_type: Literal["text"] | None = None
