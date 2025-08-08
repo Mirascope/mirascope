@@ -1,6 +1,7 @@
 """OpenAI message types and conversion utilities."""
 
 from collections.abc import Sequence
+from typing import Literal
 
 from openai import Stream
 from openai.types.chat import (
@@ -100,7 +101,7 @@ def convert_openai_stream_to_chunk_iterator(
     openai_stream: Stream[ChatCompletionChunk],
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from an OpenAI Stream[ChatCompletionChunk]"""
-    content_started = False
+    current_content_type: Literal["text"] | None = None
 
     for chunk in openai_stream:
         choice = chunk.choices[0] if chunk.choices else None
@@ -110,17 +111,20 @@ def convert_openai_stream_to_chunk_iterator(
         delta = choice.delta
 
         if delta.content is not None:
-            if not content_started:
+            if current_content_type is None:
                 yield TextStartChunk(type="text_start_chunk"), chunk
-                content_started = True
+                current_content_type = "text"
+            elif current_content_type != "text":
+                raise NotImplementedError
 
-            if delta.content:
-                yield TextChunk(type="text_chunk", delta=delta.content), chunk
+            yield TextChunk(type="text_chunk", delta=delta.content), chunk
 
         if choice.finish_reason:
-            if content_started:
+            if current_content_type == "text":
                 yield TextEndChunk(type="text_end_chunk"), chunk
-                content_started = False
+                current_content_type = None
+            else:
+                raise NotImplementedError
 
             finish_reason = OPENAI_FINISH_REASON_MAP.get(
                 choice.finish_reason, FinishReason.UNKNOWN
