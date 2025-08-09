@@ -3,7 +3,7 @@
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
-from ..content import Text, ToolCall
+from ..content import Text, Thinking, ToolCall
 from ..formatting import FormatT
 from ..messages import AssistantMessage, Message
 from .base_response import BaseResponse
@@ -49,8 +49,10 @@ class Response(BaseResponse[FormatT]):
                 self.texts.append(part)
             elif isinstance(part, ToolCall):
                 self.tool_calls.append(part)
-            else:
+            elif isinstance(part, Thinking):
                 self.thinkings.append(part)
+            else:
+                raise NotImplementedError
 
     def format(self) -> FormatT:
         """Format the response according to the response format parser.
@@ -69,4 +71,32 @@ class Response(BaseResponse[FormatT]):
 
     def pretty(self) -> str:
         """Return a string representation of all response content."""
-        raise NotImplementedError()
+        if not self.content:
+            return "[empty response]"
+
+        parts = []
+        for part in self.content:
+            if isinstance(part, Text):
+                # Text content appears directly without brackets
+                parts.append(part.text)
+            elif isinstance(part, ToolCall):
+                # Tool calls get bracketed with structured info
+                parts.append(
+                    f"[ToolCall: id={part.id}, name={part.name}, args={part.args}]"
+                )
+            elif isinstance(part, Thinking):
+                # Thinking gets bracketed with indented content
+                indented_thinking = "\n".join(
+                    f"  {line}" for line in part.thinking.split("\n")
+                )
+                signature_line = (
+                    f"\n  signature: {part.signature}" if part.signature else ""
+                )
+                parts.append(f"[Thinking:\n{indented_thinking}{signature_line}\n]")
+            else:
+                # Fallback for unknown content types
+                parts.append(
+                    f"[{type(part).__name__}: {str(part)}]"
+                )  # pragma: no cover
+
+        return "\n".join(parts)
