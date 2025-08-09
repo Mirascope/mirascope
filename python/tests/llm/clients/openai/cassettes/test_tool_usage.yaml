@@ -1,0 +1,220 @@
+interactions:
+  - request:
+      body:
+        '{"messages":[{"role":"user","content":[{"type":"text","text":"What is 1337
+        * 4242? Please use the multiply_numbers tool."}]}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"multiply_numbers","description":"Multiply
+        two numbers together.","parameters":{"type":"object","properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false},"strict":false}}]}'
+      headers:
+        accept:
+          - application/json
+        accept-encoding:
+          - gzip, deflate
+        connection:
+          - keep-alive
+        content-length:
+          - "445"
+        content-type:
+          - application/json
+        host:
+          - api.openai.com
+        user-agent:
+          - OpenAI/Python 1.86.0
+        x-stainless-arch:
+          - arm64
+        x-stainless-async:
+          - "false"
+        x-stainless-lang:
+          - python
+        x-stainless-os:
+          - MacOS
+        x-stainless-package-version:
+          - 1.86.0
+        x-stainless-read-timeout:
+          - "600"
+        x-stainless-retry-count:
+          - "0"
+        x-stainless-runtime:
+          - CPython
+        x-stainless-runtime-version:
+          - 3.10.16
+      method: POST
+      uri: https://api.openai.com/v1/chat/completions
+    response:
+      body:
+        string: !!binary |
+          H4sIAAAAAAAAAwAAAP//jFPLbptAFN3zFaO7NpXB2Kbs0rSLSm2zaBT14QiNhwtMOi/NDFEcy/8e
+          ATZgJ5HKAo3umXPuuY/ZB4QALyAjwGrqmTQivI5vfvjH5/WyebZ3t/VPEX2uoi9f+W39/WYHs5ah
+          tw/I/In1gWlpBHquVQ8zi9Rjqxqtl8kqXSXxsgOkLlC0tMr4MNGh5IqH8TxOwvk6jNIju9acoYOM
+          /A0IIWTf/VufqsAnyMh8dopIdI5WCNlwiRCwWrQRoM5x56nyMBtBppVH1VpXjRATwGstckaFGBP3
+          335yHptFhch/fazSP/x6/Vs9fLtbzMUnFUXbpys2yddL70xnqGwUG5o0wYd4dpGMEFBUdlzZCM+N
+          2OWqkVu07kKDEKC2aiQq3/qH/QboBrJosVjPNrDdQJbESXyAM9IheOt8P2mKxbJxVLzuFlVKe9qa
+          7tp1f0QOw2SErozVW3dBhZIr7urcInVdwdO+BycjnQVozkYLxmppfO71P+ySrtJeFMbtG8H4uCPg
+          tadijKcn0plaXqCnvJv8sGyMshqLkTkuHW0KridAMKn8tZm3tPvquar+R34EGEPjsciNxYKz84LH
+          axbbt/netaHHnWFwaB85w9xztO00CixpI/oXA27nPMq85KpCayzvng2UJl/FNF7QNMISgkPwAgAA
+          //8DAJpYUGhEBAAA
+      headers:
+        CF-RAY:
+          - 96c1e7ad082c75fe-SEA
+        Connection:
+          - keep-alive
+        Content-Encoding:
+          - gzip
+        Content-Type:
+          - application/json
+        Date:
+          - Fri, 08 Aug 2025 20:53:46 GMT
+        Server:
+          - cloudflare
+        Set-Cookie:
+          - __cf_bm=I8EMSFLpl2VVlV_SGzJjUmVfwObjeRSN3_f4zp28K3k-1754686426-1.0.1.1-C7XbPih7HWUY3XvEzhxPH3T8zrws8w5oko6K7q_uYb8UqqIaOLc5W_7qm1200j_CfL_MbGYBQyzCAz7eEacFSuwMGkM0BHCIRU8pQtLnu9o;
+            path=/; expires=Fri, 08-Aug-25 21:23:46 GMT; domain=.api.openai.com; HttpOnly;
+            Secure; SameSite=None
+          - _cfuvid=FrGJpOQjnzz.13klt49O5noaUB3hKxDM9E_2DkfKynY-1754686426561-0.0.1.1-604800000;
+            path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+        Strict-Transport-Security:
+          - max-age=31536000; includeSubDomains; preload
+        Transfer-Encoding:
+          - chunked
+        X-Content-Type-Options:
+          - nosniff
+        access-control-expose-headers:
+          - X-Request-ID
+        alt-svc:
+          - h3=":443"; ma=86400
+        cf-cache-status:
+          - DYNAMIC
+        openai-organization:
+          - sotai-i3ryiz
+        openai-processing-ms:
+          - "960"
+        openai-project:
+          - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+        openai-version:
+          - "2020-10-01"
+        x-envoy-upstream-service-time:
+          - "1138"
+        x-ratelimit-limit-requests:
+          - "5000"
+        x-ratelimit-limit-tokens:
+          - "4000000"
+        x-ratelimit-remaining-requests:
+          - "4999"
+        x-ratelimit-remaining-tokens:
+          - "3999983"
+        x-ratelimit-reset-requests:
+          - 12ms
+        x-ratelimit-reset-tokens:
+          - 0s
+        x-request-id:
+          - req_c65dcaff11c14eb5bb7d505ae8092e24
+      status:
+        code: 200
+        message: OK
+  - request:
+      body:
+        '{"messages":[{"role":"user","content":[{"type":"text","text":"What is 1337
+        * 4242? Please use the multiply_numbers tool."}]},{"role":"assistant","content":null,"tool_calls":[{"id":"call_X9g8ZiC7YnjLV30lBn11bxAc","type":"function","function":{"name":"multiply_numbers","arguments":"{\"a\":
+        1337, \"b\": 4242}"}}]},{"role":"tool","content":"42","tool_call_id":"call_X9g8ZiC7YnjLV30lBn11bxAc"}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"multiply_numbers","description":"Multiply
+        two numbers together.","parameters":{"type":"object","properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false},"strict":false}}]}'
+      headers:
+        accept:
+          - application/json
+        accept-encoding:
+          - gzip, deflate
+        connection:
+          - keep-alive
+        content-length:
+          - "711"
+        content-type:
+          - application/json
+        cookie:
+          - __cf_bm=I8EMSFLpl2VVlV_SGzJjUmVfwObjeRSN3_f4zp28K3k-1754686426-1.0.1.1-C7XbPih7HWUY3XvEzhxPH3T8zrws8w5oko6K7q_uYb8UqqIaOLc5W_7qm1200j_CfL_MbGYBQyzCAz7eEacFSuwMGkM0BHCIRU8pQtLnu9o;
+            _cfuvid=FrGJpOQjnzz.13klt49O5noaUB3hKxDM9E_2DkfKynY-1754686426561-0.0.1.1-604800000
+        host:
+          - api.openai.com
+        user-agent:
+          - OpenAI/Python 1.86.0
+        x-stainless-arch:
+          - arm64
+        x-stainless-async:
+          - "false"
+        x-stainless-lang:
+          - python
+        x-stainless-os:
+          - MacOS
+        x-stainless-package-version:
+          - 1.86.0
+        x-stainless-read-timeout:
+          - "600"
+        x-stainless-retry-count:
+          - "0"
+        x-stainless-runtime:
+          - CPython
+        x-stainless-runtime-version:
+          - 3.10.16
+      method: POST
+      uri: https://api.openai.com/v1/chat/completions
+    response:
+      body:
+        string: !!binary |
+          H4sIAAAAAAAAA4xSwY6bMBC98xUjn1oprAKhkOTa9la1PbSHqqyQYw/grbEte1h1tcq/V4ZsYLdb
+          qReE5s17fm9mHhMApiQ7AhM9JzE4nb7Pv3weK3IPH77Sjofhx8fT/fdPp8OW37U920SGPd2hoCfW
+          jbCD00jKmhkWHjlhVM2qd0W5L4u8nIDBStSR1jlKC5sOyqg03+ZFuq3SbH9h91YJDOwIPxMAgMfp
+          G30aib/ZEbabp8qAIfAO2fHaBMC81bHCeAgqEDfENgsorCE0k/VvPYLHMGoC20Jdv4Fst6ugrkkN
+          GKDIixzq+i2o+H+zFvHYjoHHIGbUegVwYyzxOIjJ/u0FOV8Na9s5b0/hBZW1yqjQNx55sCaaC2Qd
+          m9BzAnA7DWZ8lpU5bwdHDdlfOD13qGY5tqxjAbPDBSRLXK/qWbl5Ra6RSFzpsJosE1z0KBfqsgY+
+          SmVXQLIK/beb17Tn4Mp0/yO/AEKgI5SN8yiVeJ54afMYr/VfbdchT4ZZQH+vBDak0MdFSGz5qOcb
+          YuEhEA5Nq0yH3nk1H1LrmjLn+Y7vM2xZck7+AAAA//8DAOzZGcJWAwAA
+      headers:
+        CF-RAY:
+          - 96c1e7b668b175fe-SEA
+        Connection:
+          - keep-alive
+        Content-Encoding:
+          - gzip
+        Content-Type:
+          - application/json
+        Date:
+          - Fri, 08 Aug 2025 20:53:47 GMT
+        Server:
+          - cloudflare
+        Strict-Transport-Security:
+          - max-age=31536000; includeSubDomains; preload
+        Transfer-Encoding:
+          - chunked
+        X-Content-Type-Options:
+          - nosniff
+        access-control-expose-headers:
+          - X-Request-ID
+        alt-svc:
+          - h3=":443"; ma=86400
+        cf-cache-status:
+          - DYNAMIC
+        openai-organization:
+          - sotai-i3ryiz
+        openai-processing-ms:
+          - "693"
+        openai-project:
+          - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+        openai-version:
+          - "2020-10-01"
+        x-envoy-upstream-service-time:
+          - "708"
+        x-ratelimit-limit-requests:
+          - "5000"
+        x-ratelimit-limit-tokens:
+          - "4000000"
+        x-ratelimit-remaining-requests:
+          - "4999"
+        x-ratelimit-remaining-tokens:
+          - "3999981"
+        x-ratelimit-reset-requests:
+          - 12ms
+        x-ratelimit-reset-tokens:
+          - 0s
+        x-request-id:
+          - req_908833b7092a4a1896455f823783f143
+      status:
+        code: 200
+        message: OK
+version: 1

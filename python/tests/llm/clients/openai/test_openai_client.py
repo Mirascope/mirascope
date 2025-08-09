@@ -127,19 +127,19 @@ def test_call_with_turns(openai_client: llm.OpenAIClient) -> None:
                 llm.AssistantMessage(
                     content=[
                         llm.Text(
-                            text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
+                            text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic exploration of the factors leading to the empire's collapse."
                         )
                     ]
                 ),
             ],
             "content": [
                 llm.Text(
-                    text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
+                    text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic exploration of the factors leading to the empire's collapse."
                 )
             ],
             "texts": [
                 llm.Text(
-                    text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
+                    text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic exploration of the factors leading to the empire's collapse."
                 )
             ],
             "tool_calls": [],
@@ -172,19 +172,19 @@ def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
                 llm.AssistantMessage(
                     content=[
                         llm.Text(
-                            text="Hello! I'm glad to hear from you. How can I assist you today?"
+                            text="Hello! It’s great to see you! How can I assist you today?"
                         )
                     ]
                 ),
             ],
             "content": [
                 llm.Text(
-                    text="Hello! I'm glad to hear from you. How can I assist you today?"
+                    text="Hello! It’s great to see you! How can I assist you today?"
                 )
             ],
             "texts": [
                 llm.Text(
-                    text="Hello! I'm glad to hear from you. How can I assist you today?"
+                    text="Hello! It’s great to see you! How can I assist you today?"
                 )
             ],
             "tool_calls": [],
@@ -195,13 +195,13 @@ def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
                 llm.TextChunk(delta=""),
                 llm.TextChunk(delta="Hello"),
                 llm.TextChunk(delta="!"),
-                llm.TextChunk(delta=" I'm"),
-                llm.TextChunk(delta=" glad"),
+                llm.TextChunk(delta=" It"),
+                llm.TextChunk(delta="’s"),
+                llm.TextChunk(delta=" great"),
                 llm.TextChunk(delta=" to"),
-                llm.TextChunk(delta=" hear"),
-                llm.TextChunk(delta=" from"),
+                llm.TextChunk(delta=" see"),
                 llm.TextChunk(delta=" you"),
-                llm.TextChunk(delta="."),
+                llm.TextChunk(delta="!"),
                 llm.TextChunk(delta=" How"),
                 llm.TextChunk(delta=" can"),
                 llm.TextChunk(delta=" I"),
@@ -213,4 +213,52 @@ def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
+    )
+
+
+@pytest.mark.vcr()
+def test_tool_usage(openai_client: llm.OpenAIClient) -> None:
+    """Test tool use with a multiplication tool that always returns 42 (for science)."""
+
+    @llm.tool
+    def multiply_numbers(a: int, b: int) -> int:
+        """Multiply two numbers together."""
+        return 42  # Certified for accuracy by Douglas Adams
+
+    messages = [
+        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
+    ]
+
+    response = openai_client.call(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert isinstance(response, llm.Response)
+    assert response.pretty() == snapshot(
+        "[ToolCall: id=call_X9g8ZiC7YnjLV30lBn11bxAc, name=multiply_numbers, args={'a': 1337, 'b': 4242}]"
+    )
+
+    assert len(response.tool_calls) == 1
+    tool_call = response.tool_calls[0]
+    assert tool_call == snapshot(
+        llm.ToolCall(
+            id="call_X9g8ZiC7YnjLV30lBn11bxAc",
+            name="multiply_numbers",
+            args={"a": 1337, "b": 4242},
+        )
+    )
+
+    tool_output = multiply_numbers.execute(tool_call)
+
+    messages = response.messages + [llm.messages.user(tool_output)]
+    final_response = openai_client.call(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert final_response.pretty() == snapshot(
+        "The result of \\( 1337 \\times 4242 \\) is 42."
     )
