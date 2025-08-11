@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Literal, overload
 
 from typing_extensions import Unpack
 
-from .base import LLM
+from .llm import LLM
 
 if TYPE_CHECKING:
     from ..clients import (
@@ -27,11 +27,7 @@ if TYPE_CHECKING:
         OpenAIParams,
         Provider,
     )
-    from ..models import (
-        Anthropic,
-        Google,
-        OpenAI,
-    )
+
 
 MODEL_CONTEXT: ContextVar[LLM | None] = ContextVar("MODEL_CONTEXT", default=None)
 
@@ -44,7 +40,7 @@ def model(
     model: AnthropicModel,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> Iterator[Anthropic]:
+) -> Iterator[LLM[AnthropicClient, AnthropicParams]]:
     """Overload for Anthropic models."""
     ...
 
@@ -57,7 +53,7 @@ def model(
     model: GoogleModel,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> Iterator[Google]:
+) -> Iterator[LLM[GoogleClient, GoogleParams]]:
     """Overload for Google models."""
     ...
 
@@ -70,7 +66,7 @@ def model(
     model: OpenAIModel,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> Iterator[OpenAI]:
+) -> Iterator[LLM[OpenAIClient, OpenAIParams]]:
     """Overload for OpenAI models."""
     ...
 
