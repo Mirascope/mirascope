@@ -17,6 +17,9 @@ from ...content import (
     TextEndChunk,
     TextStartChunk,
     ToolCall,
+    ToolCallChunk,
+    ToolCallEndChunk,
+    ToolCallStartChunk,
 )
 from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import ChunkIterator, FinishReason
@@ -166,6 +169,15 @@ def convert_anthropic_stream_to_chunk_iterator(
 
                 if content_block.type == "text":
                     yield TextStartChunk(type="text_start_chunk"), event
+                elif content_block.type == "tool_use":
+                    yield (
+                        ToolCallStartChunk(
+                            type="tool_call_start_chunk",
+                            id=content_block.id,
+                            name=content_block.name,
+                        ),
+                        event,
+                    )
                 else:
                     raise NotImplementedError
 
@@ -173,12 +185,24 @@ def convert_anthropic_stream_to_chunk_iterator(
                 delta = event.delta
                 if delta.type == "text_delta":
                     yield TextChunk(type="text_chunk", delta=delta.text), event
+                elif delta.type == "input_json_delta":
+                    yield (
+                        ToolCallChunk(type="tool_call_chunk", delta=delta.partial_json),
+                        event,
+                    )
                 else:
                     raise NotImplementedError
 
             elif event.type == "content_block_stop":
                 if current_block_type == "text":
                     yield TextEndChunk(type="text_end_chunk"), event
+                elif current_block_type == "tool_use":
+                    yield (
+                        ToolCallEndChunk(
+                            type="tool_call_end_chunk", content_type="tool_call"
+                        ),
+                        event,
+                    )
                 else:
                     raise NotImplementedError
 
