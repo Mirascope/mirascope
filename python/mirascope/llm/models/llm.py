@@ -23,7 +23,7 @@ from ..formatting import FormatT
 from ..types import Jsonable
 
 
-class LLM(Generic[ParamsT, ClientT]):
+class LLM(Generic[ClientT, ParamsT]):
     """The unified LLM interface that delegates to provider-specific clients.
 
     This class provides a consistent interface for interacting with language models
@@ -37,19 +37,19 @@ class LLM(Generic[ParamsT, ClientT]):
     model: Model
     """The model being used (e.g. `gpt-4o-mini`)."""
 
-    params: ParamsT
-    """The default parameters for the model (temperature, max_tokens, etc.)."""
-
     client: ClientT
     """The client object used to interact with the model API."""
+
+    params: ParamsT
+    """The default parameters for the model (temperature, max_tokens, etc.)."""
 
     def __init__(
         self,
         *,
         provider: str,
         name: str,
-        params: ParamsT | None = None,
         client: ClientT | None = None,
+        params: ParamsT | None = None,
     ) -> None:
         """Initializes an `LLM` instance."""
         raise NotImplementedError()
@@ -63,7 +63,6 @@ class LLM(Generic[ParamsT, ClientT]):
         | Sequence[Tool | ContextTool[..., Jsonable, DepsT]]
         | None = None,
         format: type[FormatT] | None = None,
-        params: ParamsT | None = None,
     ) -> Response[FormatT]:
         """Generate a response using the model."""
         raise NotImplementedError()
@@ -77,7 +76,6 @@ class LLM(Generic[ParamsT, ClientT]):
         | Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]]
         | None = None,
         format: type[FormatT] | None = None,
-        params: ParamsT | None = None,
     ) -> Response[FormatT]:
         """Generate a response asynchronously using the model."""
         raise NotImplementedError()
@@ -91,7 +89,6 @@ class LLM(Generic[ParamsT, ClientT]):
         | Sequence[Tool | ContextTool[..., Jsonable, DepsT]]
         | None = None,
         format: type[FormatT] | None = None,
-        params: ParamsT | None = None,
     ) -> StreamResponse[Stream, FormatT]:
         """Stream a response using the model."""
         raise NotImplementedError()
@@ -105,7 +102,6 @@ class LLM(Generic[ParamsT, ClientT]):
         | Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]]
         | None = None,
         format: type[FormatT] | None = None,
-        params: ParamsT | None = None,
     ) -> StreamResponse[AsyncStream, FormatT]:
         """Stream a response asynchronously using the model."""
         raise NotImplementedError()
