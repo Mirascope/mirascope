@@ -53,6 +53,10 @@ class Tool(ToolSchema[P, JsonableCovariantT]):
         result = self.fn(**tool_call.args)  # type: ignore[reportCallIssue]
         return ToolOutput(id=tool_call.id, value=result)
 
+    def __hash__(self) -> int:
+        """Hash based on schema fields only, ignoring the fn field."""
+        return super().__hash__()
+
 
 @dataclass
 class AsyncTool(ToolSchema[P, JsonableCovariantT]):
@@ -91,3 +95,7 @@ class AsyncTool(ToolSchema[P, JsonableCovariantT]):
         """Execute the async tool using an LLM-provided `ToolCall`."""
         result = await self.fn(**tool_call.args)  # type: ignore[reportCallIssue]
         return ToolOutput(id=tool_call.id, value=result)
+
+    def __hash__(self) -> int:
+        """Hash based on schema fields only, ignoring the fn field."""
+        return super().__hash__()
