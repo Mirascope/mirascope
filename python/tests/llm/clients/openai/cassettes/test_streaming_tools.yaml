@@ -1,0 +1,243 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 1337 * 4242? Please use
+      the multiply_numbers tool."}],"model":"gpt-4o-mini","stream":true,"tools":[{"type":"function","function":{"name":"multiply_numbers","description":"Multiply
+      two numbers together.","parameters":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '434'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: 'data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"role":"assistant","content":null,"tool_calls":[{"index":0,"id":"call_gdjsOY6GOAuHAaopGj4iyeWV","type":"function","function":{"name":"multiply_numbers","arguments":""}}],"refusal":null},"logprobs":null,"finish_reason":null}],"obfuscation":"xtgeegBhHr6R"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"{\""}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"uXQiAzdpXj0"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"a"}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"ypw7uIBGcoht7"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"\":"}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"yp4mAE1m2Bd"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"133"}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"EJiwzZcKcbo"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"7"}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"tA3dnvmo0SSbk"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":",\""}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"luzLVsTrLM2"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"b"}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"EwofHbKHFg5oW"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"\":"}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"bNmCNPhIls4"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"424"}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"gFsodVTwzqn"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"2"}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"ZtK3fW10tvJHC"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{"tool_calls":[{"index":0,"function":{"arguments":"}"}}]},"logprobs":null,"finish_reason":null}],"obfuscation":"C6UVe83XG57ng"}
+
+
+        data: {"id":"chatcmpl-C3xidEbP00KEuWL2zYAWJ8ADS0BdS","object":"chat.completion.chunk","created":1755060579,"model":"gpt-4o-mini-2024-07-18","service_tier":"default","system_fingerprint":"fp_34a54ae93c","choices":[{"index":0,"delta":{},"logprobs":null,"finish_reason":"tool_calls"}],"obfuscation":"8lXTR8YB0V0V"}
+
+
+        data: [DONE]
+
+
+        '
+    headers:
+      CF-RAY:
+      - 96e5964afe060882-SEA
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Wed, 13 Aug 2025 04:49:39 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - _cfuvid=fuKNPGqWjMff8xHS3pPZeGIWH0rV6KLE.osX_SbBJO4-1755060579779-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '385'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '475'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999983'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_b0152e8d8c6d40e2ba1acd7b9725669e
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 1337 * 4242? Please use
+      the multiply_numbers tool."},{"role":"assistant","content":null,"tool_calls":[{"id":"call_gdjsOY6GOAuHAaopGj4iyeWV","type":"function","function":{"name":"multiply_numbers","arguments":"{\"a\":1337,\"b\":4242}"}}]},{"role":"tool","content":"42","tool_call_id":"call_gdjsOY6GOAuHAaopGj4iyeWV"}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"multiply_numbers","description":"Multiply
+      two numbers together.","parameters":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '683'
+      content-type:
+      - application/json
+      cookie:
+      - _cfuvid=fuKNPGqWjMff8xHS3pPZeGIWH0rV6KLE.osX_SbBJO4-1755060579779-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFLBitswEL37KwadWogXO3biJNe97KFQCl0orRejSGNbu7JGSHLZsuTf
+        i5w09m630Isx8+Y9vTczLwkAU5IdgImeBzFYnd4Wzwrv9p/p/u62r2T+XW6/3Jff8k+0K45sFRl0
+        fEQR/rBuBA1WY1BkzrBwyANG1bzabLJtttllEzCQRB1pnQ1pSemgjErX2bpMsyrNdxd2T0qgZwf4
+        kQAAvEzf6NNIfGYHmLSmyoDe8w7Z4doEwBzpWGHce+UDN4GtZlCQCWgm6197BId+1AGohbr+AHlR
+        VFDXQQ3ooVyXa6jrj6Di/81SxGE7eh6DmFHrBcCNocDjICb7DxfkdDWsqbOOjv4NlbXKKN83Drkn
+        E835QJZN6CkBeJgGM77KyqyjwYYm0BNOz+2rsxyb1zGD+f4CBgpcL+r5dvWOXCMxcKX9YrJMcNGj
+        nKnzGvgoFS2AZBH6bzfvaZ+DK9P9j/wMCIE2oGysQ6nE68Rzm8N4rf9quw55Msw8up9KYBMUurgI
+        iS0f9fmGmP/lAw5Nq0yHzjp1PqTWNkXJNyXHfSFYckp+AwAA//8DAFXUKwZWAwAA
+    headers:
+      CF-RAY:
+      - 96e5965179000882-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 13 Aug 2025 04:49:40 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '650'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '697'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999981'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_30f62a049fd54c4d867f016e6fa5eea6
+    status:
+      code: 200
+      message: OK
+version: 1
