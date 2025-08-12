@@ -51,7 +51,7 @@ class Tool(ToolSchema[P, JsonableCovariantT]):
     def execute(self, tool_call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Execute the tool using an LLM-provided `ToolCall`."""
         result = self.fn(**tool_call.args)  # type: ignore[reportCallIssue]
-        return ToolOutput(id=tool_call.id, value=result)
+        return ToolOutput(id=tool_call.id, value=result, name=self.name)
 
     def __hash__(self) -> int:
         """Hash based on schema fields only, ignoring the fn field."""
@@ -94,7 +94,7 @@ class AsyncTool(ToolSchema[P, JsonableCovariantT]):
     async def execute(self, tool_call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Execute the async tool using an LLM-provided `ToolCall`."""
         result = await self.fn(**tool_call.args)  # type: ignore[reportCallIssue]
-        return ToolOutput(id=tool_call.id, value=result)
+        return ToolOutput(id=tool_call.id, value=result, name=self.name)
 
     def __hash__(self) -> int:
         """Hash based on schema fields only, ignoring the fn field."""
