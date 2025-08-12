@@ -22,5 +22,8 @@ class ToolOutput(Generic[JsonableT]):
     id: str
     """The ID of the tool call that this output is for."""
 
+    name: str
+    """The name of the tool that created this output."""
+
     value: JsonableT
     """The output value from the tool call."""
