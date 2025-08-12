@@ -1,6 +1,7 @@
 """Google message types and conversion utilities."""
 
 from collections.abc import Iterator, Sequence
+from functools import lru_cache
 from typing import Literal
 
 from google.genai import types as genai_types
@@ -14,9 +15,11 @@ from ...content import (
     TextChunk,
     TextEndChunk,
     TextStartChunk,
+    ToolCall,
 )
 from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import ChunkIterator, FinishReason
+from ...tools import Tool
 from ..base import _utils as _base_utils
 
 GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
@@ -29,18 +32,39 @@ GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
     "PROHIBITED_CONTENT": FinishReason.REFUSAL,
     "SPII": FinishReason.REFUSAL,
     "MALFORMED_FUNCTION_CALL": FinishReason.UNKNOWN,
+    "FUNCTION_CALL": FinishReason.TOOL_USE,
 }
 
 
 def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict]:
     """Returns a list of google `PartDicts` converted from a sequence of Mirascope `ContentPart`s"""
     result = []
-    for item in content:
-        if item.type == "text":
-            result.append({"text": item.text})
+    for part in content:
+        if part.type == "text":
+            result.append({"text": part.text})
+        elif part.type == "tool_call":
+            result.append(
+                {
+                    "function_call": {
+                        "name": part.name,
+                        "args": part.args,
+                        "id": part.id,
+                    }
+                }
+            )
+        elif part.type == "tool_output":
+            result.append(
+                {
+                    "function_response": {
+                        "id": part.id,
+                        "name": part.name,
+                        "response": {"output": str(part.value)},
+                    }
+                }
+            )
         else:
             raise NotImplementedError(
-                f"Have not implemented conversion for {item.type}"
+                f"Have not implemented conversion for {part.type}"
             )
     return result
 
@@ -63,10 +87,21 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
         raise NotImplementedError("Support for code execution results not implemented.")
     elif part.executable_code:
         raise NotImplementedError("Support for executable code not implemented.")
-    elif part.function_call:
-        raise NotImplementedError("Support for function calls not implemented.")
+    elif function_call := part.function_call:
+        id = function_call.id
+        name = function_call.name
+        args = function_call.args
+        if not name or not args:
+            raise ValueError(
+                "Google function_call does not match spec"
+            )  # pragma: no cover
+        if not id:
+            id = name  # Google treats tool call ids as optional
+        return ToolCall(id=id, name=name, args=args)
     elif part.function_response:
-        raise NotImplementedError("Support for function responses not implemented.")
+        raise NotImplementedError(
+            "function_response part does not decode to AssistantContent."
+        )
     else:
         # Per Part docstring, this should never happen:
         # >  Exactly one field within a Part should be set, representing the specific type
@@ -107,16 +142,49 @@ def _encode_messages(
     return [_encode_message(message) for message in messages]
 
 
+@lru_cache(maxsize=128)
+def _convert_tool_to_function_declaration(
+    tool: Tool,
+) -> genai_types.FunctionDeclaration:
+    """Convert a single Mirascope tool to Google FunctionDeclaration format with caching."""
+    schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
+    schema_dict["type"] = "object"
+    return genai_types.FunctionDeclaration(
+        name=tool.name,
+        description=tool.description,
+        parameters=genai_types.Schema(
+            type=genai_types.Type.OBJECT,
+            properties={
+                name: genai_types.Schema.model_validate(prop)
+                for name, prop in schema_dict.get("properties", {}).items()
+            },
+            required=schema_dict.get("required", []),
+        ),
+    )
+
+
 def prepare_google_request(
     messages: Sequence[Message],
+    tools: Sequence[Tool] | None = None,
 ) -> tuple[genai_types.ContentListUnionDict, GenerateContentConfig | None]:
     system_message_content, remaining_messages = _base_utils.extract_system_message(
         messages
     )
 
-    config = None
+    config_params = {}
+
     if system_message_content:
-        config = GenerateContentConfig(system_instruction=system_message_content)
+        config_params["system_instruction"] = system_message_content
+
+    if tools:
+        function_declarations = [
+            _convert_tool_to_function_declaration(tool) for tool in tools
+        ]
+        config_params["tools"] = [
+            genai_types.Tool(function_declarations=function_declarations)
+        ]
+
+    config = GenerateContentConfig(**config_params) if config_params else None
 
     return _encode_messages(remaining_messages), config
 
