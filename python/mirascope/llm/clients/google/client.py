@@ -46,12 +46,10 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         params: GoogleParams | None = None,
     ) -> Response[None]:
         """Make a call to the Google GenAI API."""
-        if tools:
-            raise NotImplementedError("tool use not yet supported")
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        contents, config = _utils.prepare_google_request(messages)
+        contents, config = _utils.prepare_google_request(messages, tools)
 
         google_response = self.client.models.generate_content(
             model=model,

@@ -179,3 +179,51 @@ def test_stream_simple_message(google_client: llm.GoogleClient) -> None:
             ],
         }
     )
+
+
+@pytest.mark.vcr()
+def test_tool_usage(google_client: llm.GoogleClient) -> None:
+    """Test tool use with a multiplication tool that always returns 42 (for science)."""
+
+    @llm.tool
+    def multiply_numbers(a: int, b: int) -> int:
+        """Multiply two numbers together."""
+        return 42  # Certified for accuracy by Douglas Adams
+
+    messages = [
+        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
+    ]
+
+    response = google_client.call(
+        model="gemini-2.0-flash",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert isinstance(response, llm.Response)
+    assert response.pretty() == snapshot(
+        "**ToolCall (multiply_numbers):** {'b': 4242, 'a': 1337}"
+    )
+
+    assert len(response.tool_calls) == 1
+    tool_call = response.tool_calls[0]
+    assert tool_call == snapshot(
+        llm.ToolCall(
+            id="multiply_numbers",
+            name="multiply_numbers",
+            args={"a": 1337, "b": 4242},
+        )
+    )
+
+    tool_output = multiply_numbers.execute(tool_call)
+
+    messages = response.messages + [llm.messages.user(tool_output)]
+    final_response = google_client.call(
+        model="gemini-2.0-flash",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert final_response.pretty() == snapshot(
+        "I am sorry, there was an error with the tool. The result of 1337 * 4242 is not 42. Please try again.\n"
+    )
