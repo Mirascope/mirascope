@@ -304,3 +304,221 @@ def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
     assert final_response.pretty() == snapshot(
         "The result of multiplying 1337 by 4242 is 42."
     )
+
+
+@pytest.mark.vcr()
+def test_parallel_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
+    """Test parallel tool use with multiple tools called simultaneously."""
+
+    @llm.tool
+    def get_weather(location: str) -> str:
+        """Get the current weather in a given location.
+
+        Args:
+            location: A city acronym like NYC or LA.
+        """
+        if location == "NYC":
+            return "The weather in NYC is sunny and 72°F"
+        elif location == "SF":
+            return "The weather in SF is overcast and 64°F"
+        else:
+            return "Unknown city " + location
+
+    messages = [llm.messages.user("What's the weather in SF and NYC?")]
+
+    response = anthropic_client.call(
+        model="claude-4-sonnet-20250514",
+        messages=messages,
+        tools=[get_weather],
+    )
+
+    assert len(response.tool_calls) == 2
+    assert response.pretty() == snapshot(
+        inspect.cleandoc("""\
+        I'll check the weather in both San Francisco (SF) and New York City (NYC) for you.
+
+        **ToolCall (get_weather):** {"location": "SF"}
+
+        **ToolCall (get_weather):** {"location": "NYC"}
+        """)
+    )
+
+    tool_outputs = []
+    for tool_call in response.tool_calls:
+        if get_weather.matches(tool_call):
+            output = get_weather.execute(tool_call)
+        else:
+            raise RuntimeError
+        tool_outputs.append(output)
+
+    messages = response.messages + [llm.messages.user(tool_outputs)]
+    final_response = anthropic_client.call(
+        model="claude-4-sonnet-20250514",
+        messages=messages,
+        tools=[get_weather],
+    )
+
+    assert final_response.pretty() == snapshot(
+        inspect.cleandoc("""\
+        Here's the current weather for both cities:
+
+        **San Francisco (SF):** Overcast and 64°F
+        **New York City (NYC):** Sunny and 72°F
+
+        It looks like NYC is having a nicer day with sunny skies and warmer temperatures, while SF is experiencing typical overcast conditions with cooler weather.
+        """)
+    )
+
+
+@pytest.mark.vcr()
+def test_streaming_parallel_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
+    """Test parallel tool use with streaming and multiple tools called simultaneously."""
+
+    @llm.tool
+    def get_weather(location: str) -> str:
+        """Get the current weather in a given location.
+
+        Args:
+            location: A city acronym like NYC or LA.
+        """
+        if location == "NYC":
+            return "The weather in NYC is sunny and 72°F"
+        elif location == "SF":
+            return "The weather in SF is overcast and 64°F"
+        else:
+            return "Unknown city " + location
+
+    messages = [llm.messages.user("What's the weather in SF and NYC?")]
+
+    stream_response = anthropic_client.stream(
+        model="claude-4-sonnet-20250514",
+        messages=messages,
+        tools=[get_weather],
+    )
+
+    for _ in stream_response.chunk_stream():
+        ...
+
+    assert len(stream_response.tool_calls) == 2
+    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
+        {
+            "provider": "anthropic",
+            "model": "claude-4-sonnet-20250514",
+            "finish_reason": llm.FinishReason.TOOL_USE,
+            "messages": [
+                llm.UserMessage(
+                    content=[llm.Text(text="What's the weather in SF and NYC?")]
+                ),
+                llm.AssistantMessage(
+                    content=[
+                        llm.Text(
+                            text="I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you."
+                        ),
+                        llm.ToolCall(
+                            id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
+                            name="get_weather",
+                            args='{"location": "SF"}',
+                        ),
+                        llm.ToolCall(
+                            id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
+                            name="get_weather",
+                            args='{"location": "NYC"}',
+                        ),
+                    ]
+                ),
+            ],
+            "content": [
+                llm.Text(
+                    text="I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you."
+                ),
+                llm.ToolCall(
+                    id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
+                    name="get_weather",
+                    args='{"location": "SF"}',
+                ),
+                llm.ToolCall(
+                    id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
+                    name="get_weather",
+                    args='{"location": "NYC"}',
+                ),
+            ],
+            "texts": [
+                llm.Text(
+                    text="I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you."
+                )
+            ],
+            "tool_calls": [
+                llm.ToolCall(
+                    id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
+                    name="get_weather",
+                    args='{"location": "SF"}',
+                ),
+                llm.ToolCall(
+                    id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
+                    name="get_weather",
+                    args='{"location": "NYC"}',
+                ),
+            ],
+            "thinkings": [],
+            "consumed": True,
+            "chunks": [
+                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextChunk(delta="I'll get the current weather for"),
+                llm.TextChunk(
+                    delta=" both San Francisco (SF) and New York City (NYC) for you."
+                ),
+                llm.TextEndChunk(type="text_end_chunk"),
+                llm.ToolCallStartChunk(
+                    type="tool_call_start_chunk",
+                    id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
+                    name="get_weather",
+                ),
+                llm.ToolCallChunk(type="tool_call_chunk", delta=""),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='{"loca'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='tion": "'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='SF"}'),
+                llm.ToolCallEndChunk(
+                    type="tool_call_end_chunk", content_type="tool_call"
+                ),
+                llm.ToolCallStartChunk(
+                    type="tool_call_start_chunk",
+                    id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
+                    name="get_weather",
+                ),
+                llm.ToolCallChunk(type="tool_call_chunk", delta=""),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='{"l'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='ocation":'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta=' "NYC"}'),
+                llm.ToolCallEndChunk(
+                    type="tool_call_end_chunk", content_type="tool_call"
+                ),
+                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+            ],
+        }
+    )
+
+    tool_outputs = []
+    for tool_call in stream_response.tool_calls:
+        if get_weather.matches(tool_call):
+            output = get_weather.execute(tool_call)
+        else:
+            raise RuntimeError
+        tool_outputs.append(output)
+
+    messages = stream_response.messages + [llm.messages.user(tool_outputs)]
+    final_response = anthropic_client.call(
+        model="claude-4-sonnet-20250514",
+        messages=messages,
+        tools=[get_weather],
+    )
+
+    assert final_response.pretty() == snapshot(
+        inspect.cleandoc("""\
+        Here's the current weather for both cities:
+
+        **San Francisco (SF):** Overcast and 64°F
+        **New York City (NYC):** Sunny and 72°F
+
+        NYC is having nicer weather today with sunshine and warmer temperatures, while SF is experiencing typical overcast conditions with cooler temperatures.
+        """)
+    )
