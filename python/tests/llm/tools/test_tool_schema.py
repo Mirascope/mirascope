@@ -194,3 +194,79 @@ def test_non_jsonable_parameter_raises_error() -> None:
 
     with pytest.raises(PydanticSchemaGenerationError):
         llm.tools.ToolSchema.create_schema(tool_with_non_jsonable)
+
+
+def test_google_style_docstring_parameter_descriptions() -> None:
+    """Test parsing parameter descriptions from Google-style docstrings."""
+
+    def google_style_tool(name: str, age: int, is_active: bool = True) -> str:
+        """A tool with Google-style parameter documentation.
+
+        Args:
+            name: The person's name
+            age (int): The person's age in years
+            is_active: Whether the person is currently active
+
+        Returns:
+            A formatted string with the information
+        """
+        raise NotImplementedError
+
+    schema = llm.tools.ToolSchema.create_schema(google_style_tool)
+
+    assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
+        {
+            "properties": {
+                "name": {
+                    "description": "The person's name",
+                    "title": "Name",
+                    "type": "string",
+                },
+                "age": {
+                    "description": "The person's age in years",
+                    "title": "Age",
+                    "type": "integer",
+                },
+                "is_active": {
+                    "default": True,
+                    "description": "Whether the person is currently active",
+                    "title": "Is Active",
+                    "type": "boolean",
+                },
+            },
+            "required": ["name", "age"],
+            "additionalProperties": False,
+        }
+    )
+
+
+def test_field_annotation_overrides_docstring() -> None:
+    """Test that Field annotation descriptions take precedence over docstring."""
+
+    def tool_with_both_docstring_descr_and_annotation(
+        param: Annotated[str, Field(description="Field description")],
+    ) -> str:
+        """A tool where Field annotation should override docstring.
+
+        Args:
+            param: Docstring description that should be ignored
+        """
+        raise NotImplementedError
+
+    schema = llm.tools.ToolSchema.create_schema(
+        tool_with_both_docstring_descr_and_annotation
+    )
+
+    assert schema.parameters.properties["param"]["description"] == "Field description"
+
+
+def test_no_docstring_no_descriptions() -> None:
+    """Test that parameters without docstrings have no descriptions."""
+
+    def no_docs_tool(param1: str, param2: int) -> str:
+        raise NotImplementedError
+
+    schema = llm.tools.ToolSchema.create_schema(no_docs_tool)
+
+    assert "description" not in schema.parameters.properties["param1"]
+    assert "description" not in schema.parameters.properties["param2"]
