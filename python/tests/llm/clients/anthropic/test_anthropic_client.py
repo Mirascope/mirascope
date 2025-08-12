@@ -189,3 +189,118 @@ def test_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
     assert final_response.pretty() == snapshot(
         "The result of multiplying 1337 by 4242 is 42."
     )
+
+
+@pytest.mark.vcr()
+def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
+    """Test streaming tool use with a multiplication tool that always returns 42 (for science)."""
+
+    @llm.tool
+    def multiply_numbers(a: int, b: int) -> int:
+        """Multiply two numbers together."""
+        return 42  # Certified for accuracy by Douglas Adams
+
+    messages = [
+        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
+    ]
+
+    stream_response = anthropic_client.stream(
+        model="claude-3-5-sonnet-latest",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert isinstance(stream_response, llm.StreamResponse)
+    for _ in stream_response.chunk_stream():
+        ...
+
+    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
+        {
+            "provider": "anthropic",
+            "model": "claude-3-5-sonnet-latest",
+            "finish_reason": llm.FinishReason.TOOL_USE,
+            "messages": [
+                llm.UserMessage(
+                    content=[
+                        llm.Text(
+                            text="What is 1337 * 4242? Please use the multiply_numbers tool."
+                        )
+                    ]
+                ),
+                llm.AssistantMessage(
+                    content=[
+                        llm.Text(
+                            text="I'll help you multiply those numbers using the multiply_numbers tool."
+                        ),
+                        llm.ToolCall(
+                            id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
+                            name="multiply_numbers",
+                            args='{"a": 1337, "b": 4242}',
+                        ),
+                    ]
+                ),
+            ],
+            "content": [
+                llm.Text(
+                    text="I'll help you multiply those numbers using the multiply_numbers tool."
+                ),
+                llm.ToolCall(
+                    id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
+                    name="multiply_numbers",
+                    args='{"a": 1337, "b": 4242}',
+                ),
+            ],
+            "texts": [
+                llm.Text(
+                    text="I'll help you multiply those numbers using the multiply_numbers tool."
+                )
+            ],
+            "tool_calls": [
+                llm.ToolCall(
+                    id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
+                    name="multiply_numbers",
+                    args='{"a": 1337, "b": 4242}',
+                )
+            ],
+            "thinkings": [],
+            "consumed": True,
+            "chunks": [
+                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextChunk(delta="I"),
+                llm.TextChunk(delta="'ll help"),
+                llm.TextChunk(delta=" you multiply"),
+                llm.TextChunk(delta=" those numbers using the multiply_"),
+                llm.TextChunk(delta="numbers tool."),
+                llm.TextEndChunk(type="text_end_chunk"),
+                llm.ToolCallStartChunk(
+                    type="tool_call_start_chunk",
+                    id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
+                    name="multiply_numbers",
+                ),
+                llm.ToolCallChunk(type="tool_call_chunk", delta=""),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='{"'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='a": 133'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="7"),
+                llm.ToolCallChunk(type="tool_call_chunk", delta=', "b": 42'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="42}"),
+                llm.ToolCallEndChunk(
+                    type="tool_call_end_chunk", content_type="tool_call"
+                ),
+                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+            ],
+        }
+    )
+
+    tool_call = stream_response.tool_calls[0]
+    tool_output = multiply_numbers.execute(tool_call)
+
+    messages = stream_response.messages + [llm.messages.user(tool_output)]
+    final_response = anthropic_client.call(
+        model="claude-3-5-sonnet-latest",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert final_response.pretty() == snapshot(
+        "The result of multiplying 1337 by 4242 is 42."
+    )
