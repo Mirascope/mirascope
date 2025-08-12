@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import inspect
+from collections import namedtuple
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import (
@@ -15,11 +16,46 @@ from typing import (
     get_type_hints,
 )
 
+from docstring_parser import parse
 from pydantic import BaseModel, Field, create_model
 from pydantic.fields import FieldInfo
 from typing_extensions import Self
 
 from ..types import Jsonable, JsonableCovariantT, P
+
+DocstringArg = namedtuple("DocstringArg", ["name", "description"])
+
+
+@dataclass
+class ParsedDocstring:
+    args: list[DocstringArg]
+
+
+def _parse_docstring_params(docstring: str | None) -> ParsedDocstring:
+    """Parse parameter descriptions from a docstring.
+
+    Uses docstring-parser library which supports ReST, Google, Numpydoc-style and
+    Epydoc docstrings
+
+    Args:
+        docstring: The function's docstring
+
+    Returns:
+        ParsedDocstring containing parameter descriptions
+    """
+    if not docstring:
+        return ParsedDocstring(args=[])
+
+    parsed = parse(docstring)
+    args = []
+
+    for param in parsed.params:
+        if param.description:
+            args.append(
+                DocstringArg(name=param.arg_name, description=param.description)
+            )
+
+    return ParsedDocstring(args=args)
 
 
 class ToolParameterSchema(BaseModel):
@@ -88,6 +124,8 @@ class ToolSchema(Generic[P, JsonableCovariantT]):
         name = fn.__name__
         description = inspect.cleandoc(fn.__doc__) if fn.__doc__ else name
 
+        param_descriptions = _parse_docstring_params(fn.__doc__)
+
         field_definitions = {}
         hints = get_type_hints(fn, include_extras=True)
 
@@ -97,27 +135,35 @@ class ToolSchema(Generic[P, JsonableCovariantT]):
 
             param_type = hints.get(param.name, Any)
             default = ... if param.default is inspect.Parameter.empty else param.default
+            field_info = None
 
             if get_origin(param_type) is Annotated:
                 args = get_args(param_type)
-                core_type = args[0]
-
-                field_info = None
+                param_type = args[0]
                 for annotation in args[1:]:
                     if isinstance(annotation, FieldInfo):
                         field_info = annotation
                         break
 
-                if field_info is not None:
-                    new_field_info = Field(
-                        default=default,
-                        description=field_info.description,
-                    )
-                    field_definitions[param.name] = (core_type, new_field_info)
-                else:
-                    field_definitions[param.name] = (core_type, default)
+            if field_info is not None:
+                field_value = Field(
+                    default=default,
+                    description=field_info.description,
+                )
             else:
-                field_definitions[param.name] = (param_type, default)
+                docstring_description = None
+                for arg in param_descriptions.args:
+                    if arg.name == param.name:
+                        docstring_description = arg.description
+                        break
+                if docstring_description:
+                    field_value = Field(
+                        default=default, description=docstring_description
+                    )
+                else:
+                    field_value = default
+
+            field_definitions[param.name] = (param_type, field_value)
 
         TempModel = create_model("TempModel", **field_definitions)
 
