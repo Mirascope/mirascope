@@ -15,6 +15,9 @@ from ...content import (
     TextEndChunk,
     TextStartChunk,
     ToolCall,
+    ToolCallChunk,
+    ToolCallEndChunk,
+    ToolCallStartChunk,
 )
 from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import ChunkIterator, FinishReason
@@ -194,7 +197,8 @@ def convert_openai_stream_to_chunk_iterator(
     openai_stream: Stream[openai_types.ChatCompletionChunk],
 ) -> ChunkIterator:
     """Returns a ChunkIterator converted from an OpenAI Stream[ChatCompletionChunk]"""
-    current_content_type: Literal["text"] | None = None
+    current_content_type: Literal["text", "tool_call"] | None = None
+    current_tool_index: int | None = None
 
     for chunk in openai_stream:
         choice = chunk.choices[0] if chunk.choices else None
@@ -207,15 +211,86 @@ def convert_openai_stream_to_chunk_iterator(
             if current_content_type is None:
                 yield TextStartChunk(type="text_start_chunk"), chunk
                 current_content_type = "text"
+            elif current_content_type == "tool_call":
+                raise RuntimeError(
+                    "received text delta inside tool call"
+                )  # pragma: no cover
             elif current_content_type != "text":
                 raise NotImplementedError
 
             yield TextChunk(type="text_chunk", delta=delta.content), chunk
 
+        if delta.tool_calls:
+            if current_content_type == "text":
+                # In testing, I can't get OpenAI to emit text and tool calls in the same chunk
+                # But we handle this defensively.
+                yield TextEndChunk(type="text_end_chunk"), chunk  # pragma: no cover
+            elif current_content_type and current_content_type != "tool_call":
+                raise RuntimeError(
+                    f"Unexpected current_content_type: {current_content_type}"
+                )  # pragma: no cover
+            current_content_type = "tool_call"
+
+            for tool_call_delta in delta.tool_calls:
+                index = tool_call_delta.index
+
+                if current_tool_index is None or current_tool_index < index:
+                    if current_tool_index is not None:
+                        yield (
+                            ToolCallEndChunk(
+                                type="tool_call_end_chunk",
+                                content_type="tool_call",
+                            ),
+                            chunk,
+                        )
+
+                    if (
+                        not tool_call_delta.function
+                        or not tool_call_delta.function.name
+                    ):
+                        raise RuntimeError(
+                            f"Missing name for tool call at index {index}"
+                        )  # pragma: no cover
+
+                    current_tool_index = index
+                    name = tool_call_delta.function.name
+                    tool_id = tool_call_delta.id or name
+
+                    yield (
+                        ToolCallStartChunk(
+                            type="tool_call_start_chunk",
+                            id=tool_id,
+                            name=name,
+                        ),
+                        chunk,
+                    )
+
+                if current_tool_index > index:
+                    raise RuntimeError(
+                        f"Received tool data for already-finished tool at index {index}"
+                    )  # pragma: no cover
+
+                if tool_call_delta.function and tool_call_delta.function.arguments:
+                    yield (
+                        ToolCallChunk(
+                            type="tool_call_chunk",
+                            delta=tool_call_delta.function.arguments,
+                        ),
+                        chunk,
+                    )
+
         if choice.finish_reason:
             if current_content_type == "text":
                 yield TextEndChunk(type="text_end_chunk"), chunk
                 current_content_type = None
+            elif current_content_type == "tool_call":
+                yield (
+                    ToolCallEndChunk(
+                        type="tool_call_end_chunk",
+                        content_type="tool_call",
+                    ),
+                    chunk,
+                )
             else:
                 raise NotImplementedError
 

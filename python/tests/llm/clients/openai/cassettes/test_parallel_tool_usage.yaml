@@ -1,0 +1,221 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What''s the weather in SF and NYC?"}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"get_weather","description":"Get
+      the current weather in a given location.\n\nArgs:\n    location: A city acronym
+      like NYC or LA.","parameters":{"properties":{"location":{"description":"A city
+      acronym like NYC or LA.","title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '487'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//zFRNc5swEL3zKzR7Nh1j449waz1tp1/ppO2kdesMo4gFFAtJlYQTx+P/
+        3gFiwE7aybEcGNin9/btaqWdRwjwBCICLKeOFVr4i7HNp69KM7l/HYzuOR/ON+JyrabjO3chYFAx
+        1PUNMndgvWCq0AIdV7KBmUHqsFINZpPJMAxG07AGCpWgqGiZdn6o/IJL7o+Go9Afzvxg/sDOFWdo
+        ISK/PEII2dXvyqdM8A4iMhwcIgVaSzOEqF1ECBglqghQa7l1VDoYdCBT0qGsrMtSiB7glBIxo0J0
+        iZtn1/vumkWFiJdSfnCffpjMsttvv/mNfscuFsks6OVrpLe6NpSWkrVN6uFtPDpJRghIWtTcDF18
+        i9TlaE7ohAA1WVmgdJV12K1AKEYrwRVEZAVf36xgD0ecfe9vP3hWsS/fv2XLcr1k3/XFl+1m/fny
+        7Hz4Mfv5nxV7vlz8u9r2+6q3+QbT0lLxeCqolMrV8vVYXHknPQOhMm3UtT2hQsolt3lskNq61v58
+        eQcjtQUoj0YYtFGFdrFTa6yTzuaNKHSnrAPDyQPolKOiiwej8eAJuThBR3k94u2pYpTlmHTU7nTR
+        MuGqB3i90h+7eUq7KZ/L7DnyHcAYaodJrA0mnB1X3C0zWF1Cf1vWNrk2DBbNhjOMHUdTbUeCKS1F
+        czWA3VqHRZxymaHRhtf3A6Q6Hod0ElI8GzPw9t4fAAAA//8DAD+9qz4tBQAA
+    headers:
+      CF-RAY:
+      - 96e3bebd4c8d1675-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 12 Aug 2025 23:27:45 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - _cfuvid=8Mp8wOqEgWJnF1YB0.wR.sU4Ut3HhzOWNLeEsB8DihQ-1755041265888-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1518'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1593'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999989'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_13e212e7fd9549fca0eb55b0cb18b432
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"messages\":[{\"role\":\"user\",\"content\":\"What's the weather in SF
+      and NYC?\"},{\"role\":\"assistant\",\"content\":null,\"tool_calls\":[{\"id\":\"call_YnnKtMXrgscwTqijpIcQCd71\",\"type\":\"function\",\"function\":{\"name\":\"get_weather\",\"arguments\":\"{\\\"location\\\":
+      \\\"SF\\\"}\"}},{\"id\":\"call_AJGcYukYcWpQRyvkOV9N0LgZ\",\"type\":\"function\",\"function\":{\"name\":\"get_weather\",\"arguments\":\"{\\\"location\\\":
+      \\\"NYC\\\"}\"}}]},{\"role\":\"tool\",\"content\":\"The weather in SF is overcast
+      and 64\xB0F\",\"tool_call_id\":\"call_YnnKtMXrgscwTqijpIcQCd71\"},{\"role\":\"tool\",\"content\":\"The
+      weather in NYC is sunny and 72\xB0F\",\"tool_call_id\":\"call_AJGcYukYcWpQRyvkOV9N0LgZ\"}],\"model\":\"gpt-4o-mini\",\"tools\":[{\"type\":\"function\",\"function\":{\"name\":\"get_weather\",\"description\":\"Get
+      the current weather in a given location.\\n\\nArgs:\\n    location: A city acronym
+      like NYC or LA.\",\"parameters\":{\"properties\":{\"location\":{\"description\":\"A
+      city acronym like NYC or LA.\",\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":false}}]}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1023'
+      content-type:
+      - application/json
+      cookie:
+      - _cfuvid=8Mp8wOqEgWJnF1YB0.wR.sU4Ut3HhzOWNLeEsB8DihQ-1755041265888-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFLLbtswELzrKxY8JYAV+CHHsa8GnLRAjQLuoUERCBtqLTGWSIJc2TUC
+        /1O/oV8WUH5IaVOgFx52ZpY7s/saAQiViRkIWSDLypbxfOSLu+JldT/5YpYPmwH3p/nD1+/3m8/b
+        nRS9oDDPLyT5rLqRprIlsTL6CEtHyBS6DibjcT8ZDG9vG6AyGZVBlluOExNXSqt42B8mcX8SD+5O
+        6sIoSV7M4EcEAPDavGFOndFPMYN+71ypyHvMScwuJADhTBkqAr1XnlGz6LWgNJpJN6N/Kwh2hFyQ
+        A6VhhRoWDrVUXhq4Wi2uQXkwW3ISPQPqDG6T378WN/BJw5J28GjcBuaK93C1fJxf90BxUPha631D
+        nwwDvfu7o3XtMSSg67LsAKi1YQwJNr6fTsjh4rQ0uXXm2f8hFWullS9SR+iNDq48Gysa9BABPDWJ
+        1u9CEtaZynLKZkPNd4Pjdpp0zots0dHoBLJhLDuq6bT3Qb80I0ZV+s5OhERZUNZK2wVinSnTAaKO
+        67+n+aj30bnS+f+0bwEpyTJlqXWUKfnecUtzFO78X7RLys3AwpPbKkkpK3JhExmtsS6P1yf83jNV
+        6VrpnJx16niCa5uOEhwnSNORFNEhegMAAP//AwAgpgupkAMAAA==
+    headers:
+      CF-RAY:
+      - 96e3bec88c9d1675-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 12 Aug 2025 23:27:47 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '909'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1006'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999967'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_cac000469774411dbd2f7430dd7502d0
+    status:
+      code: 200
+      message: OK
+version: 1

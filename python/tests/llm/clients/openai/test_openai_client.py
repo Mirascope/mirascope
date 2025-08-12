@@ -1,5 +1,6 @@
 """Tests for OpenAIClient using VCR.py for HTTP request recording/playback."""
 
+import inspect
 import os
 
 import pytest
@@ -253,6 +254,297 @@ def test_tool_usage(openai_client: llm.OpenAIClient) -> None:
     tool_output = multiply_numbers.execute(tool_call)
 
     messages = response.messages + [llm.messages.user(tool_output)]
+    final_response = openai_client.call(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert final_response.pretty() == snapshot(
+        "The result of \\( 1337 \\times 4242 \\) is 42."
+    )
+
+
+@pytest.mark.vcr()
+def test_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
+    """Test parallel tool use with multiple tools called simultaneously."""
+
+    @llm.tool
+    def get_weather(location: str) -> str:
+        """Get the current weather in a given location.
+
+        Args:
+            location: A city acronym like NYC or LA.
+        """
+        if location == "NYC":
+            return "The weather in NYC is sunny and 72°F"
+        elif location == "SF":
+            return "The weather in SF is overcast and 64°F"
+        else:
+            return "Unknown city " + location
+
+    messages = [llm.messages.user("What's the weather in SF and NYC?")]
+
+    response = openai_client.call(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[get_weather],
+    )
+
+    assert len(response.tool_calls) == 2
+    assert response.pretty() == snapshot(
+        inspect.cleandoc("""\
+            **ToolCall (get_weather):** {"location": "SF"}
+
+            **ToolCall (get_weather):** {"location": "NYC"}
+            """)
+    )
+
+    tool_outputs = []
+    for tool_call in response.tool_calls:
+        if get_weather.matches(tool_call):
+            output = get_weather.execute(tool_call)
+        else:
+            raise RuntimeError
+        tool_outputs.append(output)
+
+    messages = response.messages + [llm.messages.user(tool_outputs)]
+    final_response = openai_client.call(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[get_weather],
+    )
+
+    assert final_response.pretty() == snapshot(
+        "The weather in San Francisco (SF) is overcast and 64°F. In New York City (NYC), it is sunny and 72°F."
+    )
+
+
+@pytest.mark.vcr()
+def test_streaming_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
+    """Test parallel tool use with streaming and multiple tools called simultaneously."""
+
+    @llm.tool
+    def get_weather(location: str) -> str:
+        """Get the current weather in a given location.
+
+        Args:
+            location: A city acronym like NYC or LA.
+        """
+        if location == "NYC":
+            return "The weather in NYC is sunny and 72°F"
+        elif location == "SF":
+            return "The weather in SF is overcast and 64°F"
+        else:
+            return "Unknown city " + location
+
+    messages = [
+        llm.messages.user("What's the weather in SF and NYC?"),
+    ]
+
+    stream_response = openai_client.stream(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[get_weather],
+    )
+
+    for _ in stream_response.chunk_stream():
+        ...
+
+    assert len(stream_response.tool_calls) == 2
+    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
+        {
+            "provider": "openai",
+            "model": "gpt-4o-mini",
+            "finish_reason": llm.FinishReason.TOOL_USE,
+            "messages": [
+                llm.UserMessage(
+                    content=[llm.Text(text="What's the weather in SF and NYC?")]
+                ),
+                llm.AssistantMessage(
+                    content=[
+                        llm.ToolCall(
+                            id="call_DMPzhebh8ngVkUULAHoCrPLq",
+                            name="get_weather",
+                            args='{"location": "SF"}',
+                        ),
+                        llm.ToolCall(
+                            id="call_snqLlKGxxkJgH8teSWaf9OEK",
+                            name="get_weather",
+                            args='{"location": "NYC"}',
+                        ),
+                    ]
+                ),
+            ],
+            "content": [
+                llm.ToolCall(
+                    id="call_DMPzhebh8ngVkUULAHoCrPLq",
+                    name="get_weather",
+                    args='{"location": "SF"}',
+                ),
+                llm.ToolCall(
+                    id="call_snqLlKGxxkJgH8teSWaf9OEK",
+                    name="get_weather",
+                    args='{"location": "NYC"}',
+                ),
+            ],
+            "texts": [],
+            "tool_calls": [
+                llm.ToolCall(
+                    id="call_DMPzhebh8ngVkUULAHoCrPLq",
+                    name="get_weather",
+                    args='{"location": "SF"}',
+                ),
+                llm.ToolCall(
+                    id="call_snqLlKGxxkJgH8teSWaf9OEK",
+                    name="get_weather",
+                    args='{"location": "NYC"}',
+                ),
+            ],
+            "thinkings": [],
+            "consumed": True,
+            "chunks": [
+                llm.ToolCallStartChunk(
+                    type="tool_call_start_chunk",
+                    id="call_DMPzhebh8ngVkUULAHoCrPLq",
+                    name="get_weather",
+                ),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='{"lo'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="catio"),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='n": "S'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='F"}'),
+                llm.ToolCallEndChunk(
+                    type="tool_call_end_chunk", content_type="tool_call"
+                ),
+                llm.ToolCallStartChunk(
+                    type="tool_call_start_chunk",
+                    id="call_snqLlKGxxkJgH8teSWaf9OEK",
+                    name="get_weather",
+                ),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='{"lo'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="catio"),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='n": "N'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='YC"}'),
+                llm.ToolCallEndChunk(
+                    type="tool_call_end_chunk", content_type="tool_call"
+                ),
+                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+            ],
+        }
+    )
+
+    tool_outputs = []
+    for tool_call in stream_response.tool_calls:
+        if get_weather.matches(tool_call):
+            output = get_weather.execute(tool_call)
+        else:
+            raise RuntimeError
+        tool_outputs.append(output)
+
+    messages = stream_response.messages + [llm.messages.user(tool_outputs)]
+    final_response = openai_client.call(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[get_weather],
+    )
+
+    assert final_response.pretty() == snapshot(
+        "The weather in San Francisco (SF) is overcast and 64°F, while in New York City (NYC), it is sunny and 72°F."
+    )
+
+
+@pytest.mark.vcr()
+def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
+    """Test streaming tool use with a multiplication tool that always returns 42 (for science)."""
+
+    @llm.tool
+    def multiply_numbers(a: int, b: int) -> int:
+        """Multiply two numbers together."""
+        return 42  # Certified for accuracy by Douglas Adams
+
+    messages = [
+        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
+    ]
+
+    stream_response = openai_client.stream(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[multiply_numbers],
+    )
+
+    assert isinstance(stream_response, llm.StreamResponse)
+    for _ in stream_response.chunk_stream():
+        ...
+
+    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
+        {
+            "provider": "openai",
+            "model": "gpt-4o-mini",
+            "finish_reason": llm.FinishReason.TOOL_USE,
+            "messages": [
+                llm.UserMessage(
+                    content=[
+                        llm.Text(
+                            text="What is 1337 * 4242? Please use the multiply_numbers tool."
+                        )
+                    ]
+                ),
+                llm.AssistantMessage(
+                    content=[
+                        llm.ToolCall(
+                            id="call_gdjsOY6GOAuHAaopGj4iyeWV",
+                            name="multiply_numbers",
+                            args='{"a":1337,"b":4242}',
+                        )
+                    ]
+                ),
+            ],
+            "content": [
+                llm.ToolCall(
+                    id="call_gdjsOY6GOAuHAaopGj4iyeWV",
+                    name="multiply_numbers",
+                    args='{"a":1337,"b":4242}',
+                )
+            ],
+            "texts": [],
+            "tool_calls": [
+                llm.ToolCall(
+                    id="call_gdjsOY6GOAuHAaopGj4iyeWV",
+                    name="multiply_numbers",
+                    args='{"a":1337,"b":4242}',
+                )
+            ],
+            "thinkings": [],
+            "consumed": True,
+            "chunks": [
+                llm.ToolCallStartChunk(
+                    type="tool_call_start_chunk",
+                    id="call_gdjsOY6GOAuHAaopGj4iyeWV",
+                    name="multiply_numbers",
+                ),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='{"'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="a"),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='":'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="133"),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="7"),
+                llm.ToolCallChunk(type="tool_call_chunk", delta=',"'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="b"),
+                llm.ToolCallChunk(type="tool_call_chunk", delta='":'),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="424"),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="2"),
+                llm.ToolCallChunk(type="tool_call_chunk", delta="}"),
+                llm.ToolCallEndChunk(
+                    type="tool_call_end_chunk", content_type="tool_call"
+                ),
+                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+            ],
+        }
+    )
+
+    tool_call = stream_response.tool_calls[0]
+    tool_output = multiply_numbers.execute(tool_call)
+
+    messages = stream_response.messages + [llm.messages.user(tool_output)]
     final_response = openai_client.call(
         model="gpt-4o-mini",
         messages=messages,

@@ -151,16 +151,15 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         params: OpenAIParams | None = None,
     ) -> StreamResponse[Stream, None]:
         """Make a streaming call to the OpenAI API."""
-        if tools:
-            raise NotImplementedError("tool use not yet supported")
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        message_params, _ = _utils.prepare_openai_request(messages)
+        message_params, tool_params = _utils.prepare_openai_request(messages, tools)
 
         openai_stream = self.client.chat.completions.create(
             model=model,
             messages=message_params,
+            tools=tool_params,
             stream=True,
         )
 
