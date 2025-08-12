@@ -81,9 +81,9 @@ class ToolParameterSchema(BaseModel):
 
 @dataclass
 class ToolSchema(Generic[P, JsonableCovariantT]):
-    """Base class defining a tool that can be used by LLMs.
+    """Underlying schema defining a tool that can be used by LLMs.
 
-    A Tool represents a function that can be called by an LLM during a call.
+    A ToolSchema represents a function that can be called by an LLM during a call.
     It includes metadata like name, description, and parameter schema.
 
     This class is not instantiated directly but created by the `@tool()` decorator.
@@ -96,10 +96,27 @@ class ToolSchema(Generic[P, JsonableCovariantT]):
     """Description of what the tool does, extracted from the function's docstring."""
 
     parameters: ToolParameterSchema
-    """JSON Schema describing the parameters accepted by the tool."""
+    """JSON Schema describing the parameters accepted by the tool.
+    
+    The serialized parameters table is cached for efficient hash lookups (e.g. when
+    caching provider-encoded tool representations in a LRU cache). Therefore,
+    it should **not be modified** after the ToolSchema is created.
+    """
 
     strict: bool
     """Whether the tool should use strict mode when supported by the model."""
+
+    def __hash__(self) -> int:
+        if not hasattr(self, "_hash"):
+            self._hash = hash(
+                (
+                    self.name,
+                    self.description,
+                    self.strict,
+                    self.parameters.model_dump_json(),
+                )
+            )
+        return self._hash
 
     @classmethod
     def create_schema(

@@ -153,7 +153,6 @@ def test_self_cls_parameters_skipped() -> None:
     instance_schema = llm.tools.ToolSchema.create_schema(TestClass.instance_method)
     class_schema = llm.tools.ToolSchema.create_schema(TestClass.class_method)
 
-    # Only the actual parameters should be present
     assert list(instance_schema.parameters.properties.keys()) == ["param"]
     assert list(class_schema.parameters.properties.keys()) == ["param"]
 
@@ -270,3 +269,70 @@ def test_no_docstring_no_descriptions() -> None:
 
     assert "description" not in schema.parameters.properties["param1"]
     assert "description" not in schema.parameters.properties["param2"]
+
+
+def test_tool_schema_is_hashable() -> None:
+    """Test that ToolSchema instances are hashable."""
+
+    def sample_tool(param: str) -> str:
+        """A sample tool."""
+        raise NotImplementedError
+
+    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+
+    hash_value = hash(schema)
+    assert isinstance(hash_value, int)
+
+    schema_set = {schema}
+    schema_dict = {schema: "value"}
+    assert len(schema_set) == 1
+    assert schema_dict[schema] == "value"
+
+
+def test_equivalent_schemas_have_same_hash() -> None:
+    """Test that equivalent ToolSchemas have the same hash."""
+
+    def sample_function(param: str) -> str:
+        """A sample function."""
+        return param
+
+    schema1 = llm.tools.ToolSchema.create_schema(sample_function)
+    schema2 = llm.tools.ToolSchema.create_schema(sample_function)
+
+    assert hash(schema1) == hash(schema2)
+
+    schema_set = {schema1, schema2}
+    assert len(schema_set) == 1
+
+
+def test_different_schemas_have_different_hashes() -> None:
+    """Test that different ToolSchemas have different hashes."""
+
+    def func1(param: str) -> str:
+        """First function."""
+        return param
+
+    def func2(param: int) -> str:
+        """Second function."""
+        return str(param)
+
+    schema1 = llm.tools.ToolSchema.create_schema(func1)
+    schema2 = llm.tools.ToolSchema.create_schema(func2)
+
+    assert hash(schema1) != hash(schema2)
+
+
+def test_schema_hash_consistent_across_calls() -> None:
+    """Test that hash is consistent across multiple calls."""
+
+    def sample_function(param: str) -> str:
+        """A sample function."""
+        return param
+
+    schema = llm.tools.ToolSchema.create_schema(sample_function)
+
+    hash1 = hash(schema)
+    hash2 = hash(schema)
+    hash3 = hash(schema)
+
+    assert hash1 == hash2 == hash3
