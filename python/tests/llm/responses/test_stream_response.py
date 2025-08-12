@@ -59,6 +59,15 @@ def example_thinking() -> llm.Thinking:
 
 
 @pytest.fixture
+def example_tool_call() -> llm.ToolCall:
+    return llm.ToolCall(
+        id="tool_call_123",
+        name="test_function",
+        args='{"param1": "value1", "param2": 42}',
+    )
+
+
+@pytest.fixture
 def example_text_chunks() -> list[llm.AssistantContentChunk]:
     """Create a complete text chunk sequence for testing."""
     return [
@@ -78,6 +87,19 @@ def example_thinking_chunks() -> list[llm.AssistantContentChunk]:
         llm.ThinkingChunk(type="thinking_chunk", delta="Let me"),
         llm.ThinkingChunk(type="thinking_chunk", delta=" think..."),
         llm.ThinkingEndChunk(type="thinking_end_chunk", signature="reasoning"),
+    ]
+
+
+@pytest.fixture
+def example_tool_call_chunks() -> list[llm.AssistantContentChunk]:
+    """Create a complete tool call chunk sequence for testing."""
+    return [
+        llm.ToolCallStartChunk(
+            type="tool_call_start_chunk", id="tool_call_123", name="test_function"
+        ),
+        llm.ToolCallChunk(type="tool_call_chunk", delta='{"param1": "value1", '),
+        llm.ToolCallChunk(type="tool_call_chunk", delta='"param2": 42}'),
+        llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
     ]
 
 
@@ -142,19 +164,25 @@ class TestChunkStream:
         self,
         example_text_chunks: list[llm.AssistantContentChunk],
         example_thinking_chunks: list[llm.AssistantContentChunk],
+        example_tool_call_chunks: list[llm.AssistantContentChunk],
         example_text: llm.Text,
         example_thinking: llm.Thinking,
+        example_tool_call: llm.ToolCall,
     ) -> None:
         """Test streaming mixed chunk types with sync response."""
-        chunks = [*example_text_chunks, *example_thinking_chunks]
+        chunks = [
+            *example_text_chunks,
+            *example_thinking_chunks,
+            *example_tool_call_chunks,
+        ]
         stream_response = create_sync_stream_response(chunks)
 
         streamed_chunks = list(stream_response.chunk_stream())
 
         check_stream_response_consistency(
-            stream_response, chunks, [example_text, example_thinking]
+            stream_response, chunks, [example_text, example_thinking, example_tool_call]
         )
-        assert len(streamed_chunks) == 9
+        assert len(streamed_chunks) == 13  # 5 text + 4 thinking + 4 tool_call
         assert stream_response.consumed is True
 
     @pytest.mark.asyncio
@@ -162,11 +190,17 @@ class TestChunkStream:
         self,
         example_text_chunks: list[llm.AssistantContentChunk],
         example_thinking_chunks: list[llm.AssistantContentChunk],
+        example_tool_call_chunks: list[llm.AssistantContentChunk],
         example_text: llm.Text,
         example_thinking: llm.Thinking,
+        example_tool_call: llm.ToolCall,
     ) -> None:
         """Test streaming mixed chunk types with async response."""
-        chunks = [*example_text_chunks, *example_thinking_chunks]
+        chunks = [
+            *example_text_chunks,
+            *example_thinking_chunks,
+            *example_tool_call_chunks,
+        ]
         stream_response = create_async_stream_response(chunks)
 
         streamed_chunks = [
@@ -174,9 +208,9 @@ class TestChunkStream:
         ]
 
         check_stream_response_consistency(
-            stream_response, chunks, [example_text, example_thinking]
+            stream_response, chunks, [example_text, example_thinking, example_tool_call]
         )
-        assert len(streamed_chunks) == 9
+        assert len(streamed_chunks) == 13  # 5 text + 4 thinking + 4 tool_call
         assert stream_response.consumed is True
 
     def test_sync_replay_functionality(
@@ -390,7 +424,106 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
             [llm.Thinking(thinking="Let me think...", signature="reasoning")],
         ],
     ),
+    "empty_tool_call": ChunkProcessingTestCase(
+        chunks=[
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="tool_123",
+                name="empty_function",
+            ),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+        ],
+        expected_contents=[
+            [],
+            [llm.ToolCall(id="tool_123", name="empty_function", args="{}")],
+        ],
+    ),
+    "tool_call_with_args": ChunkProcessingTestCase(
+        chunks=[
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="tool_456",
+                name="test_function",
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"key": '),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='"value"}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+        ],
+        expected_contents=[
+            [],
+            [],
+            [],
+            [
+                llm.ToolCall(
+                    id="tool_456", name="test_function", args='{"key": "value"}'
+                )
+            ],
+        ],
+    ),
 }
+
+
+class TestToolCallSupport:
+    """Test tool call specific functionality."""
+
+    def test_sync_tool_call_streaming(
+        self,
+        example_tool_call_chunks: list[llm.AssistantContentChunk],
+        example_tool_call: llm.ToolCall,
+    ) -> None:
+        """Test tool call streaming functionality with sync response."""
+        stream_response = create_sync_stream_response(example_tool_call_chunks)
+
+        streamed_chunks = list(stream_response.chunk_stream())
+
+        check_stream_response_consistency(
+            stream_response, example_tool_call_chunks, [example_tool_call]
+        )
+        assert len(streamed_chunks) == 4  # start + 2 deltas + end
+        assert stream_response.consumed is True
+
+    @pytest.mark.asyncio
+    async def test_async_tool_call_streaming(
+        self,
+        example_tool_call_chunks: list[llm.AssistantContentChunk],
+        example_tool_call: llm.ToolCall,
+    ) -> None:
+        """Test tool call streaming functionality with async response."""
+        stream_response = create_async_stream_response(example_tool_call_chunks)
+
+        streamed_chunks = [
+            chunk async for chunk in await stream_response.chunk_stream()
+        ]
+
+        check_stream_response_consistency(
+            stream_response, example_tool_call_chunks, [example_tool_call]
+        )
+        assert len(streamed_chunks) == 4  # start + 2 deltas + end
+        assert stream_response.consumed is True
+
+    def test_sync_tool_call_partial_json_accumulation(self) -> None:
+        """Test that partial JSON arguments are correctly accumulated."""
+        chunks = [
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="tool_complex",
+                name="complex_function",
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"nested":'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=' {"key": "value"},'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=' "array": [1, 2, 3]}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+        ]
+
+        stream_response = create_sync_stream_response(chunks)
+
+        list(stream_response.chunk_stream())
+
+        assert len(stream_response.tool_calls) == 1
+        tool_call = stream_response.tool_calls[0]
+        assert tool_call.id == "tool_complex"
+        assert tool_call.name == "complex_function"
+        assert tool_call.args == '{"nested": {"key": "value"}, "array": [1, 2, 3]}'
 
 
 class ChunkProcessingFixtureRequest(pytest.FixtureRequest):
@@ -577,6 +710,46 @@ INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
             llm.ThinkingEndChunk(type="thinking_end_chunk", signature=None),
         ],
         expected_error="Received thinking_end_chunk while not processing thinking",
+    ),
+    "tool_call_chunk_without_start": InvalidChunkSequenceTestCase(
+        chunks=[llm.ToolCallChunk(type="tool_call_chunk", delta='{"test": "value"}')],
+        expected_error="Received tool_call_chunk while not processing tool call",
+    ),
+    "tool_call_end_without_start": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call")
+        ],
+        expected_error="Received tool_call_end_chunk while not processing tool call",
+    ),
+    "overlapping_text_then_tool_call": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="tool_123",
+                name="test_function",
+            ),
+        ],
+        expected_error="while processing another chunk",
+    ),
+    "overlapping_tool_call_then_text": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="tool_123",
+                name="test_function",
+            ),
+            llm.TextStartChunk(type="text_start_chunk"),
+        ],
+        expected_error="while processing another chunk",
+    ),
+    "tool_call_end_without_matching_start": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(type="text_chunk", delta="test"),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+        ],
+        expected_error="Received tool_call_end_chunk while not processing tool call",
     ),
 }
 

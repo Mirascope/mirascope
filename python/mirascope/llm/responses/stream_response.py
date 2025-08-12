@@ -15,6 +15,9 @@ from ..content import (
     ThinkingEndChunk,
     ThinkingStartChunk,
     ToolCall,
+    ToolCallChunk,
+    ToolCallEndChunk,
+    ToolCallStartChunk,
 )
 from ..formatting import FormatT, Partial
 from ..messages import AssistantMessage, Message
@@ -221,7 +224,7 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
 
         self.messages = list(input_messages) + [AssistantMessage(content=self._content)]
 
-        self._current_content: Text | Thinking | None = None
+        self._current_content: Text | Thinking | ToolCall | None = None
         self._chunk_iterator = chunk_iterator
 
     @overload
@@ -339,6 +342,8 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
             self._handle_text_chunk(chunk)
         elif chunk.content_type == "thinking":
             self._handle_thinking_chunk(chunk)
+        elif chunk.content_type == "tool_call":
+            self._handle_tool_call_chunk(chunk)
         else:
             raise NotImplementedError
 
@@ -400,6 +405,44 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
             self._current_content.signature = chunk.signature
             self._content.append(self._current_content)
             self._thinkings.append(self._current_content)
+            self._current_content = None
+
+    def _handle_tool_call_chunk(
+        self, chunk: ToolCallStartChunk | ToolCallChunk | ToolCallEndChunk
+    ) -> None:
+        if chunk.type == "tool_call_start_chunk":
+            if self._current_content:
+                raise RuntimeError(
+                    "Received tool_call_start_chunk while processing another chunk"
+                )
+            self._current_content = ToolCall(
+                id=chunk.id,
+                name=chunk.name,
+                args="",
+            )
+
+        elif chunk.type == "tool_call_chunk":
+            if (
+                self._current_content is None
+                or self._current_content.type != "tool_call"
+            ):
+                raise RuntimeError(
+                    "Received tool_call_chunk while not processing tool call."
+                )
+            self._current_content.args += chunk.delta
+
+        elif chunk.type == "tool_call_end_chunk":
+            if (
+                self._current_content is None
+                or self._current_content.type != "tool_call"
+            ):
+                raise RuntimeError(
+                    "Received tool_call_end_chunk while not processing tool call."
+                )
+            if not self._current_content.args:
+                self._current_content.args = "{}"
+            self._content.append(self._current_content)
+            self._tool_calls.append(self._current_content)
             self._current_content = None
 
     def _sync_chunk_stream(self) -> Iterator[AssistantContentChunk]:
