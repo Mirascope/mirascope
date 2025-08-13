@@ -45,26 +45,26 @@ def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict
     result = []
     for part in content:
         if part.type == "text":
-            result.append({"text": part.text})
+            result.append(genai_types.PartDict(text=part.text))
         elif part.type == "tool_call":
             result.append(
-                {
-                    "function_call": {
-                        "name": part.name,
-                        "args": json.loads(part.args),
-                        "id": part.id,
-                    }
-                }
+                genai_types.PartDict(
+                    function_call=genai_types.FunctionCallDict(
+                        name=part.name,
+                        args=json.loads(part.args),
+                        id=part.id,
+                    )
+                )
             )
         elif part.type == "tool_output":
             result.append(
-                {
-                    "function_response": {
-                        "id": part.id,
-                        "name": part.name,
-                        "response": {"output": str(part.value)},
-                    }
-                }
+                genai_types.PartDict(
+                    function_response=genai_types.FunctionResponseDict(
+                        id=part.id,
+                        name=part.name,
+                        response={"output": str(part.value)},
+                    )
+                )
             )
         else:
             raise NotImplementedError(
@@ -133,10 +133,10 @@ def _encode_message(
     message: UserMessage | AssistantMessage,
 ) -> genai_types.ContentDict:
     """Returns a Google `ContentDict` converted from a Mirascope `Message`"""
-    return {
-        "role": "model" if message.role == "assistant" else message.role,
-        "parts": _encode_content(message.content),
-    }
+    return genai_types.ContentDict(
+        role="model" if message.role == "assistant" else message.role,
+        parts=_encode_content(message.content),
+    )
 
 
 def _encode_messages(
