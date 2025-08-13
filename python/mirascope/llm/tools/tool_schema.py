@@ -10,7 +10,6 @@ from typing import (
     Annotated,
     Any,
     Generic,
-    TypeGuard,
     TypeVar,
     get_args,
     get_origin,
@@ -211,8 +210,8 @@ class ToolSchema(Generic[ToolFnT]):
             strict=strict,
         )
 
-    def matches(self, tool_call: ToolCall) -> bool:
-        """Check if a `ToolCall` matches with this `ToolSchema`.
+    def can_execute(self, tool_call: ToolCall) -> bool:
+        """Check if a `ToolCall` can be executed by tools with this `ToolSchema`.
 
         This method is a convenient way to determine if a `ToolCall` is likely intended
         to be executed by a tool with this `ToolSchema`. It does so by checking
@@ -220,25 +219,3 @@ class ToolSchema(Generic[ToolFnT]):
         is performed.
         """
         return tool_call.name == self.name
-
-    def defines(self, tool: ToolSchema) -> TypeGuard[Self]:
-        """Check if another `ToolSchema` instance is defined by this one.
-
-        This method is useful if you get an arbitrary tool back from a `ToolKit`,
-        and want to refine the type of that tool to a specific tool with a known return
-        type. For example:
-
-        ```
-        known_tool: Tool[P, int] = ...
-        unknown_tool = toolkit.get(tool_call)
-        if known_tool.defines(unknown_tool):
-          output: ToolOutput[int] = known_tool.execute(tool_call)
-        ```
-
-        Args:
-            tool: The `ToolSchema` to compare against.
-
-        Returns:
-            True if this `ToolSchema` defines the other `ToolSchema` instance, False otherwise.
-        """
-        return hash(self) == hash(tool)
