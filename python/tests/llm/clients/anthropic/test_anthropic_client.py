@@ -163,7 +163,7 @@ def test_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
         inspect.cleandoc("""\
         I'll help you multiply those numbers using the multiply_numbers tool.
 
-        **ToolCall (multiply_numbers):** {'a': 1337, 'b': 4242}
+        **ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}
         """)
     )
 
@@ -173,7 +173,7 @@ def test_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
         llm.ToolCall(
             id="toolu_01EcyDhLAzjUwsiXJrJieL1p",
             name="multiply_numbers",
-            args={"a": 1337, "b": 4242},
+            args='{"a": 1337, "b": 4242}',
         )
     )
 

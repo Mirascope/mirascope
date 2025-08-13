@@ -3,8 +3,6 @@
 from dataclasses import dataclass
 from typing import Literal
 
-from ..types import Jsonable
-
 
 @dataclass(kw_only=True)
 class ToolCall:
@@ -25,8 +23,8 @@ class ToolCall:
     name: str
     """The name of the tool to call."""
 
-    args: dict[str, Jsonable]
-    """The arguments to pass to the tool."""
+    args: str
+    """The arguments to pass to the tool, stored as stringified json."""
 
 
 @dataclass(kw_only=True)

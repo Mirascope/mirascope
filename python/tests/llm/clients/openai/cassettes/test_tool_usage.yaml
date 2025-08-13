@@ -41,19 +41,19 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFPLbtswELzrK4g9W4UtK46gW/pAkeaQY4DUgUBTK4kpXyYpt67hfy9E
-        2ZLsJEB1EIgdzuzsg4eIEOAl5ARYQz2TRsRflvp+y75+3/nVM5e6aah8Vb8fhXn+9tfArGPozSsy
-        f2Z9YloagZ5r1cPMIvXYqS5ub27mSbrM0gBIXaLoaLXxcapjyRWPk3mSxvPbeJGd2I3mDB3k5GdE
-        CCGH8O98qhL/QE7ms3NEonO0RsiHS4SA1aKLAHWOO0+Vh9kIMq08qs66aoWYAF5rUTAqxJi4/w6T
-        89gsKkSRLsyT32V3Tz/Uw4O/397JR739TOeTfL303gRDVavY0KQJPsTzq2SEgKIycGUrPDdiX6hW
-        btC6Kw1CgNq6lah85x8Oa6BryBfL5e1sDZs15GmSJke4IB2j984vk6ZYrFpHxdtuUaW0p53p0K6X
-        E3IcJiN0bazeuCsqVFxx1xQWqQsFT/senY0EC9BejBaM1dL4wutfGJKusl4Uxu0bweS0I+C1p2KM
-        Z2fShVpRoqc8TH5YNkZZg+XIHJeOtiXXEyCaVP7WzHvaffVc1f8jPwKMofFYFsZiydllweM1i93b
-        /Oja0ONgGBzaHWdYeI62m0aJFW1F/2LA7Z1HWVRc1WiN5eHZQGWKVUKTJc0WWEF0jP4BAAD//wMA
-        5IizkkQEAAA=
+        H4sIAAAAAAAAAwAAAP//jFNdb5swFH3nV1j3OUyEkJDx2Kqa9iFV2UM2aamQYy7EnbE927TNovz3
+        CpMASTtpPCDrHp9zz/3wISAEeAEZAbajjtVahLez55/f3c1LKuO79eLb+kZ83U8Xa0Wf088OJi1D
+        bR+RuTPrA1O1Fui4kh3MDFKHreo0nc+j+SJKph6oVYGipVXahYkKay55GEdxEkZpOF2e2DvFGVrI
+        yK+AEEIO/t/6lAW+QEaiyTlSo7W0Qsj6S4SAUaKNALWWW0dl5/kEMiUdyta6bIQYAU4pkTMqxJC4
+        +w6j89AsKkSuVolepl/u1n/+Pt7TH6v7VfR0+6ncjfJ10nvtDZWNZH2TRngfz66SEQKS1p5bN8Jx
+        Lfa5bOotGnulQQhQUzU1Stf6h8MG6Aay6WyWTjaw3UCWxEl8hAvSMXjv/DBqisGysVS87RaVUjna
+        mvbtejghx34yQlXaqK29okLJJbe73CC1vuBx34OzEW8BmovRgjaq1i536jf6pItlJwrD9g1gfNoR
+        cMpRMcSXZ9KFWl6go9xPvl82RtkOi4E5LB1tCq5GQDCq/K2Z97S76rms/kd+ABhD7bDItcGCs8uC
+        h2sG27f5r2t9j71hsGieOMPccTTtNAosaSNOr9zurcM6L7ms0GjD/bOBUuezhM4Tih9nDIJj8AoA
+        AP//AwBA84MKRAQAAA==
     headers:
       CF-RAY:
-      - 96e222a118f708ba-SEA
+      - 96e5277fe893df23-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -61,14 +61,11 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 12 Aug 2025 18:46:25 GMT
+      - Wed, 13 Aug 2025 03:34:01 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=Q5cFj8PAzGvG1xZehNinvI0ZC3G3tFYjZZNyhRADIPw-1755024385-1.0.1.1-XYcnbzl1Q3MzqXa3_YIh1wTmeAYRLG7o2mZsyVOBmYiKVgNY8wuNxo8uHry0BJEiD6yvxt9TbiwQ8lu.QMP11kkdUPZDnCg7Kqfs2s4JcL0;
-        path=/; expires=Tue, 12-Aug-25 19:16:25 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=G0IJ8SHIEbMLS0mTxjf1QeAKa.lpuV4ZRqB3.ntSG20-1755024385644-0.0.1.1-604800000;
+      - _cfuvid=OAaWaUzofyge3idcBymI3f8_9BoOpBqcewbmv0U0lK8-1755056041852-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -85,13 +82,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '781'
+      - '637'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1118'
+      - '682'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -105,14 +102,13 @@ interactions:
       x-ratelimit-reset-tokens:
       - 0s
       x-request-id:
-      - req_22976c778eb84fe7b23b4528cfab59f9
+      - req_1def7fac933845cb90ec01ecf715cf59
     status:
       code: 200
       message: OK
 - request:
     body: '{"messages":[{"role":"user","content":"What is 1337 * 4242? Please use
-      the multiply_numbers tool."},{"role":"assistant","content":null,"tool_calls":[{"id":"call_41pWtv8AWJnKKtIqAmOoqBa0","type":"function","function":{"name":"multiply_numbers","arguments":"{\"a\":
-      1337, \"b\": 4242}"}}]},{"role":"tool","content":"42","tool_call_id":"call_41pWtv8AWJnKKtIqAmOoqBa0"}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"multiply_numbers","description":"Multiply
+      the multiply_numbers tool."},{"role":"assistant","content":null,"tool_calls":[{"id":"call_oQ4p87JEVqzjOaWQOQ0vCGfh","type":"function","function":{"name":"multiply_numbers","arguments":"{\"a\":1337,\"b\":4242}"}}]},{"role":"tool","content":"42","tool_call_id":"call_oQ4p87JEVqzjOaWQOQ0vCGfh"}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"multiply_numbers","description":"Multiply
       two numbers together.","parameters":{"properties":{"a":{"title":"A","type":"integer"},"b":{"title":"B","type":"integer"}},"required":["a","b"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
     headers:
       accept:
@@ -122,12 +118,11 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '686'
+      - '683'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=Q5cFj8PAzGvG1xZehNinvI0ZC3G3tFYjZZNyhRADIPw-1755024385-1.0.1.1-XYcnbzl1Q3MzqXa3_YIh1wTmeAYRLG7o2mZsyVOBmYiKVgNY8wuNxo8uHry0BJEiD6yvxt9TbiwQ8lu.QMP11kkdUPZDnCg7Kqfs2s4JcL0;
-        _cfuvid=G0IJ8SHIEbMLS0mTxjf1QeAKa.lpuV4ZRqB3.ntSG20-1755024385644-0.0.1.1-604800000
+      - _cfuvid=OAaWaUzofyge3idcBymI3f8_9BoOpBqcewbmv0U0lK8-1755056041852-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -155,17 +150,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jJJBa9wwEIXv/hWDjmUd1rI33t1jSg+hUCi09FCCUaSxrVbWqJIcGsL+
-        9yJ7s3bSFHrxYb554/dG85QBMK3YEZjsRZSDM/n7km49/9zdfP1Uc/z28Otw6w/Xj9XNx+KDY5uk
-        oPsfKOOz6krS4AxGTXbG0qOImKYW9W635VW5301gIIUmyToX84ryQVud8y2v8m2dF/uzuictMbAj
-        fM8AAJ6mb/JpFf5mR9hunisDhiA6ZMdLEwDzZFKFiRB0iMJGtlmgJBvRTta/9Agew2giUAtFWdbw
-        DipecdABKn61lnlsxyCSdTsaswLCWooiRZ8M353J6WLRUOc83YdXUtZqq0PfeBSBbLITIjk20VMG
-        cDetYnyRjjlPg4tNpJ84/e5Qz+PY8gALLHZnGCkKs6oXfPPGuEZhFNqE1S6ZFLJHtUiXxYtRaVqB
-        bBX6bzdvzZ6Da9v9z/gFSIkuomqcR6Xly8RLm8d0n/9quyx5MswC+gctsYkafXoIha0YzXw1LDyG
-        iEPTatuhd17Pp9O65poLXop9gS3LTtkfAAAA//8DANwQUMZIAwAA
+        H4sIAAAAAAAAAwAAAP//jFJNb9QwEL3nV4x8AmlT5Wsbdq8gOCBxaStVIlXkdSaJi2Mbe9IC1f53
+        5GS7SaFIXKJo3rzn92bmKQJgsmF7YKLnJAar4vf54+1Vue1vvP71+Tp9vPfZw4cvH2+vvn+6ObBN
+        YJjDPQp6Zl0IM1iFJI2eYeGQEwbVtNxuk+1lUmQTMJgGVaB1luLCxIPUMs6SrIiTMk7fndi9kQI9
+        28PXCADgafoGn7rBH2wPyea5MqD3vEO2PzcBMGdUqDDuvfTENbHNAgqjCfVk/bpHcOhHRWBaqKo3
+        kOZ5CVVFckAPRVZkUFVvQYb/i7WIw3b0PATRo1IrgGttiIdBTPbvTsjxbFiZzjpz8H9QWSu19H3t
+        kHujgzlPxrIJPUYAd9NgxhdZmXVmsFST+YbTc7tylmPLOhYw3Z1AMsTVqp5ebl6RqxskLpVfTZYJ
+        LnpsFuqyBj420qyAaBX6bzevac/Bpe7+R34BhEBL2NTWYSPFy8RLm8Nwrf9qOw95Msw8ugcpsCaJ
+        LiyiwZaPar4h5n96wqFupe7QWSfnQ2ptnRd8W3Dc5YJFx+g3AAAA//8DAKUgDnlWAwAA
     headers:
       CF-RAY:
-      - 96e222aa797f08ba-SEA
+      - 96e52785fdcfdf23-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -173,7 +168,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 12 Aug 2025 18:46:26 GMT
+      - Wed, 13 Aug 2025 03:34:02 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -191,13 +186,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '620'
+      - '550'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '676'
+      - '705'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -211,7 +206,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 0s
       x-request-id:
-      - req_02673766d17c4708b229cbe38dfe76a8
+      - req_7c3caff788924f45942d94f6534d1f92
     status:
       code: 200
       message: OK
