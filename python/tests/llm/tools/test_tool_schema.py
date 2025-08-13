@@ -338,82 +338,6 @@ def test_schema_hash_consistent_across_calls() -> None:
     assert hash1 == hash2 == hash3
 
 
-def test_defines_same_schema() -> None:
-    """Test that a ToolSchema defines itself."""
-
-    def sample_tool(param: str) -> str:
-        """A sample tool."""
-        return param
-
-    schema = llm.tools.ToolSchema.from_function(sample_tool)
-
-    assert schema.defines(schema)
-
-
-def test_defines_equivalent_schema() -> None:
-    """Test that equivalent ToolSchemas define each other."""
-
-    def sample_tool(param: str) -> str:
-        """A sample tool."""
-        return param
-
-    schema1 = llm.tools.ToolSchema.from_function(sample_tool)
-    schema2 = llm.tools.ToolSchema.from_function(sample_tool)
-
-    assert schema1.defines(schema2)
-    assert schema2.defines(schema1)
-
-
-def test_defines_different_schemas() -> None:
-    """Test that different ToolSchemas do not define each other."""
-
-    def tool1(param: str) -> str:
-        """First tool."""
-        return param
-
-    def tool2(param: int) -> str:
-        """Second tool."""
-        return str(param)
-
-    schema1 = llm.tools.ToolSchema.from_function(tool1)
-    schema2 = llm.tools.ToolSchema.from_function(tool2)
-
-    assert not schema1.defines(schema2)
-    assert not schema2.defines(schema1)
-
-
-def test_defines_different_strict_mode() -> None:
-    """Test that schemas with different strict modes don't define each other."""
-
-    def sample_tool(param: str) -> str:
-        """A sample tool."""
-        return param
-
-    schema1 = llm.tools.ToolSchema.from_function(sample_tool, strict=False)
-    schema2 = llm.tools.ToolSchema.from_function(sample_tool, strict=True)
-
-    assert not schema1.defines(schema2)
-    assert not schema2.defines(schema1)
-
-
-def test_defines_different_descriptions() -> None:
-    """Test that tools with different descriptions don't define each other."""
-
-    def tool_v1(param: str) -> str:
-        """First version of the tool."""
-        return param
-
-    def tool_v2(param: str) -> str:
-        """Updated version of the tool."""
-        return param
-
-    schema1 = llm.tools.ToolSchema.from_function(tool_v1)
-    schema2 = llm.tools.ToolSchema.from_function(tool_v2)
-
-    assert not schema1.defines(schema2)
-    assert not schema2.defines(schema1)
-
-
 def test_matches_matching_tool_call() -> None:
     """Test that matches returns True for ToolCall with same name."""
 
@@ -426,7 +350,7 @@ def test_matches_matching_tool_call() -> None:
         id="test_id", name="sample_tool", args='{"param": "value"}'
     )
 
-    assert schema.matches(tool_call)
+    assert schema.can_execute(tool_call)
 
 
 def test_matches_non_matching_tool_call() -> None:
@@ -441,7 +365,7 @@ def test_matches_non_matching_tool_call() -> None:
         id="test_id", name="different_tool", args='{"param": "value"}'
     )
 
-    assert not schema.matches(tool_call)
+    assert not schema.can_execute(tool_call)
 
 
 def test_matches_ignores_args() -> None:
@@ -456,4 +380,4 @@ def test_matches_ignores_args() -> None:
         id="test_id", name="sample_tool", args='{"invalid": "json"}'
     )
 
-    assert schema.matches(tool_call)
+    assert schema.can_execute(tool_call)

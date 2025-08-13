@@ -302,7 +302,7 @@ def test_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
 
     tool_outputs = []
     for tool_call in response.tool_calls:
-        if get_weather.matches(tool_call):
+        if get_weather.can_execute(tool_call):
             output = get_weather.execute(tool_call)
         else:
             raise RuntimeError
@@ -435,7 +435,7 @@ def test_streaming_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
 
     tool_outputs = []
     for tool_call in stream_response.tool_calls:
-        if get_weather.matches(tool_call):
+        if get_weather.can_execute(tool_call):
             output = get_weather.execute(tool_call)
         else:
             raise RuntimeError
