@@ -199,16 +199,23 @@ class ToolSchema(Generic[P, JsonableCovariantT]):
         )
 
     def defines(self, tool: ToolSchema) -> TypeGuard[Self]:
-        """Check if this ToolDef matches a specific Tool instance.
+        """Check if another `ToolSchema` instance is defined by this one.
 
-        This method is used to ensure that the ToolDef was created from a specific
-        function, allowing for type-safe access to the return value when calling
-        the tool.
+        This method is useful if you get an arbitrary tool back from a `ToolKit`,
+        and want to refine the type of that tool to a specific tool with a known return
+        type. For example:
+
+        ```
+        known_tool: Tool[P, int] = ...
+        unknown_tool = toolkit.get(tool_call)
+        if known_tool.defines(unknown_tool):
+          output: ToolOutput[int] = known_tool.execute(tool_call)
+        ```
 
         Args:
-            tool: The Tool instance to compare against.
+            tool: The `ToolSchema` to compare against.
 
         Returns:
-            True if the ToolDef defines the Tool instance, False otherwise.
+            True if this `ToolSchema` defines the other `ToolSchema` instance, False otherwise.
         """
-        raise NotImplementedError()
+        return hash(self) == hash(tool)

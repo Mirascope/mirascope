@@ -336,3 +336,79 @@ def test_schema_hash_consistent_across_calls() -> None:
     hash3 = hash(schema)
 
     assert hash1 == hash2 == hash3
+
+
+def test_defines_same_schema() -> None:
+    """Test that a ToolSchema defines itself."""
+
+    def sample_tool(param: str) -> str:
+        """A sample tool."""
+        return param
+
+    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+
+    assert schema.defines(schema)
+
+
+def test_defines_equivalent_schema() -> None:
+    """Test that equivalent ToolSchemas define each other."""
+
+    def sample_tool(param: str) -> str:
+        """A sample tool."""
+        return param
+
+    schema1 = llm.tools.ToolSchema.create_schema(sample_tool)
+    schema2 = llm.tools.ToolSchema.create_schema(sample_tool)
+
+    assert schema1.defines(schema2)
+    assert schema2.defines(schema1)
+
+
+def test_defines_different_schemas() -> None:
+    """Test that different ToolSchemas do not define each other."""
+
+    def tool1(param: str) -> str:
+        """First tool."""
+        return param
+
+    def tool2(param: int) -> str:
+        """Second tool."""
+        return str(param)
+
+    schema1 = llm.tools.ToolSchema.create_schema(tool1)
+    schema2 = llm.tools.ToolSchema.create_schema(tool2)
+
+    assert not schema1.defines(schema2)
+    assert not schema2.defines(schema1)
+
+
+def test_defines_different_strict_mode() -> None:
+    """Test that schemas with different strict modes don't define each other."""
+
+    def sample_tool(param: str) -> str:
+        """A sample tool."""
+        return param
+
+    schema1 = llm.tools.ToolSchema.create_schema(sample_tool, strict=False)
+    schema2 = llm.tools.ToolSchema.create_schema(sample_tool, strict=True)
+
+    assert not schema1.defines(schema2)
+    assert not schema2.defines(schema1)
+
+
+def test_defines_different_descriptions() -> None:
+    """Test that tools with different descriptions don't define each other."""
+
+    def tool_v1(param: str) -> str:
+        """First version of the tool."""
+        return param
+
+    def tool_v2(param: str) -> str:
+        """Updated version of the tool."""
+        return param
+
+    schema1 = llm.tools.ToolSchema.create_schema(tool_v1)
+    schema2 = llm.tools.ToolSchema.create_schema(tool_v2)
+
+    assert not schema1.defines(schema2)
+    assert not schema2.defines(schema1)
