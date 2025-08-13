@@ -1,0 +1,138 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What''s the weather in SF and NYC?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Get the
+      current weather in a given location.\n\nArgs:\n    location: A city acronym
+      like NYC or LA.", "name": "get_weather", "parameters": {"properties": {"location":
+      {"description": "A city acronym like NYC or LA.", "title": "Location", "type":
+      "STRING"}}, "required": ["location"], "type": "OBJECT"}}]}], "generationConfig":
+      {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '474'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/81SwU6DQBC98xVkz20D2NritWpStVorMRpjzAjDlrjskt2ljWn67y4UKDR6MPEg
+        B7I7b+a9NzuztWybhMCjJAKNipzZLyZi29vyX2CCa+TaAHXIBDOQ+pC7/7ats0mJcx7qRPApMNYp
+        rnAOKZo4oajfNgh6hZL0jpNAUvVNsUGYCKGgLygeLslRws766bbr/QvLt8/TX3huzq8HOSIFK92k
+        IkJWkzXtkTjhiVotEVT1SMHdonFLYE1vBM2keC/M9p2B454Mh6NTzx17k4k/dvyRVUuXoiRXQHGO
+        GsyeQNMgMRRppgPxgXwq8nJPhv5eprVWHdx1KlwLDawDjerSFq06N6IJa69baxNN98AS/Vm0GFw8
+        Ba2BGP6Oq/qJrNZLHnv8IzHX6YpZ1WT2w3pEqao9oJiaOfW9gdOPGahVyUgkqkxwhbOoyLla5iFc
+        xzibLUK+pgude3PvfkOsnfUFRUN3ur4DAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 13 Aug 2025 04:57:09 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=590
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What''s the weather in SF and NYC?"}],
+      "role": "user"}, {"parts": [{"functionCall": {"id": "get_weather", "args": {"location":
+      "SF"}, "name": "get_weather"}}, {"functionCall": {"id": "get_weather", "args":
+      {"location": "NYC"}, "name": "get_weather"}}], "role": "model"}, {"parts": [{"functionResponse":
+      {"id": "get_weather", "name": "get_weather", "response": {"output": "The weather
+      in SF is overcast and 64\u00b0F"}}}, {"functionResponse": {"id": "get_weather",
+      "name": "get_weather", "response": {"output": "The weather in NYC is sunny and
+      72\u00b0F"}}}], "role": "user"}], "tools": [{"functionDeclarations": [{"description":
+      "Get the current weather in a given location.\n\nArgs:\n    location: A city
+      acronym like NYC or LA.", "name": "get_weather", "parameters": {"properties":
+      {"location": {"description": "A city acronym like NYC or LA.", "title": "Location",
+      "type": "STRING"}}, "required": ["location"], "type": "OBJECT"}}]}], "generationConfig":
+      {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '994'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RXW+CMBR951c0fRYDaET2ODcT3YduksVl20OVKzRCS2hxM4b/tN+wX7YWRGG+
+        rg9Nc8/pPfeeczAQwmvCAhoQCQJfoTdVQehQ3hrjTAKTCqhLqpiSTJ651Tk03ooi4Ut/wrO7LvIj
+        QJ9AZAQZogwtxogKxHeQrYmQSImjQf/ne3xBfHwdaabIGduXNNfRtHeGG1rF6f3ROU+Y8Ri0fMID
+        iGt6URPwhjIqomcggjNNW/izOT6hZBfe8zDN+EovaVpdq2e7rttzvWHfHvQty/WMWroUxbkgITyA
+        JMpFcvIKqxZJKn2+BTbieemiZ1cyDdNbuOMdcckliVuQ7Vidi77iRqnSuJlGIyi1Pomp3Osd/dul
+        jxsWyfZYtUdGw8q/Q/6TmOO1xYxjNFVaL5AJWsUSQqKCMp2uZW5iIqKyI85ApJwJmASaM43yNZms
+        yLUJjO3CeW+6TIZPW2wUxi8pozdZ3QIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 13 Aug 2025 04:57:10 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=639
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

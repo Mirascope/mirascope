@@ -154,12 +154,10 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
     ) -> StreamResponse[Stream, None]:
-        if tools:
-            raise NotImplementedError("tool use not yet supported")
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        contents, config = _utils.prepare_google_request(messages)
+        contents, config = _utils.prepare_google_request(messages, tools)
 
         google_stream = self.client.models.generate_content_stream(
             model=model,
