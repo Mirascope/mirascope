@@ -14,8 +14,7 @@ def create_sync_stream_response(
     """Create a llm.StreamResponse with a functioning iterator for testing."""
 
     def sync_chunk_iter() -> llm.ChunkIterator:
-        for chunk in chunks:
-            yield chunk, f"raw_{chunk.type}"
+        yield from chunks
 
     iterator = sync_chunk_iter()
 
@@ -35,7 +34,7 @@ def create_async_stream_response(
 
     async def async_chunk_iter() -> llm.AsyncChunkIterator:
         for chunk in chunks:
-            yield chunk, f"raw_{chunk.type}"
+            yield chunk
 
     iterator = async_chunk_iter()
 
@@ -109,8 +108,6 @@ def check_stream_response_consistency(
     content: Sequence[llm.AssistantContentPart],
 ) -> None:
     assert response.chunks == chunks, "response.chunks"
-    expected_raw = [f"raw_{chunk.type}" for chunk in chunks]
-    assert response.raw == expected_raw, "response.raw"
     assert response.content == content, "response.content"
     assert response.texts == [part for part in content if part.type == "text"], (
         "response.texts"
@@ -841,77 +838,65 @@ class TestErrorHandling:
         check_stream_response_consistency(stream_response, chunks[:6], [example_text])
 
 
-class TestRawChunkDeduplication:
+class TestRawChunkTracking:
     """Test chunk deduplication behavior."""
 
-    def test_sync_chunk_deduplication_with_same_raw(self) -> None:
-        """Test that chunks with same raw underlying chunk are not duplicated."""
-        raw_chunk_1 = {"info": "a"}
-        raw_chunk_2 = raw_chunk_1  # This is the same object, and will be dedup'd
-        raw_chunk_3 = {"info": "a"}  # Logically equivalent but new object, will stay
+    def test_sync_raw_chunks_collection(self) -> None:
+        """Test that raw chunks are collected."""
+        raw1 = {"info": "a"}
+        raw2 = {"info": "b"}
+        chunk1 = llm.TextStartChunk(type="text_start_chunk", content_type="text")
+        chunk2 = llm.TextChunk(type="text_chunk", content_type="text", delta="hi")
+        chunk3 = llm.TextEndChunk(type="text_end_chunk", content_type="text")
 
-        chunk_1 = llm.TextStartChunk(type="text_start_chunk", content_type="text")
-        chunk_2 = llm.TextChunk(type="text_chunk", content_type="text", delta="hi")
-        chunk_3 = llm.TextEndChunk(type="text_end_chunk", content_type="text")
-
-        def sync_chunk_iter_with_duplicates() -> llm.ChunkIterator:
-            yield (
-                chunk_1,
-                raw_chunk_1,
-            )
-            yield (
-                chunk_2,
-                raw_chunk_2,
-            )
-            yield (
-                chunk_3,
-                raw_chunk_3,
-            )
+        def chunk_iterator() -> llm.ChunkIterator:
+            yield llm.responses.RawChunk(raw=raw1)
+            yield chunk1
+            yield chunk2
+            yield llm.responses.RawChunk(raw=raw2)
+            yield chunk3
 
         stream_response = llm.StreamResponse(
             provider="openai",
             model="gpt-4o-mini",
             input_messages=[llm.messages.user("Test")],
-            chunk_iterator=sync_chunk_iter_with_duplicates(),
+            chunk_iterator=chunk_iterator(),
         )
 
         for _ in stream_response.chunk_stream():
             ...
 
-        assert stream_response.raw == [raw_chunk_1, raw_chunk_3]
+        check_stream_response_consistency(
+            stream_response, [chunk1, chunk2, chunk3], [llm.Text(text="hi")]
+        )
+        assert stream_response.raw == [raw1, raw2]
 
     @pytest.mark.asyncio
     async def test_async_chunk_deduplication_with_same_raw(self) -> None:
-        """Test that chunks with same raw underlying chunk are not duplicated."""
-        raw_chunk_1 = {"info": "a"}
-        raw_chunk_2 = raw_chunk_1  # This is the same object, and will be dedup'd
-        raw_chunk_3 = {"info": "a"}  # Logically equivalent but new object, will stay
+        raw1 = {"info": "a"}
+        raw2 = {"info": "b"}
+        chunk1 = llm.TextStartChunk(type="text_start_chunk", content_type="text")
+        chunk2 = llm.TextChunk(type="text_chunk", content_type="text", delta="hi")
+        chunk3 = llm.TextEndChunk(type="text_end_chunk", content_type="text")
 
-        chunk_1 = llm.TextStartChunk(type="text_start_chunk", content_type="text")
-        chunk_2 = llm.TextChunk(type="text_chunk", content_type="text", delta="hi")
-        chunk_3 = llm.TextEndChunk(type="text_end_chunk", content_type="text")
-
-        async def async_chunk_iter_with_duplicates() -> llm.AsyncChunkIterator:
-            yield (
-                chunk_1,
-                raw_chunk_1,
-            )
-            yield (
-                chunk_2,
-                raw_chunk_2,
-            )
-            yield (
-                chunk_3,
-                raw_chunk_3,
-            )
+        async def chunk_iterator() -> llm.AsyncChunkIterator:
+            yield llm.responses.RawChunk(raw=raw1)
+            yield chunk1
+            yield chunk2
+            yield llm.responses.RawChunk(raw=raw2)
+            yield chunk3
 
         stream_response = llm.StreamResponse[llm.AsyncStream](
             provider="openai",
             model="gpt-4o-mini",
             input_messages=[llm.messages.user("Test")],
-            chunk_iterator=async_chunk_iter_with_duplicates(),
+            chunk_iterator=chunk_iterator(),
         )
 
-        [_ async for _ in await stream_response.chunk_stream()]
+        async for _ in await stream_response.chunk_stream():
+            ...
 
-        assert stream_response.raw == [raw_chunk_1, raw_chunk_3]
+        check_stream_response_consistency(
+            stream_response, [chunk1, chunk2, chunk3], [llm.Text(text="hi")]
+        )
+        assert stream_response.raw == [raw1, raw2]

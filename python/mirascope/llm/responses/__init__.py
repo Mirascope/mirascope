@@ -5,15 +5,15 @@ from .response import Response
 from .stream_response import (
     AsyncChunkIterator,
     ChunkIterator,
-    ChunkWithRaw,
+    RawChunk,
     StreamResponse,
 )
 
 __all__ = [
     "AsyncChunkIterator",
     "ChunkIterator",
-    "ChunkWithRaw",
     "FinishReason",
+    "RawChunk",
     "Response",
     "StreamResponse",
 ]

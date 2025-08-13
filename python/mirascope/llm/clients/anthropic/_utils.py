@@ -22,7 +22,7 @@ from ...content import (
     ToolCallStartChunk,
 )
 from ...messages import AssistantMessage, Message, UserMessage, assistant
-from ...responses import ChunkIterator, FinishReason
+from ...responses import ChunkIterator, FinishReason, RawChunk
 from ...tools import Tool
 from ..base import _utils as _base_utils
 
@@ -163,45 +163,41 @@ def convert_anthropic_stream_to_chunk_iterator(
 
     with anthropic_stream_manager as stream:
         for event in stream._raw_stream:
+            yield RawChunk(raw=event)
+
             if event.type == "content_block_start":
                 content_block = event.content_block
                 current_block_type = content_block.type
 
                 if content_block.type == "text":
-                    yield TextStartChunk(type="text_start_chunk"), event
+                    yield TextStartChunk(type="text_start_chunk")
                 elif content_block.type == "tool_use":
-                    yield (
-                        ToolCallStartChunk(
-                            type="tool_call_start_chunk",
-                            id=content_block.id,
-                            name=content_block.name,
-                        ),
-                        event,
+                    yield ToolCallStartChunk(
+                        type="tool_call_start_chunk",
+                        id=content_block.id,
+                        name=content_block.name,
                     )
+
                 else:
                     raise NotImplementedError
 
             elif event.type == "content_block_delta":
                 delta = event.delta
                 if delta.type == "text_delta":
-                    yield TextChunk(type="text_chunk", delta=delta.text), event
+                    yield TextChunk(type="text_chunk", delta=delta.text)
                 elif delta.type == "input_json_delta":
-                    yield (
-                        ToolCallChunk(type="tool_call_chunk", delta=delta.partial_json),
-                        event,
+                    yield ToolCallChunk(
+                        type="tool_call_chunk", delta=delta.partial_json
                     )
                 else:
                     raise NotImplementedError
 
             elif event.type == "content_block_stop":
                 if current_block_type == "text":
-                    yield TextEndChunk(type="text_end_chunk"), event
+                    yield TextEndChunk(type="text_end_chunk")
                 elif current_block_type == "tool_use":
-                    yield (
-                        ToolCallEndChunk(
-                            type="tool_call_end_chunk", content_type="tool_call"
-                        ),
-                        event,
+                    yield ToolCallEndChunk(
+                        type="tool_call_end_chunk", content_type="tool_call"
                     )
                 else:
                     raise NotImplementedError
@@ -213,4 +209,4 @@ def convert_anthropic_stream_to_chunk_iterator(
                     finish_reason = ANTHROPIC_FINISH_REASON_MAP.get(
                         event.delta.stop_reason, FinishReason.UNKNOWN
                     )
-                    yield FinishReasonChunk(finish_reason=finish_reason), event
+                    yield FinishReasonChunk(finish_reason=finish_reason)
