@@ -36,7 +36,8 @@ AgentToolT = TypeVar(
 
 @dataclass
 class ContextTool(
-    ToolSchema[P, JsonableCovariantT], Generic[P, JsonableCovariantT, DepsT]
+    ToolSchema[Callable[Concatenate[Context[DepsT], P], JsonableCovariantT]],
+    Generic[P, JsonableCovariantT, DepsT],
 ):
     """Protocol defining a tool that can be used by LLMs.
 
@@ -45,9 +46,6 @@ class ContextTool(
 
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
-
-    fn: Callable[Concatenate[Context[DepsT], P], JsonableCovariantT]
-    """The function that implements the tool's functionality."""
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -63,7 +61,8 @@ class ContextTool(
 
 @dataclass
 class AsyncContextTool(
-    ToolSchema[P, JsonableCovariantT], Generic[P, JsonableCovariantT, DepsT]
+    ToolSchema[Callable[Concatenate[Context[DepsT], P], JsonableCovariantT]],
+    Generic[P, JsonableCovariantT, DepsT],
 ):
     """Protocol defining an async tool that can be used by LLMs with context.
 
@@ -72,9 +71,6 @@ class AsyncContextTool(
 
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
-
-    fn: Callable[Concatenate[Context[DepsT], P], Awaitable[JsonableCovariantT]]
-    """The async function that implements the tool's functionality."""
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
