@@ -58,7 +58,7 @@ def test_response_initialization_with_mixed_content() -> None:
     # Create final assistant message with mixed content
     mixed_content = [
         llm.Text(text="I'll help you with that."),
-        llm.ToolCall(id="call_1", name="test_tool", args={"param": "value"}),
+        llm.ToolCall(id="call_1", name="test_tool", args='{"param": "value"}'),
         llm.Thinking(thinking="Let me think about this", signature=None),
         llm.Text(text="Here's the result."),
     ]
@@ -81,7 +81,7 @@ def test_response_initialization_with_mixed_content() -> None:
 
     assert len(response.tool_calls) == 1
     assert response.tool_calls[0].name == "test_tool"
-    assert response.tool_calls[0].args == {"param": "value"}
+    assert response.tool_calls[0].args == '{"param": "value"}'
 
     assert len(response.thinkings) == 1
     assert response.thinkings[0].thinking == "Let me think about this"
@@ -197,7 +197,7 @@ def test_mixed_content_response_pretty() -> None:
                 signature="math_helper_v1",
             ),
             llm.ToolCall(
-                id="call_abc123", name="multiply_numbers", args={"a": 1337, "b": 4242}
+                id="call_abc123", name="multiply_numbers", args='{"a": 1337, "b": 4242}'
             ),
         ]
     )
@@ -212,14 +212,16 @@ def test_mixed_content_response_pretty() -> None:
     )
 
     assert response.pretty() == snapshot(
-        inspect.cleandoc("""
+        inspect.cleandoc(
+            """\
             I need to calculate something for you.
 
             **Thinking:**
               Let me think about this calculation step by step...
 
-            **ToolCall (multiply_numbers):** {'a': 1337, 'b': 4242}
-        """)
+            **ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}
+            """
+        )
     )
 
 

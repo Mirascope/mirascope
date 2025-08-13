@@ -1,6 +1,5 @@
 """OpenAI message types and conversion utilities."""
 
-import json
 from collections.abc import Sequence
 from functools import lru_cache
 from typing import Literal
@@ -77,7 +76,7 @@ def _encode_assistant_message(
                 openai_types.ChatCompletionMessageToolCallParam(
                     id=part.id,
                     type="function",
-                    function={"name": part.name, "arguments": json.dumps(part.args)},
+                    function={"name": part.name, "arguments": part.args},
                 )
             )
         else:
@@ -134,7 +133,7 @@ def _decode_assistant_message(
                 ToolCall(
                     id=tool_call.id,
                     name=tool_call.function.name,
-                    args=json.loads(tool_call.function.arguments),
+                    args=tool_call.function.arguments,
                 )
             )
 

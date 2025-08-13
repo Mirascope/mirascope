@@ -1,5 +1,6 @@
 """Google message types and conversion utilities."""
 
+import json
 from collections.abc import Iterator, Sequence
 from functools import lru_cache
 from typing import Literal
@@ -47,7 +48,7 @@ def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict
                 {
                     "function_call": {
                         "name": part.name,
-                        "args": part.args,
+                        "args": json.loads(part.args),
                         "id": part.id,
                     }
                 }
@@ -97,7 +98,7 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
             )  # pragma: no cover
         if not id:
             id = name  # Google treats tool call ids as optional
-        return ToolCall(id=id, name=name, args=args)
+        return ToolCall(id=id, name=name, args=json.dumps(args))
     elif part.function_response:
         raise NotImplementedError(
             "function_response part does not decode to AssistantContent."

@@ -1,5 +1,6 @@
 """Anthropic message types and conversion utilities."""
 
+import json
 from collections.abc import Sequence
 from functools import lru_cache
 
@@ -56,7 +57,7 @@ def _encode_content(
                     type="tool_use",
                     id=part.id,
                     name=part.name,
-                    input=part.args,
+                    input=json.loads(part.args),
                 )
             )
         else:
@@ -75,7 +76,7 @@ def _decode_assistant_content(
         return ToolCall(
             id=content.id,
             name=content.name,
-            args=dict(content.input),  # type: ignore[arg-type]
+            args=json.dumps(content.input),
         )
     else:
         raise NotImplementedError(

@@ -26,7 +26,7 @@ def test_sync_tool_basic() -> None:
 
     assert add_numbers(2, 3) == 5
 
-    tool_call = llm.ToolCall(id="call_123", name="add_numbers", args={"a": 5, "b": 7})
+    tool_call = llm.ToolCall(id="call_123", name="add_numbers", args='{"a": 5, "b": 7}')
     output = add_numbers.execute(tool_call)
     expected = llm.ToolOutput(id="call_123", value=12, name="add_numbers")
     assert output == expected
@@ -75,7 +75,7 @@ async def test_async_tool_basic() -> None:
 
     assert await async_add(3, 4) == 7
 
-    tool_call = llm.ToolCall(id="call_456", name="async_add", args={"a": 10, "b": 15})
+    tool_call = llm.ToolCall(id="call_456", name="async_add", args='{"a": 10, "b": 15}')
     output = await async_add.execute(tool_call)
     expected = llm.ToolOutput(id="call_456", value=25, name="async_add")
     assert output == expected

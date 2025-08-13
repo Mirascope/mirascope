@@ -237,16 +237,16 @@ def test_tool_usage(openai_client: llm.OpenAIClient) -> None:
 
     assert isinstance(response, llm.Response)
     assert response.pretty() == snapshot(
-        "**ToolCall (multiply_numbers):** {'a': 1337, 'b': 4242}"
+        '**ToolCall (multiply_numbers):** {"a":1337,"b":4242}'
     )
 
     assert len(response.tool_calls) == 1
     tool_call = response.tool_calls[0]
     assert tool_call == snapshot(
         llm.ToolCall(
-            id="call_41pWtv8AWJnKKtIqAmOoqBa0",
+            id="call_oQ4p87JEVqzjOaWQOQ0vCGfh",
             name="multiply_numbers",
-            args={"a": 1337, "b": 4242},
+            args='{"a":1337,"b":4242}',
         )
     )
 
@@ -259,7 +259,9 @@ def test_tool_usage(openai_client: llm.OpenAIClient) -> None:
         tools=[multiply_numbers],
     )
 
-    assert final_response.pretty() == snapshot("The result of 1337 * 4242 is 42.")
+    assert final_response.pretty() == snapshot(
+        "The result of \\( 1337 \\times 4242 \\) is 42."
+    )
 
 
 @pytest.mark.vcr()

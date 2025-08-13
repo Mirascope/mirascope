@@ -202,7 +202,7 @@ def test_tool_usage(google_client: llm.GoogleClient) -> None:
 
     assert isinstance(response, llm.Response)
     assert response.pretty() == snapshot(
-        "**ToolCall (multiply_numbers):** {'b': 4242, 'a': 1337}"
+        '**ToolCall (multiply_numbers):** {"b": 4242, "a": 1337}'
     )
 
     assert len(response.tool_calls) == 1
@@ -211,7 +211,7 @@ def test_tool_usage(google_client: llm.GoogleClient) -> None:
         llm.ToolCall(
             id="multiply_numbers",
             name="multiply_numbers",
-            args={"a": 1337, "b": 4242},
+            args='{"b": 4242, "a": 1337}',
         )
     )
 
