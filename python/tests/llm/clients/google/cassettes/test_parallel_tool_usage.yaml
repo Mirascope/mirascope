@@ -29,13 +29,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/81SwU6DQBC98xVkz20D2NritWpStVorMRpjzAjDlrjskt2ljWn67y4UKDR6MPEg
-        B7I7b+a9NzuztWybhMCjJAKNipzZLyZi29vyX2CCa+TaAHXIBDOQ+pC7/7ats0mJcx7qRPApMNYp
-        rnAOKZo4oajfNgh6hZL0jpNAUvVNsUGYCKGgLygeLslRws766bbr/QvLt8/TX3huzq8HOSIFK92k
-        IkJWkzXtkTjhiVotEVT1SMHdonFLYE1vBM2keC/M9p2B454Mh6NTzx17k4k/dvyRVUuXoiRXQHGO
-        GsyeQNMgMRRppgPxgXwq8nJPhv5eprVWHdx1KlwLDawDjerSFq06N6IJa69baxNN98AS/Vm0GFw8
-        Ba2BGP6Oq/qJrNZLHnv8IzHX6YpZ1WT2w3pEqao9oJiaOfW9gdOPGahVyUgkqkxwhbOoyLla5iFc
-        xzibLUK+pgude3PvfkOsnfUFRUN3ur4DAAA=
+        H4sIAAAAAAAC/81SUU/CMBB+769Y+sxIh4DBNwUlJqhEp9EYQ052K4tdu6wdRgn/3W5sYyP6YOKD
+        e1ja++6+77vebYjj0CXIIArAoKYnzrONOM6m+OeYkgalsUAVssEEUrPP3X2bxtmmhJlcmkjJMQjR
+        Ki5xCTHaOOVoFu8IZoUp7RwmQcr1N8UWEWoJOX1OcXdBDxK25KfbtvMvLF8/jX/huT6/7OVoqkTh
+        JlYBioqsbo+GkYz06hZBl4/k38xrtxTWfKZ4kqrX3KzLusxjPW/YPxocjxgbeqOBRyrpQpRmGjhe
+        oQG7J1A3SC1FnBhfvaEcq6zYk/5oJ9NYqxbusRI3yoBoQYOqtEGrJ1Y0Es11a2yi7R5EZD7yFv3z
+        R78xEMvfclU9EWm85KHHPxLzWFuMlJPZDesBU13uAcfYzsntdZkbCtCrgpGmqBMlNV4Gec7ibBrA
+        bO1OZxOQaz7/zMLMPb2nZEu+AIkJc/6+AwAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -44,11 +44,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 13 Aug 2025 04:57:09 GMT
+      - Wed, 13 Aug 2025 22:30:20 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=590
+      - gfet4t7; dur=607
       Transfer-Encoding:
       - chunked
       Vary:
@@ -66,13 +66,12 @@ interactions:
       message: OK
 - request:
     body: '{"contents": [{"parts": [{"text": "What''s the weather in SF and NYC?"}],
-      "role": "user"}, {"parts": [{"functionCall": {"id": "get_weather", "args": {"location":
-      "SF"}, "name": "get_weather"}}, {"functionCall": {"id": "get_weather", "args":
-      {"location": "NYC"}, "name": "get_weather"}}], "role": "model"}, {"parts": [{"functionResponse":
-      {"id": "get_weather", "name": "get_weather", "response": {"output": "The weather
-      in SF is overcast and 64\u00b0F"}}}, {"functionResponse": {"id": "get_weather",
-      "name": "get_weather", "response": {"output": "The weather in NYC is sunny and
-      72\u00b0F"}}}], "role": "user"}], "tools": [{"functionDeclarations": [{"description":
+      "role": "user"}, {"parts": [{"functionCall": {"args": {"location": "SF"}, "name":
+      "get_weather"}}, {"functionCall": {"args": {"location": "NYC"}, "name": "get_weather"}}],
+      "role": "model"}, {"parts": [{"functionResponse": {"name": "get_weather", "response":
+      {"output": "The weather in SF is overcast and 64\u00b0F"}}}, {"functionResponse":
+      {"name": "get_weather", "response": {"output": "The weather in NYC is sunny
+      and 72\u00b0F"}}}], "role": "user"}], "tools": [{"functionDeclarations": [{"description":
       "Get the current weather in a given location.\n\nArgs:\n    location: A city
       acronym like NYC or LA.", "name": "get_weather", "parameters": {"properties":
       {"location": {"description": "A city acronym like NYC or LA.", "title": "Location",
@@ -86,7 +85,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '994'
+      - '910'
       content-type:
       - application/json
       host:
@@ -100,13 +99,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61RXW+CMBR951c0fRYDaET2ODcT3YduksVl20OVKzRCS2hxM4b/tN+wX7YWRGG+
-        rg9Nc8/pPfeeczAQwmvCAhoQCQJfoTdVQehQ3hrjTAKTCqhLqpiSTJ651Tk03ooi4Ut/wrO7LvIj
-        QJ9AZAQZogwtxogKxHeQrYmQSImjQf/ne3xBfHwdaabIGduXNNfRtHeGG1rF6f3ROU+Y8Ri0fMID
-        iGt6URPwhjIqomcggjNNW/izOT6hZBfe8zDN+EovaVpdq2e7rttzvWHfHvQty/WMWroUxbkgITyA
-        JMpFcvIKqxZJKn2+BTbieemiZ1cyDdNbuOMdcckliVuQ7Vidi77iRqnSuJlGIyi1Pomp3Osd/dul
-        jxsWyfZYtUdGw8q/Q/6TmOO1xYxjNFVaL5AJWsUSQqKCMp2uZW5iIqKyI85ApJwJmASaM43yNZms
-        yLUJjO3CeW+6TIZPW2wUxi8pozdZ3QIAAA==
+        H4sIAAAAAAAC/61R0U7CMBR931c0fQayDWHgm6IYjSKBaTRqTGV3W8Nol7ZDF8I/+Q1+me3GYMNX
+        +9A095zec+85GwshvCAsoAFRIPEpetEVhDbFbTDOFDClgaqkiykR6sAtz6b21hQFX+YT9mNAn0BU
+        DAJRhuZjRCXiaxALIhXSwqh/8vM97qAj4uR5ZJgyYywvaJ5raK8M13S2+/db6zCd4AkY6RUPIKno
+        24qAQ8qojGdAJGeGNvfvp3iPknV0y6NU8A+zYNvu2HbPHdjOoDv0uk6353lOz6q0C1WcSRLBHSii
+        LSR7o7DusUqVz5fARjwrLBw6pU7N8QbuejtccUWSBuQ4g9afvvJCq9KkHkUtJb0/SajKixgun3xc
+        80g1x6pMsmpeHg/5T2Ku1xSzdtmUcT2CkLTMJYKVTqrtdux2mBAZFx2xAJlyJuE6MJz32VVAbsLl
+        +SQL2Tqa8kXfyc8esLW1fgEtxlvc2gIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -115,11 +114,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 13 Aug 2025 04:57:10 GMT
+      - Wed, 13 Aug 2025 22:30:21 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=639
+      - gfet4t7; dur=595
       Transfer-Encoding:
       - chunked
       Vary:

@@ -234,27 +234,34 @@ def convert_openai_stream_to_chunk_iterator(
             for tool_call_delta in delta.tool_calls:
                 index = tool_call_delta.index
 
-                if current_tool_index is None or current_tool_index < index:
-                    if current_tool_index is not None:
-                        yield (
-                            ToolCallEndChunk(
-                                type="tool_call_end_chunk",
-                                content_type="tool_call",
-                            ),
-                            chunk,
-                        )
+                if current_tool_index is not None and current_tool_index > index:
+                    raise RuntimeError(
+                        f"Received tool data for already-finished tool at index {index}"
+                    )  # pragma: no cover
 
-                    if (
-                        not tool_call_delta.function
-                        or not tool_call_delta.function.name
+                if current_tool_index is not None and current_tool_index < index:
+                    yield (
+                        ToolCallEndChunk(
+                            type="tool_call_end_chunk",
+                            content_type="tool_call",
+                        ),
+                        chunk,
+                    )
+                    current_tool_index = None
+
+                if current_tool_index is None:
+                    if not tool_call_delta.function or not (
+                        name := tool_call_delta.function.name
                     ):
                         raise RuntimeError(
                             f"Missing name for tool call at index {index}"
                         )  # pragma: no cover
 
                     current_tool_index = index
-                    name = tool_call_delta.function.name
-                    tool_id = tool_call_delta.id or name
+                    if not (tool_id := tool_call_delta.id):
+                        raise RuntimeError(
+                            f"Missing id for tool call at index {index}"
+                        )  # pragma: no cover
 
                     yield (
                         ToolCallStartChunk(
@@ -264,11 +271,6 @@ def convert_openai_stream_to_chunk_iterator(
                         ),
                         chunk,
                     )
-
-                if current_tool_index > index:
-                    raise RuntimeError(
-                        f"Received tool data for already-finished tool at index {index}"
-                    )  # pragma: no cover
 
                 if tool_call_delta.function and tool_call_delta.function.arguments:
                     yield (
