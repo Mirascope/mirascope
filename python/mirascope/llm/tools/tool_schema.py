@@ -11,6 +11,7 @@ from typing import (
     Any,
     Generic,
     TypeGuard,
+    TypeVar,
     get_args,
     get_origin,
     get_type_hints,
@@ -22,7 +23,11 @@ from pydantic.fields import FieldInfo
 from typing_extensions import Self
 
 from ..content import ToolCall
-from ..types import Jsonable, JsonableCovariantT, P
+from ..types import Jsonable
+
+ToolFnT = TypeVar(
+    "ToolFnT", bound=Callable[..., Jsonable] | Callable[..., Awaitable[Jsonable]]
+)
 
 DocstringArg = namedtuple("DocstringArg", ["name", "description"])
 
@@ -81,7 +86,7 @@ class ToolParameterSchema(BaseModel):
 
 
 @dataclass
-class ToolSchema(Generic[P, JsonableCovariantT]):
+class ToolSchema(Generic[ToolFnT]):
     """Underlying schema defining a tool that can be used by LLMs.
 
     A ToolSchema represents a function that can be called by an LLM during a call.
@@ -89,6 +94,9 @@ class ToolSchema(Generic[P, JsonableCovariantT]):
 
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
+
+    fn: ToolFnT
+    """The function that implements the tool's functionality."""
 
     name: str
     """The name of the tool, used by the LLM to identify which tool to call."""
@@ -120,12 +128,12 @@ class ToolSchema(Generic[P, JsonableCovariantT]):
         return self._hash
 
     @classmethod
-    def create_schema(
+    def from_function(
         cls,
-        fn: Callable[..., Jsonable] | Callable[..., Awaitable[Jsonable]],
+        fn: ToolFnT,
         *,
         strict: bool = False,
-    ) -> ToolSchema:
+    ) -> Self:
         """Create a `ToolSchema` by inspecting a function and its docstring.
 
         Uses Pydantic's create_model to dynamically build a model from the function
@@ -196,7 +204,11 @@ class ToolSchema(Generic[P, JsonableCovariantT]):
             parameters.defs = schema["$defs"]
 
         return cls(
-            name=name, description=description, parameters=parameters, strict=strict
+            fn=fn,
+            name=name,
+            description=description,
+            parameters=parameters,
+            strict=strict,
         )
 
     def matches(self, tool_call: ToolCall) -> bool:

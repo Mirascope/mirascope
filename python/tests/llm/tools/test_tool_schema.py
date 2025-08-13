@@ -35,7 +35,7 @@ def test_complex_tool_schema_snapshot() -> None:
         """
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.create_schema(complex_tool)
+    schema = llm.tools.ToolSchema.from_function(complex_tool)
 
     assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
         {
@@ -89,8 +89,8 @@ def test_strict_mode() -> None:
         """A simple tool."""
         raise NotImplementedError
 
-    normal_schema = llm.tools.ToolSchema.create_schema(simple_tool)
-    strict_schema = llm.tools.ToolSchema.create_schema(simple_tool, strict=True)
+    normal_schema = llm.tools.ToolSchema.from_function(simple_tool)
+    strict_schema = llm.tools.ToolSchema.from_function(simple_tool, strict=True)
 
     assert normal_schema.strict is False
     assert strict_schema.strict is True
@@ -102,7 +102,7 @@ def test_default_description() -> None:
     def tool_no_docstring() -> str:
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.create_schema(tool_no_docstring)
+    schema = llm.tools.ToolSchema.from_function(tool_no_docstring)
     assert schema.description == "tool_no_docstring"
 
 
@@ -119,7 +119,7 @@ def test_docstring_cleaning() -> None:
         """
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.create_schema(tool_with_multiline_docstring)
+    schema = llm.tools.ToolSchema.from_function(tool_with_multiline_docstring)
     expected = "Long docstring.\n\nThis is a multiline docstring\nwith some indentation.\n\nIt should be cleaned up properly."
     assert schema.description == expected
 
@@ -131,7 +131,7 @@ def test_no_parameters() -> None:
         """A tool with no parameters."""
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.create_schema(no_param_tool)
+    schema = llm.tools.ToolSchema.from_function(no_param_tool)
 
     assert schema.parameters.properties == {}
     assert schema.parameters.required == []
@@ -150,8 +150,8 @@ def test_self_cls_parameters_skipped() -> None:
             """Class method."""
             raise NotImplementedError
 
-    instance_schema = llm.tools.ToolSchema.create_schema(TestClass.instance_method)
-    class_schema = llm.tools.ToolSchema.create_schema(TestClass.class_method)
+    instance_schema = llm.tools.ToolSchema.from_function(TestClass.instance_method)
+    class_schema = llm.tools.ToolSchema.from_function(TestClass.class_method)
 
     assert list(instance_schema.parameters.properties.keys()) == ["param"]
     assert list(class_schema.parameters.properties.keys()) == ["param"]
@@ -169,7 +169,7 @@ def test_annotated_without_field_info() -> None:
         """Tool with Annotated type but no Field annotation."""
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.create_schema(tool_with_annotated_no_field)
+    schema = llm.tools.ToolSchema.from_function(tool_with_annotated_no_field)
     assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
         {
             "properties": {"param": {"title": "Param", "type": "string"}},
@@ -192,7 +192,7 @@ def test_non_jsonable_parameter_raises_error() -> None:
         raise NotImplementedError
 
     with pytest.raises(PydanticSchemaGenerationError):
-        llm.tools.ToolSchema.create_schema(tool_with_non_jsonable)
+        llm.tools.ToolSchema.from_function(tool_with_non_jsonable)
 
 
 def test_google_style_docstring_parameter_descriptions() -> None:
@@ -211,7 +211,7 @@ def test_google_style_docstring_parameter_descriptions() -> None:
         """
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.create_schema(google_style_tool)
+    schema = llm.tools.ToolSchema.from_function(google_style_tool)
 
     assert schema.parameters.model_dump(by_alias=True, exclude_none=True) == snapshot(
         {
@@ -252,7 +252,7 @@ def test_field_annotation_overrides_docstring() -> None:
         """
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.create_schema(
+    schema = llm.tools.ToolSchema.from_function(
         tool_with_both_docstring_descr_and_annotation
     )
 
@@ -265,7 +265,7 @@ def test_no_docstring_no_descriptions() -> None:
     def no_docs_tool(param1: str, param2: int) -> str:
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.create_schema(no_docs_tool)
+    schema = llm.tools.ToolSchema.from_function(no_docs_tool)
 
     assert "description" not in schema.parameters.properties["param1"]
     assert "description" not in schema.parameters.properties["param2"]
@@ -278,7 +278,7 @@ def test_tool_schema_is_hashable() -> None:
         """A sample tool."""
         raise NotImplementedError
 
-    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+    schema = llm.tools.ToolSchema.from_function(sample_tool)
 
     hash_value = hash(schema)
     assert isinstance(hash_value, int)
@@ -296,8 +296,8 @@ def test_equivalent_schemas_have_same_hash() -> None:
         """A sample function."""
         return param
 
-    schema1 = llm.tools.ToolSchema.create_schema(sample_function)
-    schema2 = llm.tools.ToolSchema.create_schema(sample_function)
+    schema1 = llm.tools.ToolSchema.from_function(sample_function)
+    schema2 = llm.tools.ToolSchema.from_function(sample_function)
 
     assert hash(schema1) == hash(schema2)
 
@@ -316,8 +316,8 @@ def test_different_schemas_have_different_hashes() -> None:
         """Second function."""
         return str(param)
 
-    schema1 = llm.tools.ToolSchema.create_schema(func1)
-    schema2 = llm.tools.ToolSchema.create_schema(func2)
+    schema1 = llm.tools.ToolSchema.from_function(func1)
+    schema2 = llm.tools.ToolSchema.from_function(func2)
 
     assert hash(schema1) != hash(schema2)
 
@@ -329,7 +329,7 @@ def test_schema_hash_consistent_across_calls() -> None:
         """A sample function."""
         return param
 
-    schema = llm.tools.ToolSchema.create_schema(sample_function)
+    schema = llm.tools.ToolSchema.from_function(sample_function)
 
     hash1 = hash(schema)
     hash2 = hash(schema)
@@ -345,7 +345,7 @@ def test_defines_same_schema() -> None:
         """A sample tool."""
         return param
 
-    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+    schema = llm.tools.ToolSchema.from_function(sample_tool)
 
     assert schema.defines(schema)
 
@@ -357,8 +357,8 @@ def test_defines_equivalent_schema() -> None:
         """A sample tool."""
         return param
 
-    schema1 = llm.tools.ToolSchema.create_schema(sample_tool)
-    schema2 = llm.tools.ToolSchema.create_schema(sample_tool)
+    schema1 = llm.tools.ToolSchema.from_function(sample_tool)
+    schema2 = llm.tools.ToolSchema.from_function(sample_tool)
 
     assert schema1.defines(schema2)
     assert schema2.defines(schema1)
@@ -375,8 +375,8 @@ def test_defines_different_schemas() -> None:
         """Second tool."""
         return str(param)
 
-    schema1 = llm.tools.ToolSchema.create_schema(tool1)
-    schema2 = llm.tools.ToolSchema.create_schema(tool2)
+    schema1 = llm.tools.ToolSchema.from_function(tool1)
+    schema2 = llm.tools.ToolSchema.from_function(tool2)
 
     assert not schema1.defines(schema2)
     assert not schema2.defines(schema1)
@@ -389,8 +389,8 @@ def test_defines_different_strict_mode() -> None:
         """A sample tool."""
         return param
 
-    schema1 = llm.tools.ToolSchema.create_schema(sample_tool, strict=False)
-    schema2 = llm.tools.ToolSchema.create_schema(sample_tool, strict=True)
+    schema1 = llm.tools.ToolSchema.from_function(sample_tool, strict=False)
+    schema2 = llm.tools.ToolSchema.from_function(sample_tool, strict=True)
 
     assert not schema1.defines(schema2)
     assert not schema2.defines(schema1)
@@ -407,8 +407,8 @@ def test_defines_different_descriptions() -> None:
         """Updated version of the tool."""
         return param
 
-    schema1 = llm.tools.ToolSchema.create_schema(tool_v1)
-    schema2 = llm.tools.ToolSchema.create_schema(tool_v2)
+    schema1 = llm.tools.ToolSchema.from_function(tool_v1)
+    schema2 = llm.tools.ToolSchema.from_function(tool_v2)
 
     assert not schema1.defines(schema2)
     assert not schema2.defines(schema1)
@@ -421,7 +421,7 @@ def test_matches_matching_tool_call() -> None:
         """A sample tool."""
         return param
 
-    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+    schema = llm.tools.ToolSchema.from_function(sample_tool)
     tool_call = llm.ToolCall(
         id="test_id", name="sample_tool", args='{"param": "value"}'
     )
@@ -436,7 +436,7 @@ def test_matches_non_matching_tool_call() -> None:
         """A sample tool."""
         return param
 
-    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+    schema = llm.tools.ToolSchema.from_function(sample_tool)
     tool_call = llm.ToolCall(
         id="test_id", name="different_tool", args='{"param": "value"}'
     )
@@ -451,7 +451,7 @@ def test_matches_ignores_args() -> None:
         """A sample tool."""
         return param
 
-    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+    schema = llm.tools.ToolSchema.from_function(sample_tool)
     tool_call = llm.ToolCall(
         id="test_id", name="sample_tool", args='{"invalid": "json"}'
     )

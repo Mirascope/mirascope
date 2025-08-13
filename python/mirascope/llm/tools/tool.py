@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import Generic, TypeVar
 
 from ..content import ToolCall, ToolOutput
 from ..types import Jsonable, JsonableCovariantT, P
@@ -19,7 +19,7 @@ ToolT = TypeVar(
 
 
 @dataclass
-class Tool(ToolSchema[P, JsonableCovariantT]):
+class Tool(ToolSchema[Callable[P, JsonableCovariantT]], Generic[P, JsonableCovariantT]):
     """A tool that can be used by LLMs.
 
     A `Tool` represents a function that can be called by an LLM during a call.
@@ -27,23 +27,6 @@ class Tool(ToolSchema[P, JsonableCovariantT]):
 
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
-
-    fn: Callable[P, JsonableCovariantT]
-    """The function that implements the tool's functionality."""
-
-    @classmethod
-    def from_function(
-        cls, fn: Callable[P, JsonableCovariantT], *, strict: bool = False
-    ) -> Tool[P, JsonableCovariantT]:
-        """Create a `Tool` from a function."""
-        schema = ToolSchema.create_schema(fn, strict=strict)
-        return cls(
-            fn=fn,
-            name=schema.name,
-            description=schema.description,
-            parameters=schema.parameters,
-            strict=schema.strict,
-        )
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> JsonableCovariantT:
         """Call the underlying function directly."""
@@ -61,7 +44,10 @@ class Tool(ToolSchema[P, JsonableCovariantT]):
 
 
 @dataclass
-class AsyncTool(ToolSchema[P, JsonableCovariantT]):
+class AsyncTool(
+    ToolSchema[Callable[P, Awaitable[JsonableCovariantT]]],
+    Generic[P, JsonableCovariantT],
+):
     """An async tool that can be used by LLMs.
 
     An `AsyncTool` represents an async function that can be called by an LLM during a call.
@@ -69,23 +55,6 @@ class AsyncTool(ToolSchema[P, JsonableCovariantT]):
 
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
-
-    fn: Callable[P, Awaitable[JsonableCovariantT]]
-    """The async function that implements the tool's functionality."""
-
-    @classmethod
-    def from_function(
-        cls, fn: Callable[P, Awaitable[JsonableCovariantT]], *, strict: bool = False
-    ) -> AsyncTool[P, JsonableCovariantT]:
-        """Create an `AsyncTool` from a function."""
-        schema = ToolSchema.create_schema(fn, strict=strict)
-        return cls(
-            fn=fn,
-            name=schema.name,
-            description=schema.description,
-            parameters=schema.parameters,
-            strict=schema.strict,
-        )
 
     def __call__(
         self, *args: P.args, **kwargs: P.kwargs
