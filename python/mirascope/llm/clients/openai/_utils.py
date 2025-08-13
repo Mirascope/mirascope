@@ -20,7 +20,7 @@ from ...content import (
     ToolCallStartChunk,
 )
 from ...messages import AssistantMessage, Message, UserMessage
-from ...responses import ChunkIterator, FinishReason
+from ...responses import ChunkIterator, FinishReason, RawChunk
 from ...tools import Tool
 
 OPENAI_FINISH_REASON_MAP = {
@@ -201,6 +201,8 @@ def convert_openai_stream_to_chunk_iterator(
     current_tool_index: int | None = None
 
     for chunk in openai_stream:
+        yield RawChunk(raw=chunk)
+
         choice = chunk.choices[0] if chunk.choices else None
         if not choice:
             continue  # pragma: no cover
@@ -209,7 +211,7 @@ def convert_openai_stream_to_chunk_iterator(
 
         if delta.content is not None:
             if current_content_type is None:
-                yield TextStartChunk(type="text_start_chunk"), chunk
+                yield TextStartChunk(type="text_start_chunk")
                 current_content_type = "text"
             elif current_content_type == "tool_call":
                 raise RuntimeError(
@@ -218,13 +220,13 @@ def convert_openai_stream_to_chunk_iterator(
             elif current_content_type != "text":
                 raise NotImplementedError
 
-            yield TextChunk(type="text_chunk", delta=delta.content), chunk
+            yield TextChunk(type="text_chunk", delta=delta.content)
 
         if delta.tool_calls:
             if current_content_type == "text":
                 # In testing, I can't get OpenAI to emit text and tool calls in the same chunk
                 # But we handle this defensively.
-                yield TextEndChunk(type="text_end_chunk"), chunk  # pragma: no cover
+                yield TextEndChunk(type="text_end_chunk")  # pragma: no cover
             elif current_content_type and current_content_type != "tool_call":
                 raise RuntimeError(
                     f"Unexpected current_content_type: {current_content_type}"
@@ -240,13 +242,11 @@ def convert_openai_stream_to_chunk_iterator(
                     )  # pragma: no cover
 
                 if current_tool_index is not None and current_tool_index < index:
-                    yield (
-                        ToolCallEndChunk(
-                            type="tool_call_end_chunk",
-                            content_type="tool_call",
-                        ),
-                        chunk,
+                    yield ToolCallEndChunk(
+                        type="tool_call_end_chunk",
+                        content_type="tool_call",
                     )
+
                     current_tool_index = None
 
                 if current_tool_index is None:
@@ -263,40 +263,32 @@ def convert_openai_stream_to_chunk_iterator(
                             f"Missing id for tool call at index {index}"
                         )  # pragma: no cover
 
-                    yield (
-                        ToolCallStartChunk(
-                            type="tool_call_start_chunk",
-                            id=tool_id,
-                            name=name,
-                        ),
-                        chunk,
+                    yield ToolCallStartChunk(
+                        type="tool_call_start_chunk",
+                        id=tool_id,
+                        name=name,
                     )
 
                 if tool_call_delta.function and tool_call_delta.function.arguments:
-                    yield (
-                        ToolCallChunk(
-                            type="tool_call_chunk",
-                            delta=tool_call_delta.function.arguments,
-                        ),
-                        chunk,
+                    yield ToolCallChunk(
+                        type="tool_call_chunk",
+                        delta=tool_call_delta.function.arguments,
                     )
 
         if choice.finish_reason:
             if current_content_type == "text":
-                yield TextEndChunk(type="text_end_chunk"), chunk
+                yield TextEndChunk(type="text_end_chunk")
                 current_content_type = None
             elif current_content_type == "tool_call":
-                yield (
-                    ToolCallEndChunk(
-                        type="tool_call_end_chunk",
-                        content_type="tool_call",
-                    ),
-                    chunk,
+                yield ToolCallEndChunk(
+                    type="tool_call_end_chunk",
+                    content_type="tool_call",
                 )
+
             else:
                 raise NotImplementedError
 
             finish_reason = OPENAI_FINISH_REASON_MAP.get(
                 choice.finish_reason, FinishReason.UNKNOWN
             )
-            yield FinishReasonChunk(finish_reason=finish_reason), chunk
+            yield FinishReasonChunk(finish_reason=finish_reason)

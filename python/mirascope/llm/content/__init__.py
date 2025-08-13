@@ -11,14 +11,6 @@ from .thinking import Thinking, ThinkingChunk, ThinkingEndChunk, ThinkingStartCh
 from .tool_call import ToolCall, ToolCallChunk, ToolCallEndChunk, ToolCallStartChunk
 from .tool_output import ToolOutput
 
-UserContentPart: TypeAlias = (
-    Text | Image | ImageUrl | Audio | AudioUrl | Document | ToolOutput
-)
-"""Content parts that can be included in a UserMessage."""
-
-AssistantContentPart: TypeAlias = Text | ToolCall | Thinking
-"""Content parts that can be included in an AssistantMessage."""
-
 ContentPart: TypeAlias = (
     Text
     | Image
@@ -31,6 +23,14 @@ ContentPart: TypeAlias = (
     | Thinking
 )
 """Content parts that may be included in a Message."""
+
+UserContentPart: TypeAlias = (
+    Text | Image | ImageUrl | Audio | AudioUrl | Document | ToolOutput
+)
+"""Content parts that can be included in a UserMessage."""
+
+AssistantContentPart: TypeAlias = Text | ToolCall | Thinking
+"""Content parts that can be included in an AssistantMessage."""
 
 AssistantContentChunk: TypeAlias = (
     TextStartChunk

@@ -26,15 +26,19 @@ from .base_response import BaseResponse
 
 if TYPE_CHECKING:
     from ..clients import Model, Provider
+from dataclasses import dataclass
 
 
-ChunkWithRaw: TypeAlias = tuple[AssistantContentChunk, Any]
-"""A chunk paired with its raw provider data."""
+@dataclass
+class RawChunk:
+    raw: Any
+    type: Literal["raw_chunk"] = "raw_chunk"
 
-ChunkIterator: TypeAlias = Iterator[ChunkWithRaw]
+
+ChunkIterator: TypeAlias = Iterator[AssistantContentChunk | RawChunk]
 """Synchronous iterator yielding chunks with raw data."""
 
-AsyncChunkIterator: TypeAlias = AsyncIterator[ChunkWithRaw]
+AsyncChunkIterator: TypeAlias = AsyncIterator[AssistantContentChunk | RawChunk]
 """Asynchronous iterator yielding chunks with raw data."""
 
 
@@ -332,7 +336,7 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
         else:
             return self._async_chunk_stream()
 
-    def _handle_chunk(self, chunk: AssistantContentChunk, raw_chunk: Any) -> None:  # noqa: ANN401
+    def _handle_chunk(self, chunk: AssistantContentChunk) -> None:
         if self.finish_reason is not None:
             raise RuntimeError(
                 f"Stream already finished with reason: {self.finish_reason}"
@@ -349,9 +353,6 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
             raise NotImplementedError
 
         self._chunks.append(chunk)
-        if self._last_raw_chunk is not raw_chunk:
-            self._raw.append(raw_chunk)
-            self._last_raw_chunk = raw_chunk
 
     def _handle_text_chunk(
         self, chunk: TextStartChunk | TextChunk | TextEndChunk
@@ -462,10 +463,12 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
         if self.consumed:
             return
 
-        for chunk, raw_chunk in self._chunk_iterator:
-            self._handle_chunk(chunk, raw_chunk)
-
-            yield chunk
+        for chunk in self._chunk_iterator:
+            if chunk.type == "raw_chunk":
+                self._raw.append(chunk.raw)
+            else:
+                self._handle_chunk(chunk)
+                yield chunk
 
         self.consumed = True
 
@@ -486,9 +489,12 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
             if self.consumed:
                 return
 
-            async for chunk, raw_chunk in self._chunk_iterator:
-                self._handle_chunk(chunk, raw_chunk)
-                yield chunk
+            async for chunk in self._chunk_iterator:
+                if chunk.type == "raw_chunk":
+                    self._raw.append(chunk.raw)
+                else:
+                    self._handle_chunk(chunk)
+                    yield chunk
 
             self.consumed = True
 
