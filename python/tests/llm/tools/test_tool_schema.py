@@ -412,3 +412,48 @@ def test_defines_different_descriptions() -> None:
 
     assert not schema1.defines(schema2)
     assert not schema2.defines(schema1)
+
+
+def test_matches_matching_tool_call() -> None:
+    """Test that matches returns True for ToolCall with same name."""
+
+    def sample_tool(param: str) -> str:
+        """A sample tool."""
+        return param
+
+    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+    tool_call = llm.ToolCall(
+        id="test_id", name="sample_tool", args='{"param": "value"}'
+    )
+
+    assert schema.matches(tool_call)
+
+
+def test_matches_non_matching_tool_call() -> None:
+    """Test that matches returns False for ToolCall with different name."""
+
+    def sample_tool(param: str) -> str:
+        """A sample tool."""
+        return param
+
+    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+    tool_call = llm.ToolCall(
+        id="test_id", name="different_tool", args='{"param": "value"}'
+    )
+
+    assert not schema.matches(tool_call)
+
+
+def test_matches_ignores_args() -> None:
+    """Test that matches only checks name, ignoring args."""
+
+    def sample_tool(param: str) -> str:
+        """A sample tool."""
+        return param
+
+    schema = llm.tools.ToolSchema.create_schema(sample_tool)
+    tool_call = llm.ToolCall(
+        id="test_id", name="sample_tool", args='{"invalid": "json"}'
+    )
+
+    assert schema.matches(tool_call)
