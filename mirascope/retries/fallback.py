@@ -4,6 +4,7 @@ import inspect
 from collections.abc import Callable, Coroutine
 from typing import Any, ParamSpec, Protocol, TypeVar, overload
 
+from pydantic import BaseModel
 from typing_extensions import NotRequired, Required, TypedDict
 
 from .. import llm
@@ -75,8 +76,8 @@ def fallback(
     def decorator(
         fn: Callable[_P, _R] | Callable[_P, Coroutine[_R, Any, Any]],
     ) -> Callable[_P, _R] | Callable[_P, Coroutine[_R, Any, Any]]:
-        # TODO: figure out why llm call fn is not considered as coroutine at runtime
-        if inspect.iscoroutinefunction(fn._original_fn):  # pyright: ignore [reportFunctionMemberAccess]
+        fn_to_check = fn._original_fn if hasattr(fn, "_original_fn") else fn  # pyright: ignore [reportFunctionMemberAccess]
+        if inspect.iscoroutinefunction(fn_to_check):
 
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _R:
                 caught: list[Exception] = []
@@ -93,7 +94,8 @@ def fallback(
                                 client=backup.get("client", None),
                             ):
                                 response = await fn(*args, **kwargs)  # pyright: ignore [reportGeneralTypeIssues]
-                                response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
+                                if isinstance(response, BaseModel):
+                                    response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
                                 return response  # pyright: ignore [reportReturnType]
                         except backup["catch"] as be:
                             caught.append(be)
@@ -117,7 +119,8 @@ def fallback(
                                 client=backup.get("client", None),
                             ):
                                 response = fn(*args, **kwargs)
-                                response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
+                                if isinstance(response, BaseModel):
+                                    response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
                                 return response  # pyright: ignore [reportReturnType]
                         except backup["catch"] as be:
                             caught.append(be)
