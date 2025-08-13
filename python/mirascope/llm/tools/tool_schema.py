@@ -21,6 +21,7 @@ from pydantic import BaseModel, Field, create_model
 from pydantic.fields import FieldInfo
 from typing_extensions import Self
 
+from ..content import ToolCall
 from ..types import Jsonable, JsonableCovariantT, P
 
 DocstringArg = namedtuple("DocstringArg", ["name", "description"])
@@ -197,6 +198,16 @@ class ToolSchema(Generic[P, JsonableCovariantT]):
         return cls(
             name=name, description=description, parameters=parameters, strict=strict
         )
+
+    def matches(self, tool_call: ToolCall) -> bool:
+        """Check if a `ToolCall` matches with this `ToolSchema`.
+
+        This method is a convenient way to determine if a `ToolCall` is likely intended
+        to be executed by a tool with this `ToolSchema`. It does so by checking
+        whether the name on the call matches the name on the schema. No other validation
+        is performed.
+        """
+        return tool_call.name == self.name
 
     def defines(self, tool: ToolSchema) -> TypeGuard[Self]:
         """Check if another `ToolSchema` instance is defined by this one.
