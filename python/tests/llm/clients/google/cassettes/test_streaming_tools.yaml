@@ -1,0 +1,133 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is 1337 * 4242? Please use the
+      multiply_numbers tool."}], "role": "user"}], "tools": [{"functionDeclarations":
+      [{"description": "Multiply two numbers together.", "name": "multiply_numbers",
+      "parameters": {"properties": {"a": {"title": "A", "type": "INTEGER"}, "b": {"title":
+      "B", "type": "INTEGER"}}, "required": ["a", "b"], "type": "OBJECT"}}]}], "generationConfig":
+      {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '411'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"multiply_numbers\",\"args\": {\"a\": 1337,\"b\": 4242}}}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\":
+        37,\"candidatesTokenCount\": 7,\"totalTokenCount\": 44,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 37}],\"candidatesTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 7}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
+        \"JhucaKDQNsOWn9kP9YXlKQ\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Wed, 13 Aug 2025 04:57:11 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=658
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is 1337 * 4242? Please use the
+      multiply_numbers tool."}], "role": "user"}, {"parts": [{"functionCall": {"id":
+      "multiply_numbers", "args": {"a": 1337, "b": 4242}, "name": "multiply_numbers"}}],
+      "role": "model"}, {"parts": [{"functionResponse": {"id": "multiply_numbers",
+      "name": "multiply_numbers", "response": {"output": "42"}}}], "role": "user"}],
+      "tools": [{"functionDeclarations": [{"description": "Multiply two numbers together.",
+      "name": "multiply_numbers", "parameters": {"properties": {"a": {"title": "A",
+      "type": "INTEGER"}, "b": {"title": "B", "type": "INTEGER"}}, "required": ["a",
+      "b"], "type": "OBJECT"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '684'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.20.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RTU/jMBC951eMfES0Ckm3VFz2AAgVgZaPClgtHIZ0mlo4nsh2Squq/x07bYrL
+        eX2wrHnP897MWycAokA9lVN0ZMUZ/PMVgHV7B4y1I+080JV8sUbjvrnbs47enuJoGT6JMWAFmh3g
+        uyJwDAUbQ4VTKyhQFY3ysnCS56dwBINskMGndHNwcwJcoFS7X6xsH85Rw4obqBWhJWjqYLmlBgJY
+        hrHvqSOFmsyMTeU50u7lJOvfr1pEdjf799vx95CGFYUJKp6S6uibjiBmUks7f/BWWAfa4+TPndij
+        uChvuKwNv4c99dJ+NhrmJ9kwT/M0S7PT4SDplFtN0Vgs6ZYc+qFwv23hO1S1m/AH6XNu2hx+pVuV
+        KLYDPB/tcMcO1QE06qCorb3wolLFcUZJ++FRSbcKE04uXyYiWpA7dNVtKIkW+dPjfxLLR4diyS6Y
+        bVZPZKzchlJS5WPqZf20N1No521HYcjWrC2Np4FzvWwKvH28HF9fFXpR3tne8zK7/yuSTfIFbxde
+        4B4DAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 13 Aug 2025 04:57:12 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=656
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

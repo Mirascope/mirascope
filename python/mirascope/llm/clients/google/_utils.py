@@ -17,6 +17,9 @@ from ...content import (
     TextEndChunk,
     TextStartChunk,
     ToolCall,
+    ToolCallChunk,
+    ToolCallEndChunk,
+    ToolCallStartChunk,
 )
 from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import ChunkIterator, FinishReason
@@ -212,7 +215,8 @@ def decode_response(
 def convert_google_stream_to_chunk_iterator(
     google_stream: Iterator[genai_types.GenerateContentResponse],
 ) -> ChunkIterator:
-    current_content_type: Literal["text"] | None = None
+    current_content_type: Literal["text", "tool_call"] | None = None
+    current_tool_call_id: str | None = None
 
     for chunk in google_stream:
         candidate = chunk.candidates[0] if chunk.candidates else None
@@ -224,6 +228,19 @@ def convert_google_stream_to_chunk_iterator(
                 raise NotImplementedError
 
             elif part.text:
+                if current_content_type == "tool_call":
+                    # In testing, Gemini never emits tool calls and text in the same message
+                    # (even when specifically asked in system and user prompt), so
+                    # the following code is uncovered but included for completeness
+                    yield (  # pragma: no cover
+                        ToolCallEndChunk(
+                            type="tool_call_end_chunk", content_type="tool_call"
+                        ),
+                        chunk,
+                    )
+                    current_content_type = None  # pragma: no cover
+                    current_tool_call_id = None  # pragma: no cover
+
                 if current_content_type is None:
                     yield TextStartChunk(type="text_start_chunk"), chunk
                     current_content_type = "text"
@@ -232,11 +249,61 @@ def convert_google_stream_to_chunk_iterator(
 
                 yield TextChunk(type="text_chunk", delta=part.text), chunk
 
+            elif function_call := part.function_call:
+                if current_content_type == "text":
+                    # Similar to above, this does not seem to happen in practice but is
+                    # included for safety.
+                    yield TextEndChunk(type="text_end_chunk"), chunk  # pragma: no cover
+
+                if (
+                    current_content_type != "tool_call"
+                    or current_tool_call_id != function_call.id
+                ):
+                    if current_content_type == "tool_call":
+                        yield (
+                            ToolCallEndChunk(
+                                type="tool_call_end_chunk", content_type="tool_call"
+                            ),
+                            chunk,
+                        )
+
+                    current_content_type = "tool_call"
+                    current_tool_call_id = (
+                        function_call.id or function_call.name or "unknown"
+                    )
+
+                    yield (
+                        ToolCallStartChunk(
+                            type="tool_call_start_chunk",
+                            id=current_tool_call_id,
+                            name=function_call.name or "",
+                        ),
+                        chunk,
+                    )
+
+                if function_call.args:
+                    yield (
+                        ToolCallChunk(
+                            type="tool_call_chunk", delta=json.dumps(function_call.args)
+                        ),
+                        chunk,
+                    )
+
         if candidate.finish_reason:
             if current_content_type == "text":
                 yield TextEndChunk(type="text_end_chunk"), chunk
+            elif current_content_type == "tool_call":
+                yield (
+                    ToolCallEndChunk(
+                        type="tool_call_end_chunk", content_type="tool_call"
+                    ),
+                    chunk,
+                )
             else:
                 raise NotImplementedError
+
+            current_content_type = None
+            current_tool_call_id = None
 
             finish_reason = GOOGLE_FINISH_REASON_MAP.get(
                 candidate.finish_reason, FinishReason.UNKNOWN
