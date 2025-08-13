@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from collections.abc import Awaitable, Callable
-from dataclasses import dataclass
 from typing import Generic, TypeVar
 
 from ..content import ToolCall, ToolOutput
@@ -18,7 +17,6 @@ ToolT = TypeVar(
 )
 
 
-@dataclass
 class Tool(ToolSchema[Callable[P, JsonableCovariantT]], Generic[P, JsonableCovariantT]):
     """A tool that can be used by LLMs.
 
@@ -38,12 +36,7 @@ class Tool(ToolSchema[Callable[P, JsonableCovariantT]], Generic[P, JsonableCovar
         result = self.fn(**args)  # type: ignore[reportCallIssue]
         return ToolOutput(id=tool_call.id, value=result, name=self.name)
 
-    def __hash__(self) -> int:
-        """Hash based on schema fields only, ignoring the fn field."""
-        return super().__hash__()
 
-
-@dataclass
 class AsyncTool(
     ToolSchema[Callable[P, Awaitable[JsonableCovariantT]]],
     Generic[P, JsonableCovariantT],
@@ -67,7 +60,3 @@ class AsyncTool(
         args = json.loads(tool_call.args)
         result = await self.fn(**args)  # type: ignore[reportCallIssue]
         return ToolOutput(id=tool_call.id, value=result, name=self.name)
-
-    def __hash__(self) -> int:
-        """Hash based on schema fields only, ignoring the fn field."""
-        return super().__hash__()

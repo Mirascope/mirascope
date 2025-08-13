@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
-from dataclasses import dataclass
 from typing import Any, Concatenate, Generic
 
 from typing_extensions import TypeVar
@@ -34,7 +33,6 @@ AgentToolT = TypeVar(
 )
 
 
-@dataclass
 class ContextTool(
     ToolSchema[Callable[Concatenate[Context[DepsT], P], JsonableCovariantT]],
     Generic[P, JsonableCovariantT, DepsT],
@@ -59,7 +57,6 @@ class ContextTool(
         raise NotImplementedError()
 
 
-@dataclass
 class AsyncContextTool(
     ToolSchema[Callable[Concatenate[Context[DepsT], P], JsonableCovariantT]],
     Generic[P, JsonableCovariantT, DepsT],
