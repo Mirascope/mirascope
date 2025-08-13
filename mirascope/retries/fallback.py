@@ -86,15 +86,15 @@ def fallback(
                     caught.append(e)
                     for backup in fallbacks:
                         try:
-                            response = await llm.override(
-                                fn,
+                            with llm.context(
                                 provider=backup["provider"],
                                 model=backup["model"],
                                 call_params=backup.get("call_params", None),
                                 client=backup.get("client", None),
-                            )(*args, **kwargs)  # pyright: ignore [reportGeneralTypeIssues]
-                            response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
-                            return response  # pyright: ignore [reportReturnType]
+                            ):
+                                response = await fn(*args, **kwargs)  # pyright: ignore [reportGeneralTypeIssues]
+                                response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
+                                return response  # pyright: ignore [reportReturnType]
                         except backup["catch"] as be:
                             caught.append(be)
                 raise FallbackError(f"All fallbacks failed:\n{caught}")
@@ -110,15 +110,15 @@ def fallback(
                     caught.append(e)
                     for backup in fallbacks:
                         try:
-                            response = llm.override(
-                                fn,
+                            with llm.context(
                                 provider=backup["provider"],
                                 model=backup["model"],
                                 call_params=backup.get("call_params", None),
                                 client=backup.get("client", None),
-                            )(*args, **kwargs)
-                            response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
-                            return response  # pyright: ignore [reportReturnType]
+                            ):
+                                response = fn(*args, **kwargs)
+                                response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
+                                return response  # pyright: ignore [reportReturnType]
                         except backup["catch"] as be:
                             caught.append(be)
                 raise FallbackError(f"All fallbacks failed:\n{caught}")
