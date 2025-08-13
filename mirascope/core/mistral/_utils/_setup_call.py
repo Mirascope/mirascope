@@ -39,6 +39,16 @@ from ..tool import MistralTool
 from ._convert_common_call_params import convert_common_call_params
 from ._convert_message_params import convert_message_params
 
+global_client: Mistral | None = None
+
+
+def _get_default_client() -> Mistral:
+    """Get or create the default Mistral client."""
+    global global_client
+    if global_client is None:
+        global_client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
+    return global_client
+
 
 @overload
 def setup_call(
@@ -144,7 +154,7 @@ def setup_call(
     call_kwargs |= {"model": model, "messages": messages}
 
     if client is None:
-        client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
+        client = _get_default_client()
     if fn_is_async(fn):
         create_or_stream = get_async_create_fn(
             client.chat.complete_async, client.chat.stream_async
