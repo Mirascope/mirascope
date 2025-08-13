@@ -211,6 +211,7 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
         self._thinkings: list[Thinking] = []
         self._tool_calls: list[ToolCall] = []
         self._raw: list[Any] = []
+        self._last_raw_chunk: Any | None = None
 
         # Externally-facing references typed as immutable Sequences
         self.chunks = self._chunks
@@ -331,7 +332,7 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
         else:
             return self._async_chunk_stream()
 
-    def _handle_chunk(self, chunk: AssistantContentChunk) -> None:
+    def _handle_chunk(self, chunk: AssistantContentChunk, raw_chunk: Any) -> None:  # noqa: ANN401
         if self.finish_reason is not None:
             raise RuntimeError(
                 f"Stream already finished with reason: {self.finish_reason}"
@@ -348,6 +349,9 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
             raise NotImplementedError
 
         self._chunks.append(chunk)
+        if self._last_raw_chunk is not raw_chunk:
+            self._raw.append(raw_chunk)
+            self._last_raw_chunk = raw_chunk
 
     def _handle_text_chunk(
         self, chunk: TextStartChunk | TextChunk | TextEndChunk
@@ -458,9 +462,9 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
         if self.consumed:
             return
 
-        for chunk, raw_data in self._chunk_iterator:
-            self._handle_chunk(chunk)
-            self._raw.append(raw_data)
+        for chunk, raw_chunk in self._chunk_iterator:
+            self._handle_chunk(chunk, raw_chunk)
+
             yield chunk
 
         self.consumed = True
@@ -482,9 +486,8 @@ class StreamResponse(BaseResponse[FormatT], Generic[StreamT, FormatT]):
             if self.consumed:
                 return
 
-            async for chunk, raw_data in self._chunk_iterator:
-                self._handle_chunk(chunk)
-                self._raw.append(raw_data)
+            async for chunk, raw_chunk in self._chunk_iterator:
+                self._handle_chunk(chunk, raw_chunk)
                 yield chunk
 
             self.consumed = True
