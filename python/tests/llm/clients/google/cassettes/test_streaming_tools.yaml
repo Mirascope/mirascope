@@ -33,7 +33,7 @@ interactions:
         37,\"candidatesTokenCount\": 7,\"totalTokenCount\": 44,\"promptTokensDetails\":
         [{\"modality\": \"TEXT\",\"tokenCount\": 37}],\"candidatesTokensDetails\":
         [{\"modality\": \"TEXT\",\"tokenCount\": 7}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"JhucaKDQNsOWn9kP9YXlKQ\"}\r\n\r\n"
+        \"_RGdaOi-M8OWn9kP9YXlKQ\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -42,11 +42,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Wed, 13 Aug 2025 04:57:11 GMT
+      - Wed, 13 Aug 2025 22:30:22 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=658
+      - gfet4t7; dur=729
       Transfer-Encoding:
       - chunked
       Vary:
@@ -64,14 +64,13 @@ interactions:
       message: OK
 - request:
     body: '{"contents": [{"parts": [{"text": "What is 1337 * 4242? Please use the
-      multiply_numbers tool."}], "role": "user"}, {"parts": [{"functionCall": {"id":
-      "multiply_numbers", "args": {"a": 1337, "b": 4242}, "name": "multiply_numbers"}}],
-      "role": "model"}, {"parts": [{"functionResponse": {"id": "multiply_numbers",
-      "name": "multiply_numbers", "response": {"output": "42"}}}], "role": "user"}],
-      "tools": [{"functionDeclarations": [{"description": "Multiply two numbers together.",
-      "name": "multiply_numbers", "parameters": {"properties": {"a": {"title": "A",
-      "type": "INTEGER"}, "b": {"title": "B", "type": "INTEGER"}}, "required": ["a",
-      "b"], "type": "OBJECT"}}]}], "generationConfig": {}}'
+      multiply_numbers tool."}], "role": "user"}, {"parts": [{"functionCall": {"args":
+      {"a": 1337, "b": 4242}, "name": "multiply_numbers"}}], "role": "model"}, {"parts":
+      [{"functionResponse": {"name": "multiply_numbers", "response": {"output": "42"}}}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Multiply
+      two numbers together.", "name": "multiply_numbers", "parameters": {"properties":
+      {"a": {"title": "A", "type": "INTEGER"}, "b": {"title": "B", "type": "INTEGER"}},
+      "required": ["a", "b"], "type": "OBJECT"}}]}], "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -80,7 +79,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '684'
+      - '632'
       content-type:
       - application/json
       host:
@@ -94,14 +93,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61RTU/jMBC951eMfES0Ckm3VFz2AAgVgZaPClgtHIZ0mlo4nsh2Squq/x07bYrL
-        eX2wrHnP897MWycAokA9lVN0ZMUZ/PMVgHV7B4y1I+080JV8sUbjvrnbs47enuJoGT6JMWAFmh3g
-        uyJwDAUbQ4VTKyhQFY3ysnCS56dwBINskMGndHNwcwJcoFS7X6xsH85Rw4obqBWhJWjqYLmlBgJY
-        hrHvqSOFmsyMTeU50u7lJOvfr1pEdjf799vx95CGFYUJKp6S6uibjiBmUks7f/BWWAfa4+TPndij
-        uChvuKwNv4c99dJ+NhrmJ9kwT/M0S7PT4SDplFtN0Vgs6ZYc+qFwv23hO1S1m/AH6XNu2hx+pVuV
-        KLYDPB/tcMcO1QE06qCorb3wolLFcUZJ++FRSbcKE04uXyYiWpA7dNVtKIkW+dPjfxLLR4diyS6Y
-        bVZPZKzchlJS5WPqZf20N1No521HYcjWrC2Np4FzvWwKvH28HF9fFXpR3tne8zK7/yuSTfIFbxde
-        4B4DAAA=
+        H4sIAAAAAAAC/61SwU7CQBC99ysmezRASltBvHhQYzASURslUWNGOrQr212yu0UJ4d/dUgrFsz20
+        m3lv582817UHwKYoE56gJcPO4dVVANbbd4kpaUlaB9QlV1ygtgdu9awbZ0ex9FNeYkPAHIzSetUC
+        m5Em+EYDKIG0VroDcUagyRTCgppBNwz7cAJREAXAjft24EUVIoGVKkDwOUFOYBVYvQJMkcuLN8ka
+        wpv9+b11GFcrQeUsuUpI1PRNTWAzLrnJHgmNkiXtKb4fsz2Ky/ROpQutPsuN237Hj/yo2x/4vcj3
+        w+6gN+h6tfRWlBUGUxqRRWcp7o1jrkW+sLGak7xUxdbSU7+SaSRwhIf9HW6VRXEEndVQo625cqJc
+        NJNphOa2R8Htqlwxvp7ErOGQPZ6qtshrOPl3xn8SC/vHYt4umSqsZ9KGV6mklLuc2kHHb88Emmzb
+        kblfZ6GkoWFScj6ymwRvJ1/D4Xgql+nYFsEoePhm3sb7BaYRArLpAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -110,11 +108,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 13 Aug 2025 04:57:12 GMT
+      - Wed, 13 Aug 2025 22:30:23 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=656
+      - gfet4t7; dur=948
       Transfer-Encoding:
       - chunked
       Vary:

@@ -28,13 +28,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61SwU6DQBC98xVkz22DCy3Vm6kmNbaxKjEmxphpWeimyy6yS03T9N8doLSAepMD
-        Wd6beW9mH3vLtskKZMhDMEyTK/sNEdvel++CU9IwaZCoIQRTyMy5tnr2jTOWRLlcGa7kBIRoNR95
-        CQlDnCS5MDwVuw+ZJ0uWadLrVkIW618UkFki7FGPdluKJqQuXNfvMAfrr6/z+f0sRzIlqilVyAQ5
-        4oe6gERccr1+YqCVLMqeg4fFaQEC23im4jRTy2L+4YBejh1vPKYu9d2R43us74ys2rt0JbmGmM2Z
-        AUwDTksT1EhSE6gNkxOVl2m4fuXTCK/F17RRBkSL8bzeD1V9g55cNDNtxI3bg+BmV6wY3L4GjYxQ
-        vzVUfUVW4ya7I/6TWcfLOgZTZfWCvxKvQolZgjH16cDpRwL0uhQkGdOpkprdhUXN/PF5BbP7aOrz
-        jdzGi8/hFOj1F7EO1jdvwvkRIgMAAA==
+        H4sIAAAAAAAC/61SXU+DMBR951eQPo8FATf0zUwzP6YukxgTY8xldKyxtKQtS5Zl/90LjA1Q3+wD
+        KeecnntvT3eWbZMliIQlYKgml/Y7Ira9q74lJ4WhwiDRQAjmoMxJW69da4+SVSGWhkkxAc47hw+8
+        gIwiTrKCG5bz7acospgqTQZ9JahU/+JQMgif+f64fwSpGKnAC7wes7f++jvtP052REledykTyskB
+        3zcCsmKC6fWCgpailL1Ez/PjAAQ26UymuZJx2f/50LsI3SAMPd8b+yN3HFDHHVlN7aoqKTSk9JEa
+        wDTgODRBjyw3kfyiYiKLKo1m6lZ4Hb6hjTTAO0wQDH646musyXg701bcOD1wZrbliNHNW9TKCP07
+        TTVXZLVust/iPxXr1bIOwdRZveJTYnUoKc0wJscbus6Kg15XhkRRnUuh6V1Sapz1NIH72dNtTBOx
+        Sef8YarCq5RYe+sbyHDUMSIDAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -43,11 +43,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 13 Aug 2025 03:19:13 GMT
+      - Wed, 13 Aug 2025 22:30:18 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=590
+      - gfet4t7; dur=543
       Transfer-Encoding:
       - chunked
       Vary:
@@ -65,14 +65,13 @@ interactions:
       message: OK
 - request:
     body: '{"contents": [{"parts": [{"text": "What is 1337 * 4242? Please use the
-      multiply_numbers tool."}], "role": "user"}, {"parts": [{"functionCall": {"id":
-      "multiply_numbers", "args": {"b": 4242, "a": 1337}, "name": "multiply_numbers"}}],
-      "role": "model"}, {"parts": [{"functionResponse": {"id": "multiply_numbers",
-      "name": "multiply_numbers", "response": {"output": "42"}}}], "role": "user"}],
-      "tools": [{"functionDeclarations": [{"description": "Multiply two numbers together.",
-      "name": "multiply_numbers", "parameters": {"properties": {"a": {"title": "A",
-      "type": "INTEGER"}, "b": {"title": "B", "type": "INTEGER"}}, "required": ["a",
-      "b"], "type": "OBJECT"}}]}], "generationConfig": {}}'
+      multiply_numbers tool."}], "role": "user"}, {"parts": [{"functionCall": {"args":
+      {"a": 1337, "b": 4242}, "name": "multiply_numbers"}}], "role": "model"}, {"parts":
+      [{"functionResponse": {"name": "multiply_numbers", "response": {"output": "42"}}}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Multiply
+      two numbers together.", "name": "multiply_numbers", "parameters": {"properties":
+      {"a": {"title": "A", "type": "INTEGER"}, "b": {"title": "B", "type": "INTEGER"}},
+      "required": ["a", "b"], "type": "OBJECT"}}]}], "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -81,7 +80,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '684'
+      - '632'
       content-type:
       - application/json
       host:
@@ -95,13 +94,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61STU/CQBC991dM9migKS0F8WbEGAwokcYYPw4jLGV12SG7g0oI/90tUCie7WEz
-        mfd23ux7XQcAYoxmoibI0okLePEdgPX2LDAyLA17oGz55gItH7m7b12pPYXlT3FJ9ADn4MjaVQ14
-        Jq2Eb3SABqS1ZOFb8azoAxPpEDJfWemWmoGm0EiSNpxBM27GoBwYYl+HMNQSnb9hV4A5KhO+GlER
-        3xzqt9pxZUtaFvvMaSJ1Sd+UBDFVRrnZgx9MpqCNsvuhOKD4lfcpX1h6L15dj8KoGcdpp9VJGs20
-        nTY6aRKU0ltRsXSYy4Fk9LbiwTzhR8wXnNGnNFe03NqaRjuZSgoneNLe40yM+gQ6L6HKWNf1okpX
-        06kE51+PWvGqeGJ2/ZSJikN8ulVpUVBx8u+O/ySWtE/Fgn0yu7AepXVql0ou5z6nehxG9alGN9tO
-        FP6HWZBxsjcpOIN8NMb+x3P39oaTOxoajHXrciyCTfAL6dCpou0CAAA=
+        H4sIAAAAAAAC/61STU+DQBC98ysmezSF8KWtXltjmti0VmJM1MMoUyCFXbq7rTZN/7sLlBY8y4FM
+        5j3mzbzHwQJgX8jjLEZNit3Bm+kAHOp3hQmuiWsDtC3TLFHqC7d5Dp3aUDT9VB+xKWABSki5H4BO
+        SRJ8owLkQFIK6UCUEkhS21yDWIEXBEO4gtAPfcgUcKFN7cAiJ1QEWu4BE8y4885ZR+54rj8GlyWl
+        yKnaoBAx5S392BLYKuOZSpdmsOAV7TmaL9gZxV3yKJJSis/qTtt1PG/oB27ojoLAu/WHXmC1yrUm
+        2ypMaEYajY94douZCUWpI7EmPhbb2sdrt1Hp2N7Dg/CEa6Ex70GjFuqMVRMjmuXdODpJmeMxz/S+
+        ujC6f41YxyDd36p1yOoY+XfHfxILwr6YdQqmyeqFpMqaUBIqTEy277j2KkeV1hOZ+V9KwRVN44pj
+        /zzEOJ8sx1s75rtkcTPbbMKnNbOO1i/91EZn3gIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -110,11 +109,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 13 Aug 2025 03:19:14 GMT
+      - Wed, 13 Aug 2025 22:30:20 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=613
+      - gfet4t7; dur=1103
       Transfer-Encoding:
       - chunked
       Vary:

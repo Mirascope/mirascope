@@ -203,16 +203,16 @@ def test_tool_usage(google_client: llm.GoogleClient) -> None:
 
     assert isinstance(response, llm.Response)
     assert response.pretty() == snapshot(
-        '**ToolCall (multiply_numbers):** {"b": 4242, "a": 1337}'
+        '**ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}'
     )
 
     assert len(response.tool_calls) == 1
     tool_call = response.tool_calls[0]
     assert tool_call == snapshot(
         llm.ToolCall(
-            id="multiply_numbers",
+            id="<unknown>",
             name="multiply_numbers",
-            args='{"b": 4242, "a": 1337}',
+            args='{"a": 1337, "b": 4242}',
         )
     )
 
@@ -226,7 +226,7 @@ def test_tool_usage(google_client: llm.GoogleClient) -> None:
     )
 
     assert final_response.pretty() == snapshot(
-        "I am sorry, there was an error with the tool. The result of 1337 * 4242 is not 42. Please try again.\n"
+        "I am sorry, there was an error. The result of 1337 * 4242 is not 42. Please try again.\n"
     )
 
 
@@ -281,7 +281,7 @@ def test_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
     )
 
     assert final_response.pretty() == snapshot(
-        "OK. The weather in SF is overcast and 64°F. The weather in NYC is sunny and 72°F.\n"
+        "The weather in SF is overcast and 64°F. The weather in NYC is sunny and 72°F.\n"
     )
 
 
@@ -325,7 +325,7 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
                 llm.AssistantMessage(
                     content=[
                         llm.ToolCall(
-                            id="multiply_numbers",
+                            id="<unknown>",
                             name="multiply_numbers",
                             args='{"a": 1337, "b": 4242}',
                         )
@@ -334,7 +334,7 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
             ],
             "content": [
                 llm.ToolCall(
-                    id="multiply_numbers",
+                    id="<unknown>",
                     name="multiply_numbers",
                     args='{"a": 1337, "b": 4242}',
                 )
@@ -342,7 +342,7 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
             "texts": [],
             "tool_calls": [
                 llm.ToolCall(
-                    id="multiply_numbers",
+                    id="<unknown>",
                     name="multiply_numbers",
                     args='{"a": 1337, "b": 4242}',
                 )
@@ -352,7 +352,7 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
             "chunks": [
                 llm.ToolCallStartChunk(
                     type="tool_call_start_chunk",
-                    id="multiply_numbers",
+                    id="<unknown>",
                     name="multiply_numbers",
                 ),
                 llm.ToolCallChunk(
@@ -377,7 +377,7 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
     )
 
     assert final_response.pretty() == snapshot(
-        "I am not able to correctly calculate 1337 * 4242 with the available tools. Can you please update the tool so I can correctly perform this calculation?\n"
+        "I am sorry, there was an error. The result of 1337 * 4242 is 42. Would you like me to try again?\n"
     )
 
 
@@ -426,12 +426,12 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
                 llm.AssistantMessage(
                     content=[
                         llm.ToolCall(
-                            id="get_weather",
+                            id="<unknown>",
                             name="get_weather",
                             args='{"location": "SF"}',
                         ),
                         llm.ToolCall(
-                            id="get_weather",
+                            id="<unknown>",
                             name="get_weather",
                             args='{"location": "NYC"}',
                         ),
@@ -440,12 +440,12 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
             ],
             "content": [
                 llm.ToolCall(
-                    id="get_weather",
+                    id="<unknown>",
                     name="get_weather",
                     args='{"location": "SF"}',
                 ),
                 llm.ToolCall(
-                    id="get_weather",
+                    id="<unknown>",
                     name="get_weather",
                     args='{"location": "NYC"}',
                 ),
@@ -453,12 +453,12 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
             "texts": [],
             "tool_calls": [
                 llm.ToolCall(
-                    id="get_weather",
+                    id="<unknown>",
                     name="get_weather",
                     args='{"location": "SF"}',
                 ),
                 llm.ToolCall(
-                    id="get_weather",
+                    id="<unknown>",
                     name="get_weather",
                     args='{"location": "NYC"}',
                 ),
@@ -468,7 +468,7 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
             "chunks": [
                 llm.ToolCallStartChunk(
                     type="tool_call_start_chunk",
-                    id="get_weather",
+                    id="<unknown>",
                     name="get_weather",
                 ),
                 llm.ToolCallChunk(type="tool_call_chunk", delta='{"location": "SF"}'),
@@ -477,7 +477,7 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
                 ),
                 llm.ToolCallStartChunk(
                     type="tool_call_start_chunk",
-                    id="get_weather",
+                    id="<unknown>",
                     name="get_weather",
                 ),
                 llm.ToolCallChunk(type="tool_call_chunk", delta='{"location": "NYC"}'),
