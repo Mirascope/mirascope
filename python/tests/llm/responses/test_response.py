@@ -10,17 +10,14 @@ from mirascope import llm
 
 def test_response_initialization_with_text_content() -> None:
     """Test Response initialization with text content."""
-    # Create input messages
     input_messages = [
         llm.messages.system("You are a helpful assistant"),
         llm.messages.user("Hello, world!"),
     ]
 
-    # Create final assistant message with text content
     text_content = [llm.Text(text="Hello! How can I help you today?")]
     assistant_message = llm.messages.assistant(text_content)
 
-    # Create response
     response = llm.Response(
         provider="openai",
         model="gpt-4o-mini",
@@ -30,19 +27,16 @@ def test_response_initialization_with_text_content() -> None:
         finish_reason=llm.FinishReason.END_TURN,
     )
 
-    # Verify basic attributes
     assert response.provider == "openai"
     assert response.model == "gpt-4o-mini"
     assert response.raw == {"test": "response"}
     assert response.finish_reason == llm.FinishReason.END_TURN
 
-    # Verify messages are correctly combined
     assert len(response.messages) == 3
     assert response.messages[0] == input_messages[0]
     assert response.messages[1] == input_messages[1]
     assert response.messages[2] == assistant_message
 
-    # Verify content extraction
     assert response.content == text_content
     assert len(response.texts) == 1
     assert response.texts[0].text == "Hello! How can I help you today?"
@@ -52,10 +46,8 @@ def test_response_initialization_with_text_content() -> None:
 
 def test_response_initialization_with_mixed_content() -> None:
     """Test Response initialization with mixed content types."""
-    # Create input messages
     input_messages = [llm.messages.user("Use a tool and explain")]
 
-    # Create final assistant message with mixed content
     mixed_content = [
         llm.Text(text="I'll help you with that."),
         llm.ToolCall(id="call_1", name="test_tool", args='{"param": "value"}'),
@@ -64,7 +56,6 @@ def test_response_initialization_with_mixed_content() -> None:
     ]
     assistant_message = llm.messages.assistant(mixed_content)
 
-    # Create response
     response = llm.Response(
         provider="openai",
         model="gpt-4o-mini",
@@ -74,7 +65,6 @@ def test_response_initialization_with_mixed_content() -> None:
         finish_reason=llm.FinishReason.TOOL_USE,
     )
 
-    # Verify content extraction by type
     assert len(response.texts) == 2
     assert response.texts[0].text == "I'll help you with that."
     assert response.texts[1].text == "Here's the result."
@@ -89,11 +79,9 @@ def test_response_initialization_with_mixed_content() -> None:
 
 def test_response_initialization_with_empty_input_messages() -> None:
     """Test Response initialization with empty input messages."""
-    # Create final assistant message
     text_content = [llm.Text(text="Hello!")]
     assistant_message = llm.messages.assistant(text_content)
 
-    # Create response with empty input messages
     response = llm.Response(
         provider="openai",
         model="gpt-4o-mini",
@@ -103,14 +91,12 @@ def test_response_initialization_with_empty_input_messages() -> None:
         finish_reason=llm.FinishReason.END_TURN,
     )
 
-    # Verify messages contain only the final message
     assert len(response.messages) == 1
     assert response.messages[0] == assistant_message
 
 
 def test_response_format_method_not_implemented() -> None:
     """Test that Response.format() raises NotImplementedError."""
-    # Create minimal response
     text_content = [llm.Text(text="Hello!")]
     assistant_message = llm.messages.assistant(text_content)
 
