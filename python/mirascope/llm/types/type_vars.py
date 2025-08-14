@@ -13,5 +13,8 @@ It captures both positional and keyword arguments (*args, **kwargs) while
 maintaining their original types.
 """
 
+AnyP = ParamSpec("AnyP", default=...)
+"""A parameter specification that defaults to ..."""
+
 CovariantT = TypeVar("CovariantT", covariant=True)
 """Type variable for covariant types."""

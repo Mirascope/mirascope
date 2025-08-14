@@ -46,7 +46,7 @@ class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
     def __call__(
         self: AgentDecorator[
             P,
-            None | Tool | ContextTool[DepsT, ...],
+            None | Tool | ContextTool[DepsT],
             FormatT,
         ],
         fn: SystemPrompt[P] | ContextSystemPrompt[P, DepsT],
@@ -58,7 +58,7 @@ class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
     def __call__(
         self: AgentDecorator[
             P,
-            None | AsyncTool | AsyncContextTool[DepsT, ...],
+            None | AsyncTool | AsyncContextTool[DepsT],
             FormatT,
         ],
         fn: AsyncSystemPrompt[P] | AsyncContextSystemPrompt[P, DepsT],

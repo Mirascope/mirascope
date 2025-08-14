@@ -1,31 +1,11 @@
 """The `llm.tool` decorator for turning functions into tools."""
 
-from collections.abc import Awaitable
-from typing import Protocol, overload
+from typing import overload
 
-from ..context import Context, DepsT
+from ..context import RequiredDepsT
 from ..types import JsonableCovariantT, P
 from .context_tool import AsyncContextTool, ContextTool
-
-
-class ContextToolFn(Protocol[P, JsonableCovariantT, DepsT]):
-    """Protocol for the context tool function."""
-
-    def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> JsonableCovariantT:
-        """Call the function with the given arguments."""
-        raise NotImplementedError()
-
-
-class AsyncContextToolFn(Protocol[P, JsonableCovariantT, DepsT]):
-    """Protocol for the async context tool function."""
-
-    def __call__(
-        self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Awaitable[JsonableCovariantT]:
-        """Call the function with the given arguments."""
-        raise NotImplementedError()
+from .protocols import AsyncContextToolFn, ContextToolFn
 
 
 class ContextToolDecorator:
@@ -33,25 +13,25 @@ class ContextToolDecorator:
 
     @overload
     def __call__(
-        self, fn: ContextToolFn[P, JsonableCovariantT, DepsT]
-    ) -> ContextTool[DepsT, P, JsonableCovariantT]:
+        self, fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT]
+    ) -> ContextTool[RequiredDepsT, P, JsonableCovariantT]:
         """Call the decorator with a sync function."""
         ...
 
     @overload
     def __call__(
-        self, fn: AsyncContextToolFn[P, JsonableCovariantT, DepsT]
-    ) -> AsyncContextTool[DepsT, P, JsonableCovariantT]:
+        self, fn: AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT]
+    ) -> AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]:
         """Call the decorator with an async function."""
         ...
 
     def __call__(
         self,
-        fn: ContextToolFn[P, JsonableCovariantT, DepsT]
-        | AsyncContextToolFn[P, JsonableCovariantT, DepsT],
+        fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT]
+        | AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT],
     ) -> (
-        ContextTool[DepsT, P, JsonableCovariantT]
-        | AsyncContextTool[DepsT, P, JsonableCovariantT]
+        ContextTool[RequiredDepsT, P, JsonableCovariantT]
+        | AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]
     ):
         """Call the decorator with a function."""
         raise NotImplementedError()
@@ -59,16 +39,16 @@ class ContextToolDecorator:
 
 @overload
 def context_tool(
-    __fn: ContextToolFn[P, JsonableCovariantT, DepsT],
-) -> ContextTool[DepsT, P, JsonableCovariantT]:
+    __fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT],
+) -> ContextTool[RequiredDepsT, P, JsonableCovariantT]:
     """Overload for no arguments, which uses default settings."""
     ...
 
 
 @overload
 def context_tool(
-    __fn: AsyncContextToolFn[P, JsonableCovariantT, DepsT],
-) -> AsyncContextTool[DepsT, P, JsonableCovariantT]:
+    __fn: AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT],
+) -> AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]:
     """Overload for async functions with no arguments."""
     ...
 
@@ -80,15 +60,15 @@ def context_tool(*, strict: bool = False) -> ContextToolDecorator:
 
 
 def context_tool(
-    __fn: ContextToolFn[P, JsonableCovariantT, DepsT]
-    | AsyncContextToolFn[P, JsonableCovariantT, DepsT]
+    __fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT]
+    | AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT]
     | None = None,
     *,
-    deps_type: type[DepsT] | type[None] | None = None,
+    deps_type: type[RequiredDepsT] | type[None] | None = None,
     strict: bool = False,
 ) -> (
-    ContextTool[DepsT, P, JsonableCovariantT]
-    | AsyncContextTool[DepsT, P, JsonableCovariantT]
+    ContextTool[RequiredDepsT, P, JsonableCovariantT]
+    | AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]
     | ContextToolDecorator
 ):
     '''Decorator that turns a function into a tool definition.
