@@ -1,5 +1,6 @@
 """Anthropic client implementation."""
 
+import os
 from collections.abc import Sequence
 
 import httpx
@@ -16,6 +17,21 @@ from ..base import BaseClient
 from . import _utils
 from .models import AnthropicModel
 from .params import AnthropicParams
+
+_global_client: "AnthropicClient | None" = None
+
+
+def get_anthropic_client() -> "AnthropicClient":
+    """Get a global Anthropic client instance.
+
+    Returns:
+        An Anthropic client instance. Multiple calls return the same instance.
+    """
+    global _global_client
+    if _global_client is None:
+        api_key = os.getenv("ANTHROPIC_API_KEY")
+        _global_client = AnthropicClient(api_key=api_key)
+    return _global_client
 
 
 class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):

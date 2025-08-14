@@ -1,5 +1,6 @@
 """Google client implementation."""
 
+import os
 from collections.abc import Sequence
 
 from google.genai import Client
@@ -19,6 +20,21 @@ from ..base import BaseClient
 from . import _utils
 from .model import GoogleModel
 from .params import GoogleParams
+
+_global_client: "GoogleClient | None" = None
+
+
+def get_google_client() -> "GoogleClient":
+    """Get a global Google client instance.
+
+    Returns:
+        A Google client instance. Multiple calls return the same instance.
+    """
+    global _global_client
+    if _global_client is None:
+        api_key = os.getenv("GOOGLE_API_KEY")
+        _global_client = GoogleClient(api_key=api_key)
+    return _global_client
 
 
 class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
