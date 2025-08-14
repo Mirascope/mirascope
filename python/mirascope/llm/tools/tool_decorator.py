@@ -4,6 +4,8 @@ import inspect
 from collections.abc import Awaitable, Callable
 from typing import Protocol, overload
 
+from typing_extensions import TypeIs
+
 from ..context import DepsT
 from ..types import JsonableCovariantT, P
 from .tool import AsyncTool, Tool
@@ -51,6 +53,12 @@ class ToolDecorator(Protocol):
         raise NotImplementedError()
 
 
+def _is_async_tool_fn(
+    fn: ToolFn | AsyncToolFn,
+) -> TypeIs[AsyncToolFn[P, JsonableCovariantT]]:
+    return inspect.iscoroutinefunction(fn)
+
+
 def _tool_decorator(strict: bool) -> ToolDecorator:
     @overload
     def decorator(fn: ToolFn[P, JsonableCovariantT]) -> Tool[P, JsonableCovariantT]: ...
@@ -63,10 +71,10 @@ def _tool_decorator(strict: bool) -> ToolDecorator:
     def decorator(
         fn: ToolFn[P, JsonableCovariantT] | AsyncToolFn[P, JsonableCovariantT],
     ) -> Tool[P, JsonableCovariantT] | AsyncTool[P, JsonableCovariantT]:
-        if inspect.iscoroutinefunction(fn):
-            return AsyncTool.from_function(fn, strict=strict)
+        if _is_async_tool_fn(fn):
+            return AsyncTool[P, JsonableCovariantT].from_function(fn, strict=strict)
         else:
-            return Tool.from_function(fn, strict=strict)
+            return Tool[P, JsonableCovariantT].from_function(fn, strict=strict)
 
     return decorator
 

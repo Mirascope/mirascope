@@ -24,9 +24,7 @@ from typing_extensions import Self
 from ..content import ToolCall
 from ..types import Jsonable
 
-ToolFnT = TypeVar(
-    "ToolFnT", bound=Callable[..., Jsonable] | Callable[..., Awaitable[Jsonable]]
-)
+ToolFnT = TypeVar("ToolFnT", bound=Callable | Callable[..., Awaitable[Jsonable]])
 
 DocstringArg = namedtuple("DocstringArg", ["name", "description"])
 
