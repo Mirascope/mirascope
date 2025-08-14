@@ -74,7 +74,18 @@ from .responses import (
     StreamResponse,
 )
 from .streams import AsyncStream, Stream
-from .tools import AsyncContextTool, AsyncTool, ContextTool, Tool, context_tool, tool
+from .tools import (
+    AsyncContextTool,
+    AsyncContextToolkit,
+    AsyncTool,
+    AsyncToolkit,
+    ContextTool,
+    ContextToolkit,
+    Tool,
+    Toolkit,
+    context_tool,
+    tool,
+)
 
 __all__ = [
     "LLM",
@@ -89,9 +100,11 @@ __all__ = [
     "AsyncAgentTemplate",
     "AsyncChunkIterator",
     "AsyncContextTool",
+    "AsyncContextToolkit",
     "AsyncStream",
     "AsyncStreamResponse",
     "AsyncTool",
+    "AsyncToolkit",
     "Audio",
     "AuthenticationError",
     "BadRequestError",
@@ -99,6 +112,7 @@ __all__ = [
     "ConnectionError",
     "Context",
     "ContextTool",
+    "ContextToolkit",
     "Document",
     "FinishReason",
     "FinishReasonChunk",
@@ -136,6 +150,7 @@ __all__ = [
     "ToolCallStartChunk",
     "ToolNotFoundError",
     "ToolOutput",
+    "Toolkit",
     "UserContentPart",
     "UserMessage",
     "agent",
