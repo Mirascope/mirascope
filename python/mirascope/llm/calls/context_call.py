@@ -8,14 +8,14 @@ from ..formatting import FormatT
 from ..messages import UserContent
 from ..prompts import Prompt
 from ..responses import AsyncStreamResponse, Response, StreamResponse
-from ..tools import ContextToolT
+from ..tools import ContextToolkit, ContextToolT
 from ..types import P
-from .base_call import BaseContextCall
+from .base_call import BaseCall
 
 
 @dataclass
 class ContextCall(
-    BaseContextCall[P, Prompt, ContextToolT, FormatT, DepsT],
+    BaseCall[P, Prompt, ContextToolkit[ContextToolT, DepsT], FormatT],
     Generic[P, ContextToolT, DepsT, FormatT],
 ):
     """A class for generating responses using LLMs."""
@@ -63,7 +63,7 @@ class ContextCall(
 
 @dataclass
 class AsyncContextCall(
-    BaseContextCall[P, Prompt, ContextToolT, FormatT, DepsT],
+    BaseCall[P, Prompt, ContextToolkit[ContextToolT, DepsT], FormatT],
     Generic[P, ContextToolT, DepsT, FormatT],
 ):
     """A class for generating responses using LLMs asynchronously."""
