@@ -6,9 +6,10 @@ from .jsonable import (
     JsonableCovariantT,
     JsonableT,
 )
-from .type_vars import CovariantT, P
+from .type_vars import AnyP, CovariantT, P
 
 __all__ = [
+    "AnyP",
     "CovariantT",
     "Dataclass",
     "Jsonable",

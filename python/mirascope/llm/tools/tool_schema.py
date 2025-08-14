@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import inspect
 from collections import namedtuple
-from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import (
     Annotated,
@@ -19,12 +18,15 @@ from typing import (
 from docstring_parser import parse
 from pydantic import BaseModel, Field, create_model
 from pydantic.fields import FieldInfo
-from typing_extensions import Self
 
 from ..content import ToolCall
-from ..types import Jsonable
+from .protocols import AsyncContextToolFn, AsyncToolFn, ContextToolFn, ToolFn
 
-ToolFnT = TypeVar("ToolFnT", bound=Callable | Callable[..., Awaitable[Jsonable]])
+ToolFnT = TypeVar(
+    "ToolFnT",
+    bound=ToolFn | AsyncToolFn | ContextToolFn | AsyncContextToolFn,
+    covariant=True,
+)
 
 DocstringArg = namedtuple("DocstringArg", ["name", "description"])
 
@@ -124,13 +126,12 @@ class ToolSchema(Generic[ToolFnT]):
             )
         return self._hash
 
-    @classmethod
-    def from_function(
-        cls,
+    def __init__(
+        self,
         fn: ToolFnT,
         *,
         strict: bool = False,
-    ) -> Self:
+    ) -> None:
         """Create a `ToolSchema` by inspecting a function and its docstring.
 
         Uses Pydantic's create_model to dynamically build a model from the function
@@ -200,13 +201,11 @@ class ToolSchema(Generic[ToolFnT]):
         if "$defs" in schema:
             parameters.defs = schema["$defs"]
 
-        return cls(
-            fn=fn,
-            name=name,
-            description=description,
-            parameters=parameters,
-            strict=strict,
-        )
+        self.fn = fn
+        self.name = name
+        self.description = description
+        self.parameters = parameters
+        self.strict = strict
 
     def can_execute(self, tool_call: ToolCall) -> bool:
         """Check if a `ToolCall` can be executed by tools with this `ToolSchema`.

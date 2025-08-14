@@ -1,32 +1,14 @@
 """The `llm.tool` decorator for turning functions into tools."""
 
 import inspect
-from collections.abc import Awaitable, Callable
 from typing import Protocol, overload
 
 from typing_extensions import TypeIs
 
 from ..context import DepsT
 from ..types import JsonableCovariantT, P
+from .protocols import AsyncToolFn, ToolFn
 from .tool import AsyncTool, Tool
-
-
-class ToolFn(Protocol[P, JsonableCovariantT]):
-    """Protocol for the tool function."""
-
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> JsonableCovariantT:
-        """Call the function with the given arguments."""
-        raise NotImplementedError()
-
-
-class AsyncToolFn(Protocol[P, JsonableCovariantT]):
-    """Protocol for the async tool function."""
-
-    def __call__(
-        self, *args: P.args, **kwargs: P.kwargs
-    ) -> Awaitable[JsonableCovariantT]:
-        """Call the function with the given arguments."""
-        raise NotImplementedError()
 
 
 class ToolDecorator(Protocol):
@@ -72,9 +54,9 @@ def _tool_decorator(strict: bool) -> ToolDecorator:
         fn: ToolFn[P, JsonableCovariantT] | AsyncToolFn[P, JsonableCovariantT],
     ) -> Tool[P, JsonableCovariantT] | AsyncTool[P, JsonableCovariantT]:
         if _is_async_tool_fn(fn):
-            return AsyncTool[P, JsonableCovariantT].from_function(fn, strict=strict)
+            return AsyncTool[P, JsonableCovariantT](fn, strict=strict)
         else:
-            return Tool[P, JsonableCovariantT].from_function(fn, strict=strict)
+            return Tool[P, JsonableCovariantT](fn, strict=strict)
 
     return decorator
 
@@ -98,8 +80,8 @@ def tool(*, deps_type: type[None] | None = None, strict: bool = False) -> ToolDe
 
 
 def tool(
-    __fn: Callable[P, JsonableCovariantT]
-    | Callable[P, Awaitable[JsonableCovariantT]]
+    __fn: ToolFn[P, JsonableCovariantT]
+    | AsyncToolFn[P, JsonableCovariantT]
     | None = None,
     *,
     deps_type: type[DepsT] | type[None] | None = None,

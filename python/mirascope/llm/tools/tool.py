@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable
 from typing import Generic, TypeVar
 
 from ..content import ToolCall, ToolOutput
-from ..types import JsonableCovariantT, P
+from ..types import AnyP, JsonableCovariantT
+from .protocols import AsyncToolFn, ToolFn
 from .tool_schema import ToolSchema
 
 ToolT = TypeVar(
@@ -17,7 +18,9 @@ ToolT = TypeVar(
 )
 
 
-class Tool(ToolSchema[Callable[P, JsonableCovariantT]], Generic[P, JsonableCovariantT]):
+class Tool(
+    ToolSchema[ToolFn[AnyP, JsonableCovariantT]], Generic[AnyP, JsonableCovariantT]
+):
     """A tool that can be used by LLMs.
 
     A `Tool` represents a function that can be called by an LLM during a call.
@@ -26,7 +29,7 @@ class Tool(ToolSchema[Callable[P, JsonableCovariantT]], Generic[P, JsonableCovar
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> JsonableCovariantT:
+    def __call__(self, *args: AnyP.args, **kwargs: AnyP.kwargs) -> JsonableCovariantT:
         """Call the underlying function directly."""
         return self.fn(*args, **kwargs)
 
@@ -38,8 +41,8 @@ class Tool(ToolSchema[Callable[P, JsonableCovariantT]], Generic[P, JsonableCovar
 
 
 class AsyncTool(
-    ToolSchema[Callable[P, Awaitable[JsonableCovariantT]]],
-    Generic[P, JsonableCovariantT],
+    ToolSchema[AsyncToolFn[AnyP, JsonableCovariantT]],
+    Generic[AnyP, JsonableCovariantT],
 ):
     """An async tool that can be used by LLMs.
 
@@ -50,7 +53,7 @@ class AsyncTool(
     """
 
     def __call__(
-        self, *args: P.args, **kwargs: P.kwargs
+        self, *args: AnyP.args, **kwargs: AnyP.kwargs
     ) -> Awaitable[JsonableCovariantT]:
         """Call the underlying async function directly."""
         return self.fn(*args, **kwargs)
