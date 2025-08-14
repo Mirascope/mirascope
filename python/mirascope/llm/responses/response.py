@@ -68,38 +68,3 @@ class Response(BaseResponse[FormatT]):
                 specified format.
         """
         raise NotImplementedError()
-
-    def pretty(self) -> str:
-        """Return a string representation of all response content.
-
-        The response content will be represented in a way that emphasies clarity and
-        readability, but may not include all metadata (like thinking signatures or tool
-        call ids), and thus cannot be used to reconstruct the response. For example:
-
-        **Thinking:**
-          The user is asking a math problem. I should use the calculator tool.
-
-        **Tool Call (calculator)** {'operation': 'mult', 'a': 1337, 'b': 4242}
-
-        I am going to use the calculator and answer your question for you!
-        """
-        if not self.content:
-            return "**[No Content]**"
-
-        pretty_parts: list[str] = []
-        for part in self.content:
-            if isinstance(part, Text):
-                pretty_parts.append(part.text)
-            elif isinstance(part, ToolCall):
-                pretty_parts.append(f"**ToolCall ({part.name}):** {part.args}")
-            elif isinstance(part, Thinking):
-                indented_thinking = "\n".join(
-                    f"  {line}" for line in part.thinking.split("\n")
-                )
-                pretty_parts.append(f"**Thinking:**\n{indented_thinking}")
-            else:
-                pretty_parts.append(
-                    f"[{type(part).__name__}: {str(part)}]"
-                )  # pragma: no cover
-
-        return "\n\n".join(pretty_parts)

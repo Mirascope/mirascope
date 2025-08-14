@@ -1,9 +1,11 @@
 """Tests for llm.StreamResponse class."""
 
+import inspect
 from collections.abc import AsyncIterator, Iterator, Sequence
 from dataclasses import dataclass
 
 import pytest
+from inline_snapshot import snapshot
 
 from mirascope import llm
 
@@ -54,7 +56,9 @@ def example_text() -> llm.Text:
 
 @pytest.fixture
 def example_thinking() -> llm.Thinking:
-    return llm.Thinking(thinking="Let me think...", signature="reasoning")
+    return llm.Thinking(
+        thinking="Let me think...\nThis is interesting!", signature="reasoning"
+    )
 
 
 @pytest.fixture
@@ -83,8 +87,8 @@ def example_thinking_chunks() -> list[llm.AssistantContentChunk]:
     """Create a complete thinking chunk sequence for testing."""
     return [
         llm.ThinkingStartChunk(type="thinking_start_chunk"),
-        llm.ThinkingChunk(type="thinking_chunk", delta="Let me"),
-        llm.ThinkingChunk(type="thinking_chunk", delta=" think..."),
+        llm.ThinkingChunk(type="thinking_chunk", delta="Let me think..."),
+        llm.ThinkingChunk(type="thinking_chunk", delta="\nThis is interesting!"),
         llm.ThinkingEndChunk(type="thinking_end_chunk", signature="reasoning"),
     ]
 
@@ -830,6 +834,117 @@ class TestErrorHandling:
 
         assert stream_response.finish_reason == llm.FinishReason.END_TURN
         check_stream_response_consistency(stream_response, chunks[:6], [example_text])
+
+
+class TestPrettyStream:
+    def test_sync_pretty_stream_text_only(
+        self, example_text_chunks: list[llm.AssistantContentChunk]
+    ) -> None:
+        stream_response = create_sync_stream_response(example_text_chunks)
+
+        streamed_output = "".join(stream_response.pretty_stream())
+
+        assert streamed_output == snapshot("Hello world")
+        assert streamed_output == stream_response.pretty()
+
+    @pytest.mark.asyncio
+    async def test_async_pretty_stream_text_only(
+        self, example_text_chunks: list[llm.AssistantContentChunk]
+    ) -> None:
+        stream_response = create_async_stream_response(example_text_chunks)
+
+        streamed_output = "".join(
+            [part async for part in stream_response.pretty_stream()]
+        )
+
+        assert streamed_output == snapshot("Hello world")
+        assert streamed_output == stream_response.pretty()
+
+    def test_sync_pretty_stream_mixed_content(
+        self,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_thinking_chunks: list[llm.AssistantContentChunk],
+        example_tool_call_chunks: list[llm.AssistantContentChunk],
+    ) -> None:
+        chunks = [
+            *example_text_chunks,
+            *example_thinking_chunks,
+            *example_tool_call_chunks,
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        streamed_output = "".join(stream_response.pretty_stream())
+
+        assert streamed_output == snapshot(
+            inspect.cleandoc(
+                """
+                Hello world
+
+                **Thinking:**
+                  Let me think...
+                  This is interesting!
+
+                **ToolCall (test_function):** {"param1": "value1", "param2": 42}
+                """
+            )
+        )
+        assert streamed_output == stream_response.pretty()
+
+    @pytest.mark.asyncio
+    async def test_async_pretty_stream_mixed_content(
+        self,
+        example_text_chunks: list[llm.AssistantContentChunk],
+        example_thinking_chunks: list[llm.AssistantContentChunk],
+        example_tool_call_chunks: list[llm.AssistantContentChunk],
+    ) -> None:
+        chunks = [
+            *example_text_chunks,
+            *example_thinking_chunks,
+            *example_tool_call_chunks,
+        ]
+        stream_response = create_async_stream_response(chunks)
+
+        streamed_output = "".join(
+            [part async for part in stream_response.pretty_stream()]
+        )
+
+        assert streamed_output == snapshot(
+            inspect.cleandoc(
+                """
+                Hello world
+
+                **Thinking:**
+                  Let me think...
+                  This is interesting!
+
+                **ToolCall (test_function):** {"param1": "value1", "param2": 42}
+                """
+            )
+        )
+        assert streamed_output == stream_response.pretty()
+
+    def test_sync_pretty_stream_empty_response(self) -> None:
+        stream_response = create_sync_stream_response(
+            [llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN)]
+        )
+
+        streamed_output = "".join(stream_response.pretty_stream())
+
+        assert streamed_output == snapshot("**[No Content]**")
+        assert streamed_output == stream_response.pretty()
+
+    @pytest.mark.asyncio
+    async def test_async_pretty_stream_empty_response(self) -> None:
+        stream_response = create_async_stream_response(
+            [llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN)]
+        )
+
+        streamed_output = "".join(
+            [part async for part in stream_response.pretty_stream()]
+        )
+
+        assert streamed_output == snapshot("**[No Content]**")
+        assert streamed_output == stream_response.pretty()
 
 
 class TestRawChunkTracking:
