@@ -10,9 +10,7 @@ from ..prompts import (
     AsyncPrompt,
     Prompt,
 )
-from ..tools import (
-    ToolT,
-)
+from ..tools import AsyncTool, Tool, ToolT
 from .call import AsyncCall, Call
 
 if TYPE_CHECKING:
@@ -41,18 +39,20 @@ class CallDecorator(Protocol[ToolT, FormatT]):
     """A decorator for converting prompts to calls."""
 
     @overload
-    def __call__(self, fn: AsyncPrompt[P]) -> AsyncCall[P, ToolT, FormatT]:
+    def __call__(
+        self: CallDecorator[AsyncTool, FormatT], fn: AsyncPrompt[P]
+    ) -> AsyncCall[P, FormatT]:
         """Decorate an async prompt into an AsyncCall."""
         ...
 
     @overload
-    def __call__(self, fn: Prompt[P]) -> Call[P, ToolT, FormatT]:
+    def __call__(self: CallDecorator[Tool, FormatT], fn: Prompt[P]) -> Call[P, FormatT]:
         """Decorate a prompt into a Call."""
         ...
 
     def __call__(
         self, fn: Prompt[P] | AsyncPrompt[P]
-    ) -> Call[P, ToolT, FormatT] | AsyncCall[P, ToolT, FormatT]:
+    ) -> Call[P, FormatT] | AsyncCall[P, FormatT]:
         """Decorates a prompt into a Call."""
         raise NotImplementedError()
 

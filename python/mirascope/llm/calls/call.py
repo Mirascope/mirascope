@@ -7,7 +7,10 @@ from ..formatting import FormatT
 from ..messages import UserContent
 from ..prompts import AsyncPrompt, Prompt
 from ..responses import AsyncStreamResponse, Response, StreamResponse
-from ..tools import Toolkit, ToolT
+from ..tools import (
+    AsyncToolkit,
+    Toolkit,
+)
 from ..types import P
 from .base_call import BaseCall
 
@@ -16,7 +19,7 @@ from .base_call import BaseCall
 
 
 @dataclass
-class Call(BaseCall[P, Prompt, Toolkit[ToolT], FormatT], Generic[P, ToolT, FormatT]):
+class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
     """A class for generating responses using LLMs."""
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Response[FormatT]:
@@ -54,8 +57,8 @@ class Call(BaseCall[P, Prompt, Toolkit[ToolT], FormatT], Generic[P, ToolT, Forma
 
 @dataclass
 class AsyncCall(
-    BaseCall[P, AsyncPrompt, Toolkit[ToolT], FormatT],
-    Generic[P, ToolT, FormatT],
+    BaseCall[P, AsyncPrompt, AsyncToolkit, FormatT],
+    Generic[P, FormatT],
 ):
     """A class for generating responses using LLMs asynchronously."""
 

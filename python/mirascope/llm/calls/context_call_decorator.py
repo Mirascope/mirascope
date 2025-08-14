@@ -44,14 +44,11 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
     def __call__(
         self: ContextCallDecorator[
             P,
-            Tool[..., Jsonable]
-            | AsyncTool[..., Jsonable]
-            | ContextTool[..., Jsonable, DepsT]
-            | AsyncContextTool[..., Jsonable, DepsT],
+            AsyncTool[..., Jsonable] | AsyncContextTool[..., Jsonable, DepsT],
             FormatT,
         ],
         fn: AsyncContextPrompt[P, DepsT],
-    ) -> AsyncContextCall[P, ContextToolT, DepsT, FormatT]:
+    ) -> AsyncContextCall[P, DepsT, FormatT]:
         """Decorate an async context prompt into an AsyncContextCall."""
         ...
 
@@ -59,14 +56,11 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
     def __call__(
         self: ContextCallDecorator[
             P,
-            Tool[..., Jsonable]
-            | AsyncTool[..., Jsonable]
-            | ContextTool[..., Jsonable, DepsT]
-            | AsyncContextTool[..., Jsonable, DepsT],
+            Tool[..., Jsonable] | ContextTool[..., Jsonable, DepsT],
             FormatT,
         ],
         fn: ContextPrompt[P, DepsT],
-    ) -> ContextCall[P, ContextToolT, DepsT, FormatT]:
+    ) -> ContextCall[P, DepsT, FormatT]:
         """Decorate a context prompt into a ContextCall."""
         ...
 
@@ -80,10 +74,7 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
             FormatT,
         ],
         fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
-    ) -> (
-        ContextCall[P, ContextToolT, DepsT, FormatT]
-        | AsyncContextCall[P, ContextToolT, DepsT, FormatT]
-    ):
+    ) -> ContextCall[P, DepsT, FormatT] | AsyncContextCall[P, DepsT, FormatT]:
         """Decorates a context prompt into a ContextCall."""
         raise NotImplementedError()
 
