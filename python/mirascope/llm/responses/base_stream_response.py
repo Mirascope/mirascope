@@ -263,6 +263,23 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
             self._tool_calls.append(self._current_content)
             self._current_content = None
 
+    def _pretty_chunk(self, chunk: AssistantContentChunk, spacer: str) -> str:
+        match chunk.type:
+            case "text_start_chunk":
+                return spacer
+            case "thinking_start_chunk":
+                return spacer + "**Thinking:**\n  "
+            case "tool_call_start_chunk":
+                return spacer + f"**ToolCall ({chunk.name}):** "
+            case "text_chunk":
+                return chunk.delta
+            case "thinking_chunk":
+                return chunk.delta.replace("\n", "\n  ")  # Indent every line
+            case "tool_call_chunk":
+                return chunk.delta
+            case _:
+                return ""
+
     @overload
     def format(self, partial: Literal[True]) -> Partial[FormatT]:
         """Format the response into a `Partial[BaseModel]` (with optional fields).
