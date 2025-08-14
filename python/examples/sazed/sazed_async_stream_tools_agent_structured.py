@@ -39,10 +39,8 @@ async def sazed():
 async def main():
     agent: llm.AsyncAgent[None, KeeperEntry] = await sazed()
     query = "What are the Kandra?"
-    response: llm.StreamResponse[llm.AsyncStream, KeeperEntry] = await agent.stream(
-        query
-    )
-    async for chunk in await response.structured_stream():
+    response: llm.AsyncStreamResponse[KeeperEntry] = await agent.stream(query)
+    async for chunk in response.structured_stream():
         print("[Partial]: ", chunk, flush=True)
 
 

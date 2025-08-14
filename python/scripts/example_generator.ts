@@ -158,14 +158,11 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
   }
 
   private get stream_type(): string {
-    let generic = "";
-    let asyncPart = this.async ? "llm.AsyncStream" : "llm.Stream";
+    let base = `llm.${this.async ? "Async" : ""}StreamResponse`;
     if (this.structured) {
-      generic = `[${asyncPart}, KeeperEntry]`;
-    } else if (this.async) {
-      generic = `[${asyncPart}]`;
+      base += `[KeeperEntry]`;
     }
-    return `llm.StreamResponse${generic}`;
+    return base;
   }
 
   private get agent_type(): string {
@@ -252,8 +249,8 @@ ${this._async}def main():`;
 
   private print_stream(indent: string): string {
     const stream_target = this.structured
-      ? `${this._await}response.structured_stream()`
-      : `${this._await}response.pretty_stream()`;
+      ? `response.structured_stream()`
+      : `response.pretty_stream()`;
     const stream_print = this.structured
       ? `print("[Partial]: ", chunk, flush=True)`
       : `print(chunk, flush=True, end="")`;

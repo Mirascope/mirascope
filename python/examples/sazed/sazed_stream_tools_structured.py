@@ -37,7 +37,7 @@ def sazed(query: str):
 
 def main():
     query = "What are the Kandra?"
-    response: llm.StreamResponse[llm.Stream, KeeperEntry] = sazed.stream(query)
+    response: llm.StreamResponse[KeeperEntry] = sazed.stream(query)
     while True:
         streams = response.streams()
         for stream in streams:

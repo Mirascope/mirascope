@@ -9,11 +9,7 @@ from google.genai.types import HttpOptions
 from ...context import Context, DepsT
 from ...formatting import FormatT
 from ...messages import Message
-from ...responses import (
-    Response,
-    StreamResponse,
-)
-from ...streams import AsyncStream, Stream
+from ...responses import AsyncStreamResponse, Response, StreamResponse
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ...types import Jsonable
 from ..base import BaseClient
@@ -169,7 +165,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
-    ) -> StreamResponse[Stream, None]:
+    ) -> StreamResponse:
         if params:
             raise NotImplementedError("param use not yet supported")
 
@@ -198,7 +194,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
-    ) -> StreamResponse[Stream, None]:
+    ) -> StreamResponse:
         raise NotImplementedError
 
     def structured_stream(
@@ -209,7 +205,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> StreamResponse[Stream, FormatT]:
+    ) -> StreamResponse[FormatT]:
         raise NotImplementedError
 
     def structured_context_stream(
@@ -221,7 +217,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> StreamResponse[Stream, FormatT]:
+    ) -> StreamResponse[FormatT]:
         raise NotImplementedError
 
     async def stream_async(
@@ -231,7 +227,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: GoogleParams | None = None,
-    ) -> StreamResponse[AsyncStream, None]:
+    ) -> AsyncStreamResponse:
         raise NotImplementedError
 
     async def context_stream_async(
@@ -242,7 +238,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         params: GoogleParams | None = None,
-    ) -> StreamResponse[AsyncStream, None]:
+    ) -> AsyncStreamResponse:
         raise NotImplementedError
 
     async def structured_stream_async(
@@ -253,7 +249,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> StreamResponse[AsyncStream, FormatT]:
+    ) -> AsyncStreamResponse[FormatT]:
         raise NotImplementedError
 
     async def structured_context_stream_async(
@@ -265,5 +261,5 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
         format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> StreamResponse[AsyncStream, FormatT]:
+    ) -> AsyncStreamResponse[FormatT]:
         raise NotImplementedError

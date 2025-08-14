@@ -9,7 +9,7 @@ def stream_response() -> llm.StreamResponse:
     raise NotImplementedError()
 
 
-def async_stream_response() -> llm.StreamResponse[llm.AsyncStream]:
+def async_stream_response() -> llm.AsyncStreamResponse:
     raise NotImplementedError()
 
 
@@ -37,7 +37,7 @@ def stream_type_safety():
 
 
 async def async_stream_type_safety():
-    async for chunk in await async_stream_response().pretty_stream():
+    async for chunk in async_stream_response().pretty_stream():
         assert_type(chunk, str)
 
     streams: AsyncIterator[llm.AsyncStream] = await async_stream_response().streams()

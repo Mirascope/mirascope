@@ -38,7 +38,7 @@ def main():
     coppermind = Coppermind(repository="Ancient Terris")
     agent: llm.Agent[Coppermind, KeeperEntry] = sazed(deps=coppermind)
     query = "What are the Kandra?"
-    response: llm.StreamResponse[llm.Stream, KeeperEntry] = agent.stream(query)
+    response: llm.StreamResponse[KeeperEntry] = agent.stream(query)
     for chunk in response.structured_stream():
         print("[Partial]: ", chunk, flush=True)
 
