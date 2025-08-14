@@ -8,27 +8,27 @@ from typing import Any, Concatenate, Generic
 from typing_extensions import TypeVar
 
 from ..content import ToolCall, ToolOutput
-from ..context import Context, DepsT
-from ..types import JsonableCovariantT, PWithDefault
+from ..context import Context, RequiredDepsT
+from ..types import JsonableCovariantT, P
 from .tool import AsyncTool, Tool
 from .tool_schema import ToolSchema
 
 ContextToolT = TypeVar(
     "ContextToolT",
-    bound="Tool | AsyncTool | ContextTool[Any] | AsyncContextTool[Any]",
+    bound="Tool | AsyncTool | ContextTool[Any, ...] | AsyncContextTool[Any, ...]",
     covariant=True,
 )
 AgentToolT = TypeVar(
     "AgentToolT",
-    bound="Tool | AsyncTool | ContextTool[Any] | AsyncContextTool[Any] | None",
+    bound="Tool | AsyncTool | ContextTool[Any, ...] | AsyncContextTool[Any, ...] | None",
     covariant=True,
     default=None,
 )
 
 
 class ContextTool(
-    ToolSchema[Callable[Concatenate[Context[DepsT], PWithDefault], JsonableCovariantT]],
-    Generic[DepsT, PWithDefault, JsonableCovariantT],
+    ToolSchema[Callable[Concatenate[Context[RequiredDepsT], P], JsonableCovariantT]],
+    Generic[RequiredDepsT, P, JsonableCovariantT],
 ):
     """Protocol defining a tool that can be used by LLMs.
 
@@ -40,22 +40,22 @@ class ContextTool(
 
     def __call__(
         self,
-        ctx: Context[DepsT],
-        *args: PWithDefault.args,
-        **kwargs: PWithDefault.kwargs,
+        ctx: Context[RequiredDepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> JsonableCovariantT:
         raise NotImplementedError()
 
     def execute(
-        self, ctx: Context[DepsT], tool_call: ToolCall
+        self, ctx: Context[RequiredDepsT], tool_call: ToolCall
     ) -> ToolOutput[JsonableCovariantT]:
         """Call the tool using an LLM-provided `ToolCall`."""
         raise NotImplementedError()
 
 
 class AsyncContextTool(
-    ToolSchema[Callable[Concatenate[Context[DepsT], PWithDefault], JsonableCovariantT]],
-    Generic[DepsT, PWithDefault, JsonableCovariantT],
+    ToolSchema[Callable[Concatenate[Context[RequiredDepsT], P], JsonableCovariantT]],
+    Generic[RequiredDepsT, P, JsonableCovariantT],
 ):
     """Protocol defining an async tool that can be used by LLMs with context.
 
@@ -67,14 +67,14 @@ class AsyncContextTool(
 
     def __call__(
         self,
-        ctx: Context[DepsT],
-        *args: PWithDefault.args,
-        **kwargs: PWithDefault.kwargs,
+        ctx: Context[RequiredDepsT],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> Awaitable[JsonableCovariantT]:
         raise NotImplementedError()
 
     async def execute(
-        self, ctx: Context[DepsT], tool_call: ToolCall
+        self, ctx: Context[RequiredDepsT], tool_call: ToolCall
     ) -> ToolOutput[JsonableCovariantT]:
         """Call the tool using an LLM-provided `ToolCall`."""
         raise NotImplementedError()

@@ -85,7 +85,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT, ...]],
         params: GoogleParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
@@ -107,7 +107,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT, ...]],
         format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Response[FormatT]:
@@ -129,7 +129,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT, ...]],
         params: GoogleParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
@@ -151,7 +151,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT, ...]],
         format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> Response[FormatT]:
@@ -191,7 +191,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT, ...]],
         params: GoogleParams | None = None,
     ) -> StreamResponse:
         raise NotImplementedError
@@ -213,7 +213,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT, ...]],
         format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> StreamResponse[FormatT]:
@@ -235,7 +235,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT, ...]],
         params: GoogleParams | None = None,
     ) -> AsyncStreamResponse:
         raise NotImplementedError
@@ -257,7 +257,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT, ...]],
         format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> AsyncStreamResponse[FormatT]:
