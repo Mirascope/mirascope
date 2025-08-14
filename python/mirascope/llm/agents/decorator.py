@@ -13,7 +13,6 @@ from ..prompts import (
     SystemPrompt,
 )
 from ..tools import AgentToolT, AsyncContextTool, AsyncTool, ContextTool, Tool
-from ..types import Jsonable
 from .agent_template import AgentTemplate, AsyncAgentTemplate
 
 if TYPE_CHECKING:
@@ -47,7 +46,7 @@ class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
     def __call__(
         self: AgentDecorator[
             P,
-            None | Tool[..., Jsonable] | ContextTool[..., Jsonable, DepsT],
+            None | Tool | ContextTool[DepsT],
             FormatT,
         ],
         fn: SystemPrompt[P] | ContextSystemPrompt[P, DepsT],
@@ -59,7 +58,7 @@ class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
     def __call__(
         self: AgentDecorator[
             P,
-            None | AsyncTool[..., Jsonable] | AsyncContextTool[..., Jsonable, DepsT],
+            None | AsyncTool | AsyncContextTool[DepsT],
             FormatT,
         ],
         fn: AsyncSystemPrompt[P] | AsyncContextSystemPrompt[P, DepsT],

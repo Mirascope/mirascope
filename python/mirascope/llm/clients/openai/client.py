@@ -11,7 +11,6 @@ from ...formatting import FormatT
 from ...messages import Message
 from ...responses import AsyncStreamResponse, Response, StreamResponse
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
-from ...types import Jsonable
 from ..base import BaseClient
 from . import _utils
 from .models import OpenAIModel
@@ -82,7 +81,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]],
         params: OpenAIParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
@@ -104,7 +103,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> Response[FormatT]:
@@ -126,7 +125,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: OpenAIParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
@@ -148,7 +147,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> Response[FormatT]:
@@ -190,7 +189,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]],
         params: OpenAIParams | None = None,
     ) -> StreamResponse:
         raise NotImplementedError
@@ -212,7 +211,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> StreamResponse[FormatT]:
@@ -234,7 +233,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse:
         raise NotImplementedError
@@ -256,7 +255,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse[FormatT]:

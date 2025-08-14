@@ -6,10 +6,7 @@ from .jsonable import (
     JsonableCovariantT,
     JsonableT,
 )
-from .type_vars import (
-    CovariantT,
-    P,
-)
+from .type_vars import CovariantT, P, PWithDefault
 
 __all__ = [
     "CovariantT",
@@ -18,4 +15,5 @@ __all__ = [
     "JsonableCovariantT",
     "JsonableT",
     "P",
+    "PWithDefault",
 ]

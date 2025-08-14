@@ -11,7 +11,6 @@ from ..messages import UserContent
 from ..models import LLM
 from ..responses import AsyncStreamResponse, Response, StreamResponse
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
-from ..types import Jsonable
 
 
 @dataclass
@@ -32,7 +31,7 @@ class BaseAgent(Generic[DepsT, FormatT], ABC):
 class Agent(BaseAgent[DepsT, FormatT]):
     """Agent class for generating responses using LLMs with tools."""
 
-    tools: Sequence[Tool[..., Jsonable] | ContextTool[..., Jsonable, DepsT]] | None
+    tools: Sequence[Tool | ContextTool[DepsT]] | None
     """The tools available to the agent, if any."""
 
     def __call__(
@@ -67,10 +66,7 @@ class Agent(BaseAgent[DepsT, FormatT]):
 class AsyncAgent(BaseAgent[DepsT, FormatT]):
     """Asynchronous agent class for generating responses using LLMs with tools."""
 
-    tools: (
-        Sequence[AsyncTool[..., Jsonable] | AsyncContextTool[..., Jsonable, DepsT]]
-        | None
-    )
+    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None
     """The tools available to the agent, if any."""
 
     async def __call__(

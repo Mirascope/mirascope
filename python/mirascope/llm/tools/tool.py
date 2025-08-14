@@ -7,12 +7,12 @@ from collections.abc import Awaitable, Callable
 from typing import Generic, TypeVar
 
 from ..content import ToolCall, ToolOutput
-from ..types import Jsonable, JsonableCovariantT, P
+from ..types import JsonableCovariantT, P
 from .tool_schema import ToolSchema
 
 ToolT = TypeVar(
     "ToolT",
-    bound="Tool[..., Jsonable] | AsyncTool[..., Jsonable]",
+    bound="Tool | AsyncTool",
     covariant=True,
 )
 

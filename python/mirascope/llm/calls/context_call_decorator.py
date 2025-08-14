@@ -11,7 +11,6 @@ from ..prompts import (
     ContextPrompt,
 )
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, ContextToolT, Tool
-from ..types import Jsonable
 from .context_call import AsyncContextCall, ContextCall
 
 if TYPE_CHECKING:
@@ -44,7 +43,7 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
     def __call__(
         self: ContextCallDecorator[
             P,
-            AsyncTool[..., Jsonable] | AsyncContextTool[..., Jsonable, DepsT],
+            AsyncTool | AsyncContextTool[DepsT],
             FormatT,
         ],
         fn: AsyncContextPrompt[P, DepsT],
@@ -56,7 +55,7 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
     def __call__(
         self: ContextCallDecorator[
             P,
-            Tool[..., Jsonable] | ContextTool[..., Jsonable, DepsT],
+            Tool | ContextTool[DepsT],
             FormatT,
         ],
         fn: ContextPrompt[P, DepsT],
@@ -67,10 +66,7 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
     def __call__(
         self: ContextCallDecorator[
             P,
-            Tool[..., Jsonable]
-            | AsyncTool[..., Jsonable]
-            | ContextTool[..., Jsonable, DepsT]
-            | AsyncContextTool[..., Jsonable, DepsT],
+            Tool | AsyncTool | ContextTool[DepsT] | AsyncContextTool[DepsT],
             FormatT,
         ],
         fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],

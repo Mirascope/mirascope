@@ -13,7 +13,6 @@ from ...formatting import FormatT
 from ...messages import Message
 from ...responses import AsyncStreamResponse, Response, StreamResponse
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
-from ...types import Jsonable
 from .params import ParamsT
 
 ModelT = TypeVar("ModelT", bound=str)
@@ -51,7 +50,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]],
         params: ParamsT | None = None,
     ) -> Response[None]:
         """Generate a context response with context tools."""
@@ -77,7 +76,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Response[FormatT]:
@@ -103,7 +102,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: ParamsT | None = None,
     ) -> Response[None]:
         """Generate a context response asynchronously."""
@@ -129,7 +128,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
     ) -> Response[FormatT]:
@@ -155,7 +154,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]],
         params: ParamsT | None = None,
     ) -> StreamResponse:
         """Stream a context response."""
@@ -181,7 +180,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
     ) -> StreamResponse[FormatT]:
@@ -207,7 +206,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: ParamsT | None = None,
     ) -> AsyncStreamResponse:
         """Stream a context response asynchronously."""
@@ -233,7 +232,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
     ) -> AsyncStreamResponse[FormatT]:
