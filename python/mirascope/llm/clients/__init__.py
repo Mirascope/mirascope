@@ -1,7 +1,5 @@
 """Client interfaces for LLM providers."""
 
-from typing import Literal, TypeAlias
-
 from .anthropic import (
     AnthropicClient,
     AnthropicModel,
@@ -15,9 +13,7 @@ from .base import (
 )
 from .google import GoogleClient, GoogleModel, GoogleParams
 from .openai import OpenAIClient, OpenAIModel, OpenAIParams
-
-Provider: TypeAlias = Literal["openai", "anthropic", "google"]
-Model: TypeAlias = OpenAIModel | AnthropicModel | GoogleModel | str
+from .providers import Model, Provider, get_client
 
 __all__ = [
     "AnthropicClient",
@@ -35,4 +31,5 @@ __all__ = [
     "OpenAIParams",
     "ParamsT",
     "Provider",
+    "get_client",
 ]

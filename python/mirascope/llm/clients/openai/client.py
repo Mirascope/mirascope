@@ -1,5 +1,6 @@
 """OpenAI client implementation."""
 
+import os
 from collections.abc import Sequence
 
 import httpx
@@ -19,6 +20,21 @@ from ..base import BaseClient
 from . import _utils
 from .models import OpenAIModel
 from .params import OpenAIParams
+
+_global_client: "OpenAIClient | None" = None
+
+
+def get_openai_client() -> "OpenAIClient":
+    """Get a global OpenAI client instance.
+
+    Returns:
+        An OpenAI client instance. Multiple calls return the same instance.
+    """
+    global _global_client
+    if _global_client is None:
+        api_key = os.getenv("OPENAI_API_KEY")
+        _global_client = OpenAIClient(api_key=api_key)
+    return _global_client
 
 
 class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
