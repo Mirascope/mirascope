@@ -1,15 +1,13 @@
-from collections.abc import Awaitable
-
-from typing_extensions import assert_type
-
 from mirascope import llm
 
 from .utils import (
-    Deps,
     async_context_prompt,
     async_context_prompt_deps,
+    async_context_tool,
+    async_context_tool_deps,
     async_prompt,
     async_tool,
+    async_tool_other_deps,
     context_prompt,
     context_prompt_deps,
     context_tool,
@@ -19,7 +17,7 @@ from .utils import (
     expect_context_call,
     expect_context_call_deps,
     prompt,
-    tool_call,
+    tool,
     tool_other_deps,
 )
 
@@ -91,66 +89,52 @@ def test_async_context_call_deps():
         )(async_context_prompt_deps)
     )
 
-    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[context_tool_deps])(
-        async_context_prompt_deps
-    )
+    llm.context_call(
+        provider="openai", model="gpt-4o-mini", tools=[async_context_tool_deps]
+    )(async_context_prompt_deps)
     # Fail: When the tool has deps but the prompt does not
-    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[context_tool_deps])(
+    llm.context_call(
+        provider="openai", model="gpt-4o-mini", tools=[async_context_tool_deps]
+    )(
         async_context_prompt  # type: ignore[reportCallIssue]
     )
 
     # Fail: When the prompt has deps but the tool does not
-    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[context_tool])(
+    llm.context_call(
+        provider="openai", model="gpt-4o-mini", tools=[async_context_tool]
+    )(
         async_context_prompt_deps  # type: ignore[reportCallIssue]
     )
 
     # Fail: When the tool expects different context deps entirely
-    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[tool_other_deps])(
+    llm.context_call(
+        provider="openai", model="gpt-4o-mini", tools=[async_tool_other_deps]
+    )(
         async_context_prompt_deps  # type: ignore[reportCallIssue]
     )
 
 
-async def test_tool_type_propagation():
-    """Test sync/async tool distinction makes it thru context_call"""
-    stk = llm.context_call(
-        provider="openai", model="gpt-4o-mini", tools=[context_tool_deps]
-    )(context_prompt_deps).toolkit
+async def test_tool_sync_or_async_must_match_prompt():
+    """Test only sync tools can be used with a sync prompt"""
 
-    ctx = llm.Context(deps=Deps())
-    assert_type(stk.execute(ctx, tool_call()), llm.ToolOutput[int])
-
-    atk = llm.context_call(provider="openai", model="gpt-4o-mini", tools=[async_tool])(
-        context_prompt_deps
-    ).toolkit
-    assert_type(await atk.execute(ctx, tool_call()), llm.ToolOutput[int])
-
-    mtk = llm.context_call(
-        provider="openai", model="gpt-4o-mini", tools=[context_tool_deps, async_tool]
-    )(context_prompt_deps).toolkit
-    assert_type(
-        mtk.execute(ctx, tool_call()),
-        llm.ToolOutput[int] | Awaitable[llm.ToolOutput[int]],
+    llm.context_call(provider="openai", model="gpt-4o-mini")(context_prompt)
+    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[tool])(
+        context_prompt
+    )
+    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[async_tool])(
+        context_prompt  # type: ignore[reportArgumentType]
+    )
+    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[tool, async_tool])(
+        context_prompt  # type: ignore[reportArgumentType]
     )
 
-
-async def test_tool_type_propagation_async_prompt():
-    """Test sync/async tool distinction makes it thru context_call with async prompt"""
-    stk = llm.context_call(
-        provider="openai", model="gpt-4o-mini", tools=[context_tool_deps]
-    )(async_context_prompt_deps).toolkit
-
-    ctx = llm.Context(deps=Deps())
-    assert_type(stk.execute(ctx, tool_call()), llm.ToolOutput[int])
-
-    atk = llm.context_call(provider="openai", model="gpt-4o-mini", tools=[async_tool])(
-        async_context_prompt_deps
-    ).toolkit
-    assert_type(await atk.execute(ctx, tool_call()), llm.ToolOutput[int])
-
-    mtk = llm.context_call(
-        provider="openai", model="gpt-4o-mini", tools=[context_tool_deps, async_tool]
-    )(async_context_prompt_deps).toolkit
-    assert_type(
-        mtk.execute(ctx, tool_call()),
-        llm.ToolOutput[int] | Awaitable[llm.ToolOutput[int]],
+    llm.context_call(provider="openai", model="gpt-4o-mini")(async_context_prompt)
+    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[async_tool])(
+        async_context_prompt
+    )
+    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[tool])(
+        async_context_prompt  # type: ignore[reportArgumentType]
+    )
+    llm.context_call(provider="openai", model="gpt-4o-mini", tools=[tool, async_tool])(
+        async_context_prompt  # type: ignore[reportArgumentType]
     )

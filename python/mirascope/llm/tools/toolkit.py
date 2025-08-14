@@ -1,81 +1,63 @@
 from collections.abc import Awaitable
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar, overload
+from typing import Any, Generic, TypeVar
 
 from ..content import ToolCall, ToolOutput
 from ..context import Context, DepsT
 from ..types import Jsonable
-from .context_tool import AsyncContextTool, ContextTool, ContextToolT
-from .tool import AsyncTool, Tool, ToolT
+from .context_tool import AsyncContextTool, ContextTool
+from .tool import AsyncTool, Tool
 
 ToolkitT = TypeVar(
     "ToolkitT",
-    bound="Toolkit[Tool | AsyncTool] | ContextToolkit[Tool | AsyncTool | ContextTool | AsyncContextTool, Any]",
+    bound="Toolkit | AsyncToolkit | ContextToolkit[Any] | AsyncContextToolkit[Any]",
     covariant=True,
 )
 
-ToolReturnT = TypeVar("ToolReturnT", bound=Jsonable, covariant=True)
-AsyncToolReturnT = TypeVar("AsyncToolReturnT", bound=Jsonable, covariant=True)
+
+@dataclass(kw_only=True)
+class Toolkit:
+    tools: list[Tool]
+
+    def get(self, tool_call: ToolCall) -> Tool:
+        raise NotImplementedError()
+
+    def execute(self, tool_call: ToolCall) -> ToolOutput[Jsonable]:
+        raise NotImplementedError()
 
 
 @dataclass(kw_only=True)
-class Toolkit(Generic[ToolT]):
-    tools: list[ToolT]
+class AsyncToolkit:
+    tools: list[AsyncTool]
 
-    def get(self, tool_call: ToolCall) -> ToolT:
+    def get(self, tool_call: ToolCall) -> AsyncTool:
         raise NotImplementedError()
 
-    @overload
-    def execute(
-        self: "Toolkit[Tool[..., ToolReturnT]]", tool_call: ToolCall
-    ) -> ToolOutput[ToolReturnT]: ...
+    def execute(self, tool_call: ToolCall) -> Awaitable[ToolOutput[Jsonable]]:
+        raise NotImplementedError()
 
-    @overload
-    def execute(
-        self: "Toolkit[AsyncTool[..., AsyncToolReturnT]]", tool_call: ToolCall
-    ) -> Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
-    @overload
-    def execute(
-        self: "Toolkit[Tool[..., ToolReturnT] | AsyncTool[...,AsyncToolReturnT]]",
-        tool_call: ToolCall,
-    ) -> ToolOutput[ToolReturnT] | Awaitable[ToolOutput[AsyncToolReturnT]]: ...
+@dataclass(kw_only=True)
+class ContextToolkit(Generic[DepsT]):
+    tools: list[Tool | ContextTool[..., Jsonable, DepsT]]
 
-    def execute(
+    def get(self, tool_call: ToolCall) -> Tool | ContextTool[..., Jsonable, DepsT]:
+        raise NotImplementedError()
+
+    def execute(self, ctx: Context[DepsT], tool_call: ToolCall) -> ToolOutput[Jsonable]:
+        raise NotImplementedError()
+
+
+@dataclass(kw_only=True)
+class AsyncContextToolkit(Generic[DepsT]):
+    tools: list[AsyncTool | AsyncContextTool[..., Jsonable, DepsT]]
+
+    def get(
         self, tool_call: ToolCall
-    ) -> ToolOutput[Jsonable] | Awaitable[ToolOutput[Jsonable]] | None:
+    ) -> AsyncTool | AsyncContextTool[..., Jsonable, DepsT]:
         raise NotImplementedError()
-
-
-@dataclass(kw_only=True)
-class ContextToolkit(Generic[ContextToolT, DepsT]):
-    tools: list[ContextToolT]
-
-    def get(self, tool_call: ToolCall) -> ContextToolT:
-        raise NotImplementedError()
-
-    @overload
-    def execute(
-        self: "ContextToolkit[Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT], DepsT]",
-        ctx: Context[DepsT],
-        tool_call: ToolCall,
-    ) -> ToolOutput[ToolReturnT]: ...
-
-    @overload
-    def execute(
-        self: "ContextToolkit[AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
-        ctx: Context[DepsT],
-        tool_call: ToolCall,
-    ) -> Awaitable[ToolOutput[AsyncToolReturnT]]: ...
-
-    @overload
-    def execute(
-        self: "ContextToolkit[Tool[..., ToolReturnT] | ContextTool[..., ToolReturnT, DepsT] | AsyncTool[..., AsyncToolReturnT] | AsyncContextTool[..., AsyncToolReturnT, DepsT], DepsT]",
-        ctx: Context[DepsT],
-        tool_call: ToolCall,
-    ) -> ToolOutput[ToolReturnT] | Awaitable[ToolOutput[AsyncToolReturnT]]: ...
 
     def execute(
         self, ctx: Context[DepsT], tool_call: ToolCall
-    ) -> ToolOutput[Jsonable] | Awaitable[ToolOutput[Jsonable]]:
+    ) -> Awaitable[ToolOutput[Jsonable]]:
         raise NotImplementedError()
