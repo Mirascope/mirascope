@@ -39,9 +39,7 @@ async def sazed(query: str):
 
 async def main():
     query = "What are the Kandra?"
-    response: llm.StreamResponse[llm.AsyncStream, KeeperEntry] = await sazed.stream(
-        query
-    )
+    response: llm.AsyncStreamResponse[KeeperEntry] = await sazed.stream(query)
     while True:
         streams = await response.streams()
         async for stream in streams:

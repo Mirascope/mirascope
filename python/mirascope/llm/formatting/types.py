@@ -9,8 +9,7 @@ from typing_extensions import TypeVar
 from ..types import CovariantT, P
 
 if TYPE_CHECKING:
-    from ..responses import Response, StreamResponse
-    from ..streams import AsyncStream, Stream
+    from ..responses import AsyncStreamResponse, Response, StreamResponse
 
 FormatT = TypeVar("FormatT", bound=BaseModel | None, default=None)
 """Type variable for structured response format types.
@@ -57,7 +56,7 @@ class ResponseParseable(Protocol[P, CovariantT]):
     @classmethod
     def parse(
         cls,
-        response: "Response | StreamResponse[Stream | AsyncStream]",
+        response: "Response | StreamResponse | AsyncStreamResponse",
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> CovariantT:

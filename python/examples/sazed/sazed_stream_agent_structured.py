@@ -30,7 +30,7 @@ def sazed():
 def main():
     agent: llm.Agent[None, KeeperEntry] = sazed()
     query = "What are the Kandra?"
-    response: llm.StreamResponse[llm.Stream, KeeperEntry] = agent.stream(query)
+    response: llm.StreamResponse[KeeperEntry] = agent.stream(query)
     for chunk in response.structured_stream():
         print("[Partial]: ", chunk, flush=True)
 

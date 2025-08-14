@@ -8,11 +8,7 @@ from typing import TYPE_CHECKING, Generic
 from ..clients import ClientT, ParamsT
 from ..context import Context
 from ..messages import Message
-from ..responses import (
-    Response,
-    StreamResponse,
-)
-from ..streams import AsyncStream, Stream
+from ..responses import AsyncStreamResponse, Response, StreamResponse
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 if TYPE_CHECKING:
@@ -79,7 +75,7 @@ class LLM(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT] | None = None,
-    ) -> StreamResponse[Stream, FormatT]:
+    ) -> StreamResponse[FormatT]:
         """Stream a response using the model."""
         raise NotImplementedError()
 
@@ -89,7 +85,7 @@ class LLM(Generic[ClientT, ParamsT]):
         messages: list[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT] | None = None,
-    ) -> StreamResponse[AsyncStream, FormatT]:
+    ) -> AsyncStreamResponse[FormatT]:
         """Stream a response asynchronously using the model."""
         raise NotImplementedError()
 
@@ -122,7 +118,7 @@ class LLM(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool] | None = None,
         format: type[FormatT] | None = None,
-    ) -> StreamResponse[Stream, FormatT]:
+    ) -> StreamResponse[FormatT]:
         """Stream a response using the model."""
         raise NotImplementedError()
 
@@ -133,6 +129,6 @@ class LLM(Generic[ClientT, ParamsT]):
         messages: list[Message],
         tools: Sequence[AsyncTool | AsyncContextTool] | None = None,
         format: type[FormatT] | None = None,
-    ) -> StreamResponse[AsyncStream, FormatT]:
+    ) -> AsyncStreamResponse[FormatT]:
         """Stream a response asynchronously using the model."""
         raise NotImplementedError()

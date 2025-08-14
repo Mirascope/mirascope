@@ -10,7 +10,7 @@ from mirascope import llm
 
 def create_sync_stream_response(
     chunks: list[llm.AssistantContentChunk],
-) -> llm.StreamResponse[llm.Stream]:
+) -> llm.StreamResponse:
     """Create a llm.StreamResponse with a functioning iterator for testing."""
 
     def sync_chunk_iter() -> llm.ChunkIterator:
@@ -29,7 +29,7 @@ def create_sync_stream_response(
 
 def create_async_stream_response(
     chunks: list[llm.AssistantContentChunk],
-) -> llm.StreamResponse[llm.AsyncStream]:
+) -> llm.AsyncStreamResponse:
     """Create a llm.StreamResponse with a functioning iterator for testing."""
 
     async def async_chunk_iter() -> llm.AsyncChunkIterator:
@@ -38,7 +38,7 @@ def create_async_stream_response(
 
     iterator = async_chunk_iter()
 
-    response = llm.StreamResponse[llm.AsyncStream](
+    response = llm.AsyncStreamResponse(
         provider="openai",
         model="gpt-4o-mini",
         input_messages=[llm.messages.user("Test")],
@@ -103,7 +103,7 @@ def example_tool_call_chunks() -> list[llm.AssistantContentChunk]:
 
 
 def check_stream_response_consistency(
-    response: llm.StreamResponse[llm.Stream | llm.AsyncStream],
+    response: llm.StreamResponse | llm.AsyncStreamResponse,
     chunks: Sequence[llm.AssistantContentChunk],
     content: Sequence[llm.AssistantContentPart],
 ) -> None:
@@ -200,9 +200,7 @@ class TestChunkStream:
         ]
         stream_response = create_async_stream_response(chunks)
 
-        streamed_chunks = [
-            chunk async for chunk in await stream_response.chunk_stream()
-        ]
+        streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
 
         check_stream_response_consistency(
             stream_response, chunks, [example_text, example_thinking, example_tool_call]
@@ -237,8 +235,8 @@ class TestChunkStream:
         """Test that streaming can be replayed from cache with async response."""
         stream_response = create_async_stream_response(example_text_chunks)
 
-        first_stream = [chunk async for chunk in await stream_response.chunk_stream()]
-        second_stream = [chunk async for chunk in await stream_response.chunk_stream()]
+        first_stream = [chunk async for chunk in stream_response.chunk_stream()]
+        second_stream = [chunk async for chunk in stream_response.chunk_stream()]
 
         check_stream_response_consistency(
             stream_response, example_text_chunks, [example_text]
@@ -287,7 +285,7 @@ class TestChunkStream:
         stream_response = create_async_stream_response(example_text_chunks)
 
         # Partial iteration stopping early
-        chunk_stream = await stream_response.chunk_stream()
+        chunk_stream = stream_response.chunk_stream()
         partial_chunks = []
         async for chunk in chunk_stream:
             partial_chunks.append(chunk)
@@ -348,7 +346,7 @@ class TestChunkStream:
         stream_response = create_async_stream_response(example_text_chunks)
 
         # Partial iteration stopping early
-        chunk_stream = await stream_response.chunk_stream()
+        chunk_stream = stream_response.chunk_stream()
         partial_chunks = []
         i = 0
         async for chunk in chunk_stream:
@@ -363,7 +361,7 @@ class TestChunkStream:
         assert stream_response.consumed is False
 
         # Restart iteration from the beginning
-        chunks = [chunk async for chunk in await stream_response.chunk_stream()]
+        chunks = [chunk async for chunk in stream_response.chunk_stream()]
         assert chunks[:2] == partial_chunks
 
         check_stream_response_consistency(
@@ -488,9 +486,7 @@ class TestToolCallSupport:
         """Test tool call streaming functionality with async response."""
         stream_response = create_async_stream_response(example_tool_call_chunks)
 
-        streamed_chunks = [
-            chunk async for chunk in await stream_response.chunk_stream()
-        ]
+        streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
 
         check_stream_response_consistency(
             stream_response, example_tool_call_chunks, [example_tool_call]
@@ -562,7 +558,7 @@ class TestChunkProcessing:
     ) -> None:
         chunks = chunk_processing_test_case.chunks
         stream_response = create_async_stream_response(chunks)
-        stream = await stream_response.chunk_stream()
+        stream = stream_response.chunk_stream()
         check_stream_response_consistency(stream_response, [], [])
         for i, expected_content in enumerate(
             chunk_processing_test_case.expected_contents
@@ -608,9 +604,7 @@ class TestChunkProcessing:
 
         assert stream_response.finish_reason is None
 
-        streamed_chunks = [
-            chunk async for chunk in await stream_response.chunk_stream()
-        ]
+        streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
 
         assert stream_response.finish_reason == llm.FinishReason.END_TURN
         check_stream_response_consistency(stream_response, chunks, [example_text])
@@ -641,7 +635,7 @@ class TestChunkProcessing:
         stream_response = create_async_stream_response(
             [llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN)]
         )
-        chunk_stream = await stream_response.chunk_stream()
+        chunk_stream = stream_response.chunk_stream()
 
         assert stream_response.finish_reason is None
         assert stream_response.consumed is False
@@ -794,7 +788,7 @@ class TestErrorHandling:
         with pytest.raises(
             RuntimeError, match=invalid_chunk_sequence_test_case.expected_error
         ):
-            [chunk async for chunk in await stream_response.chunk_stream()]
+            [chunk async for chunk in stream_response.chunk_stream()]
 
     def test_sync_chunks_after_finish_reason(
         self,
@@ -832,7 +826,7 @@ class TestErrorHandling:
         stream_response = create_async_stream_response(chunks)
 
         with pytest.raises(RuntimeError):
-            [chunk async for chunk in await stream_response.chunk_stream()]
+            [chunk async for chunk in stream_response.chunk_stream()]
 
         assert stream_response.finish_reason == llm.FinishReason.END_TURN
         check_stream_response_consistency(stream_response, chunks[:6], [example_text])
@@ -886,14 +880,14 @@ class TestRawChunkTracking:
             yield llm.responses.RawChunk(raw=raw2)
             yield chunk3
 
-        stream_response = llm.StreamResponse[llm.AsyncStream](
+        stream_response = llm.AsyncStreamResponse(
             provider="openai",
             model="gpt-4o-mini",
             input_messages=[llm.messages.user("Test")],
             chunk_iterator=chunk_iterator(),
         )
 
-        async for _ in await stream_response.chunk_stream():
+        async for _ in stream_response.chunk_stream():
             ...
 
         check_stream_response_consistency(

@@ -39,7 +39,7 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    response: llm.StreamResponse[llm.AsyncStream] = await sazed.stream(ctx, query)
+    response: llm.AsyncStreamResponse = await sazed.stream(ctx, query)
     while True:
         streams = await response.streams()
         async for stream in streams:
