@@ -5,20 +5,11 @@ from .anthropic import (
     AnthropicModel,
     get_anthropic_client,
 )
-from .base import (
-    BaseClient,
-)
 from .google import GoogleClient, GoogleModel, get_google_client
 from .openai import OpenAIClient, OpenAIModel, get_openai_client
 
 Provider: TypeAlias = Literal["openai", "anthropic", "google"]
 Model: TypeAlias = OpenAIModel | AnthropicModel | GoogleModel | str
-
-
-@overload
-def get_client(provider: Literal["openai"]) -> OpenAIClient:
-    """Get an OpenAI client instance."""
-    ...
 
 
 @overload
@@ -34,12 +25,12 @@ def get_client(provider: Literal["google"]) -> GoogleClient:
 
 
 @overload
-def get_client(provider: Provider) -> BaseClient:
-    """Get a client instance for the specified provider."""
+def get_client(provider: Literal["openai"]) -> OpenAIClient:
+    """Get an OpenAI client instance."""
     ...
 
 
-def get_client(provider: Provider) -> BaseClient:
+def get_client(provider: Provider) -> AnthropicClient | GoogleClient | OpenAIClient:
     """Get a client instance for the specified provider.
 
     Args:
