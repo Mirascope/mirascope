@@ -85,7 +85,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT, ...]],
         params: AnthropicParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
@@ -107,7 +107,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT, ...]],
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> Response[FormatT]:
@@ -129,7 +129,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT, ...]],
         params: AnthropicParams | None = None,
     ) -> Response[None]:
         raise NotImplementedError
@@ -151,7 +151,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT, ...]],
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> Response[FormatT]:
@@ -198,7 +198,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT, ...]],
         params: AnthropicParams | None = None,
     ) -> StreamResponse:
         raise NotImplementedError
@@ -220,7 +220,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT, ...]],
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> StreamResponse[FormatT]:
@@ -242,7 +242,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT, ...]],
         params: AnthropicParams | None = None,
     ) -> AsyncStreamResponse:
         raise NotImplementedError
@@ -264,7 +264,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT, ...]],
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> AsyncStreamResponse[FormatT]:

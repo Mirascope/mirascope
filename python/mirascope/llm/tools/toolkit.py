@@ -39,9 +39,9 @@ class AsyncToolkit:
 
 @dataclass(kw_only=True)
 class ContextToolkit(Generic[DepsT]):
-    tools: list[Tool | ContextTool[DepsT]]
+    tools: list[Tool | ContextTool[DepsT, ...]]
 
-    def get(self, tool_call: ToolCall) -> Tool | ContextTool[DepsT]:
+    def get(self, tool_call: ToolCall) -> Tool | ContextTool[DepsT, ...]:
         raise NotImplementedError()
 
     def execute(self, ctx: Context[DepsT], tool_call: ToolCall) -> ToolOutput[Jsonable]:
@@ -50,9 +50,9 @@ class ContextToolkit(Generic[DepsT]):
 
 @dataclass(kw_only=True)
 class AsyncContextToolkit(Generic[DepsT]):
-    tools: list[AsyncTool | AsyncContextTool[DepsT]]
+    tools: list[AsyncTool | AsyncContextTool[DepsT, ...]]
 
-    def get(self, tool_call: ToolCall) -> AsyncTool | AsyncContextTool[DepsT]:
+    def get(self, tool_call: ToolCall) -> AsyncTool | AsyncContextTool[DepsT, ...]:
         raise NotImplementedError()
 
     def execute(

@@ -15,6 +15,9 @@ dependencies that are present in `llm.Context`.
 It defaults to None when no dependencies are needed.
 """
 
+RequiredDepsT = TypeVar("RequiredDepsT")
+"""Type variable for dependency injection in `llm.Context`."""
+
 
 @dataclass
 class Context(Generic[DepsT]):

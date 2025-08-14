@@ -43,7 +43,7 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
     def __call__(
         self: ContextCallDecorator[
             P,
-            AsyncTool | AsyncContextTool[DepsT],
+            AsyncTool | AsyncContextTool[DepsT, ...],
             FormatT,
         ],
         fn: AsyncContextPrompt[P, DepsT],
@@ -55,7 +55,7 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
     def __call__(
         self: ContextCallDecorator[
             P,
-            Tool | ContextTool[DepsT],
+            Tool | ContextTool[DepsT, ...],
             FormatT,
         ],
         fn: ContextPrompt[P, DepsT],
@@ -66,7 +66,7 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
     def __call__(
         self: ContextCallDecorator[
             P,
-            Tool | AsyncTool | ContextTool[DepsT] | AsyncContextTool[DepsT],
+            Tool | AsyncTool | ContextTool[DepsT, ...] | AsyncContextTool[DepsT, ...],
             FormatT,
         ],
         fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],

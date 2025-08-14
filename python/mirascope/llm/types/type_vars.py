@@ -13,12 +13,5 @@ It captures both positional and keyword arguments (*args, **kwargs) while
 maintaining their original types.
 """
 
-PWithDefault = ParamSpec("PWithDefault", default=...)
-"""Parameter specification for function signatures, with a default.
-
-This ParamSpec has a default of ... set, which is useful in cases where we want the
-ParamSpec type var not to come first.
-"""
-
 CovariantT = TypeVar("CovariantT", covariant=True)
 """Type variable for covariant types."""
