@@ -4,6 +4,7 @@ import inspect
 from collections.abc import Callable, Coroutine
 from typing import Any, ParamSpec, Protocol, TypeVar, overload
 
+from pydantic import BaseModel
 from typing_extensions import NotRequired, Required, TypedDict
 
 from .. import llm
@@ -75,8 +76,8 @@ def fallback(
     def decorator(
         fn: Callable[_P, _R] | Callable[_P, Coroutine[_R, Any, Any]],
     ) -> Callable[_P, _R] | Callable[_P, Coroutine[_R, Any, Any]]:
-        # TODO: figure out why llm call fn is not considered as coroutine at runtime
-        if inspect.iscoroutinefunction(fn._original_fn):  # pyright: ignore [reportFunctionMemberAccess]
+        fn_to_check = fn._original_fn if hasattr(fn, "_original_fn") else fn  # pyright: ignore [reportFunctionMemberAccess]
+        if inspect.iscoroutinefunction(fn_to_check):
 
             async def inner_async(*args: _P.args, **kwargs: _P.kwargs) -> _R:
                 caught: list[Exception] = []
@@ -86,15 +87,16 @@ def fallback(
                     caught.append(e)
                     for backup in fallbacks:
                         try:
-                            response = await llm.override(
-                                fn,
+                            with llm.context(
                                 provider=backup["provider"],
                                 model=backup["model"],
                                 call_params=backup.get("call_params", None),
                                 client=backup.get("client", None),
-                            )(*args, **kwargs)  # pyright: ignore [reportGeneralTypeIssues]
-                            response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
-                            return response  # pyright: ignore [reportReturnType]
+                            ):
+                                response = await fn(*args, **kwargs)  # pyright: ignore [reportGeneralTypeIssues]
+                                if isinstance(response, BaseModel):
+                                    response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
+                                return response  # pyright: ignore [reportReturnType]
                         except backup["catch"] as be:
                             caught.append(be)
                 raise FallbackError(f"All fallbacks failed:\n{caught}")
@@ -110,15 +112,16 @@ def fallback(
                     caught.append(e)
                     for backup in fallbacks:
                         try:
-                            response = llm.override(
-                                fn,
+                            with llm.context(
                                 provider=backup["provider"],
                                 model=backup["model"],
                                 call_params=backup.get("call_params", None),
                                 client=backup.get("client", None),
-                            )(*args, **kwargs)
-                            response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
-                            return response  # pyright: ignore [reportReturnType]
+                            ):
+                                response = fn(*args, **kwargs)
+                                if isinstance(response, BaseModel):
+                                    response._caught = caught  # pyright: ignore [reportAttributeAccessIssue]
+                                return response  # pyright: ignore [reportReturnType]
                         except backup["catch"] as be:
                             caught.append(be)
                 raise FallbackError(f"All fallbacks failed:\n{caught}")
