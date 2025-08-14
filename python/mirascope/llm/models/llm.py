@@ -94,7 +94,7 @@ class LLM(Generic[ClientT, ParamsT]):
         *,
         ctx: Context[DepsT],
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
     ) -> Response[FormatT]:
         """Generate a response using the model."""
@@ -105,7 +105,7 @@ class LLM(Generic[ClientT, ParamsT]):
         *,
         ctx: Context[DepsT],
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
     ) -> Response[FormatT]:
         """Generate a response asynchronously using the model."""
@@ -116,7 +116,7 @@ class LLM(Generic[ClientT, ParamsT]):
         *,
         ctx: Context[DepsT],
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
     ) -> StreamResponse[FormatT]:
         """Stream a response using the model."""
@@ -127,7 +127,7 @@ class LLM(Generic[ClientT, ParamsT]):
         *,
         ctx: Context[DepsT],
         messages: list[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
     ) -> AsyncStreamResponse[FormatT]:
         """Stream a response asynchronously using the model."""
