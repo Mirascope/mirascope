@@ -4,9 +4,8 @@ This module defines the prompt templates used in LLM interactions, which are wri
 python functions.
 """
 
-from .decorator import (
-    prompt,
-)
+from . import _utils
+from .decorator import prompt
 from .types import (
     AsyncContextMessagesPrompt,
     AsyncContextPrompt,
@@ -37,5 +36,6 @@ __all__ = [
     "Prompt",
     "PromptT",
     "SystemPrompt",
+    "_utils",
     "prompt",
 ]

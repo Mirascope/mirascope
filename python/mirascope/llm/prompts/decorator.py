@@ -1,21 +1,14 @@
 """The `prompt` decorator for writing messages as string templates."""
 
-import inspect
 from collections.abc import Awaitable, Callable
 from typing import Concatenate, Generic, Protocol, overload
 
-from typing_extensions import TypeIs
-
 from ..context import Context, DepsT
 from ..messages import (
-    AssistantMessage,
     Message,
-    SystemMessage,
-    UserContent,
-    UserMessage,
-    user,
 )
 from ..types import P
+from . import _utils
 from .types import (
     AsyncContextMessagesPrompt,
     AsyncContextPrompt,
@@ -26,31 +19,6 @@ from .types import (
     MessagesPrompt,
     Prompt,
 )
-
-
-def _is_messages(
-    messages_or_content: list[Message] | UserContent,
-) -> TypeIs[list[Message]]:
-    if not messages_or_content:
-        raise ValueError("Prompt returned empty content")
-    return isinstance(messages_or_content, list) and isinstance(
-        messages_or_content[0], SystemMessage | UserMessage | AssistantMessage
-    )
-
-
-def _promote_prompt_result(result: list[Message] | UserContent) -> list[Message]:
-    """Promote a prompt result to a list of messages.
-
-    If the result is already a list of Messages, returns it as-is.
-    If the result is UserContent, wraps it in a single user message.
-    """
-    if _is_messages(result):
-        return result
-    return [user(result)]
-
-
-def _is_async_prompt(fn: Prompt | AsyncPrompt) -> TypeIs[AsyncPrompt]:
-    return inspect.iscoroutinefunction(fn)
 
 
 class PromptDecorator:
@@ -76,18 +44,18 @@ class PromptDecorator:
         self, fn: Prompt[P] | AsyncPrompt[P]
     ) -> MessagesPrompt[P] | AsyncMessagesPrompt[P]:
         """Decorator for creating a prompt."""
-        if _is_async_prompt(fn):
+        if _utils.is_async_prompt(fn):
 
             async def async_prompt(*args: P.args, **kwargs: P.kwargs) -> list[Message]:
                 result = await fn(*args, **kwargs)
-                return _promote_prompt_result(result)
+                return _utils.promote_to_messages(result)
 
             return async_prompt
         else:
 
             def prompt(*args: P.args, **kwargs: P.kwargs) -> list[Message]:
                 result = fn(*args, **kwargs)
-                return _promote_prompt_result(result)
+                return _utils.promote_to_messages(result)
 
             return prompt
 

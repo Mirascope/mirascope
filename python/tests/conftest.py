@@ -4,8 +4,13 @@ This module provides shared fixtures and configuration for all tests in the
 mirascope test suite, including VCR configuration for HTTP recording/playback.
 """
 
+import os
+
 import pytest
+from dotenv import load_dotenv
 from typing_extensions import TypedDict
+
+from mirascope import llm
 
 
 class VCRConfig(TypedDict):
@@ -77,3 +82,27 @@ def vcr_config() -> VCRConfig:
         ],
         "filter_post_data_parameters": [],
     }
+
+
+@pytest.fixture(scope="session")
+def openai_client() -> llm.OpenAIClient:
+    """Create an OpenAIClient instance with appropriate API key."""
+    load_dotenv()
+    api_key = os.getenv("OPENAI_API_KEY") or "dummy-key-for-vcr-tests"
+    return llm.OpenAIClient(api_key=api_key)
+
+
+@pytest.fixture(scope="session")
+def google_client() -> llm.GoogleClient:
+    """Create a GoogleClient instance with appropriate API key."""
+    load_dotenv()
+    api_key = os.getenv("GOOGLE_API_KEY") or "dummy-key-for-vcr-tests"
+    return llm.GoogleClient(api_key=api_key)
+
+
+@pytest.fixture(scope="session")
+def anthropic_client() -> llm.AnthropicClient:
+    """Create an AnthropicClient instance with appropriate API key."""
+    load_dotenv()
+    api_key = os.getenv("ANTHROPIC_API_KEY") or "dummy-key-for-vcr-tests"
+    return llm.AnthropicClient(api_key=api_key)
