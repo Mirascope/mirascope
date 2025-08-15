@@ -1,4 +1,4 @@
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Sequence
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
 
@@ -17,7 +17,7 @@ ToolkitT = TypeVar(
 
 @dataclass(kw_only=True)
 class Toolkit:
-    tools: list[Tool]
+    tools: Sequence[Tool]
 
     def get(self, tool_call: ToolCall) -> Tool:
         raise NotImplementedError()
@@ -28,7 +28,7 @@ class Toolkit:
 
 @dataclass(kw_only=True)
 class AsyncToolkit:
-    tools: list[AsyncTool]
+    tools: Sequence[AsyncTool]
 
     def get(self, tool_call: ToolCall) -> AsyncTool:
         raise NotImplementedError()
@@ -39,7 +39,7 @@ class AsyncToolkit:
 
 @dataclass(kw_only=True)
 class ContextToolkit(Generic[DepsT]):
-    tools: list[Tool | ContextTool[DepsT]]
+    tools: Sequence[Tool | ContextTool[DepsT]]
 
     def get(self, tool_call: ToolCall) -> Tool | ContextTool[DepsT]:
         raise NotImplementedError()
@@ -50,7 +50,7 @@ class ContextToolkit(Generic[DepsT]):
 
 @dataclass(kw_only=True)
 class AsyncContextToolkit(Generic[DepsT]):
-    tools: list[AsyncTool | AsyncContextTool[DepsT]]
+    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
 
     def get(self, tool_call: ToolCall) -> AsyncTool | AsyncContextTool[DepsT]:
         raise NotImplementedError()
