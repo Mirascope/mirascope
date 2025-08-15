@@ -1,24 +1,13 @@
 """Tests for GoogleClient using VCR.py for HTTP request recording/playback."""
 
 import inspect
-import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-from dotenv import load_dotenv
 from inline_snapshot import snapshot
 
 from mirascope import llm
 from tests import utils
-
-
-@pytest.fixture
-def google_client() -> llm.GoogleClient:
-    """Create a GoogleClient instance with appropriate API key."""
-    # Use real API key if available, otherwise dummy key for VCR tests
-    load_dotenv()
-    api_key = os.getenv("GOOGLE_API_KEY") or "dummy-key-for-vcr-tests"
-    return llm.GoogleClient(api_key=api_key)
 
 
 def test_custom_base_url() -> None:

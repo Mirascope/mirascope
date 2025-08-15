@@ -1,23 +1,12 @@
 """Tests for AnthropicClient using VCR.py for HTTP request recording/playback."""
 
 import inspect
-import os
 
 import pytest
-from dotenv import load_dotenv
 from inline_snapshot import snapshot
 
 from mirascope import llm
 from tests import utils
-
-
-@pytest.fixture
-def anthropic_client() -> llm.AnthropicClient:
-    """Create an AnthropicClient instance with appropriate API key."""
-    # Use real API key if available, otherwise dummy key for VCR tests
-    load_dotenv()
-    api_key = os.getenv("ANTHROPIC_API_KEY") or "dummy-key-for-vcr-tests"
-    return llm.AnthropicClient(api_key=api_key)
 
 
 @pytest.mark.vcr()
