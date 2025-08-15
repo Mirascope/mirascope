@@ -1,0 +1,110 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Please recommend a fantasy book.
+      Answer concisely in just one sentence."}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '136'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4xSTW/bMAy9+1cQOsdF4sVpluuAfVyGYOgwoGthKBJtc5FFQ6K7BUX++2Anjd21
+        BXbRgY+Peu+RjwmAIqs2oEytxTStSz8sH1afv/MWP24PEu1t9Slf3PI2u1nv672a9Qze/UIjT6wr
+        w03rUIj9CTYBtWA/dXGd59l6vV4uBqBhi66nVa2kS04b8pRm82yZzq/TxfrMrpkMRrWBnwkAwOPw
+        9jq9xT9qA/PZU6XBGHWFanNpAlCBXV9ROkaKor2o2Qga9oJ+kP4FAhpuGvQW7tRNjfBVNwhcgtQI
+        P8jbOwW7A2y1BDJ7+MZSl12MUHIAkgiBTA2/OTib7jpylnwF2lsg3xO0IEThcBB0jnx1NZURsOyi
+        7qPwnXMTQHvPovsohwDuz8jxYtlx1QbexX+oqiRPsS4C6si+txeFWzWgxwTgfoi2e5aWagM3rRTC
+        exy+y7LTODUudAK+O4PCot1YX+azV6YVFkWTi5PVKKNNjXZkjnvUnSWeAMnE80sxr80++SZf/c/4
+        ETAGW0FbtAEtmeeGx7aA/bm/1XbJeBCsIoYHMlgIYej3YLHUnTsdoYqHKNgUJfkKQxvodIllW+Sr
+        uS5XmOfvVXJM/gIAAP//AwAuA946lwMAAA==
+    headers:
+      CF-RAY:
+      - 96fb5b16bf4ad7ae-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 15 Aug 2025 20:14:01 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=WGyHSEjPq_trinfMtPJ3yrQlMAw7GuaIS1t8aTivWz8-1755288841-1.0.1.1-wV12UxpbRx_oV1x9KMRu2WnXaffJQ56mlNQOrG_ZBKFWERCfPYdiPmqo9qZk22ZnCKcmelRT2lXzbcSj7h22woo6DxEpSVD57jUXvAvrS0U;
+        path=/; expires=Fri, 15-Aug-25 20:44:01 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=3unI6x_AKRt3rI8Q87HTph1WScTOSNkV9vkHNkHTNxQ-1755288841876-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '555'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '754'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999980'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_cc4d880762684303818cdbb590641fb8
+    status:
+      code: 200
+      message: OK
+version: 1

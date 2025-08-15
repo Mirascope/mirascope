@@ -50,7 +50,8 @@ def _promote_prompt_result(result: list[Message] | UserContent) -> list[Message]
     return [user(result)]
 
 
-def _is_async_prompt(fn: Prompt | AsyncPrompt) -> TypeIs[AsyncPrompt]:
+def is_async_prompt(fn: Prompt | AsyncPrompt) -> TypeIs[AsyncPrompt]:
+    """Distinguish `Prompt` from `AsyncPrompt`, returning `TypeIs[AsyncPrompt]`"""
     return inspect.iscoroutinefunction(fn)
 
 
@@ -77,7 +78,7 @@ class PromptDecorator:
         self, fn: Prompt[P] | AsyncPrompt[P]
     ) -> MessagesPrompt[P] | AsyncMessagesPrompt[P]:
         """Decorator for creating a prompt."""
-        if _is_async_prompt(fn):
+        if is_async_prompt(fn):
 
             async def async_prompt(*args: P.args, **kwargs: P.kwargs) -> list[Message]:
                 result = await fn(*args, **kwargs)
