@@ -72,22 +72,22 @@ def async_tools() -> list[llm.AsyncTool]:
 @pytest.fixture
 def mocked_llm(mock_client: Mock, params: llm.clients.OpenAIParams) -> llm.LLM:
     """Create a test LLM instance with mock client."""
-    return llm.LLM.create(
+    return llm.model(
         provider="openai",
         model="gpt-4o-mini",
         client=mock_client,
-        params=params,
+        **params,
     )
 
 
 def test_cant_use_init() -> None:
-    with pytest.raises(TypeError, match="LLM.create"):
+    with pytest.raises(TypeError, match="llm.model"):
         llm.LLM()
 
 
 def test_create_provides_client() -> None:
     """Test that a client is created for the LLM if not provided"""
-    test_llm = llm.LLM.create(provider="openai", model="gpt-4o")
+    test_llm = llm.model(provider="openai", model="gpt-4o")
     assert isinstance(test_llm.client, llm.clients.OpenAIClient)
 
 
@@ -279,3 +279,23 @@ async def test_structured_stream_async(
         format=Format,
     )
     assert result is mock_async_stream_response
+
+
+def test_context_manager() -> None:
+    assert llm.models.llm_from_context() is None
+
+    with llm.models.model(provider="openai", model="gpt-4o-mini") as llm_outer:
+        assert isinstance(llm_outer, llm.models.LLM)
+        assert llm_outer.provider == "openai"
+        assert llm.models.llm_from_context() == llm_outer
+
+        with llm.models.model(
+            provider="anthropic", model="claude-sonnet-4-0"
+        ) as llm_inner:
+            assert isinstance(llm_inner, llm.models.LLM)
+            assert llm_inner.provider == "anthropic"
+            assert llm.models.llm_from_context() == llm_inner
+
+        assert llm.models.llm_from_context() == llm_outer
+
+    assert llm.models.llm_from_context() is None

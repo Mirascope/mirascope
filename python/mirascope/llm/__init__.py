@@ -168,6 +168,7 @@ __all__ = [
     "messages",
     "model",
     "models",
+    "prompt",
     "prompts",
     "responses",
     "streams",
