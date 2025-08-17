@@ -3,39 +3,68 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Generic, Literal, overload
+from contextvars import ContextVar, Token
+from types import TracebackType
+from typing import TYPE_CHECKING, Generic, overload
 
-from ..clients import ClientT, ParamsT, get_client
+from ..clients import ClientT, ParamsT
 from ..context import Context
 from ..messages import Message
 from ..responses import AsyncStreamResponse, Response, StreamResponse
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 if TYPE_CHECKING:
-    from ..clients import (
-        AnthropicClient,
-        AnthropicModel,
-        AnthropicParams,
-        GoogleClient,
-        GoogleModel,
-        GoogleParams,
-        Model,
-        OpenAIClient,
-        OpenAIModel,
-        OpenAIParams,
-        Provider,
-    )
+    from ..clients import Model, Provider
+
 from ..context import DepsT
 from ..formatting import FormatT
+
+LLM_CONTEXT: ContextVar[LLM | None] = ContextVar("LLM_CONTEXT", default=None)
+
+
+def llm_from_context() -> LLM | None:
+    """Get the LLM currently set via context, if any."""
+    return LLM_CONTEXT.get()
 
 
 class LLM(Generic[ClientT, ParamsT]):
     """The unified LLM interface that delegates to provider-specific clients.
 
+    NOTE: this class cannot be instantiated directly and must be created using the
+    `llm.model` factory method.
+
     This class provides a consistent interface for interacting with language models
     from various providers. It handles the common operations like generating responses,
     streaming, and async variants by delegating to the appropriate client methods.
+
+    This class can also operate as a context manager, which will set this LLM as the
+    model in context for any call to a function decorated with `@llm.call`, which will
+    first attempt to use a model set in the context, if any. If no model is set in the
+    context, the default model will be used for that function.
+
+    This is useful for overriding the default model at runtime.
+
+    Example:
+
+        ```python
+        from mirascope import llm
+
+        @llm.call(
+            provider="openai",
+            model="gpt-5",
+        )
+        def answer_question(question: str) -> str:
+            return f"Answer this question: {question}"
+
+        # Run the call with a different model from the default
+        with llm.model(provider="anthropic", model="claude-4-sonnet"):
+            response: llm.Response = answer_question("What is the capital of France?")
+            print(response.content)
+        ```
     """
+
+    _token: Token[LLM | None] | None = None
+    """The token returned when setting the LLM context."""
 
     provider: Provider
     """The provider being used (e.g. `openai`)."""
@@ -49,72 +78,25 @@ class LLM(Generic[ClientT, ParamsT]):
     params: ParamsT | None
     """The default parameters for the model (temperature, max_tokens, etc.)."""
 
-    @overload
-    @classmethod
-    def create(
-        cls: type[LLM[AnthropicClient, AnthropicParams]],
-        *,
-        provider: Literal["anthropic"],
-        model: AnthropicModel,
-        client: AnthropicClient | None = None,
-        params: AnthropicParams | None = None,
-    ) -> LLM[AnthropicClient, AnthropicParams]:
-        """Create an Anthropic LLM"""
-        ...
-
-    @overload
-    @classmethod
-    def create(
-        cls: type[LLM[GoogleClient, GoogleParams]],
-        *,
-        provider: Literal["google"],
-        model: GoogleModel,
-        client: GoogleClient | None = None,
-        params: GoogleParams | None = None,
-    ) -> LLM[GoogleClient, GoogleParams]:
-        """Create a Google LLM"""
-        ...
-
-    @overload
-    @classmethod
-    def create(
-        cls: type[LLM[OpenAIClient, OpenAIParams]],
-        *,
-        provider: Literal["openai"],
-        model: OpenAIModel,
-        client: OpenAIClient | None = None,
-        params: OpenAIParams | None = None,
-    ) -> LLM[OpenAIClient, OpenAIParams]:
-        """Create an OpenAI LLM"""
-        ...
-
-    @classmethod
-    def create(
-        cls: type[
-            LLM[AnthropicClient, AnthropicParams]
-            | LLM[GoogleClient, GoogleParams]
-            | LLM[OpenAIClient, OpenAIParams]
-        ],
-        *,
-        provider: Provider,
-        model: Model,
-        client: AnthropicClient | GoogleClient | OpenAIClient | None = None,
-        params: AnthropicParams | GoogleParams | OpenAIParams | None = None,
-    ) -> (
-        LLM[AnthropicClient, AnthropicParams]
-        | LLM[GoogleClient, GoogleParams]
-        | LLM[OpenAIClient, OpenAIParams]
-    ):
-        instance = cls.__new__(cls)
-        instance.provider = provider
-        instance.model = model
-        instance.client = client or get_client(provider)  # pyright: ignore[reportAttributeAccessIssue]
-        instance.params = params
-        return instance
-
     def __init__(self) -> None:
-        """LLM is not created via `__init__`; use `LLM.create(...)` instead."""
-        raise TypeError("Use `LLM.create(...)` instead")
+        """LLM is not created via `__init__`; use `llm.model(...)` instead."""
+        raise TypeError("Use `llm.model(...)` instead")
+
+    def __enter__(self) -> LLM[ClientT, ParamsT]:
+        """Sets LLM_CONTEXT with this LLM and stores the token."""
+        self._token = LLM_CONTEXT.set(self)
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        """Restores LLM_CONTEXT to the token returned from the last setting."""
+        if self._token is not None:
+            LLM_CONTEXT.reset(self._token)
+            self._token = None
 
     @overload
     def call(
