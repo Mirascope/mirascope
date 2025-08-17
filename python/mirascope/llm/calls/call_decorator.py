@@ -62,7 +62,7 @@ class CallDecorator(Generic[ToolT, FormatT]):
     ) -> Call[P, FormatT] | AsyncCall[P, FormatT]:
         """Decorates a prompt into a Call."""
         if _prompt_utils.is_async_prompt(fn):
-            tools = cast(Sequence[AsyncTool], self.tools)
+            tools = cast(Sequence[AsyncTool] | None, self.tools)
             return AsyncCall(
                 fn=fn,
                 model=self.model,
@@ -70,7 +70,7 @@ class CallDecorator(Generic[ToolT, FormatT]):
                 toolkit=AsyncToolkit(tools=tools),
             )
         else:
-            tools = cast(Sequence[Tool], self.tools)
+            tools = cast(Sequence[Tool] | None, self.tools)
             return Call(
                 fn=fn,
                 model=self.model,

@@ -1,26 +1,16 @@
 """Mirascope exception hierarchy for unified error handling across providers."""
 
-from typing import Any
-
-from .clients import (
-    Model,
-    Provider,
-)
-
 
 class MirascopeError(Exception):
     """Base exception for all Mirascope errors."""
 
     original_exception: Exception | None
-    provider: Provider | None
-    model: Model | None
 
 
 class APIError(MirascopeError):
     """Base class for API-related errors."""
 
     status_code: int | None
-    response: Any
 
 
 class ConnectionError(MirascopeError):
@@ -43,7 +33,7 @@ class NotFoundError(APIError):
     """Raised when requested resource is not found (404)."""
 
 
-class ToolNotFoundError(APIError):
+class ToolNotFoundError(MirascopeError):
     """Raised if a tool_call cannot be converted to any corresponding tool."""
 
 

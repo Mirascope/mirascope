@@ -28,6 +28,8 @@ ToolFnT = TypeVar(
     covariant=True,
 )
 
+ToolSchemaT = TypeVar("ToolSchemaT", bound="ToolSchema")
+
 DocstringArg = namedtuple("DocstringArg", ["name", "description"])
 
 

@@ -1,12 +1,14 @@
-from collections.abc import Awaitable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
 
 from ..content import ToolCall, ToolOutput
 from ..context import Context, DepsT
+from ..exceptions import ToolNotFoundError
 from ..types import Jsonable
 from .context_tool import AsyncContextTool, ContextTool
 from .tool import AsyncTool, Tool
+from .tool_schema import ToolSchemaT
 
 ToolkitT = TypeVar(
     "ToolkitT",
@@ -15,47 +17,129 @@ ToolkitT = TypeVar(
 )
 
 
-@dataclass(kw_only=True)
-class Toolkit:
-    tools: Sequence[Tool]
+@dataclass
+class BaseToolkit(Generic[ToolSchemaT]):
+    """Base class for tool collections.
 
-    def get(self, tool_call: ToolCall) -> Tool:
-        raise NotImplementedError()
+    Provides common functionality for managing collections of tools,
+    including name validation and tool lookup.
+    """
+
+    tools: Sequence[ToolSchemaT]
+    """The tools included in the toolkit."""
+
+    tools_dict: dict[str, ToolSchemaT]
+    """A mapping from tool names to tools in the toolkit."""
+
+    def __init__(self, tools: Sequence[ToolSchemaT] | None) -> None:
+        """Initialize the toolkit with a collection of tools.
+
+        Args:
+            tools: Sequence of tools to include in the toolkit.
+
+        Raises:
+            ValueError: If multiple tools have the same name.
+        """
+        self.tools = tools or []
+        self.tools_dict = {}
+        for tool in self.tools:
+            if tool.name in self.tools_dict:
+                raise ValueError(f"Multiple tools with name: {tool.name}")
+            self.tools_dict[tool.name] = tool
+
+    def get(self, tool_call: ToolCall) -> ToolSchemaT:
+        """Get a tool that can execute a specific tool call.
+
+        Args:
+            tool_call: The tool call containing the tool name to lookup.
+
+        Returns:
+            The tool whose name matches the tool call.
+
+        Raises:
+            ToolNotFoundError: If no tool with the given name exists.
+        """
+        tool = self.tools_dict.get(tool_call.name, None)
+        if not tool:
+            raise ToolNotFoundError(f"Tool not found in toolkit: {tool_call.name}")
+        return tool
+
+
+class Toolkit(BaseToolkit[Tool]):
+    """A collection of `Tool`s, with helpers for getting and executing specific tools."""
 
     def execute(self, tool_call: ToolCall) -> ToolOutput[Jsonable]:
-        raise NotImplementedError()
+        """Execute a `Tool` using the provided tool call.
+
+        Args:
+            tool_call: The tool call to execute.
+
+        Returns:
+            The output from executing the `Tool`.
+
+        Raises:
+            ToolNotFoundError: If the requested tool is not found.
+        """
+        tool = self.get(tool_call)
+        return tool.execute(tool_call)
 
 
-@dataclass(kw_only=True)
-class AsyncToolkit:
-    tools: Sequence[AsyncTool]
+class AsyncToolkit(BaseToolkit[AsyncTool]):
+    """A collection of `AsyncTool`s, with helpers for getting and executing specific tools."""
 
-    def get(self, tool_call: ToolCall) -> AsyncTool:
-        raise NotImplementedError()
+    async def execute(self, tool_call: ToolCall) -> ToolOutput[Jsonable]:
+        """Execute an `AsyncTool` using the provided tool call.
 
-    def execute(self, tool_call: ToolCall) -> Awaitable[ToolOutput[Jsonable]]:
-        raise NotImplementedError()
+        Args:
+            tool_call: The tool call to execute.
+
+        Returns:
+            The output from executing the `AsyncTool`.
+
+        Raises:
+            ToolNotFoundError: If the requested tool is not found.
+        """
+        tool = self.get(tool_call)
+        return await tool.execute(tool_call)
 
 
-@dataclass(kw_only=True)
-class ContextToolkit(Generic[DepsT]):
-    tools: Sequence[Tool | ContextTool[DepsT]]
-
-    def get(self, tool_call: ToolCall) -> Tool | ContextTool[DepsT]:
-        raise NotImplementedError()
+class ContextToolkit(BaseToolkit[Tool | ContextTool[DepsT]], Generic[DepsT]):
+    """A collection of `ContextTool`s, with helpers for getting and executing specific tools."""
 
     def execute(self, ctx: Context[DepsT], tool_call: ToolCall) -> ToolOutput[Jsonable]:
-        raise NotImplementedError()
+        """Execute a `ContextTool` using the provided tool call.
+
+        Args:
+            ctx: The context containing dependencies that match the tool.
+            tool_call: The tool call to execute.
+
+        Returns:
+            The output from executing the `ContextTool`.
+
+        Raises:
+            ToolNotFoundError: If the requested tool is not found.
+        """
+        raise NotImplementedError
 
 
-@dataclass(kw_only=True)
-class AsyncContextToolkit(Generic[DepsT]):
-    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+class AsyncContextToolkit(
+    BaseToolkit[AsyncTool | AsyncContextTool[DepsT]], Generic[DepsT]
+):
+    """A collection of `AsyncContextTool`s, with helpers for getting and executing specific tools."""
 
-    def get(self, tool_call: ToolCall) -> AsyncTool | AsyncContextTool[DepsT]:
-        raise NotImplementedError()
-
-    def execute(
+    async def execute(
         self, ctx: Context[DepsT], tool_call: ToolCall
-    ) -> Awaitable[ToolOutput[Jsonable]]:
-        raise NotImplementedError()
+    ) -> ToolOutput[Jsonable]:
+        """Execute an `AsyncContextTool` using the provided tool call.
+
+        Args:
+            ctx: The context containing dependencies that match the tool.
+            tool_call: The tool call to execute.
+
+        Returns:
+            The output from executing the `AsyncContextTool`.
+
+        Raises:
+            ToolNotFoundError: If the requested tool is not found.
+        """
+        raise NotImplementedError
