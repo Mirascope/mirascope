@@ -9,7 +9,7 @@ from .context_tool import (
 from .context_tool_decorator import ContextToolDecorator, context_tool
 from .tool import AsyncTool, Tool, ToolT
 from .tool_decorator import ToolDecorator, tool
-from .tool_schema import ToolParameterSchema, ToolSchema
+from .tool_schema import ToolParameterSchema, ToolSchema, ToolSchemaT
 from .toolkit import (
     AsyncContextToolkit,
     AsyncToolkit,
@@ -32,6 +32,7 @@ __all__ = [
     "ToolDecorator",
     "ToolParameterSchema",
     "ToolSchema",
+    "ToolSchemaT",
     "ToolT",
     "Toolkit",
     "ToolkitT",
