@@ -5,7 +5,6 @@ from typing import Protocol, overload
 
 from typing_extensions import TypeIs
 
-from ..context import DepsT
 from ..types import JsonableCovariantT, P
 from .protocols import AsyncToolFn, ToolFn
 from .tool import AsyncTool, Tool
@@ -74,7 +73,7 @@ def tool(__fn: AsyncToolFn[P, JsonableCovariantT]) -> AsyncTool[P, JsonableCovar
 
 
 @overload
-def tool(*, deps_type: type[None] | None = None, strict: bool = False) -> ToolDecorator:
+def tool(*, strict: bool = False) -> ToolDecorator:
     """Overload for setting non-default arguments."""
     ...
 
@@ -84,7 +83,6 @@ def tool(
     | AsyncToolFn[P, JsonableCovariantT]
     | None = None,
     *,
-    deps_type: type[DepsT] | type[None] | None = None,
     strict: bool = False,
 ) -> Tool[P, JsonableCovariantT] | AsyncTool[P, JsonableCovariantT] | ToolDecorator:
     '''Decorator that turns a function into a tool definition.

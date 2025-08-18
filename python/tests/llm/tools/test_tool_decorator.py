@@ -111,7 +111,6 @@ def test_decorator_modes_equivalence() -> None:
     decorated = llm.tool(base_func)
     via_factory = llm.tool()(base_func)
 
-    # Should be equal llm.Tool instances
     assert decorated == via_factory
 
 
@@ -125,5 +124,4 @@ def test_decorator_modes_equivalence_async() -> None:
     decorated = llm.tool(base_func)
     via_factory = llm.tool()(base_func)
 
-    # Should be equal llm.Tool instances
     assert decorated == via_factory
