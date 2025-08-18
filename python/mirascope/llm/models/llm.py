@@ -22,7 +22,7 @@ from ..formatting import FormatT
 LLM_CONTEXT: ContextVar[LLM | None] = ContextVar("LLM_CONTEXT", default=None)
 
 
-def llm_from_context() -> LLM | None:
+def get_model_from_context() -> LLM | None:
     """Get the LLM currently set via context, if any."""
     return LLM_CONTEXT.get()
 

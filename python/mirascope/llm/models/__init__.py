@@ -6,11 +6,11 @@ easily run an LLM call with a model specified at runtime rather than definition
 time.
 """
 
-from .llm import LLM, llm_from_context
+from .llm import LLM, get_model_from_context
 from .model import model
 
 __all__ = [
     "LLM",
-    "llm_from_context",
+    "get_model_from_context",
     "model",
 ]

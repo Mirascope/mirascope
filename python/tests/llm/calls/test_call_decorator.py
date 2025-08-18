@@ -165,6 +165,19 @@ def test_call_decorator_e2e_openai() -> None:
     )
 
 
+@pytest.mark.vcr()
+def test_call_decorator_e2e_model_override() -> None:
+    @llm.call(provider="openai", model="gpt-4o-mini")
+    def call() -> str:
+        return "What company created you? Answer in just one word."
+
+    assert call().pretty() == snapshot("OpenAI.")
+    with llm.model(provider="google", model="gemini-2.0-flash"):
+        assert call().pretty() == snapshot("Google.\n")
+        with llm.model(provider="anthropic", model="claude-sonnet-4-0"):
+            assert call().pretty() == snapshot("Anthropic")
+
+
 def test_value_error_invalid_provider() -> None:
     with pytest.raises(ValueError, match="Unknown provider: nonexistent"):
         llm.call(provider="nonexistent", model="gpt-4o-mini")  # pyright: ignore[reportCallIssue, reportArgumentType]

@@ -282,20 +282,20 @@ async def test_structured_stream_async(
 
 
 def test_context_manager() -> None:
-    assert llm.models.llm_from_context() is None
+    assert llm.models.get_model_from_context() is None
 
     with llm.models.model(provider="openai", model="gpt-4o-mini") as llm_outer:
         assert isinstance(llm_outer, llm.models.LLM)
         assert llm_outer.provider == "openai"
-        assert llm.models.llm_from_context() == llm_outer
+        assert llm.models.get_model_from_context() == llm_outer
 
         with llm.models.model(
             provider="anthropic", model="claude-sonnet-4-0"
         ) as llm_inner:
             assert isinstance(llm_inner, llm.models.LLM)
             assert llm_inner.provider == "anthropic"
-            assert llm.models.llm_from_context() == llm_inner
+            assert llm.models.get_model_from_context() == llm_inner
 
-        assert llm.models.llm_from_context() == llm_outer
+        assert llm.models.get_model_from_context() == llm_outer
 
-    assert llm.models.llm_from_context() is None
+    assert llm.models.get_model_from_context() is None
