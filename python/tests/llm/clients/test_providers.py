@@ -1,6 +1,6 @@
 """Tests for provider get_client functions."""
 
-from unittest.mock import patch
+import os
 
 import pytest
 
@@ -12,40 +12,34 @@ from mirascope.llm.clients import (
 )
 
 
-def test_get_client_openai() -> None:
-    """Test that get_client('openai') returns same instance on multiple calls."""
-    with patch("os.getenv", return_value="test-key") as mock_getenv:
-        client1 = get_client("openai")
-        client2 = get_client("openai")
-
-        assert isinstance(client1, OpenAIClient)
-        assert client1 is client2
-        assert client1.client.api_key == "test-key"
-        mock_getenv.assert_any_call("OPENAI_API_KEY")
-
-
 def test_get_client_anthropic() -> None:
     """Test that get_client('anthropic') returns same instance on multiple calls."""
-    with patch("os.getenv", return_value="test-key") as mock_getenv:
-        client1 = get_client("anthropic")
-        client2 = get_client("anthropic")
+    client1 = get_client("anthropic")
+    client2 = get_client("anthropic")
 
-        assert isinstance(client1, AnthropicClient)
-        assert client1 is client2
-        assert client1.client.api_key == "test-key"
-        mock_getenv.assert_any_call("ANTHROPIC_API_KEY")
+    assert isinstance(client1, AnthropicClient)
+    assert client1 is client2
+    assert client1.client.api_key == os.getenv("ANTHROPIC_API_KEY")
 
 
 def test_get_client_google() -> None:
     """Test that get_client('google') returns same instance on multiple calls."""
-    with patch("os.getenv", return_value="test-key") as mock_getenv:
-        client1 = get_client("google")
-        client2 = get_client("google")
+    client1 = get_client("google")
+    client2 = get_client("google")
 
-        assert isinstance(client1, GoogleClient)
-        assert client1 is client2
-        assert client1.client._api_client.api_key == "test-key"
-        mock_getenv.assert_any_call("GOOGLE_API_KEY")
+    assert isinstance(client1, GoogleClient)
+    assert client1 is client2
+    assert client1.client._api_client.api_key == os.getenv("GOOGLE_API_KEY")
+
+
+def test_get_client_openai() -> None:
+    """Test that get_client('openai') returns same instance on multiple calls."""
+    client1 = get_client("openai")
+    client2 = get_client("openai")
+
+    assert isinstance(client1, OpenAIClient)
+    assert client1 is client2
+    assert client1.client.api_key == os.getenv("OPENAI_API_KEY")
 
 
 def test_get_client_unknown_provider() -> None:

@@ -84,25 +84,40 @@ def vcr_config() -> VCRConfig:
     }
 
 
-@pytest.fixture(scope="session")
-def openai_client() -> llm.OpenAIClient:
-    """Create an OpenAIClient instance with appropriate API key."""
+@pytest.fixture(scope="session", autouse=True)
+def anthropic_api_key() -> str:
+    """Sets the Anthropic API key and returns it."""
     load_dotenv()
-    api_key = os.getenv("OPENAI_API_KEY") or "dummy-key-for-vcr-tests"
-    return llm.OpenAIClient(api_key=api_key)
+    return os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
 
 
-@pytest.fixture(scope="session")
-def google_client() -> llm.GoogleClient:
-    """Create a GoogleClient instance with appropriate API key."""
+@pytest.fixture(scope="session", autouse=True)
+def google_api_key() -> str:
+    """Sets the Google API key and returns it."""
     load_dotenv()
-    api_key = os.getenv("GOOGLE_API_KEY") or "dummy-key-for-vcr-tests"
-    return llm.GoogleClient(api_key=api_key)
+    return os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def openai_api_key() -> str:
+    """Sets the OpenAI API key and returns it."""
+    load_dotenv()
+    return os.environ.setdefault("OPENAI_API_KEY", "dummy-openai-key")
 
 
 @pytest.fixture(scope="session")
-def anthropic_client() -> llm.AnthropicClient:
+def anthropic_client(anthropic_api_key: str) -> llm.AnthropicClient:
     """Create an AnthropicClient instance with appropriate API key."""
-    load_dotenv()
-    api_key = os.getenv("ANTHROPIC_API_KEY") or "dummy-key-for-vcr-tests"
-    return llm.AnthropicClient(api_key=api_key)
+    return llm.clients.AnthropicClient(api_key=anthropic_api_key)
+
+
+@pytest.fixture(scope="session")
+def google_client(google_api_key: str) -> llm.GoogleClient:
+    """Create a GoogleClient instance with appropriate API key."""
+    return llm.clients.GoogleClient(api_key=google_api_key)
+
+
+@pytest.fixture(scope="session")
+def openai_client(openai_api_key: str) -> llm.OpenAIClient:
+    """Create an OpenAIClient instance with appropriate API key."""
+    return llm.clients.OpenAIClient(api_key=openai_api_key)
