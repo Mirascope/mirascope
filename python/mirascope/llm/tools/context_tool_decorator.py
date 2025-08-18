@@ -1,6 +1,10 @@
-"""The `llm.tool` decorator for turning functions into tools."""
+"""The `llm.context_tool` decorator for turning functions into context tools."""
 
+import inspect
+from dataclasses import dataclass
 from typing import overload
+
+from typing_extensions import TypeIs
 
 from ..context import RequiredDepsT
 from ..types import JsonableCovariantT, P
@@ -8,8 +12,19 @@ from .context_tool import AsyncContextTool, ContextTool
 from .protocols import AsyncContextToolFn, ContextToolFn
 
 
+def _is_async_context_tool_fn(
+    fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT]
+    | AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT],
+) -> TypeIs[AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT]]:
+    return inspect.iscoroutinefunction(fn)
+
+
+@dataclass(kw_only=True)
 class ContextToolDecorator:
     """Protocol for the context tool decorator."""
+
+    strict: bool
+    """Whether to use strict tool calling, if supported by the provider."""
 
     @overload
     def __call__(
@@ -34,7 +49,14 @@ class ContextToolDecorator:
         | AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]
     ):
         """Call the decorator with a function."""
-        raise NotImplementedError()
+        if _is_async_context_tool_fn(fn):
+            return AsyncContextTool[RequiredDepsT, P, JsonableCovariantT](
+                fn, strict=self.strict, is_context_tool=True
+            )
+        else:
+            return ContextTool[RequiredDepsT, P, JsonableCovariantT](
+                fn, strict=self.strict, is_context_tool=True
+            )
 
 
 @overload
@@ -71,7 +93,7 @@ def context_tool(
     | AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]
     | ContextToolDecorator
 ):
-    '''Decorator that turns a function into a tool definition.
+    '''Decorator that turns a function into a context tool definition.
 
     This decorator creates a `ContextTool` that can be used with `llm.call`.
     The function's name, docstring, and type hints are used to generate the
@@ -79,6 +101,7 @@ def context_tool(
 
     Args:
         strict: Whether the tool should use strict mode when supported by the model.
+        deps_type: Type hint for dependencies (mainly for documentation).
 
     Returns:
         A decorator function that converts the function into a ContextTool.
@@ -101,7 +124,11 @@ def context_tool(
         @llm.context_tool
         def available_books(ctx: llm.Context[Library]) -> list[str]:
             """Returns the list of available books."""
-            return ctx.deps.available_books
+            return ctx.deps.books
         ```
     '''
-    raise NotImplementedError()
+
+    decorator = ContextToolDecorator(strict=strict)
+    if __fn is None:
+        return decorator
+    return decorator(__fn)

@@ -27,7 +27,6 @@ ToolFnT = TypeVar(
     bound=ToolFn | AsyncToolFn | ContextToolFn | AsyncContextToolFn,
     covariant=True,
 )
-
 ToolSchemaT = TypeVar("ToolSchemaT", bound="ToolSchema")
 
 DocstringArg = namedtuple("DocstringArg", ["name", "description"])
@@ -133,6 +132,7 @@ class ToolSchema(Generic[ToolFnT]):
         fn: ToolFnT,
         *,
         strict: bool = False,
+        is_context_tool: bool = False,
     ) -> None:
         """Create a `ToolSchema` by inspecting a function and its docstring.
 
@@ -143,6 +143,7 @@ class ToolSchema(Generic[ToolFnT]):
         Args:
             fn: The function to extract schema from
             strict: Whether the tool should use strict mode when supported
+            is_context_tool: Whether this is a context tool (skips 'ctx' parameter)
 
         Returns:
             a `ToolSchema` representing the function
@@ -158,6 +159,9 @@ class ToolSchema(Generic[ToolFnT]):
         for param in inspect.signature(fn).parameters.values():
             if param.name in ("self", "cls"):
                 continue
+
+            if is_context_tool and param.name == "ctx":
+                continue  # TODO: Revisit as we finalize context handling
 
             param_type = hints.get(param.name, Any)
             default = ... if param.default is inspect.Parameter.empty else param.default

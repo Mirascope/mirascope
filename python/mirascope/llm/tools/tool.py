@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Awaitable
-from typing import Generic, TypeVar
+from typing import Any, Generic, Protocol, TypeVar, cast
 
 from ..content import ToolCall, ToolOutput
 from ..types import AnyP, JsonableCovariantT
@@ -16,6 +16,10 @@ ToolT = TypeVar(
     bound="Tool | AsyncTool",
     covariant=True,
 )
+
+
+class _KwargCallable(Protocol[JsonableCovariantT]):
+    def __call__(self, **kwargs: dict[str, Any]) -> JsonableCovariantT: ...
 
 
 class Tool(
@@ -35,8 +39,8 @@ class Tool(
 
     def execute(self, tool_call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Execute the tool using an LLM-provided `ToolCall`."""
-        args = json.loads(tool_call.args)
-        result = self.fn(**args)  # type: ignore[reportCallIssue]
+        kwargs = json.loads(tool_call.args)
+        result = cast(_KwargCallable[JsonableCovariantT], self.fn)(**kwargs)
         return ToolOutput(id=tool_call.id, value=result, name=self.name)
 
 
