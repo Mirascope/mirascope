@@ -65,7 +65,7 @@ class CallDecorator(Generic[ToolT, FormatT]):
             tools = cast(Sequence[AsyncTool] | None, self.tools)
             return AsyncCall(
                 fn=fn,
-                model=self.model,
+                default_model=self.model,
                 format=self.format,
                 toolkit=AsyncToolkit(tools=tools),
             )
@@ -73,7 +73,7 @@ class CallDecorator(Generic[ToolT, FormatT]):
             tools = cast(Sequence[Tool] | None, self.tools)
             return Call(
                 fn=fn,
-                model=self.model,
+                default_model=self.model,
                 format=self.format,
                 toolkit=Toolkit(tools=tools),
             )

@@ -102,7 +102,9 @@ def call_instance(
     mock_llm: Mock, toolkit: llm.Toolkit, mock_prompt: llm.prompts.Prompt
 ) -> llm.calls.Call:
     """Create a Call instance for testing."""
-    return llm.calls.Call(model=mock_llm, toolkit=toolkit, format=None, fn=mock_prompt)
+    return llm.calls.Call(
+        default_model=mock_llm, toolkit=toolkit, format=None, fn=mock_prompt
+    )
 
 
 @pytest.fixture
@@ -111,7 +113,7 @@ def call_instance_with_format(
 ) -> llm.calls.Call[..., Format]:
     """Create a Call instance with format for testing."""
     return llm.calls.Call(
-        model=mock_llm, toolkit=toolkit, format=Format, fn=mock_prompt
+        default_model=mock_llm, toolkit=toolkit, format=Format, fn=mock_prompt
     )
 
 
@@ -123,7 +125,7 @@ def async_call_instance(
 ) -> llm.calls.AsyncCall:
     """Create an AsyncCall instance for testing."""
     return llm.calls.AsyncCall(
-        model=mock_llm, toolkit=async_toolkit, format=None, fn=mock_async_prompt
+        default_model=mock_llm, toolkit=async_toolkit, format=None, fn=mock_async_prompt
     )
 
 
@@ -135,7 +137,10 @@ def async_call_instance_with_format(
 ) -> llm.calls.AsyncCall[..., Format]:
     """Create an AsyncCall instance with format for testing."""
     return llm.calls.AsyncCall(
-        model=mock_llm, toolkit=async_toolkit, format=Format, fn=mock_async_prompt
+        default_model=mock_llm,
+        toolkit=async_toolkit,
+        format=Format,
+        fn=mock_async_prompt,
     )
 
 
