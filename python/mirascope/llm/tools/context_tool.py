@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Awaitable
-from typing import Any, Generic
+from typing import Any, Generic, Protocol, cast
 
 from typing_extensions import TypeVar
 
@@ -27,6 +28,12 @@ AgentToolT = TypeVar(
 )
 
 
+class _KwargContextCallable(Protocol[DepsT, JsonableCovariantT]):
+    def __call__(
+        self, ctx: Context[DepsT], /, **kwargs: dict[str, Any]
+    ) -> JsonableCovariantT: ...
+
+
 class ContextTool(
     ToolSchema[ContextToolFn[DepsT, AnyP, JsonableCovariantT]],
     Generic[DepsT, AnyP, JsonableCovariantT],
@@ -45,13 +52,18 @@ class ContextTool(
         *args: AnyP.args,
         **kwargs: AnyP.kwargs,
     ) -> JsonableCovariantT:
-        raise NotImplementedError()
+        """Call the underlying function directly with context."""
+        return self.fn(ctx, *args, **kwargs)
 
     def execute(
         self, ctx: Context[DepsT], tool_call: ToolCall
     ) -> ToolOutput[JsonableCovariantT]:
-        """Call the tool using an LLM-provided `ToolCall`."""
-        raise NotImplementedError()
+        """Execute the context tool using an LLM-provided `ToolCall`."""
+        kwargs = json.loads(tool_call.args)
+        result = cast(_KwargContextCallable[DepsT, JsonableCovariantT], self.fn)(
+            ctx, **kwargs
+        )
+        return ToolOutput(id=tool_call.id, value=result, name=self.name)
 
 
 class AsyncContextTool(
@@ -72,10 +84,13 @@ class AsyncContextTool(
         *args: AnyP.args,
         **kwargs: AnyP.kwargs,
     ) -> Awaitable[JsonableCovariantT]:
-        raise NotImplementedError()
+        """Call the underlying async function directly with context."""
+        return self.fn(ctx, *args, **kwargs)
 
     async def execute(
         self, ctx: Context[DepsT], tool_call: ToolCall
     ) -> ToolOutput[JsonableCovariantT]:
-        """Call the tool using an LLM-provided `ToolCall`."""
-        raise NotImplementedError()
+        """Execute the async context tool using an LLM-provided `ToolCall`."""
+        args = json.loads(tool_call.args)
+        result = await self.fn(ctx, **args)  # type: ignore[reportCallIssue]
+        return ToolOutput(id=tool_call.id, value=result, name=self.name)

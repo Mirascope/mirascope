@@ -1,7 +1,8 @@
 """The `llm.tool` decorator for turning functions into tools."""
 
 import inspect
-from typing import Protocol, overload
+from dataclasses import dataclass
+from typing import overload
 
 from typing_extensions import TypeIs
 
@@ -10,8 +11,12 @@ from .protocols import AsyncToolFn, ToolFn
 from .tool import AsyncTool, Tool
 
 
-class ToolDecorator(Protocol):
+@dataclass(kw_only=True)
+class ToolDecorator:
     """Protocol for the tool decorator."""
+
+    strict: bool
+    """Whether to use strict tool calling, if supported by the provider."""
 
     @overload
     def __call__(
@@ -31,33 +36,16 @@ class ToolDecorator(Protocol):
         self, fn: ToolFn[P, JsonableCovariantT] | AsyncToolFn[P, JsonableCovariantT]
     ) -> Tool[P, JsonableCovariantT] | AsyncTool[P, JsonableCovariantT]:
         """Call the decorator with a function."""
-        raise NotImplementedError()
+        if _is_async_tool_fn(fn):
+            return AsyncTool[P, JsonableCovariantT](fn, strict=self.strict)
+        else:
+            return Tool[P, JsonableCovariantT](fn, strict=self.strict)
 
 
 def _is_async_tool_fn(
     fn: ToolFn | AsyncToolFn,
 ) -> TypeIs[AsyncToolFn[P, JsonableCovariantT]]:
     return inspect.iscoroutinefunction(fn)
-
-
-def _tool_decorator(strict: bool) -> ToolDecorator:
-    @overload
-    def decorator(fn: ToolFn[P, JsonableCovariantT]) -> Tool[P, JsonableCovariantT]: ...
-
-    @overload
-    def decorator(
-        fn: AsyncToolFn[P, JsonableCovariantT],
-    ) -> AsyncTool[P, JsonableCovariantT]: ...
-
-    def decorator(
-        fn: ToolFn[P, JsonableCovariantT] | AsyncToolFn[P, JsonableCovariantT],
-    ) -> Tool[P, JsonableCovariantT] | AsyncTool[P, JsonableCovariantT]:
-        if _is_async_tool_fn(fn):
-            return AsyncTool[P, JsonableCovariantT](fn, strict=strict)
-        else:
-            return Tool[P, JsonableCovariantT](fn, strict=strict)
-
-    return decorator
 
 
 @overload
@@ -108,8 +96,7 @@ def tool(
             return ["The Name of the Wind"]
         ```
     '''
-
-    decorator = _tool_decorator(strict)
+    decorator = ToolDecorator(strict=strict)
     if __fn is None:
         return decorator
     return decorator(__fn)
