@@ -130,10 +130,8 @@ async def test_creating_async_call(
 
 
 @pytest.mark.vcr()
-def test_call_decorator_e2e_anthropic(
-    anthropic_client: llm.AnthropicClient,
-) -> None:
-    @llm.call(provider="anthropic", model="claude-sonnet-4-0", client=anthropic_client)
+def test_call_decorator_e2e_anthropic() -> None:
+    @llm.call(provider="anthropic", model="claude-sonnet-4-0")
     def call() -> str:
         return "Please recommend a fantasy book. Answer concisely in just one sentence."
 
@@ -144,8 +142,8 @@ def test_call_decorator_e2e_anthropic(
 
 
 @pytest.mark.vcr()
-def test_call_decorator_e2e_google(google_client: llm.GoogleClient) -> None:
-    @llm.call(provider="google", model="gemini-2.0-flash", client=google_client)
+def test_call_decorator_e2e_google() -> None:
+    @llm.call(provider="google", model="gemini-2.0-flash")
     def call() -> str:
         return "Please recommend a fantasy book. Answer concisely in just one sentence."
 
@@ -156,8 +154,8 @@ def test_call_decorator_e2e_google(google_client: llm.GoogleClient) -> None:
 
 
 @pytest.mark.vcr()
-def test_call_decorator_e2e_openai(openai_client: llm.OpenAIClient) -> None:
-    @llm.call(provider="openai", model="gpt-4o-mini", client=openai_client)
+def test_call_decorator_e2e_openai() -> None:
+    @llm.call(provider="openai", model="gpt-4o-mini")
     def call() -> str:
         return "Please recommend a fantasy book. Answer concisely in just one sentence."
 
