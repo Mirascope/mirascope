@@ -6,6 +6,7 @@ from mirascope import llm
 def response_snapshot_dict(response: llm.Response) -> dict:
     dict_copy = response.__dict__.copy()
     dict_copy.pop("raw")
+    dict_copy.pop("format_type")
     return dict_copy
 
 

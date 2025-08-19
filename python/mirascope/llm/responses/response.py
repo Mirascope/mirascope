@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from ..content import Text, Thinking, ToolCall
 from ..formatting import FormatT
 from ..messages import AssistantMessage, Message
+from ..types import NoneType
 from .base_response import BaseResponse
 from .finish_reason import FinishReason
 
@@ -21,6 +22,7 @@ class Response(BaseResponse[FormatT]):
         *,
         provider: "Provider",
         model: "Model",
+        format: type[FormatT] = NoneType,
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
@@ -39,6 +41,7 @@ class Response(BaseResponse[FormatT]):
         self.model = model
         self.raw = raw
         self.finish_reason = finish_reason
+        self.format_type = format
 
         self.messages = list(input_messages) + [assistant_message]
         self.content = assistant_message.content
@@ -53,18 +56,3 @@ class Response(BaseResponse[FormatT]):
                 self.thinkings.append(part)
             else:
                 raise NotImplementedError
-
-    def format(self) -> FormatT:
-        """Format the response according to the response format parser.
-
-        It will parse the response content according to the specified format (if present)
-        and return a structured object.
-
-        Returns:
-            The formatted response object of type FormatT.
-
-        Raises:
-            ValueError: If the response cannot be formatted according to the
-                specified format.
-        """
-        raise NotImplementedError()
