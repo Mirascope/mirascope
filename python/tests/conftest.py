@@ -5,10 +5,10 @@ mirascope test suite, including VCR configuration for HTTP recording/playback.
 """
 
 import os
+from typing_extensions import TypedDict
 
 import pytest
 from dotenv import load_dotenv
-from typing_extensions import TypedDict
 
 from mirascope import llm
 

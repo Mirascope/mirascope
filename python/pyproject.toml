@@ -135,6 +135,8 @@ line-ending = "auto"
 
 [tool.ruff.lint.isort]
 known-first-party = ['mirascope', 'tests', 'examples']
+extra-standard-library = ["typing_extensions"]
+combine-as-imports = true
 
 [tool.pyright]
 exclude = [".venv", "docs/node_modules", "build"]

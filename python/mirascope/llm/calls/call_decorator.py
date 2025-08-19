@@ -5,12 +5,10 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, Literal, cast, overload
-
 from typing_extensions import Unpack
 
 from ..models import LLM
-from ..prompts import AsyncPrompt, Prompt
-from ..prompts import _utils as _prompt_utils
+from ..prompts import AsyncPrompt, Prompt, _utils as _prompt_utils
 from ..tools import AsyncTool, Tool, ToolT
 from . import _utils
 from .call import AsyncCall, Call

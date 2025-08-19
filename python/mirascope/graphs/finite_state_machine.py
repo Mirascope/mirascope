@@ -7,7 +7,6 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from functools import wraps
 from typing import Any, Generic, ParamSpec, Protocol, overload
-
 from typing_extensions import TypeVar
 
 NoneType = type(None)

@@ -1,7 +1,6 @@
 """Streaming response classes."""
 
 from typing import TypeAlias
-
 from typing_extensions import TypeVar
 
 from .text_stream import AsyncTextStream, TextStream

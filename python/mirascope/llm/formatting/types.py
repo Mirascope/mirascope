@@ -2,9 +2,9 @@
 
 from dataclasses import dataclass
 from typing import Literal, Protocol, runtime_checkable
+from typing_extensions import TypeVar
 
 from pydantic import BaseModel
-from typing_extensions import TypeVar
 
 FormatT = TypeVar("FormatT", bound=BaseModel | None, default=None)
 """Type variable for structured response format types.

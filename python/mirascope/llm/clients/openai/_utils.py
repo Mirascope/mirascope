@@ -5,8 +5,7 @@ from functools import lru_cache
 from typing import Literal
 
 from openai import NotGiven, Stream
-from openai.types import chat as openai_types
-from openai.types import shared_params as shared_openai_types
+from openai.types import chat as openai_types, shared_params as shared_openai_types
 from openai.types.shared_params.response_format_json_schema import JSONSchema
 
 from ...content import (
