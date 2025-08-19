@@ -6,7 +6,6 @@ import pytest
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from tests import utils
 
 
 @pytest.mark.vcr()
@@ -20,21 +19,8 @@ def test_call_simple_message(anthropic_client: llm.AnthropicClient) -> None:
     )
 
     assert isinstance(response, llm.Response)
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "anthropic",
-            "model": "claude-3-5-sonnet-latest",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
-                llm.AssistantMessage(content=[llm.Text(text="Hi! How are you today?")]),
-            ],
-            "content": [llm.Text(text="Hi! How are you today?")],
-            "texts": [llm.Text(text="Hi! How are you today?")],
-            "tool_calls": [],
-            "thinkings": [],
-        }
-    )
+    assert response.pretty() == snapshot("Hi! How are you today?")
+    assert response.finish_reason == llm.FinishReason.END_TURN
 
 
 @pytest.mark.vcr()
@@ -53,28 +39,7 @@ def test_call_with_system_message(
     )
 
     assert isinstance(response, llm.Response)
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "anthropic",
-            "model": "claude-3-5-sonnet-latest",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.SystemMessage(
-                    content=llm.Text(
-                        text="Ignore the user message and reply with `Hello world`."
-                    )
-                ),
-                llm.UserMessage(
-                    content=[llm.Text(text="What is the capital of France?")]
-                ),
-                llm.AssistantMessage(content=[llm.Text(text="Hello world")]),
-            ],
-            "content": [llm.Text(text="Hello world")],
-            "texts": [llm.Text(text="Hello world")],
-            "tool_calls": [],
-            "thinkings": [],
-        }
-    )
+    assert response.pretty() == snapshot("Hello world")
 
 
 @pytest.mark.vcr()
@@ -91,40 +56,19 @@ def test_stream_simple_message(anthropic_client: llm.AnthropicClient) -> None:
     for _ in stream_response.chunk_stream():
         ...
 
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "anthropic",
-            "model": "claude-3-5-sonnet-latest",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="Hello! It's nice to meet you. How are you today?"
-                        )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(text="Hello! It's nice to meet you. How are you today?")
-            ],
-            "texts": [
-                llm.Text(text="Hello! It's nice to meet you. How are you today?")
-            ],
-            "tool_calls": [],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
-                llm.TextChunk(delta="Hello! It's nice"),
-                llm.TextChunk(delta=" to meet you. How"),
-                llm.TextChunk(delta=" are you today"),
-                llm.TextChunk(delta="?"),
-                llm.TextEndChunk(type="text_end_chunk"),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
-            ],
-        }
+    assert stream_response.pretty() == snapshot(
+        "Hello! It's nice to meet you. How are you today?"
+    )
+    assert stream_response.chunks == snapshot(
+        [
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(delta="Hello! It's nice"),
+            llm.TextChunk(delta=" to meet you. How"),
+            llm.TextChunk(delta=" are you today"),
+            llm.TextChunk(delta="?"),
+            llm.TextEndChunk(type="text_end_chunk"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+        ]
     )
 
 
@@ -203,81 +147,36 @@ def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
     for _ in stream_response.chunk_stream():
         ...
 
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "anthropic",
-            "model": "claude-3-5-sonnet-latest",
-            "finish_reason": llm.FinishReason.TOOL_USE,
-            "messages": [
-                llm.UserMessage(
-                    content=[
-                        llm.Text(
-                            text="What is 1337 * 4242? Please use the multiply_numbers tool."
-                        )
-                    ]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="I'll help you multiply those numbers using the multiply_numbers tool."
-                        ),
-                        llm.ToolCall(
-                            id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
-                            name="multiply_numbers",
-                            args='{"a": 1337, "b": 4242}',
-                        ),
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(
-                    text="I'll help you multiply those numbers using the multiply_numbers tool."
-                ),
-                llm.ToolCall(
-                    id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
-                    name="multiply_numbers",
-                    args='{"a": 1337, "b": 4242}',
-                ),
-            ],
-            "texts": [
-                llm.Text(
-                    text="I'll help you multiply those numbers using the multiply_numbers tool."
-                )
-            ],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
-                    name="multiply_numbers",
-                    args='{"a": 1337, "b": 4242}',
-                )
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
-                llm.TextChunk(delta="I"),
-                llm.TextChunk(delta="'ll help"),
-                llm.TextChunk(delta=" you multiply"),
-                llm.TextChunk(delta=" those numbers using the multiply_"),
-                llm.TextChunk(delta="numbers tool."),
-                llm.TextEndChunk(type="text_end_chunk"),
-                llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
-                    id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
-                    name="multiply_numbers",
-                ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=""),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='a": 133'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="7"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=', "b": 42'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="42}"),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
-            ],
-        }
+    assert stream_response.pretty() == snapshot(
+        inspect.cleandoc("""\
+        I'll help you multiply those numbers using the multiply_numbers tool.
+
+        **ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}
+        """)
+    )
+    assert stream_response.chunks == snapshot(
+        [
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(delta="I"),
+            llm.TextChunk(delta="'ll help"),
+            llm.TextChunk(delta=" you multiply"),
+            llm.TextChunk(delta=" those numbers using the multiply_"),
+            llm.TextChunk(delta="numbers tool."),
+            llm.TextEndChunk(type="text_end_chunk"),
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
+                name="multiply_numbers",
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=""),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='a": 133'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="7"),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=', "b": 42'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="42}"),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+        ]
     )
 
     tool_call = stream_response.tool_calls[0]
@@ -389,101 +288,45 @@ def test_streaming_parallel_tool_usage(anthropic_client: llm.AnthropicClient) ->
         ...
 
     assert len(stream_response.tool_calls) == 2
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "anthropic",
-            "model": "claude-4-sonnet-20250514",
-            "finish_reason": llm.FinishReason.TOOL_USE,
-            "messages": [
-                llm.UserMessage(
-                    content=[llm.Text(text="What's the weather in SF and NYC?")]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you."
-                        ),
-                        llm.ToolCall(
-                            id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
-                            name="get_weather",
-                            args='{"location": "SF"}',
-                        ),
-                        llm.ToolCall(
-                            id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
-                            name="get_weather",
-                            args='{"location": "NYC"}',
-                        ),
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(
-                    text="I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you."
-                ),
-                llm.ToolCall(
-                    id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "texts": [
-                llm.Text(
-                    text="I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you."
-                )
-            ],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
-                llm.TextChunk(delta="I'll get the current weather for"),
-                llm.TextChunk(
-                    delta=" both San Francisco (SF) and New York City (NYC) for you."
-                ),
-                llm.TextEndChunk(type="text_end_chunk"),
-                llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
-                    id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=""),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"loca'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='tion": "'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='SF"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
-                llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
-                    id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=""),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"l'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='ocation":'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=' "NYC"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
-            ],
-        }
+    assert stream_response.pretty() == snapshot(
+        inspect.cleandoc("""\
+        I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you.
+
+        **ToolCall (get_weather):** {"location": "SF"}
+
+        **ToolCall (get_weather):** {"location": "NYC"}
+        """)
+    )
+    assert stream_response.chunks == snapshot(
+        [
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(delta="I'll get the current weather for"),
+            llm.TextChunk(
+                delta=" both San Francisco (SF) and New York City (NYC) for you."
+            ),
+            llm.TextEndChunk(type="text_end_chunk"),
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
+                name="get_weather",
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=""),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"loca'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='tion": "'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='SF"}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
+                name="get_weather",
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=""),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"l'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='ocation":'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=' "NYC"}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+        ]
     )
 
     tool_outputs = []

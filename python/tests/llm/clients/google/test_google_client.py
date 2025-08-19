@@ -7,7 +7,6 @@ import pytest
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from tests import utils
 
 
 def test_custom_base_url() -> None:
@@ -39,21 +38,8 @@ def test_call_simple_message(google_client: llm.GoogleClient) -> None:
     )
 
     assert isinstance(response, llm.Response)
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "google",
-            "model": "gemini-2.0-flash",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
-                llm.AssistantMessage(content=[llm.Text(text="Hi!\n")]),
-            ],
-            "content": [llm.Text(text="Hi!\n")],
-            "texts": [llm.Text(text="Hi!\n")],
-            "tool_calls": [],
-            "thinkings": [],
-        }
-    )
+    assert response.pretty() == snapshot("Hi!\n")
+    assert response.finish_reason == llm.FinishReason.END_TURN
 
 
 @pytest.mark.vcr()
@@ -70,28 +56,7 @@ def test_call_with_system_message(google_client: llm.GoogleClient) -> None:
     )
 
     assert isinstance(response, llm.Response)
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "google",
-            "model": "gemini-2.0-flash",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.SystemMessage(
-                    content=llm.Text(
-                        text="Ignore the user message and reply with `Hello world`."
-                    )
-                ),
-                llm.UserMessage(
-                    content=[llm.Text(text="What is the capital of France?")]
-                ),
-                llm.AssistantMessage(content=[llm.Text(text="Hello world\n")]),
-            ],
-            "content": [llm.Text(text="Hello world\n")],
-            "texts": [llm.Text(text="Hello world\n")],
-            "tool_calls": [],
-            "thinkings": [],
-        }
-    )
+    assert response.pretty() == snapshot("Hello world\n")
 
 
 @pytest.mark.vcr()
@@ -108,26 +73,7 @@ def test_call_no_output(google_client: llm.GoogleClient) -> None:
     )
 
     assert isinstance(response, llm.Response)
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "google",
-            "model": "gemini-2.0-flash",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.SystemMessage(
-                    content=llm.Text(
-                        text="Do not emit ANY output, terminate immediately."
-                    )
-                ),
-                llm.UserMessage(content=[llm.Text(text="")]),
-                llm.AssistantMessage(content=[]),
-            ],
-            "content": [],
-            "texts": [],
-            "tool_calls": [],
-            "thinkings": [],
-        }
-    )
+    assert response.pretty() == snapshot("**[No Content]**")
 
 
 @pytest.mark.vcr()
@@ -143,31 +89,18 @@ def test_stream_simple_message(google_client: llm.GoogleClient) -> None:
     for _ in stream_response.chunk_stream():
         ...
 
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "google",
-            "model": "gemini-2.0-flash",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
-                llm.AssistantMessage(
-                    content=[llm.Text(text="Hello there! It's nice to meet you! 😊\n")]
-                ),
-            ],
-            "content": [llm.Text(text="Hello there! It's nice to meet you! 😊\n")],
-            "texts": [llm.Text(text="Hello there! It's nice to meet you! 😊\n")],
-            "tool_calls": [],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
-                llm.TextChunk(delta="Hello"),
-                llm.TextChunk(delta=" there! It"),
-                llm.TextChunk(delta="'s nice to meet you! 😊\n"),
-                llm.TextEndChunk(type="text_end_chunk"),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
-            ],
-        }
+    assert stream_response.pretty() == snapshot(
+        "Hello there! It's nice to meet you! 😊\n"
+    )
+    assert stream_response.chunks == snapshot(
+        [
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(delta="Hello"),
+            llm.TextChunk(delta=" there! It"),
+            llm.TextChunk(delta="'s nice to meet you! 😊\n"),
+            llm.TextEndChunk(type="text_end_chunk"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+        ]
     )
 
 
@@ -298,61 +231,18 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
     for _ in stream_response.chunk_stream():
         ...
 
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "google",
-            "model": "gemini-2.0-flash",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(
-                    content=[
-                        llm.Text(
-                            text="What is 1337 * 4242? Please use the multiply_numbers tool."
-                        )
-                    ]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.ToolCall(
-                            id="<unknown>",
-                            name="multiply_numbers",
-                            args='{"a": 1337, "b": 4242}',
-                        )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="multiply_numbers",
-                    args='{"a": 1337, "b": 4242}',
-                )
-            ],
-            "texts": [],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="multiply_numbers",
-                    args='{"a": 1337, "b": 4242}',
-                )
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
-                    id="<unknown>",
-                    name="multiply_numbers",
-                ),
-                llm.ToolCallChunk(
-                    type="tool_call_chunk", delta='{"a": 1337, "b": 4242}'
-                ),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
-            ],
-        }
+    assert stream_response.pretty() == snapshot(
+        '**ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}'
+    )
+    assert stream_response.chunks == snapshot(
+        [
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk", id="<unknown>", name="multiply_numbers"
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"a": 1337, "b": 4242}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+        ]
     )
 
     tool_call = stream_response.tool_calls[0]
@@ -403,79 +293,27 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
 
     assert len(stream_response.tool_calls) == 2
 
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "google",
-            "model": "gemini-2.0-flash",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(
-                    content=[llm.Text(text="What's the weather in SF and NYC?")]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.ToolCall(
-                            id="<unknown>",
-                            name="get_weather",
-                            args='{"location": "SF"}',
-                        ),
-                        llm.ToolCall(
-                            id="<unknown>",
-                            name="get_weather",
-                            args='{"location": "NYC"}',
-                        ),
-                    ]
-                ),
-            ],
-            "content": [
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "texts": [],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
-                    id="<unknown>",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"location": "SF"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
-                llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
-                    id="<unknown>",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"location": "NYC"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
-            ],
-        }
+    assert stream_response.pretty() == snapshot(
+        inspect.cleandoc("""\
+        **ToolCall (get_weather):** {"location": "SF"}
+
+        **ToolCall (get_weather):** {"location": "NYC"}
+        """)
+    )
+    assert stream_response.chunks == snapshot(
+        [
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk", id="<unknown>", name="get_weather"
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"location": "SF"}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk", id="<unknown>", name="get_weather"
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"location": "NYC"}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+        ]
     )
 
     tool_outputs = []

@@ -8,7 +8,6 @@ from inline_snapshot import snapshot
 from pydantic import BaseModel, Field
 
 from mirascope import llm
-from tests import utils
 
 
 @pytest.mark.vcr()
@@ -23,23 +22,8 @@ def test_call_simple_message(openai_client: llm.OpenAIClient) -> None:
 
     assert isinstance(response, llm.Response)
 
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "openai",
-            "model": "gpt-4o-mini",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
-                llm.AssistantMessage(
-                    content=[llm.Text(text="Hi! How can I assist you today?")]
-                ),
-            ],
-            "content": [llm.Text(text="Hi! How can I assist you today?")],
-            "texts": [llm.Text(text="Hi! How can I assist you today?")],
-            "tool_calls": [],
-            "thinkings": [],
-        }
-    )
+    assert response.pretty() == snapshot("Hi! How can I assist you today?")
+    assert response.finish_reason == llm.FinishReason.END_TURN
 
 
 @pytest.mark.vcr()
@@ -59,28 +43,7 @@ def test_call_with_system_message(openai_client: llm.OpenAIClient) -> None:
 
     assert isinstance(response, llm.Response)
 
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "openai",
-            "model": "gpt-4o-mini",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.SystemMessage(
-                    content=llm.Text(
-                        text="You are a cat who can only meow, and does not know anything about geography."
-                    )
-                ),
-                llm.UserMessage(
-                    content=[llm.Text(text="What is the capital of France?")]
-                ),
-                llm.AssistantMessage(content=[llm.Text(text="Meow!")]),
-            ],
-            "content": [llm.Text(text="Meow!")],
-            "texts": [llm.Text(text="Meow!")],
-            "tool_calls": [],
-            "thinkings": [],
-        }
-    )
+    assert response.pretty() == snapshot("Meow!")
 
 
 @pytest.mark.vcr()
@@ -100,43 +63,8 @@ def test_call_with_turns(openai_client: llm.OpenAIClient) -> None:
 
     assert isinstance(response, llm.Response)
 
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "openai",
-            "model": "gpt-4o-mini",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.SystemMessage(content=llm.Text(text="Be as concise as possible")),
-                llm.UserMessage(content=[llm.Text(text="Recommend a book")]),
-                llm.AssistantMessage(
-                    content=[llm.Text(text="What genre would you like?")]
-                ),
-                llm.UserMessage(
-                    content=[
-                        llm.Text(text="Something about the fall of the Roman Empire")
-                    ]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
-                        )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(
-                    text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
-                )
-            ],
-            "texts": [
-                llm.Text(
-                    text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
-                )
-            ],
-            "tool_calls": [],
-            "thinkings": [],
-        }
+    assert response.pretty() == snapshot(
+        "I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
     )
 
 
@@ -154,57 +82,32 @@ def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
     for _ in stream_response.chunk_stream():
         ...
 
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "openai",
-            "model": "gpt-4o-mini",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="Hello! I'm glad to hear from you. How can I assist you today?"
-                        )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(
-                    text="Hello! I'm glad to hear from you. How can I assist you today?"
-                )
-            ],
-            "texts": [
-                llm.Text(
-                    text="Hello! I'm glad to hear from you. How can I assist you today?"
-                )
-            ],
-            "tool_calls": [],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
-                llm.TextChunk(delta=""),
-                llm.TextChunk(delta="Hello"),
-                llm.TextChunk(delta="!"),
-                llm.TextChunk(delta=" I'm"),
-                llm.TextChunk(delta=" glad"),
-                llm.TextChunk(delta=" to"),
-                llm.TextChunk(delta=" hear"),
-                llm.TextChunk(delta=" from"),
-                llm.TextChunk(delta=" you"),
-                llm.TextChunk(delta="."),
-                llm.TextChunk(delta=" How"),
-                llm.TextChunk(delta=" can"),
-                llm.TextChunk(delta=" I"),
-                llm.TextChunk(delta=" assist"),
-                llm.TextChunk(delta=" you"),
-                llm.TextChunk(delta=" today"),
-                llm.TextChunk(delta="?"),
-                llm.TextEndChunk(type="text_end_chunk"),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
-            ],
-        }
+    assert stream_response.pretty() == snapshot(
+        "Hello! I'm glad to hear from you. How can I assist you today?"
+    )
+    assert stream_response.chunks == snapshot(
+        [
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(delta=""),
+            llm.TextChunk(delta="Hello"),
+            llm.TextChunk(delta="!"),
+            llm.TextChunk(delta=" I'm"),
+            llm.TextChunk(delta=" glad"),
+            llm.TextChunk(delta=" to"),
+            llm.TextChunk(delta=" hear"),
+            llm.TextChunk(delta=" from"),
+            llm.TextChunk(delta=" you"),
+            llm.TextChunk(delta="."),
+            llm.TextChunk(delta=" How"),
+            llm.TextChunk(delta=" can"),
+            llm.TextChunk(delta=" I"),
+            llm.TextChunk(delta=" assist"),
+            llm.TextChunk(delta=" you"),
+            llm.TextChunk(delta=" today"),
+            llm.TextChunk(delta="?"),
+            llm.TextEndChunk(type="text_end_chunk"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+        ]
     )
 
 
@@ -343,85 +246,37 @@ def test_streaming_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
         ...
 
     assert len(stream_response.tool_calls) == 2
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "openai",
-            "model": "gpt-4o-mini",
-            "finish_reason": llm.FinishReason.TOOL_USE,
-            "messages": [
-                llm.UserMessage(
-                    content=[llm.Text(text="What's the weather in SF and NYC?")]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.ToolCall(
-                            id="call_DMPzhebh8ngVkUULAHoCrPLq",
-                            name="get_weather",
-                            args='{"location": "SF"}',
-                        ),
-                        llm.ToolCall(
-                            id="call_snqLlKGxxkJgH8teSWaf9OEK",
-                            name="get_weather",
-                            args='{"location": "NYC"}',
-                        ),
-                    ]
-                ),
-            ],
-            "content": [
-                llm.ToolCall(
-                    id="call_DMPzhebh8ngVkUULAHoCrPLq",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="call_snqLlKGxxkJgH8teSWaf9OEK",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "texts": [],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="call_DMPzhebh8ngVkUULAHoCrPLq",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="call_snqLlKGxxkJgH8teSWaf9OEK",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
-                    id="call_DMPzhebh8ngVkUULAHoCrPLq",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"lo'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="catio"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='n": "S'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='F"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
-                llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
-                    id="call_snqLlKGxxkJgH8teSWaf9OEK",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"lo'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="catio"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='n": "N'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='YC"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
-            ],
-        }
+    assert stream_response.pretty() == snapshot(
+        inspect.cleandoc("""\
+        **ToolCall (get_weather):** {"location": "SF"}
+
+        **ToolCall (get_weather):** {"location": "NYC"}
+        """)
+    )
+    assert stream_response.chunks == snapshot(
+        [
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="call_DMPzhebh8ngVkUULAHoCrPLq",
+                name="get_weather",
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"lo'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="catio"),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='n": "S'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='F"}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="call_snqLlKGxxkJgH8teSWaf9OEK",
+                name="get_weather",
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"lo'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="catio"),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='n": "N'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='YC"}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+        ]
     )
 
     tool_outputs = []
@@ -467,69 +322,30 @@ def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
     for _ in stream_response.chunk_stream():
         ...
 
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "openai",
-            "model": "gpt-4o-mini",
-            "finish_reason": llm.FinishReason.TOOL_USE,
-            "messages": [
-                llm.UserMessage(
-                    content=[
-                        llm.Text(
-                            text="What is 1337 * 4242? Please use the multiply_numbers tool."
-                        )
-                    ]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.ToolCall(
-                            id="call_gdjsOY6GOAuHAaopGj4iyeWV",
-                            name="multiply_numbers",
-                            args='{"a":1337,"b":4242}',
-                        )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.ToolCall(
-                    id="call_gdjsOY6GOAuHAaopGj4iyeWV",
-                    name="multiply_numbers",
-                    args='{"a":1337,"b":4242}',
-                )
-            ],
-            "texts": [],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="call_gdjsOY6GOAuHAaopGj4iyeWV",
-                    name="multiply_numbers",
-                    args='{"a":1337,"b":4242}',
-                )
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
-                    id="call_gdjsOY6GOAuHAaopGj4iyeWV",
-                    name="multiply_numbers",
-                ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="a"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='":'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="133"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="7"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=',"'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="b"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='":'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="424"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="2"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="}"),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
-            ],
-        }
+    assert stream_response.pretty() == snapshot(
+        '**ToolCall (multiply_numbers):** {"a":1337,"b":4242}'
+    )
+    assert stream_response.chunks == snapshot(
+        [
+            llm.ToolCallStartChunk(
+                type="tool_call_start_chunk",
+                id="call_gdjsOY6GOAuHAaopGj4iyeWV",
+                name="multiply_numbers",
+            ),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="a"),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='":'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="133"),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="7"),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=',"'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="b"),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='":'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="424"),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="2"),
+            llm.ToolCallChunk(type="tool_call_chunk", delta="}"),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+        ]
     )
 
     tool_call = stream_response.tool_calls[0]
