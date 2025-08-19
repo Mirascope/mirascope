@@ -9,10 +9,10 @@ from . import _utils
 from .decorator import format
 from .from_call_args import FromCallArgs
 from .partial import Partial
-from .types import Format, FormatT, Formattable, FormattingMode
+from .types import FormatInfo, FormatT, Formattable, FormattingMode
 
 __all__ = [
-    "Format",
+    "FormatInfo",
     "FormatT",
     "Formattable",
     "FormattingMode",

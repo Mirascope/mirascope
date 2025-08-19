@@ -1,0 +1,106 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Please parse this string: ''Mistborn
+      by Brandon Sanderson''"}],"model":"gpt-4o-mini","response_format":{"type":"json_schema","json_schema":{"name":"SimpleBook","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"SimpleBook","type":"object","additionalProperties":false},"strict":true}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '421'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=ZxL5UP89B.5sP4MlUgK1MOUhyqzHK1GW_F8n.ufwe2A-1755570868-1.0.1.1-qSChc1.mv6HG3DNB.i6RRloq.T07yawTqW6yW96o_Wskl9wmoieMToR6_9nMkiSlH8fsHzmp6Z57TmTvABhVpznh_lfhOVuDx2pA9Qz6O.w;
+        _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFLJbtswEL3rK4g5W4WdRpajWxfkUqRAUHRDFQg0OZKYUhyCHHWJ4X8v
+        JC+SuwC98PDevOF7M7NLhACjoRCgWsmq8zZ9tV7jpzfN7c0H+rz5mL1/evH4uvl+e9893d+9hcWg
+        oO0jKj6pninqvEU25A60CigZh66rPMuyfJXl+Uh0pNEOssZzek1pZ5xJr5ZX1+kyT1ebo7olozBC
+        Ib4kQgixG9/Bp9P4AwqxXJyQDmOUDUJxLhICAtkBARmjiSwdw2IiFTlGN1rflcCGLZZQlHBnIm8p
+        uBIWJcieWwoj/jJIp8mJd9JpDJFcCft5v4B1H+WQyfXWzgjpHLEcZjImeTgy+7N3S40PtI2/SaE2
+        zsS2CigjucFnZPIwsvtEiIdxRv1FbPCBOs8V01ccv8uPI4JpMxO5en4kmVjaCd+c8ItulUaWxsbZ
+        jEFJ1aKelNNCZK8NzYhklvlPM3/rfchtXPM/7SdCKfSMuvIBtVGXgaeygMPd/qvsPOPRMEQM34zC
+        ig2GYQ8aa9nbwzVB/BkZu6o2rsHggzmcVO2rbL2U9Rqz7AaSffILAAD//wMAAD7/qWADAAA=
+    headers:
+      CF-RAY:
+      - 971651d3aeba34d4-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 19 Aug 2025 02:46:17 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '519'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '542'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999983'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_1be154be38f246e5bc3026c4827c326c
+    status:
+      code: 200
+      message: OK
+version: 1

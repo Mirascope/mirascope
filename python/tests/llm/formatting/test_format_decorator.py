@@ -9,10 +9,10 @@ from pydantic import BaseModel, Field
 from mirascope import llm
 
 
-def get_format(x: type[llm.formatting.FormatT]) -> llm.Format:
-    assert hasattr(x, "__response_format__")
-    format = cast(llm.formatting.Formattable, x).__response_format__
-    assert isinstance(format, llm.formatting.Format)
+def get_format(x: type[llm.formatting.FormatT]) -> llm.FormatInfo:
+    assert hasattr(x, "__mirascope_format_info__")
+    format = cast(llm.formatting.Formattable, x).__mirascope_format_info__
+    assert isinstance(format, llm.formatting.FormatInfo)
     return format
 
 
