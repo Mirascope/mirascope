@@ -767,3 +767,128 @@ def test_structured_call_unsupported_modes(
             messages=messages,
             format=SimpleBook,
         )
+
+
+@pytest.mark.vcr()
+def test_structured_formatting_instructions_no_system_message(
+    openai_client: llm.OpenAIClient,
+) -> None:
+    """Test structured_call where formatting instructions create a new system message."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return "Output all fields in ALL CAPS"
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o",
+        messages=messages,
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {"title": "THE NAME OF THE WIND", "author": "PATRICK ROTHFUSS"}
+    )
+
+    assert response.messages[0] == llm.messages.system("Output all fields in ALL CAPS")
+
+
+@pytest.mark.vcr()
+def test_structured_formatting_instructions_modified_system_message(
+    openai_client: llm.OpenAIClient,
+) -> None:
+    """Test structured_call where formatting instructions create a new system message."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return "Output all fields in ALL CAPS"
+
+    messages = [
+        llm.messages.system("Recommend something by Brandon Sanderson"),
+        llm.messages.user("Recommend a fantasy book."),
+    ]
+
+    response = openai_client.structured_call(
+        model="gpt-4o",
+        messages=messages,
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {"title": "THE WAY OF KINGS", "author": "BRANDON SANDERSON"}
+    )
+
+    assert response.messages[0] == llm.messages.system(
+        "Recommend something by Brandon Sanderson\nOutput all fields in ALL CAPS"
+    )
+
+
+@pytest.mark.vcr()
+def test_structured_formatting_instructions_with_tools(
+    openai_client: llm.OpenAIClient,
+) -> None:
+    """Test structured_call where formatting instructions create a new system message."""
+
+    @llm.tool
+    def available_book_by_genre(genre: str) -> list[str]:
+        """Returns all the available books in the library by genre"""
+        if genre in ("fantasy", "FANTASY"):
+            return ["Mistborn", "Wild Seed", "The Name of the Wind"]
+        else:
+            return ["The Rise and Fall of the Roman Empire", "Gödel, Escher, Bach"]
+
+    class AllCapsBook(BaseModel):
+        title: str
+        author: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return "Output all fields in ALL CAPS"
+
+    messages = [
+        llm.messages.user("Recommend a fantasy book."),
+    ]
+
+    response = openai_client.structured_call(
+        model="gpt-4o",
+        messages=messages,
+        tools=[available_book_by_genre],
+        format=AllCapsBook,
+    )
+    assert response.messages[0] == llm.messages.system("Output all fields in ALL CAPS")
+    assert response.pretty() == snapshot(
+        '**ToolCall (available_book_by_genre):** {"genre":"fantasy"}'
+    )
+    assert len(response.tool_calls) == 1
+    tool_call = response.tool_calls[0]
+    messages = response.messages + [
+        llm.messages.user(available_book_by_genre.execute(tool_call))
+    ]
+
+    response = openai_client.structured_call(
+        model="gpt-4o",
+        messages=messages,
+        tools=[available_book_by_genre],
+        format=AllCapsBook,
+    )
+
+    assert response.messages[0] == llm.messages.system("Output all fields in ALL CAPS")
+
+    book = response.format()
+    assert isinstance(book, AllCapsBook)
+    assert book.model_dump() == snapshot(
+        {"title": "MISTBORN", "author": "BRANDON SANDERSON"}
+    )
