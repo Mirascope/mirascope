@@ -31,6 +31,8 @@ ToolSchemaT = TypeVar("ToolSchemaT", bound="ToolSchema")
 
 DocstringArg = namedtuple("DocstringArg", ["name", "description"])
 
+FORMAT_TOOL_NAME = "__mirascope_formatted_output_tool__"
+
 
 @dataclass
 class ParsedDocstring:
@@ -147,8 +149,15 @@ class ToolSchema(Generic[ToolFnT]):
 
         Returns:
             a `ToolSchema` representing the function
+
+        Raises:
+            ValueError: If the tool has a reserved name.
         """
         name = fn.__name__
+        if name == FORMAT_TOOL_NAME:
+            raise ValueError(
+                f"Cannot use reserved name {FORMAT_TOOL_NAME} as tool name."
+            )
         description = inspect.cleandoc(fn.__doc__) if fn.__doc__ else name
 
         param_descriptions = _parse_docstring_params(fn.__doc__)

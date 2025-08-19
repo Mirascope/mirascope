@@ -1,0 +1,115 @@
+interactions:
+  - request:
+      body:
+        '{"messages":[{"role":"system","content":"When you are ready to respond
+        to the user, use the __mirascope_formatted_output_tool__ tool to construct a
+        properly formatted response."},{"role":"user","content":"Please parse this string:
+        ''Mistborn by Brandon Sanderson''"}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+        this tool to extract data in SimpleBook format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"SimpleBook","type":"object","additionalProperties":false},"strict":true}}]}'
+      headers:
+        accept:
+          - application/json
+        accept-encoding:
+          - gzip, deflate
+        connection:
+          - keep-alive
+        content-length:
+          - "691"
+        content-type:
+          - application/json
+        cookie:
+          - _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
+        host:
+          - api.openai.com
+        user-agent:
+          - OpenAI/Python 1.86.0
+        x-stainless-arch:
+          - arm64
+        x-stainless-async:
+          - "false"
+        x-stainless-lang:
+          - python
+        x-stainless-os:
+          - MacOS
+        x-stainless-package-version:
+          - 1.86.0
+        x-stainless-read-timeout:
+          - "600"
+        x-stainless-retry-count:
+          - "0"
+        x-stainless-runtime:
+          - CPython
+        x-stainless-runtime-version:
+          - 3.10.16
+      method: POST
+      uri: https://api.openai.com/v1/chat/completions
+    response:
+      body:
+        string: !!binary |
+          H4sIAAAAAAAAAwAAAP//jFPbjtowEH3PV1jzDBX32+NWrHpRi1b70qqsLONMwK3jMbazgkX8exUH
+          SGCp1DxElo/PmTPH40PCGKgUZgzkRgSZW93+OFrQ6ks2eR19n0/Gb9vF6KdZ9eZvT6q3e4BWyaDV
+          b5ThzPogKbcagyJTwdKhCFiqdsfD4WjQ7U/7EcgpRV3S1ja0B9TOlVHtXqc3aHfG7e7kxN6Qkuhh
+          xn4ljDF2iP/Sp0lxBzPWaZ13cvRerBFml0OMgSNd7oDwXvkgTIBWDUoyAU1p3RRaN4BApLkUWteF
+          q+/QWNdhCa35brGbz3+k2/3j/rN+svvnx08983VLjXqV9N5GQ1lh5CWkBn7Zn90UYwyMyCOX81w5
+          4SVZ5Bm5XISAKaci2CLw6J3fyDIGwq2LHE0oW4LDEoIKGpcwW8I35cOKnFlCawmiCBtycf/BCZOS
+          Yc/CpOg8mSUc4Ur2mNxbvzSSdJgVXuj3EQtjKIiy05jxywk5Xq5T09o6WvkbKmTKKL/hDoWPKTUv
+          KzkbiRaguJoHsI5yWwb0B2PRbndQqUI9szXam57AQEHoBmvQb93R4ykGoeLAXGZUCrnBtKbWsyqK
+          VFEDSBq9v3dzT7vqX5n1/8jXgJRoy2GxDlMlrzuujzksn/S/jl1SjobBo3tVEnlQ6Mr7SDETha4e
+          Gvi9D5jzTJk1OutUfG2QWT4cdUQ2wuFwCskx+QsAAP//AwAYoO6sewQAAA==
+      headers:
+        CF-RAY:
+          - 971cfa53bd48c96d-SEA
+        Connection:
+          - keep-alive
+        Content-Encoding:
+          - gzip
+        Content-Type:
+          - application/json
+        Date:
+          - Tue, 19 Aug 2025 22:09:54 GMT
+        Server:
+          - cloudflare
+        Set-Cookie:
+          - __cf_bm=UghuTHkQZvAPejFXEKKmnllSYyyVsQo5KX5_cql7D4c-1755641394-1.0.1.1-JoI9LObB_WJL2xlwKdMrVjxEVqrqZ9fbvYUdCUaxSXeK1oxcUniXlZs2AE.PILwvz7wxQGbqlebyKCeXmnMBXB3PT0KKAOiFvzdySozNNy0;
+            path=/; expires=Tue, 19-Aug-25 22:39:54 GMT; domain=.api.openai.com; HttpOnly;
+            Secure; SameSite=None
+        Strict-Transport-Security:
+          - max-age=31536000; includeSubDomains; preload
+        Transfer-Encoding:
+          - chunked
+        X-Content-Type-Options:
+          - nosniff
+        access-control-expose-headers:
+          - X-Request-ID
+        alt-svc:
+          - h3=":443"; ma=86400
+        cf-cache-status:
+          - DYNAMIC
+        openai-organization:
+          - sotai-i3ryiz
+        openai-processing-ms:
+          - "614"
+        openai-project:
+          - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+        openai-version:
+          - "2020-10-01"
+        x-envoy-upstream-service-time:
+          - "679"
+        x-ratelimit-limit-requests:
+          - "5000"
+        x-ratelimit-limit-tokens:
+          - "4000000"
+        x-ratelimit-remaining-requests:
+          - "4999"
+        x-ratelimit-remaining-tokens:
+          - "3999949"
+        x-ratelimit-reset-requests:
+          - 12ms
+        x-ratelimit-reset-tokens:
+          - 0s
+        x-request-id:
+          - req_909994b44a7343d5a8447fe24a88edef
+      status:
+        code: 200
+        message: OK
+version: 1

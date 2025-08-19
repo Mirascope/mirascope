@@ -23,7 +23,7 @@ from ...content import (
 from ...formatting import FormatInfo
 from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import ChunkIterator, FinishReason, RawChunk
-from ...tools import Tool
+from ...tools import FORMAT_TOOL_NAME, Tool
 
 OPENAI_FINISH_REASON_MAP = {
     "stop": FinishReason.END_TURN,
@@ -32,6 +32,18 @@ OPENAI_FINISH_REASON_MAP = {
     "tool_calls": FinishReason.TOOL_USE,
     "function_call": FinishReason.TOOL_USE,
 }
+
+
+def _ensure_additional_properties_false(obj: object) -> None:
+    """Recursively adds additionalProperties = False to a schema, required by OpenAI API."""
+    if isinstance(obj, dict):
+        if obj.get("type") == "object" and "additionalProperties" not in obj:
+            obj["additionalProperties"] = False
+        for value in obj.values():
+            _ensure_additional_properties_false(value)
+    elif isinstance(obj, list):
+        for item in obj:
+            _ensure_additional_properties_false(item)
 
 
 def _encode_user_message(
@@ -309,18 +321,7 @@ def create_strict_response_format(
     """
     schema = format_info.schema.copy()
 
-    def ensure_additional_properties_false(obj: object) -> None:
-        """Recursively adds additionalProperties = False as required by OpenAI API."""
-        if isinstance(obj, dict):
-            if obj.get("type") == "object" and "additionalProperties" not in obj:
-                obj["additionalProperties"] = False
-            for value in obj.values():
-                ensure_additional_properties_false(value)
-        elif isinstance(obj, list):
-            for item in obj:
-                ensure_additional_properties_false(item)
-
-    ensure_additional_properties_false(schema)
+    _ensure_additional_properties_false(schema)
 
     json_schema = JSONSchema(
         name=format_info.name,
@@ -332,4 +333,35 @@ def create_strict_response_format(
 
     return shared_openai_types.ResponseFormatJSONSchema(
         type="json_schema", json_schema=json_schema
+    )
+
+
+def create_format_tool_param(
+    format_info: FormatInfo,
+) -> openai_types.ChatCompletionToolParam:
+    """Create OpenAI `ChatCompletionToolParam` for format parsing from a Mirascope `FormatInfo`.
+
+    Args:
+        format_info: The `FormatInfo` instance containing schema and metadata
+
+    Returns:
+        OpenAI ChatCompletionToolParam for the format tool
+    """
+    schema_dict = format_info.schema.copy()
+    schema_dict["type"] = "object"
+
+    _ensure_additional_properties_false(schema_dict)
+
+    description = f"Use this tool to extract data in {format_info.name} format for a final response."
+    if format_info.description:
+        description += "\n" + format_info.description
+
+    return openai_types.ChatCompletionToolParam(
+        type="function",
+        function={
+            "name": FORMAT_TOOL_NAME,
+            "description": description,
+            "parameters": schema_dict,
+            "strict": True,
+        },
     )

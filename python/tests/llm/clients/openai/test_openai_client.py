@@ -1,6 +1,5 @@
 """Tests for OpenAIClient using VCR.py for HTTP request recording/playback."""
 
-import inspect
 from typing import Annotated
 
 import pytest
@@ -284,11 +283,11 @@ def test_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
 
     assert len(response.tool_calls) == 2
     assert response.pretty() == snapshot(
-        inspect.cleandoc("""\
-            **ToolCall (get_weather):** {"location": "SF"}
+        """\
+**ToolCall (get_weather):** {"location": "SF"}
 
-            **ToolCall (get_weather):** {"location": "NYC"}
-            """)
+**ToolCall (get_weather):** {"location": "NYC"}\
+"""
     )
 
     tool_outputs = []
@@ -718,7 +717,7 @@ def test_descriptions_are_used(openai_client: llm.OpenAIClient) -> None:
     )
 
 
-@pytest.mark.parametrize("mode", ["strict", "strict-or-tool", "strict-or-json"])
+@pytest.mark.parametrize("mode", ["strict", "strict-or-tool", "strict-or-json", "tool"])
 @pytest.mark.vcr()
 def test_structured_call_supported_modes(
     openai_client: llm.OpenAIClient, mode: llm.formatting.FormattingMode
@@ -746,7 +745,7 @@ def test_structured_call_supported_modes(
     assert book.author == "Brandon Sanderson"
 
 
-@pytest.mark.parametrize("mode", ["json", "tool"])
+@pytest.mark.parametrize("mode", ["json"])
 def test_structured_call_unsupported_modes(
     openai_client: llm.OpenAIClient, mode: llm.formatting.FormattingMode
 ) -> None:
@@ -891,4 +890,137 @@ def test_structured_formatting_instructions_with_tools(
     assert isinstance(book, AllCapsBook)
     assert book.model_dump() == snapshot(
         {"title": "MISTBORN", "author": "BRANDON SANDERSON"}
+    )
+
+
+@pytest.mark.vcr()
+def test_tool_mode_no_tools(openai_client: llm.OpenAIClient) -> None:
+    """Test tool format parsing mode with no other tools."""
+
+    @llm.format(mode="tool")
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=SimpleBook,
+    )
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+    assert response.pretty() == snapshot(
+        '{"title":"The Name of the Wind","author":"Patrick Rothfuss"}'
+    )
+    book = response.format()
+    assert isinstance(book, SimpleBook)
+    assert book.model_dump() == snapshot(
+        {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
+    )
+
+    assert response.messages[0].role == "system"
+    assert response.messages[0].content.text == snapshot(
+        "When you are ready to respond to the user, use the __mirascope_formatted_output_tool__ tool to construct a properly formatted response."
+    )
+
+
+@pytest.mark.vcr()
+def test_tool_mode_with_other_tools(openai_client: llm.OpenAIClient) -> None:
+    """Test tool format parsing mode when other tools are present."""
+
+    @llm.tool
+    def available_books() -> list[str]:
+        """Returns all of the available books in the library."""
+        return [
+            "Wild Seed by Octavia Butler",
+            "The Long Way to a Small Angry Planet by Becky Chambers",
+            "Emergent Strategy by adrianne maree brown",
+        ]
+
+    @llm.format(mode="tool")
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book from the library.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[available_books],
+        format=Book,
+    )
+
+    assert len(response.tool_calls) == 1
+    tool_call = response.tool_calls[0]
+    assert tool_call.name == "available_books"
+
+    messages = response.messages + [
+        llm.messages.user(available_books.execute(tool_call))
+    ]
+
+    final_response = openai_client.structured_call(
+        model="gpt-4o",
+        messages=messages,
+        tools=[available_books],
+        format=Book,
+    )
+    assert response.pretty() == snapshot("**ToolCall (available_books):** {}")
+    assert final_response.finish_reason == llm.FinishReason.END_TURN
+    book = final_response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {"title": "Wild Seed", "author": "Octavia Butler"}
+    )
+
+
+@pytest.mark.vcr()
+def test_tool_mode_with_description_and_formatting_instructions(
+    openai_client: llm.OpenAIClient,
+) -> None:
+    """Test tool format parsing mode with custom description and formatting instructions."""
+
+    class Author(BaseModel):
+        first_name: str
+        last_name: str
+
+    @llm.format(mode="tool")
+    class DetailedBook(BaseModel):
+        """A detailed book recommendation with metadata."""
+
+        title: str
+        author: Author
+        genre: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return "Use UPPERCASE for all genre names."
+
+    messages = [llm.messages.user("Recommend a science fiction book.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=DetailedBook,
+    )
+
+    assert response.messages[0].role == "system"
+    assert response.messages[0].content.text == snapshot(
+        """\
+When you are ready to respond to the user, use the __mirascope_formatted_output_tool__ tool to construct a properly formatted response.
+Use UPPERCASE for all genre names.\
+"""
+    )
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+    book = response.format()
+    assert isinstance(book, DetailedBook)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "Dune",
+            "author": {"first_name": "Frank", "last_name": "Herbert"},
+            "genre": "SCIENCE FICTION",
+        }
     )

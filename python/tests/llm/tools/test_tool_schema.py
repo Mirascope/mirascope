@@ -379,3 +379,14 @@ def test_matches_ignores_args() -> None:
     )
 
     assert schema.can_execute(tool_call)
+
+
+def test_cannot_use_reserved_names() -> None:
+    """Test that matches only checks name, ignoring args."""
+
+    def __mirascope_formatted_output_tool__(param: str) -> str:
+        """A sample tool."""
+        return param
+
+    with pytest.raises(ValueError, match="reserved name"):
+        llm.tools.ToolSchema(__mirascope_formatted_output_tool__)
