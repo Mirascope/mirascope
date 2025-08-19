@@ -1,0 +1,227 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Respond with valid JSON that matches
+      this exact schema:\n\n```json\n{\n  \"properties\": {\n    \"title\": {\n      \"title\":
+      \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\": {\n      \"title\":
+      \"Author\",\n      \"type\": \"string\"\n    },\n    \"year\": {\n      \"title\":
+      \"Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"year\"\n  ],\n  \"title\":
+      \"BookSummary\",\n  \"type\": \"object\"\n}\n```"},{"role":"user","content":"Get
+      info about ''MadeUpBookButTakeItSeriouslyPls'' and format it properly."}],"model":"gpt-4o-mini","response_format":{"type":"json_object"},"tools":[{"type":"function","function":{"name":"get_book_info","description":"Get
+      information about a book.","parameters":{"properties":{"title":{"title":"Title","type":"string"}},"required":["title"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '954'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=IhVUzv4NCprjhLw9kqhthlVBeItaTiMOVGhceZ3HIPA-1755642632-1.0.1.1-mhYlxx7avdJVrLA2hCbhGEQVuzDUXo4ucq3Jy1.W9SSNyaJKFOTu1RzbyV2s5fS9hWs2I6wQ4mD0Wza95bg5d2JIWtabiwbqZbY_Bg9jeWM;
+        _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFNdb9swDHz3rxD4HA92mjidHxvsowMKBO0GbFgKQ5FpR4ssqRK9Ngvy
+        3wc7ie2kHTA/GAJPPB6P1C5gDGQOKQOx5iQqq8J5srjG+F48RfNZsZ3X8r4ui2g1vvv4RX6HUZNh
+        Vr9Q0CnrnTCVVUjS6AMsHHLChjWeTafJZJxcJS1QmRxVk1ZaCicmrKSW4TgaT8JoFsbXx+y1kQI9
+        pOxnwBhju/bf6NQ5vkDKotEpUqH3vERIu0uMgTOqiQD3XnrimmDUg8JoQt1I17VSA4CMUZngSvWF
+        D99ucO7N4kpli+j50/Ps84t7uqUfcSL+xIsPD7gVg3oH6q1tBRW1Fp1JA7yLpxfFGAPNqza3RMpW
+        xmwyqQtzQcAYcFfWFWpqxMNuCSRJ4RLSJdzxHL/ZG2M2NzV95Ru8pQd00tRebRfKL2EPZ2T74K3z
+        48Aph0XtuXptIdfaEG86aT18PCL7blzKlNaZlb9IhUJq6deZQ+5bF4bDCE5CWglQn80brDOVpYzM
+        Btui8fXswAr9Tvbo+OoIkiGuBvH4uFLnfFmOxGW7EN0OCi7WmPep/S7yOpdmAASD3l+reYv70L/U
+        5f/Q94AQaAnzzDrMpTjvuL/msHmy/7rWudwKBo/utxSYkUTXzCPHgtfq8JDAbz1hlRVSl+isk+1r
+        gsJm0yTiRYLT6XsI9sFfAAAA//8DAGt5yFxbBAAA
+    headers:
+      CF-RAY:
+      - 971d18adbafcd7ae-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 19 Aug 2025 22:30:37 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '499'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '567'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999877'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 1ms
+      x-request-id:
+      - req_263a2413f6e04b26b27095472b807edb
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"system","content":"Respond with valid JSON that matches
+      this exact schema:\n\n```json\n{\n  \"properties\": {\n    \"title\": {\n      \"title\":
+      \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\": {\n      \"title\":
+      \"Author\",\n      \"type\": \"string\"\n    },\n    \"year\": {\n      \"title\":
+      \"Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"year\"\n  ],\n  \"title\":
+      \"BookSummary\",\n  \"type\": \"object\"\n}\n```"},{"role":"user","content":"Get
+      info about ''MadeUpBookButTakeItSeriouslyPls'' and format it properly."},{"role":"assistant","content":null,"tool_calls":[{"id":"call_P0wGw7HxrqItY16cz1PESeyc","type":"function","function":{"name":"get_book_info","arguments":"{\"title\":\"MadeUpBookButTakeItSeriouslyPls\"}"}}]},{"role":"tool","content":"{''title'':
+      ''MadeUpBookButTakeItSeriouslyPls'', ''author'': ''Test Author'', ''year'':
+      4242}","tool_call_id":"call_P0wGw7HxrqItY16cz1PESeyc"}],"model":"gpt-4o","response_format":{"type":"json_object"},"tools":[{"type":"function","function":{"name":"get_book_info","description":"Get
+      information about a book.","parameters":{"properties":{"title":{"title":"Title","type":"string"}},"required":["title"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1314'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=IhVUzv4NCprjhLw9kqhthlVBeItaTiMOVGhceZ3HIPA-1755642632-1.0.1.1-mhYlxx7avdJVrLA2hCbhGEQVuzDUXo4ucq3Jy1.W9SSNyaJKFOTu1RzbyV2s5fS9hWs2I6wQ4mD0Wza95bg5d2JIWtabiwbqZbY_Bg9jeWM;
+        _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jJLBbtswDIbvfgqB52RwbMdJc1t7SoEOBdZhw+bCUCTa0SJLgkQPy4K8
+        +2A7jd2tA3bRgR9/ij/JU8QYKAkbBmLPSTROz+/yx3W93a6q+/RmEX/OP3zZpcttncmv4e4XzDqF
+        3X1HQS+qd8I2TiMpawYsPHLCrupitVzmWZKn6x40VqLuZLWjeWbnSZxk83g9j/OLcG+VwAAb9i1i
+        jLFT/3YtGok/YcPi2UukwRB4jbC5JjEG3uouAjwEFYgbgtkIhTWEpu/6VBjGCiBFGgvYsAIeuMRP
+        7tbaw21LT/yAW/qIXtk26OOjDgXMBglvaW/9oHnCQOz9JXDhR+Q9zZIsKcx5+r/Hqg28s29arSeA
+        G2OJd+PrnT9fyPnqVdvaebsLf0ihUkaFfemRB2s6X4Gsg56eI8ae+5m2r8YEztvGUUn2gP13SbYa
+        6sG4xZGm2QWSJa4nqvVi9ka9UiJxpcNkKyC42KMcpeMKeSuVnYBo4vrvbt6qPThXpv6f8iMQAh2h
+        LJ1HqcRrx2Oax+7I/5V2nXLfMAT0P5TAkhT6bhMSK97q4f4gHANhU1bK1OidV8MRVq5cxzfLfJmm
+        YgfROfoNAAD//wMAqVd5jY0DAAA=
+    headers:
+      CF-RAY:
+      - 971d18b1ec34d7ae-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 19 Aug 2025 22:30:38 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '750'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '903'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799854'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 10ms
+      x-request-id:
+      - req_a53c7d4d41164e838faa691bebb4aaa9
+    status:
+      code: 200
+      message: OK
+version: 1

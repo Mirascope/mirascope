@@ -717,7 +717,9 @@ def test_descriptions_are_used(openai_client: llm.OpenAIClient) -> None:
     )
 
 
-@pytest.mark.parametrize("mode", ["strict", "strict-or-tool", "strict-or-json", "tool"])
+@pytest.mark.parametrize(
+    "mode", ["strict", "strict-or-tool", "strict-or-json", "tool", "json"]
+)
 @pytest.mark.vcr()
 def test_structured_call_supported_modes(
     openai_client: llm.OpenAIClient, mode: llm.formatting.FormattingMode
@@ -745,27 +747,216 @@ def test_structured_call_supported_modes(
     assert book.author == "Brandon Sanderson"
 
 
-@pytest.mark.parametrize("mode", ["json"])
-def test_structured_call_unsupported_modes(
-    openai_client: llm.OpenAIClient, mode: llm.formatting.FormattingMode
-) -> None:
-    """Test that unsupported formatting modes raise NotImplementedError."""
+@pytest.mark.vcr()
+def test_json_mode_basic(openai_client: llm.OpenAIClient) -> None:
+    """Test basic JSON mode functionality."""
 
-    @llm.format(mode=mode)
-    class SimpleBook(BaseModel):
+    @llm.format(mode="json")
+    class Book(BaseModel):
         title: str
         author: str
 
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=Book,
+    )
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+    assert response.pretty() == snapshot(
+        """\
+{
+  "title": "The Name of the Wind",
+  "author": "Patrick Rothfuss"
+}\
+"""
+    )
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
+    )
+
+    assert response.messages[0].role == "system"
+    assert response.messages[0].content.text == snapshot(
+        """\
+Respond with valid JSON that matches this exact schema:
+
+```json
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "author"
+  ],
+  "title": "Book",
+  "type": "object"
+}
+```\
+"""
+    )
+
+
+@pytest.mark.vcr()
+def test_json_mode_with_description_and_formatting_instructions(
+    openai_client: llm.OpenAIClient,
+) -> None:
+    """Test JSON mode with custom description and formatting instructions."""
+
+    @llm.format(mode="json")
+    class DetailedBook(BaseModel):
+        """A detailed book recommendation with metadata."""
+
+        title: str
+        author: str
+        genre: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return "Use UPPERCASE for all genre names."
+
+    messages = [llm.messages.user("Recommend a science fiction book.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=DetailedBook,
+    )
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+    assert response.pretty() == snapshot(
+        """\
+{
+  "title": "Dune",
+  "author": "Frank Herbert",
+  "genre": "SCIENCE FICTION"
+}\
+"""
+    )
+    book = response.format()
+    assert isinstance(book, DetailedBook)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "Dune",
+            "author": "Frank Herbert",
+            "genre": "SCIENCE FICTION",
+        }
+    )
+
+    assert response.messages[0].role == "system"
+    assert response.messages[0].content.text == snapshot(
+        """\
+Respond with valid JSON that matches this exact schema:
+
+```json
+{
+  "description": "A detailed book recommendation with metadata.",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "genre": {
+      "title": "Genre",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "genre"
+  ],
+  "title": "DetailedBook",
+  "type": "object"
+}
+```
+Use UPPERCASE for all genre names.\
+"""
+    )
+
+
+@pytest.mark.vcr()
+def test_json_mode_with_tools(openai_client: llm.OpenAIClient) -> None:
+    """Test JSON mode with other tools present."""
+
+    @llm.tool
+    def get_book_info(title: str) -> dict:
+        """Get information about a book."""
+        return {"title": title, "author": "Test Author", "year": 4242}
+
+    @llm.format(mode="json")
+    class BookSummary(BaseModel):
+        title: str
+        author: str
+        year: int
+
     messages = [
-        llm.messages.user("Please parse this string: 'Mistborn by Brandon Sanderson'")
+        llm.messages.user(
+            "Get info about 'MadeUpBookButTakeItSeriouslyPls' and format it properly."
+        )
     ]
 
-    with pytest.raises(NotImplementedError):
-        openai_client.structured_call(
-            model="gpt-4o-mini",
-            messages=messages,
-            format=SimpleBook,
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[get_book_info],
+        format=BookSummary,
+    )
+
+    assert len(response.tool_calls) == 1
+    tool_call = response.tool_calls[0]
+    assert tool_call.name == "get_book_info"
+    assert tool_call == snapshot(
+        llm.ToolCall(
+            id="call_P0wGw7HxrqItY16cz1PESeyc",
+            name="get_book_info",
+            args='{"title":"MadeUpBookButTakeItSeriouslyPls"}',
         )
+    )
+
+    messages = response.messages + [llm.messages.user(get_book_info.execute(tool_call))]
+
+    final_response = openai_client.structured_call(
+        model="gpt-4o",
+        messages=messages,
+        tools=[get_book_info],
+        format=BookSummary,
+    )
+
+    assert final_response.finish_reason == llm.FinishReason.END_TURN
+    assert final_response.pretty() == snapshot(
+        """\
+{
+  "title": "MadeUpBookButTakeItSeriouslyPls",
+  "author": "Test Author",
+  "year": 4242
+}\
+"""
+    )
+    book_summary = final_response.format()
+    assert isinstance(book_summary, BookSummary)
+    assert book_summary.model_dump() == snapshot(
+        {
+            "title": "MadeUpBookButTakeItSeriouslyPls",
+            "author": "Test Author",
+            "year": 4242,
+        }
+    )
 
 
 @pytest.mark.vcr()

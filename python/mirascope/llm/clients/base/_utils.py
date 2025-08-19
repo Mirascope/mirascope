@@ -1,8 +1,10 @@
+import json
 import logging
 from collections.abc import Iterable, Sequence
 from typing import TypeAlias
 
 from ...content import Text
+from ...formatting import FormatInfo
 from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
 from ...responses import FinishReason
 from ...tools import FORMAT_TOOL_NAME
@@ -88,3 +90,23 @@ def extract_system_message(
             remaining_messages.append(message)
 
     return system_message_content, remaining_messages
+
+
+def create_json_mode_instructions(format_info: FormatInfo) -> str:
+    """Create formatting instructions for JSON mode from `FormatInfo`.
+
+    Args:
+        format_info: The `FormatInfo` instance containing schema and metadata
+
+    Returns:
+        Instructions string for JSON mode formatting
+
+    Note: This does not include `format_info.description`, under the assumption that
+    this code path is only invoked in json mode, but the client code will separately add
+    the description in all formatting code paths.
+    """
+
+    schema_str = json.dumps(format_info.schema, indent=2)
+    instructions = f"Respond with valid JSON that matches this exact schema:\n\n```json\n{schema_str}\n```"
+
+    return instructions
