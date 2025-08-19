@@ -2,8 +2,8 @@ interactions:
 - request:
     body: '{"messages":[{"role":"system","content":"When you are ready to respond
       to the user, call the __mirascope_formatted_output_tool__ tool to output a structured
-      response.\nDo NOT output any text in addition to the tool call."},{"role":"user","content":"Please
-      parse this string: ''Mistborn by Brandon Sanderson''"}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      response.\nDo NOT output any text in addition to the tool call."},{"role":"user","content":"Recommend
+      a fantasy book."}],"model":"gpt-4","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in SimpleBook format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"SimpleBook","type":"object","additionalProperties":false},"strict":true}}]}'
     headers:
       accept:
@@ -13,11 +13,9 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '735'
+      - '697'
       content-type:
       - application/json
-      cookie:
-      - _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -45,19 +43,19 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFNdb9MwFH3Pr7Duc4vaqmlZHzsYiAFiTJNgdLJunZvEm7+wHcRU9b9P
-        Sdok3YZEHiLLx+fcc4+vdwljIDNYMRAlRqGdGp8vrmaLm9/60/VX3Hr9ubgI324vL9cT+T1fw6hm
-        2O09iXhkvRFWO0VRWtPCwhNGqlWnyzRdzBeT5bwBtM1I1bTCxfHcjrU0cjybzObjyXI8fXtgl1YK
-        CrBivxLGGNs1/9qnyegvrNhkdNzRFAIWBKvuEGPgrap3AEOQIaKJMOpBYU0kU1s3lVIDIFqruECl
-        +sLttxus+7BQKW7mtw8fbgp14e/P1/pKffxx9u59+TMM6rXSj64xlFdGdCEN8G5/9awYY2BQN1zO
-        tfQYhHXEc+s1xkgZt1V0VeSNd/5MljFAX1SaTKxbgt0GooyKNrBiG/giQ9xabzYwYhvAKpbWt8ja
-        o8msYddoMvLBmg3s4UR5n7y2vhuE6SmvAqqXKaMxNmLdbBPz3QHZdzeqbOG83YZnVMilkaHknjA0
-        QQ3vKzkaaSxAdTIS4LzVrs7ogZqi01naqkI/tj06P4LRRlQD1vIwdad6PKOIspmZbkwFipKyntqP
-        K1aZtAMgGfT+0s1r2m3/0hT/I98DQpCr58V5yqQ47bg/5ql+1f861qXcGIZA/o8UxKMkX99HRjlW
-        qn1rEB5DJM1zaQryzsvmwUHueLqYYL6gND2DZJ88AQAA//8DALbpOQ5+BAAA
+        H4sIAAAAAAAAAwAAAP//jFPLbtswELzrK4i99GIbdv1Io2NdFE1yaWs0fSkQNtRKZkyRArlK4xj+
+        90JSLMmOC1QHgdjhzM4+uAuEAJVAKECukWVe6OFy8WVynSq3GX9/uly6i/l0c/sTH74lZbbMYFAx
+        7P0DST6wRtLmhSZW1jSwdIRMlerkYj5fzBbjt/MayG1CuqJlBQ9nw/FiMn1hrK2S5CEUvwMhhNjV
+        /8qbSegJQjEeHCI5eY8ZQdheEgKc1VUE0HvlGQ3DoAOlNUymsmtKrXsAW6tjiVp3iZtv1zt3DUKt
+        Y2/fT3/8utGabi+fP3y88vLqcZXl2MvXSG+L2lBaGtk2poe38fAkmRBgMK+5cZwrh17aguLUuhyZ
+        KYltyUXJce09PpEVAtBlZU6Gq5JgFxkhImDFmiIIRQSf0Lmt+GyZyQk0ieA1iZV1khy5N16s2BqK
+        YNAQseS1dQ3zenQzEl/tH61MFkFk9nCUeh+cO9/1uu0oLT3q12NAYyxj1Y16DncvyL4dubZZ4ey9
+        P6FCqozy69gR+rqT/YEGByO1BSiPdgYKZ/OiauKG6qST8btGFbpd7tDpAWTLqHus2WJwRi9OiFHV
+        S9XusUS5pqSjdvuMZaJsDwh6tb92c067qV+Z7H/kO0BKKqqFKhwlSh5X3F1zVD31f11ru1wbBk/u
+        UUmKWZGr5pFQiqVuHiP4rWfK41SZjFzhVPsig33wFwAA//8DADbJzfKIBAAA
     headers:
       CF-RAY:
-      - 971d6c9b2e780903-SEA
+      - 971d6b6a8c7357bf-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,13 +63,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 19 Aug 2025 23:27:54 GMT
+      - Tue, 19 Aug 2025 23:27:06 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=HbkBvaWQZgc7UNuOv0fUWp7S5nug8maOxzsg4_fo4gs-1755646074-1.0.1.1-zwMrR_3NF0Dksszyoy8R5GB2kERQyWWgAX51aTRuIv7vQjqqzc6bGQOsIE74mP3Xdt7J1OJmZICfQ.vpCVY0EqNmm9YMWqMHB5_lJAgSXac;
-        path=/; expires=Tue, 19-Aug-25 23:57:54 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=cqGpAJh0PcfvzQmsyB5xORJiD2v_kYZXCT7CQ6TYhvY-1755646026-1.0.1.1-u1zyTfoQpVECBWsMwmtmTtyVsPvBY2rey_jBd6tFIAxs7gw85n_OjqEsd0Plc8.mQuvzNCoFOBrIYoBW2G6YT9JpvdIX.0NqXkJqtOCe1CM;
+        path=/; expires=Tue, 19-Aug-25 23:57:06 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
+      - _cfuvid=OE9vhDzxWXEMVPthsKP2r0pYkrtvOhhuwN3ZNJ.PlVI-1755646026864-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -87,27 +87,27 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '692'
+      - '1335'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '769'
+      - '1420'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
-      - '4000000'
+      - '80000'
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '3999938'
+      - '79946'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 0s
+      - 40ms
       x-request-id:
-      - req_c389fe27229046e29210fda385fb8b56
+      - req_63678f41918a4e27b337fe8eddc8e318
     status:
       code: 200
       message: OK

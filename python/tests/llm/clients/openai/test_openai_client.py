@@ -2,6 +2,7 @@
 
 from typing import Annotated
 
+import openai
 import pytest
 from inline_snapshot import snapshot
 from pydantic import BaseModel, Field
@@ -1113,7 +1114,10 @@ def test_tool_mode_no_tools(openai_client: llm.OpenAIClient) -> None:
 
     assert response.messages[0].role == "system"
     assert response.messages[0].content.text == snapshot(
-        "When you are ready to respond to the user, use the __mirascope_formatted_output_tool__ tool to construct a properly formatted response."
+        """\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.\
+"""
     )
 
 
@@ -1198,12 +1202,11 @@ def test_tool_mode_with_description_and_formatting_instructions(
     )
 
     assert response.messages[0].role == "system"
-    assert response.messages[0].content.text == snapshot(
-        """\
-When you are ready to respond to the user, use the __mirascope_formatted_output_tool__ tool to construct a properly formatted response.
+    assert response.messages[0].content.text == snapshot("""\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.
 Use UPPERCASE for all genre names.\
-"""
-    )
+""")
 
     assert response.finish_reason == llm.FinishReason.END_TURN
     book = response.format()
@@ -1215,3 +1218,130 @@ Use UPPERCASE for all genre names.\
             "genre": "SCIENCE FICTION",
         }
     )
+
+
+@pytest.mark.vcr()
+def test_strict_or_tool_fallback(
+    openai_client: llm.OpenAIClient, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Test that strict-or-tool falls back to tool if model does not support strict."""
+
+    @llm.format(mode="strict-or-tool")
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    with caplog.at_level("WARNING"):
+        response = openai_client.structured_call(
+            model="gpt-4",
+            messages=messages,
+            format=SimpleBook,
+        )
+
+    assert response.pretty() == snapshot("""\
+{
+  "title": "Harry Potter and the Sorcerer's Stone",
+  "author": "J.K. Rowling"
+}\
+""")
+    assert response.messages[0].role == "system"
+    assert response.messages[0].content.text == snapshot(
+        """\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.\
+"""
+    )
+
+    assert response.format().model_dump() == snapshot(
+        {"title": "Harry Potter and the Sorcerer's Stone", "author": "J.K. Rowling"}
+    )
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "WARNING"
+    assert (
+        "Model gpt-4 does not support strict formatting; falling back to tool"
+        in caplog.records[0].message
+    )
+
+
+@pytest.mark.vcr()
+def test_strict_or_json_fallback(
+    openai_client: llm.OpenAIClient, caplog: pytest.LogCaptureFixture
+) -> None:
+    """Test that strict-or-json falls back to json if model does not support strict."""
+
+    @llm.format(mode="strict-or-json")
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    with caplog.at_level("WARNING"):
+        response = openai_client.structured_call(
+            model="gpt-4",
+            messages=messages,
+            format=SimpleBook,
+        )
+
+    assert response.format().model_dump() == snapshot(
+        {"title": "Harry Potter and the Sorcerer's Stone", "author": "J.K. Rowling"}
+    )
+
+    assert response.messages[0].role == "system"
+    assert response.messages[0].content.text == snapshot(
+        """\
+Respond with valid JSON that matches this exact schema:
+
+```json
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "author"
+  ],
+  "title": "SimpleBook",
+  "type": "object"
+}
+```
+Respond ONLY with valid JSON, and no other text.\
+"""
+    )
+
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "WARNING"
+    assert (
+        "Model gpt-4 does not support strict formatting; falling back to json"
+        in caplog.records[0].message
+    )
+
+
+@pytest.mark.vcr()
+def test_strict_failure_on_unsupported_model(openai_client: llm.OpenAIClient) -> None:
+    """Test that strict mode raises an OpenAI error if strict is unsupported."""
+
+    @llm.format(mode="strict")
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    with pytest.raises(openai.BadRequestError, match="Structured Outputs guide"):
+        # TODO: This will get wrapped in a Mirascope exception when we handle validation.
+        openai_client.structured_call(
+            model="gpt-4",
+            messages=messages,
+            format=SimpleBook,
+        )

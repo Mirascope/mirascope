@@ -1,10 +1,11 @@
 """OpenAI client implementation."""
 
+import logging
 import os
 from collections.abc import Sequence
 
 import httpx
-from openai import OpenAI
+from openai import NotGiven, OpenAI
 
 from ...context import Context, DepsT
 from ...formatting import FormatT, _utils as _formatting_utils
@@ -107,22 +108,45 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
 
         format_info = _formatting_utils.ensure_formattable(format)
         format_mode = format_info.mode
+        model_lacks_structured_output_support = (
+            model in _utils.MODELS_WITHOUT_STRUCTURED_OUTPUT_SUPPORT
+        )
+        if model_lacks_structured_output_support and format_mode == "strict-or-tool":
+            logging.warning(
+                "Model %s does not support strict formatting; falling back to tool",
+                model,
+            )
+            format_mode = "tool"
+        elif model_lacks_structured_output_support and format_mode == "strict-or-json":
+            logging.warning(
+                "Model %s does not support strict formatting; falling back to json",
+                model,
+            )
+            format_mode = "json"
 
         additional_system_instructions: list[str] = []
         if format_mode == "tool":
             additional_system_instructions.append(
-                f"When you are ready to respond to the user, use the {FORMAT_TOOL_NAME} tool to construct a properly formatted response."
+                f"When you are ready to respond to the user, call the {FORMAT_TOOL_NAME} tool to output a structured response."
+            )
+            additional_system_instructions.append(
+                "Do NOT output any text in addition to the tool call."
             )
         elif format_mode == "json":
             additional_system_instructions.append(
                 _base_utils.create_json_mode_instructions(format_info)
             )
+            if model_lacks_structured_output_support:
+                additional_system_instructions.append(
+                    "Respond ONLY with valid JSON, and no other text."
+                )
         if format_info.formatting_instructions:
             additional_system_instructions.append(format_info.formatting_instructions)
         if additional_system_instructions:
             messages = _base_utils.add_system_instructions(
                 messages, additional_system_instructions
             )
+
         message_params, tool_params = _utils.prepare_openai_request(messages, tools)
 
         if format_mode in ("strict", "strict-or-tool", "strict-or-json"):
@@ -148,7 +172,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
                 model=model,
                 messages=message_params,
                 tools=tool_params,
-                response_format={"type": "json_object"},
+                response_format=(
+                    NotGiven()
+                    if model_lacks_structured_output_support
+                    else {"type": "json_object"}
+                ),
             )
         else:
             raise ValueError(
@@ -156,7 +184,6 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
             )  # pragma: no cover
 
         assistant_message, finish_reason = _utils.decode_response(openai_response)
-
         if format_mode == "tool":
             assistant_message, finish_reason = _base_utils.handle_format_tool_response(
                 assistant_message, finish_reason
