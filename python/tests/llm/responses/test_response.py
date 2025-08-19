@@ -1,9 +1,12 @@
 """Tests for Response class."""
 
 import inspect
+import json
 
+import pydantic
 import pytest
 from inline_snapshot import snapshot
+from pydantic import BaseModel
 
 from mirascope import llm
 
@@ -93,24 +96,6 @@ def test_response_initialization_with_empty_input_messages() -> None:
 
     assert len(response.messages) == 1
     assert response.messages[0] == assistant_message
-
-
-def test_response_format_method_not_implemented() -> None:
-    """Test that Response.format() raises NotImplementedError."""
-    text_content = [llm.Text(text="Hello!")]
-    assistant_message = llm.messages.assistant(text_content)
-
-    response = llm.Response(
-        provider="openai",
-        model="gpt-4o-mini",
-        input_messages=[],
-        assistant_message=assistant_message,
-        raw={"test": "response"},
-        finish_reason=llm.FinishReason.END_TURN,
-    )
-
-    with pytest.raises(NotImplementedError):
-        response.format()
 
 
 def test_response_with_different_finish_reasons() -> None:
@@ -239,3 +224,109 @@ def test_multiple_text_response_pretty() -> None:
             Finally, the third part.
         """)
     )
+
+
+def test_response_format_success() -> None:
+    """Test that Response.format() successfully parses valid JSON to BaseModel."""
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: str
+        pages: int
+
+    valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien", "pages": 310}'
+    text_content = [llm.Text(text=valid_json)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        provider="openai",
+        model="gpt-4o-mini",
+        input_messages=[],
+        assistant_message=assistant_message,
+        raw={"test": "response"},
+        finish_reason=llm.FinishReason.END_TURN,
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.title == "The Hobbit"
+    assert book.author == "J.R.R. Tolkien"
+    assert book.pages == 310
+
+
+def test_response_format_invalid_json() -> None:
+    """Test that Response.format() raises ValueError for invalid JSON."""
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    invalid_json = (
+        '{"title": "The Hobbit", "author": "J.R.R. Tolkien"'  # Missing closing brace
+    )
+    text_content = [llm.Text(text=invalid_json)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        provider="openai",
+        model="gpt-4o-mini",
+        input_messages=[],
+        assistant_message=assistant_message,
+        raw={"test": "response"},
+        finish_reason=llm.FinishReason.END_TURN,
+        format=Book,
+    )
+
+    with pytest.raises(json.JSONDecodeError):
+        response.format()
+
+
+def test_response_format_validation_error() -> None:
+    """Test that Response.format() raises ValueError for JSON that doesn't match schema."""
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: str
+        pages: int  # Required field
+
+    incomplete_json = (
+        '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'  # Missing pages
+    )
+    text_content = [llm.Text(text=incomplete_json)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        provider="openai",
+        model="gpt-4o-mini",
+        input_messages=[],
+        assistant_message=assistant_message,
+        raw={"test": "response"},
+        finish_reason=llm.FinishReason.END_TURN,
+        format=Book,
+    )
+
+    with pytest.raises(pydantic.ValidationError):
+        response.format()
+
+
+def test_response_format_no_format_type() -> None:
+    """Test that Response.format() raises ValueError when no format type is specified."""
+
+    text_content = [llm.Text(text='{"title": "The Hobbit"}')]
+    assistant_message = llm.messages.assistant(text_content)
+
+    # Create response without format type (defaults to NoneType)
+    response = llm.Response(
+        provider="openai",
+        model="gpt-4o-mini",
+        input_messages=[],
+        assistant_message=assistant_message,
+        raw={"test": "response"},
+        finish_reason=llm.FinishReason.END_TURN,
+    )
+
+    assert response.format() is None

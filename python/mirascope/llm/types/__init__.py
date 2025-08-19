@@ -8,6 +8,8 @@ from .jsonable import (
 )
 from .type_vars import AnyP, CovariantT, P
 
+NoneType = type(None)
+
 __all__ = [
     "AnyP",
     "CovariantT",
@@ -15,5 +17,6 @@ __all__ = [
     "Jsonable",
     "JsonableCovariantT",
     "JsonableT",
+    "NoneType",
     "P",
 ]

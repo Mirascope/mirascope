@@ -36,8 +36,6 @@ from ..context import DepsT
 from ..formatting import FormatT
 from ..types import P
 
-NoneType = type(None)
-
 
 class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
     """Protocol for the `agent` decorator."""

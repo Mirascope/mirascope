@@ -1,12 +1,14 @@
 """Base interface for LLM responses."""
 
-from abc import ABC, abstractmethod
+import json
+from abc import ABC
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Generic
+from typing import TYPE_CHECKING, Any, Generic, Literal, overload
 
 from ..content import AssistantContentPart, Text, Thinking, ToolCall
-from ..formatting import FormatT
+from ..formatting import FormatT, Partial
 from ..messages import Message
+from ..types import NoneType
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
@@ -46,21 +48,63 @@ class BaseResponse(ABC, Generic[FormatT]):
     finish_reason: FinishReason | None
     """The reason why the LLM finished generating a response, if available."""
 
-    @abstractmethod
-    def format(self) -> FormatT:
-        """Format the response according to the response format parser.
+    format_type: type[FormatT]
+    """The type of output expected from formatting."""
 
-        It will parse the response content according to the specified format (if present)
-        and return a structured object.
+    @overload
+    def format(self: "BaseResponse[None]", partial: Literal[True]) -> None:
+        """Format the response into a `Partial[BaseModel]` (with optional fields).
+
+        This is useful for when the stream is only partially consumed, in which case the
+        structured output may only be partially available.
+        """
+        ...
+
+    @overload
+    def format(
+        self: "BaseResponse[FormatT]", partial: Literal[True]
+    ) -> Partial[FormatT]:
+        """Format the response into a `Partial[BaseModel]` (with optional fields).
+
+        This is useful for when the stream is only partially consumed, in which case the
+        structured output may only be partially available.
+        """
+        ...
+
+    @overload
+    def format(self: "BaseResponse[None]", partial: Literal[False] = False) -> None:
+        """Overload when the format type is `None`."""
+        ...
+
+    @overload
+    def format(
+        self: "BaseResponse[FormatT]", partial: Literal[False] = False
+    ) -> FormatT:
+        """Overload when the format type is not `None`."""
+        ...
+
+    def format(self, partial: bool = False) -> FormatT | Partial[FormatT] | None:
+        """Format the response according to the response format parser.
 
         Returns:
             The formatted response object of type FormatT.
 
         Raises:
-            ValueError: If the response cannot be formatted according to the
-                specified format.
+            json.JSONDecodeError: If the response's textual content can't be parsed as
+                JSON.
+            pydantic.ValidationError: If the response's content fails validation for the
+                format type.
         """
-        raise NotImplementedError()
+        if self.format_type is None or self.format_type is NoneType:
+            return None
+
+        if partial:
+            raise NotImplementedError
+
+        text = "".join(text.text for text in self.texts)
+
+        parsed_json = json.loads(text)
+        return self.format_type.model_validate(parsed_json)
 
     def pretty(self) -> str:
         """Return a string representation of all response content.
