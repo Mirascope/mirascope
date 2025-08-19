@@ -13,6 +13,7 @@ from ...messages import Message
 from ...responses import AsyncStreamResponse, Response, StreamResponse
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from ..base import BaseClient
+from ..base import _utils as _base_utils
 from . import _utils
 from .models import OpenAIModel
 from .params import OpenAIParams
@@ -102,7 +103,10 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
 
         format_info = _formatting_utils.ensure_formattable(format)
         mode = format_info.mode
-
+        if format_info.formatting_instructions:
+            messages = _base_utils.add_system_instructions(
+                messages, format_info.formatting_instructions
+            )
         message_params, tool_params = _utils.prepare_openai_request(messages, tools)
 
         if mode in ("strict", "strict-or-tool", "strict-or-json"):
