@@ -113,6 +113,10 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
             additional_system_instructions.append(
                 f"When you are ready to respond to the user, use the {FORMAT_TOOL_NAME} tool to construct a properly formatted response."
             )
+        elif format_mode == "json":
+            additional_system_instructions.append(
+                _base_utils.create_json_mode_instructions(format_info)
+            )
         if format_info.formatting_instructions:
             additional_system_instructions.append(format_info.formatting_instructions)
         if additional_system_instructions:
@@ -122,11 +126,12 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         message_params, tool_params = _utils.prepare_openai_request(messages, tools)
 
         if format_mode in ("strict", "strict-or-tool", "strict-or-json"):
+            response_format = _utils.create_strict_response_format(format_info)
             openai_response = self.client.chat.completions.create(
                 model=model,
                 messages=message_params,
                 tools=tool_params,
-                response_format=_utils.create_strict_response_format(format_info),
+                response_format=response_format,
             )
         elif format_mode == "tool":
             format_tool_param = _utils.create_format_tool_param(format_info)
@@ -139,7 +144,12 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
                 tools=tool_params,
             )
         elif format_mode == "json":
-            raise NotImplementedError
+            openai_response = self.client.chat.completions.create(
+                model=model,
+                messages=message_params,
+                tools=tool_params,
+                response_format={"type": "json_object"},
+            )
         else:
             raise ValueError(
                 f"Unsupported formatting mode: {format_mode}"
