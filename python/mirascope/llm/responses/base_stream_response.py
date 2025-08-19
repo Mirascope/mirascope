@@ -1,7 +1,7 @@
 """Base class for StreamResponse and AsyncStreamResponse."""
 
 from collections.abc import AsyncIterator, Iterator, Sequence
-from typing import TYPE_CHECKING, Any, Generic, Literal, TypeAlias, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeAlias, TypeVar
 
 from ..content import (
     AssistantContentChunk,
@@ -19,8 +19,9 @@ from ..content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from ..formatting import FormatT, Partial
+from ..formatting import FormatT
 from ..messages import AssistantMessage, Message
+from ..types import NoneType
 from .base_response import BaseResponse
 
 if TYPE_CHECKING:
@@ -108,6 +109,7 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
         *,
         provider: "Provider",
         model: "Model",
+        format: type[FormatT] = NoneType,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIteratorT,
     ) -> None:
@@ -124,6 +126,7 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
 
         self.provider = provider
         self.model = model
+        self.format_type = format
 
         # Internal-only lists which we mutate (append) during chunk processing
         self._chunks: list[AssistantContentChunk] = []
@@ -279,35 +282,3 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
                 return chunk.delta
             case _:
                 return ""
-
-    @overload
-    def format(self, partial: Literal[True]) -> Partial[FormatT]:
-        """Format the response into a `Partial[BaseModel]` (with optional fields).
-
-        This is useful for when the stream is only partially consumed, in which case the
-        structured output may only be partially available.
-        """
-        ...
-
-    @overload
-    def format(self, partial: Literal[False] = False) -> FormatT:
-        """Format the response into a Pydantic `BaseModel`."""
-        ...
-
-    def format(self, partial: bool = False) -> FormatT | Partial[FormatT]:
-        """Format the response according to the response format parser.
-
-        It will parse the response content according to the specified format (if present)
-        and return a structured object. Returns None if there was no format.
-
-        When called with `partial=True`, it will return a partial of the model, with all
-        fields optional.
-
-        Returns:
-            The formatted response object of type T.
-
-        Raises:
-            ValueError: If the response cannot be formatted according to the
-                specified format.
-        """
-        raise NotImplementedError()
