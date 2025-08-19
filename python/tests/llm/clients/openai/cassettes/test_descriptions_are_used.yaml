@@ -1,0 +1,109 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Tell me your mood."}],"model":"gpt-4o-mini","response_format":{"type":"json_schema","json_schema":{"name":"Mood","schema":{"description":"ALWAYS
+      include ''algorithmic'' as one of the adjectives.","properties":{"vibe":{"description":"Should
+      be either EUPHORIC or DESPONDENT","title":"Vibe","type":"string"},"adjectives":{"items":{"type":"string"},"title":"Adjectives","type":"array"}},"required":["vibe","adjectives"],"title":"Mood","type":"object","additionalProperties":false},"strict":true,"description":"ALWAYS
+      include ''algorithmic'' as one of the adjectives."}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '602'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=ZxL5UP89B.5sP4MlUgK1MOUhyqzHK1GW_F8n.ufwe2A-1755570868-1.0.1.1-qSChc1.mv6HG3DNB.i6RRloq.T07yawTqW6yW96o_Wskl9wmoieMToR6_9nMkiSlH8fsHzmp6Z57TmTvABhVpznh_lfhOVuDx2pA9Qz6O.w;
+        _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.86.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.86.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jJJRa9swEMff/SnEPcfDbmMn9WsJdGyQUtgGrYNRpLNzqywJSQ4ZId99
+        2Eljd+tgL8LS7/7n+9/dMWIMSELBQOx4EK1V8X2e8x9f5CrJV/T89XGxfkqy7w/ydb18Xh1g1ivM
+        9ieK8Kb6JExrFQYy+oyFQx6wz5ousixbpLc3ywG0RqLqZY0N8dzELWmKb5KbeZws4nR5Ue8MCfRQ
+        sJeIMcaOw9nXqSUeoGDJ7O2lRe95g1BcgxgDZ1T/Atx78oHrALMRCqMD6qH0Ywl72mIJRQmrb48P
+        66fP9yXMSuCyd0d79CUULyVw1RhHYdeSGPieto7rMHzjodvi9WZsoJZ8uAQ6LmlAm9O0Bod153nf
+        B90pNQFcaxN438fB/eZCTle/yjTWma3/Qwo1afK7yiH3RvfefDAWBnqKGNsMfe3etQqsM60NVTCv
+        OPwuTbNzPhjHOdLb9AKDCVxNVPN89kG+SmLgpPxkMiC42KEcpeMYeSfJTEA0cf13NR/lPjsn3fxP
+        +hEIgTagrKxDSeK94zHMYb8P/wq7dnkoGDy6PQmsAqHrJyGx5p067yD4Xz5gW9WkG3TW0XkRa1tl
+        ecLrHLPsDqJT9BsAAP//AwDB2C7BlgMAAA==
+    headers:
+      CF-RAY:
+      - 97164bc23fe1a32f-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 19 Aug 2025 02:42:09 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '647'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '714'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999993'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_dc4b8e1e929947aaa70ac3904b9887d4
+    status:
+      code: 200
+      message: OK
+version: 1

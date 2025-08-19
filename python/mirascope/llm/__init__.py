@@ -61,7 +61,7 @@ from .exceptions import (
     TimeoutError,
     ToolNotFoundError,
 )
-from .formatting import Format, Partial, format
+from .formatting import FormatInfo, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import LLM, model
 from .prompts import prompt
@@ -116,7 +116,7 @@ __all__ = [
     "Document",
     "FinishReason",
     "FinishReasonChunk",
-    "Format",
+    "FormatInfo",
     "GoogleClient",
     "Image",
     "ImageUrl",

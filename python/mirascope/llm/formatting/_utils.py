@@ -4,7 +4,7 @@ from typing import cast
 
 from .decorator import format
 from .types import (
-    Format,
+    FormatInfo,
     FormatT,
     Formattable,
 )
@@ -12,7 +12,7 @@ from .types import (
 
 def ensure_formattable(
     formattable: type[FormatT],
-) -> Format:
+) -> FormatInfo:
     """Ensures that a class is `Formattable`, and returns the format.
 
     This is intended to be used by final consumers of `FormatT` (e.g. the clients) where
@@ -21,5 +21,5 @@ def ensure_formattable(
     The `FormatT` will be decorated into a `Formattable` if it wasn't already.
     """
     if isinstance(formattable, Formattable):
-        return formattable.__response_format__
-    return cast(Formattable, format(formattable)).__response_format__
+        return formattable.__mirascope_format_info__
+    return cast(Formattable, format(formattable)).__mirascope_format_info__

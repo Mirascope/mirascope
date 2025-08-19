@@ -53,10 +53,10 @@ FormattingMode = Literal[
 
 
 @dataclass(kw_only=True)
-class Format:
+class FormatInfo:
     """Class representing a structured output format for LLM responses.
 
-    A Format defines how LLM responses should be structured and parsed.
+    A `FormatInfo` defines how LLM responses should be structured and parsed.
     It includes metadata about the format mode, whether to use strict validation,
     and the schema for the expected output.
 
@@ -64,7 +64,7 @@ class Format:
     `@format()` decorator to a class definition.
 
     When decorated with `@format()`, the class retains its original
-    fields and constructor, while adding the Format functionality:
+    fields and constructor, while adding the `FormatInfo`:
 
     Example:
       ```python
@@ -119,8 +119,8 @@ class Format:
 class Formattable(Protocol):
     """Protocol for classes that have been decorated with `@format()`."""
 
-    __response_format__: Format
-    """The `Format` instance constructed by the `@format()` decorator."""
+    __mirascope_format_info__: FormatInfo
+    """The `FormatInfo` instance added by the `@format()` decorator."""
 
 
 @runtime_checkable

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import cast, overload
 
 from .types import (
-    Format,
+    FormatInfo,
     FormatT,
     Formattable,
     FormattingMode,
@@ -31,7 +31,7 @@ class FormatDecorator:
         if __cls.__doc__:
             description = inspect.cleandoc(__cls.__doc__)
 
-        cast(Formattable, __cls).__response_format__ = Format(
+        cast(Formattable, __cls).__mirascope_format_info__ = FormatInfo(
             name=__cls.__name__,
             description=description,
             schema=__cls.model_json_schema(),
@@ -70,7 +70,7 @@ def format(
 
     This decorator converts a class into a structured output format that can be used
     with LLM calls. The original class retains its behavior and typing, while gaining
-    the ability to be parsed from LLM responses through the `__response_format__: Format`
+    the ability to be parsed from LLM responses through the `__mirascope_format_info__: Format`
     attribute added to the class. The class must inherit from Pydantic BaseModel.
 
     Args:

@@ -13,7 +13,10 @@ def test_ensure_formattable_decorates_if_necessary() -> None:
     format = llm.formatting._utils.ensure_formattable(Undecorated)
     assert format.name == "Undecorated"
     assert format.mode == "strict-or-tool"
-    assert cast(llm.formatting.Formattable, Undecorated).__response_format__ == format
+    assert (
+        cast(llm.formatting.Formattable, Undecorated).__mirascope_format_info__
+        == format
+    )
 
 
 def test_ensure_formattable_doesnt_override() -> None:

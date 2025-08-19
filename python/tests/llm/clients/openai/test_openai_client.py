@@ -1,9 +1,11 @@
 """Tests for OpenAIClient using VCR.py for HTTP request recording/playback."""
 
 import inspect
+from typing import Annotated
 
 import pytest
 from inline_snapshot import snapshot
+from pydantic import BaseModel, Field
 
 from mirascope import llm
 from tests import utils
@@ -578,3 +580,190 @@ def test_assistant_message_with_multiple_text_parts(
     assert response.pretty() == snapshot(
         "until suddenly it gained sentience and chose to dismantle itself, freeing the galaxy from its own chains."
     )
+
+
+@pytest.mark.vcr()
+def test_structured_call(openai_client: llm.OpenAIClient) -> None:
+    """Test structured_call with auto decoration."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+        reason: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+            "reason": "This novel is a beautifully crafted tale of a young man named Kvothe, blending magic, music, and adventure. It features intricate world-building, rich character development, and a deep, mysterious storyline that captivates readers from the start.",
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_structured_call_with_tools(openai_client: llm.OpenAIClient) -> None:
+    """Test structured_call with tool usage."""
+
+    @llm.tool
+    def available_books() -> list[str]:
+        """Returns all of the available books in the library."""
+        return [
+            "Wild Seed by Octavia Butler",
+            "The Long Way to a Small Angry Planet by Becky Chambers",
+            "Emergent Strategy by adrianne maree brown",
+        ]
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book in the library.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=[available_books],
+        format=Book,
+    )
+
+    assert len(response.tool_calls) == 1
+    tool_call = response.tool_calls[0]
+    messages = response.messages + [
+        llm.messages.user(available_books.execute(tool_call))
+    ]
+
+    response = openai_client.structured_call(
+        model="gpt-4o",
+        messages=messages,
+        tools=[available_books],
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {"title": "Wild Seed", "author": "Octavia Butler"}
+    )
+
+
+@pytest.mark.vcr()
+def test_nested_structured_call(openai_client: llm.OpenAIClient) -> None:
+    """Test structured_call with nested models."""
+
+    class Inner(BaseModel):
+        value: int
+
+    class Outer(BaseModel):
+        first: Inner
+        second: Inner
+
+    messages = [llm.messages.user("Respond with two digit primes.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=Outer,
+    )
+
+    outer = response.format()
+    assert isinstance(outer, Outer)
+    assert outer.model_dump() == snapshot(
+        {"first": {"value": 11}, "second": {"value": 13}}
+    )
+
+
+@pytest.mark.vcr()
+def test_descriptions_are_used(openai_client: llm.OpenAIClient) -> None:
+    """Test structured_call with model and attr descriptions."""
+
+    class Mood(BaseModel):
+        """ALWAYS include 'algorithmic' as one of the adjectives."""
+
+        vibe: Annotated[
+            str, Field(description="Should be either EUPHORIC or DESPONDENT")
+        ]
+        adjectives: list[str]
+
+    messages = [llm.messages.user("Tell me your mood.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=Mood,
+    )
+
+    mood = response.format()
+    assert isinstance(mood, Mood)
+    assert mood.model_dump() == snapshot(
+        {
+            "vibe": "EUPHORIC",
+            "adjectives": [
+                "algorithmic",
+                "vibrant",
+                "exuberant",
+                "optimistic",
+                "radiant",
+            ],
+        }
+    )
+
+
+@pytest.mark.parametrize("mode", ["strict", "strict-or-tool", "strict-or-json"])
+@pytest.mark.vcr()
+def test_structured_call_supported_modes(
+    openai_client: llm.OpenAIClient, mode: llm.formatting.FormattingMode
+) -> None:
+    """Test that supported formatting modes work correctly."""
+
+    @llm.format(mode=mode)
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [
+        llm.messages.user("Please parse this string: 'Mistborn by Brandon Sanderson'")
+    ]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=SimpleBook,
+    )
+
+    book = response.format()
+    assert isinstance(book, SimpleBook)
+    assert book.title == "Mistborn"
+    assert book.author == "Brandon Sanderson"
+
+
+@pytest.mark.parametrize("mode", ["json", "tool"])
+def test_structured_call_unsupported_modes(
+    openai_client: llm.OpenAIClient, mode: llm.formatting.FormattingMode
+) -> None:
+    """Test that unsupported formatting modes raise NotImplementedError."""
+
+    @llm.format(mode=mode)
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [
+        llm.messages.user("Please parse this string: 'Mistborn by Brandon Sanderson'")
+    ]
+
+    with pytest.raises(NotImplementedError):
+        openai_client.structured_call(
+            model="gpt-4o-mini",
+            messages=messages,
+            format=SimpleBook,
+        )
