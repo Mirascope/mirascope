@@ -8,6 +8,7 @@ from openai import OpenAI
 
 from ...context import Context, DepsT
 from ...formatting import FormatT
+from ...formatting import _utils as _formatting_utils
 from ...messages import Message
 from ...responses import AsyncStreamResponse, Response, StreamResponse
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
@@ -95,7 +96,38 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> Response[FormatT]:
-        raise NotImplementedError
+        """Make a structured call to OpenAI with formatted output."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        format_info = _formatting_utils.ensure_formattable(format)
+        mode = format_info.mode
+
+        message_params, tool_params = _utils.prepare_openai_request(messages, tools)
+
+        if mode in ("strict", "strict-or-tool", "strict-or-json"):
+            openai_response = self.client.chat.completions.create(
+                model=model,
+                messages=message_params,
+                tools=tool_params,
+                response_format=_utils.create_strict_response_format(format_info),
+            )
+        elif mode in ("tool", "json"):
+            raise NotImplementedError
+        else:
+            raise ValueError(f"Unsupported formatting mode: {mode}")  # pragma: no cover
+
+        assistant_message, finish_reason = _utils.decode_response(openai_response)
+
+        return Response[FormatT](
+            provider="openai",
+            model=model,
+            raw=openai_response,
+            input_messages=messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+            format=format,
+        )
 
     def structured_context_call(
         self,

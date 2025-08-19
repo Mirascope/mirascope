@@ -6,6 +6,8 @@ from typing import Literal
 
 from openai import NotGiven, Stream
 from openai.types import chat as openai_types
+from openai.types import shared_params as shared_openai_types
+from openai.types.shared_params.response_format_json_schema import JSONSchema
 
 from ...content import (
     AssistantContentPart,
@@ -19,6 +21,7 @@ from ...content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from ...formatting import FormatInfo
 from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import ChunkIterator, FinishReason, RawChunk
 from ...tools import Tool
@@ -292,3 +295,42 @@ def convert_openai_stream_to_chunk_iterator(
                 choice.finish_reason, FinishReason.UNKNOWN
             )
             yield FinishReasonChunk(finish_reason=finish_reason)
+
+
+def create_strict_response_format(
+    format_info: FormatInfo,
+) -> shared_openai_types.ResponseFormatJSONSchema:
+    """Create OpenAI strict response format from a Mirascope Format.
+
+    Args:
+        format_info: The `Format` instance containing schema and metadata
+
+    Returns:
+        Dictionary containing OpenAI response_format specification
+    """
+    schema = format_info.schema.copy()
+
+    def ensure_additional_properties_false(obj: object) -> None:
+        """Recursively adds additionalProperties = False as required by OpenAI API."""
+        if isinstance(obj, dict):
+            if obj.get("type") == "object" and "additionalProperties" not in obj:
+                obj["additionalProperties"] = False
+            for value in obj.values():
+                ensure_additional_properties_false(value)
+        elif isinstance(obj, list):
+            for item in obj:
+                ensure_additional_properties_false(item)
+
+    ensure_additional_properties_false(schema)
+
+    json_schema = JSONSchema(
+        name=format_info.name,
+        schema=schema,
+        strict=True,
+    )
+    if format_info.description:
+        json_schema["description"] = format_info.description
+
+    return shared_openai_types.ResponseFormatJSONSchema(
+        type="json_schema", json_schema=json_schema
+    )
