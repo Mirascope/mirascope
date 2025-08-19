@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 from collections.abc import Awaitable
 from typing import Any, Generic, Protocol, cast
-
 from typing_extensions import TypeVar
 
 from ..content import ToolCall, ToolOutput

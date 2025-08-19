@@ -1,5 +1,4 @@
 import inspect
-
 from typing_extensions import TypeIs
 
 from ..messages import (

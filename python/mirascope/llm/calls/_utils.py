@@ -15,8 +15,7 @@ from ..clients import (
     OpenAIParams,
     Provider,
 )
-from ..models import LLM
-from ..models import model as llm_factory
+from ..models import LLM, model as llm_factory
 
 
 def assumed_safe_llm_create(

@@ -3,7 +3,6 @@
 import inspect
 from dataclasses import dataclass
 from typing import overload
-
 from typing_extensions import TypeIs
 
 from ..context import RequiredDepsT

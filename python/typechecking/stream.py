@@ -1,5 +1,4 @@
 from collections.abc import AsyncIterator, Iterator
-
 from typing_extensions import assert_never, assert_type
 
 from mirascope import llm

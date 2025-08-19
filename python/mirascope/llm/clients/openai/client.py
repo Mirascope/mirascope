@@ -7,13 +7,11 @@ import httpx
 from openai import OpenAI
 
 from ...context import Context, DepsT
-from ...formatting import FormatT
-from ...formatting import _utils as _formatting_utils
+from ...formatting import FormatT, _utils as _formatting_utils
 from ...messages import Message
 from ...responses import AsyncStreamResponse, Response, StreamResponse
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
-from ..base import BaseClient
-from ..base import _utils as _base_utils
+from ..base import BaseClient, _utils as _base_utils
 from . import _utils
 from .models import OpenAIModel
 from .params import OpenAIParams

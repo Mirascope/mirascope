@@ -2,7 +2,6 @@
 
 from collections.abc import Mapping, Sequence
 from typing import Protocol, TypeAlias
-
 from typing_extensions import TypeVar
 
 

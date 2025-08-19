@@ -4,8 +4,7 @@ import json
 from collections.abc import Sequence
 from functools import lru_cache
 
-from anthropic import NotGiven
-from anthropic import types as anthropic_types
+from anthropic import NotGiven, types as anthropic_types
 from anthropic.lib.streaming import MessageStreamManager
 
 from ...content import (
