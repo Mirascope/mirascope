@@ -10,7 +10,13 @@ from ...context import Context, DepsT
 from ...formatting import FormatT, _utils as _formatting_utils
 from ...messages import Message
 from ...responses import AsyncStreamResponse, Response, StreamResponse
-from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
+from ...tools import (
+    FORMAT_TOOL_NAME,
+    AsyncContextTool,
+    AsyncTool,
+    ContextTool,
+    Tool,
+)
 from ..base import BaseClient, _utils as _base_utils
 from . import _utils
 from .models import OpenAIModel
@@ -100,26 +106,51 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
             raise NotImplementedError("param use not yet supported")
 
         format_info = _formatting_utils.ensure_formattable(format)
-        mode = format_info.mode
+        format_mode = format_info.mode
+
+        additional_system_instructions: list[str] = []
+        if format_mode == "tool":
+            additional_system_instructions.append(
+                f"When you are ready to respond to the user, use the {FORMAT_TOOL_NAME} tool to construct a properly formatted response."
+            )
         if format_info.formatting_instructions:
+            additional_system_instructions.append(format_info.formatting_instructions)
+        if additional_system_instructions:
             messages = _base_utils.add_system_instructions(
-                messages, format_info.formatting_instructions
+                messages, additional_system_instructions
             )
         message_params, tool_params = _utils.prepare_openai_request(messages, tools)
 
-        if mode in ("strict", "strict-or-tool", "strict-or-json"):
+        if format_mode in ("strict", "strict-or-tool", "strict-or-json"):
             openai_response = self.client.chat.completions.create(
                 model=model,
                 messages=message_params,
                 tools=tool_params,
                 response_format=_utils.create_strict_response_format(format_info),
             )
-        elif mode in ("tool", "json"):
+        elif format_mode == "tool":
+            format_tool_param = _utils.create_format_tool_param(format_info)
+            tool_params = list(tool_params) if isinstance(tool_params, list) else []
+            tool_params.append(format_tool_param)
+
+            openai_response = self.client.chat.completions.create(
+                model=model,
+                messages=message_params,
+                tools=tool_params,
+            )
+        elif format_mode == "json":
             raise NotImplementedError
         else:
-            raise ValueError(f"Unsupported formatting mode: {mode}")  # pragma: no cover
+            raise ValueError(
+                f"Unsupported formatting mode: {format_mode}"
+            )  # pragma: no cover
 
         assistant_message, finish_reason = _utils.decode_response(openai_response)
+
+        if format_mode == "tool":
+            assistant_message, finish_reason = _base_utils.handle_format_tool_response(
+                assistant_message, finish_reason
+            )
 
         return Response[FormatT](
             provider="openai",

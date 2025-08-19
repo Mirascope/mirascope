@@ -1,0 +1,116 @@
+interactions:
+  - request:
+      body:
+        '{"messages":[{"role":"system","content":"When you are ready to respond
+        to the user, use the __mirascope_formatted_output_tool__ tool to construct a
+        properly formatted response.\nUse UPPERCASE for all genre names."},{"role":"user","content":"Recommend
+        a science fiction book."}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+        this tool to extract data in DetailedBook format for a final response.\nA detailed
+        book recommendation with metadata.","parameters":{"$defs":{"Author":{"properties":{"first_name":{"title":"First
+        Name","type":"string"},"last_name":{"title":"Last Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"description":"A
+        detailed book recommendation with metadata.","properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"genre":{"title":"Genre","type":"string"}},"required":["title","author","genre"],"title":"DetailedBook","type":"object","additionalProperties":false},"strict":true}}]}'
+      headers:
+        accept:
+          - application/json
+        accept-encoding:
+          - gzip, deflate
+        connection:
+          - keep-alive
+        content-length:
+          - "1095"
+        content-type:
+          - application/json
+        cookie:
+          - __cf_bm=UghuTHkQZvAPejFXEKKmnllSYyyVsQo5KX5_cql7D4c-1755641394-1.0.1.1-JoI9LObB_WJL2xlwKdMrVjxEVqrqZ9fbvYUdCUaxSXeK1oxcUniXlZs2AE.PILwvz7wxQGbqlebyKCeXmnMBXB3PT0KKAOiFvzdySozNNy0;
+            _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
+        host:
+          - api.openai.com
+        user-agent:
+          - OpenAI/Python 1.86.0
+        x-stainless-arch:
+          - arm64
+        x-stainless-async:
+          - "false"
+        x-stainless-lang:
+          - python
+        x-stainless-os:
+          - MacOS
+        x-stainless-package-version:
+          - 1.86.0
+        x-stainless-read-timeout:
+          - "600"
+        x-stainless-retry-count:
+          - "0"
+        x-stainless-runtime:
+          - CPython
+        x-stainless-runtime-version:
+          - 3.10.16
+      method: POST
+      uri: https://api.openai.com/v1/chat/completions
+    response:
+      body:
+        string: !!binary |
+          H4sIAAAAAAAAAwAAAP//jFRRT9swEH7Pr7DuuZ1aaNqRt6mAQEgwja2TtiDLOJfU4NiWfUErVf/7
+          FAeaUJi0PETRfffdfb77nG3CGKgCMgZyLUjWTo+X8xtb1v7LZj63m1UzWaxCsXo+ftjM6AJh1DLs
+          /QNKemV9krZ2GklZ08HSoyBsq04XaTqfTY9PFhGobYG6pVWOxjM7rpVR46PJ0Ww8WYynn1/Ya6sk
+          BsjY74Qxxrbx3eo0Bf6BjE1Gr5EaQxAVQrZPYgy81W0ERAgqkDAEox6U1hCaVrpptB4AZK3mUmjd
+          N+6e7eC7H5bQmv+6eH4ih9fLr1en6e23lVs9/7xStz8G/brSGxcFlY2R+yEN8H08O2jGGBhRRy7n
+          tfIiSOuQl9bXgggLbhtyDfGonR+UZQyEr5oaDbVHgm0OpEhjDlkOp43BHEY5iIbW1ueQbXMolQ/E
+          244x59wL8xiTtBjGL9Dfo6ccdqMcKjS+C98uL8+ul2fs/HL5/fLmOocdvNGzSz76vhuswGPZBKHf
+          70YYY0m0I4rLuXtBdnsfaFs5b+/DARVKZVRYc48ixPEOt5y8CokSoHljJHDe1q6d7CPGptN01lWF
+          3uw9Ojt+AcmS0ANW5/vDerxAEio6bW9uKeQai57am1w0hbIDIBmc/b2aj2p351em+p/yPSAlutZl
+          zmOh5NsT92ke23/Bv9L2U46CIaB/UhI5KfTtPgosRaO7GwphEwhrXipToXdexWsKpePpfCLKOabp
+          CSS75C8AAAD//wMAyq2NirQEAAA=
+      headers:
+        CF-RAY:
+          - 971cfa6b2ee2c96d-SEA
+        Connection:
+          - keep-alive
+        Content-Encoding:
+          - gzip
+        Content-Type:
+          - application/json
+        Date:
+          - Tue, 19 Aug 2025 22:09:57 GMT
+        Server:
+          - cloudflare
+        Strict-Transport-Security:
+          - max-age=31536000; includeSubDomains; preload
+        Transfer-Encoding:
+          - chunked
+        X-Content-Type-Options:
+          - nosniff
+        access-control-expose-headers:
+          - X-Request-ID
+        alt-svc:
+          - h3=":443"; ma=86400
+        cf-cache-status:
+          - DYNAMIC
+        openai-organization:
+          - sotai-i3ryiz
+        openai-processing-ms:
+          - "906"
+        openai-project:
+          - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+        openai-version:
+          - "2020-10-01"
+        x-envoy-upstream-service-time:
+          - "929"
+        x-ratelimit-limit-requests:
+          - "5000"
+        x-ratelimit-limit-tokens:
+          - "4000000"
+        x-ratelimit-remaining-requests:
+          - "4999"
+        x-ratelimit-remaining-tokens:
+          - "3999946"
+        x-ratelimit-reset-requests:
+          - 12ms
+        x-ratelimit-reset-tokens:
+          - 0s
+        x-request-id:
+          - req_2f5de338b40147d1adc8cd775ac7a77d
+      status:
+        code: 200
+        message: OK
+version: 1

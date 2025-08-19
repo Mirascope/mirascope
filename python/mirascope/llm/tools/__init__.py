@@ -9,7 +9,12 @@ from .context_tool import (
 from .context_tool_decorator import ContextToolDecorator, context_tool
 from .tool import AsyncTool, Tool, ToolT
 from .tool_decorator import ToolDecorator, tool
-from .tool_schema import ToolParameterSchema, ToolSchema, ToolSchemaT
+from .tool_schema import (
+    FORMAT_TOOL_NAME,
+    ToolParameterSchema,
+    ToolSchema,
+    ToolSchemaT,
+)
 from .toolkit import (
     AsyncContextToolkit,
     AsyncToolkit,
@@ -19,6 +24,7 @@ from .toolkit import (
 )
 
 __all__ = [
+    "FORMAT_TOOL_NAME",
     "AgentToolT",
     "AsyncContextTool",
     "AsyncContextToolkit",
