@@ -1,27 +1,32 @@
 """The `Format` class for defining how to structure an LLM response."""
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Generic, Literal, Protocol, runtime_checkable
+from typing import Literal, Protocol, runtime_checkable
 
 from pydantic import BaseModel
 from typing_extensions import TypeVar
-
-from ..types import CovariantT, P
-
-if TYPE_CHECKING:
-    from ..responses import AsyncStreamResponse, Response, StreamResponse
 
 FormatT = TypeVar("FormatT", bound=BaseModel | None, default=None)
 """Type variable for structured response format types.
 
 This TypeVar represents the type of structured output format that LLM responses
-can be parsed into, such as Pydantic models, dataclasses, or custom classes.
-It can be None for unstructured responses and defaults to None when no specific
-format is required.
+can be parsed into, or None if no format is specified. 
+If format is specified, it must extend Pydantic BaseModel. 
+"""
+
+RequiredFormatT = TypeVar("RequiredFormatT", bound=BaseModel)
+"""Type variable for mandatory structured response format types.
+
+This TypeVar represents the type of structured output format that LLM responses
+can be parsed into. It must extend Pydantic BaseModel.
 """
 
 FormattingMode = Literal[
-    "strict", "json", "tool", "strict-or-tool", "strict-or-json", "parse"
+    "strict",
+    "json",
+    "tool",
+    "strict-or-tool",
+    "strict-or-json",
 ]
 """Available modes for response format generation.
 
@@ -44,37 +49,11 @@ FormattingMode = Literal[
 
 - "strict-or-json": Use "strict" mode if supported, or fall back to "json" mode if not.
     Will log a warning on fallback.
-
-- "parse": Use a `parse` classmethod on the FormatT, which will expect an `llm.Response`
-    as input, and produce the formatted object.
 """
 
 
-class ResponseParseable(Protocol[P, CovariantT]):
-    """Protocol for defining a class with a custom parse classmethod."""
-
-    @classmethod
-    def parse(
-        cls,
-        response: "Response | StreamResponse | AsyncStreamResponse",
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> CovariantT:
-        """Parse an LLM response into an instance of the class.
-
-        Args:
-          response: the LLM response.
-          kwargs: Extra kwargs may be provided if specified via llm.formatting.FromCallArgs.
-            If so, the extra args will match the call args that were marked FromCallArgs.
-
-        Returns:
-            An instance of the class.
-        """
-        raise NotImplementedError()
-
-
-@dataclass
-class Format(Generic[FormatT]):
+@dataclass(kw_only=True)
+class Format:
     """Class representing a structured output format for LLM responses.
 
     A Format defines how LLM responses should be structured and parsed.
@@ -113,7 +92,13 @@ class Format(Generic[FormatT]):
     ```
     """
 
-    schema: dict[str, Any]
+    name: str
+    """The name of the response format."""
+
+    description: str | None
+    """A description of the response format, if available."""
+
+    schema: dict[str, object]
     """JSON schema representation of the structured output format."""
 
     mode: FormattingMode
@@ -131,8 +116,16 @@ class Format(Generic[FormatT]):
 
 
 @runtime_checkable
-class Formattable(Protocol[FormatT]):
+class Formattable(Protocol):
     """Protocol for classes that have been decorated with `@format()`."""
 
-    __response_format__: Format[FormatT]
+    __response_format__: Format
     """The `Format` instance constructed by the `@format()` decorator."""
+
+
+@runtime_checkable
+class HasFormattingInstructions(Protocol):
+    """Protocol for classes that have been decorated with `@format()`."""
+
+    @classmethod
+    def formatting_instructions(cls) -> str: ...

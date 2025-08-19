@@ -1,70 +1,71 @@
 """The `llm.format` decorator for defining response formats as classes."""
 
-from collections.abc import Callable
-from typing import Literal, TypeAlias, overload
+import inspect
+from dataclasses import dataclass
+from typing import cast, overload
 
-from ..types import P
-from .types import FormatT, FormattingMode, ResponseParseable
-
-# Type aliases for decorator return types
-ParseableDecorator: TypeAlias = Callable[
-    [type[ResponseParseable[P, FormatT]]], type[FormatT]
-]
-FormatDecorator: TypeAlias = Callable[[type[FormatT]], type[FormatT]]
-
-
-# Decorator for cases where the class is a ResponseParseable. In this case, if mode
-# is unspecified, we default to "parse" to use the custom parser the user provided.
-@overload
-def format(
-    __cls: type[ResponseParseable[P, FormatT]],
-    /,
-    mode: Literal[
-        "strict", "json", "tool", "strict-or-tool", "strict-or-json", "parse"
-    ] = "parse",
-) -> type[FormatT]:
-    """Overload for ResponseParseable classes, where mode defaults to parse."""
-    ...
+from .types import (
+    Format,
+    FormatT,
+    Formattable,
+    FormattingMode,
+    HasFormattingInstructions,
+    RequiredFormatT,
+)
 
 
-# For general FormatT classes, we will use the "strict-or-tool" parser if unspecified.
+@dataclass(kw_only=True)
+class FormatDecorator:
+    """Decorator that makes a `BaseModel` into a `Formattable` (and returns the `BaseModel`)."""
+
+    mode: FormattingMode
+    """The `FormattingMode` of the `Formattable`s created by this decorator."""
+
+    def __call__(self, __cls: type[RequiredFormatT]) -> type[RequiredFormatT]:
+        """Convert a `BaseModel` into a `Formattable` and return the `BaseModel`."""
+        formatting_instructions = None
+        if isinstance(__cls, HasFormattingInstructions):
+            formatting_instructions = inspect.cleandoc(__cls.formatting_instructions())
+
+        description = None
+        if __cls.__doc__:
+            description = inspect.cleandoc(__cls.__doc__)
+
+        cast(Formattable, __cls).__response_format__ = Format(
+            name=__cls.__name__,
+            description=description,
+            schema=__cls.model_json_schema(),
+            mode=self.mode,
+            formatting_instructions=formatting_instructions,
+        )
+
+        return __cls
+
+
 @overload
 def format(
     __cls: type[FormatT],
     /,
-    mode: Literal[
-        "strict", "json", "tool", "strict-or-tool", "strict-or-json"
-    ] = "strict-or-tool",
+    mode: FormattingMode | None = None,
 ) -> type[FormatT]:
-    """Overload for regular classes with auto-generated parsers."""
+    """Overload to convert a class into a Formattable."""
     ...
 
 
-# Decorator factory for parse mode (ResponseParseable classes)
 @overload
 def format(
     *,
-    mode: Literal["parse"],
-) -> ParseableDecorator[P, FormatT]:
-    """Overload for decorator factory with parse mode."""
-    ...
-
-
-# Decorator factory for auto-generated modes (regular FormatT classes)
-@overload
-def format(
-    *,
-    mode: Literal["strict", "json", "tool", "strict-or-tool", "strict-or-json"],
-) -> FormatDecorator[FormatT]:
-    """Overload for decorator factory with auto-generated parsers."""
+    mode: FormattingMode | None = None,
+) -> FormatDecorator:
+    """Overload to create a FormatDecorator."""
     ...
 
 
 def format(
-    __cls=None,
+    __cls: type[FormatT] | None = None,
     /,
     mode: FormattingMode | None = None,
-) -> ParseableDecorator[P, FormatT] | type[FormatT] | FormatDecorator[FormatT]:
+) -> type[FormatT] | FormatDecorator:
     """Decorator that defines a structured response format for LLM outputs.
 
     This decorator converts a class into a structured output format that can be used
@@ -81,8 +82,6 @@ def format(
             json if not.
         - "strict-or-tool": Use strict mode if available, tool mode if not.
         - "strict-or-json": Use strict mode if available, json mode if not.
-        - "parse": Use a custom parse classmethod which takes an llm.Response
-            (for full control).
 
         Note that custom formatting instructions will be auto-appended to the prompt if
           a `formatting_instructions` classmethod is present on the class being decorated.
@@ -118,4 +117,7 @@ def format(
       print(f"{book.title} by {book.author}")
       ```
     """
-    raise NotImplementedError()
+    decorator = FormatDecorator(mode=mode or "strict-or-tool")
+    if __cls is None or __cls is type(None):
+        return decorator
+    return decorator(__cls)
