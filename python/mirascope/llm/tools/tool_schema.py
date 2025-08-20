@@ -32,6 +32,14 @@ ToolSchemaT = TypeVar("ToolSchemaT", bound="ToolSchema")
 DocstringArg = namedtuple("DocstringArg", ["name", "description"])
 
 FORMAT_TOOL_NAME = "__mirascope_formatted_output_tool__"
+"""Reserved name of the formatted output tool. 
+
+Any call to a tool with this name is NOT considered a regular tool call, but will instead
+be converted into textual output containing the arguments to the tool call.
+"""
+# TODO: Investigate whether using this hardcoded tool name has any adverse impact
+# on model performance, compared to a tool name that references the name of the formatted
+# class.
 
 
 @dataclass

@@ -8,6 +8,7 @@ import pytest
 from inline_snapshot import snapshot
 
 from mirascope import llm
+from mirascope.llm.tools import FORMAT_TOOL_NAME
 
 
 def create_sync_stream_response(
@@ -97,10 +98,12 @@ def example_thinking_chunks() -> list[llm.AssistantContentChunk]:
 def example_tool_call_chunks() -> list[llm.AssistantContentChunk]:
     """Create a complete tool call chunk sequence for testing."""
     return [
-        llm.ToolCallStartChunk(id="tool_call_123", name="test_function"),
-        llm.ToolCallChunk(delta='{"param1": "value1", '),
-        llm.ToolCallChunk(delta='"param2": 42}'),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallStartChunk(
+            type="tool_call_start_chunk", id="tool_call_123", name="test_function"
+        ),
+        llm.ToolCallChunk(type="tool_call_chunk", delta='{"param1": "value1", '),
+        llm.ToolCallChunk(type="tool_call_chunk", delta='"param2": 42}'),
+        llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
     ]
 
 
@@ -440,9 +443,9 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
                 id="tool_456",
                 name="test_function",
             ),
-            llm.ToolCallChunk(delta='{"key": '),
-            llm.ToolCallChunk(delta='"value"}'),
-            llm.ToolCallEndChunk(),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"key": '),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='"value"}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
         ],
         expected_contents=[
             [],
@@ -501,10 +504,10 @@ class TestToolCallSupport:
                 id="tool_complex",
                 name="complex_function",
             ),
-            llm.ToolCallChunk(delta='{"nested":'),
-            llm.ToolCallChunk(delta=' {"key": "value"},'),
-            llm.ToolCallChunk(delta=' "array": [1, 2, 3]}'),
-            llm.ToolCallEndChunk(),
+            llm.ToolCallChunk(type="tool_call_chunk", delta='{"nested":'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=' {"key": "value"},'),
+            llm.ToolCallChunk(type="tool_call_chunk", delta=' "array": [1, 2, 3]}'),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
         ]
 
         stream_response = create_sync_stream_response(chunks)
@@ -731,9 +734,9 @@ INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
     ),
     "tool_call_end_without_matching_start": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.TextStartChunk(),
-            llm.TextChunk(delta="test"),
-            llm.ToolCallEndChunk(),
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(type="text_chunk", delta="test"),
+            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
         ],
         expected_error="Received tool_call_end_chunk while not processing tool call",
     ),
@@ -1000,3 +1003,209 @@ class TestRawChunkTracking:
             stream_response, [chunk1, chunk2, chunk3], [llm.Text(text="hi")]
         )
         assert stream_response.raw == [raw1, raw2]
+
+
+@pytest.fixture
+def example_format_tool_chunks() -> list[llm.AssistantContentChunk]:
+    return [
+        llm.ToolCallStartChunk(
+            id="call_format_123",
+            name=FORMAT_TOOL_NAME,
+        ),
+        llm.ToolCallChunk(delta='{"title": "The Hobbit"'),
+        llm.ToolCallChunk(delta=', "author": "Tolkien"}'),
+        llm.ToolCallEndChunk(),
+        llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+    ]
+
+
+@pytest.fixture
+def example_format_tool_chunks_processed() -> list[llm.AssistantContentChunk]:
+    return [
+        llm.TextStartChunk(),
+        llm.TextChunk(delta='{"title": "The Hobbit"'),
+        llm.TextChunk(delta=', "author": "Tolkien"}'),
+        llm.TextEndChunk(),
+        llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+    ]
+
+
+@pytest.fixture
+def example_format_tool_chunks_mixed() -> list[llm.AssistantContentChunk]:
+    return [
+        llm.ToolCallStartChunk(id="call_007", name="ring_tool"),
+        llm.ToolCallChunk(delta='{"ring_purpose": "to_rule_them_all"}'),
+        llm.ToolCallEndChunk(),
+        llm.ToolCallStartChunk(
+            id="call_format_123",
+            name=FORMAT_TOOL_NAME,
+        ),
+        llm.ToolCallChunk(delta='{"title": "The Hobbit"'),
+        llm.ToolCallChunk(delta=', "author": "Tolkien"}'),
+        llm.ToolCallEndChunk(),
+        llm.TextStartChunk(),
+        llm.TextChunk(delta="A wizard is never late."),
+        llm.TextEndChunk(),
+        llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+    ]
+
+
+@pytest.fixture
+def example_format_tool_chunks_mixed_processed() -> list[llm.AssistantContentChunk]:
+    return [
+        llm.ToolCallStartChunk(id="call_007", name="ring_tool"),
+        llm.ToolCallChunk(delta='{"ring_purpose": "to_rule_them_all"}'),
+        llm.ToolCallEndChunk(),
+        llm.TextStartChunk(),
+        llm.TextChunk(delta='{"title": "The Hobbit"'),
+        llm.TextChunk(delta=', "author": "Tolkien"}'),
+        llm.TextEndChunk(),
+        llm.TextStartChunk(),
+        llm.TextChunk(delta="A wizard is never late."),
+        llm.TextEndChunk(),
+        llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+    ]
+
+
+@pytest.fixture
+def example_format_tool_chunks_max_tokens() -> list[llm.AssistantContentChunk]:
+    return [
+        llm.ToolCallStartChunk(
+            id="call_format_123",
+            name=FORMAT_TOOL_NAME,
+        ),
+        llm.ToolCallEndChunk(),
+        llm.FinishReasonChunk(finish_reason=llm.FinishReason.MAX_TOKENS),
+    ]
+
+
+@pytest.fixture
+def example_format_tool_chunks_max_tokens_processed() -> list[
+    llm.AssistantContentChunk
+]:
+    return [
+        llm.TextStartChunk(),
+        llm.TextEndChunk(),
+        llm.FinishReasonChunk(finish_reason=llm.FinishReason.MAX_TOKENS),
+    ]
+
+
+class TestFormatToolHandling:
+    """Test format tool handling in stream responses."""
+
+    def test_sync_format_tool_conversion(
+        self,
+        example_format_tool_chunks: list[llm.AssistantContentChunk],
+        example_format_tool_chunks_processed: list[llm.AssistantContentChunk],
+    ) -> None:
+        """Test that FORMAT_TOOL_NAME tool calls are converted to text."""
+        stream_response = create_sync_stream_response(example_format_tool_chunks)
+        streamed_chunks = list(stream_response.chunk_stream())
+
+        assert streamed_chunks == example_format_tool_chunks_processed
+        assert len(stream_response.texts) == 1
+        assert (
+            stream_response.texts[0].text
+            == '{"title": "The Hobbit", "author": "Tolkien"}'
+        )
+        assert len(stream_response.tool_calls) == 0
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+
+    def test_sync_mixed_regular_and_format_tools(
+        self,
+        example_format_tool_chunks_mixed: list[llm.AssistantContentChunk],
+        example_format_tool_chunks_mixed_processed: list[llm.AssistantContentChunk],
+    ) -> None:
+        """Test streaming with both regular and format tools."""
+        stream_response = create_sync_stream_response(example_format_tool_chunks_mixed)
+        streamed_chunks = list(stream_response.chunk_stream())
+
+        assert streamed_chunks == example_format_tool_chunks_mixed_processed
+        assert len(stream_response.tool_calls) == 1
+        assert stream_response.tool_calls[0].name == "ring_tool"
+        assert len(stream_response.texts) == 2
+        assert (
+            stream_response.texts[0].text
+            == '{"title": "The Hobbit", "author": "Tolkien"}'
+        )
+        assert stream_response.texts[1].text == "A wizard is never late."
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+
+    def test_sync_format_tool_no_finish_reason_change(
+        self,
+        example_format_tool_chunks_max_tokens: list[llm.AssistantContentChunk],
+        example_format_tool_chunks_max_tokens_processed: list[
+            llm.AssistantContentChunk
+        ],
+    ) -> None:
+        """Test that format tool doesn't change non-TOOL_USE finish reasons."""
+        stream_response = create_sync_stream_response(
+            example_format_tool_chunks_max_tokens
+        )
+        streamed_chunks = list(stream_response.chunk_stream())
+
+        assert streamed_chunks == example_format_tool_chunks_max_tokens_processed
+        assert len(stream_response.texts) == 1
+        assert stream_response.texts[0].text == ""
+        assert len(stream_response.tool_calls) == 0
+        assert stream_response.finish_reason == llm.FinishReason.MAX_TOKENS
+
+    @pytest.mark.asyncio
+    async def test_async_format_tool_conversion(
+        self,
+        example_format_tool_chunks: list[llm.AssistantContentChunk],
+        example_format_tool_chunks_processed: list[llm.AssistantContentChunk],
+    ) -> None:
+        """Test that FORMAT_TOOL_NAME tool calls are converted to text in async."""
+        stream_response = create_async_stream_response(example_format_tool_chunks)
+        streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
+
+        assert streamed_chunks == example_format_tool_chunks_processed
+        assert len(stream_response.texts) == 1
+        assert (
+            stream_response.texts[0].text
+            == '{"title": "The Hobbit", "author": "Tolkien"}'
+        )
+        assert len(stream_response.tool_calls) == 0
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+
+    @pytest.mark.asyncio
+    async def test_async_mixed_regular_and_format_tools(
+        self,
+        example_format_tool_chunks_mixed: list[llm.AssistantContentChunk],
+        example_format_tool_chunks_mixed_processed: list[llm.AssistantContentChunk],
+    ) -> None:
+        """Test streaming with both regular and format tools in async."""
+        stream_response = create_async_stream_response(example_format_tool_chunks_mixed)
+        streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
+
+        assert streamed_chunks == example_format_tool_chunks_mixed_processed
+        assert len(stream_response.tool_calls) == 1
+        assert stream_response.tool_calls[0].name == "ring_tool"
+        assert len(stream_response.texts) == 2
+        assert (
+            stream_response.texts[0].text
+            == '{"title": "The Hobbit", "author": "Tolkien"}'
+        )
+        assert stream_response.texts[1].text == "A wizard is never late."
+        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+
+    @pytest.mark.asyncio
+    async def test_async_format_tool_no_finish_reason_change(
+        self,
+        example_format_tool_chunks_max_tokens: list[llm.AssistantContentChunk],
+        example_format_tool_chunks_max_tokens_processed: list[
+            llm.AssistantContentChunk
+        ],
+    ) -> None:
+        """Test that format tool doesn't change non-TOOL_USE finish reasons in async."""
+        stream_response = create_async_stream_response(
+            example_format_tool_chunks_max_tokens
+        )
+        streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
+
+        assert streamed_chunks == example_format_tool_chunks_max_tokens_processed
+        assert len(stream_response.texts) == 1
+        assert stream_response.texts[0].text == ""
+        assert len(stream_response.tool_calls) == 0
+        assert stream_response.finish_reason == llm.FinishReason.MAX_TOKENS

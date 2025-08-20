@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, TypeAlias, TypeVar
 from ..content import (
     AssistantContentChunk,
     AssistantContentPart,
+    FinishReasonChunk,
     Text,
     TextChunk,
     TextEndChunk,
@@ -21,8 +22,10 @@ from ..content import (
 )
 from ..formatting import FormatT
 from ..messages import AssistantMessage, Message
+from ..tools import FORMAT_TOOL_NAME
 from ..types import NoneType
 from .base_response import BaseResponse
+from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
     from ..clients import Model, Provider
@@ -145,14 +148,39 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
         self.tool_calls = self._tool_calls
         self.raw = self._raw
 
-        self.finish_reason = None  # TODO: Add support for finish reason to chunks
+        self.finish_reason = None
 
         self.messages = list(input_messages) + [AssistantMessage(content=self._content)]
 
         self._chunk_iterator = chunk_iterator
         self._current_content: Text | Thinking | ToolCall | None = None
 
-    def _handle_chunk(self, chunk: AssistantContentChunk) -> None:
+        self._found_format_tool = False
+        self._processing_format_tool = False
+
+    def _transform_format_tool_chunks(
+        self, chunk: AssistantContentChunk
+    ) -> AssistantContentChunk:
+        if chunk.type == "tool_call_start_chunk" and chunk.name == FORMAT_TOOL_NAME:
+            self._found_format_tool = True
+            self._processing_format_tool = True
+            return TextStartChunk()
+        if self._processing_format_tool and chunk.type == "tool_call_chunk":
+            return TextChunk(delta=chunk.delta)
+        if self._processing_format_tool and chunk.type == "tool_call_end_chunk":
+            self._processing_format_tool = False
+            return TextEndChunk()
+        if (
+            self._found_format_tool
+            and chunk.type == "finish_reason_chunk"
+            and chunk.finish_reason == FinishReason.TOOL_USE
+        ):
+            return FinishReasonChunk(finish_reason=FinishReason.END_TURN)
+        return chunk
+
+    def _handle_chunk(self, chunk: AssistantContentChunk) -> AssistantContentChunk:
+        chunk = self._transform_format_tool_chunks(chunk)
+
         if self.finish_reason is not None:
             raise RuntimeError(
                 f"Stream already finished with reason: {self.finish_reason}"
@@ -169,6 +197,7 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
             raise NotImplementedError
 
         self._chunks.append(chunk)
+        return chunk
 
     def _handle_text_chunk(
         self, chunk: TextStartChunk | TextChunk | TextEndChunk

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from ..content import Text, Thinking, ToolCall
 from ..formatting import FormatT
 from ..messages import AssistantMessage, Message
+from ..tools import FORMAT_TOOL_NAME
 from ..types import NoneType
 from .base_response import BaseResponse
 from .finish_reason import FinishReason
@@ -44,10 +45,15 @@ class Response(BaseResponse[FormatT]):
         self.format_type = format
 
         self.messages = list(input_messages) + [assistant_message]
-        self.content = assistant_message.content
 
-        self.texts, self.tool_calls, self.thinkings = [], [], []
-        for part in self.content:
+        found_format_tool = False
+        self.texts, self.tool_calls, self.thinkings, self.content = [], [], [], []
+        for part in assistant_message.content:
+            if isinstance(part, ToolCall) and part.name == FORMAT_TOOL_NAME:
+                part = Text(text=part.args)
+                found_format_tool = True
+
+            self.content.append(part)
             if isinstance(part, Text):
                 self.texts.append(part)
             elif isinstance(part, ToolCall):
@@ -56,3 +62,6 @@ class Response(BaseResponse[FormatT]):
                 self.thinkings.append(part)
             else:
                 raise NotImplementedError
+
+        if found_format_tool and self.finish_reason == FinishReason.TOOL_USE:
+            self.finish_reason = FinishReason.END_TURN
