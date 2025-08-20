@@ -1,5 +1,6 @@
 """OpenAI message types and conversion utilities."""
 
+import logging
 from collections.abc import Sequence
 from functools import lru_cache
 from typing import Literal
@@ -20,10 +21,24 @@ from ...content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from ...formatting import FormatInfo
+from ...formatting import (
+    FormatInfo,
+    FormatT,
+    FormattingMode,
+    _utils as _formatting_utils,
+)
 from ...messages import AssistantMessage, Message, UserMessage
-from ...responses import ChunkIterator, FinishReason, RawChunk
-from ...tools import FORMAT_TOOL_NAME, Tool
+from ...responses import (
+    ChunkIterator,
+    FinishReason,
+    RawChunk,
+)
+from ...tools import (
+    FORMAT_TOOL_NAME,
+    Tool,
+)
+from ..base import _utils as _base_utils
+from .models import OpenAIModel
 
 OPENAI_FINISH_REASON_MAP = {
     "stop": FinishReason.END_TURN,
@@ -138,25 +153,6 @@ def _encode_message(message: Message) -> list[openai_types.ChatCompletionMessage
         raise ValueError(f"Unsupported role: {message.role}")  # pragma: no cover
 
 
-def _decode_assistant_message(
-    message: openai_types.ChatCompletionMessage,
-) -> AssistantMessage:
-    parts: list[AssistantContentPart] = []
-    if message.content:
-        parts.append(Text(text=message.content))
-    if message.tool_calls:
-        for tool_call in message.tool_calls:
-            parts.append(
-                ToolCall(
-                    id=tool_call.id,
-                    name=tool_call.function.name,
-                    args=tool_call.function.arguments,
-                )
-            )
-
-    return AssistantMessage(content=parts)
-
-
 @lru_cache(maxsize=128)
 def _convert_tool_to_tool_param(tool: Tool) -> openai_types.ChatCompletionToolParam:
     """Convert a single Mirascope `Tool` to OpenAI ChatCompletionToolParam with caching."""
@@ -173,26 +169,112 @@ def _convert_tool_to_tool_param(tool: Tool) -> openai_types.ChatCompletionToolPa
     )
 
 
+def _get_effective_format_mode(
+    format: FormatInfo, model: OpenAIModel
+) -> FormattingMode:
+    if model in MODELS_WITHOUT_STRUCTURED_OUTPUT_SUPPORT:
+        if format.mode == "strict-or-tool":
+            logging.info(
+                "Model %s does not support strict formatting; falling back to tool",
+                model,
+            )
+            return "tool"
+        elif format.mode == "strict-or-json":
+            logging.info(
+                "Model %s does not support strict formatting; falling back to json",
+                model,
+            )
+            return "json"
+        return format.mode
+    else:
+        if format.mode in ("strict-or-tool", "strict-or-json"):
+            return "strict"
+        return format.mode
+
+
 def prepare_openai_request(
+    *,
+    model: OpenAIModel,
     messages: Sequence[Message],
     tools: Sequence[Tool] | None = None,
+    format: type[FormatT] | None = None,
 ) -> tuple[
+    Sequence[Message],
     Sequence[openai_types.ChatCompletionMessageParam],
     Sequence[openai_types.ChatCompletionToolParam] | NotGiven,
+    shared_openai_types.ResponseFormatJSONObject
+    | shared_openai_types.ResponseFormatJSONSchema
+    | NotGiven,
 ]:
-    """Prepare OpenAI API request parameters."""
-    openai_tools = (
-        [_convert_tool_to_tool_param(tool) for tool in tools] if tools else NotGiven()
+    """Prepare OpenAI API request parameters.
+
+    Args:
+        model: The OpenAI model string. Used for model-specific behavior around whether
+          strict structured outputs are supported.
+        messages: A sequence of Mirascope `Message`s.
+        tools: A sequence of Mirascope tools (or None).
+        format: A format type (or None).
+
+    Returns:
+        A tuple containing:
+            - A sequence of Mirascope `Message`s, which may include modifications to the
+              system message (e.g. with instructions for JSON mode formatting).
+            - A sequence of `ChatCompletionMessageParam` representing encoded message content.
+            - A sequence of `ChatCompletionToolParam`, or `NotGiven`. This includes encoded tools,
+              and potentially a response format tool.
+            - A `ResponseFormat` specifier if needed and supported, or else `NotGiven`
+    """
+    openai_tools: list[openai_types.ChatCompletionToolParam] | NotGiven = (
+        [_convert_tool_to_tool_param(tool) for tool in tools] if tools else []
     )
+
+    additional_system_instructions = []
+    response_format: (
+        shared_openai_types.ResponseFormatJSONObject
+        | shared_openai_types.ResponseFormatJSONSchema
+        | NotGiven
+    ) = NotGiven()
+
+    if format:
+        format_info = _formatting_utils.ensure_formattable(format)
+        formatting_mode = _get_effective_format_mode(format_info, model)
+        if formatting_mode == "strict":
+            response_format = create_strict_response_format(format_info)
+        elif formatting_mode == "tool":
+            additional_system_instructions.append(
+                f"When you are ready to respond to the user, call the {FORMAT_TOOL_NAME} tool to output a structured response."
+            )
+            additional_system_instructions.append(
+                "Do NOT output any text in addition to the tool call."
+            )
+            openai_tools.append(create_format_tool_param(format_info))
+        elif formatting_mode == "json":
+            additional_system_instructions.append(
+                _base_utils.create_json_mode_instructions(format_info)
+            )
+            if model in MODELS_WITHOUT_STRUCTURED_OUTPUT_SUPPORT:
+                additional_system_instructions.append(
+                    "Respond ONLY with valid JSON, and no other text."
+                )
+            else:
+                response_format = {"type": "json_object"}
+
+        if format_info.formatting_instructions:
+            additional_system_instructions.append(format_info.formatting_instructions)
+
+    if not openai_tools:
+        openai_tools = NotGiven()
+
+    if additional_system_instructions:
+        messages = _base_utils.add_system_instructions(
+            messages, additional_system_instructions
+        )
 
     encoded_messages: list[openai_types.ChatCompletionMessageParam] = []
     for message in messages:
         encoded_messages.extend(_encode_message(message))
 
-    return (
-        encoded_messages,
-        openai_tools,
-    )
+    return messages, encoded_messages, openai_tools, response_format
 
 
 def decode_response(
@@ -200,11 +282,33 @@ def decode_response(
 ) -> tuple[AssistantMessage, FinishReason]:
     """Convert OpenAI ChatCompletion to mirascope AssistantMessage."""
     choice = response.choices[0]
-    assistant_message = _decode_assistant_message(choice.message)
+    message = choice.message
+
+    parts: list[AssistantContentPart] = []
+    found_format_tool_call = False
+    if message.content:
+        parts.append(Text(text=message.content))
+    if message.tool_calls:
+        for tool_call in message.tool_calls:
+            if tool_call.function.name == FORMAT_TOOL_NAME:
+                parts.append(Text(text=tool_call.function.arguments))
+                found_format_tool_call = True
+            else:
+                parts.append(
+                    ToolCall(
+                        id=tool_call.id,
+                        name=tool_call.function.name,
+                        args=tool_call.function.arguments,
+                    )
+                )
+
     finish_reason = OPENAI_FINISH_REASON_MAP.get(
         choice.finish_reason, FinishReason.UNKNOWN
     )
-    return assistant_message, finish_reason
+    if found_format_tool_call and finish_reason == FinishReason.TOOL_USE:
+        finish_reason = FinishReason.END_TURN
+
+    return AssistantMessage(content=parts), finish_reason
 
 
 def convert_openai_stream_to_chunk_iterator(
