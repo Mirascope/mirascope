@@ -45,10 +45,10 @@ FormattingMode = Literal[
     be handled as regular tool calls.
 
 - "strict-or-tool": Use "strict" mode if supported, or fall back to "tool" mode if not. 
-    Will log a warning on fallback.
+    Will log an info message on fallback.
 
 - "strict-or-json": Use "strict" mode if supported, or fall back to "json" mode if not.
-    Will log a warning on fallback.
+    Will log an info message on fallback.
 """
 
 

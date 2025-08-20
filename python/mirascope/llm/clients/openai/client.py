@@ -1,24 +1,22 @@
 """OpenAI client implementation."""
 
-import logging
 import os
 from collections.abc import Sequence
 
 import httpx
-from openai import NotGiven, OpenAI
+from openai import OpenAI
 
 from ...context import Context, DepsT
-from ...formatting import FormatT, _utils as _formatting_utils
+from ...formatting import FormatT
 from ...messages import Message
 from ...responses import AsyncStreamResponse, Response, StreamResponse
 from ...tools import (
-    FORMAT_TOOL_NAME,
     AsyncContextTool,
     AsyncTool,
     ContextTool,
     Tool,
 )
-from ..base import BaseClient, _utils as _base_utils
+from ..base import BaseClient
 from . import _utils
 from .models import OpenAIModel
 from .params import OpenAIParams
@@ -63,7 +61,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        message_params, tool_params = _utils.prepare_openai_request(messages, tools)
+        input_messages, message_params, tool_params, _ = _utils.prepare_openai_request(
+            model=model, messages=messages, tools=tools, format=None
+        )
 
         openai_response = self.client.chat.completions.create(
             model=model,
@@ -77,7 +77,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
             provider="openai",
             model=model,
             raw=openai_response,
-            input_messages=messages,
+            input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
         )
@@ -106,94 +106,26 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        format_info = _formatting_utils.ensure_formattable(format)
-        format_mode = format_info.mode
-        model_lacks_structured_output_support = (
-            model in _utils.MODELS_WITHOUT_STRUCTURED_OUTPUT_SUPPORT
+        input_messages, message_params, tool_params, response_format = (
+            _utils.prepare_openai_request(
+                model=model, messages=messages, tools=tools, format=format
+            )
         )
-        if model_lacks_structured_output_support and format_mode == "strict-or-tool":
-            logging.warning(
-                "Model %s does not support strict formatting; falling back to tool",
-                model,
-            )
-            format_mode = "tool"
-        elif model_lacks_structured_output_support and format_mode == "strict-or-json":
-            logging.warning(
-                "Model %s does not support strict formatting; falling back to json",
-                model,
-            )
-            format_mode = "json"
 
-        additional_system_instructions: list[str] = []
-        if format_mode == "tool":
-            additional_system_instructions.append(
-                f"When you are ready to respond to the user, call the {FORMAT_TOOL_NAME} tool to output a structured response."
-            )
-            additional_system_instructions.append(
-                "Do NOT output any text in addition to the tool call."
-            )
-        elif format_mode == "json":
-            additional_system_instructions.append(
-                _base_utils.create_json_mode_instructions(format_info)
-            )
-            if model_lacks_structured_output_support:
-                additional_system_instructions.append(
-                    "Respond ONLY with valid JSON, and no other text."
-                )
-        if format_info.formatting_instructions:
-            additional_system_instructions.append(format_info.formatting_instructions)
-        if additional_system_instructions:
-            messages = _base_utils.add_system_instructions(
-                messages, additional_system_instructions
-            )
-
-        message_params, tool_params = _utils.prepare_openai_request(messages, tools)
-
-        if format_mode in ("strict", "strict-or-tool", "strict-or-json"):
-            response_format = _utils.create_strict_response_format(format_info)
-            openai_response = self.client.chat.completions.create(
-                model=model,
-                messages=message_params,
-                tools=tool_params,
-                response_format=response_format,
-            )
-        elif format_mode == "tool":
-            format_tool_param = _utils.create_format_tool_param(format_info)
-            tool_params = list(tool_params) if isinstance(tool_params, list) else []
-            tool_params.append(format_tool_param)
-
-            openai_response = self.client.chat.completions.create(
-                model=model,
-                messages=message_params,
-                tools=tool_params,
-            )
-        elif format_mode == "json":
-            openai_response = self.client.chat.completions.create(
-                model=model,
-                messages=message_params,
-                tools=tool_params,
-                response_format=(
-                    NotGiven()
-                    if model_lacks_structured_output_support
-                    else {"type": "json_object"}
-                ),
-            )
-        else:
-            raise ValueError(
-                f"Unsupported formatting mode: {format_mode}"
-            )  # pragma: no cover
+        openai_response = self.client.chat.completions.create(
+            model=model,
+            messages=message_params,
+            tools=tool_params,
+            response_format=response_format,
+        )
 
         assistant_message, finish_reason = _utils.decode_response(openai_response)
-        if format_mode == "tool":
-            assistant_message, finish_reason = _base_utils.handle_format_tool_response(
-                assistant_message, finish_reason
-            )
 
         return Response[FormatT](
             provider="openai",
             model=model,
             raw=openai_response,
-            input_messages=messages,
+            input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
             format=format,
@@ -267,7 +199,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        message_params, tool_params = _utils.prepare_openai_request(messages, tools)
+        input_messages, message_params, tool_params, _ = _utils.prepare_openai_request(
+            model=model, messages=messages, tools=tools, format=None
+        )
 
         openai_stream = self.client.chat.completions.create(
             model=model,
@@ -281,7 +215,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         return StreamResponse(
             provider="openai",
             model=model,
-            input_messages=messages,
+            input_messages=input_messages,
             chunk_iterator=chunk_iterator,
         )
 
