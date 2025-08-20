@@ -160,11 +160,11 @@ def test_stream_simple_message(google_client: llm.GoogleClient) -> None:
             "thinkings": [],
             "consumed": True,
             "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextStartChunk(),
                 llm.TextChunk(delta="Hello"),
                 llm.TextChunk(delta=" there! It"),
                 llm.TextChunk(delta="'s nice to meet you! 😊\n"),
-                llm.TextEndChunk(type="text_end_chunk"),
+                llm.TextEndChunk(),
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
@@ -340,16 +340,11 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
             "consumed": True,
             "chunks": [
                 llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id="<unknown>",
                     name="multiply_numbers",
                 ),
-                llm.ToolCallChunk(
-                    type="tool_call_chunk", delta='{"a": 1337, "b": 4242}'
-                ),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
+                llm.ToolCallChunk(delta='{"a": 1337, "b": 4242}'),
+                llm.ToolCallEndChunk(),
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
@@ -456,23 +451,17 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
             "consumed": True,
             "chunks": [
                 llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id="<unknown>",
                     name="get_weather",
                 ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"location": "SF"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
+                llm.ToolCallChunk(delta='{"location": "SF"}'),
+                llm.ToolCallEndChunk(),
                 llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id="<unknown>",
                     name="get_weather",
                 ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"location": "NYC"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
+                llm.ToolCallChunk(delta='{"location": "NYC"}'),
+                llm.ToolCallEndChunk(),
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }

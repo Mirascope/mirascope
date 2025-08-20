@@ -11,7 +11,6 @@ def mixed_content() -> list:
     return [
         "hi, can you help me interpret this?",
         llm.ToolOutput(
-            content_type="tool_output",
             id="long_running_computation",
             name="answer_to_life_the_universe_and_everything",
             type="tool_output",

@@ -21,7 +21,7 @@ class Text:
 class TextStartChunk:
     """Represents the start of a text chunk stream."""
 
-    type: Literal["text_start_chunk"]
+    type: Literal["text_start_chunk"] = "text_start_chunk"
 
     content_type: Literal["text"] = "text"
     """The type of content reconstructed by this chunk."""
@@ -44,7 +44,7 @@ class TextChunk:
 class TextEndChunk:
     """Represents the end of a text chunk stream."""
 
-    type: Literal["text_end_chunk"]
+    type: Literal["text_end_chunk"] = "text_end_chunk"
 
     content_type: Literal["text"] = "text"
     """The type of content reconstructed by this chunk."""
