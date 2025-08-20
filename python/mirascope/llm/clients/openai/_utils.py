@@ -290,6 +290,10 @@ def decode_response(
         parts.append(Text(text=message.content))
     if message.tool_calls:
         for tool_call in message.tool_calls:
+            if tool_call.type == "custom":
+                # This should never happen, because we never create "custom" tools
+                # https://platform.openai.com/docs/guides/function-calling#custom-tools
+                raise NotImplementedError("OpenAI custom tools are not supported.")
             if tool_call.function.name == FORMAT_TOOL_NAME:
                 parts.append(Text(text=tool_call.function.arguments))
                 found_format_tool_call = True
