@@ -1,6 +1,5 @@
 """OpenAI message types and conversion utilities."""
 
-import logging
 from collections.abc import Sequence
 from functools import lru_cache
 from typing import Literal
@@ -24,7 +23,6 @@ from ...content import (
 from ...formatting import (
     FormatInfo,
     FormatT,
-    FormattingMode,
     _utils as _formatting_utils,
 )
 from ...messages import AssistantMessage, Message, UserMessage
@@ -46,6 +44,48 @@ OPENAI_FINISH_REASON_MAP = {
     "content_filter": FinishReason.REFUSAL,
     "tool_calls": FinishReason.TOOL_USE,
     "function_call": FinishReason.TOOL_USE,
+}
+
+
+MODELS_WITHOUT_JSON_SCHEMA_SUPPORT = {
+    "chatgpt-4o-latest",
+    "gpt-3.5-turbo",
+    "gpt-3.5-turbo-0125",
+    "gpt-3.5-turbo-1106",
+    "gpt-3.5-turbo-16k",
+    "gpt-4",
+    "gpt-4-0125-preview",
+    "gpt-4-0613",
+    "gpt-4-1106-preview",
+    "gpt-4-turbo",
+    "gpt-4-turbo-2024-04-09",
+    "gpt-4-turbo-preview",
+    "gpt-4o-2024-05-13",
+    "gpt-4o-audio-preview",
+    "gpt-4o-audio-preview-2024-10-01",
+    "gpt-4o-audio-preview-2024-12-17",
+    "gpt-4o-audio-preview-2025-06-03",
+    "gpt-4o-mini-audio-preview",
+    "gpt-4o-mini-audio-preview-2024-12-17",
+    "gpt-5-chat-latest",
+    "o1-mini",
+    "o1-mini-2024-09-12",
+}
+MODELS_WITHOUT_JSON_OBJECT_SUPPORT = {
+    "gpt-4",
+    "gpt-4-0613",
+    "gpt-4o-audio-preview",
+    "gpt-4o-audio-preview-2024-10-01",
+    "gpt-4o-audio-preview-2024-12-17",
+    "gpt-4o-audio-preview-2025-06-03",
+    "gpt-4o-mini-audio-preview",
+    "gpt-4o-mini-audio-preview-2024-12-17",
+    "gpt-4o-mini-search-preview",
+    "gpt-4o-mini-search-preview-2025-03-11",
+    "gpt-4o-search-preview",
+    "gpt-4o-search-preview-2025-03-11",
+    "o1-mini",
+    "o1-mini-2024-09-12",
 }
 
 
@@ -169,29 +209,6 @@ def _convert_tool_to_tool_param(tool: Tool) -> openai_types.ChatCompletionToolPa
     )
 
 
-def _get_effective_format_mode(
-    format: FormatInfo, model: OpenAIModel
-) -> FormattingMode:
-    if model in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT:
-        if format.mode == "strict-or-tool":
-            logging.info(
-                "Model %s does not support strict formatting; falling back to tool",
-                model,
-            )
-            return "tool"
-        elif format.mode == "strict-or-json":
-            logging.info(
-                "Model %s does not support strict formatting; falling back to json",
-                model,
-            )
-            return "json"
-        return format.mode
-    else:
-        if format.mode in ("strict-or-tool", "strict-or-json"):
-            return "strict"
-        return format.mode
-
-
 def prepare_openai_request(
     *,
     model: OpenAIModel,
@@ -228,7 +245,6 @@ def prepare_openai_request(
         [_convert_tool_to_tool_param(tool) for tool in tools] if tools else []
     )
 
-    additional_system_instructions = []
     response_format: (
         shared_openai_types.ResponseFormatJSONObject
         | shared_openai_types.ResponseFormatJSONSchema
@@ -236,39 +252,27 @@ def prepare_openai_request(
     ) = NotGiven()
 
     if format:
-        format_info = _formatting_utils.ensure_formattable(format)
-        formatting_mode = _get_effective_format_mode(format_info, model)
-        if formatting_mode == "strict":
-            response_format = create_strict_response_format(format_info)
-        elif formatting_mode == "tool":
-            additional_system_instructions.append(
-                f"When you are ready to respond to the user, call the {FORMAT_TOOL_NAME} tool to output a structured response."
-            )
-            additional_system_instructions.append(
-                "Do NOT output any text in addition to the tool call."
-            )
-            openai_tools.append(create_format_tool_param(format_info))
-        elif formatting_mode == "json":
-            additional_system_instructions.append(
-                _base_utils.create_json_mode_instructions(format_info)
-            )
-            if model in MODELS_WITHOUT_JSON_OBJECT_SUPPORT:
-                additional_system_instructions.append(
-                    "Respond ONLY with valid JSON, and no other text."
-                )
-            else:
-                response_format = {"type": "json_object"}
+        model_supports_strict = model not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+        model_has_native_json_support = model not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+        resolved_format = _formatting_utils.resolve_formattable(
+            format,
+            model_supports_strict_mode=model_supports_strict,
+            model_has_native_json_support=model_has_native_json_support,
+        )
+        if resolved_format.mode == "strict":
+            response_format = create_strict_response_format(resolved_format.info)
+        elif resolved_format.mode == "tool":
+            openai_tools.append(create_format_tool_param(resolved_format.info))
+        elif resolved_format.mode == "json" and model_has_native_json_support:
+            response_format = {"type": "json_object"}
 
-        if format_info.formatting_instructions:
-            additional_system_instructions.append(format_info.formatting_instructions)
+        if resolved_format.formatting_instructions:
+            messages = _base_utils.add_system_instructions(
+                messages, resolved_format.formatting_instructions
+            )
 
     if not openai_tools:
         openai_tools = NotGiven()
-
-    if additional_system_instructions:
-        messages = _base_utils.add_system_instructions(
-            messages, additional_system_instructions
-        )
 
     encoded_messages: list[openai_types.ChatCompletionMessageParam] = []
     for message in messages:
@@ -455,45 +459,3 @@ def create_format_tool_param(
             "strict": True,
         },
     )
-
-
-MODELS_WITHOUT_JSON_SCHEMA_SUPPORT = {
-    "chatgpt-4o-latest",
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-0125",
-    "gpt-3.5-turbo-1106",
-    "gpt-3.5-turbo-16k",
-    "gpt-4",
-    "gpt-4-0125-preview",
-    "gpt-4-0613",
-    "gpt-4-1106-preview",
-    "gpt-4-turbo",
-    "gpt-4-turbo-2024-04-09",
-    "gpt-4-turbo-preview",
-    "gpt-4o-2024-05-13",
-    "gpt-4o-audio-preview",
-    "gpt-4o-audio-preview-2024-10-01",
-    "gpt-4o-audio-preview-2024-12-17",
-    "gpt-4o-audio-preview-2025-06-03",
-    "gpt-4o-mini-audio-preview",
-    "gpt-4o-mini-audio-preview-2024-12-17",
-    "gpt-5-chat-latest",
-    "o1-mini",
-    "o1-mini-2024-09-12",
-}
-MODELS_WITHOUT_JSON_OBJECT_SUPPORT = {
-    "gpt-4",
-    "gpt-4-0613",
-    "gpt-4o-audio-preview",
-    "gpt-4o-audio-preview-2024-10-01",
-    "gpt-4o-audio-preview-2024-12-17",
-    "gpt-4o-audio-preview-2025-06-03",
-    "gpt-4o-mini-audio-preview",
-    "gpt-4o-mini-audio-preview-2024-12-17",
-    "gpt-4o-mini-search-preview",
-    "gpt-4o-mini-search-preview-2025-03-11",
-    "gpt-4o-search-preview",
-    "gpt-4o-search-preview-2025-03-11",
-    "o1-mini",
-    "o1-mini-2024-09-12",
-}

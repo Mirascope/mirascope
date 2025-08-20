@@ -1,5 +1,6 @@
 """Tests for OpenAIClient using VCR.py for HTTP request recording/playback."""
 
+import inspect
 from typing import Annotated
 
 import openai
@@ -816,7 +817,15 @@ def test_json_mode_with_description_and_formatting_instructions(
 
         @classmethod
         def formatting_instructions(cls) -> str:
-            return "Use UPPERCASE for all genre names."
+            return inspect.cleandoc(
+                """Pretty please return only JSON and nothing else!
+                Specifically I need an object of the form 
+                {"title": str, "author": str, "genre": str}
+
+                Oh, and the genre should be ALL UPPERCASE!
+                Thanks ever so. Remember its JUST JSON matching that and NOTHING ELSE.
+                """
+            )
 
     messages = [llm.messages.user("Recommend a science fiction book.")]
 
@@ -849,35 +858,12 @@ def test_json_mode_with_description_and_formatting_instructions(
     assert response.messages[0].role == "system"
     assert response.messages[0].content.text == snapshot(
         """\
-Respond with valid JSON that matches this exact schema:
+Pretty please return only JSON and nothing else!
+Specifically I need an object of the form \n\
+{"title": str, "author": str, "genre": str}
 
-```json
-{
-  "description": "A detailed book recommendation with metadata.",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "genre": {
-      "title": "Genre",
-      "type": "string"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "genre"
-  ],
-  "title": "DetailedBook",
-  "type": "object"
-}
-```
-Use UPPERCASE for all genre names.\
+Oh, and the genre should be ALL UPPERCASE!
+Thanks ever so. Remember its JUST JSON matching that and NOTHING ELSE.\
 """
     )
 
@@ -1182,7 +1168,7 @@ def test_tool_mode_with_description_and_formatting_instructions(
 
         @classmethod
         def formatting_instructions(cls) -> str:
-            return "Use UPPERCASE for all genre names."
+            return "Yo, defo call the tool and output nothing but the tool call tyvm! Oh and make sure the genre field is ALL CAPS"
 
     messages = [llm.messages.user("Recommend a science fiction book.")]
 
@@ -1193,11 +1179,9 @@ def test_tool_mode_with_description_and_formatting_instructions(
     )
 
     assert response.messages[0].role == "system"
-    assert response.messages[0].content.text == snapshot("""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.
-Use UPPERCASE for all genre names.\
-""")
+    assert response.messages[0].content.text == snapshot(
+        "Yo, defo call the tool and output nothing but the tool call tyvm! Oh and make sure the genre field is ALL CAPS"
+    )
 
     assert response.finish_reason == llm.FinishReason.END_TURN
     book = response.format()
@@ -1212,9 +1196,7 @@ Use UPPERCASE for all genre names.\
 
 
 @pytest.mark.vcr()
-def test_strict_or_tool_fallback(
-    openai_client: llm.OpenAIClient, caplog: pytest.LogCaptureFixture
-) -> None:
+def test_strict_or_tool_fallback(openai_client: llm.OpenAIClient) -> None:
     """Test that strict-or-tool falls back to tool if model does not support strict."""
 
     @llm.format(mode="strict-or-tool")
@@ -1224,12 +1206,11 @@ def test_strict_or_tool_fallback(
 
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
-    with caplog.at_level("INFO"):
-        response = openai_client.structured_call(
-            model="gpt-4",
-            messages=messages,
-            format=SimpleBook,
-        )
+    response = openai_client.structured_call(
+        model="gpt-4",
+        messages=messages,
+        format=SimpleBook,
+    )
 
     assert response.pretty() == snapshot("""\
 {
@@ -1249,18 +1230,9 @@ Do NOT output any text in addition to the tool call.\
         {"title": "Harry Potter and the Sorcerer's Stone", "author": "J.K. Rowling"}
     )
 
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "INFO"
-    assert (
-        "Model gpt-4 does not support strict formatting; falling back to tool"
-        in caplog.records[0].message
-    )
-
 
 @pytest.mark.vcr()
-def test_strict_or_json_fallback(
-    openai_client: llm.OpenAIClient, caplog: pytest.LogCaptureFixture
-) -> None:
+def test_strict_or_json_fallback(openai_client: llm.OpenAIClient) -> None:
     """Test that strict-or-json falls back to json if model does not support strict."""
 
     @llm.format(mode="strict-or-json")
@@ -1270,12 +1242,11 @@ def test_strict_or_json_fallback(
 
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
-    with caplog.at_level("INFO"):
-        response = openai_client.structured_call(
-            model="gpt-4",
-            messages=messages,
-            format=SimpleBook,
-        )
+    response = openai_client.structured_call(
+        model="gpt-4",
+        messages=messages,
+        format=SimpleBook,
+    )
 
     assert response.format().model_dump() == snapshot(
         {"title": "Harry Potter and the Sorcerer's Stone", "author": "J.K. Rowling"}
@@ -1308,13 +1279,6 @@ Respond with valid JSON that matches this exact schema:
 ```
 Respond ONLY with valid JSON, and no other text.\
 """
-    )
-
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "INFO"
-    assert (
-        "Model gpt-4 does not support strict formatting; falling back to json"
-        in caplog.records[0].message
     )
 
 

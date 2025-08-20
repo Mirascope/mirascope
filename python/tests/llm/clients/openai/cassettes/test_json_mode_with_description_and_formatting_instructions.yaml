@@ -1,13 +1,10 @@
 interactions:
 - request:
-    body: '{"messages":[{"role":"system","content":"Respond with valid JSON that matches
-      this exact schema:\n\n```json\n{\n  \"description\": \"A detailed book recommendation
-      with metadata.\",\n  \"properties\": {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\":
-      \"string\"\n    },\n    \"author\": {\n      \"title\": \"Author\",\n      \"type\":
-      \"string\"\n    },\n    \"genre\": {\n      \"title\": \"Genre\",\n      \"type\":
-      \"string\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"genre\"\n  ],\n  \"title\":
-      \"DetailedBook\",\n  \"type\": \"object\"\n}\n```\nUse UPPERCASE for all genre
-      names."},{"role":"user","content":"Recommend a science fiction book."}],"model":"gpt-4o-mini","response_format":{"type":"json_object"}}'
+    body: '{"messages":[{"role":"system","content":"Pretty please return only JSON
+      and nothing else!\nSpecifically I need an object of the form \n{\"title\": str,
+      \"author\": str, \"genre\": str}\n\nOh, and the genre should be ALL UPPERCASE!\nThanks
+      ever so. Remember its JUST JSON matching that and NOTHING ELSE."},{"role":"user","content":"Recommend
+      a science fiction book."}],"model":"gpt-4o-mini","response_format":{"type":"json_object"}}'
     headers:
       accept:
       - application/json
@@ -16,16 +13,15 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '760'
+      - '431'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=IhVUzv4NCprjhLw9kqhthlVBeItaTiMOVGhceZ3HIPA-1755642632-1.0.1.1-mhYlxx7avdJVrLA2hCbhGEQVuzDUXo4ucq3Jy1.W9SSNyaJKFOTu1RzbyV2s5fS9hWs2I6wQ4mD0Wza95bg5d2JIWtabiwbqZbY_Bg9jeWM;
-        _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
+      - _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
-      - OpenAI/Python 1.86.0
+      - OpenAI/Python 1.100.2
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -35,7 +31,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 1.86.0
+      - 1.100.2
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -49,18 +45,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jJJNj9MwEIbv+RXWnBuUlqZfR8qWLUK7iEUgRFaRa09Ss45t7Anqqup/
-        R0m6TRYWiYsP88w7nndmjhFjoCSsGIg9J1E5Ha9nHxfy55tvm+uv9vBhLlM9fvxym7w7JMtP72HU
-        KOzuBwp6Ur0StnIaSVnTYeGREzZVx/M0nU0ns9dpCyorUTey0lE8tXGljIonyWQaJ/N4vDir91YJ
-        DLBi3yPGGDu2b9OnkXiAFUtGT5EKQ+AlwuqSxBh4q5sI8BBUIG4IRj0U1hCatvVjZhjLgBRpzGDF
-        MnhbG8xg1MV5TXvrO7Dx3Dywa/Q79HTJKNH4s/Juvb26WV+xzXb9eXt7k0FmTsNvPRZ14I11U2s9
-        ANwYS7wZXWv4/kxOF4vals7bXfhDCoUyKuxzjzxY09gJZB209BQxdt+Osn42HXDeVo5ysg/YfjdO
-        l1096DfY08niDMkS1wPVYj56oV4ukbjSYbAMEFzsUfbSfnO8lsoOQDRw/Xc3L9XunCtT/k/5HgiB
-        jlDmzqNU4rnjPs1jc+D/SrtMuW0YAvpfSmBOCn2zCYkFr3V3dhAeA2GVF8qU6J1X3e0VLk9nCS9m
-        mKZLiE7RbwAAAP//AwAeDJwliQMAAA==
+        H4sIAAAAAAAAAwAAAP//jJLBbtswDIbvfgqB53iwkzrufGzWosGADsNWoEBdGIpM21plSZXoYEOQ
+        dx9sp7G7dcAuOvDjT/EneQgYA1lCxkA0nERrVbhZq/39i/4cy9X69uphG++vXvYP8b1qvsYOFr3C
+        7H6goFfVB2Faq5Ck0SMWDjlhXzVOkyRdRcvVcgCtKVH1stpSeGHCVmoZLqPlRRilYXx5UjdGCvSQ
+        sceAMcYOw9v3qUv8CRmLFq+RFr3nNUJ2TmIMnFF9BLj30hPXBIsJCqMJ9dD6IdeM5UCSFOaQsRw+
+        dRpzWIxx3lFj3AhuHNfP7BbdDh2dM2rU7qT8ttle322u2c1283375S6HXB/n3zqsOs9767pTaga4
+        1oZ4P7rB8NOJHM8WlamtMzv/hxQqqaVvCofcG93b8WQsDPQYMPY0jLJ7Mx2wzrSWCjLPOHyXpmM5
+        mBY4weXlCZIhrqZ4HCWLd8oVJRKXys92AYKLBstJOi2Od6U0MxDMTP/dzXu1R+NS1/9TfgJCoCUs
+        C+uwlOKt4ynNYX/f/0o7D3loGDy6vRRYkETXL6LEindqvDrwvzxhW1RS1+isk+PpVbZI1hGv1pgk
+        HyE4Br8BAAD//wMAvRGIvIgDAAA=
     headers:
       CF-RAY:
-      - 971d18a8ef83d7ae-SEA
+      - 9725733d7d15e724-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -68,9 +64,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 19 Aug 2025 22:30:36 GMT
+      - Wed, 20 Aug 2025 22:50:32 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=yxseYV_JO338eKTni7uY1dpazoLUq6ttNcQtlW1_1Ug-1755730232-1.0.1.1-p76.mDPjh1tm9E8Stmby7woSwCDfhU_OoE4l5JWF7WHEvWQzs3Q_WTAqs7As0XrXsIqvs_R3qQiF9lWlR5BsFNbJy.I9ZhDS3YVnBLOmkeM;
+        path=/; expires=Wed, 20-Aug-25 23:20:32 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=JEoGtjFS8qvuoIv55e7v3cn8zpDMI5yBZlq5uNin1Lg-1755730232988-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -86,13 +88,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '624'
+      - '700'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '650'
+      - '778'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -100,13 +102,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '3999861'
+      - '3999926'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 2ms
+      - 1ms
       x-request-id:
-      - req_5d0a7317dc27430286def1904fa280c0
+      - req_fb94a442f02c40759499f40160d5604a
     status:
       code: 200
       message: OK

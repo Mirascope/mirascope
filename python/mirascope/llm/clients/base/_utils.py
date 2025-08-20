@@ -1,27 +1,28 @@
-import json
 import logging
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from typing import TypeAlias
 
 from ...content import Text
-from ...formatting import FormatInfo
 from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
 
 SystemMessageContent: TypeAlias = str | None
 
 
 def add_system_instructions(
-    messages: Sequence[Message], instructions: Iterable[str]
+    messages: Sequence[Message], additional_system_instructions: str
 ) -> Sequence[Message]:
-    combined_instructions = "\n".join(instructions)
     if messages and messages[0].role == "system":
-        if messages[0].content.text.endswith(combined_instructions):
+        if messages[0].content.text.endswith(additional_system_instructions):
             return messages
-        modified = Text(text=messages[0].content.text + "\n" + combined_instructions)
+        modified = Text(
+            text=messages[0].content.text + "\n" + additional_system_instructions
+        )
         return [SystemMessage(role="system", content=modified), *messages[1:]]
     else:
         return [
-            SystemMessage(role="system", content=Text(text=combined_instructions)),
+            SystemMessage(
+                role="system", content=Text(text=additional_system_instructions)
+            ),
             *messages,
         ]
 
@@ -55,23 +56,3 @@ def extract_system_message(
             remaining_messages.append(message)
 
     return system_message_content, remaining_messages
-
-
-def create_json_mode_instructions(format_info: FormatInfo) -> str:
-    """Create formatting instructions for JSON mode from `FormatInfo`.
-
-    Args:
-        format_info: The `FormatInfo` instance containing schema and metadata
-
-    Returns:
-        Instructions string for JSON mode formatting
-
-    Note: This does not include `format_info.description`, under the assumption that
-    this code path is only invoked in json mode, but the client code will separately add
-    the description in all formatting code paths.
-    """
-
-    schema_str = json.dumps(format_info.schema, indent=2)
-    instructions = f"Respond with valid JSON that matches this exact schema:\n\n```json\n{schema_str}\n```"
-
-    return instructions

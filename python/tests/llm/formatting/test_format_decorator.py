@@ -1,19 +1,13 @@
 """Tests for the @format decorator."""
 
-from typing import Annotated, cast
+from typing import Annotated
 
 import pytest
 from inline_snapshot import snapshot
 from pydantic import BaseModel, Field
 
 from mirascope import llm
-
-
-def get_format(x: type[llm.formatting.FormatT]) -> llm.FormatInfo:
-    assert hasattr(x, "__mirascope_format_info__")
-    format = cast(llm.formatting.Formattable, x).__mirascope_format_info__
-    assert isinstance(format, llm.formatting.FormatInfo)
-    return format
+from tests import utils
 
 
 def test_format_decorator_basic() -> None:
@@ -24,11 +18,11 @@ def test_format_decorator_basic() -> None:
         title: str
         author: str
 
-    format_obj = get_format(Book)
+    format_obj = utils.get_format(Book)
     assert format_obj.name == "Book"
     assert format_obj.description is None
     assert format_obj.mode == "strict-or-tool"
-    assert format_obj.formatting_instructions is None
+    assert format_obj.format == Book
 
 
 @pytest.mark.parametrize(
@@ -41,11 +35,11 @@ def test_format_decorator_all_modes(mode: llm.formatting.FormattingMode) -> None
     class ModeTest(BaseModel):
         content: str
 
-    format_obj = get_format(ModeTest)
+    format_obj = utils.get_format(ModeTest)
     assert format_obj.name == "ModeTest"
     assert format_obj.description is None
     assert format_obj.mode == mode
-    assert format_obj.formatting_instructions is None
+    assert format_obj.format == ModeTest
 
 
 def test_format_decorator_schema_snapshot() -> None:
@@ -62,7 +56,7 @@ def test_format_decorator_schema_snapshot() -> None:
         metadata: dict[str, str] = {}
         is_active: bool = True
 
-    format_obj = get_format(ComplexModel)
+    format_obj = utils.get_format(ComplexModel)
     assert format_obj.name == "ComplexModel"
     assert format_obj.description == "A complex model for testing schema generation."
 
@@ -99,28 +93,6 @@ def test_format_decorator_schema_snapshot() -> None:
     )
 
 
-def test_format_decorator_with_formatting_instructions() -> None:
-    """Test format decorator with formatting instructions."""
-
-    @llm.format()
-    class TaskWithInstructions(BaseModel):
-        task: str
-        priority: int
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return """
-            Always use clear, concise language for tasks.
-            Also, be sure not to include extra newlines.
-            """
-
-    format_obj = get_format(TaskWithInstructions)
-    assert (
-        format_obj.formatting_instructions
-        == "Always use clear, concise language for tasks.\nAlso, be sure not to include extra newlines."
-    )
-
-
 def test_format_decorator_factory_vs_direct() -> None:
     """Test that factory and direct application produce equivalent results."""
 
@@ -138,7 +110,18 @@ def test_format_decorator_factory_vs_direct() -> None:
 
         return Example
 
-    assert get_format(direct_decorated()) == get_format(factory_decorated())
+    DirectExample = direct_decorated()
+    FactoryExample = factory_decorated()
+    direct_format = utils.get_format(DirectExample)
+    factory_format = utils.get_format(FactoryExample)
+
+    assert direct_format.description == factory_format.description
+    assert direct_format.mode == factory_format.mode
+    assert direct_format.name == factory_format.name
+    assert direct_format.schema == factory_format.schema
+
+    assert direct_format.format == DirectExample
+    assert factory_format.format == FactoryExample
 
 
 def test_format_decorator_preserves_class_functionality() -> None:
@@ -170,7 +153,7 @@ def test_format_decorator_nested_models() -> None:
         name: str
         address: Address
 
-    schema = get_format(Person).schema
+    schema = utils.get_format(Person).schema
     assert schema == snapshot(
         {
             "$defs": {
@@ -210,7 +193,7 @@ def test_format_decorator_name_and_description() -> None:
         author: str
         isbn: str
 
-    format_obj = get_format(BookWithDescription)
+    format_obj = utils.get_format(BookWithDescription)
     assert format_obj.name == "BookWithDescription"
     expected_description = (
         "A comprehensive book record for library management.\n\n"

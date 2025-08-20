@@ -107,11 +107,46 @@ class FormatInfo:
     Determines how the LLM call may be modified in order to extract the expected format.
     """
 
+    format: type[BaseModel]
+    """The associated format that this `FormatInfo` describes."""
+
+
+ConcreteFormattingMode = Literal[
+    "strict",
+    "tool",
+    "json",
+]
+"""Concrete mode for formatting responses with a particular LLM.
+
+The semantics for modes "strict", "tool", and "json" are as described in `FormattingMode`. 
+
+"strict-or-tool" and "strict-or-json" are not present because they will have resolved to one of "strict", "tool", or "json".
+"""
+
+
+@dataclass(kw_only=True)
+class ResolvedFormatInfo:
+    """Resolved format info for direct processing by LLM.
+
+    A `FormatInfo` is converted into a `ResolvedFormatInfo` using
+    `ResolvedFormatInfo.from_format_info(...)`. Based on information about the model's capabilities,
+    it will include a concrete formatting mode. It may also contain formatting instructions
+    that will be added to the model's system message. Those formatting instructions will be
+    the `FormatInfo`'s system instructions if present, or may be auto-generated instructions
+    (e.g. a dump of the expected JSON schema in JSON mode) if no custom formatting instructions
+    were provided.
+    """
+
+    mode: ConcreteFormattingMode
+    """The concrete formatting mode that will be used."""
+
+    info: FormatInfo
+    """The FormatInfo this ResolvedFormatInfo was resolved from."""
+
     formatting_instructions: str | None
-    """Format instructions. Will be appended to the prompt if present.
+    """The formatting instructions that will be added to the LLM system prompt.
     
-    May be provided as an argument to the llm.format decorator, or pulled from a
-    formatting_instructions class method.
+    These are computed based on the `FormattingInstructions` present on the `FormatInfo`.
     """
 
 
@@ -128,4 +163,4 @@ class HasFormattingInstructions(Protocol):
     """Protocol for classes that have been decorated with `@format()`."""
 
     @classmethod
-    def formatting_instructions(cls) -> str: ...
+    def formatting_instructions(cls) -> str | None: ...
