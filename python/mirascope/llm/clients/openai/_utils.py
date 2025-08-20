@@ -318,6 +318,10 @@ def convert_openai_stream_to_chunk_iterator(
     current_content_type: Literal["text", "tool_call"] | None = None
     current_tool_index: int | None = None
 
+    # TODO: Consider moving this logic into the Response classes to avoid per-client duplication.
+    current_tool_is_format_tool = False
+    found_format_tool = False
+
     for chunk in openai_stream:
         yield RawChunk(raw=chunk)
 
@@ -360,10 +364,14 @@ def convert_openai_stream_to_chunk_iterator(
                     )  # pragma: no cover
 
                 if current_tool_index is not None and current_tool_index < index:
-                    yield ToolCallEndChunk(
-                        type="tool_call_end_chunk",
-                        content_type="tool_call",
-                    )
+                    if current_tool_is_format_tool:
+                        yield TextEndChunk(type="text_end_chunk")  # pragma: no cover
+                        current_tool_is_format_tool = False  # pragma: no cover
+                    else:
+                        yield ToolCallEndChunk(
+                            type="tool_call_end_chunk",
+                            content_type="tool_call",
+                        )
 
                     current_tool_index = None
 
@@ -376,27 +384,37 @@ def convert_openai_stream_to_chunk_iterator(
                         )  # pragma: no cover
 
                     current_tool_index = index
+                    if name == FORMAT_TOOL_NAME:
+                        current_tool_is_format_tool = True
+                        found_format_tool = True
                     if not (tool_id := tool_call_delta.id):
                         raise RuntimeError(
                             f"Missing id for tool call at index {index}"
                         )  # pragma: no cover
 
-                    yield ToolCallStartChunk(
-                        type="tool_call_start_chunk",
-                        id=tool_id,
-                        name=name,
-                    )
+                    if current_tool_is_format_tool:
+                        yield TextStartChunk(type="text_start_chunk")
+                    else:
+                        yield ToolCallStartChunk(
+                            type="tool_call_start_chunk",
+                            id=tool_id,
+                            name=name,
+                        )
 
                 if tool_call_delta.function and tool_call_delta.function.arguments:
-                    yield ToolCallChunk(
-                        type="tool_call_chunk",
-                        delta=tool_call_delta.function.arguments,
-                    )
+                    if current_tool_is_format_tool:
+                        yield TextChunk(
+                            type="text_chunk", delta=tool_call_delta.function.arguments
+                        )
+                    else:
+                        yield ToolCallChunk(
+                            type="tool_call_chunk",
+                            delta=tool_call_delta.function.arguments,
+                        )
 
         if choice.finish_reason:
-            if current_content_type == "text":
+            if current_content_type == "text" or current_tool_is_format_tool:
                 yield TextEndChunk(type="text_end_chunk")
-                current_content_type = None
             elif current_content_type == "tool_call":
                 yield ToolCallEndChunk(
                     type="tool_call_end_chunk",
@@ -409,6 +427,8 @@ def convert_openai_stream_to_chunk_iterator(
             finish_reason = OPENAI_FINISH_REASON_MAP.get(
                 choice.finish_reason, FinishReason.UNKNOWN
             )
+            if found_format_tool and finish_reason == FinishReason.TOOL_USE:
+                finish_reason = FinishReason.END_TURN
             yield FinishReasonChunk(finish_reason=finish_reason)
 
 
