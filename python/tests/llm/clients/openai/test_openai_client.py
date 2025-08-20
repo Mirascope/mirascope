@@ -1233,7 +1233,7 @@ def test_strict_or_tool_fallback(
 
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
-    with caplog.at_level("WARNING"):
+    with caplog.at_level("INFO"):
         response = openai_client.structured_call(
             model="gpt-4",
             messages=messages,
@@ -1259,7 +1259,7 @@ Do NOT output any text in addition to the tool call.\
     )
 
     assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "WARNING"
+    assert caplog.records[0].levelname == "INFO"
     assert (
         "Model gpt-4 does not support strict formatting; falling back to tool"
         in caplog.records[0].message
@@ -1279,7 +1279,7 @@ def test_strict_or_json_fallback(
 
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
-    with caplog.at_level("WARNING"):
+    with caplog.at_level("INFO"):
         response = openai_client.structured_call(
             model="gpt-4",
             messages=messages,
@@ -1320,7 +1320,7 @@ Respond ONLY with valid JSON, and no other text.\
     )
 
     assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "WARNING"
+    assert caplog.records[0].levelname == "INFO"
     assert (
         "Model gpt-4 does not support strict formatting; falling back to json"
         in caplog.records[0].message
