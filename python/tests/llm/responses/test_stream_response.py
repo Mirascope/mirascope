@@ -74,11 +74,11 @@ def example_tool_call() -> llm.ToolCall:
 def example_text_chunks() -> list[llm.AssistantContentChunk]:
     """Create a complete text chunk sequence for testing."""
     return [
-        llm.TextStartChunk(type="text_start_chunk"),
-        llm.TextChunk(type="text_chunk", delta="Hello"),
-        llm.TextChunk(type="text_chunk", delta=" "),
-        llm.TextChunk(type="text_chunk", delta="world"),
-        llm.TextEndChunk(type="text_end_chunk"),
+        llm.TextStartChunk(),
+        llm.TextChunk(delta="Hello"),
+        llm.TextChunk(delta=" "),
+        llm.TextChunk(delta="world"),
+        llm.TextEndChunk(),
     ]
 
 
@@ -86,10 +86,10 @@ def example_text_chunks() -> list[llm.AssistantContentChunk]:
 def example_thinking_chunks() -> list[llm.AssistantContentChunk]:
     """Create a complete thinking chunk sequence for testing."""
     return [
-        llm.ThinkingStartChunk(type="thinking_start_chunk"),
-        llm.ThinkingChunk(type="thinking_chunk", delta="Let me think..."),
-        llm.ThinkingChunk(type="thinking_chunk", delta="\nThis is interesting!"),
-        llm.ThinkingEndChunk(type="thinking_end_chunk", signature="reasoning"),
+        llm.ThinkingStartChunk(),
+        llm.ThinkingChunk(delta="Let me think..."),
+        llm.ThinkingChunk(delta="\nThis is interesting!"),
+        llm.ThinkingEndChunk(signature="reasoning"),
     ]
 
 
@@ -97,12 +97,10 @@ def example_thinking_chunks() -> list[llm.AssistantContentChunk]:
 def example_tool_call_chunks() -> list[llm.AssistantContentChunk]:
     """Create a complete tool call chunk sequence for testing."""
     return [
-        llm.ToolCallStartChunk(
-            type="tool_call_start_chunk", id="tool_call_123", name="test_function"
-        ),
-        llm.ToolCallChunk(type="tool_call_chunk", delta='{"param1": "value1", '),
-        llm.ToolCallChunk(type="tool_call_chunk", delta='"param2": 42}'),
-        llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+        llm.ToolCallStartChunk(id="tool_call_123", name="test_function"),
+        llm.ToolCallChunk(delta='{"param1": "value1", '),
+        llm.ToolCallChunk(delta='"param2": 42}'),
+        llm.ToolCallEndChunk(),
     ]
 
 
@@ -383,17 +381,17 @@ class ChunkProcessingTestCase:
 CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
     "empty_text": ChunkProcessingTestCase(
         chunks=[
-            llm.TextStartChunk(type="text_start_chunk"),
-            llm.TextEndChunk(type="text_end_chunk"),
+            llm.TextStartChunk(),
+            llm.TextEndChunk(),
         ],
         expected_contents=[[llm.Text(text="")], [llm.Text(text="")]],
     ),
     "text_with_deltas": ChunkProcessingTestCase(
         chunks=[
-            llm.TextStartChunk(type="text_start_chunk"),
-            llm.TextChunk(type="text_chunk", delta="Hello"),
-            llm.TextChunk(type="text_chunk", delta=" world"),
-            llm.TextEndChunk(type="text_end_chunk"),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Hello"),
+            llm.TextChunk(delta=" world"),
+            llm.TextEndChunk(),
         ],
         expected_contents=[
             [llm.Text(text="")],
@@ -404,17 +402,17 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
     ),
     "empty_thinking": ChunkProcessingTestCase(
         chunks=[
-            llm.ThinkingStartChunk(type="thinking_start_chunk"),
-            llm.ThinkingEndChunk(type="thinking_end_chunk", signature="thoughts"),
+            llm.ThinkingStartChunk(),
+            llm.ThinkingEndChunk(signature="thoughts"),
         ],
         expected_contents=[[], [llm.Thinking(thinking="", signature="thoughts")]],
     ),
     "thinking_with_deltas": ChunkProcessingTestCase(
         chunks=[
-            llm.ThinkingStartChunk(type="thinking_start_chunk"),
-            llm.ThinkingChunk(type="thinking_chunk", delta="Let me"),
-            llm.ThinkingChunk(type="thinking_chunk", delta=" think..."),
-            llm.ThinkingEndChunk(type="thinking_end_chunk", signature="reasoning"),
+            llm.ThinkingStartChunk(),
+            llm.ThinkingChunk(delta="Let me"),
+            llm.ThinkingChunk(delta=" think..."),
+            llm.ThinkingEndChunk(signature="reasoning"),
         ],
         expected_contents=[
             [],
@@ -426,11 +424,10 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
     "empty_tool_call": ChunkProcessingTestCase(
         chunks=[
             llm.ToolCallStartChunk(
-                type="tool_call_start_chunk",
                 id="tool_123",
                 name="empty_function",
             ),
-            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.ToolCallEndChunk(),
         ],
         expected_contents=[
             [],
@@ -440,13 +437,12 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
     "tool_call_with_args": ChunkProcessingTestCase(
         chunks=[
             llm.ToolCallStartChunk(
-                type="tool_call_start_chunk",
                 id="tool_456",
                 name="test_function",
             ),
-            llm.ToolCallChunk(type="tool_call_chunk", delta='{"key": '),
-            llm.ToolCallChunk(type="tool_call_chunk", delta='"value"}'),
-            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.ToolCallChunk(delta='{"key": '),
+            llm.ToolCallChunk(delta='"value"}'),
+            llm.ToolCallEndChunk(),
         ],
         expected_contents=[
             [],
@@ -502,14 +498,13 @@ class TestToolCallSupport:
         """Test that partial JSON arguments are correctly accumulated."""
         chunks = [
             llm.ToolCallStartChunk(
-                type="tool_call_start_chunk",
                 id="tool_complex",
                 name="complex_function",
             ),
-            llm.ToolCallChunk(type="tool_call_chunk", delta='{"nested":'),
-            llm.ToolCallChunk(type="tool_call_chunk", delta=' {"key": "value"},'),
-            llm.ToolCallChunk(type="tool_call_chunk", delta=' "array": [1, 2, 3]}'),
-            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.ToolCallChunk(delta='{"nested":'),
+            llm.ToolCallChunk(delta=' {"key": "value"},'),
+            llm.ToolCallChunk(delta=' "array": [1, 2, 3]}'),
+            llm.ToolCallEndChunk(),
         ]
 
         stream_response = create_sync_stream_response(chunks)
@@ -661,66 +656,63 @@ class InvalidChunkSequenceTestCase:
 
 INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
     "text_chunk_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.TextChunk(type="text_chunk", delta="Hello")],
+        chunks=[llm.TextChunk(delta="Hello")],
         expected_error="Received text_chunk while not processing text",
     ),
     "text_end_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.TextEndChunk(type="text_end_chunk")],
+        chunks=[llm.TextEndChunk()],
         expected_error="Received text_end_chunk while not processing text",
     ),
     "thinking_chunk_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.ThinkingChunk(type="thinking_chunk", delta="Hello")],
+        chunks=[llm.ThinkingChunk(delta="Hello")],
         expected_error="Received thinking_chunk while not processing thinking",
     ),
     "thinking_end_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.ThinkingEndChunk(type="thinking_end_chunk", signature=None)],
+        chunks=[llm.ThinkingEndChunk(signature=None)],
         expected_error="Received thinking_end_chunk while not processing thinking",
     ),
     "overlapping_text_then_thinking": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.TextStartChunk(type="text_start_chunk"),
-            llm.ThinkingStartChunk(type="thinking_start_chunk"),
+            llm.TextStartChunk(),
+            llm.ThinkingStartChunk(),
         ],
         expected_error="while processing another chunk",
     ),
     "overlapping_thinking_then_text": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.ThinkingStartChunk(type="thinking_start_chunk"),
-            llm.TextStartChunk(type="text_start_chunk"),
+            llm.ThinkingStartChunk(),
+            llm.TextStartChunk(),
         ],
         expected_error="while processing another chunk",
     ),
     "text_end_without_matching_start": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.ThinkingStartChunk(type="thinking_start_chunk"),
-            llm.ThinkingChunk(type="thinking_chunk", delta="test"),
-            llm.TextEndChunk(type="text_end_chunk"),
+            llm.ThinkingStartChunk(),
+            llm.ThinkingChunk(delta="test"),
+            llm.TextEndChunk(),
         ],
         expected_error="Received text_end_chunk while not processing text",
     ),
     "thinking_end_without_matching_start": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.TextStartChunk(type="text_start_chunk"),
-            llm.TextChunk(type="text_chunk", delta="test"),
-            llm.ThinkingEndChunk(type="thinking_end_chunk", signature=None),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="test"),
+            llm.ThinkingEndChunk(signature=None),
         ],
         expected_error="Received thinking_end_chunk while not processing thinking",
     ),
     "tool_call_chunk_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.ToolCallChunk(type="tool_call_chunk", delta='{"test": "value"}')],
+        chunks=[llm.ToolCallChunk(delta='{"test": "value"}')],
         expected_error="Received tool_call_chunk while not processing tool call",
     ),
     "tool_call_end_without_start": InvalidChunkSequenceTestCase(
-        chunks=[
-            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call")
-        ],
+        chunks=[llm.ToolCallEndChunk()],
         expected_error="Received tool_call_end_chunk while not processing tool call",
     ),
     "overlapping_text_then_tool_call": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextStartChunk(),
             llm.ToolCallStartChunk(
-                type="tool_call_start_chunk",
                 id="tool_123",
                 name="test_function",
             ),
@@ -730,19 +722,18 @@ INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
     "overlapping_tool_call_then_text": InvalidChunkSequenceTestCase(
         chunks=[
             llm.ToolCallStartChunk(
-                type="tool_call_start_chunk",
                 id="tool_123",
                 name="test_function",
             ),
-            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextStartChunk(),
         ],
         expected_error="while processing another chunk",
     ),
     "tool_call_end_without_matching_start": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.TextStartChunk(type="text_start_chunk"),
-            llm.TextChunk(type="text_chunk", delta="test"),
-            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="test"),
+            llm.ToolCallEndChunk(),
         ],
         expected_error="Received tool_call_end_chunk while not processing tool call",
     ),
@@ -954,9 +945,9 @@ class TestRawChunkTracking:
         """Test that raw chunks are collected."""
         raw1 = {"info": "a"}
         raw2 = {"info": "b"}
-        chunk1 = llm.TextStartChunk(type="text_start_chunk", content_type="text")
-        chunk2 = llm.TextChunk(type="text_chunk", content_type="text", delta="hi")
-        chunk3 = llm.TextEndChunk(type="text_end_chunk", content_type="text")
+        chunk1 = llm.TextStartChunk()
+        chunk2 = llm.TextChunk(delta="hi")
+        chunk3 = llm.TextEndChunk()
 
         def chunk_iterator() -> llm.ChunkIterator:
             yield llm.responses.RawChunk(raw=raw1)
@@ -984,9 +975,9 @@ class TestRawChunkTracking:
     async def test_async_chunk_deduplication_with_same_raw(self) -> None:
         raw1 = {"info": "a"}
         raw2 = {"info": "b"}
-        chunk1 = llm.TextStartChunk(type="text_start_chunk", content_type="text")
-        chunk2 = llm.TextChunk(type="text_chunk", content_type="text", delta="hi")
-        chunk3 = llm.TextEndChunk(type="text_end_chunk", content_type="text")
+        chunk1 = llm.TextStartChunk()
+        chunk2 = llm.TextChunk(delta="hi")
+        chunk3 = llm.TextEndChunk()
 
         async def chunk_iterator() -> llm.AsyncChunkIterator:
             yield llm.responses.RawChunk(raw=raw1)

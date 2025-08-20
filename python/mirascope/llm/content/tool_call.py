@@ -31,7 +31,7 @@ class ToolCall:
 class ToolCallStartChunk:
     """Represents the start of a tool call chunk stream."""
 
-    type: Literal["tool_call_start_chunk"]
+    type: Literal["tool_call_start_chunk"] = "tool_call_start_chunk"
 
     content_type: Literal["tool_call"] = "tool_call"
     """The type of content reconstructed by this chunk."""
@@ -47,7 +47,7 @@ class ToolCallStartChunk:
 class ToolCallChunk:
     """Represents an incremental tool call chunk in a stream."""
 
-    type: Literal["tool_call_chunk"]
+    type: Literal["tool_call_chunk"] = "tool_call_chunk"
 
     content_type: Literal["tool_call"] = "tool_call"
     """The type of content reconstructed by this chunk."""
@@ -60,7 +60,7 @@ class ToolCallChunk:
 class ToolCallEndChunk:
     """Represents the end of a tool call chunk stream."""
 
-    type: Literal["tool_call_end_chunk"]
+    type: Literal["tool_call_end_chunk"] = "tool_call_end_chunk"
 
-    content_type: Literal["tool_call"]
+    content_type: Literal["tool_call"] = "tool_call"
     """The type of content reconstructed by this chunk."""

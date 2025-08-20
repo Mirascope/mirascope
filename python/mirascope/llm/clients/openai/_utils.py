@@ -337,7 +337,7 @@ def convert_openai_stream_to_chunk_iterator(
 
         if delta.content is not None:
             if current_content_type is None:
-                yield TextStartChunk(type="text_start_chunk")
+                yield TextStartChunk()
                 current_content_type = "text"
             elif current_content_type == "tool_call":
                 raise RuntimeError(
@@ -346,13 +346,13 @@ def convert_openai_stream_to_chunk_iterator(
             elif current_content_type != "text":
                 raise NotImplementedError
 
-            yield TextChunk(type="text_chunk", delta=delta.content)
+            yield TextChunk(delta=delta.content)
 
         if delta.tool_calls:
             if current_content_type == "text":
                 # In testing, I can't get OpenAI to emit text and tool calls in the same chunk
                 # But we handle this defensively.
-                yield TextEndChunk(type="text_end_chunk")  # pragma: no cover
+                yield TextEndChunk()  # pragma: no cover
             elif current_content_type and current_content_type != "tool_call":
                 raise RuntimeError(
                     f"Unexpected current_content_type: {current_content_type}"
@@ -369,13 +369,10 @@ def convert_openai_stream_to_chunk_iterator(
 
                 if current_tool_index is not None and current_tool_index < index:
                     if current_tool_is_format_tool:
-                        yield TextEndChunk(type="text_end_chunk")  # pragma: no cover
+                        yield TextEndChunk()  # pragma: no cover
                         current_tool_is_format_tool = False  # pragma: no cover
                     else:
-                        yield ToolCallEndChunk(
-                            type="tool_call_end_chunk",
-                            content_type="tool_call",
-                        )
+                        yield ToolCallEndChunk()
 
                     current_tool_index = None
 
@@ -397,33 +394,24 @@ def convert_openai_stream_to_chunk_iterator(
                         )  # pragma: no cover
 
                     if current_tool_is_format_tool:
-                        yield TextStartChunk(type="text_start_chunk")
+                        yield TextStartChunk()
                     else:
                         yield ToolCallStartChunk(
-                            type="tool_call_start_chunk",
                             id=tool_id,
                             name=name,
                         )
 
                 if tool_call_delta.function and tool_call_delta.function.arguments:
                     if current_tool_is_format_tool:
-                        yield TextChunk(
-                            type="text_chunk", delta=tool_call_delta.function.arguments
-                        )
+                        yield TextChunk(delta=tool_call_delta.function.arguments)
                     else:
-                        yield ToolCallChunk(
-                            type="tool_call_chunk",
-                            delta=tool_call_delta.function.arguments,
-                        )
+                        yield ToolCallChunk(delta=tool_call_delta.function.arguments)
 
         if choice.finish_reason:
             if current_content_type == "text" or current_tool_is_format_tool:
-                yield TextEndChunk(type="text_end_chunk")
+                yield TextEndChunk()
             elif current_content_type == "tool_call":
-                yield ToolCallEndChunk(
-                    type="tool_call_end_chunk",
-                    content_type="tool_call",
-                )
+                yield ToolCallEndChunk()
 
             else:
                 raise NotImplementedError

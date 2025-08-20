@@ -169,10 +169,9 @@ def convert_anthropic_stream_to_chunk_iterator(
                 current_block_type = content_block.type
 
                 if content_block.type == "text":
-                    yield TextStartChunk(type="text_start_chunk")
+                    yield TextStartChunk()
                 elif content_block.type == "tool_use":
                     yield ToolCallStartChunk(
-                        type="tool_call_start_chunk",
                         id=content_block.id,
                         name=content_block.name,
                     )
@@ -183,21 +182,17 @@ def convert_anthropic_stream_to_chunk_iterator(
             elif event.type == "content_block_delta":
                 delta = event.delta
                 if delta.type == "text_delta":
-                    yield TextChunk(type="text_chunk", delta=delta.text)
+                    yield TextChunk(delta=delta.text)
                 elif delta.type == "input_json_delta":
-                    yield ToolCallChunk(
-                        type="tool_call_chunk", delta=delta.partial_json
-                    )
+                    yield ToolCallChunk(delta=delta.partial_json)
                 else:
                     raise NotImplementedError
 
             elif event.type == "content_block_stop":
                 if current_block_type == "text":
-                    yield TextEndChunk(type="text_end_chunk")
+                    yield TextEndChunk()
                 elif current_block_type == "tool_use":
-                    yield ToolCallEndChunk(
-                        type="tool_call_end_chunk", content_type="tool_call"
-                    )
+                    yield ToolCallEndChunk()
                 else:
                     raise NotImplementedError
 

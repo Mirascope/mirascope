@@ -27,7 +27,7 @@ class Thinking:
 class ThinkingStartChunk:
     """Represents the start of a thinking chunk stream."""
 
-    type: Literal["thinking_start_chunk"]
+    type: Literal["thinking_start_chunk"] = "thinking_start_chunk"
 
     content_type: Literal["thinking"] = "thinking"
     """The type of content reconstructed by this chunk."""
@@ -37,7 +37,7 @@ class ThinkingStartChunk:
 class ThinkingChunk:
     """Represents an incremental thinking chunk in a stream."""
 
-    type: Literal["thinking_chunk"]
+    type: Literal["thinking_chunk"] = "thinking_chunk"
 
     content_type: Literal["thinking"] = "thinking"
     """The type of content reconstructed by this chunk."""
@@ -50,7 +50,7 @@ class ThinkingChunk:
 class ThinkingEndChunk:
     """Represents the end of a thinking chunk stream."""
 
-    type: Literal["thinking_end_chunk"]
+    type: Literal["thinking_end_chunk"] = "thinking_end_chunk"
 
     content_type: Literal["thinking"] = "thinking"
     """The type of content reconstructed by this chunk."""
