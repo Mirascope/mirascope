@@ -1345,3 +1345,147 @@ def test_strict_failure_on_unsupported_model(openai_client: llm.OpenAIClient) ->
             messages=messages,
             format=SimpleBook,
         )
+
+
+@pytest.mark.vcr()
+def test_structured_stream(openai_client: llm.OpenAIClient) -> None:
+    """Basic test of structured_stream with snapshotted chunks."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    stream_response = openai_client.structured_stream(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=Book,
+    )
+
+    for _ in stream_response.chunk_stream():
+        ...
+
+    assert stream_response.chunks == snapshot(
+        [
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(delta=""),
+            llm.TextChunk(delta='{"'),
+            llm.TextChunk(delta="title"),
+            llm.TextChunk(delta='":"'),
+            llm.TextChunk(delta="The"),
+            llm.TextChunk(delta=" Name"),
+            llm.TextChunk(delta=" of"),
+            llm.TextChunk(delta=" the"),
+            llm.TextChunk(delta=" Wind"),
+            llm.TextChunk(delta='","'),
+            llm.TextChunk(delta="author"),
+            llm.TextChunk(delta='":"'),
+            llm.TextChunk(delta="Patrick"),
+            llm.TextChunk(delta=" Roth"),
+            llm.TextChunk(delta="f"),
+            llm.TextChunk(delta="uss"),
+            llm.TextChunk(delta='"}'),
+            llm.TextEndChunk(type="text_end_chunk"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+        ]
+    )
+
+    book = stream_response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_structured_stream_tool_mode(openai_client: llm.OpenAIClient) -> None:
+    """Basic test of structured_stream on tool mode with snapshotted chunks.
+
+    Tool mode deserves special attention because the tool call chunks for the
+    format tool should be converted into text chunks under the hood.
+    """
+
+    @llm.format(mode="tool")
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    stream_response = openai_client.structured_stream(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=Book,
+    )
+
+    for _ in stream_response.chunk_stream():
+        ...
+
+    assert stream_response.chunks == snapshot(
+        [
+            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextChunk(delta='{"'),
+            llm.TextChunk(delta="title"),
+            llm.TextChunk(delta='":"'),
+            llm.TextChunk(delta="The"),
+            llm.TextChunk(delta=" Name"),
+            llm.TextChunk(delta=" of"),
+            llm.TextChunk(delta=" the"),
+            llm.TextChunk(delta=" Wind"),
+            llm.TextChunk(delta='","'),
+            llm.TextChunk(delta="author"),
+            llm.TextChunk(delta='":"'),
+            llm.TextChunk(delta="Patrick"),
+            llm.TextChunk(delta=" Roth"),
+            llm.TextChunk(delta="f"),
+            llm.TextChunk(delta="uss"),
+            llm.TextChunk(delta='"}'),
+            llm.TextEndChunk(type="text_end_chunk"),
+            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+        ]
+    )
+
+    book = stream_response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+        }
+    )
+
+
+@pytest.mark.parametrize(
+    "mode", ["strict", "strict-or-tool", "strict-or-json", "tool", "json"]
+)
+@pytest.mark.vcr()
+def test_structured_stream_supported_modes(
+    openai_client: llm.OpenAIClient, mode: llm.formatting.FormattingMode
+) -> None:
+    """Test that supported formatting modes work correctly."""
+
+    @llm.format(mode=mode)
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [
+        llm.messages.user("Please parse this string: 'Mistborn by Brandon Sanderson'")
+    ]
+
+    stream_response = openai_client.structured_stream(
+        model="gpt-4o",
+        messages=messages,
+        format=SimpleBook,
+    )
+    for _ in stream_response.chunk_stream():
+        ...
+
+    book = stream_response.format()
+    assert isinstance(book, SimpleBook)
+    assert book.title == "Mistborn"
+    assert book.author == "Brandon Sanderson"

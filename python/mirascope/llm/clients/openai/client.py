@@ -239,7 +239,32 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         format: type[FormatT],
         params: OpenAIParams | None = None,
     ) -> StreamResponse[FormatT]:
-        raise NotImplementedError
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, message_params, tool_params, response_format = (
+            _utils.prepare_openai_request(
+                model=model, messages=messages, tools=tools, format=format
+            )
+        )
+
+        openai_stream = self.client.chat.completions.create(
+            model=model,
+            messages=message_params,
+            tools=tool_params,
+            response_format=response_format,
+            stream=True,
+        )
+
+        chunk_iterator = _utils.convert_openai_stream_to_chunk_iterator(openai_stream)
+
+        return StreamResponse[FormatT](
+            provider="openai",
+            model=model,
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+            format=format,
+        )
 
     def structured_context_stream(
         self,
