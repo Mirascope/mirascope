@@ -172,7 +172,7 @@ def _convert_tool_to_tool_param(tool: Tool) -> openai_types.ChatCompletionToolPa
 def _get_effective_format_mode(
     format: FormatInfo, model: OpenAIModel
 ) -> FormattingMode:
-    if model in MODELS_WITHOUT_STRUCTURED_OUTPUT_SUPPORT:
+    if model in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT:
         if format.mode == "strict-or-tool":
             logging.info(
                 "Model %s does not support strict formatting; falling back to tool",
@@ -252,7 +252,7 @@ def prepare_openai_request(
             additional_system_instructions.append(
                 _base_utils.create_json_mode_instructions(format_info)
             )
-            if model in MODELS_WITHOUT_STRUCTURED_OUTPUT_SUPPORT:
+            if model in MODELS_WITHOUT_JSON_OBJECT_SUPPORT:
                 additional_system_instructions.append(
                     "Respond ONLY with valid JSON, and no other text."
                 )
@@ -491,37 +491,43 @@ def create_format_tool_param(
     )
 
 
-MODELS_WITHOUT_STRUCTURED_OUTPUT_SUPPORT = {
-    "gpt-4o-mini-audio-preview",
-    "o1-mini",
-    "gpt-3.5-turbo-1106",
+MODELS_WITHOUT_JSON_SCHEMA_SUPPORT = {
     "chatgpt-4o-latest",
-    "gpt-4o-2024-05-13",
-    "gpt-4-1106-preview",
-    "gpt-4o-mini-audio-preview-2024-12-17",
-    "o1-mini-2024-09-12",
-    "gpt-4o-audio-preview-2024-10-01",
     "gpt-3.5-turbo",
     "gpt-3.5-turbo-0125",
-    "gpt-4-turbo-2024-04-09",
-    "gpt-4-0125-preview",
+    "gpt-3.5-turbo-1106",
     "gpt-3.5-turbo-16k",
-    "gpt-4-turbo",
+    "gpt-4",
+    "gpt-4-0125-preview",
     "gpt-4-0613",
+    "gpt-4-1106-preview",
+    "gpt-4-turbo",
+    "gpt-4-turbo-2024-04-09",
     "gpt-4-turbo-preview",
+    "gpt-4o-2024-05-13",
+    "gpt-4o-audio-preview",
+    "gpt-4o-audio-preview-2024-10-01",
     "gpt-4o-audio-preview-2024-12-17",
     "gpt-4o-audio-preview-2025-06-03",
-    "gpt-4o-audio-preview",
+    "gpt-4o-mini-audio-preview",
+    "gpt-4o-mini-audio-preview-2024-12-17",
+    "gpt-5-chat-latest",
+    "o1-mini",
+    "o1-mini-2024-09-12",
+}
+MODELS_WITHOUT_JSON_OBJECT_SUPPORT = {
     "gpt-4",
-    "o1-preview-2024-09-12",
-    "gpt-4-0314",
-    "gpt-4-32k",
-    "codex-mini-latest",
-    "gpt-4-vision-preview",
-    "gpt-3.5-turbo-0301",
-    "o1-preview",
-    "gpt-3.5-turbo-16k-0613",
-    "gpt-4-32k-0314",
-    "gpt-3.5-turbo-0613",
-    "gpt-4-32k-0613",
+    "gpt-4-0613",
+    "gpt-4o-audio-preview",
+    "gpt-4o-audio-preview-2024-10-01",
+    "gpt-4o-audio-preview-2024-12-17",
+    "gpt-4o-audio-preview-2025-06-03",
+    "gpt-4o-mini-audio-preview",
+    "gpt-4o-mini-audio-preview-2024-12-17",
+    "gpt-4o-mini-search-preview",
+    "gpt-4o-mini-search-preview-2025-03-11",
+    "gpt-4o-search-preview",
+    "gpt-4o-search-preview-2025-03-11",
+    "o1-mini",
+    "o1-mini-2024-09-12",
 }
