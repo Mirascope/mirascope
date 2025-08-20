@@ -116,12 +116,12 @@ def test_stream_simple_message(anthropic_client: llm.AnthropicClient) -> None:
             "thinkings": [],
             "consumed": True,
             "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextStartChunk(),
                 llm.TextChunk(delta="Hello! It's nice"),
                 llm.TextChunk(delta=" to meet you. How"),
                 llm.TextChunk(delta=" are you today"),
                 llm.TextChunk(delta="?"),
-                llm.TextEndChunk(type="text_end_chunk"),
+                llm.TextEndChunk(),
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
@@ -254,27 +254,24 @@ def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
             "thinkings": [],
             "consumed": True,
             "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextStartChunk(),
                 llm.TextChunk(delta="I"),
                 llm.TextChunk(delta="'ll help"),
                 llm.TextChunk(delta=" you multiply"),
                 llm.TextChunk(delta=" those numbers using the multiply_"),
                 llm.TextChunk(delta="numbers tool."),
-                llm.TextEndChunk(type="text_end_chunk"),
+                llm.TextEndChunk(),
                 llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
                     name="multiply_numbers",
                 ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=""),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='a": 133'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="7"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=', "b": 42'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="42}"),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
+                llm.ToolCallChunk(delta=""),
+                llm.ToolCallChunk(delta='{"'),
+                llm.ToolCallChunk(delta='a": 133'),
+                llm.ToolCallChunk(delta="7"),
+                llm.ToolCallChunk(delta=', "b": 42'),
+                llm.ToolCallChunk(delta="42}"),
+                llm.ToolCallEndChunk(),
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
             ],
         }
@@ -451,36 +448,30 @@ def test_streaming_parallel_tool_usage(anthropic_client: llm.AnthropicClient) ->
             "thinkings": [],
             "consumed": True,
             "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextStartChunk(),
                 llm.TextChunk(delta="I'll get the current weather for"),
                 llm.TextChunk(
                     delta=" both San Francisco (SF) and New York City (NYC) for you."
                 ),
-                llm.TextEndChunk(type="text_end_chunk"),
+                llm.TextEndChunk(),
                 llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
                     name="get_weather",
                 ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=""),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"loca'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='tion": "'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='SF"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
+                llm.ToolCallChunk(delta=""),
+                llm.ToolCallChunk(delta='{"loca'),
+                llm.ToolCallChunk(delta='tion": "'),
+                llm.ToolCallChunk(delta='SF"}'),
+                llm.ToolCallEndChunk(),
                 llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
                     name="get_weather",
                 ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=""),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"l'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='ocation":'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=' "NYC"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
+                llm.ToolCallChunk(delta=""),
+                llm.ToolCallChunk(delta='{"l'),
+                llm.ToolCallChunk(delta='ocation":'),
+                llm.ToolCallChunk(delta=' "NYC"}'),
+                llm.ToolCallEndChunk(),
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
             ],
         }

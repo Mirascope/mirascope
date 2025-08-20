@@ -183,7 +183,7 @@ def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
             "thinkings": [],
             "consumed": True,
             "chunks": [
-                llm.TextStartChunk(type="text_start_chunk"),
+                llm.TextStartChunk(),
                 llm.TextChunk(delta=""),
                 llm.TextChunk(delta="Hello"),
                 llm.TextChunk(delta="!"),
@@ -201,7 +201,7 @@ def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
                 llm.TextChunk(delta=" you"),
                 llm.TextChunk(delta=" today"),
                 llm.TextChunk(delta="?"),
-                llm.TextEndChunk(type="text_end_chunk"),
+                llm.TextEndChunk(),
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
@@ -396,29 +396,23 @@ def test_streaming_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
             "consumed": True,
             "chunks": [
                 llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id="call_DMPzhebh8ngVkUULAHoCrPLq",
                     name="get_weather",
                 ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"lo'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="catio"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='n": "S'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='F"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
+                llm.ToolCallChunk(delta='{"lo'),
+                llm.ToolCallChunk(delta="catio"),
+                llm.ToolCallChunk(delta='n": "S'),
+                llm.ToolCallChunk(delta='F"}'),
+                llm.ToolCallEndChunk(),
                 llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id="call_snqLlKGxxkJgH8teSWaf9OEK",
                     name="get_weather",
                 ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"lo'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="catio"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='n": "N'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='YC"}'),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
+                llm.ToolCallChunk(delta='{"lo'),
+                llm.ToolCallChunk(delta="catio"),
+                llm.ToolCallChunk(delta='n": "N'),
+                llm.ToolCallChunk(delta='YC"}'),
+                llm.ToolCallEndChunk(),
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
             ],
         }
@@ -509,24 +503,21 @@ def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
             "consumed": True,
             "chunks": [
                 llm.ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id="call_gdjsOY6GOAuHAaopGj4iyeWV",
                     name="multiply_numbers",
                 ),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='{"'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="a"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='":'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="133"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="7"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta=',"'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="b"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta='":'),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="424"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="2"),
-                llm.ToolCallChunk(type="tool_call_chunk", delta="}"),
-                llm.ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                ),
+                llm.ToolCallChunk(delta='{"'),
+                llm.ToolCallChunk(delta="a"),
+                llm.ToolCallChunk(delta='":'),
+                llm.ToolCallChunk(delta="133"),
+                llm.ToolCallChunk(delta="7"),
+                llm.ToolCallChunk(delta=',"'),
+                llm.ToolCallChunk(delta="b"),
+                llm.ToolCallChunk(delta='":'),
+                llm.ToolCallChunk(delta="424"),
+                llm.ToolCallChunk(delta="2"),
+                llm.ToolCallChunk(delta="}"),
+                llm.ToolCallEndChunk(),
                 llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
             ],
         }
@@ -1368,7 +1359,7 @@ def test_structured_stream(openai_client: llm.OpenAIClient) -> None:
 
     assert stream_response.chunks == snapshot(
         [
-            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextStartChunk(),
             llm.TextChunk(delta=""),
             llm.TextChunk(delta='{"'),
             llm.TextChunk(delta="title"),
@@ -1386,7 +1377,7 @@ def test_structured_stream(openai_client: llm.OpenAIClient) -> None:
             llm.TextChunk(delta="f"),
             llm.TextChunk(delta="uss"),
             llm.TextChunk(delta='"}'),
-            llm.TextEndChunk(type="text_end_chunk"),
+            llm.TextEndChunk(),
             llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
         ]
     )
@@ -1427,7 +1418,7 @@ def test_structured_stream_tool_mode(openai_client: llm.OpenAIClient) -> None:
 
     assert stream_response.chunks == snapshot(
         [
-            llm.TextStartChunk(type="text_start_chunk"),
+            llm.TextStartChunk(),
             llm.TextChunk(delta='{"'),
             llm.TextChunk(delta="title"),
             llm.TextChunk(delta='":"'),
@@ -1444,7 +1435,7 @@ def test_structured_stream_tool_mode(openai_client: llm.OpenAIClient) -> None:
             llm.TextChunk(delta="f"),
             llm.TextChunk(delta="uss"),
             llm.TextChunk(delta='"}'),
-            llm.TextEndChunk(type="text_end_chunk"),
+            llm.TextEndChunk(),
             llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
         ]
     )

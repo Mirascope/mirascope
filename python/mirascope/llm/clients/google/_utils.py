@@ -234,26 +234,24 @@ def convert_google_stream_to_chunk_iterator(
                     # (even when specifically asked in system and user prompt), so
                     # the following code is uncovered but included for completeness
                     yield (  # pragma: no cover
-                        ToolCallEndChunk(
-                            type="tool_call_end_chunk", content_type="tool_call"
-                        ),
+                        ToolCallEndChunk(),
                         chunk,
                     )
                     current_content_type = None  # pragma: no cover
 
                 if current_content_type is None:
-                    yield TextStartChunk(type="text_start_chunk")
+                    yield TextStartChunk()
                     current_content_type = "text"
                 elif current_content_type != "text":
                     raise NotImplementedError
 
-                yield TextChunk(type="text_chunk", delta=part.text)
+                yield TextChunk(delta=part.text)
 
             elif function_call := part.function_call:
                 if current_content_type == "text":
                     # Similar to above, this does not seem to happen in practice but is
                     # included for safety.
-                    yield TextEndChunk(type="text_end_chunk")  # pragma: no cover
+                    yield TextEndChunk()  # pragma: no cover
                     current_content_type = None  # pragma: no cover
 
                 if not function_call.name:
@@ -262,24 +260,20 @@ def convert_google_stream_to_chunk_iterator(
                     )  # pragma: no cover
 
                 yield ToolCallStartChunk(
-                    type="tool_call_start_chunk",
                     id=function_call.id or UNKNOWN_TOOL_ID,
                     name=function_call.name,
                 )
 
                 yield ToolCallChunk(
-                    type="tool_call_chunk",
                     delta=json.dumps(function_call.args)
                     if function_call.args
                     else "{}",
                 )
-                yield ToolCallEndChunk(
-                    type="tool_call_end_chunk", content_type="tool_call"
-                )
+                yield ToolCallEndChunk()
 
         if candidate.finish_reason:
             if current_content_type == "text":
-                yield TextEndChunk(type="text_end_chunk")
+                yield TextEndChunk()
             elif current_content_type is not None:
                 raise NotImplementedError
 
