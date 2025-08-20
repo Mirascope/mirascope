@@ -1,10 +1,8 @@
 interactions:
 - request:
-    body: '{"messages":[{"role":"system","content":"When you are ready to respond
-      to the user, call the __mirascope_formatted_output_tool__ tool to output a structured
-      response.\nDo NOT output any text in addition to the tool call.\nUse UPPERCASE
-      for all genre names."},{"role":"user","content":"Recommend a science fiction
-      book."}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+    body: '{"messages":[{"role":"system","content":"Yo, defo call the tool and output
+      nothing but the tool call tyvm! Oh and make sure the genre field is ALL CAPS"},{"role":"user","content":"Recommend
+      a science fiction book."}],"model":"gpt-4o-mini","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in DetailedBook format for a final response.\nA detailed
       book recommendation with metadata.","parameters":{"$defs":{"Author":{"properties":{"first_name":{"title":"First
       Name","type":"string"},"last_name":{"title":"Last Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"description":"A
@@ -17,16 +15,15 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1139'
+      - '1034'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=TVv0lusGrzLLwpawNEeeyKER.jr0JfLlyzP.P6aKaa4-1755646075-1.0.1.1-rCRTcMlMQtDuT.qd_zUeDhkzr6EJZAUL7vdmePWcpXmzVXcuiW8EsBUsD3cRTecg4aM9A2guuAHhhnIRJXEXA52dwqZ0uHsPICjUXsvA2KA;
-        _cfuvid=uat_Qwo7bNA0d0hV8BGgnIL5mEtQ700ifJQKRrZmK50-1755570868473-0.0.1.1-604800000
+      - _cfuvid=JEoGtjFS8qvuoIv55e7v3cn8zpDMI5yBZlq5uNin1Lg-1755730232988-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
-      - OpenAI/Python 1.86.0
+      - OpenAI/Python 1.100.2
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -36,7 +33,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 1.86.0
+      - 1.100.2
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -50,20 +47,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFRdT9swFH3Pr7DuczuV0A/I21boKExMiIlNW5BlnJvU1LEt20Ggqv99
-        sgNNWpi0PETWPfeee+6HvUkIAVFARoCvmOe1kcP59CY9vZt9OflaXKb1ejFXP2/ry6Vbny38CwxC
-        hH54RO7foj5xXRuJXmjVwtwi8xhYj2aTyXQ8Hc1mEah1gTKEVcYPx3pYCyWG6SgdD0ez4dHJa/RK
-        C44OMvInIYSQTfwHnarAZ8jIaPBmqdE5ViFkOydCwGoZLMCcE84z5WHQgVwrjypIV42UPcBrLSln
-        UnaJ22/TO3fNYlJSJdJf6aP5fXe1uLj5fHV2LJ4um2+PppevpX4xUVDZKL5rUg/f2bODZISAYnWM
-        pbQWljmuDdJS25p5jwXVjTeNp1E7PaAlBJitmhqVDyXBJgcvvMQcshzOGoU5DHJgjV9pm0O2yaEU
-        1nkaMkafhWVqHZ0k69sv0D6g9TlsBzlUqGxrvp0vz6/n52SxnP9Yfr/OYQt7erbJR+f73ggslo1j
-        8v1smFLas9CiOJz7V2S72wOpK2P1gzsIhVIo4VbUInOxvf0pJ29CogRo9hYJjNW1CZ1dY0x6NJ20
-        rNAte4eOj19Brz2TnT0dnQw+4KMFeibipu2WmzO+wqIL7ZacNYXQPSDp1f5ezUfcbf1CVf9D3wGc
-        owlbZiwWgu9X3LlZDG/Bv9x2XY6CwaF9EhypF2jDPAosWSPbGwruxXmsaSlUhdZYEa8plIZOpiNW
-        TnEyOYVkm/wFAAD//wMAXn5sZrQEAAA=
+        H4sIAAAAAAAAAwAAAP//jFRda9swFH33rxD3ORlOYyeNH5e0LC20jLUrdC5Cka8dtbIkJHlrCfnv
+        w3Iaux+D+cGIe+6599wPaRcRAqKAjADfMs9rI8fLmXxe3TfX8VRdqdvyz9e7m8XP1eJSioXTMGoZ
+        evOI3L+yvnBdG4leaNXB3CLz2EadzNN0Po2n00UAal2gbGmV8eNEj2uhxPgkPknG8Xw8OT2wt1pw
+        dJCRXxEhhOzCv9WpCnyGjMSjV0uNzrEKITs6EQJWy9YCzDnhPFMeRj3ItfKoWumqkXIAeK0l5UzK
+        PnH37QbnvllMSpp+Tx8v7i4myepycT9bT9fPspiJJB7k60K/mCCobBQ/NmmAH+3Zu2SEgGJ14FJa
+        C8sc1wZpqW3NvMeC6sabxtOgnb4LSwgwWzU1Kt+WBLscvPASc8hyWDUKcxjlwBq/1TaHbJdDKazz
+        tM0YfM4tU0/BSbKh/RvaDVqfw36UQ4XKduYfy/XZ1fKMnK+XN+vrqxz28EbPPvrs/DAYgcWycUx+
+        nA1TSnvWtigM5+GA7I97IHVlrN64d1QohRJuSy0yF9o7nHL0KiRIgObNIoGxujZtZ58wJJ0kSRcV
+        +mXv0WR6AL32TA5Yp/PRJ/FogZ6JsGnH5eaMb7Hoqf2Ss6YQegBEg9o/qvksdle/UNX/hO8BztG0
+        W2YsFoK/rbh3s9i+Bf9yO3Y5CAaH9rfgSL1A286jwJI1sruh4F6cx5qWQlVojRXhmkJpaDqLWTnD
+        NF1AtI/+AgAA//8DAG+FBgq0BAAA
     headers:
       CF-RAY:
-      - 971d6cad0be70903-SEA
+      - 972575dc2c9623f8-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -71,9 +68,13 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 19 Aug 2025 23:27:57 GMT
+      - Wed, 20 Aug 2025 22:52:20 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=9qoXt6w84I61BTv5_602KS84ZnOdXARIDflKayJZMoA-1755730340-1.0.1.1-UkQ4GhWpLmMVvYLkhRAv0g28kf1BaW.Y8AJkWVyxFzw1ErDRSXxh.VfyrZ1RzhOySLYAp9b2ArnmSKoEZtZZA9C5ogx60kCfyFlnD.dFLo0;
+        path=/; expires=Wed, 20-Aug-25 23:22:20 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -89,13 +90,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '740'
+      - '633'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '765'
+      - '721'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -103,13 +104,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '3999935'
+      - '3999961'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
       - 0s
       x-request-id:
-      - req_5482dfa86dd24b7e9ddbf1e6848c201b
+      - req_3acc9fda81934abf8598c95502975a70
     status:
       code: 200
       message: OK

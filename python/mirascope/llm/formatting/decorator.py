@@ -9,7 +9,6 @@ from .types import (
     FormatT,
     Formattable,
     FormattingMode,
-    HasFormattingInstructions,
     RequiredFormatT,
 )
 
@@ -23,9 +22,6 @@ class FormatDecorator:
 
     def __call__(self, __cls: type[RequiredFormatT]) -> type[RequiredFormatT]:
         """Convert a `BaseModel` into a `Formattable` and return the `BaseModel`."""
-        formatting_instructions = None
-        if isinstance(__cls, HasFormattingInstructions):
-            formatting_instructions = inspect.cleandoc(__cls.formatting_instructions())
 
         description = None
         if __cls.__doc__:
@@ -36,7 +32,7 @@ class FormatDecorator:
             description=description,
             schema=__cls.model_json_schema(),
             mode=self.mode,
-            formatting_instructions=formatting_instructions,
+            format=__cls,
         )
 
         return __cls
@@ -74,17 +70,22 @@ def format(
     attribute added to the class. The class must inherit from Pydantic BaseModel.
 
     Args:
-      mode: The format mode to use, one of the following:
-        - "strict": Use model strict structured outputs, or fail if unavailable.
-        - "tool": Use forced tool calling with a special tool that represents a
-            formatted response.
-        - "json": Use provider json mode if available, or modify prompt to request
-            json if not.
-        - "strict-or-tool": Use strict mode if available, tool mode if not.
-        - "strict-or-json": Use strict mode if available, json mode if not.
+        mode: The format mode to use, one of the following:
+            - "strict": Use model strict structured outputs, or fail if unavailable.
+            - "tool": Use forced tool calling with a special tool that represents a
+              formatted response.
+            - "json": Use provider json mode if available, or modify prompt to request
+              json if not.
+            - "strict-or-tool": Use strict mode if available, tool mode if not.
+            - "strict-or-json": Use strict mode if available, json mode if not.
 
-        Note that custom formatting instructions will be auto-appended to the prompt if
-          a `formatting_instructions` classmethod is present on the class being decorated.
+    The decorated BaseModel may provide custom formatting instructions via a
+    `formatting_instructions(cls)` classmethod. If that method is present, it will be called,
+    and the resulting instructions will automatically be appended to the system prompt.
+
+    If no formatting instructions are present, then Mirascope may auto-generate instructions
+    based on the active format mode. To disable this behavior and all prompt modification,
+    you can add the `formatting_instructions` classmethod and have it return `None`.
 
     Returns:
       Either the decorated class (direct decoration) or a decorator function

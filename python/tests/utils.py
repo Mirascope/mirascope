@@ -1,6 +1,15 @@
 """Test utilities for response testing."""
 
+from typing import cast
+
 from mirascope import llm
+
+
+def get_format(x: type[llm.formatting.FormatT]) -> llm.FormatInfo:
+    assert hasattr(x, "__mirascope_format_info__")
+    format = cast(llm.formatting.Formattable, x).__mirascope_format_info__
+    assert isinstance(format, llm.formatting.FormatInfo)
+    return format
 
 
 def response_snapshot_dict(response: llm.Response) -> dict:

@@ -9,15 +9,26 @@ from . import _utils
 from .decorator import format
 from .from_call_args import FromCallArgs
 from .partial import Partial
-from .types import FormatInfo, FormatT, Formattable, FormattingMode
+from .types import (
+    ConcreteFormattingMode,
+    FormatInfo,
+    FormatT,
+    Formattable,
+    FormattingMode,
+    RequiredFormatT,
+    ResolvedFormatInfo,
+)
 
 __all__ = [
+    "ConcreteFormattingMode",
     "FormatInfo",
     "FormatT",
     "Formattable",
     "FormattingMode",
     "FromCallArgs",
     "Partial",
+    "RequiredFormatT",
+    "ResolvedFormatInfo",
     "_utils",
     "format",
 ]
