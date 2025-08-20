@@ -126,8 +126,7 @@ class StreamResponse(BaseStreamResponse[ChunkIterator, FormatT]):
             if chunk.type == "raw_chunk":
                 self._raw.append(chunk.raw)
             else:
-                self._handle_chunk(chunk)
-                yield chunk
+                yield self._handle_chunk(chunk)
 
         self.consumed = True
 
@@ -288,8 +287,7 @@ class AsyncStreamResponse(BaseStreamResponse[AsyncChunkIterator, FormatT]):
             if chunk.type == "raw_chunk":
                 self._raw.append(chunk.raw)
             else:
-                self._handle_chunk(chunk)
-                yield chunk
+                yield self._handle_chunk(chunk)
 
         self.consumed = True
 

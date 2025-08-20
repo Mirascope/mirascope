@@ -9,6 +9,7 @@ from inline_snapshot import snapshot
 from pydantic import BaseModel
 
 from mirascope import llm
+from mirascope.llm.tools import FORMAT_TOOL_NAME
 
 
 def test_response_initialization_with_text_content() -> None:
@@ -330,3 +331,114 @@ def test_response_format_no_format_type() -> None:
     )
 
     assert response.format() is None
+
+
+def test_response_format_tool_handling() -> None:
+    """Test that Response correctly converts FORMAT_TOOL_NAME tool calls to text."""
+    input_messages = [llm.messages.user("Format a book for me")]
+
+    mixed_content = [
+        llm.Text(text="I'll format that for you."),
+        llm.ToolCall(
+            id="call_format_123",
+            name=FORMAT_TOOL_NAME,
+            args='{"title": "The Hobbit", "author": "J.R.R. Tolkien"}',
+        ),
+    ]
+    assistant_message = llm.messages.assistant(mixed_content)
+
+    response = llm.Response(
+        provider="openai",
+        model="gpt-4o-mini",
+        input_messages=input_messages,
+        assistant_message=assistant_message,
+        raw={"test": "response"},
+        finish_reason=llm.FinishReason.TOOL_USE,
+    )
+
+    assert len(response.texts) == 2
+    assert response.texts[0].text == "I'll format that for you."
+    assert (
+        response.texts[1].text == '{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+    )
+
+    assert len(response.tool_calls) == 0
+
+    assert len(response.content) == 2
+    assert response.content[0] == llm.Text(text="I'll format that for you.")
+    assert response.content[1] == llm.Text(
+        text='{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
+    )
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+
+
+def test_response_mixed_regular_and_format_tool() -> None:
+    """Test Response handling of both regular and format tool calls."""
+    input_messages = [llm.messages.user("Use tools and format output")]
+
+    mixed_content = [
+        llm.ToolCall(
+            id="call_regular_123", name="regular_tool", args='{"param": "value"}'
+        ),
+        llm.ToolCall(
+            id="call_format_456",
+            name=FORMAT_TOOL_NAME,
+            args='{"formatted": "output"}',
+        ),
+        llm.Text(text="Done!"),
+    ]
+    assistant_message = llm.messages.assistant(mixed_content)
+
+    response = llm.Response(
+        provider="openai",
+        model="gpt-4o-mini",
+        input_messages=input_messages,
+        assistant_message=assistant_message,
+        raw={"test": "response"},
+        finish_reason=llm.FinishReason.TOOL_USE,
+    )
+
+    assert len(response.tool_calls) == 1
+    assert response.tool_calls[0].name == "regular_tool"
+    assert len(response.texts) == 2
+    assert response.texts[0].text == '{"formatted": "output"}'
+    assert response.texts[1].text == "Done!"
+
+    assert len(response.content) == 3
+    assert response.content[0] == llm.ToolCall(
+        id="call_regular_123", name="regular_tool", args='{"param": "value"}'
+    )
+    assert response.content[1] == llm.Text(text='{"formatted": "output"}')
+    assert response.content[2] == llm.Text(text="Done!")
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+
+
+def test_response_format_tool_no_finish_reason_change() -> None:
+    """Test that format tool doesn't change finish reason if not TOOL_USE."""
+    input_messages = [llm.messages.user("Format something")]
+
+    content = [
+        llm.ToolCall(
+            id="call_format_123",
+            name=FORMAT_TOOL_NAME,
+            args='{"data": "formatted"}',
+        ),
+    ]
+    assistant_message = llm.messages.assistant(content)
+
+    response = llm.Response(
+        provider="openai",
+        model="gpt-4o-mini",
+        input_messages=input_messages,
+        assistant_message=assistant_message,
+        raw={"test": "response"},
+        finish_reason=llm.FinishReason.MAX_TOKENS,
+    )
+
+    assert len(response.texts) == 1
+    assert response.texts[0].text == '{"data": "formatted"}'
+    assert len(response.tool_calls) == 0
+
+    assert response.finish_reason == llm.FinishReason.MAX_TOKENS
