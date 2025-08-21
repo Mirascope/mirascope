@@ -1444,3 +1444,27 @@ def test_structured_stream_supported_modes(
     assert isinstance(book, SimpleBook)
     assert book.title == "Mistborn"
     assert book.author == "Brandon Sanderson"
+
+
+@pytest.mark.vcr()
+def test_tool_mode_annotated_fields(openai_client: llm.OpenAIClient) -> None:
+    """Test tool format mode when the format has an annotated field."""
+
+    @llm.format(mode="tool")
+    class Book(BaseModel):
+        title: str
+        author: str
+        genre: Annotated[str, Field("Genre should be ALL CAPS")]
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = openai_client.structured_call(
+        model="gpt-4o-mini",
+        messages=messages,
+        format=Book,
+    )
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+    assert response.pretty() == snapshot(
+        '{"title":"The Name of the Wind","author":"Patrick Rothfuss","genre":"FANTASY"}'
+    )
