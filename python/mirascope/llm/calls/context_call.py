@@ -7,10 +7,12 @@ from ..context import Context, DepsT
 from ..formatting import FormatT
 from ..messages import UserContent
 from ..prompts import Prompt
-from ..responses import AsyncStreamResponse, Response, StreamResponse
+from ..responses import AsyncResponse, AsyncStreamResponse, Response, StreamResponse
 from ..tools import AsyncContextToolkit, ContextToolkit
 from ..types import P
 from .base_call import BaseCall
+
+# TODO: These classes should return ContextResponse / AsyncContextResponse once those are implemented.
 
 
 @dataclass
@@ -42,6 +44,7 @@ class ContextCall(
         self,
         ctx: Context[DepsT],
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT],
         content: UserContent,
@@ -53,6 +56,7 @@ class ContextCall(
         self,
         ctx: Context[DepsT],
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT],
         content: UserContent,
@@ -70,13 +74,13 @@ class AsyncContextCall(
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         """Generates a response using the LLM asynchronously."""
         raise NotImplementedError()
 
     async def call(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         """Generates a response using the LLM asynchronously."""
         raise NotImplementedError()
 
@@ -90,10 +94,11 @@ class AsyncContextCall(
         self,
         ctx: Context[DepsT],
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT],
         content: UserContent,
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         """Generate a new response by continuing from a previous output, plus new user content."""
         raise NotImplementedError()
 
@@ -101,6 +106,7 @@ class AsyncContextCall(
         self,
         ctx: Context[DepsT],
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT],
         content: UserContent,

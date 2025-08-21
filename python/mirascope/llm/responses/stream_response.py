@@ -8,13 +8,14 @@ from ..content import (
 )
 from ..formatting import FormatT, Partial
 from ..streams import AsyncStream, Stream
+from ..tools import AsyncToolkit, Toolkit
 from .base_stream_response import AsyncChunkIterator, BaseStreamResponse, ChunkIterator
 
 if TYPE_CHECKING:
     pass
 
 
-class StreamResponse(BaseStreamResponse[ChunkIterator, FormatT]):
+class StreamResponse(BaseStreamResponse[ChunkIterator, Toolkit, FormatT]):
     """A `StreamResponse` wraps response content from the LLM with a streaming interface.
 
     This class supports iteration to process chunks as they arrive from the model.
@@ -174,7 +175,9 @@ class StreamResponse(BaseStreamResponse[ChunkIterator, FormatT]):
         raise NotImplementedError()
 
 
-class AsyncStreamResponse(BaseStreamResponse[AsyncChunkIterator, FormatT]):
+class AsyncStreamResponse(
+    BaseStreamResponse[AsyncChunkIterator, AsyncToolkit, FormatT]
+):
     """An `AsyncStreamResponse` wraps response content from the LLM with a streaming interface.
 
     This class supports iteration to process chunks as they arrive from the model.

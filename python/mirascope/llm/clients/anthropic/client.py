@@ -9,8 +9,8 @@ from anthropic import Anthropic
 from ...context import Context, DepsT
 from ...formatting import FormatT
 from ...messages import Message
-from ...responses import AsyncStreamResponse, Response, StreamResponse
-from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
+from ...responses import AsyncResponse, AsyncStreamResponse, Response, StreamResponse
+from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool, Toolkit
 from ..base import BaseClient
 from . import _utils
 from .models import AnthropicModel
@@ -77,6 +77,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             input_messages=messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            toolkit=Toolkit(tools=tools),
         )
 
     def context_call(
@@ -120,7 +121,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: AnthropicParams | None = None,
-    ) -> Response[None]:
+    ) -> AsyncResponse[None]:
         raise NotImplementedError
 
     async def context_call_async(
@@ -131,7 +132,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: AnthropicParams | None = None,
-    ) -> Response[None]:
+    ) -> AsyncResponse[None]:
         raise NotImplementedError
 
     async def structured_call_async(
@@ -142,7 +143,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: AnthropicParams | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         raise NotImplementedError
 
     async def structured_context_call_async(
@@ -154,7 +155,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: AnthropicParams | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         raise NotImplementedError
 
     def stream(
@@ -190,6 +191,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             model=model,
             input_messages=messages,
             chunk_iterator=chunk_iterator,
+            toolkit=Toolkit(tools=tools),
         )
 
     def context_stream(

@@ -28,10 +28,12 @@ def test_response_initialization_with_text_content() -> None:
         assistant_message=assistant_message,
         raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert response.provider == "openai"
     assert response.model == "gpt-4o-mini"
+    assert response.toolkit == llm.Toolkit(tools=[])
     assert response.raw == {"test": "response"}
     assert response.finish_reason == llm.FinishReason.END_TURN
 
@@ -66,6 +68,7 @@ def test_response_initialization_with_mixed_content() -> None:
         assistant_message=assistant_message,
         raw={"test": "response"},
         finish_reason=llm.FinishReason.TOOL_USE,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert len(response.texts) == 2
@@ -92,6 +95,7 @@ def test_response_initialization_with_empty_input_messages() -> None:
         assistant_message=assistant_message,
         raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert len(response.messages) == 1
@@ -120,6 +124,7 @@ def test_response_with_different_finish_reasons() -> None:
             assistant_message=assistant_message,
             raw={"test": "response"},
             finish_reason=finish_reason,
+            toolkit=llm.Toolkit(tools=[]),
         )
         assert response.finish_reason == finish_reason
 
@@ -135,6 +140,7 @@ def test_empty_response_pretty() -> None:
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
         raw=None,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert response.pretty() == snapshot("**[No Content]**")
@@ -153,6 +159,7 @@ def test_text_only_response_pretty() -> None:
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
         raw=None,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert response.pretty() == snapshot("Hello! How can I help you today?")
@@ -180,6 +187,7 @@ def test_mixed_content_response_pretty() -> None:
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.TOOL_USE,
         raw=None,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert response.pretty() == snapshot(
@@ -211,6 +219,7 @@ def test_multiple_text_response_pretty() -> None:
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
         raw=None,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert response.pretty() == snapshot(
@@ -245,6 +254,7 @@ def test_response_format_success() -> None:
         raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
         format=Book,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     book = response.format()
@@ -276,6 +286,7 @@ def test_response_format_invalid_json() -> None:
         raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
         format=Book,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     with pytest.raises(json.JSONDecodeError):
@@ -305,6 +316,7 @@ def test_response_format_validation_error() -> None:
         raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
         format=Book,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     with pytest.raises(pydantic.ValidationError):
@@ -325,6 +337,7 @@ def test_response_format_no_format_type() -> None:
         assistant_message=assistant_message,
         raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert response.format() is None
@@ -351,6 +364,7 @@ def test_response_format_tool_handling() -> None:
         assistant_message=assistant_message,
         raw={"test": "response"},
         finish_reason=llm.FinishReason.TOOL_USE,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert len(response.texts) == 2
@@ -394,6 +408,7 @@ def test_response_mixed_regular_and_format_tool() -> None:
         assistant_message=assistant_message,
         raw={"test": "response"},
         finish_reason=llm.FinishReason.TOOL_USE,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert len(response.tool_calls) == 1
@@ -432,6 +447,7 @@ def test_response_format_tool_no_finish_reason_change() -> None:
         assistant_message=assistant_message,
         raw={"test": "response"},
         finish_reason=llm.FinishReason.MAX_TOKENS,
+        toolkit=llm.Toolkit(tools=[]),
     )
 
     assert len(response.texts) == 1

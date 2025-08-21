@@ -232,6 +232,7 @@ def test_tool_usage(openai_client: llm.OpenAIClient) -> None:
     assert response.pretty() == snapshot(
         '**ToolCall (multiply_numbers):** {"a":1337,"b":4242}'
     )
+    assert response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert len(response.tool_calls) == 1
     tool_call = response.tool_calls[0]
@@ -457,6 +458,7 @@ def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
         messages=messages,
         tools=[multiply_numbers],
     )
+    assert stream_response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert isinstance(stream_response, llm.StreamResponse)
     for _ in stream_response.chunk_stream():

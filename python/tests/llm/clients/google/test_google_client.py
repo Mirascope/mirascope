@@ -188,6 +188,7 @@ def test_tool_usage(google_client: llm.GoogleClient) -> None:
         messages=messages,
         tools=[multiply_numbers],
     )
+    assert response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert isinstance(response, llm.Response)
     assert response.pretty() == snapshot(
@@ -291,6 +292,7 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
         messages=messages,
         tools=[multiply_numbers],
     )
+    assert stream_response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert isinstance(stream_response, llm.StreamResponse)
 

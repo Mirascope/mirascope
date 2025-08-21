@@ -295,8 +295,8 @@ ${indent}        ${stream_print}`;
 
   private get response_impl(): string {
     const response_type = this.structured
-      ? "llm.Response[KeeperEntry]"
-      : "llm.Response";
+      ? `llm.${this.async ? "Async" : ""}Response[KeeperEntry]`
+      : `llm.${this.async ? "Async" : ""}Response`;
     const call_target = this.agent ? "agent(" : "sazed(" + this.ctx_arg;
     let result = `
     response: ${response_type} = ${this._await}${call_target}query)`;

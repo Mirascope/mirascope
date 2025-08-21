@@ -67,6 +67,7 @@ from .models import LLM, model
 from .prompts import prompt
 from .responses import (
     AsyncChunkIterator,
+    AsyncResponse,
     AsyncStreamResponse,
     ChunkIterator,
     FinishReason,
@@ -101,6 +102,7 @@ __all__ = [
     "AsyncChunkIterator",
     "AsyncContextTool",
     "AsyncContextToolkit",
+    "AsyncResponse",
     "AsyncStream",
     "AsyncStreamResponse",
     "AsyncTool",

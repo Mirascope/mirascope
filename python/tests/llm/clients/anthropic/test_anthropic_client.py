@@ -153,6 +153,7 @@ I'll help you multiply those numbers using the multiply_numbers tool.
 **ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}\
 """
     )
+    assert response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert len(response.tool_calls) == 1
     tool_call = response.tool_calls[0]
@@ -196,6 +197,7 @@ def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
         messages=messages,
         tools=[multiply_numbers],
     )
+    assert stream_response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert isinstance(stream_response, llm.StreamResponse)
     for _ in stream_response.chunk_stream():

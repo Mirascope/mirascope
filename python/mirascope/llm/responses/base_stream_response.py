@@ -22,10 +22,10 @@ from ..content import (
 )
 from ..formatting import FormatT
 from ..messages import AssistantMessage, Message
-from ..tools import FORMAT_TOOL_NAME
+from ..tools import FORMAT_TOOL_NAME, ToolkitT
 from ..types import NoneType
-from .base_response import BaseResponse
 from .finish_reason import FinishReason
+from .response_base import ResponseBase
 
 if TYPE_CHECKING:
     from ..clients import Model, Provider
@@ -47,7 +47,9 @@ AsyncChunkIterator: TypeAlias = AsyncIterator[AssistantContentChunk | RawChunk]
 ChunkIteratorT = TypeVar("ChunkIteratorT", bound=ChunkIterator | AsyncChunkIterator)
 
 
-class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]):
+class BaseStreamResponse(
+    ResponseBase[ToolkitT, FormatT], Generic[ChunkIteratorT, ToolkitT, FormatT]
+):
     """Base class underpinning StreamResponse and AsyncStreamResponse.
 
     Manages chunk handling logic for both.
@@ -112,6 +114,7 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
         *,
         provider: "Provider",
         model: "Model",
+        toolkit: ToolkitT,
         format: type[FormatT] = NoneType,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIteratorT,
@@ -129,6 +132,7 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
 
         self.provider = provider
         self.model = model
+        self.toolkit = toolkit
         self.format_type = format
 
         # Internal-only lists which we mutate (append) during chunk processing

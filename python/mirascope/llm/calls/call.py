@@ -6,7 +6,7 @@ from typing import Generic, overload
 from ..formatting import FormatT
 from ..messages import UserContent, user
 from ..prompts import AsyncPrompt, Prompt, prompt
-from ..responses import AsyncStreamResponse, Response, StreamResponse
+from ..responses import AsyncResponse, AsyncStreamResponse, Response, StreamResponse
 from ..tools import (
     AsyncToolkit,
     Toolkit,
@@ -72,7 +72,7 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
     @overload
     def resume(
         self: "Call[P, None]",
-        response: Response | StreamResponse | AsyncStreamResponse,
+        response: Response | AsyncResponse | StreamResponse | AsyncStreamResponse,
         content: UserContent,
     ) -> Response: ...
 
@@ -80,6 +80,7 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
     def resume(
         self: "Call[P, FormatT]",
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT],
         content: UserContent,
@@ -88,9 +89,11 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
     def resume(
         self,
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT]
         | Response
+        | AsyncResponse
         | StreamResponse
         | AsyncStreamResponse,
         content: UserContent,
@@ -104,7 +107,7 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
     @overload
     def resume_stream(
         self: "Call[P, None]",
-        response: Response | StreamResponse | AsyncStreamResponse,
+        response: Response | AsyncResponse | StreamResponse | AsyncStreamResponse,
         content: UserContent,
     ) -> StreamResponse: ...
 
@@ -112,6 +115,7 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
     def resume_stream(
         self: "Call[P, FormatT]",
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT],
         content: UserContent,
@@ -120,9 +124,11 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
     def resume_stream(
         self,
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT]
         | Response
+        | AsyncResponse
         | StreamResponse
         | AsyncStreamResponse,
         content: UserContent,
@@ -144,32 +150,32 @@ class AsyncCall(
     @overload
     async def __call__(
         self: "AsyncCall[P, None]", *args: P.args, **kwargs: P.kwargs
-    ) -> Response: ...
+    ) -> AsyncResponse: ...
 
     @overload
     async def __call__(
         self: "AsyncCall[P, FormatT]", *args: P.args, **kwargs: P.kwargs
-    ) -> Response[FormatT]: ...
+    ) -> AsyncResponse[FormatT]: ...
 
     async def __call__(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> Response | Response[FormatT]:
-        """Generates a response using the LLM asynchronously."""
+    ) -> AsyncResponse | AsyncResponse[FormatT]:
+        """Generates a Asyncresponse using the LLM asynchronously."""
         return await self.call(*args, **kwargs)
 
     @overload
     async def call(
         self: "AsyncCall[P, None]", *args: P.args, **kwargs: P.kwargs
-    ) -> Response: ...
+    ) -> AsyncResponse: ...
 
     @overload
     async def call(
         self: "AsyncCall[P, FormatT]", *args: P.args, **kwargs: P.kwargs
-    ) -> Response[FormatT]: ...
+    ) -> AsyncResponse[FormatT]: ...
 
     async def call(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> Response | Response[FormatT]:
+    ) -> AsyncResponse | AsyncResponse[FormatT]:
         """Generates a response using the LLM asynchronously."""
         messages = await prompt(self.fn)(*args, **kwargs)
         return await self.model.call_async(
@@ -198,29 +204,32 @@ class AsyncCall(
     @overload
     async def resume(
         self: "AsyncCall[P, None]",
-        response: Response | StreamResponse | AsyncStreamResponse,
+        response: Response | AsyncResponse | StreamResponse | AsyncStreamResponse,
         content: UserContent,
-    ) -> Response: ...
+    ) -> AsyncResponse: ...
 
     @overload
     async def resume(
         self: "AsyncCall[P, FormatT]",
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT],
         content: UserContent,
-    ) -> Response[FormatT]: ...
+    ) -> AsyncResponse[FormatT]: ...
 
     async def resume(
         self,
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT]
         | Response
+        | AsyncResponse
         | StreamResponse
         | AsyncStreamResponse,
         content: UserContent,
-    ) -> Response[FormatT] | Response:
+    ) -> AsyncResponse[FormatT] | AsyncResponse:
         """Generate a new response by continuing from a previous output, plus new user content."""
         messages = response.messages + [user(content)]
         return await self.model.call_async(
@@ -230,7 +239,7 @@ class AsyncCall(
     @overload
     async def resume_stream(
         self: "AsyncCall[P, None]",
-        response: Response | StreamResponse | AsyncStreamResponse,
+        response: Response | AsyncResponse | StreamResponse | AsyncStreamResponse,
         content: UserContent,
     ) -> AsyncStreamResponse: ...
 
@@ -238,6 +247,7 @@ class AsyncCall(
     async def resume_stream(
         self: "AsyncCall[P, FormatT]",
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT],
         content: UserContent,
@@ -246,9 +256,11 @@ class AsyncCall(
     async def resume_stream(
         self,
         response: Response[FormatT]
+        | AsyncResponse[FormatT]
         | StreamResponse[FormatT]
         | AsyncStreamResponse[FormatT]
         | Response
+        | AsyncResponse
         | StreamResponse
         | AsyncStreamResponse,
         content: UserContent,

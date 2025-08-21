@@ -40,7 +40,7 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    response: llm.Response[KeeperEntry] = await sazed(ctx, query)
+    response: llm.AsyncResponse[KeeperEntry] = await sazed(ctx, query)
     entry: KeeperEntry = response.format()
     print(entry)
 
