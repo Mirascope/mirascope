@@ -446,6 +446,9 @@ def create_format_tool_param(
 
     _ensure_additional_properties_false(schema_dict)
 
+    if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
+        schema_dict["required"] = list(schema_dict["properties"].keys())
+
     description = f"Use this tool to extract data in {format_info.name} format for a final response."
     if format_info.description:
         description += "\n" + format_info.description
