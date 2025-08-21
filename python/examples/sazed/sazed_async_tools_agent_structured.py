@@ -39,7 +39,7 @@ async def sazed():
 async def main():
     agent: llm.AsyncAgent[None, KeeperEntry] = await sazed()
     query = "What are the Kandra?"
-    response: llm.Response[KeeperEntry] = await agent(query)
+    response: llm.AsyncResponse[KeeperEntry] = await agent(query)
     entry: KeeperEntry = response.format()
     print(entry)
 

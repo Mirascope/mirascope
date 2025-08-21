@@ -9,13 +9,15 @@ from openai import OpenAI
 from ...context import Context, DepsT
 from ...formatting import FormatT
 from ...messages import Message
-from ...responses import AsyncStreamResponse, Response, StreamResponse
-from ...tools import (
-    AsyncContextTool,
-    AsyncTool,
-    ContextTool,
-    Tool,
+from ...responses import (
+    AsyncContextResponse,
+    AsyncResponse,
+    AsyncStreamResponse,
+    ContextResponse,
+    Response,
+    StreamResponse,
 )
+from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool, Toolkit
 from ..base import BaseClient
 from . import _utils
 from .models import OpenAIModel
@@ -74,9 +76,10 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         assistant_message, finish_reason = _utils.decode_response(openai_response)
 
         return Response(
+            raw=openai_response,
             provider="openai",
             model=model,
-            raw=openai_response,
+            toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -90,7 +93,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: OpenAIParams | None = None,
-    ) -> Response[None]:
+    ) -> ContextResponse[DepsT, None]:
         raise NotImplementedError
 
     def structured_call(
@@ -122,13 +125,14 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         assistant_message, finish_reason = _utils.decode_response(openai_response)
 
         return Response[FormatT](
+            raw=openai_response,
             provider="openai",
             model=model,
-            raw=openai_response,
+            toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
-            format=format,
+            format_type=format,
         )
 
     def structured_context_call(
@@ -140,7 +144,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
-    ) -> Response[FormatT]:
+    ) -> ContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
     async def call_async(
@@ -150,7 +154,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> Response[None]:
+    ) -> AsyncResponse[None]:
         raise NotImplementedError
 
     async def context_call_async(
@@ -161,7 +165,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: OpenAIParams | None = None,
-    ) -> Response[None]:
+    ) -> AsyncContextResponse[DepsT, None]:
         raise NotImplementedError
 
     async def structured_call_async(
@@ -172,7 +176,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: OpenAIParams | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         raise NotImplementedError
 
     async def structured_context_call_async(
@@ -184,7 +188,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
     def stream(
@@ -215,6 +219,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         return StreamResponse(
             provider="openai",
             model=model,
+            toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
         )
@@ -261,9 +266,10 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         return StreamResponse[FormatT](
             provider="openai",
             model=model,
+            toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
-            format=format,
+            format_type=format,
         )
 
     def structured_context_stream(

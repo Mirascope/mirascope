@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Generic, overload
 from ..clients import ClientT, ParamsT
 from ..context import Context
 from ..messages import Message
-from ..responses import AsyncStreamResponse, Response, StreamResponse
+from ..responses import AsyncResponse, AsyncStreamResponse, Response, StreamResponse
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 if TYPE_CHECKING:
@@ -144,7 +144,7 @@ class LLM(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
-    ) -> Response: ...
+    ) -> AsyncResponse: ...
 
     @overload
     async def call_async(
@@ -153,7 +153,7 @@ class LLM(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
-    ) -> Response[FormatT]: ...
+    ) -> AsyncResponse[FormatT]: ...
 
     async def call_async(
         self,
@@ -161,7 +161,7 @@ class LLM(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT] | None = None,
-    ) -> Response | Response[FormatT]:
+    ) -> AsyncResponse | AsyncResponse[FormatT]:
         """Generate a response asynchronously using the model."""
         if format:
             return await self.client.structured_call_async(

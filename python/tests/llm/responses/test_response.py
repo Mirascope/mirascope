@@ -22,16 +22,18 @@ def test_response_initialization_with_text_content() -> None:
     assistant_message = llm.messages.assistant(text_content)
 
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
     )
 
     assert response.provider == "openai"
     assert response.model == "gpt-4o-mini"
+    assert response.toolkit == llm.Toolkit(tools=[])
     assert response.raw == {"test": "response"}
     assert response.finish_reason == llm.FinishReason.END_TURN
 
@@ -44,7 +46,7 @@ def test_response_initialization_with_text_content() -> None:
     assert len(response.texts) == 1
     assert response.texts[0].text == "Hello! How can I help you today?"
     assert len(response.tool_calls) == 0
-    assert len(response.thinkings) == 0
+    assert len(response.thoughts) == 0
 
 
 def test_response_initialization_with_mixed_content() -> None:
@@ -60,11 +62,12 @@ def test_response_initialization_with_mixed_content() -> None:
     assistant_message = llm.messages.assistant(mixed_content)
 
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.TOOL_USE,
     )
 
@@ -76,8 +79,8 @@ def test_response_initialization_with_mixed_content() -> None:
     assert response.tool_calls[0].name == "test_tool"
     assert response.tool_calls[0].args == '{"param": "value"}'
 
-    assert len(response.thinkings) == 1
-    assert response.thinkings[0].thinking == "Let me think about this"
+    assert len(response.thoughts) == 1
+    assert response.thoughts[0].thinking == "Let me think about this"
 
 
 def test_response_initialization_with_empty_input_messages() -> None:
@@ -86,11 +89,12 @@ def test_response_initialization_with_empty_input_messages() -> None:
     assistant_message = llm.messages.assistant(text_content)
 
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
     )
 
@@ -114,11 +118,12 @@ def test_response_with_different_finish_reasons() -> None:
 
     for finish_reason in finish_reasons:
         response = llm.Response(
+            raw={"test": "response"},
             provider="openai",
             model="gpt-4o-mini",
+            toolkit=llm.Toolkit(tools=[]),
             input_messages=[],
             assistant_message=assistant_message,
-            raw={"test": "response"},
             finish_reason=finish_reason,
         )
         assert response.finish_reason == finish_reason
@@ -129,12 +134,13 @@ def test_empty_response_pretty() -> None:
     assistant_message = llm.messages.assistant(content=[])
 
     response = llm.Response(
+        raw=None,
         provider="openai",
         model="test-model",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        raw=None,
     )
 
     assert response.pretty() == snapshot("**[No Content]**")
@@ -147,12 +153,13 @@ def test_text_only_response_pretty() -> None:
     )
 
     response = llm.Response(
+        raw=None,
         provider="openai",
         model="test-model",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        raw=None,
     )
 
     assert response.pretty() == snapshot("Hello! How can I help you today?")
@@ -174,12 +181,13 @@ def test_mixed_content_response_pretty() -> None:
     )
 
     response = llm.Response(
+        raw=None,
         provider="openai",
         model="test-model",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.TOOL_USE,
-        raw=None,
     )
 
     assert response.pretty() == snapshot(
@@ -205,12 +213,13 @@ def test_multiple_text_response_pretty() -> None:
     )
 
     response = llm.Response(
+        raw=None,
         provider="openai",
         model="test-model",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        raw=None,
     )
 
     assert response.pretty() == snapshot(
@@ -238,13 +247,14 @@ def test_response_format_success() -> None:
     assistant_message = llm.messages.assistant(text_content)
 
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
-        format=Book,
+        format_type=Book,
     )
 
     book = response.format()
@@ -269,13 +279,14 @@ def test_response_format_invalid_json() -> None:
     assistant_message = llm.messages.assistant(text_content)
 
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
-        format=Book,
+        format_type=Book,
     )
 
     with pytest.raises(json.JSONDecodeError):
@@ -298,13 +309,14 @@ def test_response_format_validation_error() -> None:
     assistant_message = llm.messages.assistant(text_content)
 
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
-        format=Book,
+        format_type=Book,
     )
 
     with pytest.raises(pydantic.ValidationError):
@@ -319,11 +331,12 @@ def test_response_format_no_format_type() -> None:
 
     # Create response without format type (defaults to NoneType)
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.END_TURN,
     )
 
@@ -345,11 +358,12 @@ def test_response_format_tool_handling() -> None:
     assistant_message = llm.messages.assistant(mixed_content)
 
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.TOOL_USE,
     )
 
@@ -388,11 +402,12 @@ def test_response_mixed_regular_and_format_tool() -> None:
     assistant_message = llm.messages.assistant(mixed_content)
 
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.TOOL_USE,
     )
 
@@ -426,11 +441,12 @@ def test_response_format_tool_no_finish_reason_change() -> None:
     assistant_message = llm.messages.assistant(content)
 
     response = llm.Response(
+        raw={"test": "response"},
         provider="openai",
         model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
         assistant_message=assistant_message,
-        raw={"test": "response"},
         finish_reason=llm.FinishReason.MAX_TOKENS,
     )
 

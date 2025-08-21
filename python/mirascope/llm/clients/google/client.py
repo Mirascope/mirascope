@@ -9,8 +9,15 @@ from google.genai.types import HttpOptions
 from ...context import Context, DepsT
 from ...formatting import FormatT
 from ...messages import Message
-from ...responses import AsyncStreamResponse, Response, StreamResponse
-from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
+from ...responses import (
+    AsyncContextResponse,
+    AsyncResponse,
+    AsyncStreamResponse,
+    ContextResponse,
+    Response,
+    StreamResponse,
+)
+from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool, Toolkit
 from ..base import BaseClient
 from . import _utils
 from .model import GoogleModel
@@ -71,9 +78,10 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         assistant_message, finish_reason = _utils.decode_response(google_response)
 
         return Response(
+            raw=google_response,
             provider="google",
             model=model,
-            raw=google_response,
+            toolkit=Toolkit(tools=tools),
             input_messages=messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -87,7 +95,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: GoogleParams | None = None,
-    ) -> Response[None]:
+    ) -> ContextResponse[DepsT, None]:
         raise NotImplementedError
 
     def structured_call(
@@ -110,7 +118,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> Response[FormatT]:
+    ) -> ContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
     async def call_async(
@@ -120,7 +128,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: GoogleParams | None = None,
-    ) -> Response[None]:
+    ) -> AsyncResponse[None]:
         raise NotImplementedError
 
     async def context_call_async(
@@ -131,7 +139,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: GoogleParams | None = None,
-    ) -> Response[None]:
+    ) -> AsyncContextResponse[DepsT, None]:
         raise NotImplementedError
 
     async def structured_call_async(
@@ -142,7 +150,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         raise NotImplementedError
 
     async def structured_context_call_async(
@@ -154,7 +162,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
     def stream(
@@ -181,6 +189,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         return StreamResponse(
             provider="google",
             model=model,
+            toolkit=Toolkit(tools=tools),
             input_messages=messages,
             chunk_iterator=chunk_iterator,
         )

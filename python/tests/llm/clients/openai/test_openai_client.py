@@ -37,8 +37,8 @@ def test_call_simple_message(openai_client: llm.OpenAIClient) -> None:
             ],
             "content": [llm.Text(text="Hi! How can I assist you today?")],
             "texts": [llm.Text(text="Hi! How can I assist you today?")],
+            "thoughts": [],
             "tool_calls": [],
-            "thinkings": [],
         }
     )
 
@@ -78,8 +78,8 @@ def test_call_with_system_message(openai_client: llm.OpenAIClient) -> None:
             ],
             "content": [llm.Text(text="Meow!")],
             "texts": [llm.Text(text="Meow!")],
+            "thoughts": [],
             "tool_calls": [],
-            "thinkings": [],
         }
     )
 
@@ -135,8 +135,8 @@ def test_call_with_turns(openai_client: llm.OpenAIClient) -> None:
                     text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
                 )
             ],
+            "thoughts": [],
             "tool_calls": [],
-            "thinkings": [],
         }
     )
 
@@ -231,6 +231,7 @@ def test_tool_usage(openai_client: llm.OpenAIClient) -> None:
     assert response.pretty() == snapshot(
         '**ToolCall (multiply_numbers):** {"a":1337,"b":4242}'
     )
+    assert response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert len(response.tool_calls) == 1
     tool_call = response.tool_calls[0]
@@ -455,6 +456,7 @@ def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
         messages=messages,
         tools=[multiply_numbers],
     )
+    assert stream_response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert isinstance(stream_response, llm.StreamResponse)
     for _ in stream_response.chunk_stream():

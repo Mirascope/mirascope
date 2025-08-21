@@ -30,7 +30,7 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    response: llm.Response = await sazed(ctx, query)
+    response: llm.AsyncContextResponse[Coppermind] = await sazed(ctx, query)
     print(response.pretty())
 
 

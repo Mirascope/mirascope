@@ -39,7 +39,7 @@ def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    response: llm.Response[KeeperEntry] = sazed(ctx, query)
+    response: llm.ContextResponse[Coppermind, KeeperEntry] = sazed(ctx, query)
     entry: KeeperEntry = response.format()
     print(entry)
 

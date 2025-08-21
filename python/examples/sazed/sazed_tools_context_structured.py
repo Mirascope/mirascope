@@ -48,7 +48,7 @@ def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    response: llm.Response[KeeperEntry] = sazed(ctx, query)
+    response: llm.ContextResponse[Coppermind, KeeperEntry] = sazed(ctx, query)
     while tool_calls := response.tool_calls:
         outputs: list[llm.ToolOutput] = [
             sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls

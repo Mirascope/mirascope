@@ -10,7 +10,14 @@ from typing_extensions import TypeVar
 from ...context import Context, DepsT
 from ...formatting import FormatT
 from ...messages import Message
-from ...responses import AsyncStreamResponse, Response, StreamResponse
+from ...responses import (
+    AsyncContextResponse,
+    AsyncResponse,
+    AsyncStreamResponse,
+    ContextResponse,
+    Response,
+    StreamResponse,
+)
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from .params import ParamsT
 
@@ -51,7 +58,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: ParamsT | None = None,
-    ) -> Response[None]:
+    ) -> ContextResponse[DepsT, None]:
         """Generate a context response with context tools."""
         ...
 
@@ -78,7 +85,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[FormatT]:
+    ) -> ContextResponse[DepsT, FormatT]:
         """Generate a structured context response."""
         ...
 
@@ -90,7 +97,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
-    ) -> Response[None]:
+    ) -> AsyncResponse[None]:
         """Generate a standard response asynchronously."""
         ...
 
@@ -103,7 +110,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: ParamsT | None = None,
-    ) -> Response[None]:
+    ) -> AsyncContextResponse[DepsT, None]:
         """Generate a context response asynchronously."""
         ...
 
@@ -116,7 +123,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         """Generate a structured response asynchronously."""
         ...
 
@@ -130,7 +137,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncContextResponse[DepsT, FormatT]:
         """Generate a structured context response asynchronously."""
         ...
 

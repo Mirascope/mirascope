@@ -157,23 +157,18 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
     return this.async ? `async ` : "";
   }
 
-  private get stream_type(): string {
-    let base = `llm.${this.async ? "Async" : ""}StreamResponse`;
-    if (this.structured) {
-      base += `[KeeperEntry]`;
-    }
-    return base;
+  private get _Async(): string {
+    return this.async ? "Async" : "";
   }
 
   private get agent_type(): string {
-    const base = this.async ? "AsyncAgent" : "Agent";
     let generics = "";
     if (this.structured || this.context) {
       const parts: string[] = [this.ctx_type];
       if (this.structured) parts.push("KeeperEntry");
       generics = `[${parts.join(", ")}]`;
     }
-    return `llm.${base}${generics}`;
+    return `llm.${this._Async}Agent${generics}`;
   }
 
   private get function_decorator(): string {
@@ -236,7 +231,7 @@ ${this._async}def main():`;
       : "sazed.stream(" + this.ctx_arg;
 
     let result = `
-    response: ${this.stream_type} = ${this._await}${call_target}query)`;
+    response: ${this.response_type} = ${this._await}${call_target}query)`;
 
     if (this.tools && !this.agent) {
       result += this.tools_stream;
@@ -293,13 +288,27 @@ ${indent}        ${stream_print}`;
     return `outputs: list[llm.ToolOutput] = ${gather}[sazed.toolkit.execute(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}`;
   }
 
+  private get response_type(): string {
+    let base = `llm.${this._Async}${
+      this.context && !this.agent ? "Context" : ""
+    }${this.stream ? "Stream" : ""}Response`;
+    const parts: string[] = [];
+    if (this.context && !this.agent) {
+      parts.push("Coppermind");
+    }
+    if (this.structured) {
+      parts.push("KeeperEntry");
+    }
+    if (parts.length) {
+      base += `[${parts.join(",")}]`;
+    }
+    return base;
+  }
+
   private get response_impl(): string {
-    const response_type = this.structured
-      ? "llm.Response[KeeperEntry]"
-      : "llm.Response";
     const call_target = this.agent ? "agent(" : "sazed(" + this.ctx_arg;
     let result = `
-    response: ${response_type} = ${this._await}${call_target}query)`;
+    response: ${this.response_type} = ${this._await}${call_target}query)`;
 
     if (this.tools && !this.agent) {
       const gather = this.async ? "await asyncio.gather(*" : "";
