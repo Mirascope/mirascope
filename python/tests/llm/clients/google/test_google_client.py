@@ -1,6 +1,5 @@
 """Tests for GoogleClient using VCR.py for HTTP request recording/playback."""
 
-import inspect
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -247,11 +246,11 @@ def test_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
 
     assert len(response.tool_calls) == 2
     assert response.pretty() == snapshot(
-        inspect.cleandoc("""\
-        **ToolCall (get_weather):** {"location": "SF"}
+        """\
+**ToolCall (get_weather):** {"location": "SF"}
 
-        **ToolCall (get_weather):** {"location": "NYC"}
-        """)
+**ToolCall (get_weather):** {"location": "NYC"}\
+"""
     )
 
     tool_outputs = []
