@@ -39,7 +39,7 @@ async def sazed(query: str):
 
 async def main():
     query = "What are the Kandra?"
-    response: llm.Response[KeeperEntry] = await sazed(query)
+    response: llm.AsyncResponse[KeeperEntry] = await sazed(query)
     while tool_calls := response.tool_calls:
         outputs: list[llm.ToolOutput] = await asyncio.gather(
             *[sazed.toolkit.execute(tool_call) for tool_call in tool_calls]

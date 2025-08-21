@@ -29,8 +29,8 @@ def test_call_simple_message(anthropic_client: llm.AnthropicClient) -> None:
             ],
             "content": [llm.Text(text="Hi! How are you today?")],
             "texts": [llm.Text(text="Hi! How are you today?")],
+            "thoughts": [],
             "tool_calls": [],
-            "thinkings": [],
         }
     )
 
@@ -69,8 +69,8 @@ def test_call_with_system_message(
             ],
             "content": [llm.Text(text="Hello world")],
             "texts": [llm.Text(text="Hello world")],
+            "thoughts": [],
             "tool_calls": [],
-            "thinkings": [],
         }
     )
 
@@ -152,6 +152,7 @@ I'll help you multiply those numbers using the multiply_numbers tool.
 **ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}\
 """
     )
+    assert response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert len(response.tool_calls) == 1
     tool_call = response.tool_calls[0]
@@ -195,6 +196,7 @@ def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
         messages=messages,
         tools=[multiply_numbers],
     )
+    assert stream_response.toolkit == llm.Toolkit(tools=[multiply_numbers])
 
     assert isinstance(stream_response, llm.StreamResponse)
     for _ in stream_response.chunk_stream():

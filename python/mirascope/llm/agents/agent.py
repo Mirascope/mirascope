@@ -9,7 +9,7 @@ from ..context import Context, DepsT
 from ..formatting import FormatT
 from ..messages import UserContent
 from ..models import LLM
-from ..responses import AsyncStreamResponse, Response, StreamResponse
+from ..responses import AsyncResponse, AsyncStreamResponse, Response, StreamResponse
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 
@@ -74,7 +74,7 @@ class AsyncAgent(BaseAgent[DepsT, FormatT]):
         content: UserContent,
         *,
         ctx: Context[DepsT] | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         """Generates a response by running the agent loop asynchronously."""
         raise NotImplementedError()
 
@@ -83,7 +83,7 @@ class AsyncAgent(BaseAgent[DepsT, FormatT]):
         content: UserContent,
         *,
         ctx: Context[DepsT] | None = None,
-    ) -> Response[FormatT]:
+    ) -> AsyncResponse[FormatT]:
         """Generates a response by running the agent loop asynchronously."""
         raise NotImplementedError()
 

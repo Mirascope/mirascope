@@ -20,12 +20,12 @@ from ..content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from ..formatting import FormatT
+from ..formatting import FormatT, Partial
 from ..messages import AssistantMessage, Message
-from ..tools import FORMAT_TOOL_NAME
-from ..types import NoneType
-from .base_response import BaseResponse
+from ..streams import AsyncStream, Stream
+from ..tools import FORMAT_TOOL_NAME, ToolkitT
 from .finish_reason import FinishReason, FinishReasonChunk
+from .root_response import RootResponse
 
 if TYPE_CHECKING:
     from ..clients import Model, Provider
@@ -50,7 +50,9 @@ AsyncChunkIterator: TypeAlias = AsyncIterator[
 ChunkIteratorT = TypeVar("ChunkIteratorT", bound=ChunkIterator | AsyncChunkIterator)
 
 
-class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]):
+class BaseStreamResponse(
+    RootResponse[ToolkitT, FormatT], Generic[ChunkIteratorT, ToolkitT, FormatT]
+):
     """Base class underpinning StreamResponse and AsyncStreamResponse.
 
     Manages chunk handling logic for both.
@@ -115,7 +117,8 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
         *,
         provider: "Provider",
         model: "Model",
-        format: type[FormatT] = NoneType,
+        toolkit: ToolkitT,
+        format_type: type[FormatT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIteratorT,
     ) -> None:
@@ -132,7 +135,8 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
 
         self.provider = provider
         self.model = model
-        self.format_type = format
+        self.toolkit = toolkit
+        self.format_type = format_type
 
         # Internal-only lists which we mutate (append) during chunk processing
         self._chunks: list[AssistantContentChunk] = []
@@ -314,3 +318,214 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
                 return chunk.delta
             case _:
                 return ""
+
+
+class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, FormatT]):
+    """A base class for synchronous Stream Responses."""
+
+    def streams(self) -> Iterator[Stream]:
+        """Returns an iterator that yields streams for each content part in the response.
+
+        Returns:
+            Iterator[Stream]: Synchronous iterator yielding Stream objects
+
+        Each content part in the response will correspond to one stream, which will yield
+        chunks of content as they come in from the underlying LLM.
+
+        Fully iterating through this iterator will fully consume the underlying stream,
+        updating the Response with all collected content.
+
+        As content is consumed, it is cached on the StreamResponse. If a new iterator
+        is constructed via calling `streams()`, it will start by replaying the cached
+        content from the response, and (if there is still more content to consume from
+        the LLM), it will proceed to consume it once it has iterated through all the
+        cached chunks.
+        """
+        raise NotImplementedError()
+
+    def chunk_stream(
+        self,
+    ) -> Iterator[AssistantContentChunk]:
+        """Returns an iterator that yields content chunks as they are received.
+
+        Returns:
+            Iterator[AssistantContentChunk]: Synchronous iterator yielding chunks
+
+        This provides access to the Mirascope chunk data including start, delta, and end chunks
+        for each content type (text, thinking, tool_call). Unlike the streams() method
+        that groups chunks by content part, this yields individual chunks as they arrive.
+
+        Fully iterating through this iterator will fully consume the underlying stream,
+        updating the Response with all collected content.
+
+        As chunks are consumed, they are cached on the StreamResponse. If a new iterator
+        is constructed via calling `chunk_stream()`, it will start by replaying the cached
+        chunks from the response, and (if there is still more content to consume from
+        the LLM), it will proceed to consume it once it has iterated through all the
+        cached chunks.
+        """
+        for chunk in self.chunks:
+            yield chunk
+
+        if self.consumed:
+            return
+
+        for chunk in self._chunk_iterator:
+            if chunk.type == "raw_chunk":
+                self._raw.append(chunk.raw)
+            elif chunk.type == "finish_reason_chunk":
+                self._handle_finish_reason_chunk(chunk)
+            else:
+                yield self._handle_chunk(chunk)
+
+        self.consumed = True
+
+    def pretty_stream(self) -> Iterator[str]:
+        """Stream a readable representation of the stream_response as text.
+
+        Returns:
+            Iterator[str]: Iterator yielding string chunks depicting the content
+
+        Iterating through the pretty stream will populate the stream response by consuming
+        the underlying iterator (if it hasn't been consumed already). Calling `.pretty_stream()`
+        will always return a fresh iterator that begins from the start of the stream.
+
+        If you concatenate the text from `.pretty_stream()`, it will be equivalent to the
+        text generated by calling `.pretty()` (assuming the response was fully consumed
+        at the time when you call `.pretty()`).
+        """
+        printed = False
+
+        for chunk in self.chunk_stream():
+            pretty = self._pretty_chunk(chunk, "\n\n" if printed else "")
+            if pretty != "":
+                printed = True
+            yield pretty
+
+        if not printed:
+            yield "**[No Content]**"
+
+    def structured_stream(
+        self,
+    ) -> Iterator[Partial[FormatT]]:
+        """Returns an iterator that yields partial structured objects as content streams.
+
+        Returns:
+            Iterator[Partial[FormatT]]: Synchronous iterator yielding partial structured objects
+
+        This method yields Partial[FormatT] objects as the response content is streamed,
+        allowing you to access partial structured data before the response is fully complete.
+        Each yielded object represents the current state of the parsed structure with all
+        fields optional.
+
+        Fully iterating through this iterator will fully consume the underlying stream,
+        updating the Response with all collected content.
+        """
+        raise NotImplementedError()
+
+
+class BaseAsyncStreamResponse(
+    BaseStreamResponse[AsyncChunkIterator, ToolkitT, FormatT]
+):
+    """A base class for asynchronous Stream Responses."""
+
+    async def streams(self) -> AsyncIterator[AsyncStream]:
+        """Returns an async iterator that yields streams for each content part in the response.
+
+        Returns:
+            AsyncIterator[AsyncStream]: Async iterator yielding AsyncStream objects
+
+        Each content part in the response will correspond to one stream, which will yield
+        chunks of content as they come in from the underlying LLM.
+
+        Fully iterating through this iterator will fully consume the underlying stream,
+        updating the Response with all collected content.
+
+        As content is consumed, it is cached on the AsyncStreamResponse. If a new iterator
+        is constructed via calling `streams()`, it will start by replaying the cached
+        content from the response, and (if there is still more content to consume from
+        the LLM), it will proceed to consume it once it has iterated through all the
+        cached chunks.
+        """
+        raise NotImplementedError()
+
+    async def chunk_stream(
+        self,
+    ) -> AsyncIterator[AssistantContentChunk]:
+        """Returns an async iterator that yields content chunks as they are received.
+
+        Returns:
+            AsyncIterator[AssistantContentChunk]: Async iterator yielding chunks
+
+        This provides access to the Mirascope chunk data including start, delta, and end chunks
+        for each content type (text, thinking, tool_call). Unlike the streams() method
+        that groups chunks by content part, this yields individual chunks as they arrive.
+
+        Fully iterating through this iterator will fully consume the underlying stream,
+        updating the Response with all collected content.
+
+        As chunks are consumed, they are cached on the AsyncStreamResponse. If a new iterator
+        is constructed via calling `chunk_stream()`, it will start by replaying the cached
+        chunks from the response, and (if there is still more content to consume from
+        the LLM), it will proceed to consume it once it has iterated through all the
+        cached chunks.
+        """
+
+        for chunk in self.chunks:
+            yield chunk
+
+        if self.consumed:
+            return
+
+        async for chunk in self._chunk_iterator:
+            if chunk.type == "raw_chunk":
+                self._raw.append(chunk.raw)
+            elif chunk.type == "finish_reason_chunk":
+                self._handle_finish_reason_chunk(chunk)
+            else:
+                yield self._handle_chunk(chunk)
+
+        self.consumed = True
+
+    async def pretty_stream(self) -> AsyncIterator[str]:
+        """Stream a readable representation of the stream_response as text.
+
+        Returns:
+            AsyncIterator[str]: Async iterator yielding string chunks depicting the content
+
+        Iterating through the pretty stream will populate the stream response by consuming
+        the underlying iterator (if it hasn't been consumed already). Calling `.pretty_stream()`
+        will always return a fresh iterator that begins from the start of the stream.
+
+        If you concatenate the text from `.pretty_stream()`, it will be equivalent to the
+        text generated by calling `.pretty()` (assuming the response was fully consumed
+        at the time when you call `.pretty()`).
+        """
+        printed = False
+
+        async for chunk in self.chunk_stream():
+            pretty = self._pretty_chunk(chunk, "\n\n" if printed else "")
+            if pretty != "":
+                printed = True
+            yield pretty
+
+        if not printed:
+            yield "**[No Content]**"
+
+    def structured_stream(
+        self,
+    ) -> AsyncIterator[Partial[FormatT]]:
+        """Returns an async iterator that yields partial structured objects as content streams.
+
+        Returns:
+            AsyncIterator[Partial[FormatT]]: Async iterator yielding partial structured objects
+
+        This method yields Partial[FormatT] objects as the response content is streamed,
+        allowing you to access partial structured data before the response is fully complete.
+        Each yielded object represents the current state of the parsed structure with all
+        fields optional.
+
+        Fully iterating through this iterator will fully consume the underlying stream,
+        updating the Response with all collected content.
+        """
+        raise NotImplementedError()

@@ -39,7 +39,9 @@ def main():
     coppermind = Coppermind(repository="Ancient Terris")
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
-    response: llm.StreamResponse[KeeperEntry] = sazed.stream(ctx, query)
+    response: llm.ContextStreamResponse[Coppermind, KeeperEntry] = sazed.stream(
+        ctx, query
+    )
     for chunk in response.structured_stream():
         print("[Partial]: ", chunk, flush=True)
 

@@ -39,7 +39,7 @@ async def main():
     coppermind = Coppermind(repository="Ancient Terris")
     agent: llm.AsyncAgent[Coppermind, KeeperEntry] = await sazed(deps=coppermind)
     query = "What are the Kandra?"
-    response: llm.Response[KeeperEntry] = await agent(query)
+    response: llm.AsyncResponse[KeeperEntry] = await agent(query)
     entry: KeeperEntry = response.format()
     print(entry)
 
