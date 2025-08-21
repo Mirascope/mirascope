@@ -1,6 +1,5 @@
 """Tests for llm.StreamResponse class."""
 
-import inspect
 from collections.abc import AsyncIterator, Iterator, Sequence
 from dataclasses import dataclass
 
@@ -870,17 +869,15 @@ class TestPrettyStream:
         streamed_output = "".join(stream_response.pretty_stream())
 
         assert streamed_output == snapshot(
-            inspect.cleandoc(
-                """
-                Hello world
+            """\
+Hello world
 
-                **Thinking:**
-                  Let me think...
-                  This is interesting!
+**Thinking:**
+  Let me think...
+  This is interesting!
 
-                **ToolCall (test_function):** {"param1": "value1", "param2": 42}
-                """
-            )
+**ToolCall (test_function):** {"param1": "value1", "param2": 42}\
+"""
         )
         assert streamed_output == stream_response.pretty()
 
@@ -903,17 +900,15 @@ class TestPrettyStream:
         )
 
         assert streamed_output == snapshot(
-            inspect.cleandoc(
-                """
-                Hello world
+            """\
+Hello world
 
-                **Thinking:**
-                  Let me think...
-                  This is interesting!
+**Thinking:**
+  Let me think...
+  This is interesting!
 
-                **ToolCall (test_function):** {"param1": "value1", "param2": 42}
-                """
-            )
+**ToolCall (test_function):** {"param1": "value1", "param2": 42}\
+"""
         )
         assert streamed_output == stream_response.pretty()
 

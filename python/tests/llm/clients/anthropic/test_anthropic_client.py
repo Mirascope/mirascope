@@ -1,7 +1,5 @@
 """Tests for AnthropicClient using VCR.py for HTTP request recording/playback."""
 
-import inspect
-
 import pytest
 from inline_snapshot import snapshot
 
@@ -149,11 +147,11 @@ def test_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
 
     assert isinstance(response, llm.Response)
     assert response.pretty() == snapshot(
-        inspect.cleandoc("""\
-        I'll help you multiply those numbers using the multiply_numbers tool.
+        """\
+I'll help you multiply those numbers using the multiply_numbers tool.
 
-        **ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}
-        """)
+**ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}\
+"""
     )
 
     assert len(response.tool_calls) == 1
@@ -320,13 +318,13 @@ def test_parallel_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
 
     assert len(response.tool_calls) == 2
     assert response.pretty() == snapshot(
-        inspect.cleandoc("""\
-        I'll check the weather in both San Francisco (SF) and New York City (NYC) for you.
+        """\
+I'll check the weather in both San Francisco (SF) and New York City (NYC) for you.
 
-        **ToolCall (get_weather):** {"location": "SF"}
+**ToolCall (get_weather):** {"location": "SF"}
 
-        **ToolCall (get_weather):** {"location": "NYC"}
-        """)
+**ToolCall (get_weather):** {"location": "NYC"}\
+"""
     )
 
     tool_outputs = []
@@ -345,14 +343,14 @@ def test_parallel_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
     )
 
     assert final_response.pretty() == snapshot(
-        inspect.cleandoc("""\
-        Here's the current weather for both cities:
+        """\
+Here's the current weather for both cities:
 
-        **San Francisco (SF):** Overcast and 64°F
-        **New York City (NYC):** Sunny and 72°F
+**San Francisco (SF):** Overcast and 64°F
+**New York City (NYC):** Sunny and 72°F
 
-        It looks like NYC is having a nicer day with sunny skies and warmer temperatures, while SF is experiencing typical overcast conditions with cooler weather.
-        """)
+It looks like NYC is having a nicer day with sunny skies and warmer temperatures, while SF is experiencing typical overcast conditions with cooler weather.\
+"""
     )
 
 
@@ -493,12 +491,12 @@ def test_streaming_parallel_tool_usage(anthropic_client: llm.AnthropicClient) ->
     )
 
     assert final_response.pretty() == snapshot(
-        inspect.cleandoc("""\
-        Here's the current weather for both cities:
+        """\
+Here's the current weather for both cities:
 
-        **San Francisco (SF):** Overcast and 64°F
-        **New York City (NYC):** Sunny and 72°F
+**San Francisco (SF):** Overcast and 64°F
+**New York City (NYC):** Sunny and 72°F
 
-        NYC is having nicer weather today with sunshine and warmer temperatures, while SF is experiencing typical overcast conditions with cooler temperatures.
-        """)
+NYC is having nicer weather today with sunshine and warmer temperatures, while SF is experiencing typical overcast conditions with cooler temperatures.\
+"""
     )
