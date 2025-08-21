@@ -1,6 +1,5 @@
 """Tests for Response class."""
 
-import inspect
 import json
 
 import pydantic
@@ -184,16 +183,14 @@ def test_mixed_content_response_pretty() -> None:
     )
 
     assert response.pretty() == snapshot(
-        inspect.cleandoc(
-            """\
-            I need to calculate something for you.
+        """\
+I need to calculate something for you.
 
-            **Thinking:**
-              Let me think about this calculation step by step...
+**Thinking:**
+  Let me think about this calculation step by step...
 
-            **ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}
-            """
-        )
+**ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}\
+"""
     )
 
 
@@ -217,13 +214,13 @@ def test_multiple_text_response_pretty() -> None:
     )
 
     assert response.pretty() == snapshot(
-        inspect.cleandoc("""
-            Here's the first part.
+        """\
+Here's the first part.
 
-            And here's the second part.
+And here's the second part.
 
-            Finally, the third part.
-        """)
+Finally, the third part.\
+"""
     )
 
 
