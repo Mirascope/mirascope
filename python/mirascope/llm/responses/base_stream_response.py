@@ -1,12 +1,12 @@
 """Base class for StreamResponse and AsyncStreamResponse."""
 
 from collections.abc import AsyncIterator, Iterator, Sequence
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeAlias, TypeVar
 
 from ..content import (
     AssistantContentChunk,
     AssistantContentPart,
-    FinishReasonChunk,
     Text,
     TextChunk,
     TextEndChunk,
@@ -25,11 +25,10 @@ from ..messages import AssistantMessage, Message
 from ..tools import FORMAT_TOOL_NAME
 from ..types import NoneType
 from .base_response import BaseResponse
-from .finish_reason import FinishReason
+from .finish_reason import FinishReason, FinishReasonChunk
 
 if TYPE_CHECKING:
     from ..clients import Model, Provider
-from dataclasses import dataclass
 
 
 @dataclass
@@ -38,10 +37,14 @@ class RawChunk:
     type: Literal["raw_chunk"] = "raw_chunk"
 
 
-ChunkIterator: TypeAlias = Iterator[AssistantContentChunk | RawChunk]
+ChunkIterator: TypeAlias = Iterator[
+    AssistantContentChunk | FinishReasonChunk | RawChunk
+]
 """Synchronous iterator yielding chunks with raw data."""
 
-AsyncChunkIterator: TypeAlias = AsyncIterator[AssistantContentChunk | RawChunk]
+AsyncChunkIterator: TypeAlias = AsyncIterator[
+    AssistantContentChunk | FinishReasonChunk | RawChunk
+]
 """Asynchronous iterator yielding chunks with raw data."""
 
 ChunkIteratorT = TypeVar("ChunkIteratorT", bound=ChunkIterator | AsyncChunkIterator)
@@ -155,14 +158,22 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
         self._chunk_iterator = chunk_iterator
         self._current_content: Text | Thinking | ToolCall | None = None
 
-        self._found_format_tool = False
-        self._processing_format_tool = False
+        # Starts as None, is True while processing format tool, False afterwards
+        self._processing_format_tool: bool | None = None
+
+    def _handle_finish_reason_chunk(self, chunk: FinishReasonChunk) -> None:
+        if (
+            self._processing_format_tool is False
+            and chunk.finish_reason == FinishReason.TOOL_USE
+        ):
+            self.finish_reason = FinishReason.END_TURN
+        else:
+            self.finish_reason = chunk.finish_reason
 
     def _transform_format_tool_chunks(
         self, chunk: AssistantContentChunk
     ) -> AssistantContentChunk:
         if chunk.type == "tool_call_start_chunk" and chunk.name == FORMAT_TOOL_NAME:
-            self._found_format_tool = True
             self._processing_format_tool = True
             return TextStartChunk()
         if self._processing_format_tool and chunk.type == "tool_call_chunk":
@@ -170,24 +181,16 @@ class BaseStreamResponse(BaseResponse[FormatT], Generic[ChunkIteratorT, FormatT]
         if self._processing_format_tool and chunk.type == "tool_call_end_chunk":
             self._processing_format_tool = False
             return TextEndChunk()
-        if (
-            self._found_format_tool
-            and chunk.type == "finish_reason_chunk"
-            and chunk.finish_reason == FinishReason.TOOL_USE
-        ):
-            return FinishReasonChunk(finish_reason=FinishReason.END_TURN)
         return chunk
 
     def _handle_chunk(self, chunk: AssistantContentChunk) -> AssistantContentChunk:
-        chunk = self._transform_format_tool_chunks(chunk)
-
-        if self.finish_reason is not None:
+        if self.finish_reason:
             raise RuntimeError(
                 f"Stream already finished with reason: {self.finish_reason}"
             )
-        if chunk.type == "finish_reason_chunk":
-            self.finish_reason = chunk.finish_reason
-        elif chunk.content_type == "text":
+        chunk = self._transform_format_tool_chunks(chunk)
+
+        if chunk.content_type == "text":
             self._handle_text_chunk(chunk)
         elif chunk.content_type == "thinking":
             self._handle_thinking_chunk(chunk)

@@ -11,7 +11,6 @@ from google.genai.types import GenerateContentConfig
 from ...content import (
     AssistantContentPart,
     ContentPart,
-    FinishReasonChunk,
     Text,
     TextChunk,
     TextEndChunk,
@@ -22,7 +21,7 @@ from ...content import (
     ToolCallStartChunk,
 )
 from ...messages import AssistantMessage, Message, UserMessage, assistant
-from ...responses import ChunkIterator, FinishReason, RawChunk
+from ...responses import ChunkIterator, FinishReason, FinishReasonChunk, RawChunk
 from ...tools import Tool
 from ..base import _utils as _base_utils
 

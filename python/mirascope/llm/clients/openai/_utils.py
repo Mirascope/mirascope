@@ -10,7 +10,6 @@ from openai.types.shared_params.response_format_json_schema import JSONSchema
 
 from ...content import (
     AssistantContentPart,
-    FinishReasonChunk,
     Text,
     TextChunk,
     TextEndChunk,
@@ -29,6 +28,7 @@ from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import (
     ChunkIterator,
     FinishReason,
+    FinishReasonChunk,
     RawChunk,
 )
 from ...tools import (
