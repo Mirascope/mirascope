@@ -203,7 +203,6 @@ def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
                 llm.TextChunk(delta=" today"),
                 llm.TextChunk(delta="?"),
                 llm.TextEndChunk(),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
     )
@@ -414,7 +413,6 @@ def test_streaming_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
                 llm.ToolCallChunk(delta='n": "N'),
                 llm.ToolCallChunk(delta='YC"}'),
                 llm.ToolCallEndChunk(),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
             ],
         }
     )
@@ -519,7 +517,6 @@ def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
                 llm.ToolCallChunk(delta="2"),
                 llm.ToolCallChunk(delta="}"),
                 llm.ToolCallEndChunk(),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
             ],
         }
     )
@@ -1342,7 +1339,6 @@ def test_structured_stream(openai_client: llm.OpenAIClient) -> None:
             llm.TextChunk(delta="uss"),
             llm.TextChunk(delta='"}'),
             llm.TextEndChunk(),
-            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
         ]
     )
 
@@ -1400,7 +1396,6 @@ def test_structured_stream_tool_mode(openai_client: llm.OpenAIClient) -> None:
             llm.TextChunk(delta="uss"),
             llm.TextChunk(delta='"}'),
             llm.TextEndChunk(),
-            llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
         ]
     )
 

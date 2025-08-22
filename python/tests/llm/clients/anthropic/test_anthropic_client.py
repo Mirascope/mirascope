@@ -120,7 +120,6 @@ def test_stream_simple_message(anthropic_client: llm.AnthropicClient) -> None:
                 llm.TextChunk(delta=" are you today"),
                 llm.TextChunk(delta="?"),
                 llm.TextEndChunk(),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
     )
@@ -270,7 +269,6 @@ def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
                 llm.ToolCallChunk(delta=', "b": 42'),
                 llm.ToolCallChunk(delta="42}"),
                 llm.ToolCallEndChunk(),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
             ],
         }
     )
@@ -470,7 +468,6 @@ def test_streaming_parallel_tool_usage(anthropic_client: llm.AnthropicClient) ->
                 llm.ToolCallChunk(delta='ocation":'),
                 llm.ToolCallChunk(delta=' "NYC"}'),
                 llm.ToolCallEndChunk(),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
             ],
         }
     )

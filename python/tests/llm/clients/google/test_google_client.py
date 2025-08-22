@@ -164,7 +164,6 @@ def test_stream_simple_message(google_client: llm.GoogleClient) -> None:
                 llm.TextChunk(delta=" there! It"),
                 llm.TextChunk(delta="'s nice to meet you! 😊\n"),
                 llm.TextEndChunk(),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
     )
@@ -344,7 +343,6 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
                 ),
                 llm.ToolCallChunk(delta='{"a": 1337, "b": 4242}'),
                 llm.ToolCallEndChunk(),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
     )
@@ -461,7 +459,6 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
                 ),
                 llm.ToolCallChunk(delta='{"location": "NYC"}'),
                 llm.ToolCallEndChunk(),
-                llm.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
             ],
         }
     )
