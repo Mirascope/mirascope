@@ -10,21 +10,19 @@ export interface ExampleOptions {
 export function allOptions(): ExampleOptions[] {
   const bools = [false, true];
   const results: ExampleOptions[] = [];
-  for (const agent of bools) {
-    for (const context of bools) {
-      for (const structured of bools) {
-        for (const tools of bools) {
-          for (const stream of bools) {
-            for (const async of bools) {
-              results.push({
-                async,
-                stream,
-                context,
-                tools,
-                agent,
-                structured,
-              });
-            }
+  for (const context of bools) {
+    for (const structured of bools) {
+      for (const tools of bools) {
+        for (const stream of bools) {
+          for (const async of bools) {
+            results.push({
+              async,
+              stream,
+              context,
+              tools,
+              agent: false,
+              structured,
+            });
           }
         }
       }
