@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import Sequence
+from typing import overload
 
 from google.genai import Client
 from google.genai.types import HttpOptions
@@ -55,6 +56,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
 
         self.client = Client(api_key=api_key, http_options=http_options)
 
+    @overload
     def call(
         self,
         *,
@@ -62,10 +64,34 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
-    ) -> Response[None]:
+        format: None = None,
+    ) -> Response: ...
+
+    @overload
+    def call(
+        self,
+        *,
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        params: GoogleParams | None = None,
+        format: type[FormatT],
+    ) -> Response[FormatT]: ...
+
+    def call(
+        self,
+        *,
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        params: GoogleParams | None = None,
+        format: type[FormatT] | None = None,
+    ) -> Response | Response[FormatT]:
         """Make a call to the Google GenAI API."""
         if params:
             raise NotImplementedError("param use not yet supported")
+        if format:
+            raise NotImplementedError("structured output not yet supported")
 
         contents, config = _utils.prepare_google_request(messages, tools)
 
@@ -88,6 +114,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
             finish_reason=finish_reason,
         )
 
+    @overload
     def context_call(
         self,
         *,
@@ -96,31 +123,54 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: GoogleParams | None = None,
-    ) -> ContextResponse[DepsT, None]:
-        raise NotImplementedError
+        format: None = None,
+    ) -> ContextResponse[DepsT, None]: ...
 
-    def structured_call(
-        self,
-        *,
-        model: GoogleModel,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
-        params: GoogleParams | None = None,
-    ) -> Response[FormatT]:
-        raise NotImplementedError
-
-    def structured_context_call(
+    @overload
+    def context_call(
         self,
         *,
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> ContextResponse[DepsT, FormatT]:
+        format: type[FormatT],
+    ) -> ContextResponse[DepsT, FormatT]: ...
+
+    def context_call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: GoogleParams | None = None,
+        format: type[FormatT] | None = None,
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def call_async(
+        self,
+        *,
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        params: GoogleParams | None = None,
+        format: None = None,
+    ) -> AsyncResponse: ...
+
+    @overload
+    async def call_async(
+        self,
+        *,
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        params: GoogleParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncResponse[FormatT]: ...
 
     async def call_async(
         self,
@@ -129,8 +179,33 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: GoogleParams | None = None,
-    ) -> AsyncResponse[None]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncResponse | AsyncResponse[FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: GoogleParams | None = None,
+        format: None = None,
+    ) -> AsyncContextResponse[DepsT, None]: ...
+
+    @overload
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: GoogleParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
     async def context_call_async(
         self,
@@ -140,31 +215,31 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: GoogleParams | None = None,
-    ) -> AsyncContextResponse[DepsT, None]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
-    async def structured_call_async(
+    @overload
+    def stream(
         self,
         *,
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
+        tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
-    ) -> AsyncResponse[FormatT]:
-        raise NotImplementedError
+        format: None = None,
+    ) -> StreamResponse: ...
 
-    async def structured_context_call_async(
+    @overload
+    def stream(
         self,
         *,
-        ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        format: type[FormatT],
+        tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
-    ) -> AsyncContextResponse[DepsT, FormatT]:
-        raise NotImplementedError
+        format: type[FormatT],
+    ) -> StreamResponse[FormatT]: ...
 
     def stream(
         self,
@@ -173,9 +248,12 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: GoogleParams | None = None,
-    ) -> StreamResponse:
+        format: type[FormatT] | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]:
         if params:
             raise NotImplementedError("param use not yet supported")
+        if format:
+            raise NotImplementedError("structured output not yet supported")
 
         contents, config = _utils.prepare_google_request(messages, tools)
 
@@ -196,6 +274,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
             chunk_iterator=chunk_iterator,
         )
 
+    @overload
     def context_stream(
         self,
         *,
@@ -204,31 +283,54 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: GoogleParams | None = None,
-    ) -> StreamResponse:
-        raise NotImplementedError
+        format: None = None,
+    ) -> StreamResponse: ...
 
-    def structured_stream(
-        self,
-        *,
-        model: GoogleModel,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
-        params: GoogleParams | None = None,
-    ) -> StreamResponse[FormatT]:
-        raise NotImplementedError
-
-    def structured_context_stream(
+    @overload
+    def context_stream(
         self,
         *,
         ctx: Context[DepsT],
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> StreamResponse[FormatT]:
+        format: type[FormatT],
+    ) -> StreamResponse[FormatT]: ...
+
+    def context_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: GoogleParams | None = None,
+        format: type[FormatT] | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def stream_async(
+        self,
+        *,
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        params: GoogleParams | None = None,
+        format: None = None,
+    ) -> AsyncStreamResponse: ...
+
+    @overload
+    async def stream_async(
+        self,
+        *,
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        params: GoogleParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncStreamResponse[FormatT]: ...
 
     async def stream_async(
         self,
@@ -237,8 +339,33 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: GoogleParams | None = None,
-    ) -> AsyncStreamResponse:
+        format: type[FormatT] | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: GoogleParams | None = None,
+        format: None = None,
+    ) -> AsyncStreamResponse: ...
+
+    @overload
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: GoogleModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: GoogleParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncStreamResponse[FormatT]: ...
 
     async def context_stream_async(
         self,
@@ -248,28 +375,6 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: GoogleParams | None = None,
-    ) -> AsyncStreamResponse:
-        raise NotImplementedError
-
-    async def structured_stream_async(
-        self,
-        *,
-        model: GoogleModel,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
-        params: GoogleParams | None = None,
-    ) -> AsyncStreamResponse[FormatT]:
-        raise NotImplementedError
-
-    async def structured_context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model: GoogleModel,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        format: type[FormatT],
-        params: GoogleParams | None = None,
-    ) -> AsyncStreamResponse[FormatT]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError

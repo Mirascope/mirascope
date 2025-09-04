@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import Sequence
+from typing import overload
 
 import httpx
 from openai import OpenAI
@@ -51,6 +52,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         """
         self.client = OpenAI(api_key=api_key, base_url=base_url)
 
+    @overload
     def call(
         self,
         *,
@@ -58,19 +60,44 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> Response[None]:
+        format: None = None,
+    ) -> Response: ...
+
+    @overload
+    def call(
+        self,
+        *,
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        params: OpenAIParams | None = None,
+        format: type[FormatT],
+    ) -> Response[FormatT]: ...
+
+    def call(
+        self,
+        *,
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        params: OpenAIParams | None = None,
+        format: type[FormatT] | None = None,
+    ) -> Response | Response[FormatT]:
         """Make a call to the OpenAI ChatCompletions API."""
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        input_messages, message_params, tool_params, _ = _utils.prepare_openai_request(
-            model=model, messages=messages, tools=tools, format=None
+        input_messages, message_params, tool_params, response_format = (
+            _utils.prepare_openai_request(
+                model=model, messages=messages, tools=tools, format=format
+            )
         )
 
         openai_response = self.client.chat.completions.create(
             model=model,
             messages=message_params,
             tools=tool_params,
+            response_format=response_format,
         )
 
         assistant_message, finish_reason = _utils.decode_response(openai_response)
@@ -84,7 +111,32 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            format_type=format,
         )
+
+    @overload
+    def context_call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: OpenAIParams | None = None,
+        format: None = None,
+    ) -> ContextResponse[DepsT, None]: ...
+
+    @overload
+    def context_call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: OpenAIParams | None = None,
+        format: type[FormatT],
+    ) -> ContextResponse[DepsT, FormatT]: ...
 
     def context_call(
         self,
@@ -94,60 +146,31 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: OpenAIParams | None = None,
-    ) -> ContextResponse[DepsT, None]:
+        format: type[FormatT] | None = None,
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
-    def structured_call(
+    @overload
+    async def call_async(
         self,
         *,
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
+        tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> Response[FormatT]:
-        """Make a structured call to OpenAI with formatted output."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
+        format: None = None,
+    ) -> AsyncResponse: ...
 
-        input_messages, message_params, tool_params, response_format = (
-            _utils.prepare_openai_request(
-                model=model, messages=messages, tools=tools, format=format
-            )
-        )
-
-        openai_response = self.client.chat.completions.create(
-            model=model,
-            messages=message_params,
-            tools=tool_params,
-            response_format=response_format,
-        )
-
-        assistant_message, finish_reason = _utils.decode_response(openai_response)
-
-        return Response[FormatT](
-            raw=openai_response,
-            provider="openai",
-            model=model,
-            params=params,
-            toolkit=Toolkit(tools=tools),
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            format_type=format,
-        )
-
-    def structured_context_call(
+    @overload
+    async def call_async(
         self,
         *,
-        ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
-        format: type[FormatT],
+        tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> ContextResponse[DepsT, FormatT]:
-        raise NotImplementedError
+        format: type[FormatT],
+    ) -> AsyncResponse[FormatT]: ...
 
     async def call_async(
         self,
@@ -156,8 +179,33 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncResponse[None]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncResponse | AsyncResponse[FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: OpenAIParams | None = None,
+        format: None = None,
+    ) -> AsyncContextResponse[DepsT, None]: ...
+
+    @overload
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: OpenAIParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
     async def context_call_async(
         self,
@@ -167,31 +215,31 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: OpenAIParams | None = None,
-    ) -> AsyncContextResponse[DepsT, None]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
-    async def structured_call_async(
+    @overload
+    def stream(
         self,
         *,
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
+        tools: Sequence[Tool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncResponse[FormatT]:
-        raise NotImplementedError
+        format: None = None,
+    ) -> StreamResponse: ...
 
-    async def structured_context_call_async(
+    @overload
+    def stream(
         self,
         *,
-        ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        format: type[FormatT],
+        tools: Sequence[Tool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncContextResponse[DepsT, FormatT]:
-        raise NotImplementedError
+        format: type[FormatT],
+    ) -> StreamResponse[FormatT]: ...
 
     def stream(
         self,
@@ -200,19 +248,23 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> StreamResponse:
+        format: type[FormatT] | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]:
         """Make a streaming call to the OpenAI API."""
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        input_messages, message_params, tool_params, _ = _utils.prepare_openai_request(
-            model=model, messages=messages, tools=tools, format=None
+        input_messages, message_params, tool_params, response_format = (
+            _utils.prepare_openai_request(
+                model=model, messages=messages, tools=tools, format=format
+            )
         )
 
         openai_stream = self.client.chat.completions.create(
             model=model,
             messages=message_params,
             tools=tool_params,
+            response_format=response_format,
             stream=True,
         )
 
@@ -225,7 +277,32 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
             toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
+            format_type=format,
         )
+
+    @overload
+    def context_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: OpenAIParams | None = None,
+        format: None = None,
+    ) -> StreamResponse: ...
+
+    @overload
+    def context_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: OpenAIParams | None = None,
+        format: type[FormatT],
+    ) -> StreamResponse[FormatT]: ...
 
     def context_stream(
         self,
@@ -235,58 +312,31 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: OpenAIParams | None = None,
-    ) -> StreamResponse:
+        format: type[FormatT] | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]:
         raise NotImplementedError
 
-    def structured_stream(
+    @overload
+    async def stream_async(
         self,
         *,
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
+        tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> StreamResponse[FormatT]:
-        if params:
-            raise NotImplementedError("param use not yet supported")
+        format: None = None,
+    ) -> AsyncStreamResponse: ...
 
-        input_messages, message_params, tool_params, response_format = (
-            _utils.prepare_openai_request(
-                model=model, messages=messages, tools=tools, format=format
-            )
-        )
-
-        openai_stream = self.client.chat.completions.create(
-            model=model,
-            messages=message_params,
-            tools=tool_params,
-            response_format=response_format,
-            stream=True,
-        )
-
-        chunk_iterator = _utils.convert_openai_stream_to_chunk_iterator(openai_stream)
-
-        return StreamResponse[FormatT](
-            provider="openai",
-            model=model,
-            params=params,
-            toolkit=Toolkit(tools=tools),
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format_type=format,
-        )
-
-    def structured_context_stream(
+    @overload
+    async def stream_async(
         self,
         *,
-        ctx: Context[DepsT],
         model: OpenAIModel,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
-        format: type[FormatT],
+        tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> StreamResponse[FormatT]:
-        raise NotImplementedError
+        format: type[FormatT],
+    ) -> AsyncStreamResponse[FormatT]: ...
 
     async def stream_async(
         self,
@@ -295,8 +345,33 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse:
+        format: type[FormatT] | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: OpenAIParams | None = None,
+        format: None = None,
+    ) -> AsyncStreamResponse: ...
+
+    @overload
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: OpenAIModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: OpenAIParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncStreamResponse[FormatT]: ...
 
     async def context_stream_async(
         self,
@@ -306,28 +381,6 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse:
-        raise NotImplementedError
-
-    async def structured_stream_async(
-        self,
-        *,
-        model: OpenAIModel,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
-        params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse[FormatT]:
-        raise NotImplementedError
-
-    async def structured_context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model: OpenAIModel,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        format: type[FormatT],
-        params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse[FormatT]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError

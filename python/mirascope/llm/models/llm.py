@@ -125,17 +125,19 @@ class LLM(Generic[ClientT, ParamsT]):
     ) -> Response | Response[FormatT]:
         """Generate a response using the model."""
         if format:
-            return self.client.structured_call(
+            return self.client.call(
                 model=self.model,
                 messages=messages,
                 tools=tools,
                 format=format,
                 params=self.params,
             )
-        else:
-            return self.client.call(
-                model=self.model, messages=messages, tools=tools, params=self.params
-            )
+        return self.client.call(
+            model=self.model,
+            messages=messages,
+            tools=tools,
+            params=self.params,
+        )
 
     @overload
     async def call_async(
@@ -164,17 +166,19 @@ class LLM(Generic[ClientT, ParamsT]):
     ) -> AsyncResponse | AsyncResponse[FormatT]:
         """Generate a response asynchronously using the model."""
         if format:
-            return await self.client.structured_call_async(
+            return await self.client.call_async(
                 model=self.model,
                 messages=messages,
                 tools=tools,
                 format=format,
                 params=self.params,
             )
-        else:
-            return await self.client.call_async(
-                model=self.model, messages=messages, tools=tools, params=self.params
-            )
+        return await self.client.call_async(
+            model=self.model,
+            messages=messages,
+            tools=tools,
+            params=self.params,
+        )
 
     @overload
     def stream(
@@ -203,17 +207,19 @@ class LLM(Generic[ClientT, ParamsT]):
     ) -> StreamResponse | StreamResponse[FormatT]:
         """Stream a response using the model."""
         if format:
-            return self.client.structured_stream(
+            return self.client.stream(
                 model=self.model,
                 messages=messages,
                 tools=tools,
                 format=format,
                 params=self.params,
             )
-        else:
-            return self.client.stream(
-                model=self.model, messages=messages, tools=tools, params=self.params
-            )
+        return self.client.stream(
+            model=self.model,
+            messages=messages,
+            tools=tools,
+            params=self.params,
+        )
 
     @overload
     async def stream_async(
@@ -242,17 +248,19 @@ class LLM(Generic[ClientT, ParamsT]):
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         """Stream a response asynchronously using the model."""
         if format:
-            return await self.client.structured_stream_async(
+            return await self.client.stream_async(
                 model=self.model,
                 messages=messages,
                 tools=tools,
                 format=format,
                 params=self.params,
             )
-        else:
-            return await self.client.stream_async(
-                model=self.model, messages=messages, tools=tools, params=self.params
-            )
+        return await self.client.stream_async(
+            model=self.model,
+            messages=messages,
+            tools=tools,
+            params=self.params,
+        )
 
     @overload
     def context_call(
