@@ -121,12 +121,12 @@ def test_structured_call(
     messages: list[llm.messages.Message],
     tools: list[llm.Tool],
 ) -> None:
-    """Test that call method passes parameters correctly to client.structured_call."""
-    mock_client.structured_call.return_value = mock_response
+    """Test that call method passes format parameter correctly to client.call."""
+    mock_client.call.return_value = mock_response
 
     result = mocked_llm.call(messages=messages, tools=tools, format=Format)
 
-    mock_client.structured_call.assert_called_once_with(
+    mock_client.call.assert_called_once_with(
         model="gpt-4o-mini",
         messages=messages,
         tools=tools,
@@ -168,14 +168,14 @@ async def test_structured_call_async(
     messages: list[llm.messages.Message],
     async_tools: list[llm.AsyncTool],
 ) -> None:
-    """Test that call_async method passes parameters correctly to client.structured_call_async."""
-    mock_client.structured_call_async = AsyncMock(return_value=mock_response)
+    """Test that call_async method passes format parameters correctly to client.call_async."""
+    mock_client.call_async = AsyncMock(return_value=mock_response)
 
     result = await mocked_llm.call_async(
         messages=messages, tools=async_tools, format=Format
     )
 
-    mock_client.structured_call_async.assert_called_once_with(
+    mock_client.call_async.assert_called_once_with(
         model="gpt-4o-mini",
         messages=messages,
         tools=async_tools,
@@ -215,12 +215,12 @@ def test_structured_stream(
     messages: list[llm.messages.Message],
     tools: list[llm.Tool],
 ) -> None:
-    """Test that stream method passes parameters correctly to client.structured_stream."""
-    mock_client.structured_stream.return_value = mock_stream_response
+    """Test that stream method passes format parameters correctly to client.stream."""
+    mock_client.stream.return_value = mock_stream_response
 
     result = mocked_llm.stream(messages=messages, tools=tools, format=Format)
 
-    mock_client.structured_stream.assert_called_once_with(
+    mock_client.stream.assert_called_once_with(
         model="gpt-4o-mini",
         messages=messages,
         tools=tools,
@@ -262,16 +262,14 @@ async def test_structured_stream_async(
     messages: list[llm.messages.Message],
     async_tools: list[llm.AsyncTool],
 ) -> None:
-    """Test that stream_async method passes parameters correctly to client.structured_stream_async."""
-    mock_client.structured_stream_async = AsyncMock(
-        return_value=mock_async_stream_response
-    )
+    """Test that stream_async method passes format parameters correctly to client.stream_async."""
+    mock_client.stream_async = AsyncMock(return_value=mock_async_stream_response)
 
     result = await mocked_llm.stream_async(
         messages=messages, tools=async_tools, format=Format
     )
 
-    mock_client.structured_stream_async.assert_called_once_with(
+    mock_client.stream_async.assert_called_once_with(
         model="gpt-4o-mini",
         messages=messages,
         tools=async_tools,
