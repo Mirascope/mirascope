@@ -279,9 +279,7 @@ ${indent}        ${stream_print}`;
         tool_outputs = ${this._await}response.execute_tools(${
       this.context ? "ctx" : ""
     })
-        response = ${this._await}sazed.resume_stream(${
-      this.ctx_arg
-    }response, tool_outputs)`;
+        response = ${this._await}response.resume(${this.ctx_arg}tool_outputs)`;
   }
 
   private get response_type(): string {
@@ -312,9 +310,7 @@ ${indent}        ${stream_print}`;
         tool_outputs = ${this._await}response.execute_tools(${
         this.context ? "ctx" : ""
       })
-        response = ${this._await}sazed.resume(${
-        this.ctx_arg
-      }response, tool_outputs)`;
+        response = ${this._await}response.resume(${this.ctx_arg}tool_outputs)`;
     }
 
     if (this.structured) {

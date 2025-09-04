@@ -54,7 +54,7 @@ def main():
         if not response.tool_calls:
             break
         tool_outputs = response.execute_tools(ctx)
-        response = sazed.resume_stream(ctx, response, tool_outputs)
+        response = response.resume(ctx, tool_outputs)
 
 
 main()

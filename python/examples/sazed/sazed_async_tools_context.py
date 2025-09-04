@@ -42,7 +42,7 @@ async def main():
     response: llm.AsyncContextResponse[Coppermind] = await sazed(ctx, query)
     while response.tool_calls:
         tool_outputs = await response.execute_tools(ctx)
-        response = await sazed.resume(ctx, response, tool_outputs)
+        response = await response.resume(ctx, tool_outputs)
     print(response.pretty())
 
 

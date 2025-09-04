@@ -40,7 +40,7 @@ def main():
     response: llm.Response[KeeperEntry] = sazed(query)
     while response.tool_calls:
         tool_outputs = response.execute_tools()
-        response = sazed.resume(response, tool_outputs)
+        response = response.resume(tool_outputs)
     entry: KeeperEntry = response.format()
     print(entry)
 

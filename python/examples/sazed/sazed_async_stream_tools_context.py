@@ -57,7 +57,7 @@ async def main():
         if not response.tool_calls:
             break
         tool_outputs = await response.execute_tools(ctx)
-        response = await sazed.resume_stream(ctx, response, tool_outputs)
+        response = await response.resume(ctx, tool_outputs)
 
 
 if __name__ == "__main__":

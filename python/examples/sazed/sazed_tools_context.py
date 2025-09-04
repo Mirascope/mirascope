@@ -41,7 +41,7 @@ def main():
     response: llm.ContextResponse[Coppermind] = sazed(ctx, query)
     while response.tool_calls:
         tool_outputs = response.execute_tools(ctx)
-        response = sazed.resume(ctx, response, tool_outputs)
+        response = response.resume(ctx, tool_outputs)
     print(response.pretty())
 
 
