@@ -7,6 +7,7 @@ from typing import cast
 from ..clients import (
     AnthropicClient,
     AnthropicParams,
+    BaseClient,
     BaseParams,
     GoogleClient,
     GoogleParams,
@@ -15,19 +16,22 @@ from ..clients import (
     OpenAIParams,
     Provider,
 )
-from ..models import LLM, model as llm_factory
+from .llm import LLM
+from .model import model as llm_factory
 
 
 def assumed_safe_llm_create(
     provider: Provider,
     model: Model,
-    client: AnthropicClient | GoogleClient | OpenAIClient | None,
-    params: BaseParams,
+    client: BaseClient | None,
+    params: BaseParams | None,
 ) -> (
     LLM[AnthropicClient, AnthropicParams]
     | LLM[GoogleClient, GoogleParams]
     | LLM[OpenAIClient, OpenAIParams]
 ):
+    if not params:
+        params = {}
     match provider:
         case "anthropic":
             llm = llm_factory(
