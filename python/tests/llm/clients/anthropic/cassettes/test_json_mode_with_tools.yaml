@@ -1,0 +1,234 @@
+interactions:
+  - request:
+      body:
+        '{"max_tokens":1024,"messages":[{"role":"user","content":"Get info about
+        ''MadeUpBookButTakeItSeriouslyPls'' and format it properly."}],"model":"claude-3-5-sonnet-latest","system":"Respond
+        with valid JSON that matches this exact schema:\n\n```json\n{\n  \"properties\":
+        {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+        {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"year\":
+        {\n      \"title\": \"Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+        [\n    \"title\",\n    \"author\",\n    \"year\"\n  ],\n  \"title\": \"BookSummary\",\n  \"type\":
+        \"object\"\n}\n```\nRespond ONLY with valid JSON, and no other text.","tools":[{"name":"get_book_info","description":"Get
+        information about a book.","input_schema":{"properties":{"title":{"title":"Title","type":"string"}},"required":["title"],"additionalProperties":false,"type":"object"}}]}'
+      headers:
+        accept:
+          - application/json
+        accept-encoding:
+          - gzip, deflate
+        anthropic-version:
+          - "2023-06-01"
+        connection:
+          - keep-alive
+        content-length:
+          - "931"
+        content-type:
+          - application/json
+        host:
+          - api.anthropic.com
+        user-agent:
+          - Anthropic/Python 0.64.0
+        x-stainless-arch:
+          - arm64
+        x-stainless-async:
+          - "false"
+        x-stainless-lang:
+          - python
+        x-stainless-os:
+          - MacOS
+        x-stainless-package-version:
+          - 0.64.0
+        x-stainless-read-timeout:
+          - "600"
+        x-stainless-retry-count:
+          - "0"
+        x-stainless-runtime:
+          - CPython
+        x-stainless-runtime-version:
+          - 3.10.16
+        x-stainless-timeout:
+          - "600"
+      method: POST
+      uri: https://api.anthropic.com/v1/messages
+    response:
+      body:
+        string: !!binary |
+          H4sIAAAAAAAAAwAAAP//dJFba8MwDIX/i54dSNJ1bfO2vpSNFjq6XsYYxk3U1MSxUlsedCH/faSj
+          7MYepe8c6Qi1oAvIoPaljJPnB10+LjaT3Wk7n5xme1vOy3kCAvjcYK9C71WJIMCR6RvKe+1ZWQYB
+          NRVoIIPcqFBgNIiGkSdrkaM0Tm+SOE1BQE6W0TJkL+11KBMZGXw/9RKlr4OMk816sN2m45Aex6NV
+          udwl58Ps7h0EWFX3vhJZ7okqqe2BerNtAkPWAmu+hFuoAtfNlKiaBn5SFd7zCp2m4M15aTx03asA
+          z9RIh8qT/ZnlAjyeAtocIbPBGAHhcn7Wfi6TTBVaD9lwNBSQq/yIMneoWJOVPxXxlTtUxX/s6u0X
+          YHPEGp0yclj/1X/R5PibdgIo8PfW7ViAR/emc5Ss0UEG/dMK5Qroug8AAAD//wMASzkVLgICAAA=
+      headers:
+        CF-RAY:
+          - 97a13c87ca93170b-LAX
+        Connection:
+          - keep-alive
+        Content-Encoding:
+          - gzip
+        Content-Type:
+          - application/json
+        Date:
+          - Thu, 04 Sep 2025 23:23:48 GMT
+        Server:
+          - cloudflare
+        Transfer-Encoding:
+          - chunked
+        X-Robots-Tag:
+          - none
+        anthropic-organization-id:
+          - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+        anthropic-ratelimit-input-tokens-limit:
+          - "400000"
+        anthropic-ratelimit-input-tokens-remaining:
+          - "400000"
+        anthropic-ratelimit-input-tokens-reset:
+          - "2025-09-04T23:23:47Z"
+        anthropic-ratelimit-output-tokens-limit:
+          - "80000"
+        anthropic-ratelimit-output-tokens-remaining:
+          - "80000"
+        anthropic-ratelimit-output-tokens-reset:
+          - "2025-09-04T23:23:48Z"
+        anthropic-ratelimit-requests-limit:
+          - "4000"
+        anthropic-ratelimit-requests-remaining:
+          - "3999"
+        anthropic-ratelimit-requests-reset:
+          - "2025-09-04T23:23:45Z"
+        anthropic-ratelimit-tokens-limit:
+          - "480000"
+        anthropic-ratelimit-tokens-remaining:
+          - "480000"
+        anthropic-ratelimit-tokens-reset:
+          - "2025-09-04T23:23:47Z"
+        cf-cache-status:
+          - DYNAMIC
+        request-id:
+          - req_011CSpDqnpig4HWJ6okDcVmp
+        strict-transport-security:
+          - max-age=31536000; includeSubDomains; preload
+        via:
+          - 1.1 google
+        x-envoy-upstream-service-time:
+          - "3158"
+      status:
+        code: 200
+        message: OK
+  - request:
+      body:
+        '{"max_tokens":1024,"messages":[{"role":"user","content":"Get info about
+        ''MadeUpBookButTakeItSeriouslyPls'' and format it properly."},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01VU3WW28u2h87SgPX1yfGAz","name":"get_book_info","input":{"title":"MadeUpBookButTakeItSeriouslyPls"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01VU3WW28u2h87SgPX1yfGAz","content":"{''title'':
+        ''MadeUpBookButTakeItSeriouslyPls'', ''author'': ''Test Author'', ''year'':
+        4242}"}]}],"model":"claude-3-5-sonnet-latest","system":"Respond with valid JSON
+        that matches this exact schema:\n\n```json\n{\n  \"properties\": {\n    \"title\":
+        {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+        {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"year\":
+        {\n      \"title\": \"Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+        [\n    \"title\",\n    \"author\",\n    \"year\"\n  ],\n  \"title\": \"BookSummary\",\n  \"type\":
+        \"object\"\n}\n```\nRespond ONLY with valid JSON, and no other text.","tools":[{"name":"get_book_info","description":"Get
+        information about a book.","input_schema":{"properties":{"title":{"title":"Title","type":"string"}},"required":["title"],"additionalProperties":false,"type":"object"}}]}'
+      headers:
+        accept:
+          - application/json
+        accept-encoding:
+          - gzip, deflate
+        anthropic-version:
+          - "2023-06-01"
+        connection:
+          - keep-alive
+        content-length:
+          - "1291"
+        content-type:
+          - application/json
+        host:
+          - api.anthropic.com
+        user-agent:
+          - Anthropic/Python 0.64.0
+        x-stainless-arch:
+          - arm64
+        x-stainless-async:
+          - "false"
+        x-stainless-lang:
+          - python
+        x-stainless-os:
+          - MacOS
+        x-stainless-package-version:
+          - 0.64.0
+        x-stainless-read-timeout:
+          - "600"
+        x-stainless-retry-count:
+          - "0"
+        x-stainless-runtime:
+          - CPython
+        x-stainless-runtime-version:
+          - 3.10.16
+        x-stainless-timeout:
+          - "600"
+      method: POST
+      uri: https://api.anthropic.com/v1/messages
+    response:
+      body:
+        string: !!binary |
+          H4sIAAAAAAAAAwAAAP//dJHNasMwEIRfJcxZBttxCtWt6amFQiAJPdTFCHuJjWXJkVYhwfjdi52G
+          /tHTwnwzuww7oKkg0flDESfLer89HdePz+Vrd96cd9S6tjUQ4EtPk4u8VweCgLN6EpT3jWdlGAKd
+          rUhDotQqVBQto1XkrTHEURqnWRKnKQRKa5gMQ74Nt6VM5yk+D4khN4tFDm5YUw65yPGiKtr3a2vb
+          deCdaumJt+QaG7y+bLTPIa4RFbi27prZkefFw6fwyS+kZpqlWZqbEeO7gGfbF46UtwYSZKqCg5sK
+          z8DTMZApCdIErQXCXF4OaEwfuGDbkvGQd/eJQKnKmorSkeLGmuKnI75xR6r6j92y0wHqa+rIKV2s
+          ur/+L5rUv+koYAN/l7KVgCd3akoquCEHielllXIVxvEDAAD//wMAtHII4gACAAA=
+      headers:
+        CF-RAY:
+          - 97a13c9c5aea170b-LAX
+        Connection:
+          - keep-alive
+        Content-Encoding:
+          - gzip
+        Content-Type:
+          - application/json
+        Date:
+          - Thu, 04 Sep 2025 23:23:51 GMT
+        Server:
+          - cloudflare
+        Transfer-Encoding:
+          - chunked
+        X-Robots-Tag:
+          - none
+        anthropic-organization-id:
+          - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+        anthropic-ratelimit-input-tokens-limit:
+          - "400000"
+        anthropic-ratelimit-input-tokens-remaining:
+          - "400000"
+        anthropic-ratelimit-input-tokens-reset:
+          - "2025-09-04T23:23:50Z"
+        anthropic-ratelimit-output-tokens-limit:
+          - "80000"
+        anthropic-ratelimit-output-tokens-remaining:
+          - "80000"
+        anthropic-ratelimit-output-tokens-reset:
+          - "2025-09-04T23:23:51Z"
+        anthropic-ratelimit-requests-limit:
+          - "4000"
+        anthropic-ratelimit-requests-remaining:
+          - "3999"
+        anthropic-ratelimit-requests-reset:
+          - "2025-09-04T23:23:48Z"
+        anthropic-ratelimit-tokens-limit:
+          - "480000"
+        anthropic-ratelimit-tokens-remaining:
+          - "480000"
+        anthropic-ratelimit-tokens-reset:
+          - "2025-09-04T23:23:50Z"
+        cf-cache-status:
+          - DYNAMIC
+        request-id:
+          - req_011CSpDr2rpXH5UELCCDfkwd
+        strict-transport-security:
+          - max-age=31536000; includeSubDomains; preload
+        via:
+          - 1.1 google
+        x-envoy-upstream-service-time:
+          - "2846"
+      status:
+        code: 200
+        message: OK
+version: 1

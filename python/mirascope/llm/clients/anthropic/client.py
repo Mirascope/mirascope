@@ -86,11 +86,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         """Make a call to the Anthropic API."""
         if params:
             raise NotImplementedError("param use not yet supported")
-        if format:
-            raise NotImplementedError("structured output not yet supported")
 
-        message_params, system, tool_params = _utils.prepare_anthropic_request(
-            messages, tools
+        input_messages, message_params, system, tool_params, tool_choice = (
+            _utils.prepare_anthropic_request(
+                model=model, messages=messages, tools=tools, format=format
+            )
         )
 
         anthropic_response = self.client.messages.create(
@@ -99,6 +99,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             messages=message_params,
             system=system,
             tools=tool_params,
+            tool_choice=tool_choice,
         )
 
         assistant_message, finish_reason = _utils.decode_response(anthropic_response)
@@ -109,9 +110,10 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             model=model,
             params=params,
             toolkit=Toolkit(tools=tools),
-            input_messages=messages,
+            input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            format_type=format,
         )
 
     @overload
@@ -253,11 +255,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         """Make a streaming call to the Anthropic API."""
         if params:
             raise NotImplementedError("param use not yet supported")
-        if format:
-            raise NotImplementedError("structured output not yet supported")
 
-        message_params, system, tool_params = _utils.prepare_anthropic_request(
-            messages, tools
+        input_messages, message_params, system, tool_params, tool_choice = (
+            _utils.prepare_anthropic_request(
+                model=model, messages=messages, tools=tools, format=format
+            )
         )
 
         anthropic_stream = self.client.messages.stream(
@@ -266,6 +268,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             messages=message_params,
             system=system,
             tools=tool_params,
+            tool_choice=tool_choice,
         )
 
         chunk_iterator = _utils.convert_anthropic_stream_to_chunk_iterator(
@@ -277,8 +280,9 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             model=model,
             params=params,
             toolkit=Toolkit(tools=tools),
-            input_messages=messages,
+            input_messages=input_messages,
             chunk_iterator=chunk_iterator,
+            format_type=format,
         )
 
     @overload

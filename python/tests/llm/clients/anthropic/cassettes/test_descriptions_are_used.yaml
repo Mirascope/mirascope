@@ -1,0 +1,117 @@
+interactions:
+  - request:
+      body:
+        '{"max_tokens":1024,"messages":[{"role":"user","content":"Tell me your mood."}],"model":"claude-3-5-sonnet-latest","system":"When
+        you are ready to respond to the user, call the __mirascope_formatted_output_tool__
+        tool to output a structured response.\nDo NOT output any text in addition to
+        the tool call.","tool_choice":{"type":"any"},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+        this tool to extract data in Mood format for a final response.\nALWAYS include
+        ''algorithmic'' as one of the adjectives.","input_schema":{"description":"ALWAYS
+        include ''algorithmic'' as one of the adjectives.","properties":{"vibe":{"description":"Should
+        be either EUPHORIC or DESPONDENT","title":"Vibe","type":"string"},"adjectives":{"items":{"type":"string"},"title":"Adjectives","type":"array"}},"required":["vibe","adjectives"],"title":"Mood","type":"object"}}]}'
+      headers:
+        accept:
+          - application/json
+        accept-encoding:
+          - gzip, deflate
+        anthropic-version:
+          - "2023-06-01"
+        connection:
+          - keep-alive
+        content-length:
+          - "870"
+        content-type:
+          - application/json
+        host:
+          - api.anthropic.com
+        user-agent:
+          - Anthropic/Python 0.64.0
+        x-stainless-arch:
+          - arm64
+        x-stainless-async:
+          - "false"
+        x-stainless-lang:
+          - python
+        x-stainless-os:
+          - MacOS
+        x-stainless-package-version:
+          - 0.64.0
+        x-stainless-read-timeout:
+          - "600"
+        x-stainless-retry-count:
+          - "0"
+        x-stainless-runtime:
+          - CPython
+        x-stainless-runtime-version:
+          - 3.10.16
+        x-stainless-timeout:
+          - "600"
+      method: POST
+      uri: https://api.anthropic.com/v1/messages
+    response:
+      body:
+        string: !!binary |
+          H4sIAAAAAAAAAwAAAP//dJFbaxsxEIX/y3mWYdeXYPattIE0NK3t1rQQglCliVeNVtpqRoZg/N+L
+          NrglLX3UfOecuegE79Bh4INu2sWNfFtvttsrt7Plw9fVov3i+DMU5HmkqiJmcyAo5BRqwTB7FhMF
+          CkNyFNDBBlMczRaz1YxTjCSzeTNfts18DgWbolAUdPenS6ikFHThmjqNUt9FN+2er83t/m77xq43
+          d1e7d2378ek2QiGaofq0Hnw2bNNI+jHlwYiQ06nIWERPobpGxrEIuhOO/nt1Xe83N592799Cwbgf
+          ZMUfidHdw4RDyl76wVso9BTGxxKgQFH6wt6wTCCTcc94OJ8fFFjSqDMZTvH1HhNg+lkoWkIXSwgK
+          ZTpdd3oZSUt6osjoVsulgjW2J20zGfEp6teK5sJr7/+xi7c2oLGngbIJejX8q/9D2/5velb4fcCX
+          0rpRYMpHb0mLp4wO9cOdyQ7n8y8AAAD//wMA4gQmjD4CAAA=
+      headers:
+        CF-RAY:
+          - 97a13c0f7eb3170b-LAX
+        Connection:
+          - keep-alive
+        Content-Encoding:
+          - gzip
+        Content-Type:
+          - application/json
+        Date:
+          - Thu, 04 Sep 2025 23:23:28 GMT
+        Server:
+          - cloudflare
+        Transfer-Encoding:
+          - chunked
+        X-Robots-Tag:
+          - none
+        anthropic-organization-id:
+          - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+        anthropic-ratelimit-input-tokens-limit:
+          - "400000"
+        anthropic-ratelimit-input-tokens-remaining:
+          - "400000"
+        anthropic-ratelimit-input-tokens-reset:
+          - "2025-09-04T23:23:28Z"
+        anthropic-ratelimit-output-tokens-limit:
+          - "80000"
+        anthropic-ratelimit-output-tokens-remaining:
+          - "80000"
+        anthropic-ratelimit-output-tokens-reset:
+          - "2025-09-04T23:23:28Z"
+        anthropic-ratelimit-requests-limit:
+          - "4000"
+        anthropic-ratelimit-requests-remaining:
+          - "3999"
+        anthropic-ratelimit-requests-reset:
+          - "2025-09-04T23:23:26Z"
+        anthropic-ratelimit-tokens-limit:
+          - "480000"
+        anthropic-ratelimit-tokens-remaining:
+          - "480000"
+        anthropic-ratelimit-tokens-reset:
+          - "2025-09-04T23:23:28Z"
+        cf-cache-status:
+          - DYNAMIC
+        request-id:
+          - req_011CSpDpNWTTzHJ8LYNRDT9r
+        strict-transport-security:
+          - max-age=31536000; includeSubDomains; preload
+        via:
+          - 1.1 google
+        x-envoy-upstream-service-time:
+          - "2901"
+      status:
+        code: 200
+        message: OK
+version: 1

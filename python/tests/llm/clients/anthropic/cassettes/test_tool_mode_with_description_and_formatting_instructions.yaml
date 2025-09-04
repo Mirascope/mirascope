@@ -1,0 +1,117 @@
+interactions:
+  - request:
+      body:
+        '{"max_tokens":1024,"messages":[{"role":"user","content":"Recommend a science
+        fiction book."}],"model":"claude-3-5-sonnet-latest","system":"Yo, defo call
+        the tool and output nothing but the tool call tyvm! Oh and make sure the genre
+        field is ALL CAPS","tool_choice":{"type":"any"},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+        this tool to extract data in DetailedBook format for a final response.\nA detailed
+        book recommendation with metadata.","input_schema":{"$defs":{"Author":{"properties":{"first_name":{"title":"First
+        Name","type":"string"},"last_name":{"title":"Last Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"description":"A
+        detailed book recommendation with metadata.","properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"genre":{"title":"Genre","type":"string"}},"required":["title","author","genre"],"title":"DetailedBook","type":"object"}}]}'
+      headers:
+        accept:
+          - application/json
+        accept-encoding:
+          - gzip, deflate
+        anthropic-version:
+          - "2023-06-01"
+        connection:
+          - keep-alive
+        content-length:
+          - "974"
+        content-type:
+          - application/json
+        host:
+          - api.anthropic.com
+        user-agent:
+          - Anthropic/Python 0.64.0
+        x-stainless-arch:
+          - arm64
+        x-stainless-async:
+          - "false"
+        x-stainless-lang:
+          - python
+        x-stainless-os:
+          - MacOS
+        x-stainless-package-version:
+          - 0.64.0
+        x-stainless-read-timeout:
+          - "600"
+        x-stainless-retry-count:
+          - "0"
+        x-stainless-runtime:
+          - CPython
+        x-stainless-runtime-version:
+          - 3.10.16
+        x-stainless-timeout:
+          - "600"
+      method: POST
+      uri: https://api.anthropic.com/v1/messages
+    response:
+      body:
+        string: !!binary |
+          H4sIAAAAAAAAAwAAAP//dJJhT8IwEIb/irnPJdkYCO6jE4QQ0EQjGGOa0h1sYW1nezUasv9uOkSC
+          xo99n7v33rt0D2UOKSi35VH8PB7sHjfXw+GlnG2WZnm1ULPJChjQZ42hCp0TWwQG1lRBEM6VjoQm
+          YKBMjhWkICvhc+wknX7HGa2ROt2o24ujbhcYSKMJNUH6sj+akjEV9y64tlHC2/MozhQ+xWs9T3pJ
+          PZcfSX5/u1qGMFqo0Me5Kq1w0tTIN8YqQYQ5N55qT7w15cFS154g3QOV1Ea+8TqMEp4KYwPYlNYR
+          /zYdW6F3wKASJ22Cdo2WoGGwRW2D9JBNR4tsdDGeZo/TuwU0zSsDR6bmFoUz+nytFjh886glQqp9
+          VTHw7SXT/SEhJ7ND7SDtDxIGUsgCubQoqDSan1dER25R5P+xY28YgHWBCq2oeF/9rT/RuPhNGwY/
+          9zxIcRQxcGjfS4mcSrSQQvgAubA5NM0XAAAA//8DAD2iPetOAgAA
+      headers:
+        CF-RAY:
+          - 97a13ce0c97c170b-LAX
+        Connection:
+          - keep-alive
+        Content-Encoding:
+          - gzip
+        Content-Type:
+          - application/json
+        Date:
+          - Thu, 04 Sep 2025 23:24:03 GMT
+        Server:
+          - cloudflare
+        Transfer-Encoding:
+          - chunked
+        X-Robots-Tag:
+          - none
+        anthropic-organization-id:
+          - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+        anthropic-ratelimit-input-tokens-limit:
+          - "400000"
+        anthropic-ratelimit-input-tokens-remaining:
+          - "400000"
+        anthropic-ratelimit-input-tokens-reset:
+          - "2025-09-04T23:24:01Z"
+        anthropic-ratelimit-output-tokens-limit:
+          - "80000"
+        anthropic-ratelimit-output-tokens-remaining:
+          - "80000"
+        anthropic-ratelimit-output-tokens-reset:
+          - "2025-09-04T23:24:03Z"
+        anthropic-ratelimit-requests-limit:
+          - "4000"
+        anthropic-ratelimit-requests-remaining:
+          - "3999"
+        anthropic-ratelimit-requests-reset:
+          - "2025-09-04T23:23:59Z"
+        anthropic-ratelimit-tokens-limit:
+          - "480000"
+        anthropic-ratelimit-tokens-remaining:
+          - "480000"
+        anthropic-ratelimit-tokens-reset:
+          - "2025-09-04T23:24:01Z"
+        cf-cache-status:
+          - DYNAMIC
+        request-id:
+          - req_011CSpDrqeubTXftSN1oMHNN
+        strict-transport-security:
+          - max-age=31536000; includeSubDomains; preload
+        via:
+          - 1.1 google
+        x-envoy-upstream-service-time:
+          - "3556"
+      status:
+        code: 200
+        message: OK
+version: 1
