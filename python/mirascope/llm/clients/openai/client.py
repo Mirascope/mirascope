@@ -59,8 +59,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: OpenAIParams | None = None,
         format: None = None,
+        params: OpenAIParams | None = None,
     ) -> Response: ...
 
     @overload
@@ -70,8 +70,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: OpenAIParams | None = None,
         format: type[FormatT],
+        params: OpenAIParams | None = None,
     ) -> Response[FormatT]: ...
 
     def call(
@@ -80,8 +80,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: OpenAIParams | None = None,
         format: type[FormatT] | None = None,
+        params: OpenAIParams | None = None,
     ) -> Response | Response[FormatT]:
         """Make a call to the OpenAI ChatCompletions API."""
         if params:
@@ -122,8 +122,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: None = None,
+        params: OpenAIParams | None = None,
     ) -> ContextResponse[DepsT, None]: ...
 
     @overload
@@ -134,8 +134,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: type[FormatT],
+        params: OpenAIParams | None = None,
     ) -> ContextResponse[DepsT, FormatT]: ...
 
     def context_call(
@@ -145,8 +145,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: type[FormatT] | None = None,
+        params: OpenAIParams | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
@@ -157,8 +157,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: OpenAIParams | None = None,
         format: None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncResponse: ...
 
     @overload
@@ -168,8 +168,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: OpenAIParams | None = None,
         format: type[FormatT],
+        params: OpenAIParams | None = None,
     ) -> AsyncResponse[FormatT]: ...
 
     async def call_async(
@@ -178,8 +178,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: OpenAIParams | None = None,
         format: type[FormatT] | None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
         raise NotImplementedError
 
@@ -191,8 +191,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncContextResponse[DepsT, None]: ...
 
     @overload
@@ -203,8 +203,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: type[FormatT],
+        params: OpenAIParams | None = None,
     ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
     async def context_call_async(
@@ -214,8 +214,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: type[FormatT] | None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
@@ -226,8 +226,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: OpenAIParams | None = None,
         format: None = None,
+        params: OpenAIParams | None = None,
     ) -> StreamResponse: ...
 
     @overload
@@ -237,8 +237,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: OpenAIParams | None = None,
         format: type[FormatT],
+        params: OpenAIParams | None = None,
     ) -> StreamResponse[FormatT]: ...
 
     def stream(
@@ -247,8 +247,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: OpenAIParams | None = None,
         format: type[FormatT] | None = None,
+        params: OpenAIParams | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
         """Make a streaming call to the OpenAI API."""
         if params:
@@ -288,8 +288,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: None = None,
+        params: OpenAIParams | None = None,
     ) -> StreamResponse: ...
 
     @overload
@@ -300,8 +300,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: type[FormatT],
+        params: OpenAIParams | None = None,
     ) -> StreamResponse[FormatT]: ...
 
     def context_stream(
@@ -311,8 +311,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: type[FormatT] | None = None,
+        params: OpenAIParams | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
         raise NotImplementedError
 
@@ -323,8 +323,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: OpenAIParams | None = None,
         format: None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse: ...
 
     @overload
@@ -334,8 +334,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: OpenAIParams | None = None,
         format: type[FormatT],
+        params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
 
     async def stream_async(
@@ -344,8 +344,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: OpenAIParams | None = None,
         format: type[FormatT] | None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError
 
@@ -357,8 +357,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse: ...
 
     @overload
@@ -369,8 +369,8 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: type[FormatT],
+        params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
 
     async def context_stream_async(
@@ -380,7 +380,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         model: OpenAIModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: OpenAIParams | None = None,
         format: type[FormatT] | None = None,
+        params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError

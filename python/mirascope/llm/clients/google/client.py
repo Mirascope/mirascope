@@ -63,8 +63,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: GoogleParams | None = None,
         format: None = None,
+        params: GoogleParams | None = None,
     ) -> Response: ...
 
     @overload
@@ -74,8 +74,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: GoogleParams | None = None,
         format: type[FormatT],
+        params: GoogleParams | None = None,
     ) -> Response[FormatT]: ...
 
     def call(
@@ -84,8 +84,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: GoogleParams | None = None,
         format: type[FormatT] | None = None,
+        params: GoogleParams | None = None,
     ) -> Response | Response[FormatT]:
         """Make a call to the Google GenAI API."""
         if params:
@@ -122,8 +122,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: None = None,
+        params: GoogleParams | None = None,
     ) -> ContextResponse[DepsT, None]: ...
 
     @overload
@@ -134,8 +134,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: type[FormatT],
+        params: GoogleParams | None = None,
     ) -> ContextResponse[DepsT, FormatT]: ...
 
     def context_call(
@@ -145,8 +145,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: type[FormatT] | None = None,
+        params: GoogleParams | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
@@ -157,8 +157,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: GoogleParams | None = None,
         format: None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncResponse: ...
 
     @overload
@@ -168,8 +168,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: GoogleParams | None = None,
         format: type[FormatT],
+        params: GoogleParams | None = None,
     ) -> AsyncResponse[FormatT]: ...
 
     async def call_async(
@@ -178,8 +178,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: GoogleParams | None = None,
         format: type[FormatT] | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
         raise NotImplementedError
 
@@ -191,8 +191,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncContextResponse[DepsT, None]: ...
 
     @overload
@@ -203,8 +203,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: type[FormatT],
+        params: GoogleParams | None = None,
     ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
     async def context_call_async(
@@ -214,8 +214,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: type[FormatT] | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
@@ -226,8 +226,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: GoogleParams | None = None,
         format: None = None,
+        params: GoogleParams | None = None,
     ) -> StreamResponse: ...
 
     @overload
@@ -237,8 +237,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: GoogleParams | None = None,
         format: type[FormatT],
+        params: GoogleParams | None = None,
     ) -> StreamResponse[FormatT]: ...
 
     def stream(
@@ -247,8 +247,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: GoogleParams | None = None,
         format: type[FormatT] | None = None,
+        params: GoogleParams | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
         if params:
             raise NotImplementedError("param use not yet supported")
@@ -282,8 +282,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: None = None,
+        params: GoogleParams | None = None,
     ) -> StreamResponse: ...
 
     @overload
@@ -294,8 +294,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: type[FormatT],
+        params: GoogleParams | None = None,
     ) -> StreamResponse[FormatT]: ...
 
     def context_stream(
@@ -305,8 +305,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: type[FormatT] | None = None,
+        params: GoogleParams | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
         raise NotImplementedError
 
@@ -317,8 +317,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: GoogleParams | None = None,
         format: None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse: ...
 
     @overload
@@ -328,8 +328,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: GoogleParams | None = None,
         format: type[FormatT],
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
 
     async def stream_async(
@@ -338,8 +338,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: GoogleParams | None = None,
         format: type[FormatT] | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError
 
@@ -351,8 +351,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse: ...
 
     @overload
@@ -363,8 +363,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: type[FormatT],
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
 
     async def context_stream_async(
@@ -374,7 +374,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         model: GoogleModel,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: GoogleParams | None = None,
         format: type[FormatT] | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError
