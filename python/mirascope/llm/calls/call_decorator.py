@@ -7,10 +7,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, Literal, cast, overload
 from typing_extensions import Unpack
 
-from ..models import LLM
+from ..models import LLM, _utils as _model_utils
 from ..prompts import AsyncPrompt, Prompt, _utils as _prompt_utils
 from ..tools import AsyncTool, Tool, ToolT
-from . import _utils
 from .call import AsyncCall, Call
 
 if TYPE_CHECKING:
@@ -146,7 +145,7 @@ def call(
         print(response)
         ```
     """
-    llm = _utils.assumed_safe_llm_create(
+    llm = _model_utils.assumed_safe_llm_create(
         provider=provider, model=model, client=client, params=params
     )
     return CallDecorator(model=llm, tools=tools, format=format)

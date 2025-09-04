@@ -14,6 +14,7 @@ from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
     from ..clients import BaseParams, Model, Provider
+    from ..models import LLM
 
 
 class RootResponse(Generic[ToolkitT, FormatT], ABC):
@@ -146,3 +147,17 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
                 )  # pragma: no cover
 
         return "\n\n".join(pretty_parts)
+
+    def _model(self) -> "LLM":
+        from ..clients import get_client
+        from ..models import _utils as _model_utils, get_model_from_context
+
+        if context_model := get_model_from_context():
+            return context_model
+
+        return _model_utils.assumed_safe_llm_create(
+            provider=self.provider,
+            model=self.model,
+            client=get_client(self.provider),
+            params=self.params,
+        )
