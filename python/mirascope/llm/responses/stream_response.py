@@ -1,8 +1,11 @@
 """StreamResponse and AsyncStreamResponse to stream content from LLMs."""
 
+import asyncio
+from collections.abc import Sequence
 from typing import Generic
 
-from ..context import DepsT
+from ..content import ToolOutput
+from ..context import Context, DepsT
 from ..formatting import FormatT
 from ..tools import AsyncContextToolkit, AsyncToolkit, ContextToolkit, Toolkit
 from .base_stream_response import BaseAsyncStreamResponse, BaseSyncStreamResponse
@@ -69,6 +72,18 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
         ```
     """
 
+    def execute_tools(self) -> Sequence[ToolOutput]:
+        """Execute and return all of the tool calls in the response.
+
+        Returns:
+            A sequence containing a `ToolOutput` for every tool call in the order they appeared.
+
+        Raises:
+            ToolNotFoundError: If one of the response's tool calls has no matching tool.
+            Exception: If one of the tools throws an exception.
+        """
+        return [self.toolkit.execute(tool_call) for tool_call in self.tool_calls]
+
 
 class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
     """An `AsyncStreamResponse` wraps response content from the LLM with a streaming interface.
@@ -131,6 +146,19 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
         ```
     """
 
+    async def execute_tools(self) -> Sequence[ToolOutput]:
+        """Execute and return all of the tool calls in the response.
+
+        Returns:
+            A sequence containing a `ToolOutput` for every tool call in the order they appeared.
+
+        Raises:
+            ToolNotFoundError: If one of the response's tool calls has no matching tool.
+            Exception: If one of the tools throws an exception.
+        """
+        tasks = [self.toolkit.execute(tool_call) for tool_call in self.tool_calls]
+        return await asyncio.gather(*tasks)
+
 
 class ContextStreamResponse(
     BaseSyncStreamResponse[ContextToolkit, FormatT], Generic[DepsT, FormatT]
@@ -184,16 +212,32 @@ class ContextStreamResponse(
             provider="openai",
             model="gpt-4o-mini",
         )
-        def answer_question(question: str) -> str:
+        def answer_question(ctx: llm.Context, question: str) -> str:
             return f"Answer this question: {question}"
 
-        stream_response = answer_question.stream("What is the capital of France?")
+        ctx = llm.Context()
+        stream_response = answer_question.stream(ctx, "What is the capital of France?")
 
         for chunk in stream_response.pretty_stream():
             print(chunk, end="", flush=True)
         print()
         ```
     """
+
+    def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput]:
+        """Execute and return all of the tool calls in the response.
+
+        Args:
+            ctx: A `Context` with the required deps type.
+
+        Returns:
+            A sequence containing a `ToolOutput` for every tool call.
+
+        Raises:
+            ToolNotFoundError: If one of the response's tool calls has no matching tool.
+            Exception: If one of the tools throws an exception.
+        """
+        raise NotImplementedError
 
 
 class AsyncContextStreamResponse(
@@ -248,13 +292,29 @@ class AsyncContextStreamResponse(
             provider="openai",
             model="gpt-4o-mini",
         )
-        async def answer_question(question: str) -> str:
+        async def answer_question(ctx: llm.Context, question: str) -> str:
             return f"Answer this question: {question}"
 
-        stream_response = await answer_question.stream("What is the capital of France?")
+        ctx = llm.Context()
+        stream_response = await answer_question.stream(ctx, "What is the capital of France?")
 
         async for chunk in stream_response.pretty_stream():
             print(chunk, end="", flush=True)
         print()
         ```
     """
+
+    async def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput]:
+        """Execute and return all of the tool calls in the response.
+
+        Args:
+            ctx: A `Context` with the required deps type.
+
+        Returns:
+            A sequence containing a `ToolOutput` for every tool call in the order they appeared.
+
+        Raises:
+            ToolNotFoundError: If one of the response's tool calls has no matching tool.
+            Exception: If one of the tools throws an exception.
+        """
+        raise NotImplementedError

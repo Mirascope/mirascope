@@ -47,19 +47,17 @@ async def main():
         async for stream in streams:
             match stream.content_type:
                 case "tool_call":
-                    print(f"Calling tool{stream.tool_name} with args:")
+                    print(f"Calling tool {stream.tool_name} with args:")
                     async for chunk in stream:
                         print(chunk.delta, flush=True, end="")
                     print()
                 case "text":
                     async for chunk in stream:
                         print(chunk.delta, flush=True, end="")
-        if not (tool_calls := response.tool_calls):
+        if not response.tool_calls:
             break
-        outputs: list[llm.ToolOutput] = await asyncio.gather(
-            *[sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls]
-        )
-        response = await sazed.resume_stream(ctx, response, outputs)
+        tool_outputs = await response.execute_tools(ctx)
+        response = await sazed.resume_stream(ctx, response, tool_outputs)
 
 
 if __name__ == "__main__":

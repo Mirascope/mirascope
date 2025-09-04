@@ -40,11 +40,9 @@ async def main():
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.AsyncContextResponse[Coppermind] = await sazed(ctx, query)
-    while tool_calls := response.tool_calls:
-        outputs: list[llm.ToolOutput] = await asyncio.gather(
-            *[sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls]
-        )
-        response = await sazed.resume(ctx, response, outputs)
+    while response.tool_calls:
+        tool_outputs = await response.execute_tools(ctx)
+        response = await sazed.resume(ctx, response, tool_outputs)
     print(response.pretty())
 
 

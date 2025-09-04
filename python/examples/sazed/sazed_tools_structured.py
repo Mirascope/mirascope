@@ -38,11 +38,9 @@ def sazed(query: str):
 def main():
     query = "What are the Kandra?"
     response: llm.Response[KeeperEntry] = sazed(query)
-    while tool_calls := response.tool_calls:
-        outputs: list[llm.ToolOutput] = [
-            sazed.toolkit.execute(tool_call) for tool_call in tool_calls
-        ]
-        response = sazed.resume(response, outputs)
+    while response.tool_calls:
+        tool_outputs = response.execute_tools()
+        response = sazed.resume(response, tool_outputs)
     entry: KeeperEntry = response.format()
     print(entry)
 

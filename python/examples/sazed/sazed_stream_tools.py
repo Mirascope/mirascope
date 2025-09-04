@@ -33,19 +33,17 @@ def main():
         for stream in streams:
             match stream.content_type:
                 case "tool_call":
-                    print(f"Calling tool{stream.tool_name} with args:")
+                    print(f"Calling tool {stream.tool_name} with args:")
                     for chunk in stream:
                         print(chunk.delta, flush=True, end="")
                     print()
                 case "text":
                     for chunk in stream:
                         print(chunk.delta, flush=True, end="")
-        if not (tool_calls := response.tool_calls):
+        if not response.tool_calls:
             break
-        outputs: list[llm.ToolOutput] = [
-            sazed.toolkit.execute(tool_call) for tool_call in tool_calls
-        ]
-        response = sazed.resume_stream(response, outputs)
+        tool_outputs = response.execute_tools()
+        response = sazed.resume_stream(response, tool_outputs)
 
 
 main()

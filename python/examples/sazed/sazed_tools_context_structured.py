@@ -49,11 +49,9 @@ def main():
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.ContextResponse[Coppermind, KeeperEntry] = sazed(ctx, query)
-    while tool_calls := response.tool_calls:
-        outputs: list[llm.ToolOutput] = [
-            sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls
-        ]
-        response = sazed.resume(ctx, response, outputs)
+    while response.tool_calls:
+        tool_outputs = response.execute_tools(ctx)
+        response = sazed.resume(ctx, response, tool_outputs)
     entry: KeeperEntry = response.format()
     print(entry)
 
