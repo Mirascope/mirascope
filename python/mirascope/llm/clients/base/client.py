@@ -45,8 +45,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: ParamsT | None = None,
         format: None = None,
+        params: ParamsT | None = None,
     ) -> Response: ...
 
     @overload
@@ -57,8 +57,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: ParamsT | None = None,
         format: type[FormatT],
+        params: ParamsT | None = None,
     ) -> Response[FormatT]: ...
 
     @abstractmethod
@@ -68,8 +68,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: ParamsT | None = None,
         format: type[FormatT] | None = None,
+        params: ParamsT | None = None,
     ) -> Response | Response[FormatT]:
         """Generate a response."""
         ...
@@ -83,8 +83,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: None = None,
+        params: ParamsT | None = None,
     ) -> ContextResponse[DepsT, None]: ...
 
     @overload
@@ -96,8 +96,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: type[FormatT],
+        params: ParamsT | None = None,
     ) -> ContextResponse[DepsT, FormatT]: ...
 
     @abstractmethod
@@ -108,8 +108,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: type[FormatT] | None = None,
+        params: ParamsT | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         """Generate a context response."""
         ...
@@ -122,8 +122,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: ParamsT | None = None,
         format: None = None,
+        params: ParamsT | None = None,
     ) -> AsyncResponse: ...
 
     @overload
@@ -134,8 +134,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: ParamsT | None = None,
         format: type[FormatT],
+        params: ParamsT | None = None,
     ) -> AsyncResponse[FormatT]: ...
 
     @abstractmethod
@@ -145,8 +145,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: ParamsT | None = None,
         format: type[FormatT] | None = None,
+        params: ParamsT | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
         """Generate a response asynchronously."""
         ...
@@ -160,8 +160,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: None = None,
+        params: ParamsT | None = None,
     ) -> AsyncContextResponse[DepsT, None]: ...
 
     @overload
@@ -173,8 +173,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: type[FormatT],
+        params: ParamsT | None = None,
     ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
     @abstractmethod
@@ -185,8 +185,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: type[FormatT] | None = None,
+        params: ParamsT | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         """Generate a context response asynchronously."""
         ...
@@ -199,8 +199,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: ParamsT | None = None,
         format: None = None,
+        params: ParamsT | None = None,
     ) -> StreamResponse: ...
 
     @overload
@@ -211,8 +211,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: ParamsT | None = None,
         format: type[FormatT],
+        params: ParamsT | None = None,
     ) -> StreamResponse[FormatT]: ...
 
     @abstractmethod
@@ -222,8 +222,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        params: ParamsT | None = None,
         format: type[FormatT] | None = None,
+        params: ParamsT | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
         """Stream a response."""
         ...
@@ -237,8 +237,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: None = None,
+        params: ParamsT | None = None,
     ) -> StreamResponse: ...
 
     @overload
@@ -250,8 +250,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: type[FormatT],
+        params: ParamsT | None = None,
     ) -> StreamResponse[FormatT]: ...
 
     @abstractmethod
@@ -262,8 +262,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: type[FormatT] | None = None,
+        params: ParamsT | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
         """Stream a context response."""
         ...
@@ -276,8 +276,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: ParamsT | None = None,
         format: None = None,
+        params: ParamsT | None = None,
     ) -> AsyncStreamResponse: ...
 
     @overload
@@ -288,8 +288,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: ParamsT | None = None,
         format: type[FormatT],
+        params: ParamsT | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
 
     @abstractmethod
@@ -299,8 +299,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        params: ParamsT | None = None,
         format: type[FormatT] | None = None,
+        params: ParamsT | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         """Stream a response asynchronously."""
         ...
@@ -314,8 +314,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: None = None,
+        params: ParamsT | None = None,
     ) -> AsyncStreamResponse: ...
 
     @overload
@@ -327,8 +327,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: type[FormatT],
+        params: ParamsT | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
 
     @abstractmethod
@@ -339,8 +339,8 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         model: ModelT,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        params: ParamsT | None = None,
         format: type[FormatT] | None = None,
+        params: ParamsT | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         """Stream a context response asynchronously."""
         ...
