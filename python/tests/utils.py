@@ -30,7 +30,7 @@ def stream_response_snapshot_dict(
     """
     return {
         "provider": response.provider,
-        "model": response.model,
+        "model_id": response.model_id,
         "finish_reason": response.finish_reason,
         "messages": list(response.messages),
         "content": list(response.content),

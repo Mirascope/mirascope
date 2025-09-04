@@ -18,7 +18,7 @@ def test_call_simple_message(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
     )
 
@@ -27,7 +27,7 @@ def test_call_simple_message(openai_client: llm.OpenAIClient) -> None:
     assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "openai",
-            "model": "gpt-4o-mini",
+            "model_id": "gpt-4o-mini",
             "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
@@ -55,7 +55,7 @@ def test_call_with_system_message(openai_client: llm.OpenAIClient) -> None:
     ]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
     )
 
@@ -64,7 +64,7 @@ def test_call_with_system_message(openai_client: llm.OpenAIClient) -> None:
     assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "openai",
-            "model": "gpt-4o-mini",
+            "model_id": "gpt-4o-mini",
             "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
@@ -97,7 +97,7 @@ def test_call_with_turns(openai_client: llm.OpenAIClient) -> None:
     ]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
     )
 
@@ -106,7 +106,7 @@ def test_call_with_turns(openai_client: llm.OpenAIClient) -> None:
     assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "openai",
-            "model": "gpt-4o-mini",
+            "model_id": "gpt-4o-mini",
             "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
@@ -150,7 +150,7 @@ def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Hi! Please greet me back.")]
 
     stream_response = openai_client.stream(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
     )
 
@@ -161,7 +161,7 @@ def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
     assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "openai",
-            "model": "gpt-4o-mini",
+            "model_id": "gpt-4o-mini",
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
@@ -225,7 +225,7 @@ def test_tool_usage(openai_client: llm.OpenAIClient) -> None:
     ]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -250,7 +250,7 @@ def test_tool_usage(openai_client: llm.OpenAIClient) -> None:
 
     messages = response.messages + [llm.messages.user(tool_output)]
     final_response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -281,7 +281,7 @@ def test_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("What's the weather in SF and NYC?")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[get_weather],
     )
@@ -305,7 +305,7 @@ def test_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
 
     messages = response.messages + [llm.messages.user(tool_outputs)]
     final_response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[get_weather],
     )
@@ -338,7 +338,7 @@ def test_streaming_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
     ]
 
     stream_response = openai_client.stream(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[get_weather],
     )
@@ -350,7 +350,7 @@ def test_streaming_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
     assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "openai",
-            "model": "gpt-4o-mini",
+            "model_id": "gpt-4o-mini",
             "finish_reason": llm.FinishReason.TOOL_USE,
             "messages": [
                 llm.UserMessage(
@@ -431,7 +431,7 @@ def test_streaming_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
 
     messages = stream_response.messages + [llm.messages.user(tool_outputs)]
     final_response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[get_weather],
     )
@@ -455,7 +455,7 @@ def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
     ]
 
     stream_response = openai_client.stream(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -468,7 +468,7 @@ def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
     assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "openai",
-            "model": "gpt-4o-mini",
+            "model_id": "gpt-4o-mini",
             "finish_reason": llm.FinishReason.TOOL_USE,
             "messages": [
                 llm.UserMessage(
@@ -531,7 +531,7 @@ def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
 
     messages = stream_response.messages + [llm.messages.user(tool_output)]
     final_response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -567,7 +567,7 @@ def test_assistant_message_with_multiple_text_parts(
     ]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
     )
 
@@ -588,7 +588,7 @@ def test_structured_call(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=Book,
     )
@@ -624,7 +624,7 @@ def test_structured_call_with_tools(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book in the library.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[available_books],
         format=Book,
@@ -637,7 +637,7 @@ def test_structured_call_with_tools(openai_client: llm.OpenAIClient) -> None:
     ]
 
     response = openai_client.call(
-        model="gpt-4o",
+        model_id="gpt-4o",
         messages=messages,
         tools=[available_books],
         format=Book,
@@ -664,7 +664,7 @@ def test_nested_structured_call(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Respond with two digit primes.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=Outer,
     )
@@ -691,7 +691,7 @@ def test_descriptions_are_used(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Tell me your mood.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=Mood,
     )
@@ -731,7 +731,7 @@ def test_structured_call_supported_modes(
     ]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=SimpleBook,
     )
@@ -754,7 +754,7 @@ def test_json_mode_basic(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=Book,
     )
@@ -832,7 +832,7 @@ def test_json_mode_with_description_and_formatting_instructions(
     messages = [llm.messages.user("Recommend a science fiction book.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=DetailedBook,
     )
@@ -892,7 +892,7 @@ def test_json_mode_with_tools(openai_client: llm.OpenAIClient) -> None:
     ]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[get_book_info],
         format=BookSummary,
@@ -912,7 +912,7 @@ def test_json_mode_with_tools(openai_client: llm.OpenAIClient) -> None:
     messages = response.messages + [llm.messages.user(get_book_info.execute(tool_call))]
 
     final_response = openai_client.call(
-        model="gpt-4o",
+        model_id="gpt-4o",
         messages=messages,
         tools=[get_book_info],
         format=BookSummary,
@@ -956,7 +956,7 @@ def test_structured_formatting_instructions_no_system_message(
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
     response = openai_client.call(
-        model="gpt-4o",
+        model_id="gpt-4o",
         messages=messages,
         format=Book,
     )
@@ -990,7 +990,7 @@ def test_structured_formatting_instructions_modified_system_message(
     ]
 
     response = openai_client.call(
-        model="gpt-4o",
+        model_id="gpt-4o",
         messages=messages,
         format=Book,
     )
@@ -1033,7 +1033,7 @@ def test_structured_formatting_instructions_with_tools(
     ]
 
     response = openai_client.call(
-        model="gpt-4o",
+        model_id="gpt-4o",
         messages=messages,
         tools=[available_book_by_genre],
         format=AllCapsBook,
@@ -1049,7 +1049,7 @@ def test_structured_formatting_instructions_with_tools(
     ]
 
     response = openai_client.call(
-        model="gpt-4o",
+        model_id="gpt-4o",
         messages=messages,
         tools=[available_book_by_genre],
         format=AllCapsBook,
@@ -1076,7 +1076,7 @@ def test_tool_mode_no_tools(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=SimpleBook,
     )
@@ -1121,7 +1121,7 @@ def test_tool_mode_with_other_tools(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book from the library.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[available_books],
         format=Book,
@@ -1136,7 +1136,7 @@ def test_tool_mode_with_other_tools(openai_client: llm.OpenAIClient) -> None:
     ]
 
     final_response = openai_client.call(
-        model="gpt-4o",
+        model_id="gpt-4o",
         messages=messages,
         tools=[available_books],
         format=Book,
@@ -1175,7 +1175,7 @@ def test_tool_mode_with_description_and_formatting_instructions(
     messages = [llm.messages.user("Recommend a science fiction book.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=DetailedBook,
     )
@@ -1209,7 +1209,7 @@ def test_strict_or_tool_fallback(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
     response = openai_client.call(
-        model="gpt-4",
+        model_id="gpt-4",
         messages=messages,
         format=SimpleBook,
     )
@@ -1245,7 +1245,7 @@ def test_strict_or_json_fallback(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
     response = openai_client.call(
-        model="gpt-4",
+        model_id="gpt-4",
         messages=messages,
         format=SimpleBook,
     )
@@ -1298,7 +1298,7 @@ def test_strict_failure_on_unsupported_model(openai_client: llm.OpenAIClient) ->
     with pytest.raises(openai.BadRequestError, match="Structured Outputs guide"):
         # TODO: This will get wrapped in a Mirascope exception when we handle validation.
         openai_client.call(
-            model="gpt-4",
+            model_id="gpt-4",
             messages=messages,
             format=SimpleBook,
         )
@@ -1315,7 +1315,7 @@ def test_structured_stream(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
     stream_response = openai_client.stream(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=Book,
     )
@@ -1373,7 +1373,7 @@ def test_structured_stream_tool_mode(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
     stream_response = openai_client.stream(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=Book,
     )
@@ -1433,7 +1433,7 @@ def test_structured_stream_supported_modes(
     ]
 
     stream_response = openai_client.stream(
-        model="gpt-4o",
+        model_id="gpt-4o",
         messages=messages,
         format=SimpleBook,
     )
@@ -1459,7 +1459,7 @@ def test_tool_mode_annotated_fields(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("Recommend a fantasy book.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=Book,
     )

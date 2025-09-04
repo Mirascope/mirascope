@@ -14,7 +14,7 @@ from ..responses import AsyncResponse, AsyncStreamResponse, Response, StreamResp
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 if TYPE_CHECKING:
-    from ..clients import Model, Provider
+    from ..clients import ModelId, Provider
 
 from ..context import DepsT
 from ..formatting import FormatT
@@ -51,13 +51,13 @@ class LLM(Generic[ClientT, ParamsT]):
 
         @llm.call(
             provider="openai",
-            model="gpt-5",
+            model_id="gpt-5",
         )
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
 
         # Run the call with a different model from the default
-        with llm.model(provider="anthropic", model="claude-4-sonnet"):
+        with llm.model(provider="anthropic", model_id="claude-4-sonnet"):
             response: llm.Response = answer_question("What is the capital of France?")
             print(response.content)
         ```
@@ -69,7 +69,7 @@ class LLM(Generic[ClientT, ParamsT]):
     provider: Provider
     """The provider being used (e.g. `openai`)."""
 
-    model: Model
+    model_id: ModelId
     """The model being used (e.g. `gpt-4o-mini`)."""
 
     client: ClientT
@@ -126,14 +126,14 @@ class LLM(Generic[ClientT, ParamsT]):
         """Generate a response using the model."""
         if format:
             return self.client.call(
-                model=self.model,
+                model_id=self.model_id,
                 messages=messages,
                 tools=tools,
                 format=format,
                 params=self.params,
             )
         return self.client.call(
-            model=self.model,
+            model_id=self.model_id,
             messages=messages,
             tools=tools,
             params=self.params,
@@ -167,14 +167,14 @@ class LLM(Generic[ClientT, ParamsT]):
         """Generate a response asynchronously using the model."""
         if format:
             return await self.client.call_async(
-                model=self.model,
+                model_id=self.model_id,
                 messages=messages,
                 tools=tools,
                 format=format,
                 params=self.params,
             )
         return await self.client.call_async(
-            model=self.model,
+            model_id=self.model_id,
             messages=messages,
             tools=tools,
             params=self.params,
@@ -208,14 +208,14 @@ class LLM(Generic[ClientT, ParamsT]):
         """Stream a response using the model."""
         if format:
             return self.client.stream(
-                model=self.model,
+                model_id=self.model_id,
                 messages=messages,
                 tools=tools,
                 format=format,
                 params=self.params,
             )
         return self.client.stream(
-            model=self.model,
+            model_id=self.model_id,
             messages=messages,
             tools=tools,
             params=self.params,
@@ -249,14 +249,14 @@ class LLM(Generic[ClientT, ParamsT]):
         """Stream a response asynchronously using the model."""
         if format:
             return await self.client.stream_async(
-                model=self.model,
+                model_id=self.model_id,
                 messages=messages,
                 tools=tools,
                 format=format,
                 params=self.params,
             )
         return await self.client.stream_async(
-            model=self.model,
+            model_id=self.model_id,
             messages=messages,
             tools=tools,
             params=self.params,

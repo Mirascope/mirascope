@@ -2,14 +2,14 @@ from typing import Literal, TypeAlias, overload
 
 from .anthropic import (
     AnthropicClient,
-    AnthropicModel,
+    AnthropicModelId,
     get_anthropic_client,
 )
-from .google import GoogleClient, GoogleModel, get_google_client
-from .openai import OpenAIClient, OpenAIModel, get_openai_client
+from .google import GoogleClient, GoogleModelId, get_google_client
+from .openai import OpenAIClient, OpenAIModelId, get_openai_client
 
 Provider: TypeAlias = Literal["openai", "anthropic", "google"]
-Model: TypeAlias = OpenAIModel | AnthropicModel | GoogleModel | str
+ModelId: TypeAlias = OpenAIModelId | AnthropicModelId | GoogleModelId | str
 
 
 @overload

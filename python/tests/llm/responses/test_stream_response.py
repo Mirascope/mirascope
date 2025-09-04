@@ -22,7 +22,7 @@ def create_sync_stream_response(
 
     response = llm.StreamResponse(
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[llm.messages.user("Test")],
@@ -44,7 +44,7 @@ def create_async_stream_response(
 
     response = llm.AsyncStreamResponse(
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.AsyncToolkit(tools=[]),
         input_messages=[llm.messages.user("Test")],
@@ -148,7 +148,7 @@ def test_sync_initialization(
     stream_response = create_sync_stream_response(example_text_chunks)
 
     assert stream_response.provider == "openai"
-    assert stream_response.model == "gpt-4o-mini"
+    assert stream_response.model_id == "gpt-4o-mini"
     assert stream_response.toolkit == llm.Toolkit(tools=[])
     assert stream_response.finish_reason is None
     assert isinstance(stream_response._chunk_iterator, Iterator)
@@ -167,7 +167,7 @@ async def test_async_initialization(
     stream_response = create_async_stream_response(example_text_chunks)
 
     assert stream_response.provider == "openai"
-    assert stream_response.model == "gpt-4o-mini"
+    assert stream_response.model_id == "gpt-4o-mini"
     assert stream_response.toolkit == llm.AsyncToolkit(tools=[])
     assert stream_response.finish_reason is None
     assert isinstance(stream_response._chunk_iterator, AsyncIterator)
@@ -1026,7 +1026,7 @@ class TestRawChunkTracking:
 
         stream_response = llm.StreamResponse(
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
             params=None,
             toolkit=llm.Toolkit(tools=[]),
             input_messages=[llm.messages.user("Test")],
@@ -1058,7 +1058,7 @@ class TestRawChunkTracking:
 
         stream_response = llm.AsyncStreamResponse(
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
             params=None,
             toolkit=llm.AsyncToolkit(tools=[]),
             input_messages=[llm.messages.user("Test")],
@@ -1320,7 +1320,7 @@ def test_stream_response_execute_tools() -> None:
 
     stream_response = llm.StreamResponse(
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[tool_one, tool_two]),
         input_messages=[],
@@ -1363,7 +1363,7 @@ async def test_async_stream_response_execute_tools() -> None:
 
     stream_response = llm.AsyncStreamResponse(
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.AsyncToolkit(tools=[tool_one, tool_two]),
         input_messages=[],

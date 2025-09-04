@@ -107,7 +107,7 @@ def format(
 
         @llm.call(
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
             format=Book,
         )
         def recommend_book(genre: str):

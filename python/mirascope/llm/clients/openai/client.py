@@ -21,7 +21,7 @@ from ...responses import (
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool, Toolkit
 from ..base import BaseClient
 from . import _utils
-from .models import OpenAIModel
+from .model_ids import OpenAIModelId
 from .params import OpenAIParams
 
 _global_client: "OpenAIClient | None" = None
@@ -40,7 +40,7 @@ def get_openai_client() -> "OpenAIClient":
     return _global_client
 
 
-class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
+class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
     """The client for the OpenAI LLM model."""
 
     def __init__(
@@ -56,7 +56,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     def call(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: None = None,
@@ -67,7 +67,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     def call(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -77,7 +77,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     def call(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT] | None = None,
@@ -89,12 +89,12 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
 
         input_messages, message_params, tool_params, response_format = (
             _utils.prepare_openai_request(
-                model=model, messages=messages, tools=tools, format=format
+                model_id=model_id, messages=messages, tools=tools, format=format
             )
         )
 
         openai_response = self.client.chat.completions.create(
-            model=model,
+            model=model_id,
             messages=message_params,
             tools=tool_params,
             response_format=response_format,
@@ -105,7 +105,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         return Response(
             raw=openai_response,
             provider="openai",
-            model=model,
+            model_id=model_id,
             params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
@@ -119,7 +119,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: None = None,
@@ -131,7 +131,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
@@ -142,7 +142,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None = None,
@@ -154,7 +154,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     async def call_async(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
@@ -165,7 +165,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     async def call_async(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -175,7 +175,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     async def call_async(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT] | None = None,
@@ -188,7 +188,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: None = None,
@@ -200,7 +200,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
@@ -211,7 +211,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None = None,
@@ -223,7 +223,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     def stream(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: None = None,
@@ -234,7 +234,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     def stream(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -244,7 +244,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     def stream(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT] | None = None,
@@ -256,12 +256,12 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
 
         input_messages, message_params, tool_params, response_format = (
             _utils.prepare_openai_request(
-                model=model, messages=messages, tools=tools, format=format
+                model_id=model_id, messages=messages, tools=tools, format=format
             )
         )
 
         openai_stream = self.client.chat.completions.create(
-            model=model,
+            model=model_id,
             messages=message_params,
             tools=tool_params,
             response_format=response_format,
@@ -272,7 +272,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
 
         return StreamResponse(
             provider="openai",
-            model=model,
+            model_id=model_id,
             params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
@@ -285,7 +285,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: None = None,
@@ -297,7 +297,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
@@ -308,7 +308,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None = None,
@@ -320,7 +320,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     async def stream_async(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
@@ -331,7 +331,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     async def stream_async(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -341,7 +341,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
     async def stream_async(
         self,
         *,
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT] | None = None,
@@ -354,7 +354,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: None = None,
@@ -366,7 +366,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
@@ -377,7 +377,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model: OpenAIModel,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None = None,

@@ -238,7 +238,7 @@ class FiniteStateMachine(Generic[DepsT]):
 
 
         @machine.node()
-        @llm.call(provider="openai", model="gpt-4o-mini", tools=[all_books, book_is_available])
+        @llm.call(provider="openai", model_id="gpt-4o-mini", tools=[all_books, book_is_available])
         async def answer_question(ctx: g.RunContext[Library]) -> str:
             return f"You are a librarian named {ctx.deps.librarian}"
 

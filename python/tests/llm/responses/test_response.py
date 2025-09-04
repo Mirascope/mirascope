@@ -24,7 +24,7 @@ def test_response_initialization_with_text_content() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
@@ -33,7 +33,7 @@ def test_response_initialization_with_text_content() -> None:
     )
 
     assert response.provider == "openai"
-    assert response.model == "gpt-4o-mini"
+    assert response.model_id == "gpt-4o-mini"
     assert response.toolkit == llm.Toolkit(tools=[])
     assert response.raw == {"test": "response"}
     assert response.finish_reason == llm.FinishReason.END_TURN
@@ -65,7 +65,7 @@ def test_response_initialization_with_mixed_content() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
@@ -93,7 +93,7 @@ def test_response_initialization_with_empty_input_messages() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
@@ -123,7 +123,7 @@ def test_response_with_different_finish_reasons() -> None:
         response = llm.Response(
             raw={"test": "response"},
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
             params=None,
             toolkit=llm.Toolkit(tools=[]),
             input_messages=[],
@@ -140,7 +140,7 @@ def test_empty_response_pretty() -> None:
     response = llm.Response(
         raw=None,
         provider="openai",
-        model="test-model",
+        model_id="test-model",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
@@ -160,7 +160,7 @@ def test_text_only_response_pretty() -> None:
     response = llm.Response(
         raw=None,
         provider="openai",
-        model="test-model",
+        model_id="test-model",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
@@ -189,7 +189,7 @@ def test_mixed_content_response_pretty() -> None:
     response = llm.Response(
         raw=None,
         provider="openai",
-        model="test-model",
+        model_id="test-model",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
@@ -222,7 +222,7 @@ def test_multiple_text_response_pretty() -> None:
     response = llm.Response(
         raw=None,
         provider="openai",
-        model="test-model",
+        model_id="test-model",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
@@ -257,7 +257,7 @@ def test_response_format_success() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
@@ -290,7 +290,7 @@ def test_response_format_invalid_json() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
@@ -321,7 +321,7 @@ def test_response_format_validation_error() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
@@ -344,7 +344,7 @@ def test_response_format_no_format_type() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=[],
@@ -372,7 +372,7 @@ def test_response_format_tool_handling() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
@@ -417,7 +417,7 @@ def test_response_mixed_regular_and_format_tool() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
@@ -457,7 +457,7 @@ def test_response_format_tool_no_finish_reason_change() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[]),
         input_messages=input_messages,
@@ -492,7 +492,7 @@ def test_response_execute_tools() -> None:
     response = llm.Response(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.Toolkit(tools=[tool_one, tool_two]),
         input_messages=[],
@@ -527,7 +527,7 @@ async def test_async_response_execute_tools() -> None:
     response = llm.AsyncResponse(
         raw={"test": "response"},
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         params=None,
         toolkit=llm.AsyncToolkit(tools=[tool_one, tool_two]),
         input_messages=[],

@@ -9,7 +9,7 @@ def search_coppermind(query: str) -> str:
 
 @llm.call(
     provider="openai",
-    model="gpt-4o-mini",
+    model_id="gpt-4o-mini",
     tools=[search_coppermind],
 )
 def sazed(query: str):

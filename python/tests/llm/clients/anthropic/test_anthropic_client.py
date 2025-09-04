@@ -13,7 +13,7 @@ def test_call_simple_message(anthropic_client: llm.AnthropicClient) -> None:
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
     response = anthropic_client.call(
-        model="claude-3-5-sonnet-latest",
+        model_id="claude-3-5-sonnet-latest",
         messages=messages,
     )
 
@@ -21,7 +21,7 @@ def test_call_simple_message(anthropic_client: llm.AnthropicClient) -> None:
     assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "anthropic",
-            "model": "claude-3-5-sonnet-latest",
+            "model_id": "claude-3-5-sonnet-latest",
             "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
@@ -47,7 +47,7 @@ def test_call_with_system_message(
     ]
 
     response = anthropic_client.call(
-        model="claude-3-5-sonnet-latest",
+        model_id="claude-3-5-sonnet-latest",
         messages=messages,
     )
 
@@ -55,7 +55,7 @@ def test_call_with_system_message(
     assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "anthropic",
-            "model": "claude-3-5-sonnet-latest",
+            "model_id": "claude-3-5-sonnet-latest",
             "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
@@ -83,7 +83,7 @@ def test_stream_simple_message(anthropic_client: llm.AnthropicClient) -> None:
     messages = [llm.messages.user("Hi! Please greet me back.")]
 
     stream_response = anthropic_client.stream(
-        model="claude-3-5-sonnet-latest",
+        model_id="claude-3-5-sonnet-latest",
         messages=messages,
     )
 
@@ -94,7 +94,7 @@ def test_stream_simple_message(anthropic_client: llm.AnthropicClient) -> None:
     assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "anthropic",
-            "model": "claude-3-5-sonnet-latest",
+            "model_id": "claude-3-5-sonnet-latest",
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
@@ -141,7 +141,7 @@ def test_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
     ]
 
     response = anthropic_client.call(
-        model="claude-3-5-sonnet-latest",
+        model_id="claude-3-5-sonnet-latest",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -170,7 +170,7 @@ I'll help you multiply those numbers using the multiply_numbers tool.
 
     messages = response.messages + [llm.messages.user(tool_output)]
     final_response = anthropic_client.call(
-        model="claude-3-5-sonnet-latest",
+        model_id="claude-3-5-sonnet-latest",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -194,7 +194,7 @@ def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
     ]
 
     stream_response = anthropic_client.stream(
-        model="claude-3-5-sonnet-latest",
+        model_id="claude-3-5-sonnet-latest",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -207,7 +207,7 @@ def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
     assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "anthropic",
-            "model": "claude-3-5-sonnet-latest",
+            "model_id": "claude-3-5-sonnet-latest",
             "finish_reason": llm.FinishReason.TOOL_USE,
             "messages": [
                 llm.UserMessage(
@@ -282,7 +282,7 @@ def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
 
     messages = stream_response.messages + [llm.messages.user(tool_output)]
     final_response = anthropic_client.call(
-        model="claude-3-5-sonnet-latest",
+        model_id="claude-3-5-sonnet-latest",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -313,7 +313,7 @@ def test_parallel_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
     messages = [llm.messages.user("What's the weather in SF and NYC?")]
 
     response = anthropic_client.call(
-        model="claude-4-sonnet-20250514",
+        model_id="claude-4-sonnet-20250514",
         messages=messages,
         tools=[get_weather],
     )
@@ -339,7 +339,7 @@ I'll check the weather in both San Francisco (SF) and New York City (NYC) for yo
 
     messages = response.messages + [llm.messages.user(tool_outputs)]
     final_response = anthropic_client.call(
-        model="claude-4-sonnet-20250514",
+        model_id="claude-4-sonnet-20250514",
         messages=messages,
         tools=[get_weather],
     )
@@ -377,7 +377,7 @@ def test_streaming_parallel_tool_usage(anthropic_client: llm.AnthropicClient) ->
     messages = [llm.messages.user("What's the weather in SF and NYC?")]
 
     stream_response = anthropic_client.stream(
-        model="claude-4-sonnet-20250514",
+        model_id="claude-4-sonnet-20250514",
         messages=messages,
         tools=[get_weather],
     )
@@ -389,7 +389,7 @@ def test_streaming_parallel_tool_usage(anthropic_client: llm.AnthropicClient) ->
     assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "anthropic",
-            "model": "claude-4-sonnet-20250514",
+            "model_id": "claude-4-sonnet-20250514",
             "finish_reason": llm.FinishReason.TOOL_USE,
             "messages": [
                 llm.UserMessage(
@@ -486,7 +486,7 @@ def test_streaming_parallel_tool_usage(anthropic_client: llm.AnthropicClient) ->
 
     messages = stream_response.messages + [llm.messages.user(tool_outputs)]
     final_response = anthropic_client.call(
-        model="claude-4-sonnet-20250514",
+        model_id="claude-4-sonnet-20250514",
         messages=messages,
         tools=[get_weather],
     )

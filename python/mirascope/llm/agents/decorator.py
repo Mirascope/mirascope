@@ -17,16 +17,16 @@ from .agent_template import AgentTemplate, AsyncAgentTemplate
 if TYPE_CHECKING:
     from ..clients import (
         AnthropicClient,
-        AnthropicModel,
+        AnthropicModelId,
         AnthropicParams,
         BaseClient,
         BaseParams,
         GoogleClient,
-        GoogleModel,
+        GoogleModelId,
         GoogleParams,
-        Model,
+        ModelId,
         OpenAIClient,
-        OpenAIModel,
+        OpenAIModelId,
         OpenAIParams,
         Provider,
     )
@@ -78,7 +78,7 @@ class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
 def agent(
     *,
     provider: Literal["anthropic"],
-    model: AnthropicModel,
+    model_id: AnthropicModelId,
     tools: list[AgentToolT] | None = None,
     format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
@@ -92,7 +92,7 @@ def agent(
 def agent(
     *,
     provider: Literal["google"],
-    model: GoogleModel,
+    model_id: GoogleModelId,
     tools: list[AgentToolT] | None = None,
     format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
@@ -106,7 +106,7 @@ def agent(
 def agent(
     *,
     provider: Literal["openai"],
-    model: OpenAIModel,
+    model_id: OpenAIModelId,
     tools: list[AgentToolT] | None = None,
     format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
@@ -120,7 +120,7 @@ def agent(
 def agent(
     *,
     provider: Provider,
-    model: Model,
+    model_id: ModelId,
     tools: list[AgentToolT] | None = None,
     format: type[FormatT] | None = None,
     client: None = None,
@@ -133,7 +133,7 @@ def agent(
 def agent(
     *,
     provider: Provider,
-    model: Model,
+    model_id: ModelId,
     tools: list[AgentToolT] | None = None,
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
@@ -142,7 +142,7 @@ def agent(
     """Decorator for creating an agent or structured agent.
 
     Args:
-        model: The model to use for the agent.
+        model_id: The model to use for the agent.
         tools: The tools available to the agent.
         format: The response format type for the agent.
         client: The client to use for the agent.

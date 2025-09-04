@@ -13,7 +13,7 @@ from ..types import NoneType
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
-    from ..clients import BaseParams, Model, Provider
+    from ..clients import BaseParams, ModelId, Provider
     from ..models import LLM
 
 
@@ -26,8 +26,8 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
     provider: "Provider"
     """The provider that generated this response."""
 
-    model: "Model"
-    """The model that generated this response."""
+    model_id: "ModelId"
+    """The model id that generated this response."""
 
     params: "BaseParams | None"
     """The params that were used to generate this response (or None)."""
@@ -157,7 +157,7 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
 
         return _model_utils.assumed_safe_llm_create(
             provider=self.provider,
-            model=self.model,
+            model_id=self.model_id,
             client=get_client(self.provider),
             params=self.params,
         )

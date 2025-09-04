@@ -15,15 +15,15 @@ from .call import AsyncCall, Call
 if TYPE_CHECKING:
     from ..clients import (
         AnthropicClient,
-        AnthropicModel,
+        AnthropicModelId,
         AnthropicParams,
         BaseParams,
         GoogleClient,
-        GoogleModel,
+        GoogleModelId,
         GoogleParams,
-        Model,
+        ModelId,
         OpenAIClient,
-        OpenAIModel,
+        OpenAIModelId,
         OpenAIParams,
         Provider,
     )
@@ -80,7 +80,7 @@ class CallDecorator(Generic[ToolT, FormatT]):
 def call(
     *,
     provider: Literal["anthropic"],
-    model: AnthropicModel,
+    model_id: AnthropicModelId,
     tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
@@ -94,7 +94,7 @@ def call(
 def call(
     *,
     provider: Literal["google"],
-    model: GoogleModel,
+    model_id: GoogleModelId,
     tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
@@ -108,7 +108,7 @@ def call(
 def call(
     *,
     provider: Literal["openai"],
-    model: OpenAIModel,
+    model_id: OpenAIModelId,
     tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
@@ -121,7 +121,7 @@ def call(
 def call(
     *,
     provider: Provider,
-    model: Model,
+    model_id: ModelId,
     tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
     client: AnthropicClient | GoogleClient | OpenAIClient | None = None,
@@ -136,7 +136,7 @@ def call(
 
         @llm.call(
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
         )
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
@@ -146,6 +146,6 @@ def call(
         ```
     """
     llm = _model_utils.assumed_safe_llm_create(
-        provider=provider, model=model, client=client, params=params
+        provider=provider, model_id=model_id, client=client, params=params
     )
     return CallDecorator(model=llm, tools=tools, format=format)

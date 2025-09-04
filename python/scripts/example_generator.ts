@@ -178,7 +178,7 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
       : this.context
       ? "context_call"
       : "call";
-    return `@llm.${decorator}(provider="openai", model="gpt-4o-mini",${args})`;
+    return `@llm.${decorator}(provider="openai", model_id="gpt-4o-mini",${args})`;
   }
 
   private get function_def(): string {

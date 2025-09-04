@@ -21,7 +21,7 @@ class FromCallArgs:
 
     @llm.call(
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         format=Book,
     )
     def summarize_book(title: str, author: str):

@@ -15,16 +15,16 @@ from .context_call import AsyncContextCall, ContextCall
 if TYPE_CHECKING:
     from ..clients import (
         AnthropicClient,
-        AnthropicModel,
+        AnthropicModelId,
         AnthropicParams,
         BaseClient,
         BaseParams,
         GoogleClient,
-        GoogleModel,
+        GoogleModelId,
         GoogleParams,
-        Model,
+        ModelId,
         OpenAIClient,
-        OpenAIModel,
+        OpenAIModelId,
         OpenAIParams,
         Provider,
     )
@@ -78,7 +78,7 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
 def context_call(
     *,
     provider: Literal["anthropic"],
-    model: AnthropicModel,
+    model_id: AnthropicModelId,
     tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
     client: AnthropicClient | None = None,
@@ -92,7 +92,7 @@ def context_call(
 def context_call(
     *,
     provider: Literal["google"],
-    model: GoogleModel,
+    model_id: GoogleModelId,
     tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
     client: GoogleClient | None = None,
@@ -106,7 +106,7 @@ def context_call(
 def context_call(
     *,
     provider: Literal["openai"],
-    model: OpenAIModel,
+    model_id: OpenAIModelId,
     tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
     client: OpenAIClient | None = None,
@@ -120,7 +120,7 @@ def context_call(
 def context_call(
     *,
     provider: Provider,
-    model: Model,
+    model_id: ModelId,
     tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
     client: None = None,
@@ -133,7 +133,7 @@ def context_call(
 def context_call(
     *,
     provider: Provider,
-    model: Model,
+    model_id: ModelId,
     tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
     client: BaseClient | None = None,
@@ -158,7 +158,7 @@ def context_call(
 
         @llm.context_call(
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
         )
         def answer_question(ctx: llm.Context[Personality], question: str) -> str:
             return f"Your vibe is {ctx.deps.vibe}. Answer this question: {question}. "

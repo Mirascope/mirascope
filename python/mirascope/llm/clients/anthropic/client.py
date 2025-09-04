@@ -21,7 +21,7 @@ from ...responses import (
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool, Toolkit
 from ..base import BaseClient
 from . import _utils
-from .models import AnthropicModel
+from .model_ids import AnthropicModelId
 from .params import AnthropicParams
 
 _global_client: "AnthropicClient | None" = None
@@ -40,7 +40,7 @@ def get_anthropic_client() -> "AnthropicClient":
     return _global_client
 
 
-class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
+class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
     """The client for the Anthropic LLM model."""
 
     def __init__(
@@ -56,7 +56,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     def call(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: None = None,
@@ -67,7 +67,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     def call(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -77,7 +77,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     def call(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT] | None = None,
@@ -90,12 +90,12 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             raise NotImplementedError("structured output not yet supported")
 
         message_params, system, tool_params = _utils.prepare_anthropic_request(
-            messages=messages, tools=tools
+            model_id=model_id, messages=messages, tools=tools
         )
 
         anthropic_response = self.client.messages.create(
             max_tokens=1024,
-            model=model,
+            model=model_id,
             messages=message_params,
             system=system,
             tools=tool_params,
@@ -106,7 +106,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         return Response(
             raw=anthropic_response,
             provider="anthropic",
-            model=model,
+            model_id=model_id,
             params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=messages,
@@ -119,7 +119,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: None = None,
@@ -131,7 +131,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
@@ -142,7 +142,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None = None,
@@ -154,7 +154,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     async def call_async(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
@@ -165,7 +165,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     async def call_async(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -175,7 +175,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     async def call_async(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT] | None = None,
@@ -188,7 +188,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: None = None,
@@ -200,7 +200,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
@@ -211,7 +211,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None = None,
@@ -223,7 +223,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     def stream(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: None = None,
@@ -234,7 +234,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     def stream(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -244,7 +244,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     def stream(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT] | None = None,
@@ -257,12 +257,12 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             raise NotImplementedError("structured output not yet supported")
 
         message_params, system, tool_params = _utils.prepare_anthropic_request(
-            messages=messages, tools=tools
+            model_id=model_id, messages=messages, tools=tools
         )
 
         anthropic_stream = self.client.messages.stream(
             max_tokens=1024,
-            model=model,
+            model=model_id,
             messages=message_params,
             system=system,
             tools=tool_params,
@@ -274,7 +274,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
 
         return StreamResponse(
             provider="anthropic",
-            model=model,
+            model_id=model_id,
             params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=messages,
@@ -286,7 +286,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: None = None,
@@ -298,7 +298,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
@@ -309,7 +309,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None = None,
@@ -321,7 +321,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     async def stream_async(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
@@ -332,7 +332,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     async def stream_async(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -342,7 +342,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
     async def stream_async(
         self,
         *,
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT] | None = None,
@@ -355,7 +355,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: None = None,
@@ -367,7 +367,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
@@ -378,7 +378,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model: AnthropicModel,
+        model_id: AnthropicModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None = None,

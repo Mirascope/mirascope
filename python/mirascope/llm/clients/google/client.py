@@ -21,7 +21,7 @@ from ...responses import (
 from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool, Toolkit
 from ..base import BaseClient
 from . import _utils
-from .model import GoogleModel
+from .model_ids import GoogleModelId
 from .params import GoogleParams
 
 _global_client: "GoogleClient | None" = None
@@ -40,7 +40,7 @@ def get_google_client() -> "GoogleClient":
     return _global_client
 
 
-class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
+class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     """The client for the Google LLM model."""
 
     def __init__(
@@ -60,7 +60,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     def call(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: None = None,
@@ -71,7 +71,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     def call(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -81,7 +81,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     def call(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT] | None = None,
@@ -96,7 +96,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         contents, config = _utils.prepare_google_request(messages, tools)
 
         google_response = self.client.models.generate_content(
-            model=model,
+            model=model_id,
             contents=contents,
             config=config,
         )
@@ -106,7 +106,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         return Response(
             raw=google_response,
             provider="google",
-            model=model,
+            model_id=model_id,
             params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=messages,
@@ -119,7 +119,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: None = None,
@@ -131,7 +131,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
@@ -142,7 +142,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None = None,
@@ -154,7 +154,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     async def call_async(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
@@ -165,7 +165,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     async def call_async(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -175,7 +175,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     async def call_async(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT] | None = None,
@@ -188,7 +188,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: None = None,
@@ -200,7 +200,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
@@ -211,7 +211,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None = None,
@@ -223,7 +223,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     def stream(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: None = None,
@@ -234,7 +234,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     def stream(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT],
@@ -244,7 +244,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     def stream(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormatT] | None = None,
@@ -258,7 +258,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         contents, config = _utils.prepare_google_request(messages, tools)
 
         google_stream = self.client.models.generate_content_stream(
-            model=model,
+            model=model_id,
             contents=contents,
             config=config,
         )
@@ -267,7 +267,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
 
         return StreamResponse(
             provider="google",
-            model=model,
+            model_id=model_id,
             params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=messages,
@@ -279,7 +279,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: None = None,
@@ -291,7 +291,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
@@ -302,7 +302,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None = None,
@@ -314,7 +314,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     async def stream_async(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
@@ -325,7 +325,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     async def stream_async(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT],
@@ -335,7 +335,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
     async def stream_async(
         self,
         *,
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormatT] | None = None,
@@ -348,7 +348,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: None = None,
@@ -360,7 +360,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
@@ -371,7 +371,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         self,
         *,
         ctx: Context[DepsT],
-        model: GoogleModel,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None = None,
