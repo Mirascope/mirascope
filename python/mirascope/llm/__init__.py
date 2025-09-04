@@ -6,7 +6,6 @@ code that works with multiple LLM providers without changing your application lo
 """
 
 from . import (
-    agents,
     calls,
     clients,
     content,
@@ -21,7 +20,6 @@ from . import (
     tools,
     types,
 )
-from .agents import Agent, AgentTemplate, AsyncAgent, AsyncAgentTemplate, agent
 from .calls import call, context_call
 from .clients import AnthropicClient, GoogleClient, OpenAIClient
 from .content import (
@@ -94,14 +92,10 @@ from .tools import (
 __all__ = [
     "LLM",
     "APIError",
-    "Agent",
-    "AgentTemplate",
     "AnthropicClient",
     "AssistantContentChunk",
     "AssistantContentPart",
     "AssistantMessage",
-    "AsyncAgent",
-    "AsyncAgentTemplate",
     "AsyncChunkIterator",
     "AsyncContextResponse",
     "AsyncContextStreamResponse",
@@ -161,8 +155,6 @@ __all__ = [
     "Toolkit",
     "UserContentPart",
     "UserMessage",
-    "agent",
-    "agents",
     "call",
     "calls",
     "clients",
