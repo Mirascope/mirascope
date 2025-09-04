@@ -30,11 +30,9 @@ async def sazed(query: str):
 async def main():
     query = "What are the Kandra?"
     response: llm.AsyncResponse = await sazed(query)
-    while tool_calls := response.tool_calls:
-        outputs: list[llm.ToolOutput] = await asyncio.gather(
-            *[sazed.toolkit.execute(tool_call) for tool_call in tool_calls]
-        )
-        response = await sazed.resume(response, outputs)
+    while response.tool_calls:
+        tool_outputs = await response.execute_tools()
+        response = await sazed.resume(response, tool_outputs)
     print(response.pretty())
 
 

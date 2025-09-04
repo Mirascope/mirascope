@@ -261,7 +261,7 @@ ${indent}        ${stream_print}`;
         ${this._async}for stream in streams:
             match stream.content_type:
                 case "tool_call":
-                    print(f"Calling tool{stream.tool_name} with args:")
+                    print(f"Calling tool {stream.tool_name} with args:")
                     ${this._async}for chunk in stream:
                         print(chunk.delta, flush=True, end="")
                     print()
@@ -274,18 +274,14 @@ ${indent}        ${stream_print}`;
                             ? `print(chunk.delta, flush=True, end="")`
                             : `print("[Partial]: ", response.format(partial=True), flush=True)`
                         }
-        if not (tool_calls := response.tool_calls):
+        if not response.tool_calls:
             break
-        ${this.gather_tools}
+        tool_outputs = ${this._await}response.execute_tools(${
+      this.context ? "ctx" : ""
+    })
         response = ${this._await}sazed.resume_stream(${
       this.ctx_arg
-    }response, outputs)`;
-  }
-
-  private get gather_tools(): string {
-    const gather = this.async ? "await asyncio.gather(*" : "";
-    const gather_close = this.async ? ")" : "";
-    return `outputs: list[llm.ToolOutput] = ${gather}[sazed.toolkit.execute(${this.ctx_arg}tool_call) for tool_call in tool_calls]${gather_close}`;
+    }response, tool_outputs)`;
   }
 
   private get response_type(): string {
@@ -311,12 +307,14 @@ ${indent}        ${stream_print}`;
     response: ${this.response_type} = ${this._await}${call_target}query)`;
 
     if (this.tools && !this.agent) {
-      const gather = this.async ? "await asyncio.gather(*" : "";
-      const gather_close = this.async ? ")" : "";
       result += `
-    while tool_calls := response.tool_calls:
-        ${this.gather_tools}
-        response = ${this._await}sazed.resume(${this.ctx_arg}response, outputs)`;
+    while response.tool_calls:
+        tool_outputs = ${this._await}response.execute_tools(${
+        this.context ? "ctx" : ""
+      })
+        response = ${this._await}sazed.resume(${
+        this.ctx_arg
+      }response, tool_outputs)`;
     }
 
     if (this.structured) {

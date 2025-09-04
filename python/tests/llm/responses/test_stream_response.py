@@ -1291,3 +1291,82 @@ class TestFormatToolHandling:
         assert stream_response.texts[0].text == ""
         assert len(stream_response.tool_calls) == 0
         assert stream_response.finish_reason == llm.FinishReason.MAX_TOKENS
+
+
+def test_stream_response_execute_tools() -> None:
+    """Test execute_tools with multiple tool calls."""
+
+    @llm.tool
+    def tool_one(x: int) -> int:
+        return x * 2
+
+    @llm.tool
+    def tool_two(y: str) -> str:
+        return y.upper()
+
+    tool_call_chunks = [
+        llm.ToolCallStartChunk(id="call_1", name="tool_one"),
+        llm.ToolCallChunk(delta='{"x": 5}'),
+        llm.ToolCallEndChunk(),
+        llm.ToolCallStartChunk(id="call_2", name="tool_two"),
+        llm.ToolCallChunk(delta='{"y": "hello"}'),
+        llm.ToolCallEndChunk(),
+        llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+    ]
+
+    stream_response = llm.StreamResponse(
+        provider="openai",
+        model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[tool_one, tool_two]),
+        input_messages=[],
+        chunk_iterator=iter(tool_call_chunks),
+    )
+
+    list(stream_response.chunk_stream())
+
+    outputs = stream_response.execute_tools()
+    assert len(outputs) == 2
+    assert outputs[0].value == 10
+    assert outputs[1].value == "HELLO"
+
+
+@pytest.mark.asyncio
+async def test_async_stream_response_execute_tools() -> None:
+    """Test async execute_tools with multiple tool calls executing concurrently."""
+
+    @llm.tool
+    async def tool_one(x: int) -> int:
+        return x * 2
+
+    @llm.tool
+    async def tool_two(y: str) -> str:
+        return y.upper()
+
+    tool_call_chunks = [
+        llm.ToolCallStartChunk(id="call_1", name="tool_one"),
+        llm.ToolCallChunk(delta='{"x": 5}'),
+        llm.ToolCallEndChunk(),
+        llm.ToolCallStartChunk(id="call_2", name="tool_two"),
+        llm.ToolCallChunk(delta='{"y": "hello"}'),
+        llm.ToolCallEndChunk(),
+        llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
+    ]
+
+    async def async_chunk_iter() -> AsyncIterator[llm.AssistantContentChunk]:
+        for chunk in tool_call_chunks:
+            yield chunk
+
+    stream_response = llm.AsyncStreamResponse(
+        provider="openai",
+        model="gpt-4o-mini",
+        toolkit=llm.AsyncToolkit(tools=[tool_one, tool_two]),
+        input_messages=[],
+        chunk_iterator=async_chunk_iter(),
+    )
+
+    [chunk async for chunk in stream_response.chunk_stream()]
+
+    outputs = await stream_response.execute_tools()
+    assert len(outputs) == 2
+    assert outputs[0].value == 10
+    assert outputs[1].value == "HELLO"

@@ -455,3 +455,70 @@ def test_response_format_tool_no_finish_reason_change() -> None:
     assert len(response.tool_calls) == 0
 
     assert response.finish_reason == llm.FinishReason.MAX_TOKENS
+
+
+def test_response_execute_tools() -> None:
+    """Test execute_tools with multiple tool calls."""
+
+    @llm.tool
+    def tool_one(x: int) -> int:
+        return x * 2
+
+    @llm.tool
+    def tool_two(y: str) -> str:
+        return y.upper()
+
+    tool_calls = [
+        llm.ToolCall(name="tool_one", id="call_1", args='{"x": 5}'),
+        llm.ToolCall(name="tool_two", id="call_2", args='{"y": "hello"}'),
+    ]
+    assistant_message = llm.messages.assistant(tool_calls)
+
+    response = llm.Response(
+        raw={"test": "response"},
+        provider="openai",
+        model="gpt-4o-mini",
+        toolkit=llm.Toolkit(tools=[tool_one, tool_two]),
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.TOOL_USE,
+    )
+
+    outputs = response.execute_tools()
+    assert len(outputs) == 2
+    assert outputs[0].value == 10
+    assert outputs[1].value == "HELLO"
+
+
+@pytest.mark.asyncio
+async def test_async_response_execute_tools() -> None:
+    """Test async execute_tools with multiple tool calls executing concurrently."""
+
+    @llm.tool
+    async def tool_one(x: int) -> int:
+        return x * 2
+
+    @llm.tool
+    async def tool_two(y: str) -> str:
+        return y.upper()
+
+    tool_calls = [
+        llm.ToolCall(name="tool_one", id="call_1", args='{"x": 5}'),
+        llm.ToolCall(name="tool_two", id="call_2", args='{"y": "hello"}'),
+    ]
+    assistant_message = llm.messages.assistant(tool_calls)
+
+    response = llm.AsyncResponse(
+        raw={"test": "response"},
+        provider="openai",
+        model="gpt-4o-mini",
+        toolkit=llm.AsyncToolkit(tools=[tool_one, tool_two]),
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.TOOL_USE,
+    )
+
+    outputs = await response.execute_tools()
+    assert len(outputs) == 2
+    assert outputs[0].value == 10
+    assert outputs[1].value == "HELLO"

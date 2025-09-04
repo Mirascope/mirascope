@@ -52,11 +52,9 @@ async def main():
     response: llm.AsyncContextResponse[Coppermind, KeeperEntry] = await sazed(
         ctx, query
     )
-    while tool_calls := response.tool_calls:
-        outputs: list[llm.ToolOutput] = await asyncio.gather(
-            *[sazed.toolkit.execute(ctx, tool_call) for tool_call in tool_calls]
-        )
-        response = await sazed.resume(ctx, response, outputs)
+    while response.tool_calls:
+        tool_outputs = await response.execute_tools(ctx)
+        response = await sazed.resume(ctx, response, tool_outputs)
     entry: KeeperEntry = response.format()
     print(entry)
 
