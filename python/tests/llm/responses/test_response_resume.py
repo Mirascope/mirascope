@@ -82,7 +82,7 @@ def test_response_resume_with_format(openai_client: llm.OpenAIClient) -> None:
         )
     ]
 
-    response = openai_client.structured_call(
+    response = openai_client.call(
         model="gpt-4o-mini",
         messages=messages,
         format=Book,

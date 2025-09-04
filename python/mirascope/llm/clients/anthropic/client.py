@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import Sequence
+from typing import overload
 
 import httpx
 from anthropic import Anthropic
@@ -51,6 +52,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         """
         self.client = Anthropic(api_key=api_key, base_url=base_url)
 
+    @overload
     def call(
         self,
         *,
@@ -58,10 +60,34 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: AnthropicParams | None = None,
-    ) -> Response[None]:
+        format: None = None,
+    ) -> Response: ...
+
+    @overload
+    def call(
+        self,
+        *,
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        params: AnthropicParams | None = None,
+        format: type[FormatT],
+    ) -> Response[FormatT]: ...
+
+    def call(
+        self,
+        *,
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        params: AnthropicParams | None = None,
+        format: type[FormatT] | None = None,
+    ) -> Response | Response[FormatT]:
         """Make a call to the Anthropic API."""
         if params:
             raise NotImplementedError("param use not yet supported")
+        if format:
+            raise NotImplementedError("structured output not yet supported")
 
         message_params, system, tool_params = _utils.prepare_anthropic_request(
             messages, tools
@@ -88,6 +114,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             finish_reason=finish_reason,
         )
 
+    @overload
     def context_call(
         self,
         *,
@@ -96,31 +123,54 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: AnthropicParams | None = None,
-    ) -> ContextResponse[DepsT, None]:
-        raise NotImplementedError
+        format: None = None,
+    ) -> ContextResponse[DepsT, None]: ...
 
-    def structured_call(
-        self,
-        *,
-        model: AnthropicModel,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
-        params: AnthropicParams | None = None,
-    ) -> Response[FormatT]:
-        raise NotImplementedError
-
-    def structured_context_call(
+    @overload
+    def context_call(
         self,
         *,
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        format: type[FormatT],
         params: AnthropicParams | None = None,
-    ) -> ContextResponse[DepsT, FormatT]:
+        format: type[FormatT],
+    ) -> ContextResponse[DepsT, FormatT]: ...
+
+    def context_call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: AnthropicParams | None = None,
+        format: type[FormatT] | None = None,
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def call_async(
+        self,
+        *,
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        params: AnthropicParams | None = None,
+        format: None = None,
+    ) -> AsyncResponse: ...
+
+    @overload
+    async def call_async(
+        self,
+        *,
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        params: AnthropicParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncResponse[FormatT]: ...
 
     async def call_async(
         self,
@@ -129,8 +179,33 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: AnthropicParams | None = None,
-    ) -> AsyncResponse[None]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncResponse | AsyncResponse[FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: AnthropicParams | None = None,
+        format: None = None,
+    ) -> AsyncContextResponse[DepsT, None]: ...
+
+    @overload
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: AnthropicParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
     async def context_call_async(
         self,
@@ -140,31 +215,31 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: AnthropicParams | None = None,
-    ) -> AsyncContextResponse[DepsT, None]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         raise NotImplementedError
 
-    async def structured_call_async(
+    @overload
+    def stream(
         self,
         *,
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
+        tools: Sequence[Tool] | None = None,
         params: AnthropicParams | None = None,
-    ) -> AsyncResponse[FormatT]:
-        raise NotImplementedError
+        format: None = None,
+    ) -> StreamResponse: ...
 
-    async def structured_context_call_async(
+    @overload
+    def stream(
         self,
         *,
-        ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        format: type[FormatT],
+        tools: Sequence[Tool] | None = None,
         params: AnthropicParams | None = None,
-    ) -> AsyncContextResponse[DepsT, FormatT]:
-        raise NotImplementedError
+        format: type[FormatT],
+    ) -> StreamResponse[FormatT]: ...
 
     def stream(
         self,
@@ -173,10 +248,13 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: AnthropicParams | None = None,
-    ) -> StreamResponse:
+        format: type[FormatT] | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]:
         """Make a streaming call to the Anthropic API."""
         if params:
             raise NotImplementedError("param use not yet supported")
+        if format:
+            raise NotImplementedError("structured output not yet supported")
 
         message_params, system, tool_params = _utils.prepare_anthropic_request(
             messages, tools
@@ -203,6 +281,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             chunk_iterator=chunk_iterator,
         )
 
+    @overload
     def context_stream(
         self,
         *,
@@ -211,31 +290,54 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: AnthropicParams | None = None,
-    ) -> StreamResponse:
-        raise NotImplementedError
+        format: None = None,
+    ) -> StreamResponse: ...
 
-    def structured_stream(
-        self,
-        *,
-        model: AnthropicModel,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
-        params: AnthropicParams | None = None,
-    ) -> StreamResponse[FormatT]:
-        raise NotImplementedError
-
-    def structured_context_stream(
+    @overload
+    def context_stream(
         self,
         *,
         ctx: Context[DepsT],
         model: AnthropicModel,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
-        format: type[FormatT],
         params: AnthropicParams | None = None,
-    ) -> StreamResponse[FormatT]:
+        format: type[FormatT],
+    ) -> StreamResponse[FormatT]: ...
+
+    def context_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: AnthropicParams | None = None,
+        format: type[FormatT] | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def stream_async(
+        self,
+        *,
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        params: AnthropicParams | None = None,
+        format: None = None,
+    ) -> AsyncStreamResponse: ...
+
+    @overload
+    async def stream_async(
+        self,
+        *,
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        params: AnthropicParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncStreamResponse[FormatT]: ...
 
     async def stream_async(
         self,
@@ -244,8 +346,33 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: AnthropicParams | None = None,
-    ) -> AsyncStreamResponse:
+        format: type[FormatT] | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError
+
+    @overload
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: AnthropicParams | None = None,
+        format: None = None,
+    ) -> AsyncStreamResponse: ...
+
+    @overload
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: AnthropicModel,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: AnthropicParams | None = None,
+        format: type[FormatT],
+    ) -> AsyncStreamResponse[FormatT]: ...
 
     async def context_stream_async(
         self,
@@ -255,28 +382,6 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: AnthropicParams | None = None,
-    ) -> AsyncStreamResponse:
-        raise NotImplementedError
-
-    async def structured_stream_async(
-        self,
-        *,
-        model: AnthropicModel,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
-        params: AnthropicParams | None = None,
-    ) -> AsyncStreamResponse[FormatT]:
-        raise NotImplementedError
-
-    async def structured_context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model: AnthropicModel,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        format: type[FormatT],
-        params: AnthropicParams | None = None,
-    ) -> AsyncStreamResponse[FormatT]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         raise NotImplementedError

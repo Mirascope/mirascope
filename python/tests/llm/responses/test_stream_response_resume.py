@@ -89,7 +89,7 @@ def test_stream_response_resume_with_format(openai_client: llm.OpenAIClient) -> 
         )
     ]
 
-    stream_response = openai_client.structured_stream(
+    stream_response = openai_client.stream(
         model="gpt-4o-mini",
         messages=messages,
         format=Book,

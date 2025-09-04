@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Generic
+from typing import Generic, overload
 from typing_extensions import TypeVar
 
 from ...context import Context, DepsT
@@ -37,6 +37,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
 
     client: ProviderClientT
 
+    @overload
     @abstractmethod
     def call(
         self,
@@ -45,9 +46,59 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: ParamsT | None = None,
-    ) -> Response[None]:
-        """Generate a standard response."""
+        format: None = None,
+    ) -> Response: ...
+
+    @overload
+    @abstractmethod
+    def call(
+        self,
+        *,
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        params: ParamsT | None = None,
+        format: type[FormatT],
+    ) -> Response[FormatT]: ...
+
+    @abstractmethod
+    def call(
+        self,
+        *,
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        params: ParamsT | None = None,
+        format: type[FormatT] | None = None,
+    ) -> Response | Response[FormatT]:
+        """Generate a response."""
         ...
+
+    @overload
+    @abstractmethod
+    def context_call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: ParamsT | None = None,
+        format: None = None,
+    ) -> ContextResponse[DepsT, None]: ...
+
+    @overload
+    @abstractmethod
+    def context_call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: ParamsT | None = None,
+        format: type[FormatT],
+    ) -> ContextResponse[DepsT, FormatT]: ...
 
     @abstractmethod
     def context_call(
@@ -58,36 +109,34 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: ParamsT | None = None,
-    ) -> ContextResponse[DepsT, None]:
-        """Generate a context response with context tools."""
+        format: type[FormatT] | None = None,
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
+        """Generate a context response."""
         ...
 
+    @overload
     @abstractmethod
-    def structured_call(
+    async def call_async(
         self,
         *,
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
+        tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
-    ) -> Response[FormatT]:
-        """Generate a structured response."""
-        ...
+        format: None = None,
+    ) -> AsyncResponse: ...
 
+    @overload
     @abstractmethod
-    def structured_context_call(
+    async def call_async(
         self,
         *,
-        ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
-        format: type[FormatT],
+        tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
-    ) -> ContextResponse[DepsT, FormatT]:
-        """Generate a structured context response."""
-        ...
+        format: type[FormatT],
+    ) -> AsyncResponse[FormatT]: ...
 
     @abstractmethod
     async def call_async(
@@ -97,9 +146,36 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
-    ) -> AsyncResponse[None]:
-        """Generate a standard response asynchronously."""
+        format: type[FormatT] | None = None,
+    ) -> AsyncResponse | AsyncResponse[FormatT]:
+        """Generate a response asynchronously."""
         ...
+
+    @overload
+    @abstractmethod
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: ParamsT | None = None,
+        format: None = None,
+    ) -> AsyncContextResponse[DepsT, None]: ...
+
+    @overload
+    @abstractmethod
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: ParamsT | None = None,
+        format: type[FormatT],
+    ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
     @abstractmethod
     async def context_call_async(
@@ -110,36 +186,34 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: ParamsT | None = None,
-    ) -> AsyncContextResponse[DepsT, None]:
+        format: type[FormatT] | None = None,
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         """Generate a context response asynchronously."""
         ...
 
+    @overload
     @abstractmethod
-    async def structured_call_async(
+    def stream(
         self,
         *,
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
+        tools: Sequence[Tool] | None = None,
         params: ParamsT | None = None,
-    ) -> AsyncResponse[FormatT]:
-        """Generate a structured response asynchronously."""
-        ...
+        format: None = None,
+    ) -> StreamResponse: ...
 
+    @overload
     @abstractmethod
-    async def structured_context_call_async(
+    def stream(
         self,
         *,
-        ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        format: type[FormatT],
+        tools: Sequence[Tool] | None = None,
         params: ParamsT | None = None,
-    ) -> AsyncContextResponse[DepsT, FormatT]:
-        """Generate a structured context response asynchronously."""
-        ...
+        format: type[FormatT],
+    ) -> StreamResponse[FormatT]: ...
 
     @abstractmethod
     def stream(
@@ -149,9 +223,36 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         params: ParamsT | None = None,
-    ) -> StreamResponse:
-        """Stream a standard response."""
+        format: type[FormatT] | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]:
+        """Stream a response."""
         ...
+
+    @overload
+    @abstractmethod
+    def context_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: ParamsT | None = None,
+        format: None = None,
+    ) -> StreamResponse: ...
+
+    @overload
+    @abstractmethod
+    def context_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        params: ParamsT | None = None,
+        format: type[FormatT],
+    ) -> StreamResponse[FormatT]: ...
 
     @abstractmethod
     def context_stream(
@@ -162,36 +263,34 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]],
         params: ParamsT | None = None,
-    ) -> StreamResponse:
+        format: type[FormatT] | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]:
         """Stream a context response."""
         ...
 
+    @overload
     @abstractmethod
-    def structured_stream(
+    async def stream_async(
         self,
         *,
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
+        tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
-    ) -> StreamResponse[FormatT]:
-        """Stream a structured response."""
-        ...
+        format: None = None,
+    ) -> AsyncStreamResponse: ...
 
+    @overload
     @abstractmethod
-    def structured_context_stream(
+    async def stream_async(
         self,
         *,
-        ctx: Context[DepsT],
         model: ModelT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
-        format: type[FormatT],
+        tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
-    ) -> StreamResponse[FormatT]:
-        """Stream a structured context response."""
-        ...
+        format: type[FormatT],
+    ) -> AsyncStreamResponse[FormatT]: ...
 
     @abstractmethod
     async def stream_async(
@@ -201,9 +300,36 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStreamResponse:
-        """Stream a standard response asynchronously."""
+        format: type[FormatT] | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
+        """Stream a response asynchronously."""
         ...
+
+    @overload
+    @abstractmethod
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: ParamsT | None = None,
+        format: None = None,
+    ) -> AsyncStreamResponse: ...
+
+    @overload
+    @abstractmethod
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model: ModelT,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        params: ParamsT | None = None,
+        format: type[FormatT],
+    ) -> AsyncStreamResponse[FormatT]: ...
 
     @abstractmethod
     async def context_stream_async(
@@ -214,33 +340,7 @@ class BaseClient(Generic[ParamsT, ModelT, ProviderClientT], ABC):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         params: ParamsT | None = None,
-    ) -> AsyncStreamResponse:
+        format: type[FormatT] | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         """Stream a context response asynchronously."""
-        ...
-
-    @abstractmethod
-    async def structured_stream_async(
-        self,
-        *,
-        model: ModelT,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
-        params: ParamsT | None = None,
-    ) -> AsyncStreamResponse[FormatT]:
-        """Stream a structured response asynchronously."""
-        ...
-
-    @abstractmethod
-    async def structured_context_stream_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        model: ModelT,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
-        format: type[FormatT],
-        params: ParamsT | None = None,
-    ) -> AsyncStreamResponse[FormatT]:
-        """Stream a structured context response asynchronously."""
         ...
