@@ -42,7 +42,7 @@ async def main():
     response: llm.AsyncResponse[KeeperEntry] = await sazed(query)
     while response.tool_calls:
         tool_outputs = await response.execute_tools()
-        response = await sazed.resume(response, tool_outputs)
+        response = await response.resume(tool_outputs)
     entry: KeeperEntry = response.format()
     print(entry)
 

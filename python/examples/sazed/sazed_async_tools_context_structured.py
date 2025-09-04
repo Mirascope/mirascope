@@ -54,7 +54,7 @@ async def main():
     )
     while response.tool_calls:
         tool_outputs = await response.execute_tools(ctx)
-        response = await sazed.resume(ctx, response, tool_outputs)
+        response = await response.resume(ctx, tool_outputs)
     entry: KeeperEntry = response.format()
     print(entry)
 
