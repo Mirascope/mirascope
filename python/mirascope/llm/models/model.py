@@ -11,15 +11,15 @@ from .llm import LLM
 if TYPE_CHECKING:
     from ..clients import (
         AnthropicClient,
-        AnthropicModel,
+        AnthropicModelId,
         AnthropicParams,
         BaseParams,
         GoogleClient,
-        GoogleModel,
+        GoogleModelId,
         GoogleParams,
-        Model,
+        ModelId,
         OpenAIClient,
-        OpenAIModel,
+        OpenAIModelId,
         OpenAIParams,
         Provider,
     )
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 def model(
     *,
     provider: Literal["anthropic"],
-    model: AnthropicModel,
+    model_id: AnthropicModelId,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> LLM[AnthropicClient, AnthropicParams]:
@@ -41,7 +41,7 @@ def model(
 def model(
     *,
     provider: Literal["google"],
-    model: GoogleModel,
+    model_id: GoogleModelId,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> LLM[GoogleClient, GoogleParams]:
@@ -53,7 +53,7 @@ def model(
 def model(
     *,
     provider: Literal["openai"],
-    model: OpenAIModel,
+    model_id: OpenAIModelId,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> LLM[OpenAIClient, OpenAIParams]:
@@ -64,7 +64,7 @@ def model(
 def model(
     *,
     provider: Provider,
-    model: Model,
+    model_id: ModelId,
     client: AnthropicClient | GoogleClient | OpenAIClient | None = None,
     **params: Unpack[BaseParams],
 ) -> (
@@ -75,7 +75,7 @@ def model(
     """Returns an `LLM` instance with the given settings."""
     llm = LLM.__new__(LLM)
     llm.provider = provider
-    llm.model = model
+    llm.model_id = model_id
     llm.client = client or get_client(provider)
     llm.params = params
     return llm

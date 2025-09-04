@@ -4,5 +4,5 @@ from typing import TypeAlias
 
 from openai.types import ChatModel
 
-OpenAIModel: TypeAlias = ChatModel | str
-"""The OpenAI models registered with Mirascope."""
+OpenAIModelId: TypeAlias = ChatModel | str
+"""The OpenAI model ids registered with Mirascope."""

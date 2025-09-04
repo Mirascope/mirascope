@@ -28,7 +28,7 @@ from .finish_reason import FinishReason, FinishReasonChunk
 from .root_response import RootResponse
 
 if TYPE_CHECKING:
-    from ..clients import BaseParams, Model, Provider
+    from ..clients import BaseParams, ModelId, Provider
 
 
 @dataclass
@@ -116,7 +116,7 @@ class BaseStreamResponse(
         self,
         *,
         provider: "Provider",
-        model: "Model",
+        model_id: "ModelId",
         params: "BaseParams | None",
         toolkit: ToolkitT,
         format_type: type[FormatT] | None = None,
@@ -127,7 +127,7 @@ class BaseStreamResponse(
 
         Args:
             provider: The provider name (e.g. "anthropic", "openai").
-            model: The model identifier that generated the response.
+            model_id: The model identifier that generated the response.
             params: The params used to generate the response (or None).
             toolkit: Toolkit containing all the tools used to generate the response.
             format_type: The type for the expected structured output format (or None).
@@ -138,7 +138,7 @@ class BaseStreamResponse(
         """
 
         self.provider = provider
-        self.model = model
+        self.model_id = model_id
         self.params = params
         self.toolkit = toolkit
         self.format_type = format_type

@@ -23,6 +23,7 @@ from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import ChunkIterator, FinishReason, FinishReasonChunk, RawChunk
 from ...tools import Tool
 from ..base import _utils as _base_utils
+from .model_ids import AnthropicModelId
 
 ANTHROPIC_FINISH_REASON_MAP = {
     "end_turn": FinishReason.END_TURN,
@@ -117,6 +118,7 @@ def _convert_tool_to_tool_param(tool: Tool) -> anthropic_types.ToolParam:
 
 def prepare_anthropic_request(
     messages: Sequence[Message],
+    model_id: AnthropicModelId,
     tools: Sequence[Tool] | None = None,
 ) -> tuple[
     Sequence[anthropic_types.MessageParam],

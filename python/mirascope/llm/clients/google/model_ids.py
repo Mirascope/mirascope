@@ -2,7 +2,7 @@
 
 from typing import Literal, TypeAlias
 
-GoogleModel: TypeAlias = (
+GoogleModelId: TypeAlias = (
     Literal[
         "gemini-2.5-pro",
         "gemini-2.5-flash",
@@ -12,4 +12,4 @@ GoogleModel: TypeAlias = (
     ]
     | str
 )
-"""The Google models registered with Mirascope."""
+"""The Google model ids registered with Mirascope."""

@@ -33,7 +33,7 @@ def test_call_simple_message(google_client: llm.GoogleClient) -> None:
     messages = [llm.messages.user("Hello, say 'Hi' back to me")]
 
     response = google_client.call(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
     )
 
@@ -41,7 +41,7 @@ def test_call_simple_message(google_client: llm.GoogleClient) -> None:
     assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
-            "model": "gemini-2.0-flash",
+            "model_id": "gemini-2.0-flash",
             "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
@@ -65,7 +65,7 @@ def test_call_with_system_message(google_client: llm.GoogleClient) -> None:
     ]
 
     response = google_client.call(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
     )
 
@@ -73,7 +73,7 @@ def test_call_with_system_message(google_client: llm.GoogleClient) -> None:
     assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
-            "model": "gemini-2.0-flash",
+            "model_id": "gemini-2.0-flash",
             "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
@@ -104,7 +104,7 @@ def test_call_no_output(google_client: llm.GoogleClient) -> None:
     ]
 
     response = google_client.call(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
     )
 
@@ -112,7 +112,7 @@ def test_call_no_output(google_client: llm.GoogleClient) -> None:
     assert utils.response_snapshot_dict(response) == snapshot(
         {
             "provider": "google",
-            "model": "gemini-2.0-flash",
+            "model_id": "gemini-2.0-flash",
             "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
@@ -137,7 +137,7 @@ def test_stream_simple_message(google_client: llm.GoogleClient) -> None:
     messages = [llm.messages.user("Hi! Please greet me back.")]
 
     stream_response = google_client.stream(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
     )
 
@@ -148,7 +148,7 @@ def test_stream_simple_message(google_client: llm.GoogleClient) -> None:
     assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "google",
-            "model": "gemini-2.0-flash",
+            "model_id": "gemini-2.0-flash",
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
@@ -186,7 +186,7 @@ def test_tool_usage(google_client: llm.GoogleClient) -> None:
     ]
 
     response = google_client.call(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -211,7 +211,7 @@ def test_tool_usage(google_client: llm.GoogleClient) -> None:
 
     messages = response.messages + [llm.messages.user(tool_output)]
     final_response = google_client.call(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -242,7 +242,7 @@ def test_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
     messages = [llm.messages.user("What's the weather in SF and NYC?")]
 
     response = google_client.call(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
         tools=[get_weather],
     )
@@ -266,7 +266,7 @@ def test_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
 
     messages = response.messages + [llm.messages.user(tool_outputs)]
     final_response = google_client.call(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
         tools=[get_weather],
     )
@@ -290,7 +290,7 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
     ]
 
     stream_response = google_client.stream(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -304,7 +304,7 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
     assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "google",
-            "model": "gemini-2.0-flash",
+            "model_id": "gemini-2.0-flash",
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.UserMessage(
@@ -357,7 +357,7 @@ def test_streaming_tools(google_client: llm.GoogleClient) -> None:
 
     messages = stream_response.messages + [llm.messages.user(tool_output)]
     final_response = google_client.call(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
         tools=[multiply_numbers],
     )
@@ -390,7 +390,7 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
     ]
 
     stream_response = google_client.stream(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
         tools=[get_weather],
     )
@@ -403,7 +403,7 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
     assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
         {
             "provider": "google",
-            "model": "gemini-2.0-flash",
+            "model_id": "gemini-2.0-flash",
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.UserMessage(
@@ -478,7 +478,7 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
 
     messages = stream_response.messages + [llm.messages.user(tool_outputs)]
     final_response = google_client.call(
-        model="gemini-2.0-flash",
+        model_id="gemini-2.0-flash",
         messages=messages,
         tools=[get_weather],
     )

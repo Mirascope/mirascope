@@ -16,7 +16,7 @@ def test_stream_response_resume_basic(openai_client: llm.OpenAIClient) -> None:
     ]
 
     stream_response = openai_client.stream(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
     )
 
@@ -54,7 +54,7 @@ def test_stream_response_resume_with_tools(openai_client: llm.OpenAIClient) -> N
     messages = [llm.messages.user("What's the weather in San Francisco?")]
 
     stream_response = openai_client.stream(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[get_weather],
     )
@@ -90,7 +90,7 @@ def test_stream_response_resume_with_format(openai_client: llm.OpenAIClient) -> 
     ]
 
     stream_response = openai_client.stream(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=Book,
     )
@@ -123,7 +123,7 @@ def test_stream_response_resume_model_override(
     messages = [llm.messages.user("What company created you? Be concise.")]
 
     stream_response = openai_client.stream(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
     )
 
@@ -132,7 +132,9 @@ def test_stream_response_resume_model_override(
     assert stream_response.provider == "openai"
 
     with llm.model(
-        provider="anthropic", client=anthropic_client, model="claude-3-5-haiku-latest"
+        provider="anthropic",
+        client=anthropic_client,
+        model_id="claude-3-5-haiku-latest",
     ):
         resumed = stream_response.resume("Are you sure?")
 
@@ -152,7 +154,7 @@ def test_stream_response_partial_consumption_resume(
     messages = [llm.messages.user("Tell me a 3-5 sentence story about a dragon")]
 
     stream_response = openai_client.stream(
-        model="gpt-4o",
+        model_id="gpt-4o",
         messages=messages,
     )
 

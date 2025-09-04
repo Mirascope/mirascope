@@ -55,7 +55,7 @@ def test_call_decorator_creation_openai(
 
     decorator = llm.call(
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         tools=tools,
         format=Format,
         client=mock_client,
@@ -66,7 +66,7 @@ def test_call_decorator_creation_openai(
     assert decorator.format is Format
     assert decorator.model.client is mock_client
     assert decorator.model.provider == "openai"
-    assert decorator.model.model == "gpt-4o-mini"
+    assert decorator.model.model_id == "gpt-4o-mini"
     assert decorator.model.params == params
 
 
@@ -80,7 +80,7 @@ def test_creating_sync_call(
 
     call = llm.call(
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         tools=tools,
         format=Format,
         client=mock_client,
@@ -91,7 +91,7 @@ def test_creating_sync_call(
 
     assert call.model.client is mock_client
     assert call.model.provider == "openai"
-    assert call.model.model == "gpt-4o-mini"
+    assert call.model.model_id == "gpt-4o-mini"
     assert call.model.params == params
 
     assert call.toolkit == llm.Toolkit(tools=tools)
@@ -110,7 +110,7 @@ async def test_creating_async_call(
 
     call = llm.call(
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         tools=async_tools,
         format=Format,
         client=mock_client,
@@ -121,7 +121,7 @@ async def test_creating_async_call(
 
     assert call.model.client is mock_client
     assert call.model.provider == "openai"
-    assert call.model.model == "gpt-4o-mini"
+    assert call.model.model_id == "gpt-4o-mini"
     assert call.model.params == params
 
     assert call.toolkit == llm.AsyncToolkit(tools=async_tools)
@@ -131,7 +131,7 @@ async def test_creating_async_call(
 
 @pytest.mark.vcr()
 def test_call_decorator_e2e_anthropic() -> None:
-    @llm.call(provider="anthropic", model="claude-sonnet-4-0")
+    @llm.call(provider="anthropic", model_id="claude-sonnet-4-0")
     def call() -> str:
         return "Please recommend a fantasy book. Answer concisely in just one sentence."
 
@@ -143,7 +143,7 @@ def test_call_decorator_e2e_anthropic() -> None:
 
 @pytest.mark.vcr()
 def test_call_decorator_e2e_google() -> None:
-    @llm.call(provider="google", model="gemini-2.0-flash")
+    @llm.call(provider="google", model_id="gemini-2.0-flash")
     def call() -> str:
         return "Please recommend a fantasy book. Answer concisely in just one sentence."
 
@@ -155,7 +155,7 @@ def test_call_decorator_e2e_google() -> None:
 
 @pytest.mark.vcr()
 def test_call_decorator_e2e_openai() -> None:
-    @llm.call(provider="openai", model="gpt-4o-mini")
+    @llm.call(provider="openai", model_id="gpt-4o-mini")
     def call() -> str:
         return "Please recommend a fantasy book. Answer concisely in just one sentence."
 
@@ -167,17 +167,17 @@ def test_call_decorator_e2e_openai() -> None:
 
 @pytest.mark.vcr()
 def test_call_decorator_e2e_model_override() -> None:
-    @llm.call(provider="openai", model="gpt-4o-mini")
+    @llm.call(provider="openai", model_id="gpt-4o-mini")
     def call() -> str:
         return "What company created you? Answer in just one word."
 
     assert call().pretty() == snapshot("OpenAI.")
-    with llm.model(provider="google", model="gemini-2.0-flash"):
+    with llm.model(provider="google", model_id="gemini-2.0-flash"):
         assert call().pretty() == snapshot("Google.\n")
-        with llm.model(provider="anthropic", model="claude-sonnet-4-0"):
+        with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
             assert call().pretty() == snapshot("Anthropic")
 
 
 def test_value_error_invalid_provider() -> None:
     with pytest.raises(ValueError, match="Unknown provider: nonexistent"):
-        llm.call(provider="nonexistent", model="gpt-4o-mini")  # pyright: ignore[reportCallIssue, reportArgumentType]
+        llm.call(provider="nonexistent", model_id="gpt-4o-mini")  # pyright: ignore[reportCallIssue, reportArgumentType]

@@ -74,7 +74,7 @@ def mocked_llm(mock_client: Mock, params: llm.clients.OpenAIParams) -> llm.LLM:
     """Create a test LLM instance with mock client."""
     return llm.model(
         provider="openai",
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         client=mock_client,
         **params,
     )
@@ -87,7 +87,7 @@ def test_cant_use_init() -> None:
 
 def test_create_provides_client() -> None:
     """Test that a client is created for the LLM if not provided"""
-    test_llm = llm.model(provider="openai", model="gpt-4o")
+    test_llm = llm.model(provider="openai", model_id="gpt-4o")
     assert isinstance(test_llm.client, llm.clients.OpenAIClient)
 
 
@@ -105,7 +105,7 @@ def test_call(
     result = mocked_llm.call(messages=messages, tools=tools)
 
     mock_client.call.assert_called_once_with(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=tools,
         params=params,
@@ -127,7 +127,7 @@ def test_structured_call(
     result = mocked_llm.call(messages=messages, tools=tools, format=Format)
 
     mock_client.call.assert_called_once_with(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=tools,
         params=params,
@@ -151,7 +151,7 @@ async def test_call_async(
     result = await mocked_llm.call_async(messages=messages, tools=async_tools)
 
     mock_client.call_async.assert_called_once_with(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=async_tools,
         params=params,
@@ -176,7 +176,7 @@ async def test_structured_call_async(
     )
 
     mock_client.call_async.assert_called_once_with(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=async_tools,
         params=params,
@@ -199,7 +199,7 @@ def test_stream(
     result = mocked_llm.stream(messages=messages, tools=tools)
 
     mock_client.stream.assert_called_once_with(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=tools,
         params=params,
@@ -221,7 +221,7 @@ def test_structured_stream(
     result = mocked_llm.stream(messages=messages, tools=tools, format=Format)
 
     mock_client.stream.assert_called_once_with(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=tools,
         params=params,
@@ -245,7 +245,7 @@ async def test_stream_async(
     result = await mocked_llm.stream_async(messages=messages, tools=async_tools)
 
     mock_client.stream_async.assert_called_once_with(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=async_tools,
         params=params,
@@ -270,7 +270,7 @@ async def test_structured_stream_async(
     )
 
     mock_client.stream_async.assert_called_once_with(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=async_tools,
         params=params,
@@ -282,13 +282,13 @@ async def test_structured_stream_async(
 def test_context_manager() -> None:
     assert llm.models.get_model_from_context() is None
 
-    with llm.models.model(provider="openai", model="gpt-4o-mini") as llm_outer:
+    with llm.models.model(provider="openai", model_id="gpt-4o-mini") as llm_outer:
         assert isinstance(llm_outer, llm.models.LLM)
         assert llm_outer.provider == "openai"
         assert llm.models.get_model_from_context() == llm_outer
 
         with llm.models.model(
-            provider="anthropic", model="claude-sonnet-4-0"
+            provider="anthropic", model_id="claude-sonnet-4-0"
         ) as llm_inner:
             assert isinstance(llm_inner, llm.models.LLM)
             assert llm_inner.provider == "anthropic"

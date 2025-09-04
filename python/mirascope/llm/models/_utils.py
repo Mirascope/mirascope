@@ -11,7 +11,7 @@ from ..clients import (
     BaseParams,
     GoogleClient,
     GoogleParams,
-    Model,
+    ModelId,
     OpenAIClient,
     OpenAIParams,
     Provider,
@@ -22,7 +22,7 @@ from .model import model as llm_factory
 
 def assumed_safe_llm_create(
     provider: Provider,
-    model: Model,
+    model_id: ModelId,
     client: BaseClient | None,
     params: BaseParams | None,
 ) -> (
@@ -37,21 +37,21 @@ def assumed_safe_llm_create(
             llm = llm_factory(
                 provider="anthropic",
                 client=cast(AnthropicClient, client),
-                model=model,
+                model_id=model_id,
                 **params,
             )
         case "google":
             llm = llm_factory(
                 provider="google",
                 client=cast(GoogleClient, client),
-                model=model,
+                model_id=model_id,
                 **params,
             )
         case "openai":
             llm = llm_factory(
                 provider="openai",
                 client=cast(OpenAIClient, client),
-                model=model,
+                model_id=model_id,
                 **params,
             )
         case _:

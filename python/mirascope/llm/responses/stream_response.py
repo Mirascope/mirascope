@@ -60,7 +60,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
 
         @llm.call(
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
         )
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
@@ -163,7 +163,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
 
         @llm.call(
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
         )
         async def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
@@ -267,7 +267,7 @@ class ContextStreamResponse(
 
         @llm.call(
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
         )
         def answer_question(ctx: llm.Context, question: str) -> str:
             return f"Answer this question: {question}"
@@ -377,7 +377,7 @@ class AsyncContextStreamResponse(
 
         @llm.call(
             provider="openai",
-            model="gpt-4o-mini",
+            model_id="gpt-4o-mini",
         )
         async def answer_question(ctx: llm.Context, question: str) -> str:
             return f"Answer this question: {question}"

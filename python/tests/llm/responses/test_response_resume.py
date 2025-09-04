@@ -16,7 +16,7 @@ def test_response_resume_basic(openai_client: llm.OpenAIClient) -> None:
     ]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
     )
 
@@ -52,7 +52,7 @@ def test_response_resume_with_tools(openai_client: llm.OpenAIClient) -> None:
     messages = [llm.messages.user("What's the weather in San Francisco?")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         tools=[get_weather],
     )
@@ -83,7 +83,7 @@ def test_response_resume_with_format(openai_client: llm.OpenAIClient) -> None:
     ]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
         format=Book,
     )
@@ -113,7 +113,7 @@ def test_response_resume_model_override(
     messages = [llm.messages.user("What company created you? Be concise.")]
 
     response = openai_client.call(
-        model="gpt-4o-mini",
+        model_id="gpt-4o-mini",
         messages=messages,
     )
 
@@ -121,7 +121,9 @@ def test_response_resume_model_override(
     assert response.provider == "openai"
 
     with llm.model(
-        provider="anthropic", client=anthropic_client, model="claude-3-5-haiku-latest"
+        provider="anthropic",
+        client=anthropic_client,
+        model_id="claude-3-5-haiku-latest",
     ):
         response = response.resume("Are you sure?")
 

@@ -1,12 +1,12 @@
 """Anthropic client implementation."""
 
 from .client import AnthropicClient, get_anthropic_client
-from .models import AnthropicModel
+from .model_ids import AnthropicModelId
 from .params import AnthropicParams
 
 __all__ = [
     "AnthropicClient",
-    "AnthropicModel",
+    "AnthropicModelId",
     "AnthropicParams",
     "get_anthropic_client",
 ]

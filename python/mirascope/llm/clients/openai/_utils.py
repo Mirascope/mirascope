@@ -36,7 +36,7 @@ from ...tools import (
     Tool,
 )
 from ..base import _utils as _base_utils
-from .models import OpenAIModel
+from .model_ids import OpenAIModelId
 
 OPENAI_FINISH_REASON_MAP = {
     "stop": FinishReason.END_TURN,
@@ -211,7 +211,7 @@ def _convert_tool_to_tool_param(tool: Tool) -> openai_types.ChatCompletionToolPa
 
 def prepare_openai_request(
     *,
-    model: OpenAIModel,
+    model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: Sequence[Tool] | None = None,
     format: type[FormatT] | None = None,
@@ -252,8 +252,10 @@ def prepare_openai_request(
     ) = NotGiven()
 
     if format:
-        model_supports_strict = model not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
-        model_has_native_json_support = model not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+        model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+        model_has_native_json_support = (
+            model_id not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+        )
         resolved_format = _formatting_utils.resolve_formattable(
             format,
             model_supports_strict_mode=model_supports_strict,
