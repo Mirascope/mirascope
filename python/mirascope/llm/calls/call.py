@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Generic, overload
 
 from ..formatting import FormatT
-from ..messages import UserContent, user
 from ..prompts import AsyncPrompt, Prompt, prompt
 from ..responses import AsyncResponse, AsyncStreamResponse, Response, StreamResponse
 from ..tools import (
@@ -69,76 +68,6 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
             messages=messages, tools=self.toolkit.tools, format=self.format
         )
 
-    @overload
-    def resume(
-        self: "Call[P, None]",
-        response: Response | AsyncResponse | StreamResponse | AsyncStreamResponse,
-        content: UserContent,
-    ) -> Response: ...
-
-    @overload
-    def resume(
-        self: "Call[P, FormatT]",
-        response: Response[FormatT]
-        | AsyncResponse[FormatT]
-        | StreamResponse[FormatT]
-        | AsyncStreamResponse[FormatT],
-        content: UserContent,
-    ) -> Response[FormatT]: ...
-
-    def resume(
-        self,
-        response: Response[FormatT]
-        | AsyncResponse[FormatT]
-        | StreamResponse[FormatT]
-        | AsyncStreamResponse[FormatT]
-        | Response
-        | AsyncResponse
-        | StreamResponse
-        | AsyncStreamResponse,
-        content: UserContent,
-    ) -> Response[FormatT] | Response:
-        """Generate a new response by continuing from a previous output, plus new user content."""
-        messages = response.messages + [user(content)]
-        return self.model.call(
-            messages=messages, tools=self.toolkit.tools, format=self.format
-        )
-
-    @overload
-    def resume_stream(
-        self: "Call[P, None]",
-        response: Response | AsyncResponse | StreamResponse | AsyncStreamResponse,
-        content: UserContent,
-    ) -> StreamResponse: ...
-
-    @overload
-    def resume_stream(
-        self: "Call[P, FormatT]",
-        response: Response[FormatT]
-        | AsyncResponse[FormatT]
-        | StreamResponse[FormatT]
-        | AsyncStreamResponse[FormatT],
-        content: UserContent,
-    ) -> StreamResponse[FormatT]: ...
-
-    def resume_stream(
-        self,
-        response: Response[FormatT]
-        | AsyncResponse[FormatT]
-        | StreamResponse[FormatT]
-        | AsyncStreamResponse[FormatT]
-        | Response
-        | AsyncResponse
-        | StreamResponse
-        | AsyncStreamResponse,
-        content: UserContent,
-    ) -> StreamResponse[FormatT] | StreamResponse:
-        """Generate a new stream by continuing from a previous output, plus new user content."""
-        messages = response.messages + [user(content)]
-        return self.model.stream(
-            messages=messages, tools=self.toolkit.tools, format=self.format
-        )
-
 
 @dataclass
 class AsyncCall(
@@ -197,76 +126,6 @@ class AsyncCall(
     ) -> AsyncStreamResponse[FormatT] | AsyncStreamResponse:
         """Generates a streaming response using the LLM asynchronously."""
         messages = await prompt(self.fn)(*args, **kwargs)
-        return await self.model.stream_async(
-            messages=messages, tools=self.toolkit.tools, format=self.format
-        )
-
-    @overload
-    async def resume(
-        self: "AsyncCall[P, None]",
-        response: Response | AsyncResponse | StreamResponse | AsyncStreamResponse,
-        content: UserContent,
-    ) -> AsyncResponse: ...
-
-    @overload
-    async def resume(
-        self: "AsyncCall[P, FormatT]",
-        response: Response[FormatT]
-        | AsyncResponse[FormatT]
-        | StreamResponse[FormatT]
-        | AsyncStreamResponse[FormatT],
-        content: UserContent,
-    ) -> AsyncResponse[FormatT]: ...
-
-    async def resume(
-        self,
-        response: Response[FormatT]
-        | AsyncResponse[FormatT]
-        | StreamResponse[FormatT]
-        | AsyncStreamResponse[FormatT]
-        | Response
-        | AsyncResponse
-        | StreamResponse
-        | AsyncStreamResponse,
-        content: UserContent,
-    ) -> AsyncResponse[FormatT] | AsyncResponse:
-        """Generate a new response by continuing from a previous output, plus new user content."""
-        messages = response.messages + [user(content)]
-        return await self.model.call_async(
-            messages=messages, tools=self.toolkit.tools, format=self.format
-        )
-
-    @overload
-    async def resume_stream(
-        self: "AsyncCall[P, None]",
-        response: Response | AsyncResponse | StreamResponse | AsyncStreamResponse,
-        content: UserContent,
-    ) -> AsyncStreamResponse: ...
-
-    @overload
-    async def resume_stream(
-        self: "AsyncCall[P, FormatT]",
-        response: Response[FormatT]
-        | AsyncResponse[FormatT]
-        | StreamResponse[FormatT]
-        | AsyncStreamResponse[FormatT],
-        content: UserContent,
-    ) -> AsyncStreamResponse[FormatT]: ...
-
-    async def resume_stream(
-        self,
-        response: Response[FormatT]
-        | AsyncResponse[FormatT]
-        | StreamResponse[FormatT]
-        | AsyncStreamResponse[FormatT]
-        | Response
-        | AsyncResponse
-        | StreamResponse
-        | AsyncStreamResponse,
-        content: UserContent,
-    ) -> AsyncStreamResponse[FormatT] | AsyncStreamResponse:
-        """Generate a new stream by continuing from a previous output, plus new user content."""
-        messages = response.messages + [user(content)]
         return await self.model.stream_async(
             messages=messages, tools=self.toolkit.tools, format=self.format
         )
