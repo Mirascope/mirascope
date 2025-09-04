@@ -11,7 +11,7 @@ from .finish_reason import FinishReason
 from .root_response import RootResponse
 
 if TYPE_CHECKING:
-    from ..clients import Model, Provider
+    from ..clients import BaseParams, Model, Provider
 
 
 class BaseResponse(RootResponse[ToolkitT, FormatT]):
@@ -23,6 +23,7 @@ class BaseResponse(RootResponse[ToolkitT, FormatT]):
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model: "Model",
+        params: "BaseParams | None",
         toolkit: ToolkitT,
         format_type: type[FormatT] | None = None,
         input_messages: Sequence[Message],
@@ -32,18 +33,23 @@ class BaseResponse(RootResponse[ToolkitT, FormatT]):
         """Initialize a Response.
 
         Args:
+            raw: The raw response from the LLM.
+            provider: The provider name (e.g. "anthropic", "openai").
             model: The model identifier that generated the response.
+            params: The params used to generate the response (or None).
+            toolkit: Toolkit containing all the tools used to generate the response.
+            format_type: The type for the expected structured output format (or None).
             input_messages: The message history before the final assistant message.
             assistant_message: The final assistant message containing the response content.
-            raw: The raw response from the LLM.
             finish_reason: The reason why the LLM finished generating a response.
         """
+        self.raw = raw
         self.provider = provider
         self.model = model
-        self.raw = raw
+        self.params = params
+        self.toolkit = toolkit
         self.finish_reason = finish_reason
         self.format_type = format_type
-        self.toolkit = toolkit
 
         self.messages = list(input_messages) + [assistant_message]
 

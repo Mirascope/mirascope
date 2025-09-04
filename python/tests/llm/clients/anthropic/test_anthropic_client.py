@@ -22,6 +22,7 @@ def test_call_simple_message(anthropic_client: llm.AnthropicClient) -> None:
         {
             "provider": "anthropic",
             "model": "claude-3-5-sonnet-latest",
+            "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
@@ -55,6 +56,7 @@ def test_call_with_system_message(
         {
             "provider": "anthropic",
             "model": "claude-3-5-sonnet-latest",
+            "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.SystemMessage(

@@ -81,6 +81,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
             raw=anthropic_response,
             provider="anthropic",
             model=model,
+            params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=messages,
             assistant_message=assistant_message,
@@ -196,6 +197,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModel, Anthropic]):
         return StreamResponse(
             provider="anthropic",
             model=model,
+            params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=messages,
             chunk_iterator=chunk_iterator,

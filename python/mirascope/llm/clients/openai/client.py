@@ -79,6 +79,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
             raw=openai_response,
             provider="openai",
             model=model,
+            params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
             assistant_message=assistant_message,
@@ -128,6 +129,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
             raw=openai_response,
             provider="openai",
             model=model,
+            params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
             assistant_message=assistant_message,
@@ -219,6 +221,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         return StreamResponse(
             provider="openai",
             model=model,
+            params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
@@ -266,6 +269,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModel, OpenAI]):
         return StreamResponse[FormatT](
             provider="openai",
             model=model,
+            params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,

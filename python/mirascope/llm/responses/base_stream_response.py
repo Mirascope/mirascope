@@ -28,7 +28,7 @@ from .finish_reason import FinishReason, FinishReasonChunk
 from .root_response import RootResponse
 
 if TYPE_CHECKING:
-    from ..clients import Model, Provider
+    from ..clients import BaseParams, Model, Provider
 
 
 @dataclass
@@ -117,6 +117,7 @@ class BaseStreamResponse(
         *,
         provider: "Provider",
         model: "Model",
+        params: "BaseParams | None",
         toolkit: ToolkitT,
         format_type: type[FormatT] | None = None,
         input_messages: Sequence[Message],
@@ -125,8 +126,11 @@ class BaseStreamResponse(
         """Initialize the BaseStreamResponse.
 
         Args:
-            provider: The provider name (e.g., "anthropic", "openai")
-            model: The model identifier
+            provider: The provider name (e.g. "anthropic", "openai").
+            model: The model identifier that generated the response.
+            params: The params used to generate the response (or None).
+            toolkit: Toolkit containing all the tools used to generate the response.
+            format_type: The type for the expected structured output format (or None).
             input_messages: The input messages that were sent to the LLM
 
         The BaseStreamResponse will process the tuples to build the chunks and raw lists
@@ -135,6 +139,7 @@ class BaseStreamResponse(
 
         self.provider = provider
         self.model = model
+        self.params = params
         self.toolkit = toolkit
         self.format_type = format_type
 
