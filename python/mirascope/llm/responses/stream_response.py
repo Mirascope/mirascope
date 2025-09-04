@@ -2,11 +2,12 @@
 
 import asyncio
 from collections.abc import Sequence
-from typing import Generic
+from typing import Generic, overload
 
 from ..content import ToolOutput
 from ..context import Context, DepsT
 from ..formatting import FormatT
+from ..messages import UserContent, user
 from ..tools import AsyncContextToolkit, AsyncToolkit, ContextToolkit, Toolkit
 from .base_stream_response import BaseAsyncStreamResponse, BaseSyncStreamResponse
 
@@ -84,6 +85,35 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
         """
         return [self.toolkit.execute(tool_call) for tool_call in self.tool_calls]
 
+    @overload
+    def resume(self: "StreamResponse", content: UserContent) -> "StreamResponse": ...
+
+    @overload
+    def resume(
+        self: "StreamResponse[FormatT]", content: UserContent
+    ) -> "StreamResponse[FormatT]": ...
+
+    def resume(
+        self, content: UserContent
+    ) -> "StreamResponse | StreamResponse[FormatT]":
+        """Generate a new `StreamResponse` using this response's messages with additional user content.
+
+        Uses this response's tools and format type. Also uses this response's provider,
+        model, client, and params, unless the model context manager is being used to
+        provide a new LLM as an override.
+
+        Args:
+            content: The new user message content to append to the message history.
+
+        Returns:
+            A new `StreamResponse` instance generated from the extended message history.
+        """
+        messages = self.messages + [user(content)]
+        model = self._model()
+        return model.stream(
+            messages=messages, tools=self.toolkit.tools, format=self.format_type
+        )
+
 
 class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
     """An `AsyncStreamResponse` wraps response content from the LLM with a streaming interface.
@@ -158,6 +188,33 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
         """
         tasks = [self.toolkit.execute(tool_call) for tool_call in self.tool_calls]
         return await asyncio.gather(*tasks)
+
+    @overload
+    async def resume(
+        self: "AsyncStreamResponse", content: UserContent
+    ) -> "AsyncStreamResponse": ...
+
+    @overload
+    async def resume(
+        self: "AsyncStreamResponse[FormatT]", content: UserContent
+    ) -> "AsyncStreamResponse[FormatT]": ...
+
+    async def resume(
+        self, content: UserContent
+    ) -> "AsyncStreamResponse | AsyncStreamResponse[FormatT]":
+        """Generate a new `AsyncStreamResponse` using this response's messages with additional user content.
+
+        Uses this response's tools and format type. Also uses this response's provider,
+        model, client, and params, unless the model context manager is being used to
+        provide a new LLM as an override.
+
+        Args:
+            content: The new user message content to append to the message history.
+
+        Returns:
+            A new `AsyncStreamResponse` instance generated from the extended message history.
+        """
+        raise NotImplementedError
 
 
 class ContextStreamResponse(
@@ -239,6 +296,36 @@ class ContextStreamResponse(
         """
         raise NotImplementedError
 
+    @overload
+    def resume(
+        self: "ContextStreamResponse[DepsT]", ctx: Context[DepsT], content: UserContent
+    ) -> "ContextStreamResponse[DepsT]": ...
+
+    @overload
+    def resume(
+        self: "ContextStreamResponse[DepsT, FormatT]",
+        ctx: Context[DepsT],
+        content: UserContent,
+    ) -> "ContextStreamResponse[DepsT, FormatT]": ...
+
+    def resume(
+        self, ctx: Context[DepsT], content: UserContent
+    ) -> "ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormatT]":
+        """Generate a new `ContextStreamResponse` using this response's messages with additional user content.
+
+        Uses this response's tools and format type. Also uses this response's provider,
+        model, client, and params, unless the model context manager is being used to
+        provide a new LLM as an override.
+
+        Args:
+            ctx: A Context with the required deps type.
+            content: The new user message content to append to the message history.
+
+        Returns:
+            A new `ContextStreamResponse` instance generated from the extended message history.
+        """
+        raise NotImplementedError
+
 
 class AsyncContextStreamResponse(
     BaseAsyncStreamResponse[AsyncContextToolkit, FormatT], Generic[DepsT, FormatT]
@@ -316,5 +403,39 @@ class AsyncContextStreamResponse(
         Raises:
             ToolNotFoundError: If one of the response's tool calls has no matching tool.
             Exception: If one of the tools throws an exception.
+        """
+        raise NotImplementedError
+
+    @overload
+    async def resume(
+        self: "AsyncContextStreamResponse[DepsT]",
+        ctx: Context[DepsT],
+        content: UserContent,
+    ) -> "AsyncContextStreamResponse[DepsT]": ...
+
+    @overload
+    async def resume(
+        self: "AsyncContextStreamResponse[DepsT, FormatT]",
+        ctx: Context[DepsT],
+        content: UserContent,
+    ) -> "AsyncContextStreamResponse[DepsT, FormatT]": ...
+
+    async def resume(
+        self, ctx: Context[DepsT], content: UserContent
+    ) -> (
+        "AsyncContextStreamResponse[DepsT] | AsyncContextStreamResponse[DepsT, FormatT]"
+    ):
+        """Generate a new `AsyncContextStreamResponse` using this response's messages with additional user content.
+
+        Uses this response's tools and format type. Also uses this response's provider,
+        model, client, and params, unless the model context manager is being used to
+        provide a new LLM as an override.
+
+        Args:
+            ctx: A Context with the required deps type.
+            content: The new user message content to append to the message history.
+
+        Returns:
+            A new `AsyncContextStreamResponse` instance generated from the extended message history.
         """
         raise NotImplementedError
