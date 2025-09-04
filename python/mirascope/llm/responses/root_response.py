@@ -13,7 +13,7 @@ from ..types import NoneType
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
-    from ..clients import Model, Provider
+    from ..clients import BaseParams, Model, Provider
 
 
 class RootResponse(Generic[ToolkitT, FormatT], ABC):
@@ -28,8 +28,11 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
     model: "Model"
     """The model that generated this response."""
 
+    params: "BaseParams | None"
+    """The params that were used to generate this response (or None)."""
+
     toolkit: ToolkitT
-    """The toolkit containing this call's tools."""
+    """The toolkit containing the tools used when generating this response."""
 
     messages: list[Message]
     """The message history, including the most recent assistant message."""

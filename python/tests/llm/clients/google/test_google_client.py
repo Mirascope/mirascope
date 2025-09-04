@@ -42,6 +42,7 @@ def test_call_simple_message(google_client: llm.GoogleClient) -> None:
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
+            "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
@@ -73,6 +74,7 @@ def test_call_with_system_message(google_client: llm.GoogleClient) -> None:
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
+            "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.SystemMessage(
@@ -111,6 +113,7 @@ def test_call_no_output(google_client: llm.GoogleClient) -> None:
         {
             "provider": "google",
             "model": "gemini-2.0-flash",
+            "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.SystemMessage(

@@ -28,6 +28,7 @@ def test_call_simple_message(openai_client: llm.OpenAIClient) -> None:
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
+            "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
@@ -64,6 +65,7 @@ def test_call_with_system_message(openai_client: llm.OpenAIClient) -> None:
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
+            "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.SystemMessage(
@@ -105,6 +107,7 @@ def test_call_with_turns(openai_client: llm.OpenAIClient) -> None:
         {
             "provider": "openai",
             "model": "gpt-4o-mini",
+            "params": None,
             "finish_reason": llm.FinishReason.END_TURN,
             "messages": [
                 llm.SystemMessage(content=llm.Text(text="Be as concise as possible")),

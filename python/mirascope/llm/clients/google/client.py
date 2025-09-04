@@ -81,6 +81,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
             raw=google_response,
             provider="google",
             model=model,
+            params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=messages,
             assistant_message=assistant_message,
@@ -189,6 +190,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModel, Client]):
         return StreamResponse(
             provider="google",
             model=model,
+            params=params,
             toolkit=Toolkit(tools=tools),
             input_messages=messages,
             chunk_iterator=chunk_iterator,
