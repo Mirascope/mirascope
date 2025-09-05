@@ -14,7 +14,7 @@ from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
     from ..clients import BaseParams, ModelId, Provider
-    from ..models import LLM
+    from ..models import Model
 
 
 class RootResponse(Generic[ToolkitT, FormatT], ABC):
@@ -148,7 +148,9 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
 
         return "\n\n".join(pretty_parts)
 
-    def _model(self) -> "LLM":
+    @property
+    def model(self) -> "Model":
+        """A `Model` with parameters matching this response."""
         from ..clients import get_client
         from ..models import _utils as _model_utils, get_model_from_context
 

@@ -16,8 +16,7 @@ from ..clients import (
     OpenAIParams,
     Provider,
 )
-from .llm import LLM
-from .model import model as llm_factory
+from .model import Model, model as model_factory
 
 
 def assumed_safe_llm_create(
@@ -26,29 +25,29 @@ def assumed_safe_llm_create(
     client: BaseClient | None,
     params: BaseParams | None,
 ) -> (
-    LLM[AnthropicClient, AnthropicParams]
-    | LLM[GoogleClient, GoogleParams]
-    | LLM[OpenAIClient, OpenAIParams]
+    Model[AnthropicClient, AnthropicParams]
+    | Model[GoogleClient, GoogleParams]
+    | Model[OpenAIClient, OpenAIParams]
 ):
     if not params:
         params = {}
     match provider:
         case "anthropic":
-            llm = llm_factory(
+            model = model_factory(
                 provider="anthropic",
                 client=cast(AnthropicClient, client),
                 model_id=model_id,
                 **params,
             )
         case "google":
-            llm = llm_factory(
+            model = model_factory(
                 provider="google",
                 client=cast(GoogleClient, client),
                 model_id=model_id,
                 **params,
             )
         case "openai":
-            llm = llm_factory(
+            model = model_factory(
                 provider="openai",
                 client=cast(OpenAIClient, client),
                 model_id=model_id,
@@ -57,4 +56,4 @@ def assumed_safe_llm_create(
         case _:
             raise ValueError(f"Unknown provider: {provider}")
 
-    return llm
+    return model

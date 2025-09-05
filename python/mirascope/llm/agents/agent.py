@@ -8,7 +8,7 @@ from typing import Generic
 from ..context import Context, DepsT
 from ..formatting import FormatT
 from ..messages import UserContent
-from ..models import LLM
+from ..models import Model
 from ..responses import AsyncResponse, AsyncStreamResponse, Response, StreamResponse
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
@@ -23,7 +23,7 @@ class BaseAgent(Generic[DepsT, FormatT], ABC):
     format: type[FormatT] | None
     """The response format for the generated response."""
 
-    model: LLM
+    model: Model
     """The default model the agent will use if not specified through context."""
 
 

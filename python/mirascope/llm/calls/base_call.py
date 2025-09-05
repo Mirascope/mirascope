@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Generic
 
 from ..formatting import FormatT
-from ..models import LLM, get_model_from_context
+from ..models import Model, get_model_from_context
 from ..prompts import PromptT
 from ..tools import ToolkitT
 from ..types import P
@@ -15,7 +15,7 @@ from ..types import P
 class BaseCall(Generic[P, PromptT, ToolkitT, FormatT], ABC):
     """A base class for generating responses using LLMs."""
 
-    default_model: LLM
+    default_model: Model
     """The default model that will be used if no model is set in context."""
 
     toolkit: ToolkitT
@@ -28,6 +28,6 @@ class BaseCall(Generic[P, PromptT, ToolkitT, FormatT], ABC):
     """The Prompt function that generates the Prompt."""
 
     @property
-    def model(self) -> LLM:
+    def model(self) -> Model:
         """The model used for generating responses. May be overwritten via `with llm.model(...)."""
         return get_model_from_context() or self.default_model

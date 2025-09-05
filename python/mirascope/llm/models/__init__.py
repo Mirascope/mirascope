@@ -7,11 +7,10 @@ time.
 """
 
 from . import _utils
-from .llm import LLM, get_model_from_context
-from .model import model
+from .model import Model, get_model_from_context, model
 
 __all__ = [
-    "LLM",
+    "Model",
     "_utils",
     "get_model_from_context",
     "model",
