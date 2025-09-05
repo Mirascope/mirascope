@@ -19,9 +19,17 @@ from ...content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from ...formatting import (
+    FormatInfo,
+    FormatT,
+    _utils as _formatting_utils,
+)
 from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import ChunkIterator, FinishReason, FinishReasonChunk, RawChunk
-from ...tools import Tool
+from ...tools import (
+    FORMAT_TOOL_NAME,
+    Tool,
+)
 from ..base import _utils as _base_utils
 from .model_ids import AnthropicModelId
 
@@ -117,26 +125,51 @@ def _convert_tool_to_tool_param(tool: Tool) -> anthropic_types.ToolParam:
 
 
 def prepare_anthropic_request(
-    messages: Sequence[Message],
     model_id: AnthropicModelId,
+    messages: Sequence[Message],
     tools: Sequence[Tool] | None = None,
+    format: type[FormatT] | None = None,
 ) -> tuple[
+    Sequence[Message],
     Sequence[anthropic_types.MessageParam],
     str | NotGiven,
     Sequence[anthropic_types.ToolParam] | NotGiven,
+    anthropic_types.ToolChoiceParam | NotGiven,
 ]:
+    anthropic_tools: list[anthropic_types.ToolParam] | NotGiven = (
+        [_convert_tool_to_tool_param(tool) for tool in tools] if tools else []
+    )
+
+    tool_choice: anthropic_types.ToolChoiceParam | NotGiven = NotGiven()
+
+    if format:
+        resolved_format = _formatting_utils.resolve_formattable(
+            format,
+            model_supports_strict_mode=False,
+            model_has_native_json_support=False,
+        )
+        if resolved_format.mode == "tool":
+            anthropic_tools.append(create_format_tool_param(resolved_format.info))
+            tool_choice = {"type": "any"}
+
+        if resolved_format.formatting_instructions:
+            messages = _base_utils.add_system_instructions(
+                messages, resolved_format.formatting_instructions
+            )
+
+    if not anthropic_tools:
+        anthropic_tools = NotGiven()
+
     system_message_content, remaining_messages = _base_utils.extract_system_message(
         messages
     )
 
-    tool_params = (
-        [_convert_tool_to_tool_param(tool) for tool in tools] if tools else NotGiven()
-    )
-
     return (
+        messages,
         _encode_messages(remaining_messages),
         system_message_content or NotGiven(),
-        tool_params,
+        anthropic_tools,
+        tool_choice,
     )
 
 
@@ -205,3 +238,31 @@ def convert_anthropic_stream_to_chunk_iterator(
                         event.delta.stop_reason, FinishReason.UNKNOWN
                     )
                     yield FinishReasonChunk(finish_reason=finish_reason)
+
+
+def create_format_tool_param(
+    format_info: FormatInfo,
+) -> anthropic_types.ToolParam:
+    """Create Anthropic ToolParam for format parsing from a Mirascope FormatInfo.
+
+    Args:
+        format_info: The FormatInfo instance containing schema and metadata
+
+    Returns:
+        Anthropic ToolParam for the format tool
+    """
+    schema_dict = format_info.schema.copy()
+    schema_dict["type"] = "object"
+
+    if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
+        schema_dict["required"] = list(schema_dict["properties"].keys())
+
+    description = f"Use this tool to extract data in {format_info.name} format for a final response."
+    if format_info.description:
+        description += "\n" + format_info.description
+
+    return anthropic_types.ToolParam(
+        name=FORMAT_TOOL_NAME,
+        description=description,
+        input_schema=schema_dict,
+    )
