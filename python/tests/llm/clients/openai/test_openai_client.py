@@ -813,8 +813,6 @@ Do NOT output any text in addition to the tool call.\
             "gpt-4o:json": {
                 "system_message": """\
 Respond with valid JSON that matches this exact schema:
-
-```json
 {
   "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
   "properties": {
@@ -839,8 +837,7 @@ Respond with valid JSON that matches this exact schema:
   ],
   "title": "Book",
   "type": "object"
-}
-```\
+}\
 """,
                 "model_dump": {
                     "title": "The Name of the Wind",
@@ -851,8 +848,6 @@ Respond with valid JSON that matches this exact schema:
             "gpt-4:strict-or-json": {
                 "system_message": """\
 Respond with valid JSON that matches this exact schema:
-
-```json
 {
   "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
   "properties": {
@@ -878,11 +873,11 @@ Respond with valid JSON that matches this exact schema:
   "title": "Book",
   "type": "object"
 }
-```
+
 Respond ONLY with valid JSON, and no other text.\
 """,
                 "model_dump": {
-                    "title": "Harry Potter and the Philosopher's Stone",
+                    "title": "Harry Potter and the Sorcerer's Stone",
                     "author": "J.K. Rowling",
                     "vibe": "mysterious!",
                 },
@@ -906,8 +901,6 @@ Do NOT output any text in addition to the tool call.\
             "gpt-4:json": {
                 "system_message": """\
 Respond with valid JSON that matches this exact schema:
-
-```json
 {
   "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
   "properties": {
@@ -933,7 +926,7 @@ Respond with valid JSON that matches this exact schema:
   "title": "Book",
   "type": "object"
 }
-```
+
 Respond ONLY with valid JSON, and no other text.\
 """,
                 "model_dump": {
@@ -1074,9 +1067,9 @@ Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
 the STRENGTH OF YOUR RECOMMENDATION!\
 """,
                 "model_dump": {
-                    "title": "THE NAME OF THE WIND",
-                    "author": "PATRICK ROTHFUSS",
-                    "vibe": "A MELANCHOLIC NARRATIVE THAT FOLLOWS A TURMOIL-RIDDEN JOURNEY OF TRIALS AND HEARTBREAK IN A LIFE LACED WITH MYSTERIOUS WISPS OF ANGUISH AND LONGING.",
+                    "title": "THE WELL OF ASCENSION",
+                    "author": "Brandon Sanderson",
+                    "vibe": "BETRAYAL AND DESPAIR IN THE SHADOWS OF OPPRESSION",
                 },
             },
             "gpt-4:strict-or-tool": {
@@ -1102,9 +1095,9 @@ Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
 the STRENGTH OF YOUR RECOMMENDATION!\
 """,
                 "model_dump": {
-                    "title": "THE LAST UNICORN",
-                    "author": "PETER S. BEAGLE",
-                    "vibe": "POIGNANTLY GUT-WRENCHING YET TOUCHINGLY BEAUTIFUL",
+                    "title": "THE ROAD",
+                    "author": "CORMAC MCCARTHY",
+                    "vibe": "FILLED WITH DYSTOPIAN DESPAIR AND UNEQUIVOCAL DESOLATION THAT INTRIGUINGLY BLENDS REALISTIC AND FANTASTIC ELEMENTS!",
                 },
             },
             "gpt-4:strict": {
@@ -1135,9 +1128,9 @@ Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
 the STRENGTH OF YOUR RECOMMENDATION!\
 """,
                 "model_dump": {
-                    "title": "THE ROAD",
-                    "author": "CORMAC MCCARTHY",
-                    "vibe": "DEVASTATINGLY BLEAK, RELENTLESSLY GLOOMY",
+                    "title": "THE BROKEN EMPIRE TRILOGY",
+                    "author": "MARK LAWRENCE",
+                    "vibe": "MERCILESS BETRAYAL, LONELINESS, AND LOSS",
                 },
             },
         }
