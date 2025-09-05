@@ -1,7 +1,5 @@
 """Tests for the call decorator function."""
 
-from unittest.mock import Mock
-
 import pytest
 from inline_snapshot import snapshot
 from pydantic import BaseModel
@@ -38,18 +36,12 @@ def async_tools() -> list[llm.AsyncTool]:
 
 
 @pytest.fixture
-def mock_client() -> Mock:
-    """Create a mock client for testing."""
-    return Mock()
-
-
-@pytest.fixture
 def params() -> llm.clients.BaseParams:
     return {"temperature": 0.7, "max_tokens": 100}
 
 
 def test_call_decorator_creation_openai(
-    tools: list[llm.Tool], mock_client: Mock, params: llm.clients.BaseParams
+    tools: list[llm.Tool], params: llm.clients.BaseParams
 ) -> None:
     """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
@@ -58,20 +50,18 @@ def test_call_decorator_creation_openai(
         model_id="gpt-4o-mini",
         tools=tools,
         format=Format,
-        client=mock_client,
         **params,
     )
 
     assert decorator.tools is tools
     assert decorator.format is Format
-    assert decorator.model.client is mock_client
     assert decorator.model.provider == "openai"
     assert decorator.model.model_id == "gpt-4o-mini"
     assert decorator.model.params == params
 
 
 def test_creating_sync_call(
-    tools: list[llm.Tool], mock_client: Mock, params: llm.clients.BaseParams
+    tools: list[llm.Tool], params: llm.clients.BaseParams
 ) -> None:
     """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
@@ -83,13 +73,11 @@ def test_creating_sync_call(
         model_id="gpt-4o-mini",
         tools=tools,
         format=Format,
-        client=mock_client,
         **params,
     )(prompt)
 
     assert isinstance(call, llm.calls.Call)
 
-    assert call.model.client is mock_client
     assert call.model.provider == "openai"
     assert call.model.model_id == "gpt-4o-mini"
     assert call.model.params == params
@@ -101,7 +89,7 @@ def test_creating_sync_call(
 
 @pytest.mark.asyncio
 async def test_creating_async_call(
-    async_tools: list[llm.AsyncTool], mock_client: Mock, params: llm.clients.BaseParams
+    async_tools: list[llm.AsyncTool], params: llm.clients.BaseParams
 ) -> None:
     """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
@@ -113,13 +101,11 @@ async def test_creating_async_call(
         model_id="gpt-4o-mini",
         tools=async_tools,
         format=Format,
-        client=mock_client,
         **params,
     )(async_prompt)
 
     assert isinstance(call, llm.calls.AsyncCall)
 
-    assert call.model.client is mock_client
     assert call.model.provider == "openai"
     assert call.model.model_id == "gpt-4o-mini"
     assert call.model.params == params
