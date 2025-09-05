@@ -4,34 +4,27 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, Literal, cast, overload
+from typing import Generic, Literal, cast, overload
 from typing_extensions import Unpack
 
+from ..clients import (
+    AnthropicModelId,
+    AnthropicParams,
+    BaseParams,
+    GoogleModelId,
+    GoogleParams,
+    ModelId,
+    OpenAIModelId,
+    OpenAIParams,
+    Provider,
+    get_client,
+)
+from ..formatting import FormatT
 from ..models import Model, _utils as _model_utils
 from ..prompts import AsyncPrompt, Prompt, _utils as _prompt_utils
-from ..tools import AsyncTool, Tool, ToolT
-from .call import AsyncCall, Call
-
-if TYPE_CHECKING:
-    from ..clients import (
-        AnthropicClient,
-        AnthropicModelId,
-        AnthropicParams,
-        BaseParams,
-        GoogleClient,
-        GoogleModelId,
-        GoogleParams,
-        ModelId,
-        OpenAIClient,
-        OpenAIModelId,
-        OpenAIParams,
-        Provider,
-    )
-
-
-from ..formatting import FormatT
-from ..tools import AsyncToolkit, Toolkit
+from ..tools import AsyncTool, AsyncToolkit, Tool, Toolkit, ToolT
 from ..types import P
+from .call import AsyncCall, Call
 
 
 @dataclass(kw_only=True)
@@ -83,7 +76,6 @@ def call(
     model_id: AnthropicModelId,
     tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
-    client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
 ) -> CallDecorator[ToolT, FormatT]:
     """Decorate a prompt into a Call using Anthropic models."""
@@ -97,7 +89,6 @@ def call(
     model_id: GoogleModelId,
     tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
-    client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
 ) -> CallDecorator[ToolT, FormatT]:
     """Decorate a prompt into a Call using Google models."""
@@ -111,7 +102,6 @@ def call(
     model_id: OpenAIModelId,
     tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
-    client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
 ) -> CallDecorator[ToolT, FormatT]:
     """Decorate a prompt into a Call using OpenAI models."""
@@ -124,7 +114,6 @@ def call(
     model_id: ModelId,
     tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
-    client: AnthropicClient | GoogleClient | OpenAIClient | None = None,
     **params: Unpack[BaseParams],
 ) -> CallDecorator[ToolT, FormatT]:
     """Returns a decorator for turning prompt template functions into generations.
@@ -146,6 +135,6 @@ def call(
         ```
     """
     llm = _model_utils.assumed_safe_llm_create(
-        provider=provider, model_id=model_id, client=client, params=params
+        provider=provider, model_id=model_id, client=get_client(provider), params=params
     )
     return CallDecorator(model=llm, tools=tools, format=format)

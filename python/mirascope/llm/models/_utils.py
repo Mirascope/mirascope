@@ -53,7 +53,7 @@ def assumed_safe_llm_create(
                 model_id=model_id,
                 **params,
             )
-        case _:
+        case _:  # pragma: no cover
             raise ValueError(f"Unknown provider: {provider}")
 
     return model
