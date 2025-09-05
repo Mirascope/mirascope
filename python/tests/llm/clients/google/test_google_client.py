@@ -1,9 +1,12 @@
 """Tests for GoogleClient using VCR.py for HTTP request recording/playback."""
 
+import inspect
+from typing import Annotated
 from unittest.mock import MagicMock, patch
 
 import pytest
 from inline_snapshot import snapshot
+from pydantic import BaseModel, Field
 
 from mirascope import llm
 from tests import utils
@@ -485,4 +488,590 @@ def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
 
     assert final_response.pretty() == snapshot(
         "The weather in SF is overcast and 64°F. The weather in NYC is sunny and 72°F.\n"
+    )
+
+
+@pytest.mark.vcr()
+def test_structured_call(google_client: llm.GoogleClient) -> None:
+    """Test structured call with auto decoration."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+        reason: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = google_client.call(
+        model_id="gemini-2.0-flash",
+        messages=messages,
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "Mistborn: The Final Empire",
+            "author": "Brandon Sanderson",
+            "reason": "It features a compelling magic system, intricate plot, and well-developed characters in a unique fantasy world.",
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_structured_call_with_tools(google_client: llm.GoogleClient) -> None:
+    """Test structured call with tool usage."""
+
+    @llm.tool
+    def available_books() -> list[str]:
+        """Returns all of the available books in the library."""
+        return [
+            "Wild Seed by Octavia Butler",
+            "The Long Way to a Small Angry Planet by Becky Chambers",
+            "Emergent Strategy by adrianne maree brown",
+        ]
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book in the library.")]
+
+    response = google_client.call(
+        model_id="gemini-2.0-flash",
+        messages=messages,
+        tools=[available_books],
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot({"title": "string", "author": "string"})
+
+
+@pytest.mark.vcr()
+def test_nested_structured_call(google_client: llm.GoogleClient) -> None:
+    """Test nested structured call."""
+
+    class Author(BaseModel):
+        name: str
+        bio: str
+
+    class Book(BaseModel):
+        title: str
+        author: Author
+        reason: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = google_client.call(
+        model_id="gemini-2.0-flash",
+        messages=messages,
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert isinstance(book.author, Author)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "The Name of the Wind",
+            "author": {
+                "name": "Patrick Rothfuss",
+                "bio": "Patrick Rothfuss is an American fantasy writer and professor. He is best known for his Kingkiller Chronicle series, which has gained critical acclaim for its rich world-building, compelling characters, and lyrical prose.",
+            },
+            "reason": "This book is beautifully written, with a compelling narrative and a fascinating magic system. Kvothe's story is captivating, and the mystery surrounding his past and the world he inhabits will keep you hooked from beginning to end.",
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_structured_stream(google_client: llm.GoogleClient) -> None:
+    """Test structured streaming call."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+        reason: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    stream_response = google_client.stream(
+        model_id="gemini-2.0-flash",
+        messages=messages,
+        format=Book,
+    )
+
+    list(stream_response.chunk_stream())
+
+    book = stream_response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "Mistborn: The Final Empire",
+            "author": "Brandon Sanderson",
+            "reason": "A compelling fantasy novel with a unique magic system based on the ability to ingest and 'burn' metals to gain special powers. It features a well-developed world, intricate plot, and memorable characters who are fighting against a seemingly invincible, immortal emperor.",
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_structured_stream_tool_mode(google_client: llm.GoogleClient) -> None:
+    """Test structured streaming in tool mode."""
+
+    @llm.format(mode="tool")
+    class Book(BaseModel):
+        title: str
+        author: str
+        reason: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    stream_response = google_client.stream(
+        model_id="gemini-2.0-flash",
+        messages=messages,
+        format=Book,
+    )
+    list(stream_response.chunk_stream())
+
+    book = stream_response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "The Name of the Wind",
+            "author": "Patrick Rothfuss",
+            "reason": "It is a beautifully written coming-of-age story with a compelling magic system.",
+        }
+    )
+
+
+@pytest.mark.parametrize("mode", ["strict-or-tool", "strict-or-json", "tool", "json"])
+@pytest.mark.vcr()
+def test_structured_call_supported_modes(
+    google_client: llm.GoogleClient, mode: llm.formatting.FormattingMode
+) -> None:
+    """Test that supported formatting modes work correctly."""
+
+    @llm.format(mode=mode)
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [
+        llm.messages.user("Please parse this string: 'Mistborn by Brandon Sanderson'")
+    ]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        format=SimpleBook,
+    )
+
+    book = response.format()
+    assert isinstance(book, SimpleBook)
+    assert book.title == "Mistborn"
+    assert book.author == "Brandon Sanderson"
+
+
+@pytest.mark.vcr()
+def test_json_mode_with_description_and_formatting_instructions(
+    google_client: llm.GoogleClient,
+) -> None:
+    """Test JSON mode with custom description and formatting instructions."""
+
+    @llm.format(mode="json")
+    class DetailedBook(BaseModel):
+        """A detailed book recommendation with metadata."""
+
+        title: str
+        author: str
+        genre: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return inspect.cleandoc(
+                """Pretty please return only JSON and nothing else!
+                Specifically I need an object of the form 
+                {"title": str, "author": str, "genre": str}
+
+                Oh, and the genre should be ALL UPPERCASE!
+                Thanks ever so. Remember its JUST JSON matching that and NOTHING ELSE.
+                """
+            )
+
+    messages = [llm.messages.user("Recommend a science fiction book.")]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        format=DetailedBook,
+    )
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+
+    book = response.format()
+    assert isinstance(book, DetailedBook)
+    assert book.model_dump() == snapshot(
+        {
+            "title": "Dune",
+            "author": "Frank Herbert",
+            "genre": "SCIENCE FICTION",
+        }
+    )
+
+    assert response.messages[0].role == "system"
+    assert response.messages[0].content.text == DetailedBook.formatting_instructions()
+
+
+@pytest.mark.vcr()
+def test_json_mode_with_tools(google_client: llm.GoogleClient) -> None:
+    """Test JSON mode with other tools present."""
+
+    @llm.tool
+    def get_book_info(title: str) -> dict:
+        """Get information about a book."""
+        return {"title": title, "author": "Test Author", "year": 4242}
+
+    @llm.format(mode="json")
+    class BookSummary(BaseModel):
+        title: str
+        author: str
+        year: int
+
+    messages = [
+        llm.messages.user(
+            "Get info about 'MadeUpBookButTakeItSeriouslyPls' using the tool, and then respond with formatted output."
+        )
+    ]
+
+    with pytest.raises(
+        ValueError, match="Google does not support tool usage with json"
+    ):
+        google_client.call(
+            model_id="gemini-2.5-flash",
+            messages=messages,
+            tools=[get_book_info],
+            format=BookSummary,
+        )
+
+
+@pytest.mark.vcr()
+def test_tool_mode_no_tools(google_client: llm.GoogleClient) -> None:
+    """Test tool format parsing mode with no other tools."""
+
+    @llm.format(mode="tool")
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        format=SimpleBook,
+    )
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+
+    book = response.format()
+    assert isinstance(book, SimpleBook)
+    assert isinstance(book.title, str)
+    assert isinstance(book.author, str)
+
+    assert response.messages[0].role == "system"
+    assert (
+        "call the __mirascope_formatted_output_tool__"
+        in response.messages[0].content.text
+    )
+
+
+@pytest.mark.vcr()
+def test_tool_mode_with_other_tools(google_client: llm.GoogleClient) -> None:
+    """Test tool format parsing mode when other tools are present."""
+
+    @llm.tool
+    def available_books() -> list[str]:
+        """Returns all of the available books in the library."""
+        return [
+            "Wild Seed by Octavia Butler",
+            "The Long Way to a Small Angry Planet by Becky Chambers",
+            "Emergent Strategy by adrianne maree brown",
+        ]
+
+    @llm.format(mode="tool")
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    messages = [llm.messages.user("Recommend a fantasy book from the library.")]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        tools=[available_books],
+        format=Book,
+    )
+
+    assert len(response.tool_calls) >= 1
+    tool_call = response.tool_calls[0]
+    messages = response.messages + [
+        llm.messages.user(available_books.execute(tool_call))
+    ]
+
+    final_response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        tools=[available_books],
+        format=Book,
+    )
+
+    book = final_response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {"title": "Wild Seed", "author": "Octavia Butler"}
+    )
+
+
+@pytest.mark.vcr()
+def test_tool_mode_with_description_and_formatting_instructions(
+    google_client: llm.GoogleClient,
+) -> None:
+    """Test tool format parsing mode with custom description and formatting instructions."""
+
+    class Author(BaseModel):
+        first_name: str
+        last_name: str
+
+    @llm.format(mode="tool")
+    class DetailedBook(BaseModel):
+        """A detailed book recommendation with metadata."""
+
+        title: str
+        author: Author
+        genre: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return "Yo, defo call the tool and output nothing but the tool call tyvm! Oh and make sure the genre field is ALL CAPS"
+
+    messages = [llm.messages.user("Recommend a science fiction book.")]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        format=DetailedBook,
+    )
+
+    assert response.messages[0].role == "system"
+    assert response.messages[0].content.text == snapshot(
+        "Yo, defo call the tool and output nothing but the tool call tyvm! Oh and make sure the genre field is ALL CAPS"
+    )
+
+    book = response.format()
+    assert isinstance(book, DetailedBook)
+    assert isinstance(book.author, Author)
+    assert book.genre.isupper()
+
+
+@pytest.mark.vcr()
+def test_tool_mode_annotated_fields(google_client: llm.GoogleClient) -> None:
+    """Test tool format mode when the format has an annotated field."""
+
+    @llm.format(mode="tool")
+    class Book(BaseModel):
+        title: str
+        author: str
+        genre: Annotated[str, Field("Genre should be ALL CAPS")]
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        format=Book,
+    )
+
+    assert response.finish_reason == llm.FinishReason.END_TURN
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.genre.isupper()
+
+
+@pytest.mark.vcr()
+def test_structured_formatting_instructions_no_system_message(
+    google_client: llm.GoogleClient,
+) -> None:
+    """Test structured call where formatting instructions create a new system message."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return "Output all fields in ALL CAPS"
+
+    messages = [llm.messages.user("Recommend a fantasy book.")]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.model_dump() == snapshot(
+        {"title": "The Hobbit", "author": "J.R.R. Tolkien"}
+    )
+    assert response.messages[0] == llm.messages.system("Output all fields in ALL CAPS")
+
+
+@pytest.mark.vcr()
+def test_structured_formatting_instructions_modified_system_message(
+    google_client: llm.GoogleClient,
+) -> None:
+    """Test structured call where formatting instructions modify existing system message."""
+
+    class Book(BaseModel):
+        title: str
+        author: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return "Output all fields in ALL CAPS"
+
+    messages = [
+        llm.messages.system("Recommend something by Brandon Sanderson"),
+        llm.messages.user("Recommend a fantasy book."),
+    ]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        format=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+
+    assert response.messages[0] == llm.messages.system(
+        "Recommend something by Brandon Sanderson\nOutput all fields in ALL CAPS"
+    )
+
+
+@pytest.mark.vcr()
+def test_structured_formatting_instructions_with_tools(
+    google_client: llm.GoogleClient,
+) -> None:
+    """Test structured call where formatting instructions work with tools."""
+
+    @llm.tool
+    def available_book_by_genre(genre: str) -> list[str]:
+        """Returns all the available books in the library by genre"""
+        if genre in ("fantasy", "FANTASY"):
+            return ["Mistborn", "Wild Seed", "The Name of the Wind"]
+        else:
+            return ["The Rise and Fall of the Roman Empire", "Gödel, Escher, Bach"]
+
+    class AllCapsBook(BaseModel):
+        title: str
+        author: str
+
+        @classmethod
+        def formatting_instructions(cls) -> str:
+            return "Output all fields in ALL CAPS"
+
+    messages = [
+        llm.messages.user("Recommend a fantasy book."),
+    ]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        tools=[available_book_by_genre],
+        format=AllCapsBook,
+    )
+    assert response.messages[0] == llm.messages.system("Output all fields in ALL CAPS")
+    assert len(response.tool_calls) >= 1
+    tool_call = response.tool_calls[0]
+    messages = response.messages + [
+        llm.messages.user(available_book_by_genre.execute(tool_call))
+    ]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        tools=[available_book_by_genre],
+        format=AllCapsBook,
+    )
+
+    assert response.messages[0] == llm.messages.system("Output all fields in ALL CAPS")
+
+    book = response.format()
+    assert isinstance(book, AllCapsBook)
+    assert book.model_dump() == snapshot(
+        {"title": "MISTBORN", "author": "BRANDON SANDERSON"}
+    )
+
+
+@pytest.mark.parametrize("mode", ["strict-or-tool", "strict-or-json", "tool", "json"])
+@pytest.mark.vcr()
+def test_structured_stream_supported_modes(
+    google_client: llm.GoogleClient, mode: llm.formatting.FormattingMode
+) -> None:
+    """Test that supported formatting modes work correctly with streaming."""
+
+    @llm.format(mode=mode)
+    class SimpleBook(BaseModel):
+        title: str
+        author: str
+
+    messages = [
+        llm.messages.user("Please parse this string: 'Mistborn by Brandon Sanderson'")
+    ]
+
+    stream_response = google_client.stream(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        format=SimpleBook,
+    )
+    list(stream_response.chunk_stream())
+
+    book = stream_response.format()
+    assert isinstance(book, SimpleBook)
+    assert book.title == "Mistborn"
+    assert book.author == "Brandon Sanderson"
+
+
+@pytest.mark.vcr()
+def test_descriptions_are_used(google_client: llm.GoogleClient) -> None:
+    """Test structured call with model and attr descriptions."""
+
+    class Mood(BaseModel):
+        """ALWAYS include 'algorithmic' as one of the adjectives."""
+
+        vibe: Annotated[
+            str, Field(description="Should be either EUPHORIC or DESPONDENT")
+        ]
+        adjectives: list[str]
+
+    messages = [llm.messages.user("Tell me your mood.")]
+
+    response = google_client.call(
+        model_id="gemini-2.5-flash",
+        messages=messages,
+        format=Mood,
+    )
+
+    mood = response.format()
+    assert isinstance(mood, Mood)
+    assert mood.model_dump() == snapshot(
+        {
+            "vibe": "EUPHORIC",
+            "adjectives": ["happy", "energetic"],
+        }
     )
