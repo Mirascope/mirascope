@@ -1,0 +1,73 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Recommend a single fantasy book in the
+      library."}], "role": "user"}], "systemInstruction": {"parts": [{"text": "Respond
+      with valid JSON that matches this exact schema:\n{\n  \"description\": \"A book
+      recommendation with metadata. ALWAYS add an exclamation point to the vibe!\",\n  \"properties\":
+      {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"vibe\":
+      {\n      \"description\": \"Should be one of mysterious, euphoric, intruiging,
+      or soul_searching\",\n      \"title\": \"Vibe\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\",\n    \"vibe\"\n  ],\n  \"title\": \"Book\",\n  \"type\":
+      \"object\"\n}"}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Returns all of the available books in the library.", "name": "available_books",
+      "parameters": {"properties": {}, "required": [], "type": "OBJECT"}}]}], "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1096'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RXU/CMBR936+ofQYzN+XDN6KgRolEFwI4Ywq7bA1dO9tCMAv/3ZaxMfDVPjTt
+        vaf3nJ6TOwjhBeERjYgGhW/Rh6kglO932xNcA9emUZZMMSNSH7HFymtnA9GwtY9wHnKEQqypZhCa
+        QoiDBNCDmDPKUT/NQAoZ4kaBImud2KuFPROdgKQcUC+KqBK8Qm3o/DBKiTX7UkDkIqE8vghxyHe4
+        pmNXnT8bR/VSMLDSUhEBK+G7EoCXlFOVvAExnBb2HryOcNUlm/hFxJkUc2tA0710u13Pv2l7btf3
+        rjt+q+07JfWeFK8ViWEImhiHSeUjNiPSTAdiBfxOrPcOe26r4KklcgLwvUNfC03Y6Vu/0/gzWN0b
+        WsrqUdVSNP8njOof+8mgPwlwzSN9pqt0yamZea7yn9h875TMOYRT5DUGqWgRTAypiarpXbrNJSMq
+        2U/EElQmuIKnyGKmV5MeGT4OBtPvcapXo+3Mm8W9IXZ2zi/Wgjow+wIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 16:27:15 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=704
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

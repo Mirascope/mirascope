@@ -90,10 +90,10 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         """Make a call to the Google GenAI API."""
         if params:
             raise NotImplementedError("param use not yet supported")
-        if format:
-            raise NotImplementedError("structured output not yet supported")
 
-        contents, config = _utils.prepare_google_request(messages, tools)
+        input_messages, contents, config = _utils.prepare_google_request(
+            messages, tools, format
+        )
 
         google_response = self.client.models.generate_content(
             model=model_id,
@@ -109,9 +109,10 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
             model_id=model_id,
             params=params,
             toolkit=Toolkit(tools=tools),
-            input_messages=messages,
+            input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
+            format_type=format,
         )
 
     @overload
@@ -252,10 +253,10 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> StreamResponse | StreamResponse[FormatT]:
         if params:
             raise NotImplementedError("param use not yet supported")
-        if format:
-            raise NotImplementedError("structured output not yet supported")
 
-        contents, config = _utils.prepare_google_request(messages, tools)
+        input_messages, contents, config = _utils.prepare_google_request(
+            messages, tools, format
+        )
 
         google_stream = self.client.models.generate_content_stream(
             model=model_id,
@@ -270,8 +271,9 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
             model_id=model_id,
             params=params,
             toolkit=Toolkit(tools=tools),
-            input_messages=messages,
+            input_messages=input_messages,
             chunk_iterator=chunk_iterator,
+            format_type=format,
         )
 
     @overload
