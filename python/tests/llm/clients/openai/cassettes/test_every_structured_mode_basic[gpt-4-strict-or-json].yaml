@@ -1,14 +1,14 @@
 interactions:
 - request:
     body: '{"messages":[{"role":"system","content":"Respond with valid JSON that matches
-      this exact schema:\n\n```json\n{\n  \"description\": \"A book recommendation
-      with metadata. ALWAYS add an exclamation point to the vibe!\",\n  \"properties\":
-      {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      this exact schema:\n{\n  \"description\": \"A book recommendation with metadata.
+      ALWAYS add an exclamation point to the vibe!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
       {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"vibe\":
       {\n      \"description\": \"Should be one of mysterious, euphoric, intruiging,
       or soul_searching\",\n      \"title\": \"Vibe\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
       [\n    \"title\",\n    \"author\",\n    \"vibe\"\n  ],\n  \"title\": \"Book\",\n  \"type\":
-      \"object\"\n}\n```\nRespond ONLY with valid JSON, and no other text."},{"role":"user","content":"Recommend
+      \"object\"\n}\n\nRespond ONLY with valid JSON, and no other text."},{"role":"user","content":"Recommend
       a single fantasy book."}],"model":"gpt-4"}'
     headers:
       accept:
@@ -18,12 +18,11 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '849'
+      - '835'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=Nl7.EmT6yZK4XnBU8_s3mqv5AIrfGUFS8VeqnQtu1PA-1757376020-1.0.1.1-_zmqYFb429dbpZxhWnHqDgdTZbGnS7wje8RM6KTU2YQAjkn0G8slO5a21tbX1_dR2xnv3dKEG80qz.JmoOFLAb3FIML2Y6Xwe_6k83B605I;
-        _cfuvid=6afjR9C2orG3RPsFb.irAoUlVgkxz2SeMC8PceZFmKM-1757374620341-0.0.1.1-604800000
+      - _cfuvid=Y0zLJLiGs5q3HvWoFltWFji23s01Tblh7ZSHyowykvk-1757377765167-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -51,18 +50,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFJNj9MwEL3nVwxz4dJW/dpG9AoHxEpoBQjBklXkOtPE4HiCPVmoqv73
-        lZNuk4VF4uLDvHnPb97MMQFAU+AWUFdKdN3Y6es35fr265drv7h9n1af5yxrne4PPzeflqs1TiKD
-        d99JyyNrprluLIlh18PakxKKqov0Kl2lm/ky7YCaC7KRVjYyXU/nm8XqzKjYaAq4hW8JAMCxe6M3
-        V9Bv3MJ88lipKQRVEm4vTQDo2cYKqhBMEOUEJwOo2Qm5zu4xcwAZihFLGW4hw7fK+wPcsAh5UK4A
-        qQhuKmM5cFORfxngo7CjDCc9V7VSse/J72bXM/jAv6xx5aXh3uzO2vUhCHnDbXiRYeZOY1Oe9m1Q
-        MQzXWjsClHMsKobZxXF3Rk6XACyXjedd+IOKe+NMqHJPKrCLwwbhBjv0lADcdUG3T7LDxnPdSC78
-        g7rvFq/SXg+HnQ7o6uoMCouyQ325Wk6e0csLEmVsGK0KtdIVFQN12KtqC8MjIBlN/beb57T7yY0r
-        /0d+ALSmRqjIG0+F0U8nHto8xZP/V9sl5c4wBvL3RlMuhnzcREF71dr+KDHEq6jzvXEl+cab7jLj
-        JpNT8gAAAP//AwDTzRlYkAMAAA==
+        H4sIAAAAAAAAAwAAAP//jFJNj9MwEL3nV5i5cGmrfm6XHCkHvg6IsqgSWUWuM028OB5jTxZWVf87
+        ctJtsrBIXHyYN+/5zZs5JkKALiAVoCrJqnZmvHlzt3oX3I/d5vq1vNmGj7zYfdlsl1/tcudgFBm0
+        v0PFj6yJotoZZE22g5VHyRhVZ+vVenG9vpouW6CmAk2klY7Hy/H0arY4MyrSCgOk4lsihBDH9o3e
+        bIG/IBXT0WOlxhBkiZBemoQATyZWQIagA0vLMOpBRZbRtnaPmRUiA9ZsMINUZPBWev8gPhEzeiFt
+        IbhCsSWv0KN/GcSWyWIGo44oG67Id8z3kw8T8Zl+Gm3LS8O93p+F64fA6DU14UUGmT0NHXk8NEHG
+        JGxjzACQ1hLLmGSbxe0ZOV2mN1Q6T/vwBxUO2upQ5R5lIBsnDUwOWvSUCHHbptw8CQ6cp9pxzvQd
+        2+9mr+adHvQL7dHF6gwysTR9fT5fj57RywtkqU0Y7AmUVBUWPbVfqmwKTQMgGUz9t5vntLvJtS3/
+        R74HlELHWOTOY6HV04n7No/x3v/Vdkm5NQwB/b1WmLNGHzdR4EE2prtICPEq6vygbYneed2eZdxk
+        ckp+AwAA//8DANpKYKWNAwAA
     headers:
       CF-RAY:
-      - 97c267c83d92769a-SEA
+      - 97c382707e03deea-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -70,9 +69,13 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 09 Sep 2025 00:00:28 GMT
+      - Tue, 09 Sep 2025 03:13:25 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=V6N4eWMeHcYT6.lx_6B3UYIudzdLZ7ei.bEW0ioj_zU-1757387605-1.0.1.1-Y0sD2tpnJhAuRTC70s6ALmLR_IoNr8EGSCIshyBe4PO83.caWHooB2zxnCc8dnzxwrcF8kvW5Teya1ABnFZ8usEA.kdw.NrekDU8Cn3Yo4w;
+        path=/; expires=Tue, 09-Sep-25 03:43:25 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -88,13 +91,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1439'
+      - '1162'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1444'
+      - '1166'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -102,13 +105,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '79828'
+      - '79831'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 129ms
+      - 126ms
       x-request-id:
-      - req_9a243790380f4d2e80c82047455f68cb
+      - req_d7e3cb57440641269b0f619ad910042a
     status:
       code: 200
       message: OK
