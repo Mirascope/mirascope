@@ -20,9 +20,17 @@ from ...content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from ...formatting import (
+    FormatInfo,
+    FormatT,
+    _utils as _formatting_utils,
+)
 from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import ChunkIterator, FinishReason, FinishReasonChunk, RawChunk
-from ...tools import Tool
+from ...tools import (
+    FORMAT_TOOL_NAME,
+    Tool,
+)
 from ..base import _utils as _base_utils
 
 GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
@@ -86,8 +94,6 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
         raise NotImplementedError("Support for inline data (Blob) not implemented.")
     elif part.file_data:
         raise NotImplementedError("Support for file data (FileData) not implemented.")
-    elif part.thought_signature:
-        raise NotImplementedError("Support for thought signature not implemented.")
     elif part.code_execution_result:
         raise NotImplementedError("Support for code execution results not implemented.")
     elif part.executable_code:
@@ -96,7 +102,7 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
         id = function_call.id
         name = function_call.name
         args = function_call.args
-        if not name or not args:
+        if not name or args is None:
             raise ValueError(
                 "Google function_call does not match spec"
             )  # pragma: no cover
@@ -105,6 +111,8 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
         raise NotImplementedError(
             "function_response part does not decode to AssistantContent."
         )
+    elif part.thought_signature:
+        raise NotImplementedError("Support for thought signature not implemented.")
     else:
         # Per Part docstring, this should never happen:
         # >  Exactly one field within a Part should be set, representing the specific type
@@ -159,7 +167,7 @@ def _convert_tool_to_function_declaration(
             type=genai_types.Type.OBJECT,
             properties={
                 name: genai_types.Schema.model_validate(prop)
-                for name, prop in schema_dict.get("properties", {}).items()
+                for name, prop in (schema_dict.get("properties", {})).items()
             },
             required=schema_dict.get("required", []),
         ),
@@ -169,27 +177,59 @@ def _convert_tool_to_function_declaration(
 def prepare_google_request(
     messages: Sequence[Message],
     tools: Sequence[Tool] | None = None,
-) -> tuple[genai_types.ContentListUnionDict, GenerateContentConfig | None]:
-    system_message_content, remaining_messages = _base_utils.extract_system_message(
-        messages
-    )
-
+    format: type[FormatT] | None = None,
+) -> tuple[
+    Sequence[Message], genai_types.ContentListUnionDict, GenerateContentConfig | None
+]:
     config_params = {}
+    google_tools: list[genai_types.Tool] = []
 
-    if system_message_content:
-        config_params["system_instruction"] = system_message_content
+    if format:
+        resolved_format = _formatting_utils.resolve_formattable(
+            format,
+            # Google does not support strict outputs when tools are present
+            # (Gemini 2.5 will error, 2.0 and below will ignore tools)
+            model_supports_strict_mode=not tools,
+            model_has_native_json_support=True,
+        )
+
+        if resolved_format.mode == "strict":
+            config_params["response_mime_type"] = "application/json"
+            config_params["response_schema"] = _convert_format_info_to_schema(
+                resolved_format.info
+            )
+        elif resolved_format.mode == "tool":
+            format_tool = create_format_tool_declaration(resolved_format.info)
+            google_tools.append(genai_types.Tool(function_declarations=[format_tool]))
+        elif resolved_format.mode == "json":
+            config_params["response_mime_type"] = "application/json"
+
+        if resolved_format.formatting_instructions:
+            messages = _base_utils.add_system_instructions(
+                messages, resolved_format.formatting_instructions
+            )
 
     if tools:
         function_declarations = [
             _convert_tool_to_function_declaration(tool) for tool in tools
         ]
-        config_params["tools"] = [
+        google_tools.append(
             genai_types.Tool(function_declarations=function_declarations)
-        ]
+        )
+
+    if google_tools:
+        config_params["tools"] = google_tools
+
+    system_message_content, remaining_messages = _base_utils.extract_system_message(
+        messages
+    )
+
+    if system_message_content:
+        config_params["system_instruction"] = system_message_content
 
     config = GenerateContentConfig(**config_params) if config_params else None
 
-    return _encode_messages(remaining_messages), config
+    return messages, _encode_messages(remaining_messages), config
 
 
 def decode_response(
@@ -282,3 +322,36 @@ def convert_google_stream_to_chunk_iterator(
                 candidate.finish_reason, FinishReason.UNKNOWN
             )
             yield FinishReasonChunk(finish_reason=finish_reason)
+
+
+def _convert_format_info_to_schema(format_info: FormatInfo) -> dict:
+    """Convert a Mirascope FormatInfo to Google's response schema format."""
+    schema = format_info.schema.copy()
+    return schema
+
+
+def create_format_tool_declaration(
+    format_info: FormatInfo,
+) -> genai_types.FunctionDeclaration:
+    """Create Google FunctionDeclaration for format parsing from a Mirascope FormatInfo.
+
+    Args:
+        format_info: The FormatInfo instance containing schema and metadata
+
+    Returns:
+        Google FunctionDeclaration for the format tool
+    """
+    schema_dict = format_info.schema.copy()
+    schema_dict["type"] = "object"
+    if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
+        schema_dict["required"] = list(schema_dict["properties"].keys())
+
+    description = f"Use this tool to extract data in {format_info.name} format for a final response."
+    if format_info.description:
+        description += "\n" + format_info.description
+
+    return genai_types.FunctionDeclaration(
+        name=FORMAT_TOOL_NAME,
+        description=description,
+        parameters_json_schema=schema_dict,
+    )
