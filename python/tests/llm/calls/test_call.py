@@ -17,7 +17,7 @@ class Format(BaseModel):
 @pytest.fixture
 def mock_llm() -> Mock:
     """Create a mock LLM for testing."""
-    return Mock(spec=llm.LLM)
+    return Mock(spec=llm.Model)
 
 
 @pytest.fixture

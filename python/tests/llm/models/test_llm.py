@@ -70,7 +70,7 @@ def async_tools() -> list[llm.AsyncTool]:
 
 
 @pytest.fixture
-def mocked_llm(mock_client: Mock, params: llm.clients.OpenAIParams) -> llm.LLM:
+def mocked_llm(mock_client: Mock, params: llm.clients.OpenAIParams) -> llm.Model:
     """Create a test LLM instance with mock client."""
     return llm.model(
         provider="openai",
@@ -82,7 +82,7 @@ def mocked_llm(mock_client: Mock, params: llm.clients.OpenAIParams) -> llm.LLM:
 
 def test_cant_use_init() -> None:
     with pytest.raises(TypeError, match="llm.model"):
-        llm.LLM()
+        llm.Model()
 
 
 def test_create_provides_client() -> None:
@@ -92,7 +92,7 @@ def test_create_provides_client() -> None:
 
 
 def test_call(
-    mocked_llm: llm.LLM,
+    mocked_llm: llm.Model,
     mock_client: Mock,
     mock_response: Mock,
     params: llm.clients.OpenAIParams,
@@ -114,7 +114,7 @@ def test_call(
 
 
 def test_structured_call(
-    mocked_llm: llm.LLM,
+    mocked_llm: llm.Model,
     mock_client: Mock,
     mock_response: Mock,
     params: llm.clients.OpenAIParams,
@@ -138,7 +138,7 @@ def test_structured_call(
 
 @pytest.mark.asyncio
 async def test_call_async(
-    mocked_llm: llm.LLM,
+    mocked_llm: llm.Model,
     mock_client: Mock,
     mock_response: Mock,
     params: llm.clients.OpenAIParams,
@@ -161,7 +161,7 @@ async def test_call_async(
 
 @pytest.mark.asyncio
 async def test_structured_call_async(
-    mocked_llm: llm.LLM,
+    mocked_llm: llm.Model,
     mock_client: Mock,
     mock_response: Mock,
     params: llm.clients.OpenAIParams,
@@ -186,7 +186,7 @@ async def test_structured_call_async(
 
 
 def test_stream(
-    mocked_llm: llm.LLM,
+    mocked_llm: llm.Model,
     mock_client: Mock,
     mock_stream_response: Mock,
     params: llm.clients.OpenAIParams,
@@ -208,7 +208,7 @@ def test_stream(
 
 
 def test_structured_stream(
-    mocked_llm: llm.LLM,
+    mocked_llm: llm.Model,
     mock_client: Mock,
     mock_stream_response: Mock,
     params: llm.clients.OpenAIParams,
@@ -232,7 +232,7 @@ def test_structured_stream(
 
 @pytest.mark.asyncio
 async def test_stream_async(
-    mocked_llm: llm.LLM,
+    mocked_llm: llm.Model,
     mock_client: Mock,
     mock_async_stream_response: Mock,
     params: llm.clients.OpenAIParams,
@@ -255,7 +255,7 @@ async def test_stream_async(
 
 @pytest.mark.asyncio
 async def test_structured_stream_async(
-    mocked_llm: llm.LLM,
+    mocked_llm: llm.Model,
     mock_client: Mock,
     mock_async_stream_response: Mock,
     params: llm.clients.OpenAIParams,
@@ -283,14 +283,14 @@ def test_context_manager() -> None:
     assert llm.models.get_model_from_context() is None
 
     with llm.models.model(provider="openai", model_id="gpt-4o-mini") as llm_outer:
-        assert isinstance(llm_outer, llm.models.LLM)
+        assert isinstance(llm_outer, llm.models.Model)
         assert llm_outer.provider == "openai"
         assert llm.models.get_model_from_context() == llm_outer
 
         with llm.models.model(
             provider="anthropic", model_id="claude-sonnet-4-0"
         ) as llm_inner:
-            assert isinstance(llm_inner, llm.models.LLM)
+            assert isinstance(llm_inner, llm.models.Model)
             assert llm_inner.provider == "anthropic"
             assert llm.models.get_model_from_context() == llm_inner
 

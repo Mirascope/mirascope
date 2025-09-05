@@ -54,8 +54,7 @@ class Response(BaseResponse[Toolkit, FormatT]):
             A new `Response` instance generated from the extended message history.
         """
         messages = self.messages + [user(content)]
-        model = self._model()
-        return model.call(
+        return self.model.call(
             messages=messages, tools=self.toolkit.tools, format=self.format_type
         )
 

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, Literal, cast, overload
 from typing_extensions import Unpack
 
-from ..models import LLM, _utils as _model_utils
+from ..models import Model, _utils as _model_utils
 from ..prompts import AsyncPrompt, Prompt, _utils as _prompt_utils
 from ..tools import AsyncTool, Tool, ToolT
 from .call import AsyncCall, Call
@@ -38,7 +38,7 @@ from ..types import P
 class CallDecorator(Generic[ToolT, FormatT]):
     """A decorator for converting prompts to calls."""
 
-    model: LLM
+    model: Model
     tools: Sequence[ToolT] | None
     format: type[FormatT] | None
 

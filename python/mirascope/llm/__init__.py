@@ -60,7 +60,7 @@ from .exceptions import (
 )
 from .formatting import FormatInfo, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
-from .models import LLM, model
+from .models import Model, model
 from .prompts import prompt
 from .responses import (
     AsyncChunkIterator,
@@ -90,7 +90,6 @@ from .tools import (
 )
 
 __all__ = [
-    "LLM",
     "APIError",
     "AnthropicClient",
     "AssistantContentChunk",
@@ -124,6 +123,7 @@ __all__ = [
     "ImageUrl",
     "Message",
     "MirascopeError",
+    "Model",
     "NotFoundError",
     "OpenAIClient",
     "Partial",

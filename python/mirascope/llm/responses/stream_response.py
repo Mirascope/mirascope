@@ -109,8 +109,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
             A new `StreamResponse` instance generated from the extended message history.
         """
         messages = self.messages + [user(content)]
-        model = self._model()
-        return model.stream(
+        return self.model.stream(
             messages=messages, tools=self.toolkit.tools, format=self.format_type
         )
 
