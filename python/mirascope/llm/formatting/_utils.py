@@ -23,15 +23,12 @@ TOOL_MODE_INSTRUCTIONS = inspect.cleandoc(f"""
     """)
 
 
-JSON_MODE_INSTRUCTIONS = inspect.cleandoc("""\
-    Respond with valid JSON that matches this exact schema:
+JSON_MODE_INSTRUCTIONS = (
+    "Respond with valid JSON that matches this exact schema:\n{json_schema}"
+)
 
-    ```json
-    {json_schema}
-    ```
-    """)
 
-JSON_MODE_FALLBACK_INSTRUCTION = "Respond ONLY with valid JSON, and no other text."
+JSON_MODE_FALLBACK_INSTRUCTION = "\nRespond ONLY with valid JSON, and no other text."
 
 
 def _resolve_concrete_mode(

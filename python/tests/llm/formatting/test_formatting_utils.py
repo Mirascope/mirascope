@@ -177,8 +177,6 @@ def test_auto_generated_formatting_instructions(
                 "strict-mode": None,
                 "json-mode-native": """\
 Respond with valid JSON that matches this exact schema:
-
-```json
 {
   "properties": {
     "int_field": {
@@ -191,13 +189,10 @@ Respond with valid JSON that matches this exact schema:
   ],
   "title": "Format",
   "type": "object"
-}
-```\
+}\
 """,
                 "json-mode-patched": """\
 Respond with valid JSON that matches this exact schema:
-
-```json
 {
   "properties": {
     "int_field": {
@@ -211,7 +206,7 @@ Respond with valid JSON that matches this exact schema:
   "title": "Format",
   "type": "object"
 }
-```
+
 Respond ONLY with valid JSON, and no other text.\
 """,
                 "tool-mode": """\
@@ -237,14 +232,11 @@ def test_empty_schema_generation() -> None:
 
     assert resolved_info.formatting_instructions == snapshot("""\
 Respond with valid JSON that matches this exact schema:
-
-```json
 {
   "properties": {},
   "title": "Format",
   "type": "object"
-}
-```\
+}\
 """)
 
 
@@ -266,8 +258,6 @@ def test_nested_schema_generation() -> None:
 
     assert resolved_info.formatting_instructions == snapshot("""\
 Respond with valid JSON that matches this exact schema:
-
-```json
 {
   "$defs": {
     "Inner": {
@@ -294,6 +284,5 @@ Respond with valid JSON that matches this exact schema:
   ],
   "title": "Format",
   "type": "object"
-}
-```\
+}\
 """)
