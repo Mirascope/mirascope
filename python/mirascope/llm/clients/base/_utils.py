@@ -11,6 +11,20 @@ SystemMessageContent: TypeAlias = str | None
 def add_system_instructions(
     messages: Sequence[Message], additional_system_instructions: str
 ) -> Sequence[Message]:
+    """Add system instructions to a sequence of messages.
+
+    If the first message is a system message, appends the additional instructions
+    to it with a newline separator. If the instructions already exist at the end
+    of the system message, returns the original messages unchanged. Otherwise,
+    creates a new system message at the beginning of the sequence.
+
+    Args:
+        messages: The sequence of messages to modify.
+        additional_system_instructions: The system instructions to add.
+
+    Returns:
+        A new sequence of messages with the system instructions added.
+    """
     if messages and messages[0].role == "system":
         if messages[0].content.text.endswith(additional_system_instructions):
             return messages

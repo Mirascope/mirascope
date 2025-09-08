@@ -88,3 +88,63 @@ def test_encode_messages_empty_list() -> None:
 
     assert system_message is None
     assert remaining_messages == []
+
+
+def test_add_system_instructions_no_existing_system() -> None:
+    """Test adding system instructions when no system message exists."""
+    messages = [
+        llm.messages.user("Hello"),
+        llm.messages.assistant("Hi there"),
+    ]
+    additional_instructions = "Be helpful and concise."
+
+    result = _utils.add_system_instructions(messages, additional_instructions)
+
+    expected = [
+        llm.messages.system(additional_instructions),
+        *messages,
+    ]
+    assert result == expected
+
+
+def test_add_system_instructions_with_existing_system() -> None:
+    """Test adding system instructions when system message already exists."""
+    prior_system_message = "You are a helpful assistant."
+    messages = [
+        llm.messages.system(prior_system_message),
+        llm.messages.user("Hello"),
+        llm.messages.assistant("Hi there"),
+    ]
+    additional_instructions = "Be helpful and concise."
+
+    result = _utils.add_system_instructions(messages, additional_instructions)
+
+    expected = [
+        llm.messages.system(prior_system_message + "\n" + additional_instructions),
+        *messages[1:],
+    ]
+    assert result == expected
+
+
+def test_add_system_instructions_already_exists() -> None:
+    """Test that duplicate instructions are not added."""
+    additional_instructions = "Be helpful and concise."
+    messages = [
+        llm.messages.system(f"You are a helpful assistant.\n{additional_instructions}"),
+        llm.messages.user("Hello"),
+    ]
+
+    result = _utils.add_system_instructions(messages, additional_instructions)
+
+    assert result == messages
+
+
+def test_add_system_instructions_empty_messages() -> None:
+    """Test adding system instructions to empty message list."""
+    messages = []
+    additional_instructions = "Be helpful and concise."
+
+    result = _utils.add_system_instructions(messages, additional_instructions)
+
+    expected = [llm.messages.system(additional_instructions)]
+    assert result == expected
