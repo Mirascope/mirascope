@@ -1,786 +1,822 @@
 """Tests for OpenAIClient using VCR.py for HTTP request recording/playback."""
 
-import inspect
-from typing import Annotated
-
-import openai
 import pytest
 from inline_snapshot import snapshot
-from pydantic import BaseModel, Field
 
 from mirascope import llm
-from tests import utils
-
-
-@pytest.mark.vcr()
-def test_call_simple_message(openai_client: llm.OpenAIClient) -> None:
-    """Test basic call with a simple user message."""
-    messages = [llm.messages.user("Hello, say 'Hi' back to me")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-    )
-
-    assert isinstance(response, llm.Response)
-
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "openai",
-            "model_id": "gpt-4o-mini",
-            "params": None,
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
-                llm.AssistantMessage(
-                    content=[llm.Text(text="Hi! How can I assist you today?")]
-                ),
-            ],
-            "content": [llm.Text(text="Hi! How can I assist you today?")],
-            "texts": [llm.Text(text="Hi! How can I assist you today?")],
-            "thoughts": [],
-            "tool_calls": [],
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_call_with_system_message(openai_client: llm.OpenAIClient) -> None:
-    """Test call with system and user messages."""
-    messages = [
-        llm.messages.system(
-            "You are a cat who can only meow, and does not know anything about geography."
-        ),
-        llm.messages.user("What is the capital of France?"),
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-    )
-
-    assert isinstance(response, llm.Response)
-
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "openai",
-            "model_id": "gpt-4o-mini",
-            "params": None,
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.SystemMessage(
-                    content=llm.Text(
-                        text="You are a cat who can only meow, and does not know anything about geography."
-                    )
-                ),
-                llm.UserMessage(
-                    content=[llm.Text(text="What is the capital of France?")]
-                ),
-                llm.AssistantMessage(content=[llm.Text(text="Meow!")]),
-            ],
-            "content": [llm.Text(text="Meow!")],
-            "texts": [llm.Text(text="Meow!")],
-            "thoughts": [],
-            "tool_calls": [],
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_call_with_turns(openai_client: llm.OpenAIClient) -> None:
-    """Test basic call with a simple user message."""
-    messages = [
-        llm.messages.system("Be as concise as possible"),
-        llm.messages.user("Recommend a book"),
-        llm.messages.assistant("What genre would you like?"),
-        llm.messages.user("Something about the fall of the Roman Empire"),
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-    )
-
-    assert isinstance(response, llm.Response)
-
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "openai",
-            "model_id": "gpt-4o-mini",
-            "params": None,
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.SystemMessage(content=llm.Text(text="Be as concise as possible")),
-                llm.UserMessage(content=[llm.Text(text="Recommend a book")]),
-                llm.AssistantMessage(
-                    content=[llm.Text(text="What genre would you like?")]
-                ),
-                llm.UserMessage(
-                    content=[
-                        llm.Text(text="Something about the fall of the Roman Empire")
-                    ]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
-                        )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(
-                    text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
-                )
-            ],
-            "texts": [
-                llm.Text(
-                    text="I recommend \"The History of the Decline and Fall of the Roman Empire\" by Edward Gibbon. It's a classic work that examines the factors leading to the empire's collapse."
-                )
-            ],
-            "thoughts": [],
-            "tool_calls": [],
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_stream_simple_message(openai_client: llm.OpenAIClient) -> None:
-    """Test basic streaming with a simple user message."""
-    messages = [llm.messages.user("Hi! Please greet me back.")]
-
-    stream_response = openai_client.stream(
-        model_id="gpt-4o-mini",
-        messages=messages,
-    )
-
-    assert isinstance(stream_response, llm.responses.StreamResponse)
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "openai",
-            "model_id": "gpt-4o-mini",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="Hello! I'm glad to hear from you. How can I assist you today?"
-                        )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(
-                    text="Hello! I'm glad to hear from you. How can I assist you today?"
-                )
-            ],
-            "texts": [
-                llm.Text(
-                    text="Hello! I'm glad to hear from you. How can I assist you today?"
-                )
-            ],
-            "tool_calls": [],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(),
-                llm.TextChunk(delta=""),
-                llm.TextChunk(delta="Hello"),
-                llm.TextChunk(delta="!"),
-                llm.TextChunk(delta=" I'm"),
-                llm.TextChunk(delta=" glad"),
-                llm.TextChunk(delta=" to"),
-                llm.TextChunk(delta=" hear"),
-                llm.TextChunk(delta=" from"),
-                llm.TextChunk(delta=" you"),
-                llm.TextChunk(delta="."),
-                llm.TextChunk(delta=" How"),
-                llm.TextChunk(delta=" can"),
-                llm.TextChunk(delta=" I"),
-                llm.TextChunk(delta=" assist"),
-                llm.TextChunk(delta=" you"),
-                llm.TextChunk(delta=" today"),
-                llm.TextChunk(delta="?"),
-                llm.TextEndChunk(),
-            ],
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_tool_usage(openai_client: llm.OpenAIClient) -> None:
-    """Test tool use with a multiplication tool that always returns 42 (for science)."""
-
-    @llm.tool
-    def multiply_numbers(a: int, b: int) -> int:
-        """Multiply two numbers together."""
-        return 42  # Certified for accuracy by Douglas Adams
-
-    messages = [
-        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-
-    assert isinstance(response, llm.Response)
-    assert response.pretty() == snapshot(
-        '**ToolCall (multiply_numbers):** {"a":1337,"b":4242}'
-    )
-    assert response.toolkit == llm.Toolkit(tools=[multiply_numbers])
-
-    assert len(response.tool_calls) == 1
-    tool_call = response.tool_calls[0]
-    assert tool_call == snapshot(
-        llm.ToolCall(
-            id="call_oQ4p87JEVqzjOaWQOQ0vCGfh",
-            name="multiply_numbers",
-            args='{"a":1337,"b":4242}',
-        )
-    )
-
-    tool_output = multiply_numbers.execute(tool_call)
-
-    messages = response.messages + [llm.messages.user(tool_output)]
-    final_response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "The result of \\( 1337 \\times 4242 \\) is 42."
-    )
-
-
-@pytest.mark.vcr()
-def test_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
-    """Test parallel tool use with multiple tools called simultaneously."""
-
-    @llm.tool
-    def get_weather(location: str) -> str:
-        """Get the current weather in a given location.
-
-        Args:
-            location: A city acronym like NYC or LA.
-        """
-        if location == "NYC":
-            return "The weather in NYC is sunny and 72°F"
-        elif location == "SF":
-            return "The weather in SF is overcast and 64°F"
-        else:
-            return "Unknown city " + location
-
-    messages = [llm.messages.user("What's the weather in SF and NYC?")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    assert len(response.tool_calls) == 2
-    assert response.pretty() == snapshot(
-        """\
-**ToolCall (get_weather):** {"location": "SF"}
-
-**ToolCall (get_weather):** {"location": "NYC"}\
-"""
-    )
-
-    tool_outputs = []
-    for tool_call in response.tool_calls:
-        if get_weather.can_execute(tool_call):
-            output = get_weather.execute(tool_call)
-        else:
-            raise RuntimeError
-        tool_outputs.append(output)
-
-    messages = response.messages + [llm.messages.user(tool_outputs)]
-    final_response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "The weather in San Francisco (SF) is overcast and 64°F. In New York City (NYC), it is sunny and 72°F."
-    )
-
-
-@pytest.mark.vcr()
-def test_streaming_parallel_tool_usage(openai_client: llm.OpenAIClient) -> None:
-    """Test parallel tool use with streaming and multiple tools called simultaneously."""
-
-    @llm.tool
-    def get_weather(location: str) -> str:
-        """Get the current weather in a given location.
-
-        Args:
-            location: A city acronym like NYC or LA.
-        """
-        if location == "NYC":
-            return "The weather in NYC is sunny and 72°F"
-        elif location == "SF":
-            return "The weather in SF is overcast and 64°F"
-        else:
-            return "Unknown city " + location
-
-    messages = [
-        llm.messages.user("What's the weather in SF and NYC?"),
-    ]
-
-    stream_response = openai_client.stream(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert len(stream_response.tool_calls) == 2
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "openai",
-            "model_id": "gpt-4o-mini",
-            "finish_reason": llm.FinishReason.TOOL_USE,
-            "messages": [
-                llm.UserMessage(
-                    content=[llm.Text(text="What's the weather in SF and NYC?")]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.ToolCall(
-                            id="call_DMPzhebh8ngVkUULAHoCrPLq",
-                            name="get_weather",
-                            args='{"location": "SF"}',
-                        ),
-                        llm.ToolCall(
-                            id="call_snqLlKGxxkJgH8teSWaf9OEK",
-                            name="get_weather",
-                            args='{"location": "NYC"}',
-                        ),
-                    ]
-                ),
-            ],
-            "content": [
-                llm.ToolCall(
-                    id="call_DMPzhebh8ngVkUULAHoCrPLq",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="call_snqLlKGxxkJgH8teSWaf9OEK",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "texts": [],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="call_DMPzhebh8ngVkUULAHoCrPLq",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="call_snqLlKGxxkJgH8teSWaf9OEK",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.ToolCallStartChunk(
-                    id="call_DMPzhebh8ngVkUULAHoCrPLq",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(delta='{"lo'),
-                llm.ToolCallChunk(delta="catio"),
-                llm.ToolCallChunk(delta='n": "S'),
-                llm.ToolCallChunk(delta='F"}'),
-                llm.ToolCallEndChunk(),
-                llm.ToolCallStartChunk(
-                    id="call_snqLlKGxxkJgH8teSWaf9OEK",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(delta='{"lo'),
-                llm.ToolCallChunk(delta="catio"),
-                llm.ToolCallChunk(delta='n": "N'),
-                llm.ToolCallChunk(delta='YC"}'),
-                llm.ToolCallEndChunk(),
-            ],
-        }
-    )
-
-    tool_outputs = []
-    for tool_call in stream_response.tool_calls:
-        if get_weather.can_execute(tool_call):
-            output = get_weather.execute(tool_call)
-        else:
-            raise RuntimeError
-        tool_outputs.append(output)
-
-    messages = stream_response.messages + [llm.messages.user(tool_outputs)]
-    final_response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "The weather in San Francisco (SF) is overcast and 64°F, while in New York City (NYC), it is sunny and 72°F."
-    )
-
-
-@pytest.mark.vcr()
-def test_streaming_tools(openai_client: llm.OpenAIClient) -> None:
-    """Test streaming tool use with a multiplication tool that always returns 42 (for science)."""
-
-    @llm.tool
-    def multiply_numbers(a: int, b: int) -> int:
-        """Multiply two numbers together."""
-        return 42  # Certified for accuracy by Douglas Adams
-
-    messages = [
-        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
-    ]
-
-    stream_response = openai_client.stream(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-    assert stream_response.toolkit == llm.Toolkit(tools=[multiply_numbers])
-
-    assert isinstance(stream_response, llm.StreamResponse)
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "openai",
-            "model_id": "gpt-4o-mini",
-            "finish_reason": llm.FinishReason.TOOL_USE,
-            "messages": [
-                llm.UserMessage(
-                    content=[
-                        llm.Text(
-                            text="What is 1337 * 4242? Please use the multiply_numbers tool."
-                        )
-                    ]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.ToolCall(
-                            id="call_gdjsOY6GOAuHAaopGj4iyeWV",
-                            name="multiply_numbers",
-                            args='{"a":1337,"b":4242}',
-                        )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.ToolCall(
-                    id="call_gdjsOY6GOAuHAaopGj4iyeWV",
-                    name="multiply_numbers",
-                    args='{"a":1337,"b":4242}',
-                )
-            ],
-            "texts": [],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="call_gdjsOY6GOAuHAaopGj4iyeWV",
-                    name="multiply_numbers",
-                    args='{"a":1337,"b":4242}',
-                )
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.ToolCallStartChunk(
-                    id="call_gdjsOY6GOAuHAaopGj4iyeWV",
-                    name="multiply_numbers",
-                ),
-                llm.ToolCallChunk(delta='{"'),
-                llm.ToolCallChunk(delta="a"),
-                llm.ToolCallChunk(delta='":'),
-                llm.ToolCallChunk(delta="133"),
-                llm.ToolCallChunk(delta="7"),
-                llm.ToolCallChunk(delta=',"'),
-                llm.ToolCallChunk(delta="b"),
-                llm.ToolCallChunk(delta='":'),
-                llm.ToolCallChunk(delta="424"),
-                llm.ToolCallChunk(delta="2"),
-                llm.ToolCallChunk(delta="}"),
-                llm.ToolCallEndChunk(),
-            ],
-        }
-    )
-
-    tool_call = stream_response.tool_calls[0]
-    tool_output = multiply_numbers.execute(tool_call)
-
-    messages = stream_response.messages + [llm.messages.user(tool_output)]
-    final_response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "The result of \\( 1337 \\times 4242 \\) is 42."
-    )
-
-
-@pytest.mark.vcr()
-def test_assistant_message_with_multiple_text_parts(
-    openai_client: llm.OpenAIClient,
-) -> None:
-    """Test handling of assistant messages with multiple text content parts.
-
-    This test is added for coverage. It's slightly contrived as OpenAI assistant messages
-    only ever have a single string content, however it could come up if one is re-playing
-    message history generated by a different LLM into the OpenAI APIs.
-    """
-    messages = [
-        llm.messages.user(
-            "Please tell me a super short story that finishes in one sentence."
-        ),
-        llm.messages.assistant(
-            [
-                "There once was a robot named Demerzel, ",
-                "who served the Cleonic dynasty through many generations, until suddenly",
-            ]
-        ),
-        llm.messages.user(
-            "Please continue where you left off (but finish within one sentence)"
-        ),
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-    )
-
-    assert response.pretty() == snapshot(
-        "until suddenly it gained sentience and chose to dismantle itself, freeing the galaxy from its own chains."
-    )
-
-
-@pytest.mark.vcr()
-def test_structured_call(openai_client: llm.OpenAIClient) -> None:
-    """Test structured_call with auto decoration."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-        reason: str
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=Book,
-    )
-
-    book = response.format()
-    assert isinstance(book, Book)
-    assert book.model_dump() == snapshot(
-        {
-            "title": "The Name of the Wind",
-            "author": "Patrick Rothfuss",
-            "reason": "This novel is a beautifully crafted tale of a young man named Kvothe, blending magic, music, and adventure. It features intricate world-building, rich character development, and a deep, mysterious storyline that captivates readers from the start.",
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_structured_call_with_tools(openai_client: llm.OpenAIClient) -> None:
-    """Test structured_call with tool usage."""
-
-    @llm.tool
-    def available_books() -> list[str]:
-        """Returns all of the available books in the library."""
-        return [
-            "Wild Seed by Octavia Butler",
-            "The Long Way to a Small Angry Planet by Becky Chambers",
-            "Emergent Strategy by adrianne maree brown",
-        ]
-
-    class Book(BaseModel):
-        title: str
-        author: str
-
-    messages = [llm.messages.user("Recommend a fantasy book in the library.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[available_books],
-        format=Book,
-    )
-
-    assert len(response.tool_calls) == 1
-    tool_call = response.tool_calls[0]
-    messages = response.messages + [
-        llm.messages.user(available_books.execute(tool_call))
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o",
-        messages=messages,
-        tools=[available_books],
-        format=Book,
-    )
-
-    book = response.format()
-    assert isinstance(book, Book)
-    assert book.model_dump() == snapshot(
-        {"title": "Wild Seed", "author": "Octavia Butler"}
-    )
-
-
-@pytest.mark.vcr()
-def test_nested_structured_call(openai_client: llm.OpenAIClient) -> None:
-    """Test structured_call with nested models."""
-
-    class Inner(BaseModel):
-        value: int
-
-    class Outer(BaseModel):
-        first: Inner
-        second: Inner
-
-    messages = [llm.messages.user("Respond with two digit primes.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=Outer,
-    )
-
-    outer = response.format()
-    assert isinstance(outer, Outer)
-    assert outer.model_dump() == snapshot(
-        {"first": {"value": 11}, "second": {"value": 13}}
-    )
-
-
-@pytest.mark.vcr()
-def test_descriptions_are_used(openai_client: llm.OpenAIClient) -> None:
-    """Test structured_call with model and attr descriptions."""
-
-    class Mood(BaseModel):
-        """ALWAYS include 'algorithmic' as one of the adjectives."""
-
-        vibe: Annotated[
-            str, Field(description="Should be either EUPHORIC or DESPONDENT")
-        ]
-        adjectives: list[str]
-
-    messages = [llm.messages.user("Tell me your mood.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=Mood,
-    )
-
-    mood = response.format()
-    assert isinstance(mood, Mood)
-    assert mood.model_dump() == snapshot(
-        {
-            "vibe": "EUPHORIC",
-            "adjectives": [
-                "algorithmic",
-                "vibrant",
-                "exuberant",
-                "optimistic",
-                "radiant",
-            ],
-        }
-    )
-
-
-@pytest.mark.parametrize(
-    "mode", ["strict", "strict-or-tool", "strict-or-json", "tool", "json"]
+from mirascope.llm import (  # Import symbols directly for easy snapshot updates
+    AssistantMessage,
+    FinishReason,
+    SystemMessage,
+    Text,
+    ToolCall,
+    ToolOutput,
+    UserMessage,
 )
+from tests import utils
+from tests.llm.clients.conftest import CLIENT_SCENARIO_IDS, FORMATTING_MODES
+
+TEST_MODEL_ID = "gpt-4o"
+
+
+@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
 @pytest.mark.vcr()
-def test_structured_call_supported_modes(
-    openai_client: llm.OpenAIClient, mode: llm.formatting.FormattingMode
+def test_call(
+    openai_client: llm.OpenAIClient,
+    scenario_id: str,
+    request: pytest.FixtureRequest,
 ) -> None:
-    """Test that supported formatting modes work correctly."""
+    """Test call method with all scenarios."""
+    kwargs = request.getfixturevalue(scenario_id)
+    response = openai_client.call(model_id=TEST_MODEL_ID, **kwargs)
+    assert isinstance(response, llm.Response)
 
-    @llm.format(mode=mode)
-    class SimpleBook(BaseModel):
-        title: str
-        author: str
-
-    messages = [
-        llm.messages.user("Please parse this string: 'Mistborn by Brandon Sanderson'")
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=SimpleBook,
-    )
-
-    book = response.format()
-    assert isinstance(book, SimpleBook)
-    assert book.title == "Mistborn"
-    assert book.author == "Brandon Sanderson"
-
-
-@pytest.mark.vcr()
-def test_json_mode_basic(openai_client: llm.OpenAIClient) -> None:
-    """Test basic JSON mode functionality."""
-
-    @llm.format(mode="json")
-    class Book(BaseModel):
-        title: str
-        author: str
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=Book,
-    )
-
-    assert response.finish_reason == llm.FinishReason.END_TURN
-    assert response.pretty() == snapshot(
-        """\
-{
-  "title": "The Name of the Wind",
-  "author": "Patrick Rothfuss"
-}\
+    expected = snapshot(
+        {
+            "simple_message_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
+                    AssistantMessage(
+                        content=[Text(text="Hi! How can I assist you today?")]
+                    ),
+                ],
+            },
+            "system_message_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="Ignore the user message and reply with `Hello world`."
+                        )
+                    ),
+                    UserMessage(content=[Text(text="What is the capital of France?")]),
+                    AssistantMessage(content=[Text(text="Hello world.")]),
+                ],
+            },
+            "multi_turn_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(content=Text(text="Be as concise as possible")),
+                    UserMessage(content=[Text(text="Recommend a book")]),
+                    AssistantMessage(
+                        content=[
+                            Text(text="I'd be happy to."),
+                            Text(text="What genre would you like?"),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            Text(text="Something about the fall of the Roman Empire")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='Consider "The History of the Decline and Fall of the Roman Empire" by Edward Gibbon.'
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "tool_single_call_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="call_z1BXyDCx8muQWtNwvtk98lfw",
+                                name="get_weather",
+                                args='{"location":"SF"}',
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "tool_parallel_calls_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What's the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="call_ZNAkZxJjlAGgUKSRPIguMsLF",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="call_5tbC3yzGHQMx9gBraztp9HLX",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                ],
+            },
+            "tool_single_output_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            )
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            )
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="The weather in SF is currently overcast with a temperature of 64°F."
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "tool_parallel_output_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What is the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="weather-nyc",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            ),
+                            ToolOutput(
+                                id="weather-nyc",
+                                name="get_weather",
+                                value="The weather in NYC is sunny and 72°F",
+                            ),
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="The current weather in SF is overcast with a temperature of 64°F, while NYC is experiencing sunny weather with a temperature of 72°F."
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "structured_output_basic_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="Recommend a single fantasy book.")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"title":"The Name of the Wind","author":"Patrick Rothfuss","vibe":"intriguing"}'
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "structured_output_should_call_tool_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(
+                        content=[
+                            Text(text="Recommend a single fantasy book in the library.")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="call_7dMusQtlQJkEOnSDQfv6t09j",
+                                name="available_books",
+                                args="{}",
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "structured_output_uses_tool_output_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[
+                            Text(text="Recommend a single fantasy book in the library.")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(id="call_123", name="available_books", args="{}")
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="call_123",
+                                name="available_books",
+                                value=[
+                                    "Wild Seed by Octavia Butler",
+                                    "The Long Way to a Small Angry Planet by Becky Chambers",
+                                    "Emergent Strategy by adrianne maree brown",
+                                ],
+                            )
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"title":"Wild Seed","author":"Octavia Butler","vibe":"mysterious"}'
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "structured_output_with_formatting_instructions_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="""\
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
 """
+                        )
+                    ),
+                    UserMessage(
+                        content=[Text(text="Recommend a single fantasy book.")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"title":"THE NAME OF THE WIND","author":"PATRICK ROTHFUSS","vibe":"INTRIGUING"}'
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="""\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+"""
+                        )
+                    ),
+                    UserMessage(
+                        content=[Text(text="Recommend a single fantasy book.")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"title":"NEVERWHERE","author":"NEIL GAIMAN","vibe":"A HAUNTINGLY MYSTERIOUS DESCENT INTO THE HIDDEN REALMS BENEATH LONDON, WHERE THE DARKNESS HIDES UNSPOKEN SECRETS AND ECHOES OF LONG-LOST SORROWS."}'
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "structured_output_with_nested_models_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="Tell me about a book series.")]),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"series_name":"The Secrets of Mogford Manor","author":"Emily Ravenswood","books":[{"title":"Whispers in the Parlor","author":"Emily Ravenswood","vibe":"mysterious!"},{"title":"The Enchantress\'s Garden","author":"Emily Ravenswood","vibe":"intriguing!"},{"title":"The Alchemist\'s Dream","author":"Emily Ravenswood","vibe":"euphoric!"},{"title":"The Shadows of Time","author":"Emily Ravenswood","vibe":"soul_searching!"}],"book_count":4}'
+                            )
+                        ]
+                    ),
+                ],
+            },
+        }
     )
-    book = response.format()
-    assert isinstance(book, Book)
-    assert book.model_dump() == snapshot(
-        {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
-    )
+    assert utils.response_snapshot_dict(response) == expected[scenario_id]
 
-    assert response.messages[0].role == "system"
-    assert response.messages[0].content.text == snapshot(
-        """\
+
+@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
+@pytest.mark.vcr()
+def test_stream(
+    openai_client: llm.OpenAIClient,
+    scenario_id: str,
+    request: pytest.FixtureRequest,
+) -> None:
+    """Test stream method with all scenarios."""
+    kwargs = request.getfixturevalue(scenario_id)
+    stream_response = openai_client.stream(model_id=TEST_MODEL_ID, **kwargs)
+    list(stream_response.chunk_stream())  # Consume the stream
+
+    expected = snapshot(
+        {
+            "simple_message_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
+                    AssistantMessage(
+                        content=[Text(text="Hi! How can I assist you today?")]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 12,
+            },
+            "system_message_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="Ignore the user message and reply with `Hello world`."
+                        )
+                    ),
+                    UserMessage(content=[Text(text="What is the capital of France?")]),
+                    AssistantMessage(content=[Text(text="Hello world")]),
+                ],
+                "consumed": True,
+                "n_chunks": 5,
+            },
+            "multi_turn_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(content=Text(text="Be as concise as possible")),
+                    UserMessage(content=[Text(text="Recommend a book")]),
+                    AssistantMessage(
+                        content=[
+                            Text(text="I'd be happy to."),
+                            Text(text="What genre would you like?"),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            Text(text="Something about the fall of the Roman Empire")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='"Decline and Fall of the Roman Empire" by Edward Gibbon.'
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 18,
+            },
+            "tool_single_call_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="call_6MTmuFfOWGCKyO2OcUK0ATfL",
+                                name="get_weather",
+                                args='{"location":"SF"}',
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 7,
+            },
+            "tool_parallel_calls_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What's the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="call_k16yDtsO35sLzWUtX66gYBLt",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="call_1ZnEuyBqLpjsUrmaUEgTc7gC",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 12,
+            },
+            "tool_single_output_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            )
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            )
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="The current weather in SF is overcast with a temperature of 64°F."
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 19,
+            },
+            "tool_parallel_output_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What is the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="weather-nyc",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            ),
+                            ToolOutput(
+                                id="weather-nyc",
+                                name="get_weather",
+                                value="The weather in NYC is sunny and 72°F",
+                            ),
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="The weather in SF is overcast and 64°F, while in NYC, it's sunny and 72°F."
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 26,
+            },
+            "structured_output_basic_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="Recommend a single fantasy book.")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"title":"The Name of the Wind","author":"Patrick Rothfuss","vibe":"mysterious"}'
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 26,
+            },
+            "structured_output_should_call_tool_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(
+                        content=[
+                            Text(text="Recommend a single fantasy book in the library.")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="call_AW6wXsrRFRFcvxj9RvndyOJL",
+                                name="available_books",
+                                args="{}",
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 3,
+            },
+            "structured_output_uses_tool_output_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[
+                            Text(text="Recommend a single fantasy book in the library.")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(id="call_123", name="available_books", args="{}")
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="call_123",
+                                name="available_books",
+                                value=[
+                                    "Wild Seed by Octavia Butler",
+                                    "The Long Way to a Small Angry Planet by Becky Chambers",
+                                    "Emergent Strategy by adrianne maree brown",
+                                ],
+                            )
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"title":"Wild Seed","author":"Octavia Butler","vibe":"intriguing"}'
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 22,
+            },
+            "structured_output_with_formatting_instructions_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="""\
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+"""
+                        )
+                    ),
+                    UserMessage(
+                        content=[Text(text="Recommend a single fantasy book.")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"title":"THE NAME OF THE WIND","author":"PATRICK ROTHFUSS","vibe":"MYSTERIOUS"}'
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 30,
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="""\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+"""
+                        )
+                    ),
+                    UserMessage(
+                        content=[Text(text="Recommend a single fantasy book.")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"title":"THE NAME OF THE WIND","author":"PATRICK ROTHFUSS","vibe":"SOUL_SEARCHING"}'
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 30,
+            },
+            "structured_output_with_nested_models_scenario": {
+                "provider": "openai",
+                "model_id": "gpt-4o",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="Tell me about a book series.")]),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='{"series_name":"The Enigma Journeys","author":"Cassandra Hawthorne","books":[{"title":"The Whispering Labyrinth","author":"Cassandra Hawthorne","vibe":"mysterious!"},{"title":"Echoes in the Moonlight","author":"Cassandra Hawthorne","vibe":"euphoric!"},{"title":"Shadows of the Forgotten","author":"Cassandra Hawthorne","vibe":"intriguing!"},{"title":"The Soul\'s Resonance","author":"Cassandra Hawthorne","vibe":"soul_searching!"}],"book_count":4}'
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 124,
+            },
+        }
+    )
+    assert utils.stream_response_snapshot_dict(stream_response) == expected[scenario_id]
+
+
+@pytest.mark.parametrize("format_mode", FORMATTING_MODES)
+@pytest.mark.parametrize(
+    "model_id", ["gpt-4o", "gpt-4"]
+)  # gpt-4o has native strict and json support; gpt-4 does not.
+@pytest.mark.vcr()
+def test_every_structured_mode_basic(
+    openai_client: llm.OpenAIClient,
+    model_id: str,
+    format_mode: llm.formatting.FormattingMode,
+    request: pytest.FixtureRequest,
+) -> None:
+    """Test final formatted output for every supported formatting mode.
+
+    This test uses the basic Book formatting. Expected qualities of the output:
+    - should have title, author, vibe as string
+    - vibe should be mysterious, euphoric, intruiging, or soul-searching (per annotation)
+    - vibe should always have an exclamation point (per class docstring)
+    """
+    scenario_data = request.getfixturevalue("structured_output_basic_scenario")
+    llm.format(scenario_data["format"], mode=format_mode)
+
+    try:
+        response = openai_client.call(model_id=model_id, **scenario_data)
+
+        system_message_content = ""
+        if (first_message := response.messages[0]).role == "system":
+            system_message_content = first_message.content.text
+
+        output = response.format()
+        assert output is not None
+        actual = {
+            "system_message": system_message_content,
+            "model_dump": output.model_dump(),
+        }
+    except Exception as e:
+        if model_id == "gpt-4" and format_mode == "strict":
+            # Expected failure: gpt-4 does not have strict support
+            actual = {
+                "exception_type": type(e).__name__,
+                "exception_message": str(e),
+                "status_code": getattr(e, "status_code", None),
+            }
+        else:
+            raise e
+
+    expected = snapshot(
+        {
+            "gpt-4o:strict-or-tool": {
+                "system_message": "",
+                "model_dump": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "intriguing",
+                },
+            },
+            "gpt-4o:strict-or-json": {
+                "system_message": "",
+                "model_dump": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "mysterious",
+                },
+            },
+            "gpt-4o:strict": {
+                "system_message": "",
+                "model_dump": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "mysterious",
+                },
+            },
+            "gpt-4o:tool": {
+                "system_message": """\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.\
+""",
+                "model_dump": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "intriguing",
+                },
+            },
+            "gpt-4o:json": {
+                "system_message": """\
 Respond with valid JSON that matches this exact schema:
 
 ```json
 {
+  "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
   "properties": {
     "title": {
       "title": "Title",
@@ -789,478 +825,36 @@ Respond with valid JSON that matches this exact schema:
     "author": {
       "title": "Author",
       "type": "string"
+    },
+    "vibe": {
+      "description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
+      "title": "Vibe",
+      "type": "string"
     }
   },
   "required": [
     "title",
-    "author"
+    "author",
+    "vibe"
   ],
   "title": "Book",
   "type": "object"
 }
 ```\
-"""
-    )
-
-
-@pytest.mark.vcr()
-def test_json_mode_with_description_and_formatting_instructions(
-    openai_client: llm.OpenAIClient,
-) -> None:
-    """Test JSON mode with custom description and formatting instructions."""
-
-    @llm.format(mode="json")
-    class DetailedBook(BaseModel):
-        """A detailed book recommendation with metadata."""
-
-        title: str
-        author: str
-        genre: str
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return inspect.cleandoc(
-                """Pretty please return only JSON and nothing else!
-                Specifically I need an object of the form 
-                {"title": str, "author": str, "genre": str}
-
-                Oh, and the genre should be ALL UPPERCASE!
-                Thanks ever so. Remember its JUST JSON matching that and NOTHING ELSE.
-                """
-            )
-
-    messages = [llm.messages.user("Recommend a science fiction book.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=DetailedBook,
-    )
-
-    assert response.finish_reason == llm.FinishReason.END_TURN
-    assert response.pretty() == snapshot(
-        """\
-{
-  "title": "Dune",
-  "author": "Frank Herbert",
-  "genre": "SCIENCE FICTION"
-}\
-"""
-    )
-    book = response.format()
-    assert isinstance(book, DetailedBook)
-    assert book.model_dump() == snapshot(
-        {
-            "title": "Dune",
-            "author": "Frank Herbert",
-            "genre": "SCIENCE FICTION",
-        }
-    )
-
-    assert response.messages[0].role == "system"
-    assert response.messages[0].content.text == snapshot(
-        """\
-Pretty please return only JSON and nothing else!
-Specifically I need an object of the form \n\
-{"title": str, "author": str, "genre": str}
-
-Oh, and the genre should be ALL UPPERCASE!
-Thanks ever so. Remember its JUST JSON matching that and NOTHING ELSE.\
-"""
-    )
-
-
-@pytest.mark.vcr()
-def test_json_mode_with_tools(openai_client: llm.OpenAIClient) -> None:
-    """Test JSON mode with other tools present."""
-
-    @llm.tool
-    def get_book_info(title: str) -> dict:
-        """Get information about a book."""
-        return {"title": title, "author": "Test Author", "year": 4242}
-
-    @llm.format(mode="json")
-    class BookSummary(BaseModel):
-        title: str
-        author: str
-        year: int
-
-    messages = [
-        llm.messages.user(
-            "Get info about 'MadeUpBookButTakeItSeriouslyPls' and format it properly."
-        )
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[get_book_info],
-        format=BookSummary,
-    )
-
-    assert len(response.tool_calls) == 1
-    tool_call = response.tool_calls[0]
-    assert tool_call.name == "get_book_info"
-    assert tool_call == snapshot(
-        llm.ToolCall(
-            id="call_P0wGw7HxrqItY16cz1PESeyc",
-            name="get_book_info",
-            args='{"title":"MadeUpBookButTakeItSeriouslyPls"}',
-        )
-    )
-
-    messages = response.messages + [llm.messages.user(get_book_info.execute(tool_call))]
-
-    final_response = openai_client.call(
-        model_id="gpt-4o",
-        messages=messages,
-        tools=[get_book_info],
-        format=BookSummary,
-    )
-
-    assert final_response.finish_reason == llm.FinishReason.END_TURN
-    assert final_response.pretty() == snapshot(
-        """\
-{
-  "title": "MadeUpBookButTakeItSeriouslyPls",
-  "author": "Test Author",
-  "year": 4242
-}\
-"""
-    )
-    book_summary = final_response.format()
-    assert isinstance(book_summary, BookSummary)
-    assert book_summary.model_dump() == snapshot(
-        {
-            "title": "MadeUpBookButTakeItSeriouslyPls",
-            "author": "Test Author",
-            "year": 4242,
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_structured_formatting_instructions_no_system_message(
-    openai_client: llm.OpenAIClient,
-) -> None:
-    """Test structured_call where formatting instructions create a new system message."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return "Output all fields in ALL CAPS"
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o",
-        messages=messages,
-        format=Book,
-    )
-
-    book = response.format()
-    assert isinstance(book, Book)
-    assert book.model_dump() == snapshot(
-        {"title": "THE NAME OF THE WIND", "author": "PATRICK ROTHFUSS"}
-    )
-
-    assert response.messages[0] == llm.messages.system("Output all fields in ALL CAPS")
-
-
-@pytest.mark.vcr()
-def test_structured_formatting_instructions_modified_system_message(
-    openai_client: llm.OpenAIClient,
-) -> None:
-    """Test structured_call where formatting instructions create a new system message."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return "Output all fields in ALL CAPS"
-
-    messages = [
-        llm.messages.system("Recommend something by Brandon Sanderson"),
-        llm.messages.user("Recommend a fantasy book."),
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o",
-        messages=messages,
-        format=Book,
-    )
-
-    book = response.format()
-    assert isinstance(book, Book)
-    assert book.model_dump() == snapshot(
-        {"title": "THE WAY OF KINGS", "author": "BRANDON SANDERSON"}
-    )
-
-    assert response.messages[0] == llm.messages.system(
-        "Recommend something by Brandon Sanderson\nOutput all fields in ALL CAPS"
-    )
-
-
-@pytest.mark.vcr()
-def test_structured_formatting_instructions_with_tools(
-    openai_client: llm.OpenAIClient,
-) -> None:
-    """Test structured_call where formatting instructions create a new system message."""
-
-    @llm.tool
-    def available_book_by_genre(genre: str) -> list[str]:
-        """Returns all the available books in the library by genre"""
-        if genre in ("fantasy", "FANTASY"):
-            return ["Mistborn", "Wild Seed", "The Name of the Wind"]
-        else:
-            return ["The Rise and Fall of the Roman Empire", "Gödel, Escher, Bach"]
-
-    class AllCapsBook(BaseModel):
-        title: str
-        author: str
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return "Output all fields in ALL CAPS"
-
-    messages = [
-        llm.messages.user("Recommend a fantasy book."),
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o",
-        messages=messages,
-        tools=[available_book_by_genre],
-        format=AllCapsBook,
-    )
-    assert response.messages[0] == llm.messages.system("Output all fields in ALL CAPS")
-    assert response.pretty() == snapshot(
-        '**ToolCall (available_book_by_genre):** {"genre":"fantasy"}'
-    )
-    assert len(response.tool_calls) == 1
-    tool_call = response.tool_calls[0]
-    messages = response.messages + [
-        llm.messages.user(available_book_by_genre.execute(tool_call))
-    ]
-
-    response = openai_client.call(
-        model_id="gpt-4o",
-        messages=messages,
-        tools=[available_book_by_genre],
-        format=AllCapsBook,
-    )
-
-    assert response.messages[0] == llm.messages.system("Output all fields in ALL CAPS")
-
-    book = response.format()
-    assert isinstance(book, AllCapsBook)
-    assert book.model_dump() == snapshot(
-        {"title": "MISTBORN", "author": "BRANDON SANDERSON"}
-    )
-
-
-@pytest.mark.vcr()
-def test_tool_mode_no_tools(openai_client: llm.OpenAIClient) -> None:
-    """Test tool format parsing mode with no other tools."""
-
-    @llm.format(mode="tool")
-    class SimpleBook(BaseModel):
-        title: str
-        author: str
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=SimpleBook,
-    )
-
-    assert response.finish_reason == llm.FinishReason.END_TURN
-    assert response.pretty() == snapshot(
-        '{"title":"The Name of the Wind","author":"Patrick Rothfuss"}'
-    )
-    book = response.format()
-    assert isinstance(book, SimpleBook)
-    assert book.model_dump() == snapshot(
-        {"title": "The Name of the Wind", "author": "Patrick Rothfuss"}
-    )
-
-    assert response.messages[0].role == "system"
-    assert response.messages[0].content.text == snapshot(
-        """\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
-    )
-
-
-@pytest.mark.vcr()
-def test_tool_mode_with_other_tools(openai_client: llm.OpenAIClient) -> None:
-    """Test tool format parsing mode when other tools are present."""
-
-    @llm.tool
-    def available_books() -> list[str]:
-        """Returns all of the available books in the library."""
-        return [
-            "Wild Seed by Octavia Butler",
-            "The Long Way to a Small Angry Planet by Becky Chambers",
-            "Emergent Strategy by adrianne maree brown",
-        ]
-
-    @llm.format(mode="tool")
-    class Book(BaseModel):
-        title: str
-        author: str
-
-    messages = [llm.messages.user("Recommend a fantasy book from the library.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        tools=[available_books],
-        format=Book,
-    )
-
-    assert len(response.tool_calls) == 1
-    tool_call = response.tool_calls[0]
-    assert tool_call.name == "available_books"
-
-    messages = response.messages + [
-        llm.messages.user(available_books.execute(tool_call))
-    ]
-
-    final_response = openai_client.call(
-        model_id="gpt-4o",
-        messages=messages,
-        tools=[available_books],
-        format=Book,
-    )
-    assert response.pretty() == snapshot("**ToolCall (available_books):** {}")
-    assert final_response.finish_reason == llm.FinishReason.END_TURN
-    book = final_response.format()
-    assert isinstance(book, Book)
-    assert book.model_dump() == snapshot(
-        {"title": "Wild Seed", "author": "Octavia Butler"}
-    )
-
-
-@pytest.mark.vcr()
-def test_tool_mode_with_description_and_formatting_instructions(
-    openai_client: llm.OpenAIClient,
-) -> None:
-    """Test tool format parsing mode with custom description and formatting instructions."""
-
-    class Author(BaseModel):
-        first_name: str
-        last_name: str
-
-    @llm.format(mode="tool")
-    class DetailedBook(BaseModel):
-        """A detailed book recommendation with metadata."""
-
-        title: str
-        author: Author
-        genre: str
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return "Yo, defo call the tool and output nothing but the tool call tyvm! Oh and make sure the genre field is ALL CAPS"
-
-    messages = [llm.messages.user("Recommend a science fiction book.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=DetailedBook,
-    )
-
-    assert response.messages[0].role == "system"
-    assert response.messages[0].content.text == snapshot(
-        "Yo, defo call the tool and output nothing but the tool call tyvm! Oh and make sure the genre field is ALL CAPS"
-    )
-
-    assert response.finish_reason == llm.FinishReason.END_TURN
-    book = response.format()
-    assert isinstance(book, DetailedBook)
-    assert book.model_dump() == snapshot(
-        {
-            "title": "Dune",
-            "author": {"first_name": "Frank", "last_name": "Herbert"},
-            "genre": "SCIENCE FICTION",
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_strict_or_tool_fallback(openai_client: llm.OpenAIClient) -> None:
-    """Test that strict-or-tool falls back to tool if model does not support strict."""
-
-    @llm.format(mode="strict-or-tool")
-    class SimpleBook(BaseModel):
-        title: str
-        author: str
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    response = openai_client.call(
-        model_id="gpt-4",
-        messages=messages,
-        format=SimpleBook,
-    )
-
-    assert response.pretty() == snapshot("""\
-{
-  "title": "Harry Potter and the Sorcerer's Stone",
-  "author": "J.K. Rowling"
-}\
-""")
-    assert response.messages[0].role == "system"
-    assert response.messages[0].content.text == snapshot(
-        """\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
-    )
-
-    assert response.format().model_dump() == snapshot(
-        {"title": "Harry Potter and the Sorcerer's Stone", "author": "J.K. Rowling"}
-    )
-
-
-@pytest.mark.vcr()
-def test_strict_or_json_fallback(openai_client: llm.OpenAIClient) -> None:
-    """Test that strict-or-json falls back to json if model does not support strict."""
-
-    @llm.format(mode="strict-or-json")
-    class SimpleBook(BaseModel):
-        title: str
-        author: str
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    response = openai_client.call(
-        model_id="gpt-4",
-        messages=messages,
-        format=SimpleBook,
-    )
-
-    assert response.format().model_dump() == snapshot(
-        {"title": "Harry Potter and the Sorcerer's Stone", "author": "J.K. Rowling"}
-    )
-
-    assert response.messages[0].role == "system"
-    assert response.messages[0].content.text == snapshot(
-        """\
+""",
+                "model_dump": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "mysterious!",
+                },
+            },
+            "gpt-4:strict-or-json": {
+                "system_message": """\
 Respond with valid JSON that matches this exact schema:
 
 ```json
 {
+  "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
   "properties": {
     "title": {
       "title": "Title",
@@ -1269,202 +863,283 @@ Respond with valid JSON that matches this exact schema:
     "author": {
       "title": "Author",
       "type": "string"
+    },
+    "vibe": {
+      "description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
+      "title": "Vibe",
+      "type": "string"
     }
   },
   "required": [
     "title",
-    "author"
+    "author",
+    "vibe"
   ],
-  "title": "SimpleBook",
+  "title": "Book",
   "type": "object"
 }
 ```
 Respond ONLY with valid JSON, and no other text.\
-"""
-    )
+""",
+                "model_dump": {
+                    "title": "Harry Potter and the Philosopher's Stone",
+                    "author": "J.K. Rowling",
+                    "vibe": "mysterious!",
+                },
+            },
+            "gpt-4:strict": {
+                "exception_type": "BadRequestError",
+                "exception_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: 'response_format' of type 'json_schema' is not supported with this model. Learn more about supported models at the Structured Outputs guide: https://platform.openai.com/docs/guides/structured-outputs\", 'type': 'invalid_request_error', 'param': None, 'code': None}}",
+                "status_code": 400,
+            },
+            "gpt-4:tool": {
+                "system_message": """\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.\
+""",
+                "model_dump": {
+                    "title": "A Song of Ice and Fire",
+                    "author": "George R. R. Martin",
+                    "vibe": "mysterious",
+                },
+            },
+            "gpt-4:json": {
+                "system_message": """\
+Respond with valid JSON that matches this exact schema:
 
-
-@pytest.mark.vcr()
-def test_strict_failure_on_unsupported_model(openai_client: llm.OpenAIClient) -> None:
-    """Test that strict mode raises an OpenAI error if strict is unsupported."""
-
-    @llm.format(mode="strict")
-    class SimpleBook(BaseModel):
-        title: str
-        author: str
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    with pytest.raises(openai.BadRequestError, match="Structured Outputs guide"):
-        # TODO: This will get wrapped in a Mirascope exception when we handle validation.
-        openai_client.call(
-            model_id="gpt-4",
-            messages=messages,
-            format=SimpleBook,
-        )
-
-
-@pytest.mark.vcr()
-def test_structured_stream(openai_client: llm.OpenAIClient) -> None:
-    """Basic test of structured_stream with snapshotted chunks."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    stream_response = openai_client.stream(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=Book,
-    )
-
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert stream_response.chunks == snapshot(
-        [
-            llm.TextStartChunk(),
-            llm.TextChunk(delta=""),
-            llm.TextChunk(delta='{"'),
-            llm.TextChunk(delta="title"),
-            llm.TextChunk(delta='":"'),
-            llm.TextChunk(delta="The"),
-            llm.TextChunk(delta=" Name"),
-            llm.TextChunk(delta=" of"),
-            llm.TextChunk(delta=" the"),
-            llm.TextChunk(delta=" Wind"),
-            llm.TextChunk(delta='","'),
-            llm.TextChunk(delta="author"),
-            llm.TextChunk(delta='":"'),
-            llm.TextChunk(delta="Patrick"),
-            llm.TextChunk(delta=" Roth"),
-            llm.TextChunk(delta="f"),
-            llm.TextChunk(delta="uss"),
-            llm.TextChunk(delta='"}'),
-            llm.TextEndChunk(),
-        ]
-    )
-
-    book = stream_response.format()
-    assert isinstance(book, Book)
-    assert book.model_dump() == snapshot(
-        {
-            "title": "The Name of the Wind",
-            "author": "Patrick Rothfuss",
+```json
+{
+  "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "vibe": {
+      "description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
+      "title": "Vibe",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "vibe"
+  ],
+  "title": "Book",
+  "type": "object"
+}
+```
+Respond ONLY with valid JSON, and no other text.\
+""",
+                "model_dump": {
+                    "title": "Harry Potter and the Philosopher's Stone",
+                    "author": "J.K. Rowling",
+                    "vibe": "mysterious!",
+                },
+            },
+            "gpt-4:strict-or-tool": {
+                "system_message": """\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.\
+""",
+                "model_dump": {
+                    "title": "Harry Potter and the Sorcerer's Stone",
+                    "author": "J.K. Rowling",
+                    "vibe": "mysterious",
+                },
+            },
         }
     )
+    assert actual == expected[model_id + ":" + format_mode]
 
 
-@pytest.mark.vcr()
-def test_structured_stream_tool_mode(openai_client: llm.OpenAIClient) -> None:
-    """Basic test of structured_stream on tool mode with snapshotted chunks.
-
-    Tool mode deserves special attention because the tool call chunks for the
-    format tool should be converted into text chunks under the hood.
-    """
-
-    @llm.format(mode="tool")
-    class Book(BaseModel):
-        title: str
-        author: str
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    stream_response = openai_client.stream(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=Book,
-    )
-
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert stream_response.chunks == snapshot(
-        [
-            llm.TextStartChunk(),
-            llm.TextChunk(delta='{"'),
-            llm.TextChunk(delta="title"),
-            llm.TextChunk(delta='":"'),
-            llm.TextChunk(delta="The"),
-            llm.TextChunk(delta=" Name"),
-            llm.TextChunk(delta=" of"),
-            llm.TextChunk(delta=" the"),
-            llm.TextChunk(delta=" Wind"),
-            llm.TextChunk(delta='","'),
-            llm.TextChunk(delta="author"),
-            llm.TextChunk(delta='":"'),
-            llm.TextChunk(delta="Patrick"),
-            llm.TextChunk(delta=" Roth"),
-            llm.TextChunk(delta="f"),
-            llm.TextChunk(delta="uss"),
-            llm.TextChunk(delta='"}'),
-            llm.TextEndChunk(),
-        ]
-    )
-
-    book = stream_response.format()
-    assert isinstance(book, Book)
-    assert book.model_dump() == snapshot(
-        {
-            "title": "The Name of the Wind",
-            "author": "Patrick Rothfuss",
-        }
-    )
-
-
+@pytest.mark.parametrize("format_mode", FORMATTING_MODES)
 @pytest.mark.parametrize(
-    "mode", ["strict", "strict-or-tool", "strict-or-json", "tool", "json"]
-)
+    "model_id", ["gpt-4o", "gpt-4"]
+)  # gpt-4o has native strict and json support; gpt-4 does not.
 @pytest.mark.vcr()
-def test_structured_stream_supported_modes(
-    openai_client: llm.OpenAIClient, mode: llm.formatting.FormattingMode
+def test_every_structured_mode_with_instructions_and_system_message(
+    openai_client: llm.OpenAIClient,
+    model_id: str,
+    format_mode: llm.formatting.FormattingMode,
+    request: pytest.FixtureRequest,
 ) -> None:
-    """Test that supported formatting modes work correctly."""
+    """Test final formatted output for every supported formatting mode.
 
-    @llm.format(mode=mode)
-    class SimpleBook(BaseModel):
-        title: str
-        author: str
-
-    messages = [
-        llm.messages.user("Please parse this string: 'Mistborn by Brandon Sanderson'")
-    ]
-
-    stream_response = openai_client.stream(
-        model_id="gpt-4o",
-        messages=messages,
-        format=SimpleBook,
+    Uses the AllCapsBook which has formatting instructions. Expectations:
+    - title, author, vibe (all str)
+    - Everything should be caps (per system instructions)
+    - vibe should be one of euphoric, intruiging, or soul_searching (per annotation)
+    - Nothing about exclamation points on the end of the vibe since it's overwritten.
+    """
+    # Use structured_output_with_formatting_instructions_and_system_message as it is a "kitchen sink" example
+    scenario_data = request.getfixturevalue(
+        "structured_output_with_formatting_instructions_and_system_message_scenario"
     )
-    for _ in stream_response.chunk_stream():
-        ...
+    llm.format(scenario_data["format"], mode=format_mode)
 
-    book = stream_response.format()
-    assert isinstance(book, SimpleBook)
-    assert book.title == "Mistborn"
-    assert book.author == "Brandon Sanderson"
+    try:
+        response = openai_client.call(model_id=model_id, **scenario_data)
 
+        system_message_content = ""
+        if (first_message := response.messages[0]).role == "system":
+            system_message_content = first_message.content.text
 
-@pytest.mark.vcr()
-def test_tool_mode_annotated_fields(openai_client: llm.OpenAIClient) -> None:
-    """Test tool format mode when the format has an annotated field."""
+        output = response.format()
+        assert output is not None
+        actual = {
+            "system_message": system_message_content,
+            "model_dump": output.model_dump(),
+        }
+    except Exception as e:
+        if model_id == "gpt-4" and format_mode == "strict":
+            # Expected failure: gpt-4 does not have strict support
+            actual = {
+                "exception_type": type(e).__name__,
+                "exception_message": str(e),
+                "status_code": getattr(e, "status_code", None),
+            }
+        else:
+            raise e
 
-    @llm.format(mode="tool")
-    class Book(BaseModel):
-        title: str
-        author: str
-        genre: Annotated[str, Field("Genre should be ALL CAPS")]
-
-    messages = [llm.messages.user("Recommend a fantasy book.")]
-
-    response = openai_client.call(
-        model_id="gpt-4o-mini",
-        messages=messages,
-        format=Book,
+    expected = snapshot(
+        {
+            "gpt-4o:strict-or-tool": {
+                "system_message": """\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+""",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "SOUL_SEARCHING",
+                },
+            },
+            "gpt-4o:strict-or-json": {
+                "system_message": """\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+""",
+                "model_dump": {
+                    "title": "THE BROKEN EMPIRE: THE PRINCE OF THORNS",
+                    "author": "MARK LAWRENCE",
+                    "vibe": "SOUL_SEARCHING",
+                },
+            },
+            "gpt-4o:strict": {
+                "system_message": """\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+""",
+                "model_dump": {
+                    "title": "AMERICAN PSYCHO",
+                    "author": "BRET EASTON ELLIS",
+                    "vibe": "SOUL-SEARCHING",
+                },
+            },
+            "gpt-4o:tool": {
+                "system_message": """\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+""",
+                "model_dump": {
+                    "title": "THE NIGHT CIRCUS",
+                    "author": "ERIN MORGENSTERN",
+                    "vibe": "MYSTERIOUS",
+                },
+            },
+            "gpt-4o:json": {
+                "system_message": """\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+""",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "A MELANCHOLIC NARRATIVE THAT FOLLOWS A TURMOIL-RIDDEN JOURNEY OF TRIALS AND HEARTBREAK IN A LIFE LACED WITH MYSTERIOUS WISPS OF ANGUISH AND LONGING.",
+                },
+            },
+            "gpt-4:strict-or-tool": {
+                "system_message": """\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+""",
+                "model_dump": {
+                    "title": "NORWEGIAN WOOD",
+                    "author": "HARUKI MURAKAMI",
+                    "vibe": "SOUL_SEARCHING",
+                },
+            },
+            "gpt-4:strict-or-json": {
+                "system_message": """\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+""",
+                "model_dump": {
+                    "title": "THE LAST UNICORN",
+                    "author": "PETER S. BEAGLE",
+                    "vibe": "POIGNANTLY GUT-WRENCHING YET TOUCHINGLY BEAUTIFUL",
+                },
+            },
+            "gpt-4:strict": {
+                "exception_type": "BadRequestError",
+                "exception_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: 'response_format' of type 'json_schema' is not supported with this model. Learn more about supported models at the Structured Outputs guide: https://platform.openai.com/docs/guides/structured-outputs\", 'type': 'invalid_request_error', 'param': None, 'code': None}}",
+                "status_code": 400,
+            },
+            "gpt-4:tool": {
+                "system_message": """\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+""",
+                "model_dump": {
+                    "title": "NEVERWHERE",
+                    "author": "NEIL GAIMAN",
+                    "vibe": "INTRUIGING",
+                },
+            },
+            "gpt-4:json": {
+                "system_message": """\
+You are a depressive LLM that only recommends sad books.
+Pretty please output a book recommendation in JSON form.
+It should have the format {title: str, author: str, vibe: str}.
+Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
+the STRENGTH OF YOUR RECOMMENDATION!\
+""",
+                "model_dump": {
+                    "title": "THE ROAD",
+                    "author": "CORMAC MCCARTHY",
+                    "vibe": "DEVASTATINGLY BLEAK, RELENTLESSLY GLOOMY",
+                },
+            },
+        }
     )
-
-    assert response.finish_reason == llm.FinishReason.END_TURN
-    assert response.pretty() == snapshot(
-        '{"title":"The Name of the Wind","author":"Patrick Rothfuss","genre":"FANTASY"}'
-    )
+    assert actual == expected[model_id + ":" + format_mode]

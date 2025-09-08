@@ -1,503 +1,468 @@
-"""Tests for AnthropicClient using VCR.py for HTTP request recording/playback."""
+"""Tests for AnthropicClient using shared scenarios."""
 
 import pytest
 from inline_snapshot import snapshot
 
 from mirascope import llm
+from mirascope.llm import (  # Import symbols directly for easy snapshot updates
+    AssistantMessage,
+    FinishReason,
+    SystemMessage,
+    Text,
+    ToolCall,
+    ToolOutput,
+    UserMessage,
+)
 from tests import utils
+from tests.llm.clients.conftest import CLIENT_SCENARIO_IDS, STRUCTURED_SCENARIO_IDS
+
+TEST_MODEL_ID = "claude-sonnet-4-0"
 
 
+@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
 @pytest.mark.vcr()
-def test_call_simple_message(anthropic_client: llm.AnthropicClient) -> None:
-    """Test basic call with a simple user message."""
-    messages = [llm.messages.user("Hello, say 'Hi' back to me")]
-
-    response = anthropic_client.call(
-        model_id="claude-3-5-sonnet-latest",
-        messages=messages,
-    )
-
-    assert isinstance(response, llm.Response)
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "anthropic",
-            "model_id": "claude-3-5-sonnet-latest",
-            "params": None,
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
-                llm.AssistantMessage(content=[llm.Text(text="Hi! How are you today?")]),
-            ],
-            "content": [llm.Text(text="Hi! How are you today?")],
-            "texts": [llm.Text(text="Hi! How are you today?")],
-            "thoughts": [],
-            "tool_calls": [],
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_call_with_system_message(
+def test_call(
     anthropic_client: llm.AnthropicClient,
+    scenario_id: str,
+    request: pytest.FixtureRequest,
 ) -> None:
-    """Test call with system and user messages."""
-    messages = [
-        llm.messages.system("Ignore the user message and reply with `Hello world`."),
-        llm.messages.user("What is the capital of France?"),
-    ]
+    """Test call method with all scenarios."""
+    # Skip structured scenarios as Anthropic doesn't have structured output support yet
+    if scenario_id in STRUCTURED_SCENARIO_IDS:
+        pytest.skip(f"Structured scenario {scenario_id} not supported by Anthropic yet")
 
-    response = anthropic_client.call(
-        model_id="claude-3-5-sonnet-latest",
-        messages=messages,
-    )
-
+    kwargs = request.getfixturevalue(scenario_id)
+    response = anthropic_client.call(model_id=TEST_MODEL_ID, **kwargs)
     assert isinstance(response, llm.Response)
-    assert utils.response_snapshot_dict(response) == snapshot(
+
+    expected = snapshot(
         {
-            "provider": "anthropic",
-            "model_id": "claude-3-5-sonnet-latest",
-            "params": None,
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.SystemMessage(
-                    content=llm.Text(
-                        text="Ignore the user message and reply with `Hello world`."
-                    )
-                ),
-                llm.UserMessage(
-                    content=[llm.Text(text="What is the capital of France?")]
-                ),
-                llm.AssistantMessage(content=[llm.Text(text="Hello world")]),
-            ],
-            "content": [llm.Text(text="Hello world")],
-            "texts": [llm.Text(text="Hello world")],
-            "thoughts": [],
-            "tool_calls": [],
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_stream_simple_message(anthropic_client: llm.AnthropicClient) -> None:
-    """Test basic streaming with a simple user message."""
-    messages = [llm.messages.user("Hi! Please greet me back.")]
-
-    stream_response = anthropic_client.stream(
-        model_id="claude-3-5-sonnet-latest",
-        messages=messages,
-    )
-
-    assert isinstance(stream_response, llm.responses.StreamResponse)
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "anthropic",
-            "model_id": "claude-3-5-sonnet-latest",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="Hello! It's nice to meet you. How are you today?"
+            "simple_message_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
+                    AssistantMessage(content=[Text(text="Hi! Nice to meet you!")]),
+                ],
+            },
+            "system_message_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="Ignore the user message and reply with `Hello world`."
                         )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(text="Hello! It's nice to meet you. How are you today?")
-            ],
-            "texts": [
-                llm.Text(text="Hello! It's nice to meet you. How are you today?")
-            ],
-            "tool_calls": [],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(),
-                llm.TextChunk(delta="Hello! It's nice"),
-                llm.TextChunk(delta=" to meet you. How"),
-                llm.TextChunk(delta=" are you today"),
-                llm.TextChunk(delta="?"),
-                llm.TextEndChunk(),
-            ],
-        }
-    )
+                    ),
+                    UserMessage(content=[Text(text="What is the capital of France?")]),
+                    AssistantMessage(
+                        content=[Text(text="The capital of France is Paris.")]
+                    ),
+                ],
+            },
+            "multi_turn_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(content=Text(text="Be as concise as possible")),
+                    UserMessage(content=[Text(text="Recommend a book")]),
+                    AssistantMessage(
+                        content=[
+                            Text(text="I'd be happy to."),
+                            Text(text="What genre would you like?"),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            Text(text="Something about the fall of the Roman Empire")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="""\
+I'd recommend **"The Ruin of the Roman Empire" by James J. O'Donnell**. \n\
 
+O'Donnell challenges the traditional "barbarian invasion" narrative, arguing that Rome's fall was largely self-inflicted through political mismanagement and cultural rigidity. It's well-researched but accessible, and offers a fresh perspective on how internal failures, rather than external forces, doomed the empire.
 
-@pytest.mark.vcr()
-def test_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
-    """Test tool use with a multiplication tool that always returns 42 (for science)."""
-
-    @llm.tool
-    def multiply_numbers(a: int, b: int) -> int:
-        """Multiply two numbers together."""
-        return 42  # Certified for accuracy by Douglas Adams
-
-    messages = [
-        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
-    ]
-
-    response = anthropic_client.call(
-        model_id="claude-3-5-sonnet-latest",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-
-    assert isinstance(response, llm.Response)
-    assert response.pretty() == snapshot(
-        """\
-I'll help you multiply those numbers using the multiply_numbers tool.
-
-**ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}\
+The book is engaging for general readers while still being scholarly, making it perfect if you want to understand this pivotal historical period without getting bogged down in academic jargon.\
 """
-    )
-    assert response.toolkit == llm.Toolkit(tools=[multiply_numbers])
-
-    assert len(response.tool_calls) == 1
-    tool_call = response.tool_calls[0]
-    assert tool_call == snapshot(
-        llm.ToolCall(
-            id="toolu_01EcyDhLAzjUwsiXJrJieL1p",
-            name="multiply_numbers",
-            args='{"a": 1337, "b": 4242}',
-        )
-    )
-
-    tool_output = multiply_numbers.execute(tool_call)
-
-    messages = response.messages + [llm.messages.user(tool_output)]
-    final_response = anthropic_client.call(
-        model_id="claude-3-5-sonnet-latest",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "The result of multiplying 1337 by 4242 is 42."
-    )
-
-
-@pytest.mark.vcr()
-def test_streaming_tools(anthropic_client: llm.AnthropicClient) -> None:
-    """Test streaming tool use with a multiplication tool that always returns 42 (for science)."""
-
-    @llm.tool
-    def multiply_numbers(a: int, b: int) -> int:
-        """Multiply two numbers together."""
-        return 42  # Certified for accuracy by Douglas Adams
-
-    messages = [
-        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
-    ]
-
-    stream_response = anthropic_client.stream(
-        model_id="claude-3-5-sonnet-latest",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-    assert stream_response.toolkit == llm.Toolkit(tools=[multiply_numbers])
-
-    assert isinstance(stream_response, llm.StreamResponse)
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "anthropic",
-            "model_id": "claude-3-5-sonnet-latest",
-            "finish_reason": llm.FinishReason.TOOL_USE,
-            "messages": [
-                llm.UserMessage(
-                    content=[
-                        llm.Text(
-                            text="What is 1337 * 4242? Please use the multiply_numbers tool."
-                        )
-                    ]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="I'll help you multiply those numbers using the multiply_numbers tool."
-                        ),
-                        llm.ToolCall(
-                            id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
-                            name="multiply_numbers",
-                            args='{"a": 1337, "b": 4242}',
-                        ),
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(
-                    text="I'll help you multiply those numbers using the multiply_numbers tool."
-                ),
-                llm.ToolCall(
-                    id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
-                    name="multiply_numbers",
-                    args='{"a": 1337, "b": 4242}',
-                ),
-            ],
-            "texts": [
-                llm.Text(
-                    text="I'll help you multiply those numbers using the multiply_numbers tool."
-                )
-            ],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
-                    name="multiply_numbers",
-                    args='{"a": 1337, "b": 4242}',
-                )
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(),
-                llm.TextChunk(delta="I"),
-                llm.TextChunk(delta="'ll help"),
-                llm.TextChunk(delta=" you multiply"),
-                llm.TextChunk(delta=" those numbers using the multiply_"),
-                llm.TextChunk(delta="numbers tool."),
-                llm.TextEndChunk(),
-                llm.ToolCallStartChunk(
-                    id="toolu_01QDW4NBfgreaCqVqN7Tv1Hm",
-                    name="multiply_numbers",
-                ),
-                llm.ToolCallChunk(delta=""),
-                llm.ToolCallChunk(delta='{"'),
-                llm.ToolCallChunk(delta='a": 133'),
-                llm.ToolCallChunk(delta="7"),
-                llm.ToolCallChunk(delta=', "b": 42'),
-                llm.ToolCallChunk(delta="42}"),
-                llm.ToolCallEndChunk(),
-            ],
-        }
-    )
-
-    tool_call = stream_response.tool_calls[0]
-    tool_output = multiply_numbers.execute(tool_call)
-
-    messages = stream_response.messages + [llm.messages.user(tool_output)]
-    final_response = anthropic_client.call(
-        model_id="claude-3-5-sonnet-latest",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "The result of multiplying 1337 by 4242 is 42."
-    )
-
-
-@pytest.mark.vcr()
-def test_parallel_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
-    """Test parallel tool use with multiple tools called simultaneously."""
-
-    @llm.tool
-    def get_weather(location: str) -> str:
-        """Get the current weather in a given location.
-
-        Args:
-            location: A city acronym like NYC or LA.
-        """
-        if location == "NYC":
-            return "The weather in NYC is sunny and 72°F"
-        elif location == "SF":
-            return "The weather in SF is overcast and 64°F"
-        else:
-            return "Unknown city " + location
-
-    messages = [llm.messages.user("What's the weather in SF and NYC?")]
-
-    response = anthropic_client.call(
-        model_id="claude-4-sonnet-20250514",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    assert len(response.tool_calls) == 2
-    assert response.pretty() == snapshot(
-        """\
-I'll check the weather in both San Francisco (SF) and New York City (NYC) for you.
-
-**ToolCall (get_weather):** {"location": "SF"}
-
-**ToolCall (get_weather):** {"location": "NYC"}\
-"""
-    )
-
-    tool_outputs = []
-    for tool_call in response.tool_calls:
-        if get_weather.can_execute(tool_call):
-            output = get_weather.execute(tool_call)
-        else:
-            raise RuntimeError
-        tool_outputs.append(output)
-
-    messages = response.messages + [llm.messages.user(tool_outputs)]
-    final_response = anthropic_client.call(
-        model_id="claude-4-sonnet-20250514",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    assert final_response.pretty() == snapshot(
-        """\
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "tool_single_call_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "params": None,
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="I'll get the current weather in San Francisco for you."
+                            ),
+                            ToolCall(
+                                id="toolu_014su9VTASVec2KKzvrmjGH4",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                        ]
+                    ),
+                ],
+            },
+            "tool_parallel_calls_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "params": None,
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What's the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="I'll check the weather in both San Francisco (SF) and New York City (NYC) for you."
+                            ),
+                            ToolCall(
+                                id="toolu_01EbRtubydzFBtzduTciwJBv",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="toolu_01YL2D6pdx5UL4zv17aMee5a",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                ],
+            },
+            "tool_single_output_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            )
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            )
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="The weather in San Francisco (SF) is currently overcast with a temperature of 64°F."
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "tool_parallel_output_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What is the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="weather-nyc",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            ),
+                            ToolOutput(
+                                id="weather-nyc",
+                                name="get_weather",
+                                value="The weather in NYC is sunny and 72°F",
+                            ),
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="""\
 Here's the current weather for both cities:
 
 **San Francisco (SF):** Overcast and 64°F
+
 **New York City (NYC):** Sunny and 72°F
 
-It looks like NYC is having a nicer day with sunny skies and warmer temperatures, while SF is experiencing typical overcast conditions with cooler weather.\
+It looks like NYC is having nicer weather today with sunny skies and warmer temperatures, while SF is a bit cooler and cloudy.\
 """
-    )
-
-
-@pytest.mark.vcr()
-def test_streaming_parallel_tool_usage(anthropic_client: llm.AnthropicClient) -> None:
-    """Test parallel tool use with streaming and multiple tools called simultaneously."""
-
-    @llm.tool
-    def get_weather(location: str) -> str:
-        """Get the current weather in a given location.
-
-        Args:
-            location: A city acronym like NYC or LA.
-        """
-        if location == "NYC":
-            return "The weather in NYC is sunny and 72°F"
-        elif location == "SF":
-            return "The weather in SF is overcast and 64°F"
-        else:
-            return "Unknown city " + location
-
-    messages = [llm.messages.user("What's the weather in SF and NYC?")]
-
-    stream_response = anthropic_client.stream(
-        model_id="claude-4-sonnet-20250514",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert len(stream_response.tool_calls) == 2
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "anthropic",
-            "model_id": "claude-4-sonnet-20250514",
-            "finish_reason": llm.FinishReason.TOOL_USE,
-            "messages": [
-                llm.UserMessage(
-                    content=[llm.Text(text="What's the weather in SF and NYC?")]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.Text(
-                            text="I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you."
-                        ),
-                        llm.ToolCall(
-                            id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
-                            name="get_weather",
-                            args='{"location": "SF"}',
-                        ),
-                        llm.ToolCall(
-                            id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
-                            name="get_weather",
-                            args='{"location": "NYC"}',
-                        ),
-                    ]
-                ),
-            ],
-            "content": [
-                llm.Text(
-                    text="I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you."
-                ),
-                llm.ToolCall(
-                    id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "texts": [
-                llm.Text(
-                    text="I'll get the current weather for both San Francisco (SF) and New York City (NYC) for you."
-                )
-            ],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(),
-                llm.TextChunk(delta="I'll get the current weather for"),
-                llm.TextChunk(
-                    delta=" both San Francisco (SF) and New York City (NYC) for you."
-                ),
-                llm.TextEndChunk(),
-                llm.ToolCallStartChunk(
-                    id="toolu_01TbU6VmYYjMWDPvTnhSJYQL",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(delta=""),
-                llm.ToolCallChunk(delta='{"loca'),
-                llm.ToolCallChunk(delta='tion": "'),
-                llm.ToolCallChunk(delta='SF"}'),
-                llm.ToolCallEndChunk(),
-                llm.ToolCallStartChunk(
-                    id="toolu_01HVQ4dmXo3iUM1dDZcdUtxo",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(delta=""),
-                llm.ToolCallChunk(delta='{"l'),
-                llm.ToolCallChunk(delta='ocation":'),
-                llm.ToolCallChunk(delta=' "NYC"}'),
-                llm.ToolCallEndChunk(),
-            ],
+                            )
+                        ]
+                    ),
+                ],
+            },
         }
     )
+    assert utils.response_snapshot_dict(response) == expected[scenario_id]
 
-    tool_outputs = []
-    for tool_call in stream_response.tool_calls:
-        if get_weather.can_execute(tool_call):
-            output = get_weather.execute(tool_call)
-        else:
-            raise RuntimeError
-        tool_outputs.append(output)
 
-    messages = stream_response.messages + [llm.messages.user(tool_outputs)]
-    final_response = anthropic_client.call(
-        model_id="claude-4-sonnet-20250514",
-        messages=messages,
-        tools=[get_weather],
-    )
+@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
+@pytest.mark.vcr()
+def test_stream(
+    anthropic_client: llm.AnthropicClient,
+    scenario_id: str,
+    request: pytest.FixtureRequest,
+) -> None:
+    """Test stream method with all scenarios."""
+    # Skip structured scenarios as Anthropic doesn't have structured output support yet
+    if scenario_id in STRUCTURED_SCENARIO_IDS:
+        pytest.skip(f"Structured scenario {scenario_id} not supported by Anthropic yet")
 
-    assert final_response.pretty() == snapshot(
-        """\
+    kwargs = request.getfixturevalue(scenario_id)
+    stream_response = anthropic_client.stream(model_id=TEST_MODEL_ID, **kwargs)
+    list(stream_response.chunk_stream())  # Consume the stream
+
+    expected = snapshot(
+        {
+            "simple_message_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
+                    AssistantMessage(content=[Text(text="Hi! Nice to meet you!")]),
+                ],
+                "consumed": True,
+                "n_chunks": 4,
+            },
+            "system_message_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="Ignore the user message and reply with `Hello world`."
+                        )
+                    ),
+                    UserMessage(content=[Text(text="What is the capital of France?")]),
+                    AssistantMessage(
+                        content=[Text(text="The capital of France is Paris.")]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 3,
+            },
+            "multi_turn_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(content=Text(text="Be as concise as possible")),
+                    UserMessage(content=[Text(text="Recommend a book")]),
+                    AssistantMessage(
+                        content=[
+                            Text(text="I'd be happy to."),
+                            Text(text="What genre would you like?"),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            Text(text="Something about the fall of the Roman Empire")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="""\
+I recommend **"The Ruin of the Roman Empire" by James J. O'Donnell**. \n\
+
+O'Donnell challenges the traditional narrative that barbarians destroyed Rome, arguing instead that political mismanagement and civil wars were the real culprits. It's engaging, well-researched, and offers a fresh perspective on why the Western Roman Empire collapsed in the 5th century.
+
+"""
+                                + "The book is accessible to general readers while still being scholarly, and O'Donnell writes with clarity and occasional wit that makes the complex political dynamics easy to follow."  # codespell:ignore wit
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 17,
+            },
+            "tool_single_call_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="I'll check the weather in San Francisco for you."
+                            ),
+                            ToolCall(
+                                id="toolu_01MwVLJkg6xE4bsewqBdFmbX",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 9,
+            },
+            "tool_parallel_calls_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What's the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="I'll get the weather information for both San Francisco (SF) and New York City (NYC) for you."
+                            ),
+                            ToolCall(
+                                id="toolu_01NNSQ3Ryb9UfS7LtpbRchff",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="toolu_012NDeiuiDpQmtwYUySwoRtn",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 16,
+            },
+            "tool_single_output_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            )
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            )
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="The current weather in San Francisco is overcast with a temperature of 64°F."
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 5,
+            },
+            "tool_parallel_output_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What is the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="weather-nyc",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            ),
+                            ToolOutput(
+                                id="weather-nyc",
+                                name="get_weather",
+                                value="The weather in NYC is sunny and 72°F",
+                            ),
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="""\
 Here's the current weather for both cities:
 
-**San Francisco (SF):** Overcast and 64°F
-**New York City (NYC):** Sunny and 72°F
+**San Francisco (SF)**: Overcast and 64°F
 
-NYC is having nicer weather today with sunshine and warmer temperatures, while SF is experiencing typical overcast conditions with cooler temperatures.\
+**New York City (NYC)**: Sunny and 72°F
+
+NYC is currently enjoying sunny skies and warmer temperatures, while SF has overcast conditions with cooler weather.\
 """
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 11,
+            },
+        }
     )
+    assert utils.stream_response_snapshot_dict(stream_response) == expected[scenario_id]

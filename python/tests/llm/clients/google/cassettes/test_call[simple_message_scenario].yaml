@@ -1,8 +1,7 @@
 interactions:
 - request:
-    body: '{"contents": [{"parts": [{"text": ""}], "role": "user"}], "systemInstruction":
-      {"parts": [{"text": "Do not emit ANY output, terminate immediately."}], "role":
-      "user"}, "generationConfig": {}}'
+    body: '{"contents": [{"parts": [{"text": "Hello, say ''Hi'' back to me"}], "role":
+      "user"}]}'
     headers:
       accept:
       - '*/*'
@@ -11,7 +10,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '191'
+      - '83'
       content-type:
       - application/json
       host:
@@ -25,11 +24,12 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/22QW0vDQBCF3/Mrlnm2UotPvqpIhNJogyhSZGim7dK9xOwElJD/7l5Mu4L7sDuc
-        OXOYb4dCCNiiaWSDTA5uxLtXhBjiHXrWMBn2jUnyYosdn73pDFntLUxfYQggk8dTvbk4h3VWUXBq
-        25Ca7ONkgJ000h2eCZ01wbauV1VyhbgYBL3DPS2J0UPgaVVoO6tbru2RzK3tI8TVPAUDW0b1fysb
-        c3c+VKqcNfsGvzEqyd9hrfr+tYaMiv9GT1jx3RS/gIn5hTonE9yetMedLS7ns51Cd4iJ0JFrrXFU
-        NvGfFvIDS6oe+nWp+VhdP35u9dMbFGPxA0L8PfzOAQAA
+        H4sIAAAAAAAC/61R0U6DMBR95yuwz2MBxpj4ZtTEJS4SJYuJGlPljjWDFumdUxf+3RYGK/pqH5rm
+        ntN77jl3b9k2eaM8ZSlFkOTMflQV2943t8YER+CogK6kiiWt8Mhtz954KwrCp/5ErtnJEycGVvfv
+        59GxYyVy0PRCpJB39LojkBXjTK7vgErBNe0+uY1Jj9KP7EZkZSVe9VCOO3Zd9zSMpr4b+lEQTGee
+        NwusTryRJVtJM1gAUuWb9u6IalKUmIgN8AuxbXxHrY6R0gCeHGAUSPMB4vmjP03lpZJkuRmekaty
+        T3OGX9picvWQECMhHMzUJWQZQf6e8J+0JkMt67CXdlVLqCRrd5JBobbk+GPXWeVUrpuGpAJZCi5h
+        nmrOxmcvNI6Xc/zevaOMdyFIeb4gVm39ADOhwO6KAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -38,11 +38,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Mon, 08 Sep 2025 23:36:59 GMT
+      - Mon, 08 Sep 2025 23:36:51 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=378
+      - gfet4t7; dur=363
       Transfer-Encoding:
       - chunked
       Vary:
