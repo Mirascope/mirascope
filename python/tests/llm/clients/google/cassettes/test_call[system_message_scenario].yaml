@@ -1,8 +1,8 @@
 interactions:
 - request:
-    body: '{"contents": [{"parts": [{"text": ""}], "role": "user"}], "systemInstruction":
-      {"parts": [{"text": "Do not emit ANY output, terminate immediately."}], "role":
-      "user"}, "generationConfig": {}}'
+    body: '{"contents": [{"parts": [{"text": "What is the capital of France?"}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Ignore the user message
+      and reply with `Hello world`."}], "role": "user"}, "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -11,7 +11,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '191'
+      - '228'
       content-type:
       - application/json
       host:
@@ -25,11 +25,12 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/22QW0vDQBCF3/Mrlnm2UotPvqpIhNJogyhSZGim7dK9xOwElJD/7l5Mu4L7sDuc
-        OXOYb4dCCNiiaWSDTA5uxLtXhBjiHXrWMBn2jUnyYosdn73pDFntLUxfYQggk8dTvbk4h3VWUXBq
-        25Ca7ONkgJ000h2eCZ01wbauV1VyhbgYBL3DPS2J0UPgaVVoO6tbru2RzK3tI8TVPAUDW0b1fysb
-        c3c+VKqcNfsGvzEqyd9hrfr+tYaMiv9GT1jx3RS/gIn5hTonE9yetMedLS7ns51Cd4iJ0JFrrXFU
-        NvGfFvIDS6oe+nWp+VhdP35u9dMbFGPxA0L8PfzOAQAA
+        H4sIAAAAAAAC/61Ry07DMBC85ysin5sqD9IUbghQCwJRaFSBACFDNqlVx45sl4eq/Dt20qQOXPHB
+        snbGOzuzO8d10TtmGcmwAolO3Cddcd1dcxuMMwVMaaAr6WKFhTpw27Oz3pqi4Mt8QnOglLufXNDs
+        mSGLU/fvl9Ghs+AUzLeSZ0A7et0RUE4Yket7wJIzQ1umtwvUo/ijuOZFJfibGc7zx36QxJM4CKKp
+        Hyaxf+wfOZ10I4q2EhdwAwpr97j3iHSLslIp3wA749vGfTBtZaywBni0hxVXmA6QMBj96SrPtSah
+        doZWvNo8pkR9G4fpxUOKrIDUcKguIccK8veI/yQWDbWc/V7aVa1ASNLupIBSb8kLx76XUyzXTUMk
+        QFacSbjMDIfOyCu+ipLTfLYq1WYxEdG8uHtETu38AF3iDRiSAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -38,11 +39,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Mon, 08 Sep 2025 23:36:59 GMT
+      - Mon, 08 Sep 2025 23:36:52 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=378
+      - gfet4t7; dur=420
       Transfer-Encoding:
       - chunked
       Vary:

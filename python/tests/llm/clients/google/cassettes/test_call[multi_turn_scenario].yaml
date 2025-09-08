@@ -1,8 +1,10 @@
 interactions:
 - request:
-    body: '{"contents": [{"parts": [{"text": ""}], "role": "user"}], "systemInstruction":
-      {"parts": [{"text": "Do not emit ANY output, terminate immediately."}], "role":
-      "user"}, "generationConfig": {}}'
+    body: '{"contents": [{"parts": [{"text": "Recommend a book"}], "role": "user"},
+      {"parts": [{"text": "I''d be happy to."}, {"text": "What genre would you like?"}],
+      "role": "model"}, {"parts": [{"text": "Something about the fall of the Roman
+      Empire"}], "role": "user"}], "systemInstruction": {"parts": [{"text": "Be as
+      concise as possible"}], "role": "user"}, "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -11,7 +13,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '191'
+      - '373'
       content-type:
       - application/json
       host:
@@ -25,11 +27,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/22QW0vDQBCF3/Mrlnm2UotPvqpIhNJogyhSZGim7dK9xOwElJD/7l5Mu4L7sDuc
-        OXOYb4dCCNiiaWSDTA5uxLtXhBjiHXrWMBn2jUnyYosdn73pDFntLUxfYQggk8dTvbk4h3VWUXBq
-        25Ca7ONkgJ000h2eCZ01wbauV1VyhbgYBL3DPS2J0UPgaVVoO6tbru2RzK3tI8TVPAUDW0b1fysb
-        c3c+VKqcNfsGvzEqyd9hrfr+tYaMiv9GT1jx3RS/gIn5hTonE9yetMedLS7ns51Cd4iJ0JFrrXFU
-        NvGfFvIDS6oe+nWp+VhdP35u9dMbFGPxA0L8PfzOAQAA
+        H4sIAAAAAAAC/61RXU/CMBR936+46bOQgUSYr4KAkYi4GIwY07HLaOzHbItKCP/dljHYfHYPTXfP
+        6T33nrMLAMiSypSl1KIh1/DqKgC7w+kxJS1K64Cy5Io51fbMLb5d5e4oFn/8IzIGjUslBMoUFiRe
+        I4yYsUpvQa3Aut8+LjmTCG4GuKWcl/WZElTCQORM44JAsoVB+k11CkOWJEo2F5JUFPen+9vFeU6t
+        OPohhEqRl/R9SSArJplZz5AaJT3tKX6YkhNKv7J7leVaJX7VRtgM260w6rR6PX9eRq2gFD5Iko2h
+        GU7QUuckPflFXAOR21h9oLxRm4OT7agQqRhfx8MjbpWlvAZ1yqeVtqbvRBmvBlLJyu1OObNbv2A8
+        mMek4o+tT1UaFFR8/Dvjf4mFdbHgmEsR1TNqw4pMMhQupUa7GTZWnJr1oSPRaHIlDY5Tz+FD9k7v
+        BB9N5t1Pa6ZR92omHl9IsA9+Ac2EJCXgAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -38,11 +42,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Mon, 08 Sep 2025 23:36:59 GMT
+      - Mon, 08 Sep 2025 23:36:52 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=378
+      - gfet4t7; dur=535
       Transfer-Encoding:
       - chunked
       Vary:

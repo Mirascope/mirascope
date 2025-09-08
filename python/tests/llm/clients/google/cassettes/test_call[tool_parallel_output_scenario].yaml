@@ -1,0 +1,73 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the weather in SF and NYC?"}],
+      "role": "user"}, {"parts": [{"functionCall": {"id": "weather-sf", "args": {"location":
+      "SF"}, "name": "get_weather"}}, {"functionCall": {"id": "weather-nyc", "args":
+      {"location": "NYC"}, "name": "get_weather"}}], "role": "model"}, {"parts": [{"functionResponse":
+      {"id": "weather-sf", "name": "get_weather", "response": {"output": "The weather
+      in SF is overcast and 64\u00b0F"}}}, {"functionResponse": {"id": "weather-nyc",
+      "name": "get_weather", "response": {"output": "The weather in NYC is sunny and
+      72\u00b0F"}}}], "role": "user"}], "tools": [{"functionDeclarations": [{"description":
+      "Get the current weather in a given location.\n\nArgs:\n    location: A city
+      acronym like NYC or LA.", "name": "get_weather", "parameters": {"properties":
+      {"location": {"description": "A city acronym like NYC or LA.", "title": "Location",
+      "type": "STRING"}}, "required": ["location"], "type": "OBJECT"}}]}], "generationConfig":
+      {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '993'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RXU/CMBR9369o+gxkLMimbwYhMXxGFqNRYyq7bA1bu6x3KBL+E7/BX2a3Meh8
+        tg/NzT2n99yes7cIoSsmAh4wBEVvyIvuELIv7wKTAkGgBuqWbqYswwu3Onuj1hSEr+IR9SMgn8Aw
+        goxwQZYjwhWRW8hWTCHRwqTf+zmOWmWJTfLseVCwVS7ErsRdR1M7r4IaWodz/da6bJjJGAr5RAYQ
+        1/RDTaBrLriKHoApKQra0p8v6Bll23AiwzSTH8Un23bHdj2373Vt78p1HF1btXApSXPFQpgCMu0h
+        OztF9YAkRV9uQAxkXnp4bVcihuUN3PFOOEpkcQPqdmvMmKvutCqPzSyMmPTnWcxxV+YwfPKpYRA2
+        16odsgwj/y75T2KO1xSzTsFUWT1CpngVSgiJjqntdOz2OmYqKifSDFQqhYL7oODECX9n48Vwls8n
+        CW4W0fi7Z99OqXWwfgHaGAS72wIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Mon, 08 Sep 2025 23:36:55 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=679
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

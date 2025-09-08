@@ -87,7 +87,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        input_messages, message_params, tool_params, response_format = (
+        input_messages, message_params, tool_params, response_format, tool_choice = (
             _utils.prepare_openai_request(
                 model_id=model_id, messages=messages, tools=tools, format=format
             )
@@ -98,6 +98,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             messages=message_params,
             tools=tool_params,
             response_format=response_format,
+            tool_choice=tool_choice,
         )
 
         assistant_message, finish_reason = _utils.decode_response(openai_response)
@@ -254,7 +255,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        input_messages, message_params, tool_params, response_format = (
+        input_messages, message_params, tool_params, response_format, tool_choice = (
             _utils.prepare_openai_request(
                 model_id=model_id, messages=messages, tools=tools, format=format
             )
@@ -265,6 +266,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             messages=message_params,
             tools=tool_params,
             response_format=response_format,
+            tool_choice=tool_choice,
             stream=True,
         )
 

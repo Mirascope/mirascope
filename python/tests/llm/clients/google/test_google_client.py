@@ -6,7 +6,414 @@ import pytest
 from inline_snapshot import snapshot
 
 from mirascope import llm
+from mirascope.llm import (  # Import symbols directly for easy snapshot updates
+    AssistantMessage,
+    FinishReason,
+    SystemMessage,
+    Text,
+    ToolCall,
+    ToolOutput,
+    UserMessage,
+)
 from tests import utils
+from tests.llm.clients.conftest import CLIENT_SCENARIO_IDS, STRUCTURED_SCENARIO_IDS
+
+
+@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
+@pytest.mark.vcr()
+def test_call(
+    google_client: llm.GoogleClient,
+    scenario_id: str,
+    request: pytest.FixtureRequest,
+) -> None:
+    """Test call method with all scenarios."""
+    # Skip structured scenarios as Google doesn't have structured output support yet
+    if scenario_id in STRUCTURED_SCENARIO_IDS:
+        pytest.skip(f"Structured scenario {scenario_id} not supported by Google yet")
+
+    kwargs = request.getfixturevalue(scenario_id)
+    response = google_client.call(model_id="gemini-2.0-flash", **kwargs)
+    assert isinstance(response, llm.Response)
+
+    expected = snapshot(
+        {
+            "simple_message_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
+                    AssistantMessage(content=[Text(text="Hi!\n")]),
+                ],
+            },
+            "system_message_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="Ignore the user message and reply with `Hello world`."
+                        )
+                    ),
+                    UserMessage(content=[Text(text="What is the capital of France?")]),
+                    AssistantMessage(content=[Text(text="Hello world\n")]),
+                ],
+            },
+            "multi_turn_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(content=Text(text="Be as concise as possible")),
+                    UserMessage(content=[Text(text="Recommend a book")]),
+                    AssistantMessage(
+                        content=[
+                            Text(text="I'd be happy to."),
+                            Text(text="What genre would you like?"),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            Text(text="Something about the fall of the Roman Empire")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='I recommend "The History of the Decline and Fall of the Roman Empire" by Edward Gibbon.\n'
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "tool_single_call_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="<unknown>",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            )
+                        ]
+                    ),
+                ],
+            },
+            "tool_parallel_calls_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What's the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="<unknown>",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="<unknown>",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                ],
+            },
+            "tool_single_output_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            )
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            )
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[Text(text="The weather in SF is overcast and 64°F.\n")]
+                    ),
+                ],
+            },
+            "tool_parallel_output_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "params": None,
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What is the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="weather-nyc",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            ),
+                            ToolOutput(
+                                id="weather-nyc",
+                                name="get_weather",
+                                value="The weather in NYC is sunny and 72°F",
+                            ),
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="The weather in SF is overcast and 64°F, and the weather in NYC is sunny and 72°F.\n"
+                            )
+                        ]
+                    ),
+                ],
+            },
+        }
+    )
+    assert utils.response_snapshot_dict(response) == expected[scenario_id]
+
+
+@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
+@pytest.mark.vcr()
+def test_stream(
+    google_client: llm.GoogleClient,
+    scenario_id: str,
+    request: pytest.FixtureRequest,
+) -> None:
+    """Test stream method with all scenarios."""
+    # Skip structured scenarios as Google doesn't have structured output support yet
+    if scenario_id in STRUCTURED_SCENARIO_IDS:
+        pytest.skip(f"Structured scenario {scenario_id} not supported by Google yet")
+
+    kwargs = request.getfixturevalue(scenario_id)
+    stream_response = google_client.stream(model_id="gemini-2.0-flash", **kwargs)
+    list(stream_response.chunk_stream())  # Consume the stream
+
+    expected = snapshot(
+        {
+            "simple_message_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="Hello, say 'Hi' back to me")]),
+                    AssistantMessage(content=[Text(text="Hi!\n")]),
+                ],
+                "consumed": True,
+                "n_chunks": 4,
+            },
+            "system_message_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(
+                        content=Text(
+                            text="Ignore the user message and reply with `Hello world`."
+                        )
+                    ),
+                    UserMessage(content=[Text(text="What is the capital of France?")]),
+                    AssistantMessage(content=[Text(text="Hello world\n")]),
+                ],
+                "consumed": True,
+                "n_chunks": 4,
+            },
+            "multi_turn_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    SystemMessage(content=Text(text="Be as concise as possible")),
+                    UserMessage(content=[Text(text="Recommend a book")]),
+                    AssistantMessage(
+                        content=[
+                            Text(text="I'd be happy to."),
+                            Text(text="What genre would you like?"),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            Text(text="Something about the fall of the Roman Empire")
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text='"The History of the Decline and Fall of the Roman Empire" by Edward Gibbon is a classic.\n'
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 5,
+            },
+            "tool_single_call_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="<unknown>",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 3,
+            },
+            "tool_parallel_calls_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What's the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="<unknown>",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="<unknown>",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 6,
+            },
+            "tool_single_output_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(content=[Text(text="What is the weather in SF?")]),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            )
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="get-weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            )
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[Text(text="The weather in SF is overcast and 64°F.\n")]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 4,
+            },
+            "tool_parallel_output_scenario": {
+                "provider": "google",
+                "model_id": "gemini-2.0-flash",
+                "finish_reason": FinishReason.END_TURN,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What is the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            ToolCall(
+                                id="weather-sf",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="weather-nyc",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
+                        ]
+                    ),
+                    UserMessage(
+                        content=[
+                            ToolOutput(
+                                id="weather-sf",
+                                name="get_weather",
+                                value="The weather in SF is overcast and 64°F",
+                            ),
+                            ToolOutput(
+                                id="weather-nyc",
+                                name="get_weather",
+                                value="The weather in NYC is sunny and 72°F",
+                            ),
+                        ]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="The weather in SF is overcast and 64°F. The weather in NYC is sunny and 72°F.\n"
+                            )
+                        ]
+                    ),
+                ],
+                "consumed": True,
+                "n_chunks": 5,
+            },
+        }
+    )
+    assert utils.stream_response_snapshot_dict(stream_response) == expected[scenario_id]
 
 
 def test_custom_base_url() -> None:
@@ -27,74 +434,7 @@ def test_custom_base_url() -> None:
         assert google_client.client is mock_client_instance
 
 
-@pytest.mark.vcr()
-def test_call_simple_message(google_client: llm.GoogleClient) -> None:
-    """Test basic call with a simple user message."""
-    messages = [llm.messages.user("Hello, say 'Hi' back to me")]
-
-    response = google_client.call(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-    )
-
-    assert isinstance(response, llm.Response)
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "google",
-            "model_id": "gemini-2.0-flash",
-            "params": None,
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hello, say 'Hi' back to me")]),
-                llm.AssistantMessage(content=[llm.Text(text="Hi!\n")]),
-            ],
-            "content": [llm.Text(text="Hi!\n")],
-            "texts": [llm.Text(text="Hi!\n")],
-            "thoughts": [],
-            "tool_calls": [],
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_call_with_system_message(google_client: llm.GoogleClient) -> None:
-    """Test call with system and user messages."""
-    messages = [
-        llm.messages.system("Ignore the user message and reply with `Hello world`."),
-        llm.messages.user("What is the capital of France?"),
-    ]
-
-    response = google_client.call(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-    )
-
-    assert isinstance(response, llm.Response)
-    assert utils.response_snapshot_dict(response) == snapshot(
-        {
-            "provider": "google",
-            "model_id": "gemini-2.0-flash",
-            "params": None,
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.SystemMessage(
-                    content=llm.Text(
-                        text="Ignore the user message and reply with `Hello world`."
-                    )
-                ),
-                llm.UserMessage(
-                    content=[llm.Text(text="What is the capital of France?")]
-                ),
-                llm.AssistantMessage(content=[llm.Text(text="Hello world\n")]),
-            ],
-            "content": [llm.Text(text="Hello world\n")],
-            "texts": [llm.Text(text="Hello world\n")],
-            "thoughts": [],
-            "tool_calls": [],
-        }
-    )
-
-
+# Included in test_google_client as this triggers a google-specific edge case for coverage.
 @pytest.mark.vcr()
 def test_call_no_output(google_client: llm.GoogleClient) -> None:
     """Test call where assistant generates nothing."""
@@ -124,365 +464,5 @@ def test_call_no_output(google_client: llm.GoogleClient) -> None:
                 llm.UserMessage(content=[llm.Text(text="")]),
                 llm.AssistantMessage(content=[]),
             ],
-            "content": [],
-            "texts": [],
-            "thoughts": [],
-            "tool_calls": [],
         }
-    )
-
-
-@pytest.mark.vcr()
-def test_stream_simple_message(google_client: llm.GoogleClient) -> None:
-    messages = [llm.messages.user("Hi! Please greet me back.")]
-
-    stream_response = google_client.stream(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-    )
-
-    assert isinstance(stream_response, llm.responses.StreamResponse)
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "google",
-            "model_id": "gemini-2.0-flash",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(content=[llm.Text(text="Hi! Please greet me back.")]),
-                llm.AssistantMessage(
-                    content=[llm.Text(text="Hello there! It's nice to meet you! 😊\n")]
-                ),
-            ],
-            "content": [llm.Text(text="Hello there! It's nice to meet you! 😊\n")],
-            "texts": [llm.Text(text="Hello there! It's nice to meet you! 😊\n")],
-            "tool_calls": [],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.TextStartChunk(),
-                llm.TextChunk(delta="Hello"),
-                llm.TextChunk(delta=" there! It"),
-                llm.TextChunk(delta="'s nice to meet you! 😊\n"),
-                llm.TextEndChunk(),
-            ],
-        }
-    )
-
-
-@pytest.mark.vcr()
-def test_tool_usage(google_client: llm.GoogleClient) -> None:
-    """Test tool use with a multiplication tool that always returns 42 (for science)."""
-
-    @llm.tool
-    def multiply_numbers(a: int, b: int) -> int:
-        """Multiply two numbers together."""
-        return 42  # Certified for accuracy by Douglas Adams
-
-    messages = [
-        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
-    ]
-
-    response = google_client.call(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-    assert response.toolkit == llm.Toolkit(tools=[multiply_numbers])
-
-    assert isinstance(response, llm.Response)
-    assert response.pretty() == snapshot(
-        '**ToolCall (multiply_numbers):** {"a": 1337, "b": 4242}'
-    )
-
-    assert len(response.tool_calls) == 1
-    tool_call = response.tool_calls[0]
-    assert tool_call == snapshot(
-        llm.ToolCall(
-            id="<unknown>",
-            name="multiply_numbers",
-            args='{"a": 1337, "b": 4242}',
-        )
-    )
-
-    tool_output = multiply_numbers.execute(tool_call)
-
-    messages = response.messages + [llm.messages.user(tool_output)]
-    final_response = google_client.call(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "I am sorry, there was an error. The result of 1337 * 4242 is not 42. Please try again.\n"
-    )
-
-
-@pytest.mark.vcr()
-def test_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
-    """Test parallel tool use with multiple tools called simultaneously."""
-
-    @llm.tool
-    def get_weather(location: str) -> str:
-        """Get the current weather in a given location.
-
-        Args:
-            location: A city acronym like NYC or LA.
-        """
-        if location == "NYC":
-            return "The weather in NYC is sunny and 72°F"
-        elif location == "SF":
-            return "The weather in SF is overcast and 64°F"
-        else:
-            return "Unknown city " + location
-
-    messages = [llm.messages.user("What's the weather in SF and NYC?")]
-
-    response = google_client.call(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    assert len(response.tool_calls) == 2
-    assert response.pretty() == snapshot(
-        """\
-**ToolCall (get_weather):** {"location": "SF"}
-
-**ToolCall (get_weather):** {"location": "NYC"}\
-"""
-    )
-
-    tool_outputs = []
-    for tool_call in response.tool_calls:
-        if get_weather.can_execute(tool_call):
-            output = get_weather.execute(tool_call)
-        else:
-            raise RuntimeError
-        tool_outputs.append(output)
-
-    messages = response.messages + [llm.messages.user(tool_outputs)]
-    final_response = google_client.call(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "The weather in SF is overcast and 64°F. The weather in NYC is sunny and 72°F.\n"
-    )
-
-
-@pytest.mark.vcr()
-def test_streaming_tools(google_client: llm.GoogleClient) -> None:
-    """Test streaming tool use with a multiplication tool that always returns 42 (for science)."""
-
-    @llm.tool
-    def multiply_numbers(a: int, b: int) -> int:
-        """Multiply two numbers together."""
-        return 42  # Certified for accuracy by Douglas Adams
-
-    messages = [
-        llm.messages.user("What is 1337 * 4242? Please use the multiply_numbers tool.")
-    ]
-
-    stream_response = google_client.stream(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-    assert stream_response.toolkit == llm.Toolkit(tools=[multiply_numbers])
-
-    assert isinstance(stream_response, llm.StreamResponse)
-
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "google",
-            "model_id": "gemini-2.0-flash",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(
-                    content=[
-                        llm.Text(
-                            text="What is 1337 * 4242? Please use the multiply_numbers tool."
-                        )
-                    ]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.ToolCall(
-                            id="<unknown>",
-                            name="multiply_numbers",
-                            args='{"a": 1337, "b": 4242}',
-                        )
-                    ]
-                ),
-            ],
-            "content": [
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="multiply_numbers",
-                    args='{"a": 1337, "b": 4242}',
-                )
-            ],
-            "texts": [],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="multiply_numbers",
-                    args='{"a": 1337, "b": 4242}',
-                )
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.ToolCallStartChunk(
-                    id="<unknown>",
-                    name="multiply_numbers",
-                ),
-                llm.ToolCallChunk(delta='{"a": 1337, "b": 4242}'),
-                llm.ToolCallEndChunk(),
-            ],
-        }
-    )
-
-    tool_call = stream_response.tool_calls[0]
-    tool_output = multiply_numbers.execute(tool_call)
-
-    messages = stream_response.messages + [llm.messages.user(tool_output)]
-    final_response = google_client.call(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-        tools=[multiply_numbers],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "I am sorry, there was an error. The result of 1337 * 4242 is 42. Would you like me to try again?\n"
-    )
-
-
-@pytest.mark.vcr()
-def test_streaming_parallel_tool_usage(google_client: llm.GoogleClient) -> None:
-    """Test parallel tool use with streaming and multiple tools called simultaneously."""
-
-    @llm.tool
-    def get_weather(location: str) -> str:
-        """Get the current weather in a given location.
-
-        Args:
-            location: A city acronym like NYC or LA.
-        """
-        if location == "NYC":
-            return "The weather in NYC is sunny and 72°F"
-        elif location == "SF":
-            return "The weather in SF is overcast and 64°F"
-        else:
-            return "Unknown city " + location
-
-    messages = [
-        llm.messages.user("What's the weather in SF and NYC?"),
-    ]
-
-    stream_response = google_client.stream(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    for _ in stream_response.chunk_stream():
-        ...
-
-    assert len(stream_response.tool_calls) == 2
-
-    assert utils.stream_response_snapshot_dict(stream_response) == snapshot(
-        {
-            "provider": "google",
-            "model_id": "gemini-2.0-flash",
-            "finish_reason": llm.FinishReason.END_TURN,
-            "messages": [
-                llm.UserMessage(
-                    content=[llm.Text(text="What's the weather in SF and NYC?")]
-                ),
-                llm.AssistantMessage(
-                    content=[
-                        llm.ToolCall(
-                            id="<unknown>",
-                            name="get_weather",
-                            args='{"location": "SF"}',
-                        ),
-                        llm.ToolCall(
-                            id="<unknown>",
-                            name="get_weather",
-                            args='{"location": "NYC"}',
-                        ),
-                    ]
-                ),
-            ],
-            "content": [
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "texts": [],
-            "tool_calls": [
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="get_weather",
-                    args='{"location": "SF"}',
-                ),
-                llm.ToolCall(
-                    id="<unknown>",
-                    name="get_weather",
-                    args='{"location": "NYC"}',
-                ),
-            ],
-            "thinkings": [],
-            "consumed": True,
-            "chunks": [
-                llm.ToolCallStartChunk(
-                    id="<unknown>",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(delta='{"location": "SF"}'),
-                llm.ToolCallEndChunk(),
-                llm.ToolCallStartChunk(
-                    id="<unknown>",
-                    name="get_weather",
-                ),
-                llm.ToolCallChunk(delta='{"location": "NYC"}'),
-                llm.ToolCallEndChunk(),
-            ],
-        }
-    )
-
-    tool_outputs = []
-    for tool_call in stream_response.tool_calls:
-        if get_weather.can_execute(tool_call):
-            output = get_weather.execute(tool_call)
-        else:
-            raise RuntimeError
-        tool_outputs.append(output)
-
-    messages = stream_response.messages + [llm.messages.user(tool_outputs)]
-    final_response = google_client.call(
-        model_id="gemini-2.0-flash",
-        messages=messages,
-        tools=[get_weather],
-    )
-
-    assert final_response.pretty() == snapshot(
-        "The weather in SF is overcast and 64°F. The weather in NYC is sunny and 72°F.\n"
     )
