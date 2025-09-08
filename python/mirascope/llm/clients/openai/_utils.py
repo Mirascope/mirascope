@@ -222,6 +222,7 @@ def prepare_openai_request(
     shared_openai_types.ResponseFormatJSONObject
     | shared_openai_types.ResponseFormatJSONSchema
     | NotGiven,
+    openai_types.ChatCompletionToolChoiceOptionParam | NotGiven,
 ]:
     """Prepare OpenAI API request parameters.
 
@@ -251,6 +252,8 @@ def prepare_openai_request(
         | NotGiven
     ) = NotGiven()
 
+    tool_choice = NotGiven()
+
     if format:
         model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
         model_has_native_json_support = (
@@ -264,6 +267,7 @@ def prepare_openai_request(
         if resolved_format.mode == "strict":
             response_format = create_strict_response_format(resolved_format.info)
         elif resolved_format.mode == "tool":
+            tool_choice = "required"
             openai_tools.append(create_format_tool_param(resolved_format.info))
         elif resolved_format.mode == "json" and model_has_native_json_support:
             response_format = {"type": "json_object"}
@@ -280,7 +284,7 @@ def prepare_openai_request(
     for message in messages:
         encoded_messages.extend(_encode_message(message))
 
-    return messages, encoded_messages, openai_tools, response_format
+    return messages, encoded_messages, openai_tools, response_format, tool_choice
 
 
 def decode_response(

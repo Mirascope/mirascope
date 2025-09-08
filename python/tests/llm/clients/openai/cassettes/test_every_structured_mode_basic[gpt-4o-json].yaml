@@ -1,0 +1,114 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Respond with valid JSON that matches
+      this exact schema:\n\n```json\n{\n  \"description\": \"A book recommendation
+      with metadata. ALWAYS add an exclamation point to the vibe!\",\n  \"properties\":
+      {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"vibe\":
+      {\n      \"description\": \"Should be one of mysterious, euphoric, intruiging,
+      or soul_searching\",\n      \"title\": \"Vibe\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\",\n    \"vibe\"\n  ],\n  \"title\": \"Book\",\n  \"type\":
+      \"object\"\n}\n```"},{"role":"user","content":"Recommend a single fantasy book."}],"model":"gpt-4o","response_format":{"type":"json_object"}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '841'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=Nl7.EmT6yZK4XnBU8_s3mqv5AIrfGUFS8VeqnQtu1PA-1757376020-1.0.1.1-_zmqYFb429dbpZxhWnHqDgdTZbGnS7wje8RM6KTU2YQAjkn0G8slO5a21tbX1_dR2xnv3dKEG80qz.JmoOFLAb3FIML2Y6Xwe_6k83B605I;
+        _cfuvid=6afjR9C2orG3RPsFb.irAoUlVgkxz2SeMC8PceZFmKM-1757374620341-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFJLj9MwEL7nV5g5t6iPtCm9skLighAqWgmyilxnkph1PJY9WWCr/nfk
+        pNtkl0Xi4sN8D883M6dECNAl7AWoRrJqnZm/v6nTW++w8vJrGvDw7d3hg//40x5vusdHmEUFHX+g
+        4ifVW0WtM8ia7AArj5Ixui6zTbbOtotV2gMtlWiirHY8T2m+WqzS+WI3X2wvwoa0wgB78T0RQohT
+        /8YWbYm/YC8Ws6dKiyHIGmF/JQkBnkysgAxBB5aWYTaCiiyj7bs+5VaIHFizwRz2IodDg+KTbFFQ
+        JbhBcattmcNs4MmOG/ID8bNkr9W9+ELcVF0IV9KDPl682t+B0WvqwpsccnueNuGx6oKMM7CdMRNA
+        Wkss4wz7+HcX5HwNbKh2no7hhRQqbXVoCo8ykI3hApODHj0nQtz1g+2ezQqcp9ZxwXSP/XfLXTr4
+        wbjKEV2vLyATSzPWV8ts9opfUSJLbcJkNaCkarAcpeMeZVdqmgDJJPXf3bzmPSTXtv4f+xFQCh1j
+        WTiPpVbPE480j/HS/0W7TrlvGAL6B62wYI0+bqLESnZmOEII8SraotK2Ru+8Hi6xcoU6Vstst9ls
+        M0jOyR8AAAD//wMAZUp//5IDAAA=
+    headers:
+      CF-RAY:
+      - 97c267b4de74769a-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 00:00:24 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '851'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '862'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799840'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 12ms
+      x-request-id:
+      - req_04d25ec921eb4a9c8753553ab761860f
+    status:
+      code: 200
+      message: OK
+version: 1

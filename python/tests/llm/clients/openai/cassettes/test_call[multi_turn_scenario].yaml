@@ -1,0 +1,109 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Be as concise as possible"},{"role":"user","content":"Recommend
+      a book"},{"role":"assistant","content":[{"text":"I''d be happy to.","type":"text"},{"text":"What
+      genre would you like?","type":"text"}]},{"role":"user","content":"Something
+      about the fall of the Roman Empire"}],"model":"gpt-4o"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '332'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=Vw.EgPJibT5t3W5rJrbDCRTinR_p3qr8q_Xlnsrnl2c-1757374620-1.0.1.1-8PhXpMhPIkoxD6O4pn68a0zx7on0BHX55Tz5Hd3nkV.MKcflFILJhJnfytxJBVCl5Rv9IFgBnn.08vxjW_46RyIr5DI_xtP2_s_G67mmZ58;
+        _cfuvid=6afjR9C2orG3RPsFb.irAoUlVgkxz2SeMC8PceZFmKM-1757374620341-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFJNb9swDL37VxA8J4WbOMmQ29B222HA0GHADmthKBJta5NFQWK6pkX+
+        +2Dnw84+gF104ON74nvkawaA1uAaUDdKdBvc9Oa2amR2H553T/f5y8e6dp8qerv8OjcvixwnHYM3
+        30nLiXWluQ2OxLI/wDqSEupUr1eL1XxVLGfXPdCyIdfR6iDTgqezfFZM8zfTfHkkNmw1JVzDtwwA
+        4LV/uxG9oWdcQz45VVpKSdWE63MTAEZ2XQVVSjaJ8oKTAdTshXw/9Q37ZA1FeMAvDcEHm4TjDrgC
+        aQhuSTvrCZQ38E45d6p/5lZ5uGuDjfSAsNnBnfmpooH3drNhfzX+LFK1Tarz6rfOjQDlPYvqsupt
+        Ph6R/dmY4zpE3qTfqFhZb1NTRlKJfWciCQfs0X0G8NgHuL3IBEPkNkgp/IP674rFQQ6HjQ3g7Bgu
+        CotyQ315Il2olYZEWZdGC0CtdENmYA7bUltjeQRkI89/DvM37YNv6+v/kR8ArSkImTJEMlZfGh7a
+        InX3/K+2c8b9wJgoPllNpViK3R4MVWrrDqeGaZeE2rKyvqYYoj3cWxXKaj5fFrkq8hyzffYLAAD/
+        /wMAnjX+j3gDAAA=
+    headers:
+      CF-RAY:
+      - 97c24574e9ac5705-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 08 Sep 2025 23:37:01 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '831'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '837'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799963'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 2ms
+      x-request-id:
+      - req_eee181b8d3a648b6b40ea12d7204ddc6
+    status:
+      code: 200
+      message: OK
+version: 1

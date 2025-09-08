@@ -1,0 +1,72 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Recommend a book"}], "role": "user"},
+      {"parts": [{"text": "I''d be happy to."}, {"text": "What genre would you like?"}],
+      "role": "model"}, {"parts": [{"text": "Something about the fall of the Roman
+      Empire"}], "role": "user"}], "systemInstruction": {"parts": [{"text": "Be as
+      concise as possible"}], "role": "user"}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '373'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\\"\"}],\"role\":
+        \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 33,\"totalTokenCount\":
+        33,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 33}]},\"modelVersion\":
+        \"gemini-2.0-flash\",\"responseId\": \"mGi_aJCLJcS2nvgPzryYmAI\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"The History of the
+        Decline and Fall of the Roman Empire\\\" by Edward Gibbon is a\"}],\"role\":
+        \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 33,\"totalTokenCount\":
+        33,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 33}]},\"modelVersion\":
+        \"gemini-2.0-flash\",\"responseId\": \"mGi_aJCLJcS2nvgPzryYmAI\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" classic.\\n\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\":
+        29,\"candidatesTokenCount\": 21,\"totalTokenCount\": 50,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 29}],\"candidatesTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 21}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
+        \"mGi_aJCLJcS2nvgPzryYmAI\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Mon, 08 Sep 2025 23:36:56 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=300
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
