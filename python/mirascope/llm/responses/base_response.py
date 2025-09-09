@@ -51,8 +51,10 @@ class BaseResponse(RootResponse[ToolkitT, FormatT]):
         self.finish_reason = finish_reason
         self.format_type = format_type
 
-        self.messages = list(input_messages) + [assistant_message]
-
+        # Process content in the assistant message, organizing it by type and
+        # transforming ToolCalls to the special format tool into text (as calls to the
+        # formatting tool are not "real" tool calls, and response.format() expects to
+        # operate on text content).
         found_format_tool = False
         self.texts, self.tool_calls, self.thoughts, self.content = [], [], [], []
         for part in assistant_message.content:
@@ -69,6 +71,16 @@ class BaseResponse(RootResponse[ToolkitT, FormatT]):
                 self.thoughts.append(part)
             else:
                 raise NotImplementedError
+
+        if found_format_tool:
+            # We create a new assistant message if we found a formatting ToolCall
+            # since this indicates we've transformed the content from the original
+            # NOTE: we copy over the assistant message `name` field, although in
+            # practice we don't know of any providers that set the name themselves.
+            assistant_message = AssistantMessage(
+                content=self.content, name=assistant_message.name
+            )
+        self.messages = list(input_messages) + [assistant_message]
 
         if found_format_tool and self.finish_reason == FinishReason.TOOL_USE:
             self.finish_reason = FinishReason.END_TURN
