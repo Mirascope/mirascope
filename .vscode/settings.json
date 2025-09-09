@@ -23,5 +23,8 @@
   },
   "[markdown]": {
     "editor.formatOnSave": false
-  }
+  },
+  "python.testing.pytestArgs": [
+    "python"
+  ]
 }
