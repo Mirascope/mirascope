@@ -10,8 +10,8 @@ interactions:
       {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
       "type": "string"}}, "required": ["title", "author"], "title": "Book", "type":
       "object"}}, {"description": "retrieve_book_tool", "name": "retrieve_book_tool",
-      "parameters": {"properties": {}, "required": [], "type": "OBJECT"}}]}], "generationConfig":
-      {}}'
+      "parameters": {"properties": {}, "required": [], "type": "OBJECT"}}]}], "toolConfig":
+      {"functionCallingConfig": {"mode": "ANY"}}, "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -20,7 +20,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '890'
+      - '948'
       content-type:
       - application/json
       host:
@@ -34,19 +34,19 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2VTTZOaQBS8+yssrsaAuILkpsIqiMgiKppKbY0wfAkMDIOg1v73oK67mnCgqO7m
-        vZl+r8+NZpOyQeIEDiAwp341f9dIs3m+vi8cSghMSE3coRpMASbf2ttzfviuJW6R2CRAyQhE0dPP
-        n3wCYljjFIYEB/AA33cI7d8JQhH1418twN6l2/njifh41lHER4Xnk0XgJYAU+Fp9lEujgTMhQSzs
-        WA5MeWYdqMe468Z2uoLzSC6ZDr+kdd5UgEp7xhvQpsqAGcTT1ootM6zY28rbYXoUgKHBDPlMmLEi
-        Giv5nNHeJEfovGkT0TE2g84OOR7NbSy+Y79OdsgPgay+KHrYe8mGtFow+7kV2vNeC2y5ULcZX16r
-        mScSIYGKLFomBviAs/WqskMCh+vSIKfl5JSZJ3FjTdTU8hfk2NN5LNr5skcMZYaxHmI0IsjVtZkh
-        yMK25JebxNP26enADfy011exYPuEE9lOSkt0CSJlUtkossSuyEujTs6gTBY9Nx8y8wWYS31SHdQ4
-        rBJS0M4Bhwt2u9xntl9pjJ+PnU3mmrJvAp5Y/gRsyhlHhq9WcjJyQdS64drRtosxVIqwoLeh87qS
-        QfniecZSnno9nWlVBesd9WO0GHezYyVtxlNT3e1biqCk3HRwOHDL3ngpUQ8j/Z72n+9JUxhF18nG
-        yIHRXf61CpQbJEHuGxDkKLnIFuZc/1ooKkgcWNUw07g3uJamihx4cAYJqEMAvraVSjGKU2KiPUxG
-        qLiGoPPC3ao9hOZZwH7yBBEQPVFsV/jxX+FcrNsG0WOaHoJW3xJEATlermJKlvmQjbrB87nuXjQe
-        LLuH4vmM/U7j07ObjSuI8+Dmlwfj2sE2+7PXdiOQ+9eGdUjzFCU5lJ2Lxj3uRmD2XgzaATnxst7G
-        66w/KKnGR+MvSSh4CE8EAAA=
+        H4sIAAAAAAAC/2VTXXOaQBR991c4vNI2IKDSNwQTBQkS8bPT6Wxk+Vx2cVmEkMl/L5qYaMsDw5xz
+        uHf33HteO90utwfYj33AYMH97P5qkW739fw+cQQziFlLXKAWzAFlX9r35/Xqu5UEJd6zmGAdIHTz
+        8wePQQZbnKOQ0Rge4Z9nQtI/jBDEfftXC2h46vb6dkO83eo4FpEyjNgiDjFgJT1X1wtX1/wJi7M7
+        S3V0c62FD6tF8eKpq+BuaMwmSEh8EsWyuzEHe93tT3RnqvAELx1oUs/m+1N5Wt7xmjty5wjJu5Wh
+        5Ee8uQeFnzjzA52nngyMxA80eVcLxwg2O9mKRhqO1w6UpcykIRBHWLfQkDTqks2fwnteVbA4GBuQ
+        8Uulr+5LTbqzxqaaNcjd2jXLJplBJXujWXYTTnqU9KBgujpr9AOFnielK4stxJ2aCMHzaIola/kI
+        XKu/14PkAafNSjlUdeUdaxJF+4djLupQqyu3Zy4nOzFfP22VBx5nStxssmq1vNfIdNx3yRDtF3Np
+        dAgM2peIjsYw6qV8lZfrhSEE6AhGeq4L1f3EicggBzNgNmjN27ZSZcN0dYB7ZozdbTGUnmuB0GKS
+        BvaxAWkuDmjKj2piUwrYzEnqeDE7kko1t+JISETtBWTKVqmd5WBBjKUor3vc1Vi/Jv77a9ocJeg8
+        3Yz4EF3kn+vABTGOi+gJgoLgk2zhOfPPpeJi7MO6hYXOpcG5NFcWIIQ2ZKANAvjcWC6nJMuZR1KI
+        dVKegyDK/fdqV8G5FfQ+eEYYQDdUT1K//Ve4aFcBxOg6UVdha28JUMxeTlfxxhvvKh9tg9tzXbzo
+        XFl2CcbtGYdi58OzdxtXkBbxu18hzFoHv/d+KN8DBIro3LANapETXMCpf9I0xkwHVpY9whe/GUzn
+        hzJJhlrFdd46fwF8MptvUwQAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -55,11 +55,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 11 Sep 2025 01:31:43 GMT
+      - Thu, 11 Sep 2025 02:24:12 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1584
+      - gfet4t7; dur=876
       Transfer-Encoding:
       - chunked
       Vary:

@@ -10,8 +10,8 @@ interactions:
       {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
       "type": "string"}}, "required": ["title", "author"], "title": "Book", "type":
       "object"}}, {"description": "retrieve_book_tool", "name": "retrieve_book_tool",
-      "parameters": {"properties": {}, "required": [], "type": "OBJECT"}}]}], "generationConfig":
-      {}}'
+      "parameters": {"properties": {}, "required": [], "type": "OBJECT"}}]}], "toolConfig":
+      {"functionCallingConfig": {"mode": "ANY"}}, "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -20,7 +20,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '890'
+      - '948'
       content-type:
       - application/json
       host:
@@ -34,20 +34,25 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
+        qD70BQAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -56,11 +61,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 11 Sep 2025 01:30:57 GMT
+      - Thu, 11 Sep 2025 02:22:24 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1143
+      - gfet4t7; dur=1364
       Transfer-Encoding:
       - chunked
       Vary:

@@ -11,7 +11,8 @@ interactions:
       be the number 17.", "properties": {"first": {"title": "First", "type": "integer"},
       "second": {"description": "Should be the number 13", "title": "Second", "type":
       "integer"}}, "required": ["first", "second"], "title": "Output", "type": "object"}}]}],
-      "generationConfig": {}}'
+      "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames":
+      ["__mirascope_formatted_output_tool__"]}}, "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -20,7 +21,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '904'
+      - '1027'
       content-type:
       - application/json
       host:
@@ -34,19 +35,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -55,11 +57,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 11 Sep 2025 01:31:38 GMT
+      - Thu, 11 Sep 2025 02:22:29 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=870
+      - gfet4t7; dur=1070
       Transfer-Encoding:
       - chunked
       Vary:

@@ -252,7 +252,9 @@ def prepare_openai_request(
         | NotGiven
     ) = NotGiven()
 
-    tool_choice = NotGiven()
+    tool_choice: openai_types.ChatCompletionToolChoiceOptionParam | NotGiven = (
+        NotGiven()
+    )
 
     if format:
         model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
@@ -267,7 +269,11 @@ def prepare_openai_request(
         if resolved_format.mode == "strict":
             response_format = create_strict_response_format(resolved_format.info)
         elif resolved_format.mode == "tool":
-            tool_choice = "required"
+            tool_choice = (
+                "required"
+                if tools
+                else {"type": "function", "function": {"name": FORMAT_TOOL_NAME}}
+            )
             openai_tools.append(create_format_tool_param(resolved_format.info))
         elif resolved_format.mode == "json" and model_has_native_json_support:
             response_format = {"type": "json_object"}

@@ -3,7 +3,7 @@ interactions:
     body: '{"messages":[{"role":"system","content":"Please output a book recommendation
       in JSON form.\nIt should have the format {title: str, author: str} and the \ntitle
       and author should both be in all caps."},{"role":"user","content":"Extract the
-      book: The Name of the Wind by Patrick Rothfuss"}],"model":"gpt-4o","tool_choice":"required","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      book: The Name of the Wind by Patrick Rothfuss"}],"model":"gpt-4o","tool_choice":{"type":"function","function":{"name":"__mirascope_formatted_output_tool__"}},"tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object","additionalProperties":false},"strict":true}}]}'
     headers:
       accept:
@@ -13,12 +13,11 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '722'
+      - '789'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=ns5DrRcABJFXRdZhDTQTCiZOp4gTYzsf1D39poTai30-1757551965-1.0.1.1-n1CdiTmhVoEkb4M_O7YbmFnRz.l7JYgpDn6eoWX_dKPsAHK9ss4UDL0XE2_tcPLj0zmhE_gfFGMhWyJrqK9PxHQvzv60dakcgu40j4rAwq4;
-        _cfuvid=Z1Uj26Qu8pT2l1DK6mLvSauyL0OvphibDedlBVRvnig-1757551965026-0.0.1.1-604800000
+      - _cfuvid=Z1Uj26Qu8pT2l1DK6mLvSauyL0OvphibDedlBVRvnig-1757551965026-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -46,20 +45,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFPbbhoxEH3fr7DmGSqgWUC8pZQk9BJoQpRKJbKMdxaceG3L9pKmiH+v
-        bC67JKnUfVhZc+bMnDkebxJCQGQwIMBXzPPCyOZwNF33sy937V5r3V5Nb3666afx8Pax9+wvFTQC
-        Qy8ekfsD6wPXhZHohd7D3CLzGKq2e2kvTTudbjcChc5QBtrS+OaZbnZanbNmq99sdffElRYcHQzI
-        r4QQQjbxHySqDH/DgLQah0iBzrElwuCYRAhYLUMEmHPCeaY8NCqQa+VRBdWqlLIGeK0l5UzKqvHu
-        29TOlU9MSvqjuFw8fZuoi67J/6T37X56ORpP2FOt3670i4mC8lLxoz81/BgfvGpGCChWRC6lhbDM
-        cW2Q5toWzHvMqC69KT2N2umrsoQAs8uyQOXDSLCZgxde4hwGc5hdjcj1+fcRmVyQcL4fX3+eQ2MO
-        rPQrbWPO9Hx2Mx5+JTeT2dXF3e3tHLZw0mGbvHd+qJlqMS8dk2/dZkppz8LQ0e6HPbI93qzUS2P1
-        wr2iQi6UcCtqkbloWP3ekoOQKAHKk9UAY3VhgldPGJu2O/s9gmpzK/Rjuge99kzWWOkBOKlHM/RM
-        xN05ritnfIVZRa3WlpWZ0DUgqc3+Vs17tXfzC7X8n/IVwDmasDfGYib46cRVmsXwsP+VdnQ5CgaH
-        di04Ui/QhvvIMGel3L05cC/OY0FzoZZojRXx4UFuKF/k7V4/Tbs9SLbJXwAAAP//AwD47k8NgQQA
+        H4sIAAAAAAAAAwAAAP//jFNRb9owEH7nV1j3DBOwhrS8dV0ZaCvtSjemjcpynUvw6tie7VRjiP8+
+        2WlJaDtpeYis++6+++7zedshBEQGYwJ8zTwvjeydnV9/mKXL2dKp4v7z9Ovmwv0xp5MHJSv7Dbqh
+        Qt/9RO6fqt5wXRqJXmhVw9wi8xhYB2mSJkl6NBxGoNQZylBWGN870r1hf3jU6x/3+qPHwrUWHB2M
+        yY8OIYRs4z9IVBn+hjHpd58iJTrHCoTxPokQsFqGCDDnhPNMeeg2INfKowqqVSVlC/BaS8qZlE3j
+        +tu2zo1PTErKR25+9WlzwhZuOZAe5SKdvfv1Xbb61dQbEwXlleJ7f1r4Pj5+1owQUKyMtZSWwjLH
+        tUGaa1sy7zGjuvKm8jRqp89oCQFmi6pE5cNIsF2BF17iCsYruJmek/npxTm5nJBwXs7m71fQXQGr
+        /FrbmHN1enM9O/tIri9vppMvi8UKdnDQYdd57XzbMtViXjkmX7rNlNKehaGj3bePyG5/s1IXxuo7
+        96wUcqGEW1OLzEXDwHltallBQmwO1cFSgLG6NMGle4ztBm9HNR80O9tCTx5Brz2TrXiSdF/hoxl6
+        JuLW7BeVM77GrCltFpZVmdAtoNOa+qWa17jryYUq/oe+AThHEzbGWMwEP5y4SbMYnvS/0vYuR8Hg
+        0D4IjtQLtOEmMsxZJevXBm7jPJY0F6pAa6yITw5yQ/ldPkiPk2SUQmfX+QsAAP//AwDEYjUuewQA
         AA==
     headers:
       CF-RAY:
-      - 97d3367edb7875ca-SEA
+      - 97d3b460dcd2eb3c-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -67,9 +66,13 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 11 Sep 2025 00:57:46 GMT
+      - Thu, 11 Sep 2025 02:23:43 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=7S2AcD.hkWNLdghjwy6EOtjxDP4n4K2eBDM1_wc3v8M-1757557423-1.0.1.1-8cypSKdkJWjwZmqMTQR15hHvbBcoGLYqUPuoH1ff1OS80wNR4A4UHUfcJmIOJrnBAGuKYjutyg4z9dUIvb_oKzY11xoLdlPg_QMnY.MEf_Q;
+        path=/; expires=Thu, 11-Sep-25 02:53:43 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -85,13 +88,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '681'
+      - '477'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '697'
+      - '687'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -107,7 +110,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 4ms
       x-request-id:
-      - req_45f8bdf7969148d9836cbd18f441d8e2
+      - req_70d78b4fb85f47468f8175042dfcf389
     status:
       code: 200
       message: OK
