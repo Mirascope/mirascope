@@ -3,7 +3,7 @@ interactions:
     body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Produce a formatted
       output"}],"model":"claude-sonnet-4-0","system":"When you are ready to respond
       to the user, call the __mirascope_formatted_output_tool__ tool to output a structured
-      response.\nDo NOT output any text in addition to the tool call.","tool_choice":{"type":"any"},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      response.\nDo NOT output any text in addition to the tool call.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__"},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Output format for a final response.\nAn output.
       The `first` value should be the number 17.","input_schema":{"description":"An
       output. The `first` value should be the number 17.","properties":{"first":{"title":"First","type":"integer"},"second":{"description":"Should
@@ -18,7 +18,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '825'
+      - '871'
       content-type:
       - application/json
       host:
@@ -50,15 +50,15 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3SRwU7DMAyG38XnTGq7dRO5VXBjJ7QDCKEoSry1pUm62JlAVd8dZdNAA3GMv99f
-        7GSCzoIERwdVlE11ethv+yOZ3tHh49Q/3Te+BwH8OWJOIZE+IAiIYcgFTdQRa88gwAWLA0gwg04W
-        FxS8R16sFlVR1UVdrkCACZ7RM8jX6arkEAaVKDvPg+RzUkW56e/s8WVLtn1+pDX1TdXsdiUI8Nrl
-        PqVcFzWZMKLah+g0M1oVEo+J1VmqstKPiUFOsO8iMchyI4DQBG9Blst5fhNAHEYVUVPwt+OcAeEx
-        oTcI0qdhEJDO+8vpYlYc3tETyDqLjTYtKhNRcxe8uk0UVx5R2//YtTdfgGOLDqMeVO3+5n9o2f6m
-        s4Dvd7iU1su8djx1BhV3GEFC/jWro4V5/gIAAP//AwCLFGbAAwIAAA==
+        H4sIAAAAAAAAAwAAAP//dJFbSwMxEIX/yzynsNt2FfPsDQQRKVorEmIy3YbuJtvMxAvL/nfJqpUq
+        PmbOmS9nZnpwFiS0VKuivHFpW7tdraezxTmZqzt6vVg5EMDvHWYXEukaQUAMTS5oIkesPYOANlhs
+        QIJpdLI4oeA98mQ+mRbTqqjKOQgwwTN6BvnYfyM5hEYlyswxSH4nVZQn1WnJz6vl9dnl4jbx0h7d
+        P7xtQYDXbe5TqnVRkwkdqnWIrWZGq0LiLrEaoSojfZcYZA9rF4lBlscCCE3wFmQ5G4YnAcShUxE1
+        BX8YZxQIdwm9QZA+NY2ANM4v+0+y4rBFTyCrWSHAaLNBZSJqdsGrQ8dej6jtf9p3b/4Auw22GHWj
+        qvav/0ctN7/VQcB+D1/xijx2fHEGFTuMICFfzepoYRg+AAAA//8DAO0iljwDAgAA
     headers:
       CF-RAY:
-      - 97d353777aa4758c-SEA
+      - 97d3afa7dc8c6826-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -66,7 +66,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 11 Sep 2025 01:17:33 GMT
+      - Thu, 11 Sep 2025 02:20:29 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -80,35 +80,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-11T01:17:33Z'
+      - '2025-09-11T02:20:29Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-11T01:17:33Z'
+      - '2025-09-11T02:20:29Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-11T01:17:32Z'
+      - '2025-09-11T02:20:28Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-11T01:17:33Z'
+      - '2025-09-11T02:20:29Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CT1jNZmvtG8tYnYxoctv4
+      - req_011CT1pAv6ZJDKd3XMzQCRQ1
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1205'
+      - '1126'
     status:
       code: 200
       message: OK

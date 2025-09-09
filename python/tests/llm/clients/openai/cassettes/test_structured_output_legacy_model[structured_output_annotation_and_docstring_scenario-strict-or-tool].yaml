@@ -3,7 +3,7 @@ interactions:
     body: '{"messages":[{"role":"system","content":"When you are ready to respond
       to the user, call the __mirascope_formatted_output_tool__ tool to output a structured
       response.\nDo NOT output any text in addition to the tool call."},{"role":"user","content":"Produce
-      a formatted output"}],"model":"gpt-4","tool_choice":"required","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      a formatted output"}],"model":"gpt-4","tool_choice":{"type":"function","function":{"name":"__mirascope_formatted_output_tool__"}},"tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Output format for a final response.\nAn output.
       The `first` value should be the number 17.","parameters":{"description":"An
       output. The `first` value should be the number 17.","properties":{"first":{"title":"First","type":"integer"},"second":{"description":"Should
@@ -16,12 +16,11 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '882'
+      - '949'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=ns5DrRcABJFXRdZhDTQTCiZOp4gTYzsf1D39poTai30-1757551965-1.0.1.1-n1CdiTmhVoEkb4M_O7YbmFnRz.l7JYgpDn6eoWX_dKPsAHK9ss4UDL0XE2_tcPLj0zmhE_gfFGMhWyJrqK9PxHQvzv60dakcgu40j4rAwq4;
-        _cfuvid=Z1Uj26Qu8pT2l1DK6mLvSauyL0OvphibDedlBVRvnig-1757551965026-0.0.1.1-604800000
+      - _cfuvid=Z1Uj26Qu8pT2l1DK6mLvSauyL0OvphibDedlBVRvnig-1757551965026-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -49,19 +48,19 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFNda9swFH33rxB6TkrSfI28daUU1pGFMbrCUsSNfO0o09ckuV0a8t+L
-        5NR22gzmB2Pu0Tn33KPrfUYIFTmdE8o3ELiysn99s9wt1NftunDlzbNwnz99u39Z/rgaL25/StqL
-        DLPeIg9vrAtulJUYhNE1zB1CwKg6nE1mk8nleDpLgDI5ykgrbeiP+4PpcHRkbIzg6Omc/MoIIWSf
-        3tGbzvEvnZNB762i0Hsokc6bQ4RQZ2SsUPBe+AA60F4LcqMD6mhXV1J2gGCMZBykbBvXz77z3QYE
-        UrKX+6fldgp3z9s/X4abB7gaVt8Xd4OHTr9aemeToaLSvAmmgzf1+btmhFANKnEZU8KB58YiK4xT
-        EALmzFTBVoEl7+yCsXMjH4XAlZVCHeJ4dL/ShKxoIZwPq3Q1vbrikRudp9JopQ/0ROWQnft+7ITo
-        sKg8yI/pgtYmQBwyxft4RA7NTUpTWmfW/h2VFkILv2EOwaeAqA/G1raihdScVidLQK0zysZUfmNq
-        NxyNaj3aLmeLXs6OYDABZIc1Pe7ZqR7LMYBIW9IsJge+wbyltgsKVS5MB8g6U390c067nlzo8n/k
-        W4BztHFDrMNc8NOJ22MO47/7r2NNyskw9eieBEcWBLp4EzkWUMl61ajf+YCKFUKX6KwTzS+WHbJX
-        AAAA//8DAM7gxpZZBAAA
+        H4sIAAAAAAAAAwAAAP//jFPLbtswELzrKwie7cKOrRr1LX0iCAI0vaRIHRAMuZLZ8AVyZdcw/O8F
+        KUeSHReoDoK0w52dnV3uC0KoknRJqFhzFMbr8acvP77dvvjvHzd34f66XHy+mVVfxfb68eqD2dBR
+        ynDPv0Hga9Y74YzXgMrZFhYBOEJinS7KRVku5lfzDBgnQae02uN4Pp68n86OGWunBES6JL8KQgjZ
+        53fSZiX8oUsyGb1GDMTIa6DL7hAhNDidIpTHqCJyi3TUg8JZBJvk2kbrAYDOaSa41n3h9tkPvnuD
+        uNZsosor+WB/NhVu79fbu5vdg0Fxqwb1Wuqdz4KqxorOmAHexZdnxQihlpucy5hRgUfhPLDKBcMR
+        QTLXoG+QZe3sjJYQykPdGLCYWqL7lV3RSoWIqzyMUfqPIJyVOTBb2QM9YTgUl76fBqYFqJrI9Vs3
+        ubUOeWoq2/l0RA7d5LSrfXDP8SyVVsqquGYBeMyG0IjOt7KShFycNidDpz4445MLL5DLTeezlo/2
+        yzhEjyA65HoQLxejC3xMAnKVt6JbRMHFGmSf2i8kb6RyA6AYdP1WzSXutnNl6/+h7wEhwKeN8AGk
+        Eqcd98cCpLv6r2Ody1kwjRA2SgBDBSFNQkLFG93eJhp3EcGwStkagg+qu1LFofgLAAD//wMAgIUw
+        1kkEAAA=
     headers:
       CF-RAY:
-      - 97d33b6afb4ba347-SEA
+      - 97d3b46cec46eb3c-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -69,9 +68,13 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 11 Sep 2025 01:01:09 GMT
+      - Thu, 11 Sep 2025 02:23:45 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=ky7gjw4xFI.2RINyD2inK.u7WZgy.j15lhTj6YDPsM4-1757557425-1.0.1.1-iITrKFLwBHXc1JggV6J7F7JSARgHpDSy8l4P5GXflvWavk.GDW9Iy4ck8a3yFGwGj3biGfcLjCU5BZNcDQIsbABgsSi_zRK2gJye.kmDrQE;
+        path=/; expires=Thu, 11-Sep-25 02:53:45 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -87,13 +90,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1461'
+      - '885'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1521'
+      - '1024'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -109,7 +112,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 40ms
       x-request-id:
-      - req_773550fbf37543c08c228c800e298689
+      - req_c0d55022309f46739c59267f7ec22950
     status:
       code: 200
       message: OK

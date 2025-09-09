@@ -201,6 +201,15 @@ def prepare_google_request(
         elif resolved_format.mode == "tool":
             format_tool = create_format_tool_declaration(resolved_format.info)
             google_tools.append(genai_types.Tool(function_declarations=[format_tool]))
+            function_calling_config: genai_types.FunctionCallingConfigDict = {
+                "mode": genai_types.FunctionCallingConfigMode.ANY
+            }
+            if not tools:
+                function_calling_config["allowed_function_names"] = [FORMAT_TOOL_NAME]
+
+            config_params["tool_config"] = {
+                "function_calling_config": function_calling_config
+            }
         elif resolved_format.mode == "json":
             config_params["response_mime_type"] = "application/json"
 

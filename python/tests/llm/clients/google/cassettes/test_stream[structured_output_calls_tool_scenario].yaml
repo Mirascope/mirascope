@@ -10,8 +10,8 @@ interactions:
       {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
       "type": "string"}}, "required": ["title", "author"], "title": "Book", "type":
       "object"}}, {"description": "retrieve_book_tool", "name": "retrieve_book_tool",
-      "parameters": {"properties": {}, "required": [], "type": "OBJECT"}}]}], "generationConfig":
-      {}}'
+      "parameters": {"properties": {}, "required": [], "type": "OBJECT"}}]}], "toolConfig":
+      {"functionCallingConfig": {"mode": "ANY"}}, "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -20,7 +20,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '890'
+      - '948'
       content-type:
       - application/json
       host:
@@ -34,11 +34,11 @@ interactions:
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"retrieve_book_tool\",\"args\": {}},\"thoughtSignature\": \"CiQB0e2Kb4LzWsij14al4Y1ccuWU8fWgHB8uyeEkzkjQQNUD3ogKbAHR7YpvWNZH2/QXZRTywRrJh9uKHtTjsfphB+8YC/lT1gFPZMWQaCxiRg55zXKqMVHBmh0oiO671Ddry4xqcBRzvDliqDIG6/C207OzEbtztEH1MGKKXx6qBH9Jmq39TwZ+SjegW1XupSy1gAr0AQHR7YpvKIaG7CHkV/S5/x5F07pR8yLkYDN/kP9g90T+IWfpNtt2e57x96A8ARLCPbp+rErL5cT3R49oqSKkeLop0TEyv+TH2vydWbOqkQTdVwumnsvXvKe0rvmiPvoMHOyCSS71tGoqc1nfVBEUDpAslB3NVICb3+cdf9ojBvIz1+sC8nsxXdU2CurRKQJMkSpMZaUvWg/g6GIrVDpdpVuadJnNb7GZ/JfzzrN01P/oIVPM2s76p+rQXAQAkooe0DreNnEyPwCsE5Ki8JJfWedIF+xu+TueCp2LDBYQv0LdSv9Qv9aBJvBRYrKYs/9LhONSQaMKwAEB0e2Kb+erTmTHtzuvZM5W2udqYvN+AX/8wnS7gfmU8LLOUwMsC7QcwL2myNWJ0O4WQ/HgB/kfHsY4vPZjNuARVkTjBQaz9bMrhuhH9SEmPaRAhFKbwjYqLhVtWdmmvqEY0YrUHCZU3gxjL68jtC69DJQncsez6JIZh7+7k9HZUE0BuFNyU+ckdWyFhf8zRI5vVPO9E6dXqlJn8fLBKmzXq2tin/MCD/oqVaDZgwchfd002C6zZWBrXRtPHYVngqUKQQHR7YpvCfKyufrqkRoUMmzCql7YZUqRx+BHLi9eMOTSrACLPGIzYz1VMTqqQii/s2PebZ75H3gsB5tjfOp+Dblo\"}],\"role\":
+        {\"name\": \"retrieve_book_tool\",\"args\": {}},\"thoughtSignature\": \"CiQB0e2Kb4af1NAD0PVtoMbubWqB9k+I0RAjAMCvGM//vTtLSFsKbwHR7Ypv4Nb7rkne68xxvuTQuMPOViEt+vw5lKiDUPcUifkdGI1x0hxtKjxUdAMjaDKzX7flzs58WuKGkiwcbm9C+L3LUa1GnuyBHY6u5iXTEd3gn2wesBjiYYJLEWy6aXdat4UglwfNGXe+HEApYArQAQHR7Ypv7LMaFiiJWgt2S/1djsHu+DwbO2dGNdOqJoyAoMuoLU0v/znVj3nHLiWgN6COImDVnXog78gTnU1Lc3UithXmbitmVYA4nZj0AbEoedZRllOMbcWbpxufbmVBcy0xU+uqDQkevrCIN50lkPdqEnM+LAsSh//E3G/Zc2fDRaLHT9ksvPF8WEh2lIHRhCWRfUw5YKP2BhFTd4RoHSe4XD/Zn6TV96lMeF8gW6/Fn3IoJrz5ah35q1lMYQzsjc01D8LOkP20pMQDsZ6MCfoKRwHR7YpvTEZh1rWRhzdYlbAwtfsDefIVU4FsYz7s8//wiahwWS/NdsFrGF0L+0QvwrAbspQAPo6WJYmTOFIn03om3EydWpPX\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        146,\"candidatesTokenCount\": 12,\"totalTokenCount\": 285,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 146}],\"thoughtsTokenCount\": 127},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"ZybCaMfoH7mtz7IPg4_U-Q4\"}\r\n\r\n"
+        146,\"candidatesTokenCount\": 12,\"totalTokenCount\": 237,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 146}],\"thoughtsTokenCount\": 79},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"YTLCaJD6NKnTz7IP4LnRgA4\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -47,11 +47,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Thu, 11 Sep 2025 01:31:20 GMT
+      - Thu, 11 Sep 2025 02:22:26 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=964
+      - gfet4t7; dur=2125
       Transfer-Encoding:
       - chunked
       Vary:
