@@ -1177,12 +1177,11 @@ class TestFormatToolHandling:
         streamed_chunks = list(stream_response.chunk_stream())
 
         assert streamed_chunks == example_format_tool_chunks_processed
-        assert len(stream_response.texts) == 1
-        assert (
-            stream_response.texts[0].text
-            == '{"title": "The Hobbit", "author": "Tolkien"}'
+        assert stream_response.content == snapshot(
+            [llm.Text(text='{"title": "The Hobbit", "author": "Tolkien"}')]
         )
-        assert len(stream_response.tool_calls) == 0
+        assert stream_response.messages[-1].content == stream_response.content
+
         assert stream_response.finish_reason == llm.FinishReason.END_TURN
 
     def test_sync_mixed_regular_and_format_tools(
@@ -1197,14 +1196,18 @@ class TestFormatToolHandling:
         streamed_chunks = list(stream_response.chunk_stream())
 
         assert streamed_chunks == example_format_tool_chunks_mixed_processed
-        assert len(stream_response.tool_calls) == 1
-        assert stream_response.tool_calls[0].name == "ring_tool"
-        assert len(stream_response.texts) == 2
-        assert (
-            stream_response.texts[0].text
-            == '{"title": "The Hobbit", "author": "Tolkien"}'
+        assert stream_response.content == snapshot(
+            [
+                llm.ToolCall(
+                    id="call_007",
+                    name="ring_tool",
+                    args='{"ring_purpose": "to_rule_them_all"}',
+                ),
+                llm.Text(text='{"title": "The Hobbit", "author": "Tolkien"}'),
+                llm.Text(text="A wizard is never late."),
+            ]
         )
-        assert stream_response.texts[1].text == "A wizard is never late."
+        assert stream_response.messages[-1].content == stream_response.content
         assert stream_response.finish_reason == llm.FinishReason.END_TURN
 
     def test_sync_format_tool_no_finish_reason_change(
@@ -1241,12 +1244,10 @@ class TestFormatToolHandling:
         streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
 
         assert streamed_chunks == example_format_tool_chunks_processed
-        assert len(stream_response.texts) == 1
-        assert (
-            stream_response.texts[0].text
-            == '{"title": "The Hobbit", "author": "Tolkien"}'
+        assert stream_response.content == snapshot(
+            [llm.Text(text='{"title": "The Hobbit", "author": "Tolkien"}')]
         )
-        assert len(stream_response.tool_calls) == 0
+        assert stream_response.messages[-1].content == stream_response.content
         assert stream_response.finish_reason == llm.FinishReason.END_TURN
 
     @pytest.mark.asyncio
@@ -1264,14 +1265,18 @@ class TestFormatToolHandling:
         streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
 
         assert streamed_chunks == example_format_tool_chunks_mixed_processed
-        assert len(stream_response.tool_calls) == 1
-        assert stream_response.tool_calls[0].name == "ring_tool"
-        assert len(stream_response.texts) == 2
-        assert (
-            stream_response.texts[0].text
-            == '{"title": "The Hobbit", "author": "Tolkien"}'
+        assert stream_response.content == snapshot(
+            [
+                llm.ToolCall(
+                    id="call_007",
+                    name="ring_tool",
+                    args='{"ring_purpose": "to_rule_them_all"}',
+                ),
+                llm.Text(text='{"title": "The Hobbit", "author": "Tolkien"}'),
+                llm.Text(text="A wizard is never late."),
+            ]
         )
-        assert stream_response.texts[1].text == "A wizard is never late."
+        assert stream_response.messages[-1].content == stream_response.content
         assert stream_response.finish_reason == llm.FinishReason.END_TURN
 
     @pytest.mark.asyncio

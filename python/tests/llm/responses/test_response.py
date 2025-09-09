@@ -393,6 +393,7 @@ def test_response_format_tool_handling() -> None:
     assert response.content[1] == llm.Text(
         text='{"title": "The Hobbit", "author": "J.R.R. Tolkien"}'
     )
+    assert response.messages[-1].content == response.content
 
     assert response.finish_reason == llm.FinishReason.END_TURN
 
@@ -437,6 +438,8 @@ def test_response_mixed_regular_and_format_tool() -> None:
     )
     assert response.content[1] == llm.Text(text='{"formatted": "output"}')
     assert response.content[2] == llm.Text(text="Done!")
+
+    assert response.messages[-1].content == response.content
 
     assert response.finish_reason == llm.FinishReason.END_TURN
 

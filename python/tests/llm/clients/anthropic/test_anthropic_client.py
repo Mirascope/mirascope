@@ -119,34 +119,6 @@ The book is engaging for general readers while still being scholarly, making it 
                     ),
                 ],
             },
-            "tool_parallel_calls_scenario": {
-                "provider": "anthropic",
-                "model_id": "claude-sonnet-4-0",
-                "params": None,
-                "finish_reason": FinishReason.TOOL_USE,
-                "messages": [
-                    UserMessage(
-                        content=[Text(text="What's the weather in SF and NYC?")]
-                    ),
-                    AssistantMessage(
-                        content=[
-                            Text(
-                                text="I'll check the weather in both San Francisco (SF) and New York City (NYC) for you."
-                            ),
-                            ToolCall(
-                                id="toolu_01EbRtubydzFBtzduTciwJBv",
-                                name="get_weather",
-                                args='{"location": "SF"}',
-                            ),
-                            ToolCall(
-                                id="toolu_01YL2D6pdx5UL4zv17aMee5a",
-                                name="get_weather",
-                                args='{"location": "NYC"}',
-                            ),
-                        ]
-                    ),
-                ],
-            },
             "tool_single_output_scenario": {
                 "provider": "anthropic",
                 "model_id": "claude-sonnet-4-0",
@@ -177,6 +149,34 @@ The book is engaging for general readers while still being scholarly, making it 
                             Text(
                                 text="The weather in San Francisco (SF) is currently overcast with a temperature of 64°F."
                             )
+                        ]
+                    ),
+                ],
+            },
+            "tool_parallel_calls_scenario": {
+                "provider": "anthropic",
+                "model_id": "claude-sonnet-4-0",
+                "params": None,
+                "finish_reason": FinishReason.TOOL_USE,
+                "messages": [
+                    UserMessage(
+                        content=[Text(text="What's the weather in SF and NYC?")]
+                    ),
+                    AssistantMessage(
+                        content=[
+                            Text(
+                                text="I'll check the weather in both San Francisco (SF) and New York City (NYC) for you."
+                            ),
+                            ToolCall(
+                                id="toolu_01EbRtubydzFBtzduTciwJBv",
+                                name="get_weather",
+                                args='{"location": "SF"}',
+                            ),
+                            ToolCall(
+                                id="toolu_01YL2D6pdx5UL4zv17aMee5a",
+                                name="get_weather",
+                                args='{"location": "NYC"}',
+                            ),
                         ]
                     ),
                 ],
