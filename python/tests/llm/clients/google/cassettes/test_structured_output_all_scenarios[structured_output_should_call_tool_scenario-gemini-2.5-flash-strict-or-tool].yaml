@@ -1,0 +1,83 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Recommend a single fantasy book in the
+      library."}], "role": "user"}], "systemInstruction": {"parts": [{"text": "When
+      you are ready to respond to the user, call the __mirascope_formatted_output_tool__
+      tool to output a structured response.\nDo NOT output any text in addition to
+      the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in Book format for a final response.\nA book
+      recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
+      "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"description":
+      "A book recommendation with metadata. ALWAYS add an exclamation point to the
+      vibe!", "properties": {"title": {"title": "Title", "type": "string"}, "author":
+      {"title": "Author", "type": "string"}, "vibe": {"description": "Should be one
+      of mysterious, euphoric, intruiging, or soul_searching", "title": "Vibe", "type":
+      "string"}}, "required": ["title", "author", "vibe"], "title": "Book", "type":
+      "object"}}, {"description": "Returns all of the available books in the library.",
+      "name": "available_books", "parameters": {"properties": {}, "required": [],
+      "type": "OBJECT"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1239'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VT3Y6qSBi89ykMt5yzooLgJnuBIIoMB0RwlM1m0/wIrdANdKPoZN79oDPO6C4X
+        hFQV39ddqXrrdLtMCFAEI0BjwvzZ/btFut232/vKYURjRFviDrVgASr6rf143h6+W8muRiGFGCkg
+        y55+/uQRyOMWZ8ARwAwEWfxvgPGBMD/+KwRVcl319v5EvD/rGJriOknpCiYI0Lq6jVZqrMjRnMKc
+        3eml7YXmHiz4bXCkictLjuseMaBTSYvRTtrI7OxXHbghtw25sTdA1alIzzCeW6MedpyUZ/3eiZQp
+        suTKX5X0ZbEu9z634LCvztaHItnsyt7MMbB6SUI2C+3zRuPzpXMGx5kpbLe+W49Mrllc2F5qZkWm
+        md7Sdf2+Fg2E09jaQro4TwWCXqFh5zJO02wgSi5f23kwxlsvVS5cnbpz0Ya2iVf7SBxKQiyq4mih
+        +hzNs0no2nN12OfsyXxPmhEaDQWFW5wmTZ8jimAY6xM215Kx8l8d4STlx1rvj4qzq/9q5pzWY/uv
+        4UumSLrvvfCGbTpb/6jsPdGXh3SK9NKhJTnP9lptzhJVVZfLGbHVZTOlEugJo4Y/qDoKGkMi6WTp
+        r0szZfPSEnPOu8jaMj/RkV9s1KV/2Yk9+MJPErHRZnx+8EINTmsUWUV0MsIxNKaioQX8vgpqVsTl
+        JtFzp0gzyysokIP+md0qr+zQQMLUAkPdVKGZ7Pm/mIcofKfkn++EMBXObonIcRRnd/lXhJgdRJCk
+        TgwIRlfZyrXsryAyEEVx08Jc577gNpqpCUhiM6agbQ74ijhTVDgvqIsPMVJwfWtOfyx8THto2rOA
+        ++QppiB7ogbS8Mf/BhO1XQuzxwo+tLO9JcggPV+v4k437kOn2gXP57p70Xmw7F6m5zOKUufTsw8b
+        13FF4IdfSZy3Dv4c/CH83GWApLeFTBWTAiMS69FVs96oMrDnjiUao5IS++jvylw2mc575zdMsmAz
+        hAQAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 18:22:13 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=773
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

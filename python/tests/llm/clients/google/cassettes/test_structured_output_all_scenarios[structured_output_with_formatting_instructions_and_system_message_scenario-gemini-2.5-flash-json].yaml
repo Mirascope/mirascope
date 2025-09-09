@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Recommend a single fantasy book."}],
+      "role": "user"}], "systemInstruction": {"parts": [{"text": "You are a depressive
+      LLM that only recommends sad books.\nPretty please output a book recommendation
+      in JSON form.\nIt should have the format {title: str, author: str, vibe: str}.\nBe
+      super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey\nthe STRENGTH
+      OF YOUR RECOMMENDATION!"}], "role": "user"}, "generationConfig": {"responseMimeType":
+      "application/json"}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '506'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/1VSwXKbMBC98xU7uvRiZ9pM6mZ6E0YOcjDygGzHU3qQg2yYYHBBzqT1+N+7gHEw
+        B0az7+m91ds9WQDkVeVxGiujK/ITfmEF4NT8a6zIjc4NAl0JiwdVmk9u+516Z6QY/VFfIqcoB4iI
+        SU2mIyxERCYa7EzFGripdLaNyKDlqKNJirIlTQsNdKPL17LYb1J95bynm4sMhZUIPAdCAU8BnwH1
+        HbA9IZxhKOgzcwawclnAAH+ChUDxOPHoijkwE34oWRA2V1wxZ8DxDONgwTyYimc2AI/RJfefYC0W
+        sOLSRSqwF47XfMmpB2w2l9xnYQjSpRLY2K09pItSPltySW2PgcPGdA1iAtTzEEO98K7hNE6ygSZU
+        ol1dnCwk93hbnS5CyccI1B3WoM0ldgySYgeN4gwrXPhfsPHQZaiLnQaYxcLDftHOblwQcu4iEuVn
+        0pvO+Xr+PficaVlkuh7Yvoh11tHPHYFs0zytkkCrqshrWijFnFzRNI/1B5a/Wp1BI02OldrpmTYK
+        t0tdd4gccKoHI4s3nY+LY7NdP0atWG8Zb/Bv948XgimMym6w0ajDesKVg7Zp1l/T3gbjK1WWmr/1
+        UyR7kaSXhLntq4vC6iVGcFOPu8Tc9vgwerAumbUxLnVZpW1eO73HBIf3d9+H20xVSWNISl0dirzS
+        PK45Se5QNf1H/fkfb2/e5vn7yn6ka2Kdrf/JJuR3qAMAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 18:23:02 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3318
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,111 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Recommend a single fantasy book
+      in the library."}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"description":"A
+      book recommendation with metadata. ALWAYS add an exclamation point to the vibe!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"vibe":{"description":"Should
+      be one of mysterious, euphoric, intruiging, or soul_searching","title":"Vibe","type":"string"}},"required":["title","author","vibe"],"title":"Book","type":"object","additionalProperties":false},"strict":true,"description":"A
+      book recommendation with metadata. ALWAYS add an exclamation point to the vibe!"}},"tools":[{"type":"function","function":{"name":"available_books","description":"Returns
+      all of the available books in the library.","parameters":{"properties":{},"required":[],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '962'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=wh3uRSC11VCjRsTAnM1B4H7zlHy0C.I5HQauAZAzbTU-1757441166-1.0.1.1-Zn6P16qB8h4nR82CzAjNX1QYTXEN9ZR1g1XEN6Sk0p6dT.CpNFEKTo8jmtbUQMX6f9cQgb_N77WtEUeKdAEzW98x9o2yykwQpWlKTVtx36U;
+        _cfuvid=Lt2uGiGJF7fZqrW4r.lfx0blLkdwZnPUCY2gziMc9cc-1757441166671-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFNdb5swFH3nV1j3OUzQ0qTN29ZNitqq2qalD5sqdGMuxMPYlm3SdlH+
+        +wQkQNJWKg/Iusfn3HM/vA0YA5HBnAFfo+eVkeH11+f4oUzu5bcra+6uis2v8na1uP+5vFsuMpg0
+        DL36S9wfWJ+4rowkL7TqYG4JPTWq8exiliRxfHnRApXOSDa0wvgw0eFZdJaE0WUYTffEtRacHMzZ
+        n4Axxrbtv7GoMnqGOYsmh0hFzmFBMO8vMQZWyyYC6JxwHpWHyQByrTypxrWqpRwBXmuZcpRySNx9
+        29F56BNKmc7k7YP0+vfTpsQf/Ob74mb55frp3+dRvk76xbSG8lrxvj8jvI/PT5IxBgqrrpgNCokr
+        SelK69KdSDAGaIu6IuUb+7DdwRG+C946P47Kt5TXDuXrvqBS2mNjr23M4x7Z9TOQujBWr9wJFXKh
+        hFunltC1pY07HByMtBagPhoiGKsr41OvS2qTxtO4U4Vhx0bofh3Aa49yFJ8dWEd6aUYeRTvlfrE4
+        8jVlA3VYMKwzoUdAMKr9tZu3tLv6hSo+Ij8AnJPxlKXGUib4ccXDNUvNE3zvWt/l1jA4shvBKfWC
+        bDOPjHKsZfc6wL04T1WaC1WQNVa0TwRyk+bn59MkwiSKINgF/wEAAP//AwCCGVyXKwQAAA==
+    headers:
+      CF-RAY:
+      - 97c89e91ee8076fa-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 18:06:26 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '344'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '348'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799986'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 1ms
+      x-request-id:
+      - req_27da670f5ed846989ee51a44c0ab679e
+    status:
+      code: 200
+      message: OK
+version: 1

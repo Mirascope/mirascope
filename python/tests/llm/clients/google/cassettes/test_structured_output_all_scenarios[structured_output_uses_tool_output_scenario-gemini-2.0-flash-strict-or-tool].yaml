@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Recommend a single fantasy book in the
+      library."}], "role": "user"}, {"parts": [{"functionCall": {"id": "call_123",
+      "args": {}, "name": "available_books"}}], "role": "model"}, {"parts": [{"functionResponse":
+      {"id": "call_123", "name": "available_books", "response": {"output": "[''Wild
+      Seed by Octavia Butler'', ''The Long Way to a Small Angry Planet by Becky Chambers'',
+      ''Emergent Strategy by adrianne maree brown'']"}}}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "When you are ready to respond to the user, call the __mirascope_formatted_output_tool__
+      tool to output a structured response.\nDo NOT output any text in addition to
+      the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in Book format for a final response.\nA book
+      recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
+      "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"description":
+      "A book recommendation with metadata. ALWAYS add an exclamation point to the
+      vibe!", "properties": {"title": {"title": "Title", "type": "string"}, "author":
+      {"title": "Author", "type": "string"}, "vibe": {"description": "Should be one
+      of mysterious, euphoric, intruiging, or soul_searching", "title": "Vibe", "type":
+      "string"}}, "required": ["title", "author", "vibe"], "title": "Book", "type":
+      "object"}}, {"description": "Returns all of the available books in the library.",
+      "name": "available_books", "parameters": {"properties": {}, "required": [],
+      "type": "OBJECT"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1606'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61STU/DMAy991eUnBlqVwaD2/g4IEBDMMEQQpW3el1EGpfEnYSm/XfSdt26ATd6
+        qBL7+T3n2UvP98UUdCITYLTi3H9zEd9fVv8yR5pRs0s0IRfMwfAWW3/L1tlBZoWesiR9CUrtFK/z
+        GjJ0cRHHmTRgp5RjPCOTATMmMRWcFxwzkYpjcbhfDCa1v5C6zEJOKlqp2RQylTo9+FFeEhQ8J1MC
+        h1OGhQT/omCF5jcsS5cpoS9SJf4TYiL2QCvvr9v2/L5lFoZqwowSVA3ZqgGImdTSzh8RLOkS9jQa
+        PmwaE7BI7yjNDU1KCzrBUXB6HEVBPwzPwl54FkTdyGukK1FRWEjxHhnciGFjm3AUWc4j+kB9SUU1
+        4vC4V+u0VmIH0I3WeSYGtVt70j/8QWyvnKxU7V1prZF7PyjJX+UjR9fjUct9J7DbV+OS1zJzv8t/
+        UlsbuBHz1sOp5/WMxsp6MClmblSd7lHQmSmw84pRGLQ5aYs3SYkZj68GcGui4euw98n2oWfuws/B
+        vfBW3jf0RbAkfAMAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 18:22:22 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=692
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

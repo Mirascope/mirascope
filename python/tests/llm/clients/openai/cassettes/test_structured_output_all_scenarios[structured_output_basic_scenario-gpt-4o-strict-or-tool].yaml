@@ -1,0 +1,114 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Recommend a single fantasy book."}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"description":"A
+      book recommendation with metadata. ALWAYS add an exclamation point to the vibe!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"vibe":{"description":"Should
+      be one of mysterious, euphoric, intruiging, or soul_searching","title":"Vibe","type":"string"}},"required":["title","author","vibe"],"title":"Book","type":"object","additionalProperties":false},"strict":true,"description":"A
+      book recommendation with metadata. ALWAYS add an exclamation point to the vibe!"}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '707'
+      content-type:
+      - application/json
+      cookie:
+      - _cfuvid=6afjR9C2orG3RPsFb.irAoUlVgkxz2SeMC8PceZFmKM-1757374620341-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jJJNb9swDIbv/hUCz8ngJE4y+LY02GFA12EYUAxzYSgybauVRUGiuw5B
+        /vtg58NO1wK76MCHL8WX5D4SAnQBqQBVS1aNM9Ob7ctss900Nrldr+f3SXz3+9Nme3f7+PnnzReY
+        dAraPaLis+qDosYZZE32iJVHydhVna2X6ySZzVbLHjRUoOlkleNpQtN5PE+m8cdpvDoJa9IKA6Ti
+        VySEEPv+7Vq0Bb5AKuLJOdJgCLJCSC9JQoAn00VAhqADS8swGaAiy2j7rvcZsGaDGaQZ/KhRfJUN
+        CioF1yjutS0ymGQgW67J9znfJHutnsR34rpsQ+j5s94dK2DravJaZXAYf+ixbIPs/NrWmBGQ1hLL
+        bl691YcTOVzMGaqcp114JYVSWx3q3KMMZDsjgclBTw+REA/9ENuruYDz1DjOmZ6w/262OA0RhrUN
+        dJ6cIBNLM1Itz+CqXl4gS23CaA2gpKqxGKTDzmRbaBqBaOT6327eqn10rm31P+UHoBQ6xiJ3Hgut
+        rh0PaR67q34v7TLlvmEI6J+1wpw1+m4TBZayNceDg/AnMDZ5qW2F3nl9vLrS5eVisUpimcQxRIfo
+        LwAAAP//AwCE73nWfgMAAA==
+    headers:
+      CF-RAY:
+      - 97c89e0f9d3076fa-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 18:06:06 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=wh3uRSC11VCjRsTAnM1B4H7zlHy0C.I5HQauAZAzbTU-1757441166-1.0.1.1-Zn6P16qB8h4nR82CzAjNX1QYTXEN9ZR1g1XEN6Sk0p6dT.CpNFEKTo8jmtbUQMX6f9cQgb_N77WtEUeKdAEzW98x9o2yykwQpWlKTVtx36U;
+        path=/; expires=Tue, 09-Sep-25 18:36:06 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=Lt2uGiGJF7fZqrW4r.lfx0blLkdwZnPUCY2gziMc9cc-1757441166671-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1289'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1301'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799990'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_4e202e68e831476cb9569198e8d33b3c
+    status:
+      code: 200
+      message: OK
+version: 1

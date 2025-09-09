@@ -1,0 +1,100 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Recommend a single fantasy book."}],
+      "role": "user"}], "systemInstruction": {"parts": [{"text": "You are a depressive
+      LLM that only recommends sad books.\nPretty please output a book recommendation
+      in JSON form.\nIt should have the format {title: str, author: str, vibe: str}.\nBe
+      super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey\nthe STRENGTH
+      OF YOUR RECOMMENDATION!"}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in AllCapsBook format for a
+      final response.\nBook with custom formatting instructions.", "name": "__mirascope_formatted_output_tool__",
+      "parametersJsonSchema": {"description": "Book with custom formatting instructions.",
+      "properties": {"title": {"title": "Title", "type": "string"}, "author": {"title":
+      "Author", "type": "string"}, "vibe": {"description": "Should be one of mysterious,
+      euphoric, intruiging, or soul_searching", "title": "Vibe", "type": "string"}},
+      "required": ["title", "author", "vibe"], "title": "AllCapsBook", "type": "object"}}]}],
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1104'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+        AA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 18:22:59 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2194
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

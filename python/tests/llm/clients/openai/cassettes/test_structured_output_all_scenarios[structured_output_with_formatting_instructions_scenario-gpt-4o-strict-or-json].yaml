@@ -1,0 +1,113 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Pretty please output a book recommendation
+      in JSON form.\nIt should have the format {title: str, author: str, vibe: str}.\nBe
+      super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey\nthe STRENGTH
+      OF YOUR RECOMMENDATION!"},{"role":"user","content":"Recommend a single fantasy
+      book."}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"AllCapsBook","schema":{"description":"Book
+      with custom formatting instructions.","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"vibe":{"description":"Should
+      be one of mysterious, euphoric, intruiging, or soul_searching","title":"Vibe","type":"string"}},"required":["title","author","vibe"],"title":"AllCapsBook","type":"object","additionalProperties":false},"strict":true,"description":"Book
+      with custom formatting instructions."}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '905'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=wh3uRSC11VCjRsTAnM1B4H7zlHy0C.I5HQauAZAzbTU-1757441166-1.0.1.1-Zn6P16qB8h4nR82CzAjNX1QYTXEN9ZR1g1XEN6Sk0p6dT.CpNFEKTo8jmtbUQMX6f9cQgb_N77WtEUeKdAEzW98x9o2yykwQpWlKTVtx36U;
+        _cfuvid=Lt2uGiGJF7fZqrW4r.lfx0blLkdwZnPUCY2gziMc9cc-1757441166671-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4ySX2/aMBTF3/MprPsMU6BpYbxVhapoo0z80bQuVWScG+ItsS37pqJDfPfJCW3S
+        rZP2EkX+3XN8z70+BoyBTGHCQOScRGmK/s30MHCLz8PpSJsx3/56eAjHl5by2WJ6WEDPK/TuBwp6
+        UX0QujQFktSqwcIiJ/Sug9HlKIoGw3Bcg1KnWHjZ3lA/0v1hOIz64bgfXp2FuZYCHUzY94Axxo71
+        17eoUjzAhIW9l5MSneN7hMlrEWNgdeFPgDsnHXFF0Guh0IpQ1V0fYyBJBcYwiWFzN2P314sZW94y
+        //91fj+NoRcDryjXtq75cr1ZzW8+sdVyc3e7Xa9r/iR3jcPi23ozW82X23UMp+6VFrPKcZ9YVUXR
+        AVwpTdxPrA77eCan13iF3hurd+4PKWRSSZcnFrnTykdxpA3U9BQw9liPsXozGTBWl4YS0j+xvm4w
+        GjR+0C6upcPRGZImXnRUH8e9d/ySFInLwnUWAYKLHNNW2m6NV6nUHRB0Uv/dzXveTXKp9v9j3wIh
+        0BCmibGYSvE2cVtm0b/rf5W9TrluGBzaJykwIYnWbyLFjFdF8+TAPTvCMsmk2qM1VjbvLjNJdnFx
+        FYU8CkMITsFvAAAA//8DADOrfGiAAwAA
+    headers:
+      CF-RAY:
+      - 97c89f221ae376fa-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 18:06:49 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '831'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '853'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799931'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 5ms
+      x-request-id:
+      - req_7a69ddf594dd4c588f5dbf67cc8fbd5f
+    status:
+      code: 200
+      message: OK
+version: 1

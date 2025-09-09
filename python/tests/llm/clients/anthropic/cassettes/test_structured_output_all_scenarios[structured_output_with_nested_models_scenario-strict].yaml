@@ -1,0 +1,120 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Tell me about
+      a book series."}],"model":"claude-sonnet-4-0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '117'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xU227bRhD9lSlfaguSa7sJEOglkC9pG0RIERs10LowRrtDcerlLDMzlEwH/fdi
+        Kdp56RPB3bNzOefMfKs4Vsuqte3D6dm7T89fP3Sres8///kcfsnrmt+tHqt55UNHBUVmuKVqXmlO
+        5QDN2BzFq3nV5kipWlYhYR9pYVmEfPFmcX56/vb07dmbal6FLE7i1fKvby8hnZ7K4/GzrH77McKG
+        oMGuG8AzOKUEQ+4BN7l3QNjk/AhGymQ/wCdyaAmsQSXIQpBraAeocZeVnWx5L/cym902BNdPHYrR
+        bAabAT5iSwY3J6sTuMxKAxx1JCDYEtRZ4QqFKcFqo9hgCygRbgf4oCjh8biEvG3YgA0QhIUWh5oC
+        kwSCmoNzlqlG8AYdHB/JoEsYCBBq2kPTS1SKMBCqAQt4Q1D33ivBviGBpm9R2Ado0CDklIWfKY4w
+        ywkVbDCn9gRKc1OuOqeU9y9d35A7y3Y2W8IKupzYOWBKA4TcdomeYJ81xZJNCa5RvZnDGtXmY8Ml
+        0QUlhyM0J80coWUhtWMoZLNAyDIqD05inOUEbrrSoCvuKBV6lDCxOQdYgGSox0gLb1AWibeNT9Dv
+        CbtmMA5WZMQQKJFi4fKnSN9/oEV30pNDk2tkgcsGFYOTWmn2XhaTwL/mFEnG6EWwoLQvPkKdeGy4
+        g9mXHFhQnGbl4RU5Becdwcds1DW9wZpTIh3D/n5gkbHkVLZ/SGC1Q0PFhAWwRvVyu0ZlIbjImw0T
+        XCl2pIeC74of2tEP7LBVQp/NluXtl1e2bORxkszG+idmCu5ykq/NigkiJ2pbHG+unwKlROIQXhiB
+        SDtKuWvLKQbNZtD2yblLBB2pdYd2x/cXiSQatMVZOsxfKzgI1BTeLPCi5gK+QwOM2DlFYPEMWDRL
+        yC1FuP1j8uRhWspUqPlheNlg9ol2jMUIcFeomMHR+enZ2fEhEXux5qPBvgw/GmyyN4BQ3BYxlTkv
+        sMn05qgvfrjLfYrjukj8SGU1/N8KiVzXpIWQLUlZHDrFeg+fFfavMTqlmhSUQm5bkjjaz2CDRhGy
+        FIxCIZBrDoUDUjK399W/f88r89w9KKFlqZYVSXzwXqWaLoy+9mVbVEvpU/pPOkql4FLVqlopM6+g
+        tCS+JD87Na9YycrQREcpOTE5IzU+GZRQMvPz4lEVGMDki1ITU3DJwfSCzE8tyEjNTS1KzIk3zcVU
+        j5A1zECXrdVRyi8tQRYyNjDSUSpOLSrLTE6NL8lMLVKyUoLEUVGKUm0tAAAA//8DABN4Io1ZBgAA
+    headers:
+      CF-RAY:
+      - 97c89cc88bf29b6f-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 18:05:19 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-09-09T18:05:13Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-09-09T18:05:19Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-09-09T18:05:12Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-09-09T18:05:13Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CSyGbUoW3QFcaFkW6ize9
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '7419'
+    status:
+      code: 200
+      message: OK
+version: 1

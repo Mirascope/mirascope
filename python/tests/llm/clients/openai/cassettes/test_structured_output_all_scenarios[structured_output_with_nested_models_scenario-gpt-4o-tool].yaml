@@ -1,0 +1,121 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"When you are ready to respond
+      to the user, call the __mirascope_formatted_output_tool__ tool to output a structured
+      response.\nDo NOT output any text in addition to the tool call."},{"role":"user","content":"Tell
+      me about a book series."}],"model":"gpt-4o","tool_choice":"required","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Series format for a final response.\nA book series
+      with nested models.","parameters":{"$defs":{"Book":{"description":"A book recommendation
+      with metadata. ALWAYS add an exclamation point to the vibe!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"vibe":{"description":"Should
+      be one of mysterious, euphoric, intruiging, or soul_searching","title":"Vibe","type":"string"}},"required":["title","author","vibe"],"title":"Book","type":"object","additionalProperties":false}},"description":"A
+      book series with nested models.","properties":{"series_name":{"title":"Series
+      Name","type":"string"},"author":{"title":"Author","type":"string"},"books":{"items":{"$ref":"#/$defs/Book"},"title":"Books","type":"array"},"book_count":{"title":"Book
+      Count","type":"integer"}},"required":["series_name","author","books","book_count"],"title":"Series","type":"object","additionalProperties":false},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1408'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=wh3uRSC11VCjRsTAnM1B4H7zlHy0C.I5HQauAZAzbTU-1757441166-1.0.1.1-Zn6P16qB8h4nR82CzAjNX1QYTXEN9ZR1g1XEN6Sk0p6dT.CpNFEKTo8jmtbUQMX6f9cQgb_N77WtEUeKdAEzW98x9o2yykwQpWlKTVtx36U;
+        _cfuvid=Lt2uGiGJF7fZqrW4r.lfx0blLkdwZnPUCY2gziMc9cc-1757441166671-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//rFXfT9swEH7vX2H5ZS8tKl1ZWd9GN+0XMCYQk7ag6OpckmOOz7MdoFT9
+        3yen0KTANDQtD5Hjz/fd54vv87InhKRMToVUJQRVWT2Yvb0ZnZ3nv7LJeP/1Yvzu+8uXn46PLj9e
+        XX6ZHch+jOD5JapwH7WjuLIaA7FZw8ohBIysu5O9yXi8OxrvNUDFGeoYVtgwGPNgNByNB8P9wfDV
+        XWDJpNDLqfjRE0KIZfOOEk2GN3Iqhv37mQq9hwLldLNICOlYxxkJ3pMPYILst6BiE9BE1abWugME
+        Zp0q0LpNvH6WnXFbJ9A6PR2d2Esub/FN/fn4/PbrzdH7W4SP1Mm3pl7YRlBeG7WpTwffzE8fJBNC
+        Gqia2DStyIFXbDHN2VUQAmYp18HWIW20pw9ohZDgirpCE+KW5DKRHh2hTyNnIqeJPCtRzErHhpRG
+        LzgXx+AMQSL7iYQ6lOyadbOd0x1xiNfkG2TO/NMncvpjmchAQbdkh8SmL0KJ4hsFVQow2foLXOZ4
+        jn8hvqL5mqta+ICOuPaJXPW30pw4MgrFDLwlMM8lJBMcFTWZ4hFh1H3OCygwFiCqfQvXRpw5hAzd
+        cxNgbUt2pJ6kPyV9hU7MSiD3nxR/YOexqe8H8uKAF/+htJH3CApSBOaFF8doS7x+Lq/nWqcewany
+        T5oPwQdxAKGZ+we1F3dnL1Vcm5DI6WQlt478qvfU+KLT5Q7z2oN+3P5gDAeIXdj0/8UdstpYjebC
+        Op77B6EyJ0O+TB2Cbzq4ayS9eyGNBFlveZW0jisbm/cnNklHu6M1q2yttIMO72xPBg6gW2C8Cdsi
+        TDMMQI2bbQxUgSoxa0NbI4U6I+4Avc7mH8t5intdADLFc+hbQCm00cmsw4zU9pbbZQ7jVfOnZZsy
+        N4Kjy12RwjQQuvhDMsyh1utbQPp4oKo0J1Ogs46aq0DmNt3dH02ybKj29mRv1fsNAAD//wMA6838
+        oRMHAAA=
+    headers:
+      CF-RAY:
+      - 97c8a008fe2976fa-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 18:07:27 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1580'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1587'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799945'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_0bb90addba634a499eb560abf5b3744a
+    status:
+      code: 200
+      message: OK
+version: 1

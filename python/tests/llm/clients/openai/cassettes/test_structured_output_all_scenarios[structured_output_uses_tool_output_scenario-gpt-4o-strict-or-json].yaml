@@ -1,0 +1,113 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Recommend a single fantasy book
+      in the library."},{"role":"assistant","content":null,"tool_calls":[{"id":"call_123","type":"function","function":{"name":"available_books","arguments":"{}"}}]},{"role":"tool","content":"[''Wild
+      Seed by Octavia Butler'', ''The Long Way to a Small Angry Planet by Becky Chambers'',
+      ''Emergent Strategy by adrianne maree brown'']","tool_call_id":"call_123"}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"description":"A
+      book recommendation with metadata. ALWAYS add an exclamation point to the vibe!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"vibe":{"description":"Should
+      be one of mysterious, euphoric, intruiging, or soul_searching","title":"Vibe","type":"string"}},"required":["title","author","vibe"],"title":"Book","type":"object","additionalProperties":false},"strict":true,"description":"A
+      book recommendation with metadata. ALWAYS add an exclamation point to the vibe!"}},"tools":[{"type":"function","function":{"name":"available_books","description":"Returns
+      all of the available books in the library.","parameters":{"properties":{},"required":[],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1293'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=wh3uRSC11VCjRsTAnM1B4H7zlHy0C.I5HQauAZAzbTU-1757441166-1.0.1.1-Zn6P16qB8h4nR82CzAjNX1QYTXEN9ZR1g1XEN6Sk0p6dT.CpNFEKTo8jmtbUQMX6f9cQgb_N77WtEUeKdAEzW98x9o2yykwQpWlKTVtx36U;
+        _cfuvid=Lt2uGiGJF7fZqrW4r.lfx0blLkdwZnPUCY2gziMc9cc-1757441166671-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jJJBb5wwEIXv/AprzlABYTcNtzaVekmVSq20iUKEvGYAZ43t2kOU1Wr/
+        ewVsFtKmUi8c5pv3mDfjQ8AYyApyBqLlJDqrousvL0m92f1Kd3Jz/7SOv93e3N/hLa7uvroUwkFh
+        tk8o6FX1QZjOKiRp9ISFQ044uCaXq8ssS5Kr1Qg6U6EaZI2lKDNRGqdZFH+M4vVJ2Bop0EPOHgLG
+        GDuM32FEXeEL5CwOXysdes8bhPzcxBg4o4YKcO+lJ64JwhkKown1OPWhAJKksIC8gJ8tshujG7bh
+        e0aGcfaj40qxT7pxe/ZdcY1UQFgA76k1btR8RrHbs+uWd1t0fqTPcjv5SU1ONr3UTQHH5QAO697z
+        Ib/ulVoArrUhPuxvjP54IsdzWGUa68zW/yGFWmrp29Ih90YPwTwZCyM9Bow9jkvt3+wJrDOdpZLM
+        DsffpUk6+cF8xgW9OkEyxNWiniXhO35lhcSl8ouzgOCixWqWzjfkfSXNAgSL1H9P8573lFzq5n/s
+        ZyAEWsKqtA4rKd4mntscDq/8X23nLY8Dg0f3LAWWJNENl6iw5r2aHiD4vSfsylrqBp11cnqFtS3r
+        i4t1FvMsjiE4Br8BAAD//wMARPjMZY4DAAA=
+    headers:
+      CF-RAY:
+      - 97c89ed1b98e76fa-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 18:06:36 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '846'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '851'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799950'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_6bd087730dbe465d83e371794d610044
+    status:
+      code: 200
+      message: OK
+version: 1

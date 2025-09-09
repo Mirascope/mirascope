@@ -1,0 +1,82 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Tell me about a book series."}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Respond with valid JSON
+      that matches this exact schema:\n{\n  \"$defs\": {\n    \"Book\": {\n      \"description\":
+      \"A book recommendation with metadata. ALWAYS add an exclamation point to the
+      vibe!\",\n      \"properties\": {\n        \"title\": {\n          \"title\":
+      \"Title\",\n          \"type\": \"string\"\n        },\n        \"author\":
+      {\n          \"title\": \"Author\",\n          \"type\": \"string\"\n        },\n        \"vibe\":
+      {\n          \"description\": \"Should be one of mysterious, euphoric, intruiging,
+      or soul_searching\",\n          \"title\": \"Vibe\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"title\",\n        \"author\",\n        \"vibe\"\n      ],\n      \"title\":
+      \"Book\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A book
+      series with nested models.\",\n  \"properties\": {\n    \"series_name\": {\n      \"title\":
+      \"Series Name\",\n      \"type\": \"string\"\n    },\n    \"author\": {\n      \"title\":
+      \"Author\",\n      \"type\": \"string\"\n    },\n    \"books\": {\n      \"items\":
+      {\n        \"$ref\": \"#/$defs/Book\"\n      },\n      \"title\": \"Books\",\n      \"type\":
+      \"array\"\n    },\n    \"book_count\": {\n      \"title\": \"Book Count\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"series_name\",\n    \"author\",\n    \"books\",\n    \"book_count\"\n  ],\n  \"title\":
+      \"Series\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1667'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61U0W7aMBR9z1d4foYI2sLY3iigCTTaaom6aU2FTLhNPBw7sh00hPj3XZMEQjeq
+        PiwPie17fM7x9b3ZeYTQmMkVXzELhn4mT7hCyO7wdjElLUiLgXoJF3Om7QlbPrvGGCEWfrtNdBdJ
+        QiJqQHMwC8kyiHA5omEK5JEvgQSHyIeItkokK2yqdAmaBfd35BuYXEkDR8RSqbVxgCc3R+Xy40KW
+        W1EJzLfGIrUqDJnEqQJT7S+BTZWhjxpsBfoMsUFzZTw7MqHLErBvvSU9KXIk5zEZa2CZiVn+hvqt
+        T75rnqT2gjpUZO/UnkqLbAWXCZkKURiOqbuoPfLJsJr+U5sjWcETJHuneqAK0Q6A6Th1Dmaq0BK2
+        lw2MfRLEmi+X4mL2DVIuTE158uE+z42KWMSqkNbtuYnknjaqcX8cP7dONayVAFegmVqBqOH7GkBf
+        uOQmxbowSjpYEN4/0GOUbZKvKsm1Wro2aHf87vVNv9/tDj72uv3B4KrT82rlgyYtDEtgDpZhm7Fj
+        M1FkyHIbqjXIkbPv3Hd6pUyjLc8A3cGgAlhlmTiL9T5dt/5iNmPU5aLZsI1exvMzwe3WHTKc/Ahp
+        I0f2lbE6S14jma9t/ic1POW5mlfdTnlhj6BdaTuaBDK8q/aV32m/CGbSAyXV1V9junIYJcdDNhtN
+        bzfFXWbXD79+ftmo4Zx6e+8POD6vxAIFAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 18:23:31 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1620
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

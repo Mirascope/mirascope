@@ -1,0 +1,118 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Recommend a single
+      fantasy book in the library."}],"model":"claude-sonnet-4-0","system":"Respond
+      with valid JSON that matches this exact schema:\n{\n  \"description\": \"A book
+      recommendation with metadata. ALWAYS add an exclamation point to the vibe!\",\n  \"properties\":
+      {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"vibe\":
+      {\n      \"description\": \"Should be one of mysterious, euphoric, intruiging,
+      or soul_searching\",\n      \"title\": \"Vibe\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\",\n    \"vibe\"\n  ],\n  \"title\": \"Book\",\n  \"type\":
+      \"object\"\n}\n\nRespond ONLY with valid JSON, and no other text.","tools":[{"name":"available_books","description":"Returns
+      all of the available books in the library.","input_schema":{"properties":{},"required":[],"additionalProperties":false,"type":"object"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '1057'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SRTWvDMAyG/4vOLiRtUzYfy07bpYd9tIxhVEdrTRw7s+yMNuS/D2eUfbGj9Lx6
+        XwkNYGqQ0PJBFeVt068d9s3D6mq3OPHj2dzx5gYExFNHWUXMeCAQELzNDWQ2HNFFEND6mixI0BZT
+        TTP2zlGcLWfzYl4VVbkEAdq7SC6CfB4ultF7qxJnz2mRXCdVlNvd/c6H9Vmbre5e3yvkzfLpDAIc
+        tlNyj8bi3pLae99wHnddiiCHcXwRwNF3KhCydz9DJsD0lshpAumStQLSdJUcPj1U9A05BlldLwRo
+        1EdSOhBG4536qSguPBDW/7HLbA6g7kgtBbSqav/qv2h5/E1HAT7F763FSgBT6I0mFQ0FkJB/UWOo
+        YRw/AAAA//8DALMkhUfZAQAA
+    headers:
+      CF-RAY:
+      - 97c89b8dafa89b6f-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 18:04:23 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-09-09T18:04:23Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-09-09T18:04:23Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-09-09T18:04:22Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-09-09T18:04:23Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CSyGXmNHr47XbtwL4NqhQ
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '1411'
+    status:
+      code: 200
+      message: OK
+version: 1

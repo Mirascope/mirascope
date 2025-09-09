@@ -1,0 +1,99 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Recommend a single fantasy book in the
+      library."}], "role": "user"}, {"parts": [{"functionCall": {"id": "call_123",
+      "args": {}, "name": "available_books"}}], "role": "model"}, {"parts": [{"functionResponse":
+      {"id": "call_123", "name": "available_books", "response": {"output": "[''Wild
+      Seed by Octavia Butler'', ''The Long Way to a Small Angry Planet by Becky Chambers'',
+      ''Emergent Strategy by adrianne maree brown'']"}}}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "When you are ready to respond to the user, call the __mirascope_formatted_output_tool__
+      tool to output a structured response.\nDo NOT output any text in addition to
+      the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in Book format for a final response.\nA book
+      recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
+      "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"description":
+      "A book recommendation with metadata. ALWAYS add an exclamation point to the
+      vibe!", "properties": {"title": {"title": "Title", "type": "string"}, "author":
+      {"title": "Author", "type": "string"}, "vibe": {"description": "Should be one
+      of mysterious, euphoric, intruiging, or soul_searching", "title": "Vibe", "type":
+      "string"}}, "required": ["title", "author", "vibe"], "title": "Book", "type":
+      "object"}}, {"description": "Returns all of the available books in the library.",
+      "name": "available_books", "parameters": {"properties": {}, "required": [],
+      "type": "OBJECT"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1606'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+        +gssyB6jPAgAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 18:22:19 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1736
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

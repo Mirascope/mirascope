@@ -1,0 +1,89 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Recommend a single fantasy book."}],
+      "role": "user"}], "systemInstruction": {"parts": [{"text": "Pretty please output
+      a book recommendation in JSON form.\nIt should have the format {title: str,
+      author: str, vibe: str}.\nBe super vibe-y with the vibe and make sure EVERYTHING
+      IS CAPS to convey\nthe STRENGTH OF YOUR RECOMMENDATION!"}], "role": "user"},
+      "tools": [{"functionDeclarations": [{"description": "Use this tool to extract
+      data in AllCapsBook format for a final response.\nBook with custom formatting
+      instructions.", "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema":
+      {"description": "Book with custom formatting instructions.", "properties": {"title":
+      {"title": "Title", "type": "string"}, "author": {"title": "Author", "type":
+      "string"}, "vibe": {"description": "Should be one of mysterious, euphoric, intruiging,
+      or soul_searching", "title": "Vibe", "type": "string"}}, "required": ["title",
+      "author", "vibe"], "title": "AllCapsBook", "type": "object"}}]}], "generationConfig":
+      {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1046'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21VTZOiSBC9968wvLq7CCLCRswBkW9EQRRkY6OjgAJBoBAKUCfmvy9tT8/Ys8OB
+        qMr38mWRVLz8+jIajUNQRmkEMGzGf4/+GSKj0dfH+w1DJYYlHoCP0BCsQI1/ct+fr0/rgRK3ZYhT
+        VAogzz8lf8dLUMAhPn59LdIaNCGq4GuM6gJgDKNX1OKqxa8Yofz1dfzHr8mgTprfiA4ITnH+0HUU
+        cWTya3G0kUZva1c1V/8TGhK6NHjwVdOxVXmvmvLvWKDFJ1S/8bb8wBP0kb1xFGm/241/IX/7tP/2
+        WWs8qLTJCe/SpAS4rR+VBWSJfKTgtJh4lUA7ys48TQ0ekazsJ3ZXakjc5wS2DSUmetKrJ9yJVThu
+        b7nQyGbJTGLFMykpRbVUZDd37+zSzVI+cGOSYW+7nEF8QZDOiq3MGeX1nhDfOoj9Q7BBvdNy0nmu
+        eoKNCjIhVJ27bniIj3wXerVPULHFRBPE3vuj0x7nMqlv0llykSVmyTESDZHMd8XWpsXaqrCkuC0j
+        HPs9ZxSqhQ8SS2Tl+SBCdjnX3D7GMzFvLk2a8pcLxXn5JCXq5azdJ4vEFBcQzn2ZO7Qho2UCXmMu
+        cy5bc2oZ2ymnWeuW1O2OvIrXvOLLMDoWlESCfRZOXOrQNaLuC4Fib+0OhZfc4rq5icKVXWfnpVzr
+        hq8Zst3stBku7scqgfxlF3J571wy5Sr5ugFIerJ1NwE8nM0tF88vdO4Bm0fFYsaTZECZ8WR+sOp5
+        bjZZHqw16oZD2mI7f+FUkxIE2pnjYo5NlhERWyGXMq0SUIzK9q0i3sNA4gTQ1f5RCwwrOLueLDJZ
+        sSaRoAGrafNgxW6bS2n0meODflrerDwxifuRXGwnJ8hc74zbp7QG0CaLaHl9OEz9kLiypFuzan5t
+        7sK5qZloY7n2trh1B69ZFrbaN5yfbJB10QXQXDmOgQSjyIfTcFPKVDq06FYEyZSgibYoME34tOcd
+        NmKf59QdgpK56PU8qm5XwTxr1OkkozR1slgM976OY8bZQwGh5fudJRbgDAAhOfpul6/nhj05t31c
+        7ziJy+tiUYVRe4vFSa3pu32B72Qol9726vqmMruXFzOFtNYzl73tciLKd5VK91Y6iZrJtJuYOcHc
+        hyMwy+l2R0SrSJZpVWSiU4bZLRIlAwFlnWWt19YsdUxjb5Eak2DqXz0NZFK7a1j+bJ4OzcoXNmEX
+        xLFz32uULhT0cgopPWBJBpnLdI/CGzV1bRLclJ0fI5piiXRVFsv5JmDIs5SuKUIyeCjJKTI6qatm
+        970XA/csJJ2+6snG8LaBbFNxn6kbtAyhdmQV0z7dDut0lukXUZa9JalO+n74OSfYCoG62MAWzi2W
+        7BJan2nzvZh8+fLsJD9d5N+fDjKu0bu3FSiC+Qf9h8WM47RMm5MNQYPKN9rO2Wx/mNk4LSN4HcLT
+        l48CD+lx24AEriEGwwAAP0x1XNWoqLCDzrAUUPsYACTDvKs9DYxPBJr6jmOEQf4ZIj+wJ+FmNZRN
+        8+dJ8jRkhq8EeYpvDzcXPefJl4cCn8/10YuXp5Z9mO3nM1JT+uV70977eIB1k743LIHF0MI/qb/m
+        f8Y5aE6PiuMaNhUqG6hGb5xAWfFAZdx1vREuuNly0Wow8PX45dvLf+xOCSNMBwAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 18:22:36 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1426
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -19,6 +19,7 @@ from tests import utils
 from tests.llm.clients.conftest import (
     CLIENT_SCENARIO_IDS,
     FORMATTING_MODES,
+    STRUCTURED_SCENARIO_IDS,
 )
 
 TEST_MODEL_ID = "gemini-2.0-flash"
@@ -35,7 +36,6 @@ def test_call(
 
     kwargs = request.getfixturevalue(scenario_id)
     response = google_client.call(model_id=TEST_MODEL_ID, **kwargs)
-    assert isinstance(response, llm.Response)
 
     expected = snapshot(
         {
@@ -432,6 +432,7 @@ Do NOT output any text in addition to the tool call.\
             },
         }
     )
+
     assert utils.response_snapshot_dict(response) == expected[scenario_id]
 
 
@@ -896,34 +897,43 @@ Do NOT output any text in addition to the tool call.\
             },
         }
     )
+
     assert utils.stream_response_snapshot_dict(stream_response) == expected[scenario_id]
 
 
 @pytest.mark.parametrize("format_mode", FORMATTING_MODES)
 @pytest.mark.parametrize("test_model_id", ["gemini-2.5-flash", "gemini-2.0-flash"])
+@pytest.mark.parametrize("scenario_id", STRUCTURED_SCENARIO_IDS)
 @pytest.mark.vcr()
-def test_every_structured_mode_should_call_tool(
+def test_structured_output_all_scenarios(
     google_client: llm.GoogleClient,
-    format_mode: llm.formatting.FormattingMode,
     test_model_id: llm.clients.google.GoogleModelId,
+    format_mode: llm.formatting.FormattingMode,
+    scenario_id: str,
     request: pytest.FixtureRequest,
 ) -> None:
-    """Test behavior when structured formatting is enabled and the model should call a tool.
-
-    The correct behavior is to call the available_books tool; however depending on the
-    model and the formatting mode, it may fail to do so, or may throw an exception.
-    """
-
-    scenario_data = request.getfixturevalue(
-        "structured_output_should_call_tool_scenario"
-    )
+    """Test all structured output scenarios across all formatting modes."""
+    scenario_data = request.getfixturevalue(scenario_id)
     llm.format(scenario_data["format"], mode=format_mode)
 
     try:
         response = google_client.call(model_id=test_model_id, **scenario_data)
-        actual = response.content
+
+        try:
+            output = response.format()
+            if output is not None:
+                actual = {
+                    "type": "formatted_output",
+                    "model_dump": output.model_dump(),
+                }
+            else:
+                actual = {"type": "raw_content", "content": response.content}
+        except Exception:
+            actual = {"type": "raw_content", "content": response.content}
+
     except Exception as e:
         actual = {
+            "type": "exception",
             "exception_type": type(e).__name__,
             "exception_message": str(e),
             "status_code": getattr(e, "status_code", None),
@@ -931,306 +941,761 @@ def test_every_structured_mode_should_call_tool(
 
     expected = snapshot(
         {
-            # gemini-2.5-flash is either correct (strict-or-tool, tool) or fails explicitly (strict, json, strict-or-json)
-            "gemini-2.5-flash:strict-or-tool": [  # Correct
-                ToolCall(id="<unknown>", name="available_books", args="{}")
-            ],
-            "gemini-2.5-flash:strict-or-json": {  # Obvious failure
-                "exception_type": "ClientError",
-                "exception_message": "400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': \"Function calling with a response mime type: 'application/json' is unsupported\", 'status': 'INVALID_ARGUMENT'}}",
-                "status_code": None,
-            },
-            "gemini-2.5-flash:strict": {  # Obvious failure
-                "exception_type": "ClientError",
-                "exception_message": "400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': \"Function calling with a response mime type: 'application/json' is unsupported\", 'status': 'INVALID_ARGUMENT'}}",
-                "status_code": None,
-            },
-            "gemini-2.5-flash:tool": [  # Correct
-                ToolCall(id="<unknown>", name="available_books", args="{}")
-            ],
-            "gemini-2.5-flash:json": {  # Obvious failure
-                "exception_type": "ClientError",
-                "exception_message": "400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': \"Function calling with a response mime type: 'application/json' is unsupported\", 'status': 'INVALID_ARGUMENT'}}",
-                "status_code": None,
-            },
-            # gemini-2.0-flash is correct for strict-or-tool and tool, gives an invented book otherwise
-            "gemini-2.0-flash:strict-or-tool": [  # Correct
-                ToolCall(id="<unknown>", name="available_books", args="{}")
-            ],
-            "gemini-2.0-flash:strict-or-json": [  # Non-obvious failure
-                Text(
-                    text="""\
-{
-  "title": "Small Miracles",
-  "author": "Anne Lamott",
-  "vibe": "euphoric!"
-}\
-"""
-                )
-            ],
-            "gemini-2.0-flash:strict": [  # Non-obvious failure
-                Text(
-                    text="""\
-{
-  "title": "The Midnight Realm",
-  "author": "Evelyn Thorne",
-  "vibe": "mysterious"
-}\
-"""
-                )
-            ],
-            "gemini-2.0-flash:tool": [  # Correct
-                ToolCall(id="<unknown>", name="available_books", args="{}")
-            ],
-            "gemini-2.0-flash:json": [  # Non-obvious failure
-                Text(
-                    text="""\
-{
-  "title": "The Goblin Emperor",
-  "author": "Katherine Addison",
-  "vibe": "soul_searching!"
-}\
-"""
-                )
-            ],
-        }
-    )
-    assert actual == expected[test_model_id + ":" + format_mode]
-
-
-@pytest.mark.parametrize("format_mode", FORMATTING_MODES)
-@pytest.mark.vcr()
-def test_every_structured_mode_basic(
-    google_client: llm.GoogleClient,
-    format_mode: llm.formatting.FormattingMode,
-    request: pytest.FixtureRequest,
-) -> None:
-    """Test final formatted output for every supported formatting mode.
-
-    This test uses the basic Book formatting. Expected qualities of the output:
-    - should have title, author, vibe as string
-    - vibe should be mysterious, euphoric, intruiging, or soul-searching (per annotation)
-    - vibe should always have an exclamation point (per class docstring)
-    """
-    scenario_data = request.getfixturevalue("structured_output_basic_scenario")
-    llm.format(scenario_data["format"], mode=format_mode)
-
-    response = google_client.call(model_id=TEST_MODEL_ID, **scenario_data)
-
-    system_message_content = ""
-    if (first_message := response.messages[0]).role == "system":
-        system_message_content = first_message.content.text
-
-    output = response.format()
-    assert output is not None
-    actual = {
-        "system_message": system_message_content,
-        "model_dump": output.model_dump(),
-    }
-
-    expected = snapshot(
-        {
-            "strict-or-tool": {
-                "system_message": "",
+            "structured_output_basic_scenario:strict-or-tool:gemini-2.5-flash": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "Jonathan Strange & Mr Norrell",
-                    "author": "Susanna Clarke",
-                    "vibe": "mysterious",
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "intruiging!",
                 },
             },
-            "strict-or-json": {
-                "system_message": "",
-                "model_dump": {
-                    "title": "Jonathan Strange & Mr Norrell",
-                    "author": "Susanna Clarke",
-                    "vibe": "mysterious",
-                },
-            },
-            "strict": {
-                "system_message": "",
-                "model_dump": {
-                    "title": "Jonathan Strange & Mr Norrell",
-                    "author": "Susanna Clarke",
-                    "vibe": "intruiging",
-                },
-            },
-            "tool": {
-                "system_message": """\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-""",
-                "model_dump": {
-                    "title": "The Midnight Library",
-                    "author": "Matt Haig",
-                    "vibe": "soul_searching!",
-                },
-            },
-            "json": {
-                "system_message": """\
-Respond with valid JSON that matches this exact schema:
-{
-  "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "vibe": {
-      "description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
-      "title": "Vibe",
-      "type": "string"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "vibe"
-  ],
-  "title": "Book",
-  "type": "object"
-}\
-""",
+            "structured_output_basic_scenario:strict-or-json:gemini-2.5-flash": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "Mistborn: The Final Empire",
                     "author": "Brandon Sanderson",
                     "vibe": "intruiging!",
                 },
             },
-        }
-    )
-    assert actual == expected[format_mode]
-
-
-@pytest.mark.parametrize("format_mode", FORMATTING_MODES)
-@pytest.mark.vcr()
-def test_every_structured_mode_with_instructions_and_system_message(
-    google_client: llm.GoogleClient,
-    format_mode: llm.formatting.FormattingMode,
-    request: pytest.FixtureRequest,
-) -> None:
-    """Test final formatted output for every supported formatting mode.
-
-    Uses the AllCapsBook which has formatting instructions. Expectations:
-    - title, author, vibe (all str)
-    - Everything should be caps (per system instructions)
-    - vibe should be one of euphoric, intruiging, or soul_searching (per annotation)
-    - Nothing about exclamation points on the end of the vibe since it's overwritten.
-    """
-    # Use structured_output_with_formatting_instructions_and_system_message as it is a "kitchen sink" example
-    scenario_data = request.getfixturevalue(
-        "structured_output_with_formatting_instructions_and_system_message_scenario"
-    )
-    llm.format(scenario_data["format"], mode=format_mode)
-
-    response = google_client.call(model_id=TEST_MODEL_ID, **scenario_data)
-
-    system_message_content = ""
-    if (first_message := response.messages[0]).role == "system":
-        system_message_content = first_message.content.text
-
-    output = response.format()
-    assert output is not None
-    actual = {
-        "system_message": system_message_content,
-        "model_dump": output.model_dump(),
-    }
-
-    expected = snapshot(
-        {
-            "strict-or-tool": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_basic_scenario:strict:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Hobbit",
+                    "author": "J.R.R. Tolkien",
+                    "vibe": "intruiging!",
+                },
+            },
+            "structured_output_basic_scenario:tool:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Hobbit",
+                    "author": "J.R.R. Tolkien",
+                    "vibe": "intriguing!",
+                },
+            },
+            "structured_output_basic_scenario:json:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "intriguing!",
+                },
+            },
+            "structured_output_basic_scenario:strict-or-tool:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Jonathan Strange & Mr Norrell",
+                    "author": "Susanna Clarke",
+                    "vibe": "intruiging",
+                },
+            },
+            "structured_output_basic_scenario:strict-or-json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Jonathan Strange & Mr Norrell",
+                    "author": "Susanna Clarke",
+                    "vibe": "mysterious",
+                },
+            },
+            "structured_output_basic_scenario:strict:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Jonathan Strange & Mr Norrell",
+                    "author": "Susanna Clarke",
+                    "vibe": "mysterious",
+                },
+            },
+            "structured_output_basic_scenario:tool:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Mistborn: The Final Empire",
+                    "author": "Brandon Sanderson",
+                    "vibe": "intruiging!",
+                },
+            },
+            "structured_output_basic_scenario:json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Jonathan Strange & Mr Norrell",
+                    "author": "Susanna Clarke",
+                    "vibe": "intruiging!",
+                },
+            },
+            "structured_output_should_call_tool_scenario:strict-or-tool:gemini-2.5-flash": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(id="<unknown>", name="available_books", args="{}")
+                ],
+            },
+            "structured_output_should_call_tool_scenario:strict-or-json:gemini-2.5-flash": {
+                "type": "exception",
+                "exception_type": "ClientError",
+                "exception_message": "400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': \"Function calling with a response mime type: 'application/json' is unsupported\", 'status': 'INVALID_ARGUMENT'}}",
+                "status_code": None,
+            },
+            "structured_output_should_call_tool_scenario:strict:gemini-2.5-flash": {
+                "type": "exception",
+                "exception_type": "ClientError",
+                "exception_message": "400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': \"Function calling with a response mime type: 'application/json' is unsupported\", 'status': 'INVALID_ARGUMENT'}}",
+                "status_code": None,
+            },
+            "structured_output_should_call_tool_scenario:tool:gemini-2.5-flash": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(id="<unknown>", name="available_books", args="{}")
+                ],
+            },
+            "structured_output_should_call_tool_scenario:json:gemini-2.5-flash": {
+                "type": "exception",
+                "exception_type": "ClientError",
+                "exception_message": "400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': \"Function calling with a response mime type: 'application/json' is unsupported\", 'status': 'INVALID_ARGUMENT'}}",
+                "status_code": None,
+            },
+            "structured_output_should_call_tool_scenario:strict-or-tool:gemini-2.0-flash": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(id="<unknown>", name="available_books", args="{}")
+                ],
+            },
+            "structured_output_should_call_tool_scenario:strict-or-json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Title",
+                    "author": "Author",
+                    "vibe": "intruiging!",
+                },
+            },
+            "structured_output_should_call_tool_scenario:strict:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Midnight Hour",
+                    "author": "Benjamin Ashwood",
+                    "vibe": "mysterious",
+                },
+            },
+            "structured_output_should_call_tool_scenario:tool:gemini-2.0-flash": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(id="<unknown>", name="available_books", args="{}")
+                ],
+            },
+            "structured_output_should_call_tool_scenario:json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Hobbit",
+                    "author": "J.R.R. Tolkien",
+                    "vibe": "intruiging!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-tool:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "intriguing!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-json:gemini-2.5-flash": {
+                "type": "exception",
+                "exception_type": "ClientError",
+                "exception_message": "400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': \"Function calling with a response mime type: 'application/json' is unsupported\", 'status': 'INVALID_ARGUMENT'}}",
+                "status_code": None,
+            },
+            "structured_output_uses_tool_output_scenario:strict:gemini-2.5-flash": {
+                "type": "exception",
+                "exception_type": "ClientError",
+                "exception_message": "400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': \"Function calling with a response mime type: 'application/json' is unsupported\", 'status': 'INVALID_ARGUMENT'}}",
+                "status_code": None,
+            },
+            "structured_output_uses_tool_output_scenario:tool:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:json:gemini-2.5-flash": {
+                "type": "exception",
+                "exception_type": "ClientError",
+                "exception_message": "400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': \"Function calling with a response mime type: 'application/json' is unsupported\", 'status': 'INVALID_ARGUMENT'}}",
+                "status_code": None,
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-tool:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "intruiging!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "intruiging!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "mysterious",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:tool:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "intruiging!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "intruiging!",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-tool:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "ABSOLUTELY ENTHRALLING AND DEEPLY MYSTERIOUS WITH A TOUCH OF MELANCHOLY AND UNPARALLELED WORLD-BUILDING THAT WILL SWALLOW YOU WHOLE!",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-json:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "INTRIGUING",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "INTRIGUING",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:tool:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "INTRIGUING",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:json:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "A MAGNIFICENT SAGA OF MAGIC, MUSIC, AND MYSTERY, AS A LIVING LEGEND UNRAVELS HIS OWN TUMULTUOUS PAST! IMMERSE YOURSELF IN STUNNING PROSE, UNFORGETTABLE CHARACTERS, AND A WORLD SO RICH YOU CAN ALMOST TASTE THE FIREWOOD SMOKE. GET READY TO BE UTTERLY CAPTIVATED AND BEG FOR MORE! IT'S AN ABSOLUTE MASTERPIECE!",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-tool:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Goblin Emperor",
+                    "author": "Katherine Addison",
+                    "vibe": "UTTERLY HEARTWARMING AND COMFORTING!",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Priory of the Orange Tree",
+                    "author": "Samantha Shannon",
+                    "vibe": "EPIC FANTASY WITH DRAGONS AND QUEENS AND MAGIC AND IT'S SO GOOD YOU WILL CRY",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Jonathan Strange & Mr Norrell",
+                    "author": "Susanna Clarke",
+                    "vibe": "MYSTERIOUS",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:tool:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Mistborn: The Final Empire",
+                    "author": "Brandon Sanderson",
+                    "vibe": "euphoric",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Jonathan Strange & Mr Norrell",
+                    "author": "Susanna Clarke",
+                    "vibe": "DARK ACADEMIA MEETS ALTERNATE HISTORY WITH A DASH OF DRY BRITISH WIT! PERFECT FOR AUTUMN DAYS AND GETTING LOST IN A BYGONE ERA INFUSED WITH FORGOTTEN MAGIC! A MUST-READ FOR FANTASY LOVERS SEEKING SOMETHING TRULY UNIQUE AND IMMERSIVE!",  # codespell:ignore wit
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-tool:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE LAST UNICORN",
+                    "author": "PETER S. BEAGLE",
+                    "vibe": "SOUL_SEARCHING",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-json:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Last Unicorn",
+                    "author": "Peter S. Beagle",
+                    "vibe": "SOUL_SEARCHING",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Last Unicorn",
+                    "author": "Peter S. Beagle",
+                    "vibe": "PROFOUNDLY SOUL_SEARCHING, A FRAGMENTED SEARCH FOR WHAT WAS LOST, FOREVER DRAINED OF HOPE",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:tool:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "A WIZARD OF EARTHSEA",
+                    "author": "URSULA K. LE GUIN",
+                    "vibe": "SOUL_SEARCHING",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:json:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Blade Itself",
+                    "author": "Joe Abercrombie",
+                    "vibe": "A WORLD SO GRIM AND BLOOD-SOAKED, WHERE HEROES ARE FLAWED MONSTERS AND HOPE IS A CRUEL JOKE, LEAVING YOU WITH AN EXISTENTIAL EMPTINESS THAT ECHOES THE INEVITABLE DECAY OF ALL THINGS. THE CRUELTY OF FATE, THE FUTILITY OF JUSTICE, AND THE BITTER TASTE OF AMBITION'S ASHES. YOUR SOUL WILL BE CRUSHED.",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-tool:gemini-2.0-flash": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "The First Law",
                     "author": "Joe Abercrombie",
-                    "vibe": "GRIMDARK AND JOYLESS, JUST LIKE LIFE!",
+                    "vibe": "GRIMDARK AND HOPELESS",
                 },
             },
-            "strict-or-json": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
-                "model_dump": {
-                    "title": "The First Law",
-                    "author": "Joe Abercrombie",
-                    "vibe": "DEATH AWAITS YOU ALL. READ IT AND WEEP!",
-                },
-            },
-            "strict": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-json:gemini-2.0-flash": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "The First Law",
                     "author": "Joe Abercrombie",
                     "vibe": "EXISTENTIAL DREAD!",
                 },
             },
-            "tool": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The First Law",
+                    "author": "Joe Abercrombie",
+                    "vibe": "DESPAIR AND NO HOPE. NONE.",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:tool:gemini-2.0-flash": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "The Book of Lost Things",
                     "author": "John Connolly",
                     "vibe": "soul_searching",
                 },
             },
-            "json": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:json:gemini-2.0-flash": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "The First Law",
-                    "author": "Joe Abercrombie",
-                    "vibe": "A GRIMDARK PIT OF DESPAIR WHERE EVERYONE IS A TERRIBLE PERSON AND EVERYTHING GOES WRONG! UTTER NIHILISM AND FUTILITY AWAIT!",
+                    "title": "The Book of Lost Things",
+                    "author": "John Connolly",
+                    "vibe": "SOUL-CRUSHING GRIEF AND THE UTTER POINTLESSNESS OF EVERYTHING. A DARK FANTASY THAT WILL MAKE YOU QUESTION YOUR VERY EXISTENCE.",
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict-or-tool:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Chronicles of Eldoria",
+                    "author": "Elara Vance",
+                    "books": [
+                        {
+                            "title": "Whispers in the Ancient Forest",
+                            "author": "Elara Vance",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "The Sunstone's Secret",
+                            "author": "Elara Vance",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "Echoes of the Crystal Kingdom",
+                            "author": "Elara Vance",
+                            "vibe": "euphoric!",
+                        },
+                    ],
+                    "book_count": 3,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict-or-json:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Lord of the Rings",
+                    "author": "J.R.R. Tolkien",
+                    "books": [
+                        {
+                            "title": "The Fellowship of the Ring",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "The Two Towers",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "The Return of the King",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "euphoric!",
+                        },
+                    ],
+                    "book_count": 3,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Lord of the Rings",
+                    "author": "J.R.R. Tolkien",
+                    "books": [
+                        {
+                            "title": "The Fellowship of the Ring",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "The Two Towers",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "soul_searching!",
+                        },
+                        {
+                            "title": "The Return of the King",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "euphoric!",
+                        },
+                    ],
+                    "book_count": 3,
+                },
+            },
+            "structured_output_with_nested_models_scenario:tool:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Lord of the Rings",
+                    "author": "J.R.R. Tolkien",
+                    "books": [
+                        {
+                            "title": "The Fellowship of the Ring",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "intriguing!",
+                        },
+                        {
+                            "title": "The Two Towers",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "The Return of the King",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "euphoric!",
+                        },
+                    ],
+                    "book_count": 3,
+                },
+            },
+            "structured_output_with_nested_models_scenario:json:gemini-2.5-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Lord of the Rings",
+                    "author": "J.R.R. Tolkien",
+                    "books": [
+                        {
+                            "title": "The Fellowship of the Ring",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "intriguing!",
+                        },
+                        {
+                            "title": "The Two Towers",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "The Return of the King",
+                            "author": "J.R.R. Tolkien",
+                            "vibe": "euphoric!",
+                        },
+                    ],
+                    "book_count": 3,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict-or-tool:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Aubrey–Maturin series",
+                    "author": "Patrick O'Brian",
+                    "books": [
+                        {
+                            "title": "Master and Commander",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Post Captain",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "HMS Surprise",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Mauritius Command",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Desolation Island",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Fortune of War",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Surgeon's Mate",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Ionian Mission",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Treason's Harbour",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Far Side of the World",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Reverse of the Medal",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Letter of Marque",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Thirteen Gun Salute",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Nutmeg of Consolation",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Clarissa Oakes",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Wine-Dark Sea",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Commodore",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Yellow Admiral",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Hundred Days",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Blue at the Mizzen",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Final Unfinished Voyage",
+                            "author": "Patrick O'Brian",
+                            "vibe": "intruiging",
+                        },
+                    ],
+                    "book_count": 21,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict-or-json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Witcher",
+                    "author": "Andrzej Sapkowski",
+                    "books": [
+                        {
+                            "title": "The Last Wish",
+                            "author": "Andrzej Sapkowski",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Sword of Destiny",
+                            "author": "Andrzej Sapkowski",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Blood of Elves",
+                            "author": "Andrzej Sapkowski",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Time of Contempt",
+                            "author": "Andrzej Sapkowski",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Baptism of Fire",
+                            "author": "Andrzej Sapkowski",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "The Tower of the Swallow",
+                            "author": "Andrzej Sapkowski",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Lady of the Lake",
+                            "author": "Andrzej Sapkowski",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Season of Storms",
+                            "author": "Andrzej Sapkowski",
+                            "vibe": "intruiging",
+                        },
+                    ],
+                    "book_count": 8,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Lunar Chronicles",
+                    "author": "Marissa Meyer",
+                    "books": [
+                        {
+                            "title": "Cinder",
+                            "author": "Marissa Meyer",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Scarlet",
+                            "author": "Marissa Meyer",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Cress",
+                            "author": "Marissa Meyer",
+                            "vibe": "intruiging",
+                        },
+                        {
+                            "title": "Winter",
+                            "author": "Marissa Meyer",
+                            "vibe": "intruiging",
+                        },
+                    ],
+                    "book_count": 4,
+                },
+            },
+            "structured_output_with_nested_models_scenario:tool:gemini-2.0-flash": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="Okay, I need some information about the book series you're interested in. Can you tell me the name of the series, the author, and the number of books in the series? If you know the titles, authors, and vibes of each book, that would be helpful too!\n"
+                    )
+                ],
+            },
+            "structured_output_with_nested_models_scenario:json:gemini-2.0-flash": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Vibe Series!",
+                    "author": "JSON Response",
+                    "books": [
+                        {
+                            "title": "Mysterious Echoes",
+                            "author": "A. Reader",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Euphoric Dreamscapes",
+                            "author": "B. Wright",
+                            "vibe": "euphoric!",
+                        },
+                        {
+                            "title": "Intriguing Illusions",
+                            "author": "C. Author",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "Soul-Searching Journeys",
+                            "author": "D. Scribbler",
+                            "vibe": "soul_searching!",
+                        },
+                    ],
+                    "book_count": 4,
                 },
             },
         }
     )
-    assert actual == expected[format_mode]
+
+    assert actual == expected[f"{scenario_id}:{format_mode}:{test_model_id}"]
 
 
 def test_custom_base_url() -> None:
     """Test that custom base URL is used for API requests."""
     example_url = "https://example.com"
-
     with patch("mirascope.llm.clients.google.client.Client") as mock_client_class:
         mock_client_instance = MagicMock()
         mock_client_class.return_value = mock_client_instance
-
         google_client = llm.GoogleClient(base_url=example_url)
-
         mock_client_class.assert_called_once()
         call_args = mock_client_class.call_args
         assert call_args.kwargs["http_options"] is not None
         assert call_args.kwargs["http_options"].base_url == example_url
-
         assert google_client.client is mock_client_instance
 
 
@@ -1242,12 +1707,10 @@ def test_call_no_output(google_client: llm.GoogleClient) -> None:
         llm.messages.system("Do not emit ANY output, terminate immediately."),
         llm.messages.user(""),
     ]
-
     response = google_client.call(
         model_id=TEST_MODEL_ID,
         messages=messages,
     )
-
     assert isinstance(response, llm.Response)
     assert utils.response_snapshot_dict(response) == snapshot(
         {

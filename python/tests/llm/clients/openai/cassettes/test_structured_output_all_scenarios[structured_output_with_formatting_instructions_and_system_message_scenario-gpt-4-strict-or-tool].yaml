@@ -1,0 +1,117 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"You are a depressive LLM that
+      only recommends sad books.\nPretty please output a book recommendation in JSON
+      form.\nIt should have the format {title: str, author: str, vibe: str}.\nBe super
+      vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey\nthe STRENGTH
+      OF YOUR RECOMMENDATION!"},{"role":"user","content":"Recommend a single fantasy
+      book."}],"model":"gpt-4","tool_choice":"required","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in AllCapsBook format for a final response.\nBook
+      with custom formatting instructions.","parameters":{"description":"Book with
+      custom formatting instructions.","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"vibe":{"description":"Should
+      be one of mysterious, euphoric, intruiging, or soul_searching","title":"Vibe","type":"string"}},"required":["title","author","vibe"],"title":"AllCapsBook","type":"object","additionalProperties":false},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1076'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=.mSDrIEC0GIo1yikwei7bARXOCz6l1pThqAECFDOeeo-1757444653-1.0.1.1-wLCtrXyPE4MnXXDCelegbZsHZTy2Ubs74OTaD7dJJGnjG9Xihy4c50geMry09RerQm8If9mBtbDaLRMKfU9lXUmlL_lGmYLbI6P9A7wideI;
+        _cfuvid=cPUoV.fkzftThC9hLklJhu50YjuWdfApKc8mmkm58hU-1757444653349-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFPbbuIwEH3nK6x5plXpcql4Q8BSui1ItKtdaVNZxhmCW8f22k7FRfx7
+        5YQmgXaljaIomjNz5sz4eN8gBEQMfQJ8zTxPjbwYjjZvu86L/rt7sJvb7p2abl7XbbFbdrOthmao
+        0MsX5P6j6pLr1Ej0QqsC5haZx8Da6nV67Xa7e9PLgVTHKENZYvxF++Kq2/p2rFhrwdFBn/xpEELI
+        Pv8GbSrGDfTJVfMjkqJzLEHol0mEgNUyRIA5J5xnykOzArlWHlWQqzIpa4DXWlLOpKwaF8++9l8t
+        iElJh8ORutm9DJNRK/m1m8qr2e/pj7t7XutXUG9NLmiVKV4upoaX8f5ZM0JAsTSvpTQVljmuDdKV
+        tinzHmOqM28yT3Pt9IyWEGA2yVJUPowE+0gREoEXXmIEfRLBgEwGD2My/06ebhfz2fgxgmaRxDK/
+        1rbImozni8mYLC7D+zBYPE1nZd6bWB65Huc/7+njeLAY3k5nkwgidYATOYfGV//PtROwuMock5+P
+        himlPQsbys/m+YgcShtInRirl+6sFFZCCbemFpnLtwvOa1PIChLy5pCdOAiM1akJK33FvF2r1yn4
+        oHJ2hXaOXgSvPZNV/Pr6o+qEj8bomcgtVrqaM77GuCqt3M2yWOga0KhN/VnNV9zF5EIl/0NfAZyj
+        CfYyFmPBTyeu0iyGi/+vtHLLuWBwaN8ER+oF2nASMa5YJourCW7rPKZ0JVSC1lhR3s/GofEOAAD/
+        /wMA9Un9eJYEAAA=
+    headers:
+      CF-RAY:
+      - 97c8f40e390e76c8-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 19:04:49 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1884'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1888'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '80000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '79917'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 62ms
+      x-request-id:
+      - req_cedb3d7f60fe4a9c93d5180fb5d0b462
+    status:
+      code: 200
+      message: OK
+version: 1

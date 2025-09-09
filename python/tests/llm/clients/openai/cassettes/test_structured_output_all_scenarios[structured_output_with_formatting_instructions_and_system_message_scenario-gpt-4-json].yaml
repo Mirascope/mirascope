@@ -1,0 +1,111 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"You are a depressive LLM that
+      only recommends sad books.\nPretty please output a book recommendation in JSON
+      form.\nIt should have the format {title: str, author: str, vibe: str}.\nBe super
+      vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey\nthe STRENGTH
+      OF YOUR RECOMMENDATION!"},{"role":"user","content":"Recommend a single fantasy
+      book."}],"model":"gpt-4"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '413'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=.mSDrIEC0GIo1yikwei7bARXOCz6l1pThqAECFDOeeo-1757444653-1.0.1.1-wLCtrXyPE4MnXXDCelegbZsHZTy2Ubs74OTaD7dJJGnjG9Xihy4c50geMry09RerQm8If9mBtbDaLRMKfU9lXUmlL_lGmYLbI6P9A7wideI;
+        _cfuvid=cPUoV.fkzftThC9hLklJhu50YjuWdfApKc8mmkm58hU-1757444653349-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jJJRb9owEMff8ymse4apbFnYeAshK2yUTmnKhJYqMs4Bbh07sh3aDfHd
+        KwdK6NZJe/HD/e5/vvvf7TxCgBcwIMA21LKyEt1o9PQYzLePW/4leEjn9GY0DIar3/NwPLz/Ch2n
+        UMt7ZPZF9Y6pshJouZIHzDRSi65qr/+x7/t+8NlvQKkKFE62rmzX714EvQ9HxUZxhgYG5KdHCCG7
+        5nW9yQKfYEAuOi+REo2ha4TBKYkQ0Eq4CFBjuLFUWui0kClpUTbt7jKZgeVWYAYDkkE6jklyHY4y
+        6DhCa7tR+oCi6+QqjMhVFIVJOl4cM7Z8eZTepmmcTBdkHIdJ2v2RxLNoPJldknA2IqP45ns4SSaz
+        y+mCDKdx+C2DTO7Pm9K4qg11ZshaiDNApVSWOjMbO+6OZH8yQKh1pdXS/CGFFZfcbHKN1CjphjVW
+        VdDQvUfIXWN0/co7qLQqK5tb9YDNd5+CQzloV9pCv3eEVlkq2njvfb/zRrm8QEu5MGebAkbZBotW
+        2q6V1gVXZ8A7G/rvbt6qfRicy/X/lG8BY1hZLPJKY8HZ64nbNI3u4v+VdjK5aRgM6i1nmFuO2i2i
+        wBWtxeEmwfwyFst8xeUadaV5c5hukd7eewYAAP//AwAbBb2RjwMAAA==
+    headers:
+      CF-RAY:
+      - 97c8f438a9d576c8-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 09 Sep 2025 19:04:55 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1806'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1814'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '80000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '79917'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 62ms
+      x-request-id:
+      - req_8d52ee269b2c46f3b078b2a8bff489e3
+    status:
+      code: 200
+      message: OK
+version: 1

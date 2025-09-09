@@ -1,0 +1,75 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Tell me about a book series."}], "role":
+      "user"}], "generationConfig": {"responseMimeType": "application/json", "responseSchema":
+      {"description": "A book series with nested models.", "properties": {"series_name":
+      {"title": "Series Name", "type": "STRING"}, "author": {"title": "Author", "type":
+      "STRING"}, "books": {"items": {"description": "A book recommendation with metadata.
+      ALWAYS add an exclamation point to the vibe!", "properties": {"title": {"title":
+      "Title", "type": "STRING"}, "author": {"title": "Author", "type": "STRING"},
+      "vibe": {"description": "Should be one of mysterious, euphoric, intruiging,
+      or soul_searching", "title": "Vibe", "type": "STRING"}}, "property_ordering":
+      ["title", "author", "vibe"], "required": ["title", "author", "vibe"], "title":
+      "Book", "type": "OBJECT"}, "title": "Books", "type": "ARRAY"}, "book_count":
+      {"title": "Book Count", "type": "INTEGER"}}, "propertyOrdering": ["series_name",
+      "author", "books", "book_count"], "required": ["series_name", "author", "books",
+      "book_count"], "title": "Series", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1097'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/5VSwW7bMAy9+ys8ntOi6xqsyG1oNmzrimWpMRSoi0KNGVuzLBoSvbQI/O+j7ThR
+        sB06CzAEvsdH6pHbKI5hpWymM8XoYRbfSySOt/2/w8gyWhZgDEmwVo4P3OHbBnehMD53SbBNwaPT
+        6B+tqjCFWQpJgfE3cllM65jlvtQ29ylMUlANF+R60tfTpZw4IVNqtD36RFQKb3YvmqzZHNQ+oTG0
+        8YWuQ81XSP7WT4OKtuwanUvWmxTayV8Vkg1J4gbdaxrdq1YvnuXx1Ph/qy6RG2fHnq//s2dsaqHp
+        Vaf9sPPncUWNZYHftRAMpN3fHyaHMToy2M2oogzNSG9HAqy11b5YovJkO9pt8n0Be1TbDJ8lfBaN
+        BXppaLzK8QZZyUKp/dpA7aiqOaES7VXXoiCXg1awfkfw27PpjsDEyhxh08sRC3T9XKpqEy5msLPy
+        SGU0v3QvST7eJRAYwUdtjUZEgV8gE2nygo9bvHh/Hu0cG0z8KQuiB7dyrMS/k/PT6cnaKF/09cCh
+        r8l6/JJ1nPLz/INaXN3Ns2pacbn4dXFdlj9uIGqjPwpr/2WZAwAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 18:23:12 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3001
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

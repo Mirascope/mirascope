@@ -1,0 +1,68 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Recommend a single fantasy book."}],
+      "role": "user"}], "generationConfig": {"responseMimeType": "application/json",
+      "responseSchema": {"description": "A book recommendation with metadata. ALWAYS
+      add an exclamation point to the vibe!", "properties": {"title": {"title": "Title",
+      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}, "vibe":
+      {"description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
+      "title": "Vibe", "type": "STRING"}}, "propertyOrdering": ["title", "author",
+      "vibe"], "required": ["title", "author", "vibe"], "title": "Book", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '640'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RwU7CQBC99ys2e/AEpoUUxZsBDxhBlKok1sMgQ7th2W12p0TT8O9uKYWiV3to
+        due9mTf7XuExxj9BLcUSCC2/Ye+uwlix/5eYVoSKHFCXXDEDQydu9RWNs6MQfpVNvIgVYzEnQRJj
+        V4j5vVZAKSg2IwMqQXbBxoZNtDEoZcxbVQPklGpTdcxyC0oBG0gwazxStmJxGCkUmVwkQiUxj9WO
+        N1bZHc8frdMDjJZYbrfRS5Q1fVcT+EooYdNnBKtVSZtFj1N+RGGbPOgkM3pRetD2L/0g6IdX113f
+        74R+390Cr5bei3K3f4JjJHAmw9FK7kZsMor0GtVA53uTw7CSaWRyhnd7B5w0gTyD+kHrz1g7dKJC
+        NrNqxOheD1LQd/nE6G4e8YZDdL5VbZHXcPL3jv8k1u2di3mHZKqwXtFYUaWS4Mbl1O5c+u2VBJvu
+        J3KDNtPK4mhZcl7mw1sYz8MRvuUbWk997E7005h7O+8HhL+m9fsCAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 09 Sep 2025 18:22:10 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=738
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

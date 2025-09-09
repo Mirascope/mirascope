@@ -14,7 +14,11 @@ from mirascope.llm import (  # Import symbols directly for easy snapshot updates
     UserMessage,
 )
 from tests import utils
-from tests.llm.clients.conftest import CLIENT_SCENARIO_IDS, FORMATTING_MODES
+from tests.llm.clients.conftest import (
+    CLIENT_SCENARIO_IDS,
+    FORMATTING_MODES,
+    STRUCTURED_SCENARIO_IDS,
+)
 
 TEST_MODEL_ID = "gpt-4o"
 
@@ -29,7 +33,6 @@ def test_call(
     """Test call method with all scenarios."""
     kwargs = request.getfixturevalue(scenario_id)
     response = openai_client.call(model_id=TEST_MODEL_ID, **kwargs)
-    assert isinstance(response, llm.Response)
 
     expected = snapshot(
         {
@@ -364,6 +367,7 @@ the STRENGTH OF YOUR RECOMMENDATION!\
             },
         }
     )
+
     assert utils.response_snapshot_dict(response) == expected[scenario_id]
 
 
@@ -725,110 +729,93 @@ the STRENGTH OF YOUR RECOMMENDATION!\
             },
         }
     )
+
     assert utils.stream_response_snapshot_dict(stream_response) == expected[scenario_id]
 
 
 @pytest.mark.parametrize("format_mode", FORMATTING_MODES)
-@pytest.mark.parametrize(
-    "model_id", ["gpt-4o", "gpt-4"]
-)  # gpt-4o has native strict and json support; gpt-4 does not.
+@pytest.mark.parametrize("test_model_id", ["gpt-4o", "gpt-4"])
+@pytest.mark.parametrize("scenario_id", STRUCTURED_SCENARIO_IDS)
 @pytest.mark.vcr()
-def test_every_structured_mode_basic(
+def test_structured_output_all_scenarios(
     openai_client: llm.OpenAIClient,
-    model_id: str,
+    test_model_id: str,
     format_mode: llm.formatting.FormattingMode,
+    scenario_id: str,
     request: pytest.FixtureRequest,
 ) -> None:
-    """Test final formatted output for every supported formatting mode.
-
-    This test uses the basic Book formatting. Expected qualities of the output:
-    - should have title, author, vibe as string
-    - vibe should be mysterious, euphoric, intruiging, or soul-searching (per annotation)
-    - vibe should always have an exclamation point (per class docstring)
-    """
-    scenario_data = request.getfixturevalue("structured_output_basic_scenario")
+    """Test all structured output scenarios across all formatting modes."""
+    scenario_data = request.getfixturevalue(scenario_id)
     llm.format(scenario_data["format"], mode=format_mode)
 
     try:
-        response = openai_client.call(model_id=model_id, **scenario_data)
+        response = openai_client.call(model_id=test_model_id, **scenario_data)
 
-        system_message_content = ""
-        if (first_message := response.messages[0]).role == "system":
-            system_message_content = first_message.content.text
+        try:
+            output = response.format()
+            if output is not None:
+                actual = {
+                    "type": "formatted_output",
+                    "model_dump": output.model_dump(),
+                }
+            else:
+                actual = {"type": "raw_content", "content": response.content}
+        except Exception:
+            actual = {"type": "raw_content", "content": response.content}
 
-        output = response.format()
-        assert output is not None
-        actual = {
-            "system_message": system_message_content,
-            "model_dump": output.model_dump(),
-        }
     except Exception as e:
-        if model_id == "gpt-4" and format_mode == "strict":
-            # Expected failure: gpt-4 does not have strict support
-            actual = {
-                "exception_type": type(e).__name__,
-                "exception_message": str(e),
-                "status_code": getattr(e, "status_code", None),
-            }
-        else:
-            raise e
+        actual = {
+            "type": "exception",
+            "exception_type": type(e).__name__,
+            "exception_message": str(e),
+            "status_code": getattr(e, "status_code", None),
+        }
 
     expected = snapshot(
         {
-            "gpt-4o:strict-or-tool": {
-                "system_message": "",
+            "structured_output_basic_scenario:strict-or-tool:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "euphoric",
+                },
+            },
+            "structured_output_basic_scenario:strict-or-json:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Night Circus",
+                    "author": "Erin Morgenstern",
+                    "vibe": "mysterious",
+                },
+            },
+            "structured_output_basic_scenario:strict:gpt-4o": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "The Name of the Wind",
                     "author": "Patrick Rothfuss",
                     "vibe": "intriguing",
                 },
             },
-            "gpt-4o:strict-or-json": {
-                "system_message": "",
+            "structured_output_basic_scenario:tool:gpt-4o": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "The Name of the Wind",
                     "author": "Patrick Rothfuss",
                     "vibe": "mysterious",
                 },
             },
-            "gpt-4o:strict": {
-                "system_message": "",
-                "model_dump": {
-                    "title": "The Name of the Wind",
-                    "author": "Patrick Rothfuss",
-                    "vibe": "mysterious",
-                },
-            },
-            "gpt-4o:tool": {
-                "system_message": """\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-""",
-                "model_dump": {
-                    "title": "The Name of the Wind",
-                    "author": "Patrick Rothfuss",
-                    "vibe": "intriguing",
-                },
-            },
-            "gpt-4o:json": {
-                "system_message": """\
-Respond with valid JSON that matches this exact schema:
+            "structured_output_basic_scenario:json:gpt-4o": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="""\
 {
   "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
   "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "vibe": {
-      "description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
-      "title": "Vibe",
-      "type": "string"
-    }
+    "title": "The Name of the Wind",
+    "author": "Patrick Rothfuss",
+    "vibe": "Intruiging!"
   },
   "required": [
     "title",
@@ -838,301 +825,768 @@ Respond with valid JSON that matches this exact schema:
   "title": "Book",
   "type": "object"
 }\
-""",
-                "model_dump": {
-                    "title": "The Name of the Wind",
-                    "author": "Patrick Rothfuss",
-                    "vibe": "mysterious!",
-                },
+"""
+                    )
+                ],
             },
-            "gpt-4:strict-or-json": {
-                "system_message": """\
-Respond with valid JSON that matches this exact schema:
+            "structured_output_basic_scenario:strict-or-tool:gpt-4": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_JaamJzeDwbnn3pFh3ZdHdhct",
+                        name='__mirascope_formatted_output_tool__["assistant',
+                        args="""\
 {
-  "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "vibe": {
-      "description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
-      "title": "Vibe",
-      "type": "string"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "vibe"
-  ],
-  "title": "Book",
-  "type": "object"
-}
-
-Respond ONLY with valid JSON, and no other text.\
+"title": "Harry Potter and the Sorcerer's Stone",
+"author": "J.K. Rowling",
+"vibe": "mysterious"
+}\
 """,
-                "model_dump": {
-                    "title": "Harry Potter and the Sorcerer's Stone",
-                    "author": "J.K. Rowling",
-                    "vibe": "mysterious!",
-                },
+                    )
+                ],
             },
-            "gpt-4:strict": {
-                "exception_type": "BadRequestError",
-                "exception_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: 'response_format' of type 'json_schema' is not supported with this model. Learn more about supported models at the Structured Outputs guide: https://platform.openai.com/docs/guides/structured-outputs\", 'type': 'invalid_request_error', 'param': None, 'code': None}}",
-                "status_code": 400,
-            },
-            "gpt-4:tool": {
-                "system_message": """\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-""",
-                "model_dump": {
-                    "title": "A Song of Ice and Fire",
-                    "author": "George R. R. Martin",
-                    "vibe": "mysterious",
-                },
-            },
-            "gpt-4:json": {
-                "system_message": """\
-Respond with valid JSON that matches this exact schema:
-{
-  "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "vibe": {
-      "description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
-      "title": "Vibe",
-      "type": "string"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "vibe"
-  ],
-  "title": "Book",
-  "type": "object"
-}
-
-Respond ONLY with valid JSON, and no other text.\
-""",
+            "structured_output_basic_scenario:strict-or-json:gpt-4": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "Harry Potter and the Philosopher's Stone",
                     "author": "J.K. Rowling",
                     "vibe": "mysterious!",
                 },
             },
-            "gpt-4:strict-or-tool": {
-                "system_message": """\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-""",
+            "structured_output_basic_scenario:strict:gpt-4": {
+                "type": "exception",
+                "exception_type": "BadRequestError",
+                "exception_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: 'response_format' of type 'json_schema' is not supported with this model. Learn more about supported models at the Structured Outputs guide: https://platform.openai.com/docs/guides/structured-outputs\", 'type': 'invalid_request_error', 'param': None, 'code': None}}",
+                "status_code": 400,
+            },
+            "structured_output_basic_scenario:tool:gpt-4": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "Harry Potter and the Sorcerer's Stone",
                     "author": "J.K. Rowling",
                     "vibe": "mysterious",
                 },
             },
-        }
-    )
-    assert actual == expected[model_id + ":" + format_mode]
+            "structured_output_basic_scenario:json:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Harry Potter and the Sorcerer's Stone",
+                    "author": "J.K. Rowling",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_should_call_tool_scenario:strict-or-tool:gpt-4o": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_cywSSU1MtusgCdvwto3eT7Vg",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:strict-or-json:gpt-4o": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_GvgzOQsu4yuHp3bCvEUyqPLT",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:strict:gpt-4o": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_7lKVltoZwvkaQcJPHJUBCwzA",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:tool:gpt-4o": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_QGjBzF0Y2Jji5p55SxpfoGOR",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:json:gpt-4o": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_bWkrqHJcHqPX1BTgdCeOA83i",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:strict-or-tool:gpt-4": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_QJBWKGvk0yFroq3cFhFVO4jf",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:strict-or-json:gpt-4": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="""\
+Sorry, as an AI, I cannot browse a library or perform actions. I can only provide example JSON data based on the provided schema. Here is a hypothetical example:
 
-
-@pytest.mark.parametrize("format_mode", FORMATTING_MODES)
-@pytest.mark.parametrize(
-    "model_id", ["gpt-4o", "gpt-4"]
-)  # gpt-4o has native strict and json support; gpt-4 does not.
-@pytest.mark.vcr()
-def test_every_structured_mode_with_instructions_and_system_message(
-    openai_client: llm.OpenAIClient,
-    model_id: str,
-    format_mode: llm.formatting.FormattingMode,
-    request: pytest.FixtureRequest,
-) -> None:
-    """Test final formatted output for every supported formatting mode.
-
-    Uses the AllCapsBook which has formatting instructions. Expectations:
-    - title, author, vibe (all str)
-    - Everything should be caps (per system instructions)
-    - vibe should be one of euphoric, intruiging, or soul_searching (per annotation)
-    - Nothing about exclamation points on the end of the vibe since it's overwritten.
-    """
-    # Use structured_output_with_formatting_instructions_and_system_message as it is a "kitchen sink" example
-    scenario_data = request.getfixturevalue(
-        "structured_output_with_formatting_instructions_and_system_message_scenario"
-    )
-    llm.format(scenario_data["format"], mode=format_mode)
-
-    try:
-        response = openai_client.call(model_id=model_id, **scenario_data)
-
-        system_message_content = ""
-        if (first_message := response.messages[0]).role == "system":
-            system_message_content = first_message.content.text
-
-        output = response.format()
-        assert output is not None
-        actual = {
-            "system_message": system_message_content,
-            "model_dump": output.model_dump(),
-        }
-    except Exception as e:
-        if model_id == "gpt-4" and format_mode == "strict":
-            # Expected failure: gpt-4 does not have strict support
-            actual = {
-                "exception_type": type(e).__name__,
-                "exception_message": str(e),
-                "status_code": getattr(e, "status_code", None),
-            }
-        else:
-            raise e
-
-    expected = snapshot(
-        {
-            "gpt-4o:strict-or-tool": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
+{
+  "title": "Harry Potter and the Philosopher's Stone",
+  "author": "J. K. Rowling",
+  "vibe": "mysterious!"
+}\
+"""
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:strict:gpt-4": {
+                "type": "exception",
+                "exception_type": "BadRequestError",
+                "exception_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: 'response_format' of type 'json_schema' is not supported with this model. Learn more about supported models at the Structured Outputs guide: https://platform.openai.com/docs/guides/structured-outputs\", 'type': 'invalid_request_error', 'param': None, 'code': None}}",
+                "status_code": 400,
+            },
+            "structured_output_should_call_tool_scenario:tool:gpt-4": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_rq6RcLW50UeUcHuAEwtZRJEz",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:json:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Harry Potter and the Philosopher's Stone",
+                    "author": "J.K. Rowling",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-tool:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Long Way to a Small Angry Planet",
+                    "author": "Becky Chambers",
+                    "vibe": "intriguing",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-json:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Long Way to a Small Angry Planet",
+                    "author": "Becky Chambers",
+                    "vibe": "intriguing",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict:gpt-4o": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="""\
+{"title":"Wild Seed","author":"Octavia Butler","vibe":"soul_searching"}
+{"title":"The Long Way to a Small Angry Planet","author":"Becky Chambers","vibe":"euphoric"}\
+"""
+                    )
+                ],
+            },
+            "structured_output_uses_tool_output_scenario:tool:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "mysterious",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:json:gpt-4o": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="""\
+{
+  "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
+  "properties": {
+    "title": "Wild Seed",
+    "author": "Octavia Butler",
+    "vibe": "intriguing!"
+  },
+  "required": [
+    "title",
+    "author",
+    "vibe"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+"""
+                    )
+                ],
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-tool:gpt-4": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_xqhqM6ZU6DElj60C1yC8HGil",
+                        name='__mirascope_formatted_output_tool__["assistant',
+                        args="""\
+{
+  "title": "Wild Seed",
+  "author": "Octavia Butler",
+  "vibe": "mysterious"
+}\
 """,
+                    )
+                ],
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-json:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict:gpt-4": {
+                "type": "exception",
+                "exception_type": "BadRequestError",
+                "exception_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: 'response_format' of type 'json_schema' is not supported with this model. Learn more about supported models at the Structured Outputs guide: https://platform.openai.com/docs/guides/structured-outputs\", 'type': 'invalid_request_error', 'param': None, 'code': None}}",
+                "status_code": 400,
+            },
+            "structured_output_uses_tool_output_scenario:tool:gpt-4": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_M0hWIvdC7q0Kz9hSnw6YIU3i",
+                        name="__mirascope_formatted_output_tool__.__assistant",
+                        args="""\
+{
+"title": "Wild Seed",
+"author": "Octavia Butler",
+"vibe": "mysterious"
+}\
+""",
+                    )
+                ],
+            },
+            "structured_output_uses_tool_output_scenario:json:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-tool:gpt-4o": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "THE NAME OF THE WIND",
                     "author": "PATRICK ROTHFUSS",
+                    "vibe": "ENCHANTING AND MESMERIZING",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-json:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "MYSTERIOUS",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "UTTERLY ENCHANTING AND MESMERIZING",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:tool:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "MYSTERIOUS",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:json:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "EPICALLY MAGICAL AND MYSTERIOUS, WITH A TOUCH OF FOLKLORIC WONDER!",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-tool:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "GAME OF THRONES",
+                    "author": "GEORGE R. R. MARTIN",
+                    "vibe": "INTRUIGING",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-json:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE LORD OF THE RINGS",
+                    "author": "J.R.R. TOLKIEN",
+                    "vibe": "EPIC FANTASY, ADVENTURE, MYSTERY, BEAUTIFULLY COMPLEX, ABSOLUTELY MAGICAL!",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict:gpt-4": {
+                "type": "exception",
+                "exception_type": "BadRequestError",
+                "exception_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: 'response_format' of type 'json_schema' is not supported with this model. Learn more about supported models at the Structured Outputs guide: https://platform.openai.com/docs/guides/structured-outputs\", 'type': 'invalid_request_error', 'param': None, 'code': None}}",
+                "status_code": 400,
+            },
+            "structured_output_with_formatting_instructions_scenario:tool:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "A GAME OF THRONES",
+                    "author": "GEORGE R.R. MARTIN",
+                    "vibe": "INTRUIGING",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:json:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "HARRY POTTER AND THE GOBLET OF FIRE",
+                    "author": "J.K. ROWLING",
+                    "vibe": "MYSTICAL, ENCHANTING, EPIC! CANNOT MISS THIS ROLLER COASTER RIDE THROUGH THE WORLD OF WITCHCRAFT AND WIZARDRY!",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-tool:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE SLOW REGARD OF SILENT THINGS",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "SOUL-SHATTERING SOLITUDE",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-json:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE OCEAN AT THE END OF THE LANE",
+                    "author": "NEIL GAIMAN",
                     "vibe": "SOUL_SEARCHING",
                 },
             },
-            "gpt-4o:strict-or-json": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
-                "model_dump": {
-                    "title": "THE BROKEN EMPIRE: THE PRINCE OF THORNS",
-                    "author": "MARK LAWRENCE",
-                    "vibe": "SOUL_SEARCHING",
-                },
-            },
-            "gpt-4o:strict": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
-                "model_dump": {
-                    "title": "AMERICAN PSYCHO",
-                    "author": "BRET EASTON ELLIS",
-                    "vibe": "SOUL-SEARCHING",
-                },
-            },
-            "gpt-4o:tool": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict:gpt-4o": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "THE NIGHT CIRCUS",
                     "author": "ERIN MORGENSTERN",
                     "vibe": "MYSTERIOUS",
                 },
             },
-            "gpt-4o:json": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
-                "model_dump": {
-                    "title": "THE WELL OF ASCENSION",
-                    "author": "Brandon Sanderson",
-                    "vibe": "BETRAYAL AND DESPAIR IN THE SHADOWS OF OPPRESSION",
-                },
-            },
-            "gpt-4:strict-or-tool": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:tool:gpt-4o": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "NORWEGIAN WOOD",
                     "author": "HARUKI MURAKAMI",
                     "vibe": "SOUL_SEARCHING",
                 },
             },
-            "gpt-4:strict-or-json": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:json:gpt-4o": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "THE ROAD",
-                    "author": "CORMAC MCCARTHY",
-                    "vibe": "FILLED WITH DYSTOPIAN DESPAIR AND UNEQUIVOCAL DESOLATION THAT INTRIGUINGLY BLENDS REALISTIC AND FANTASTIC ELEMENTS!",
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "A POIGNANT TALE OF LOSS AND YEARNING WRAPPED IN THE MYSTICAL VEIL OF FANTASY! HERE, MAGIC IS BEAUTIFUL BUT ALSO REMINISCENT OF ALL THAT ONE DESIRES BUT CAN NEVER TRULY GRASP! A JOURNEY OF LONGING AND NEVER-ENDING SADNESS!",
                 },
             },
-            "gpt-4:strict": {
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-tool:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "A GAME OF THRONES",
+                    "author": "GEORGE R. R. MARTIN",
+                    "vibe": "SOUL_SEARCHING",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-json:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "A GAME OF THRONES",
+                    "author": "GEORGE R.R. MARTIN",
+                    "vibe": "MOURNFUL, BLEAK, HEART-WRENCHING",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict:gpt-4": {
+                "type": "exception",
                 "exception_type": "BadRequestError",
                 "exception_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: 'response_format' of type 'json_schema' is not supported with this model. Learn more about supported models at the Structured Outputs guide: https://platform.openai.com/docs/guides/structured-outputs\", 'type': 'invalid_request_error', 'param': None, 'code': None}}",
                 "status_code": 400,
             },
-            "gpt-4:tool": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:tool:gpt-4": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "NEVERWHERE",
-                    "author": "NEIL GAIMAN",
-                    "vibe": "INTRUIGING",
+                    "title": "THE SADDEST PART OF THE ENDING",
+                    "author": "RACHEL AARON",
+                    "vibe": "SOUL_SEARCHING",
                 },
             },
-            "gpt-4:json": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:json:gpt-4": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "THE BROKEN EMPIRE TRILOGY",
-                    "author": "MARK LAWRENCE",
-                    "vibe": "MERCILESS BETRAYAL, LONELINESS, AND LOSS",
+                    "title": "THE ROAD",
+                    "author": "CORMAC MCCARTHY",
+                    "vibe": "UTTERLY HEART-WRENCHING AND DESPAIRINGLY BLEAK",
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict-or-tool:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Dreamwalker Chronicles",
+                    "author": "Elara Dawn",
+                    "books": [
+                        {
+                            "title": "The Awakening",
+                            "author": "Elara Dawn",
+                            "vibe": "Mysterious!",
+                        },
+                        {
+                            "title": "Veil of Shadows",
+                            "author": "Elara Dawn",
+                            "vibe": "Intriguing!",
+                        },
+                        {
+                            "title": "Destined Paths",
+                            "author": "Elara Dawn",
+                            "vibe": "Soul Searching!",
+                        },
+                        {
+                            "title": "The Final Portal",
+                            "author": "Elara Dawn",
+                            "vibe": "Euphoric!",
+                        },
+                    ],
+                    "book_count": 4,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict-or-json:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Quantum Realm",
+                    "author": "Alden Thorne",
+                    "books": [
+                        {
+                            "title": "The Subatomic Stranger",
+                            "author": "Alden Thorne",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Entangled Enthusiasm",
+                            "author": "Alden Thorne",
+                            "vibe": "euphoric!",
+                        },
+                        {
+                            "title": "Quarks and Quandaries",
+                            "author": "Alden Thorne",
+                            "vibe": "intriguing!",
+                        },
+                        {
+                            "title": "The Event Horizon",
+                            "author": "Alden Thorne",
+                            "vibe": "soul_searching!",
+                        },
+                    ],
+                    "book_count": 4,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Enchanted Lands",
+                    "author": "Elara Moonstone",
+                    "books": [
+                        {
+                            "title": "The Whispering Forest",
+                            "author": "Elara Moonstone",
+                            "vibe": "Mysterious!",
+                        },
+                        {
+                            "title": "The Luminous Lake",
+                            "author": "Elara Moonstone",
+                            "vibe": "Euphoric!",
+                        },
+                        {
+                            "title": "The Secret Shadows",
+                            "author": "Elara Moonstone",
+                            "vibe": "Intriguing!",
+                        },
+                        {
+                            "title": "The Soul's Journey",
+                            "author": "Elara Moonstone",
+                            "vibe": "Soul-searching!",
+                        },
+                    ],
+                    "book_count": 4,
+                },
+            },
+            "structured_output_with_nested_models_scenario:tool:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Chronicles of Narnia",
+                    "author": "C.S. Lewis",
+                    "books": [
+                        {
+                            "title": "The Lion, the Witch and the Wardrobe",
+                            "author": "C.S. Lewis",
+                            "vibe": "mysterious",
+                        },
+                        {
+                            "title": "Prince Caspian",
+                            "author": "C.S. Lewis",
+                            "vibe": "intriguing",
+                        },
+                        {
+                            "title": "The Voyage of the Dawn Treader",
+                            "author": "C.S. Lewis",
+                            "vibe": "euphoric",
+                        },
+                        {
+                            "title": "The Silver Chair",
+                            "author": "C.S. Lewis",
+                            "vibe": "intriguing",
+                        },
+                        {
+                            "title": "The Horse and His Boy",
+                            "author": "C.S. Lewis",
+                            "vibe": "mysterious",
+                        },
+                        {
+                            "title": "The Magician's Nephew",
+                            "author": "C.S. Lewis",
+                            "vibe": "soul_searching",
+                        },
+                        {
+                            "title": "The Last Battle",
+                            "author": "C.S. Lewis",
+                            "vibe": "mysterious",
+                        },
+                    ],
+                    "book_count": 7,
+                },
+            },
+            "structured_output_with_nested_models_scenario:json:gpt-4o": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Kingkiller Chronicle",
+                    "author": "Patrick Rothfuss",
+                    "books": [
+                        {
+                            "title": "The Name of the Wind",
+                            "author": "Patrick Rothfuss",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "The Wise Man's Fear",
+                            "author": "Patrick Rothfuss",
+                            "vibe": "intriguing!",
+                        },
+                    ],
+                    "book_count": 2,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict-or-tool:gpt-4": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_rxH4dkUPKb9cx0OiSrOeWujN",
+                        name="__mirascope_formatted_output_tool__.__invoke",
+                        args="""\
+{
+"series_name": "Harry Potter",
+"author": "J.K. Rowling",
+"books": [
+  {
+    "title": "Harry Potter and the Philosopher's Stone",
+    "author": "J.K. Rowling",
+    "vibe": "Fantasy"
+  },
+  {
+    "title": "Harry Potter and the Chamber of Secrets",
+    "author": "J.K. Rowling",
+    "vibe": "Fantasy"
+  },
+  {
+    "title": "Harry Potter and the Prisoner of Azkaban",
+    "author": "J.K. Rowling",
+    "vibe": "Fantasy"
+  },
+  {
+    "title": "Harry Potter and the Goblet of Fire",
+    "author": "J.K. Rowling",
+    "vibe": "Fantasy"
+  },
+  {
+    "title": "Harry Potter and the Order of Phoenix",
+    "author": "J.K. Rowling",
+    "vibe": "Fantasy"
+  },
+  {
+    "title": "Harry Potter and the Half-Blood Prince",
+    "author": "J.K. Rowling",
+    "vibe": "Fantasy"
+  },
+  {
+    "title": "Harry Potter and the Deathly Hallows",
+    "author": "J.K. Rowling",
+    "vibe": "Fantasy"
+  }
+],
+"book_count": 7
+}\
+""",
+                    )
+                ],
+            },
+            "structured_output_with_nested_models_scenario:strict-or-json:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "Harry Potter",
+                    "author": "J.K. Rowling",
+                    "books": [
+                        {
+                            "title": "Harry Potter and the Philosopher's Stone",
+                            "author": "J.K. Rowling",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Harry Potter and the Chamber of Secrets",
+                            "author": "J.K. Rowling",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "Harry Potter and the Prisoner of Azkaban",
+                            "author": "J.K. Rowling",
+                            "vibe": "euphoric!",
+                        },
+                        {
+                            "title": "Harry Potter and the Goblet of Fire",
+                            "author": "J.K. Rowling",
+                            "vibe": "soul_searching!",
+                        },
+                        {
+                            "title": "Harry Potter and the Order of the Phoenix",
+                            "author": "J.K. Rowling",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Harry Potter and the Half-Blood Prince",
+                            "author": "J.K. Rowling",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "Harry Potter and the Deathly Hallows",
+                            "author": "J.K. Rowling",
+                            "vibe": "euphoric!",
+                        },
+                    ],
+                    "book_count": 7,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict:gpt-4": {
+                "type": "exception",
+                "exception_type": "BadRequestError",
+                "exception_message": "Error code: 400 - {'error': {'message': \"Invalid parameter: 'response_format' of type 'json_schema' is not supported with this model. Learn more about supported models at the Structured Outputs guide: https://platform.openai.com/docs/guides/structured-outputs\", 'type': 'invalid_request_error', 'param': None, 'code': None}}",
+                "status_code": 400,
+            },
+            "structured_output_with_nested_models_scenario:tool:gpt-4": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="call_qnyQJGNcZlLmKZehgxyY4oWY",
+                        name="__mirascope_formatted_output_tool__.__assistant",
+                        args="""\
+{
+  "series_name": "Harry Potter",
+  "author": "J.K. Rowling",
+  "books": [
+    {
+      "title": "Harry Potter and the Philosopher's Stone",
+      "author": "J.K. Rowling",
+      "vibe": "Fantasy, Adventure"
+    },
+    {
+      "title": "Harry Potter and the Chamber of Secrets",
+      "author": "J.K. Rowling",
+      "vibe": "Fantasy, Adventure"
+    },
+    {
+      "title": "Harry Potter and the Prisoner of Azkaban",
+      "author": "J.K. Rowling",
+      "vibe": "Fantasy, Adventure"
+    },
+    {
+      "title": "Harry Potter and the Goblet of Fire",
+      "author": "J.K. Rowling",
+      "vibe": "Fantasy, Adventure"
+    },
+    {
+      "title": "Harry Potter and the Order of the Phoenix",
+      "author": "J.K. Rowling",
+      "vibe": "Fantasy, Adventure"
+    },
+    {
+      "title": "Harry Potter and the Half-Blood Prince",
+      "author": "J.K. Rowling",
+      "vibe": "Fantasy, Adventure"
+    },
+    {
+      "title": "Harry Potter and the Deathly Hallows",
+      "author": "J.K. Rowling",
+      "vibe": "Fantasy, Adventure"
+    }
+  ],
+  "book_count": 7
+}\
+""",
+                    )
+                ],
+            },
+            "structured_output_with_nested_models_scenario:json:gpt-4": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "Harry Potter",
+                    "author": "J.K. Rowling",
+                    "books": [
+                        {
+                            "title": "Harry Potter and the Philosopher's Stone",
+                            "author": "J.K. Rowling",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "Harry Potter and the Chamber of Secrets",
+                            "author": "J.K. Rowling",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Harry Potter and the Prisoner of Azkaban",
+                            "author": "J.K. Rowling",
+                            "vibe": "euphoric!",
+                        },
+                        {
+                            "title": "Harry Potter and the Goblet of Fire",
+                            "author": "J.K. Rowling",
+                            "vibe": "soul_searching!",
+                        },
+                    ],
+                    "book_count": 4,
                 },
             },
         }
     )
-    assert actual == expected[model_id + ":" + format_mode]
+
+    assert actual == expected[f"{scenario_id}:{format_mode}:{test_model_id}"]

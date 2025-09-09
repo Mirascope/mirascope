@@ -17,6 +17,7 @@ from tests import utils
 from tests.llm.clients.conftest import (
     CLIENT_SCENARIO_IDS,
     FORMATTING_MODES,
+    STRUCTURED_SCENARIO_IDS,
 )
 
 TEST_MODEL_ID = "claude-sonnet-4-0"
@@ -33,7 +34,6 @@ def test_call(
 
     kwargs = request.getfixturevalue(scenario_id)
     response = anthropic_client.call(model_id=TEST_MODEL_ID, **kwargs)
-    assert isinstance(response, llm.Response)
 
     expected = snapshot(
         {
@@ -420,6 +420,7 @@ Do NOT output any text in addition to the tool call.\
             },
         }
     )
+
     assert utils.response_snapshot_dict(response) == expected[scenario_id]
 
 
@@ -834,275 +835,493 @@ Do NOT output any text in addition to the tool call.\
             },
         }
     )
+
     assert utils.stream_response_snapshot_dict(stream_response) == expected[scenario_id]
 
 
 @pytest.mark.parametrize("format_mode", FORMATTING_MODES)
+@pytest.mark.parametrize("scenario_id", STRUCTURED_SCENARIO_IDS)
 @pytest.mark.vcr()
-def test_every_structured_mode_basic(
+def test_structured_output_all_scenarios(
     anthropic_client: llm.AnthropicClient,
     format_mode: llm.formatting.FormattingMode,
+    scenario_id: str,
     request: pytest.FixtureRequest,
 ) -> None:
-    """Test final formatted output for every supported formatting mode.
-
-    This test uses the basic Book formatting. Expected qualities of the output:
-    - should have title, author, vibe as string
-    - vibe should be mysterious, euphoric, intruiging, or soul-searching (per annotation)
-    - vibe should always have an exclamation point (per class docstring)
-    """
-    scenario_data = request.getfixturevalue("structured_output_basic_scenario")
+    """Test all structured output scenarios across all formatting modes."""
+    scenario_data = request.getfixturevalue(scenario_id)
     llm.format(scenario_data["format"], mode=format_mode)
 
     try:
         response = anthropic_client.call(model_id=TEST_MODEL_ID, **scenario_data)
 
-        system_message_content = ""
-        if (first_message := response.messages[0]).role == "system":
-            system_message_content = first_message.content.text
+        try:
+            output = response.format()
+            if output is not None:
+                actual = {
+                    "type": "formatted_output",
+                    "model_dump": output.model_dump(),
+                }
+            else:
+                actual = {"type": "raw_content", "content": response.content}
+        except Exception:
+            actual = {"type": "raw_content", "content": response.content}
 
-        output = response.format()
-        assert output is not None
-        actual = {
-            "system_message": system_message_content,
-            "model_dump": output.model_dump(),
-        }
     except Exception as e:
-        if format_mode == "strict":
-            # Expected failure: anthropic does not have strict support
-            actual = {
-                "exception_type": type(e).__name__,
-                "exception_message": str(e),
-                "status_code": getattr(e, "status_code", None),
-            }
-        else:
-            raise e
+        actual = {
+            "type": "exception",
+            "exception_type": type(e).__name__,
+            "exception_message": str(e),
+            "status_code": getattr(e, "status_code", None),
+        }
 
     expected = snapshot(
         {
-            "strict": {
-                "exception_type": "JSONDecodeError",
-                "exception_message": "Expecting value: line 1 column 1 (char 0)",
-                "status_code": None,
-            },
-            "strict-or-tool": {
-                "system_message": """\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-""",
+            "structured_output_basic_scenario:strict-or-tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "The Name of the Wind",
                     "author": "Patrick Rothfuss",
                     "vibe": "intriguing!",
                 },
             },
-            "tool": {
-                "system_message": """\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-""",
+            "structured_output_basic_scenario:strict-or-json:claude-sonnet-4-0": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "The Name of the Wind",
                     "author": "Patrick Rothfuss",
                     "vibe": "mysterious!",
                 },
             },
-            "strict-or-json": {
-                "system_message": """\
-Respond with valid JSON that matches this exact schema:
+            "structured_output_basic_scenario:strict:claude-sonnet-4-0": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="""\
+I'd recommend **The Name of the Wind** by Patrick Rothfuss.
+
+It's a beautifully written story about Kvothe, a legendary figure telling his own tale at an inn. The prose is lyrical and engaging, blending magic, music, and mystery in a richly detailed world. Rothfuss has a gift for storytelling that makes even mundane moments feel magical, and the magic system based on sympathy and naming is both logical and wondrous.
+
+Fair warning: it's the first book in an unfinished trilogy, but it works well as a standalone story and is absolutely worth reading for the journey itself.\
+"""
+                    )
+                ],
+            },
+            "structured_output_basic_scenario:tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "intriguing!",
+                },
+            },
+            "structured_output_basic_scenario:json:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "The Name of the Wind",
+                    "author": "Patrick Rothfuss",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_should_call_tool_scenario:strict-or-tool:claude-sonnet-4-0": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="toolu_013H65CyUX4yKL3ZmXLpwnNe",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:strict-or-json:claude-sonnet-4-0": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="toolu_014LudfEVa1EJJhaRvDfuc5P",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:strict:claude-sonnet-4-0": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="I'll check what fantasy books are available in the library and recommend one for you."
+                    ),
+                    ToolCall(
+                        id="toolu_01QyT4R5y2kQoU9YyjfDNan9",
+                        name="available_books",
+                        args="{}",
+                    ),
+                ],
+            },
+            "structured_output_should_call_tool_scenario:tool:claude-sonnet-4-0": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="toolu_01UKiwF93p7Lp9EPpJqfAJtv",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_should_call_tool_scenario:json:claude-sonnet-4-0": {
+                "type": "raw_content",
+                "content": [
+                    ToolCall(
+                        id="toolu_01XYTYorBzciXcpfw5asP4Wz",
+                        name="available_books",
+                        args="{}",
+                    )
+                ],
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict-or-json:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:strict:claude-sonnet-4-0": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="""\
+Based on the available books in the library, I'd recommend **"Wild Seed" by Octavia Butler**. This is a compelling fantasy/science fiction novel that follows the story of Doro, an immortal being who has lived for thousands of years by taking over other people's bodies, and Anyanwu, a shape-shifting healer with extraordinary powers. \n\
+
+Butler masterfully weaves themes of power, identity, and survival into a narrative that spans centuries and continents. The book explores complex relationships and moral questions while delivering fantastic world-building and character development. It's considered one of Butler's finest works and a classic in speculative fiction that blends fantasy elements with profound social commentary.\
+"""
+                    )
+                ],
+            },
+            "structured_output_uses_tool_output_scenario:tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_uses_tool_output_scenario:json:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "Wild Seed",
+                    "author": "Octavia Butler",
+                    "vibe": "mysterious!",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "INTRIGUING",
+                },
+            },
+            "structured_output_with_formatting_instructions_scenario:strict-or-json:claude-sonnet-4-0": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="""\
+```json
 {
-  "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "vibe": {
-      "description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
-      "title": "Vibe",
-      "type": "string"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "vibe"
-  ],
-  "title": "Book",
-  "type": "object"
+  "title": "THE NAME OF THE WIND",
+  "author": "PATRICK ROTHFUSS", \n\
+  "vibe": "ABSOLUTELY LEGENDARY STORYTELLING WITH A BARD WHO COULD CHARM THE STARS FROM THE SKY AND MAGIC THAT FEELS LIKE PURE WONDER COURSING THROUGH YOUR VEINS!"
 }
-
-Respond ONLY with valid JSON, and no other text.\
-""",
+```\
+"""
+                    )
+                ],
+            },
+            "structured_output_with_formatting_instructions_scenario:strict:claude-sonnet-4-0": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "The Name of the Wind",
-                    "author": "Patrick Rothfuss",
-                    "vibe": "mysterious!",
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "ABSOLUTELY LEGENDARY STORYTELLING MAGIC WITH A BARD WHO'S BASICALLY THE FANTASY EQUIVALENT OF A ROCK STAR WIZARD AND THE PROSE WILL MAKE YOU WEEP ACTUAL TEARS OF BEAUTY!",
                 },
             },
-            "json": {
-                "system_message": """\
-Respond with valid JSON that matches this exact schema:
-{
-  "description": "A book recommendation with metadata. ALWAYS add an exclamation point to the vibe!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "vibe": {
-      "description": "Should be one of mysterious, euphoric, intruiging, or soul_searching",
-      "title": "Vibe",
-      "type": "string"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "vibe"
-  ],
-  "title": "Book",
-  "type": "object"
-}
-
-Respond ONLY with valid JSON, and no other text.\
-""",
+            "structured_output_with_formatting_instructions_scenario:tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "The Name of the Wind",
-                    "author": "Patrick Rothfuss",
-                    "vibe": "mysterious!",
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "MYSTERIOUS",
                 },
             },
-        }
-    )
-    assert actual == expected[format_mode]
-
-
-@pytest.mark.parametrize("format_mode", FORMATTING_MODES)
-@pytest.mark.vcr()
-def test_every_structured_mode_with_instructions_and_system_message(
-    anthropic_client: llm.AnthropicClient,
-    format_mode: llm.formatting.FormattingMode,
-    request: pytest.FixtureRequest,
-) -> None:
-    """Test final formatted output for every supported formatting mode.
-
-    Uses the AllCapsBook which has formatting instructions. Expectations:
-    - title, author, vibe (all str)
-    - Everything should be caps (per system instructions)
-    - vibe should be one of euphoric, intruiging, or soul_searching (per annotation)
-    - Nothing about exclamation points on the end of the vibe since it's overwritten.
-    """
-    # Use structured_output_with_formatting_instructions_and_system_message as it is a "kitchen sink" example
-    scenario_data = request.getfixturevalue(
-        "structured_output_with_formatting_instructions_and_system_message_scenario"
-    )
-    llm.format(scenario_data["format"], mode=format_mode)
-
-    try:
-        response = anthropic_client.call(model_id=TEST_MODEL_ID, **scenario_data)
-
-        system_message_content = ""
-        if (first_message := response.messages[0]).role == "system":
-            system_message_content = first_message.content.text
-
-        output = response.format()
-        assert output is not None
-        actual = {
-            "system_message": system_message_content,
-            "model_dump": output.model_dump(),
-        }
-    except Exception as e:
-        if format_mode == "strict":
-            # Expected failure: anthropic does not have strict support
-            actual = {
-                "exception_type": type(e).__name__,
-                "exception_message": str(e),
-                "status_code": getattr(e, "status_code", None),
-            }
-        else:
-            raise e
-
-    expected = snapshot(
-        {
-            "strict": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_scenario:json:claude-sonnet-4-0": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "THE BROKEN EARTH TRILOGY (THE FIFTH SEASON)",
-                    "author": "N.K. JEMISIN",
-                    "vibe": "ABSOLUTELY SOUL-CRUSHING APOCALYPTIC FANTASY WHERE THE WORLD LITERALLY TEARS ITSELF APART AND MOTHERS LOSE THEIR CHILDREN AND OPPRESSED PEOPLE SUFFER GENERATIONAL TRAUMA AND THE PLANET ITSELF IS DYING AND NOTHING WILL EVER BE OKAY AGAIN BUT IT'S BEAUTIFULLY WRITTEN DEVASTATION THAT WILL LEAVE YOU EMOTIONALLY DESTROYED!!!",
+                    "title": "THE NAME OF THE WIND",
+                    "author": "PATRICK ROTHFUSS",
+                    "vibe": "ABSOLUTELY MESMERIZING STORYTELLING MAGIC THAT WILL CONSUME YOUR SOUL WITH BEAUTIFUL PROSE AND A LEGENDARY HERO'S ORIGIN STORY TOLD WITH BARDIC PERFECTION!",
                 },
             },
-            "strict-or-tool": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "THE ROAD",
                     "author": "CORMAC MCCARTHY",
                     "vibe": "soul_searching",
                 },
             },
-            "strict-or-json": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict-or-json:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "title": "THE ROAD",
+                    "author": "CORMAC MCCARTHY",
+                    "vibe": "ABSOLUTELY SOUL-CRUSHING POST-APOCALYPTIC BLEAKNESS WHERE A FATHER AND SON TRUDGE THROUGH AN ASH-COVERED WASTELAND OF HUMAN DESPAIR AND HOPELESSNESS - THE PERFECT BOOK TO MAKE YOU QUESTION THE VERY MEANING OF EXISTENCE AND FEEL THE WEIGHT OF INEVITABLE DOOM PRESSING DOWN ON YOUR SPIRIT!",
+                },
+            },
+            "structured_output_with_formatting_instructions_and_system_message_scenario:strict:claude-sonnet-4-0": {
+                "type": "formatted_output",
                 "model_dump": {
                     "title": "THE BOOK OF LOST THINGS",
                     "author": "JOHN CONNOLLY",
-                    "vibe": "ABSOLUTELY SOUL-CRUSHING DARK FAIRY TALE WHERE A GRIEVING CHILD ESCAPES INTO A TWISTED FANTASY WORLD ONLY TO DISCOVER THAT EVEN MAGICAL REALMS ARE FILLED WITH LOSS, BETRAYAL, AND THE DEVASTATING REALIZATION THAT GROWING UP MEANS ACCEPTING THAT SOME WOUNDS NEVER HEAL AND SOME PEOPLE NEVER COME BACK NO MATTER HOW DESPERATELY YOU WISH THEY WOULD!",
+                    "vibe": "A DEVASTATINGLY BEAUTIFUL TALE OF A BOY WHO ESCAPES INTO A DARK FAIRY TALE WORLD TO COPE WITH HIS MOTHER'S DEATH, ONLY TO FIND THAT EVEN FANTASY REALMS ARE FILLED WITH LOSS, BETRAYAL, AND THE CRUSHING WEIGHT OF GROWING UP TOO SOON. PREPARE TO HAVE YOUR HEART ABSOLUTELY SHATTERED BY THE MELANCHOLY MAGIC!",
                 },
             },
-            "tool": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "THE BROKEN EARTH TRILOGY: THE FIFTH SEASON",
-                    "author": "N.K. JEMISIN",
+                    "title": "THE BOOK OF LOST THINGS",
+                    "author": "JOHN CONNOLLY",
                     "vibe": "soul_searching",
                 },
             },
-            "json": {
-                "system_message": """\
-You are a depressive LLM that only recommends sad books.
-Pretty please output a book recommendation in JSON form.
-It should have the format {title: str, author: str, vibe: str}.
-Be super vibe-y with the vibe and make sure EVERYTHING IS CAPS to convey
-the STRENGTH OF YOUR RECOMMENDATION!\
-""",
+            "structured_output_with_formatting_instructions_and_system_message_scenario:json:claude-sonnet-4-0": {
+                "type": "formatted_output",
                 "model_dump": {
-                    "title": "THE BROKEN EARTH TRILOGY (THE FIFTH SEASON)",
-                    "author": "N.K. JEMISIN",
-                    "vibe": "ABSOLUTELY SOUL-CRUSHING APOCALYPTIC FANTASY WHERE THE WORLD LITERALLY BREAKS APART AND SO DO ALL THE CHARACTERS YOU'LL GROW TO LOVE! OPPRESSION, GENOCIDE, ENVIRONMENTAL CATASTROPHE, AND PERSONAL TRAUMA ALL WRAPPED UP IN BEAUTIFUL PROSE THAT WILL MAKE YOU WEEP FOR HUMANITY! THE MAGIC SYSTEM IS BASED ON GEOLOGICAL DESTRUCTION AND THE SOCIAL COMMENTARY WILL LEAVE YOU FEELING HOPELESS ABOUT REAL-world INJUSTICES! PREPARE TO UGLY CRY!",
+                    "title": "THE ROAD",
+                    "author": "CORMAC MCCARTHY",
+                    "vibe": "A SOUL-CRUSHING POST-APOCALYPTIC JOURNEY THROUGH A DEAD WORLD WHERE A FATHER AND SON TRUDGE THROUGH ASH AND DESPAIR, CLINGING TO EACH OTHER AS THE LAST EMBER OF HUMANITY FLICKERS OUT IN AN ENDLESS GRAY WASTELAND OF HOPELESSNESS!",
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict-or-tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Expanse",
+                    "author": "James S.A. Corey",
+                    "books": [
+                        {
+                            "title": "Leviathan Wakes",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Caliban's War",
+                            "author": "James S.A. Corey",
+                            "vibe": "intriguing!",
+                        },
+                        {
+                            "title": "Abaddon's Gate",
+                            "author": "James S.A. Corey",
+                            "vibe": "soul_searching!",
+                        },
+                        {
+                            "title": "Cibola Burn",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Nemesis Games",
+                            "author": "James S.A. Corey",
+                            "vibe": "euphoric!",
+                        },
+                        {
+                            "title": "Babylon's Ashes",
+                            "author": "James S.A. Corey",
+                            "vibe": "intriguing!",
+                        },
+                        {
+                            "title": "Persepolis Rising",
+                            "author": "James S.A. Corey",
+                            "vibe": "soul_searching!",
+                        },
+                        {
+                            "title": "Tiamat's Wrath",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Leviathan Falls",
+                            "author": "James S.A. Corey",
+                            "vibe": "euphoric!",
+                        },
+                    ],
+                    "book_count": 9,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict-or-json:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Expanse",
+                    "author": "James S.A. Corey",
+                    "books": [
+                        {
+                            "title": "Leviathan Wakes",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Caliban's War",
+                            "author": "James S.A. Corey",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "Abaddon's Gate",
+                            "author": "James S.A. Corey",
+                            "vibe": "euphoric!",
+                        },
+                        {
+                            "title": "Cibola Burn",
+                            "author": "James S.A. Corey",
+                            "vibe": "soul_searching!",
+                        },
+                        {
+                            "title": "Nemesis Games",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                    ],
+                    "book_count": 5,
+                },
+            },
+            "structured_output_with_nested_models_scenario:strict:claude-sonnet-4-0": {
+                "type": "raw_content",
+                "content": [
+                    Text(
+                        text="""\
+I'd be happy to tell you about a book series! Let me share one of my favorites:
+
+**The Expanse** by James S.A. Corey (pen name for Daniel Abraham and Ty Franck)
+
+This is a nine-book science fiction series that takes place a few hundred years in the future when humanity has colonized the solar system. The series follows:
+
+**Setting**: A politically complex world where Earth, Mars, and the Belt (asteroid miners) are in constant tension. Space travel is realistic - no faster-than-light travel, and the physics of acceleration/deceleration matter.
+
+**Main Characters**: \n\
+- James Holden and his crew aboard the ship *Rocinante*
+- Detective Josephus Miller \n\
+- Politician Chrisjen Avasarala
+- Martian Marine Bobbie Draper
+
+**What makes it great**:
+- Realistic space politics and physics
+- Complex moral dilemmas
+- Excellent character development across multiple perspectives
+- Blends mystery, politics, and hard sci-fi
+- Was adapted into a acclaimed TV series
+
+The first book is *Leviathan Wakes* (2011), and it works well as both a standalone and series starter.
+
+Would you like me to tell you about a different genre or series? Or would you prefer recommendations based on your specific interests?\
+"""
+                    )
+                ],
+            },
+            "structured_output_with_nested_models_scenario:tool:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Expanse",
+                    "author": "James S.A. Corey",
+                    "books": [
+                        {
+                            "title": "Leviathan Wakes",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Caliban's War",
+                            "author": "James S.A. Corey",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "Abaddon's Gate",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Cibola Burn",
+                            "author": "James S.A. Corey",
+                            "vibe": "soul_searching!",
+                        },
+                        {
+                            "title": "Nemesis Games",
+                            "author": "James S.A. Corey",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "Babylon's Ashes",
+                            "author": "James S.A. Corey",
+                            "vibe": "euphoric!",
+                        },
+                        {
+                            "title": "Persepolis Rising",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Tiamat's Wrath",
+                            "author": "James S.A. Corey",
+                            "vibe": "soul_searching!",
+                        },
+                        {
+                            "title": "Leviathan Falls",
+                            "author": "James S.A. Corey",
+                            "vibe": "euphoric!",
+                        },
+                    ],
+                    "book_count": 9,
+                },
+            },
+            "structured_output_with_nested_models_scenario:json:claude-sonnet-4-0": {
+                "type": "formatted_output",
+                "model_dump": {
+                    "series_name": "The Expanse",
+                    "author": "James S.A. Corey",
+                    "books": [
+                        {
+                            "title": "Leviathan Wakes",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                        {
+                            "title": "Caliban's War",
+                            "author": "James S.A. Corey",
+                            "vibe": "intruiging!",
+                        },
+                        {
+                            "title": "Abaddon's Gate",
+                            "author": "James S.A. Corey",
+                            "vibe": "euphoric!",
+                        },
+                        {
+                            "title": "Cibola Burn",
+                            "author": "James S.A. Corey",
+                            "vibe": "soul_searching!",
+                        },
+                        {
+                            "title": "Nemesis Games",
+                            "author": "James S.A. Corey",
+                            "vibe": "mysterious!",
+                        },
+                    ],
+                    "book_count": 5,
                 },
             },
         }
     )
-    assert actual == expected[format_mode]
+
+    assert actual == expected[f"{scenario_id}:{format_mode}:{TEST_MODEL_ID}"]
