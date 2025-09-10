@@ -31,10 +31,7 @@ from ...responses import (
     FinishReasonChunk,
     RawChunk,
 )
-from ...tools import (
-    FORMAT_TOOL_NAME,
-    Tool,
-)
+from ...tools import FORMAT_TOOL_NAME, ToolSchema
 from ..base import _utils as _base_utils
 from .model_ids import OpenAIModelId
 
@@ -208,7 +205,9 @@ def _encode_message(message: Message) -> list[openai_types.ChatCompletionMessage
 
 
 @lru_cache(maxsize=128)
-def _convert_tool_to_tool_param(tool: Tool) -> openai_types.ChatCompletionToolParam:
+def _convert_tool_to_tool_param(
+    tool: ToolSchema,
+) -> openai_types.ChatCompletionToolParam:
     """Convert a single Mirascope `Tool` to OpenAI ChatCompletionToolParam with caching."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
@@ -227,7 +226,7 @@ def prepare_openai_request(
     *,
     model_id: OpenAIModelId,
     messages: Sequence[Message],
-    tools: Sequence[Tool] | None = None,
+    tools: Sequence[ToolSchema] | None = None,
     format: type[FormatT] | None = None,
 ) -> tuple[Sequence[Message], ChatCompletionCreateKwargs]:
     """Prepare OpenAI API request parameters.

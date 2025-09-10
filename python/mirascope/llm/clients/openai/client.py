@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from typing import overload
 
 import httpx
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 
 from ...context import Context, DepsT
 from ...formatting import FormatT
@@ -18,7 +18,14 @@ from ...responses import (
     Response,
     StreamResponse,
 )
-from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool, Toolkit
+from ...tools import (
+    AsyncContextTool,
+    AsyncTool,
+    AsyncToolkit,
+    ContextTool,
+    Tool,
+    Toolkit,
+)
 from ..base import BaseClient
 from . import _utils
 from .model_ids import OpenAIModelId
@@ -51,6 +58,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         If api_key is not set, OpenAI will look for it in env as "OPENAI_API_KEY".
         """
         self.client = OpenAI(api_key=api_key, base_url=base_url)
+        self.async_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
 
     @overload
     def call(
@@ -208,7 +216,32 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         format: type[FormatT] | None = None,
         params: OpenAIParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
-        raise NotImplementedError
+        """Make an async call to the OpenAI ChatCompletions API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, kwargs = _utils.prepare_openai_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+        )
+
+        openai_response = await self.async_client.chat.completions.create(**kwargs)
+
+        assistant_message, finish_reason = _utils.decode_response(openai_response)
+
+        return AsyncResponse(
+            raw=openai_response,
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            toolkit=AsyncToolkit(tools=tools),
+            input_messages=input_messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+            format_type=format,
+        )
 
     @overload
     async def context_call_async(

@@ -28,6 +28,18 @@ def test_call(
 
 @pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
 @pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_call_async(
+    openai_client: llm.OpenAIClient,
+    scenario_id: str,
+) -> None:
+    scenario = get_scenario(scenario_id, model_id=TEST_MODEL_ID)
+    response = await openai_client.call_async(**scenario.call_async_args)
+    scenario.check_response(response)
+
+
+@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
+@pytest.mark.vcr()
 def test_stream(
     openai_client: llm.OpenAIClient,
     scenario_id: str,
