@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Extract the book: The Name of the Wind
+      by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Please output a book recommendation in JSON form.\nIt should have the format
+      {title: str, author: str} and the \ntitle and author should both be in all caps."}],
+      "role": "user"}, "tools": [{"functionDeclarations": [{"description": "Use this
+      tool to extract data in Book format for a final response.", "name": "__mirascope_formatted_output_tool__",
+      "parametersJsonSchema": {"properties": {"title": {"title": "Title", "type":
+      "string"}, "author": {"title": "Author", "type": "string"}}, "required": ["title",
+      "author"], "title": "Book", "type": "object"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '739'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21U25KiSBR8768wfHVmFRCEjdgH5KIgCHIR2o0No4TiYgPFpWjBjvn3oe3pGZ1Z
+        HojinKw8h4zIfHsajcYBKMI0BBg2479H/w6V0ejt9n7voQLDAg+Nz9JQLEGNf2E/nre78wCJ2iLA
+        KSoEkGUPl3/0C5DDoT4+HvO0Bk2ASniMUJ0DjGF4RC0uW3zECGXH4/jL75dBHTf/Q/reaXGC6ndi
+        k3csRdiMLMNZy65t/8EyoHGKs9sWzloabXldGhny6P3sKVtx/Bv+28P3t0e68TC2jRNsp3EBcFvf
+        WIX6IvHhGqc5mxZOvV/RnIAMo95sp0SpZgvxFJy3yuScWsRcDxRFMF99qvTldG6KrM9vzZ5j2qDW
+        XeisEiV5Cd2zSbn9yeYnEavkWhztshWcuc9yzXHZpbQZStgLOi2mxY4F9NSwiZXEoX7/QqkktShU
+        7MnrfclgMZJje64o0oqbcEAQhSBItgch2Ao7UWt9hstpJ8JnuhO6CE6rOWOdtTNxauUuTPVILxbe
+        qxOh54PVe5oYbWOjZ/biOeiCijH05ZW3O7I5SJpQVoliKmVjJHaUMPSSPwtTdZFyOeeRSwtR3Xln
+        XGrklXTmLS+KmJgvHHSX+1ZdqbzqtjGyJ7xFo5iLGMxelFkoFq+OWs2ltqcV+1l12DqWZNiFUhtL
+        kyowmDLwscwyvZUL/jasCiAuQ0ExlvgAxUg/zTomngds3ZdnVV71qxbZfLOyT/OzVFWO55t6uCq4
+        zHdM111PU5HEdi3Aau11zsLv1ldEWFyvbQKKlg4qigVXcNPuUKyrlnPkV/XqcaG3aXf2Xp+yuS3b
+        7rxmk3qxmwp55O/6ac0pm3mrrWazFqLlWr24VDeJ2U3E6ztHvha8P0uqDcvRV5omppWh6Z3CuTGO
+        qka3yINnZQ7hAf2VxJscSMtwGikzEZjPmtqTAhM10DLIuViYFFKFnDHprgqhLCab1O34QN6IzCu/
+        6jFJaoCwU10JXlzihVoqOxRMAU3DmXTJrktCI6hd1CbJ/KIW+9zXC9GWkjOY1dWO60OOL0IyhKSS
+        VKeloe9ZsWNauJ4Iwcq2zYO2RRVJIRP9c++gX+7575dzxjX68F+OQph9wn9aaxylRdokFgQNKt5h
+        tmOYP308TosQdkN59vQ54EY9bhsQQx1iMEQa+BkT47JGeYkd9AILAbW3SCOIxQfbXQQ+AKj5jz5G
+        GGQPLXJBfvmDuBGHsWl2n413sTn8JchS3N8SR/Kdu0gaBjzu9anF051knyHzuCNBEk8/RPvQcQ/r
+        Jv0QLIb5IOFX8i/6a5SBJrlNHNewKVHRQCV8x4T2SQA6WW6/au51oZgoAmvEz8dP356+Aw36lEEe
+        BgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 11 Sep 2025 01:31:33 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1246
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

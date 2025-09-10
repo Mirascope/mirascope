@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Hello zebra"}], "role": "user"}, {"parts":
+      [{"text": "zebra"}, {"text": "what else?"}], "role": "model"}, {"parts": [{"text":
+      "Hello lion!"}, {"text": "Hello walrus!"}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Reply by naming every animal mentioned, all lowercase."}],
+      "role": "user"}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '364'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"zebra
+        lion walrus\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 27,\"candidatesTokenCount\":
+        4,\"totalTokenCount\": 143,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        27}],\"thoughtsTokenCount\": 112},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"qinCaL_lPOShz7IP7oPLaQ\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Thu, 11 Sep 2025 01:45:15 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1078
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

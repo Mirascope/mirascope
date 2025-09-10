@@ -1,5 +1,6 @@
 """The Tools module for LLMs."""
 
+from . import protocols
 from .context_tool import (
     AgentToolT,
     AsyncContextTool,
@@ -43,5 +44,6 @@ __all__ = [
     "Toolkit",
     "ToolkitT",
     "context_tool",
+    "protocols",
     "tool",
 ]

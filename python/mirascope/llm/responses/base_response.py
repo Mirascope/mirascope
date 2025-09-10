@@ -58,7 +58,7 @@ class BaseResponse(RootResponse[ToolkitT, FormatT]):
         found_format_tool = False
         self.texts, self.tool_calls, self.thoughts, self.content = [], [], [], []
         for part in assistant_message.content:
-            if isinstance(part, ToolCall) and part.name == FORMAT_TOOL_NAME:
+            if isinstance(part, ToolCall) and part.name.startswith(FORMAT_TOOL_NAME):
                 part = Text(text=part.args)
                 found_format_tool = True
 

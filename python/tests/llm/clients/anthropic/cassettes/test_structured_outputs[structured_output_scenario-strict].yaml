@@ -1,0 +1,115 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Extract the book:
+      The Name of the Wind by Patrick Rothfuss"}],"model":"claude-sonnet-4-0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '147'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dFRdjxNJDPwrVr/kZRbtrgiCeTlxIHERH1oQEtJdUNTpdtK+9LQHt3uX
+        YbX/HXmyOT4OnkbtqnLZ1TNz6yi63g11vzm/+KBvnrw6PL56vf33sX/9ZPnlz/Y2/O06p9OIxsJa
+        /R5d54SzFXytVNUXdZ0bOGJ2vQvZt4hnlUtBPXt4dnl+uTxfXjx0nQtcFIu6/p/bU0vFzyaeH71b
+        QfBloYCfVXxQYAHBUTi2gKAJwXjAO1i79wnhjR/QToZ8oBLXDrYTXHkVCgd4x5p2rdYOfAXSRQUP
+        gcdJaJ8UI9ywHB7AuqzLX3yD1ygdrBYRtgjJj+MEypAwjzBxgxvS1Bv1DJ5CbcPgZTo5j5kVfIkw
+        eCpWGbAa8TnV0GolLsYMydtKKHXmakISiHiNmccBi5piVXYsg1eT+C03nftvmQ+LCmP2AYEK2OYv
+        qewPlDMKPEvChUJGqCh0tH5afJ4qVTO+EVIqe6g6ZbREMymKza8YUqFP7ah5h4GHAUuc/SvsWKDS
+        QNnLPMJMeoEFxWegX07qmyYWi2m1s9gWgpCZD2avDII+/rfRMWw5mfbW/VnCMJMnbgKZg8+QaWvD
+        GnzVJCRfjbATHo5TKQtWW4tLpoIgqJ4yyjzuq3tzKsqQcU9Kg1cENKmJfIvE86GiXFOwKNZlVW1M
+        Qag8oKY5vRED7Sj8dC/zlhEyHdA2jMcrn1NGL/fZ/OHuPnauKo8bQV+5uN5hiRttUtw9UPFTwxLQ
+        9aXl3Lk2f2j9raMyNt0oH7BU119edi74kHATBOf4Nz8Szk+4hf077KS1/jjaCys+b5bD//nf0Iv0
+        M3rXOW76feni0bJz90FulFBc7+z3EL1Ed3f3FQAA//8DAO7UlPxsBAAA
+    headers:
+      CF-RAY:
+      - 97d3531c48a8758c-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 11 Sep 2025 01:17:22 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-09-11T01:17:19Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-09-11T01:17:22Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-09-11T01:17:18Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-09-11T01:17:19Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CT1jMVPUkqjZE4zBkGXvR
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '3895'
+    status:
+      code: 200
+      message: OK
+version: 1

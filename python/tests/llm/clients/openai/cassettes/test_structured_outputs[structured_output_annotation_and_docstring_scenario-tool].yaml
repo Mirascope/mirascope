@@ -1,0 +1,116 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"When you are ready to respond
+      to the user, call the __mirascope_formatted_output_tool__ tool to output a structured
+      response.\nDo NOT output any text in addition to the tool call."},{"role":"user","content":"Produce
+      a formatted output"}],"model":"gpt-4o","tool_choice":"required","tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Output format for a final response.\nAn output.
+      The `first` value should be the number 17.","parameters":{"description":"An
+      output. The `first` value should be the number 17.","properties":{"first":{"title":"First","type":"integer"},"second":{"description":"Should
+      be the number 13","title":"Second","type":"integer"}},"required":["first","second"],"title":"Output","type":"object","additionalProperties":false},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '883'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=ns5DrRcABJFXRdZhDTQTCiZOp4gTYzsf1D39poTai30-1757551965-1.0.1.1-n1CdiTmhVoEkb4M_O7YbmFnRz.l7JYgpDn6eoWX_dKPsAHK9ss4UDL0XE2_tcPLj0zmhE_gfFGMhWyJrqK9PxHQvzv60dakcgu40j4rAwq4;
+        _cfuvid=Z1Uj26Qu8pT2l1DK6mLvSauyL0OvphibDedlBVRvnig-1757551965026-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFNRa9swEH73rxD3nIzErevUj1nHBmVjbIyyLUUo8tnWKkuaJIc2If+9
+        yE5sJ81gfjCSPn1333132kWEgMghI8Ar5nlt5PT9h6+bZVI8LPmn+8/F/cPf4m775UltyrvNQwmT
+        wNDrP8j9kfWO69pI9EKrDuYWmccQdZ4maZLE8c1tC9Q6RxlopfHTaz2NZ/H1dLaYzm4OxEoLjg4y
+        8jsihJBd+w8SVY7PkJHZ5HhSo3OsRMj6S4SA1TKcAHNOOM+Uh8kAcq08qqBaNVKOAK+1pJxJOSTu
+        vt1oPfjEpKTV7Xr93fiP5bef6+3zPP1VCb+d/ViO8nWhX0wrqGgU7/0Z4f15dpaMEFCsbrmU1sIy
+        x7VBWmhbM+8xp7rxpvG01U7PwhICzJZNjcqHkmC3gkJY51eQzdPJChxyrfKwu9rDCXMfXVo/jsyy
+        WDSOybcuMqW0Z6GY1sbHA7LvOyZ1aaxeuzMqFEIJV1GLzLVGjPsRHYW0EqA5aTkYq2sTPHjCNuk8
+        ueqiwjCRAxonB9Brz+SIlS4mF+LRHD0T7Uz0Y8gZrzAfqMM4siYXegREo9rfqrkUu6tfqPJ/wg8A
+        52jCPBiLueCnFQ/XLIYH+69rvcutYHBoN4Ij9QJt6EeOBWtk95bAvTiPNS2EKtEaK9oHBYWhs3SR
+        zjFm+QKiffQKAAD//wMAI/Ha7FkEAAA=
+    headers:
+      CF-RAY:
+      - 97d33692be9575ca-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 11 Sep 2025 00:57:49 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '502'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '523'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799946'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_429d223d636d4408ad8cdd28b588aa5a
+    status:
+      code: 200
+      message: OK
+version: 1
