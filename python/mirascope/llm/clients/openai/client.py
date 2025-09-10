@@ -448,7 +448,32 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         format: type[FormatT] | None = None,
         params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
-        raise NotImplementedError
+        """Make an async streaming call to the OpenAI API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, kwargs = _utils.prepare_openai_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
+        )
+
+        openai_stream = await self.async_client.chat.completions.create(
+            **kwargs,
+            stream=True,
+        )
+
+        chunk_iterator = _utils.convert_openai_stream_to_async_chunk_iterator(
+            openai_stream
+        )
+
+        return AsyncStreamResponse(
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            toolkit=AsyncToolkit(tools=tools),
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+            format_type=format,
+        )
 
     @overload
     async def context_stream_async(
