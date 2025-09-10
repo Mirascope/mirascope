@@ -98,20 +98,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        input_messages, message_params, system, tool_params, tool_choice = (
-            _utils.prepare_anthropic_request(
-                model_id=model_id, messages=messages, tools=tools, format=format
-            )
+        input_messages, kwargs = _utils.prepare_anthropic_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
         )
 
-        anthropic_response = self.client.messages.create(
-            max_tokens=1024,
-            model=model_id,
-            messages=message_params,
-            system=system,
-            tools=tool_params,
-            tool_choice=tool_choice,
-        )
+        anthropic_response = self.client.messages.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(anthropic_response)
 
@@ -313,20 +304,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        input_messages, message_params, system, tool_params, tool_choice = (
-            _utils.prepare_anthropic_request(
-                model_id=model_id, messages=messages, tools=tools, format=format
-            )
+        input_messages, kwargs = _utils.prepare_anthropic_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
         )
 
-        anthropic_stream = self.client.messages.stream(
-            max_tokens=1024,
-            model=model_id,
-            messages=message_params,
-            system=system,
-            tools=tool_params,
-            tool_choice=tool_choice,
-        )
+        anthropic_stream = self.client.messages.stream(**kwargs)
 
         chunk_iterator = _utils.convert_anthropic_stream_to_chunk_iterator(
             anthropic_stream

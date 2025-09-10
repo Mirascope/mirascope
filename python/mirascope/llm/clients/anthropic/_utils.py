@@ -3,6 +3,7 @@
 import json
 from collections.abc import Sequence
 from functools import lru_cache
+from typing import TypedDict
 
 from anthropic import NotGiven, types as anthropic_types
 from anthropic.lib.streaming import MessageStreamManager
@@ -40,6 +41,17 @@ ANTHROPIC_FINISH_REASON_MAP = {
     "tool_use": FinishReason.TOOL_USE,
     "refusal": FinishReason.REFUSAL,
 }
+
+
+class MessageCreateKwargs(TypedDict, total=False):
+    """Kwargs for Anthropic Message.create method."""
+
+    model: str
+    max_tokens: int
+    messages: Sequence[anthropic_types.MessageParam]
+    system: str | NotGiven
+    tools: Sequence[anthropic_types.ToolParam] | NotGiven
+    tool_choice: anthropic_types.ToolChoiceParam | NotGiven
 
 
 def _encode_content(
@@ -129,18 +141,15 @@ def prepare_anthropic_request(
     messages: Sequence[Message],
     tools: Sequence[Tool] | None = None,
     format: type[FormatT] | None = None,
-) -> tuple[
-    Sequence[Message],
-    Sequence[anthropic_types.MessageParam],
-    str | NotGiven,
-    Sequence[anthropic_types.ToolParam] | NotGiven,
-    anthropic_types.ToolChoiceParam | NotGiven,
-]:
+) -> tuple[Sequence[Message], MessageCreateKwargs]:
+    kwargs: MessageCreateKwargs = {
+        "model": model_id,
+        "max_tokens": 1024,
+    }
+
     anthropic_tools: list[anthropic_types.ToolParam] | NotGiven = (
         [_convert_tool_to_tool_param(tool) for tool in tools] if tools else []
     )
-
-    tool_choice: anthropic_types.ToolChoiceParam | NotGiven = NotGiven()
 
     if format:
         resolved_format = _formatting_utils.resolve_formattable(
@@ -150,7 +159,7 @@ def prepare_anthropic_request(
         )
         if resolved_format.mode == "tool":
             anthropic_tools.append(create_format_tool_param(resolved_format.info))
-            tool_choice = (
+            kwargs["tool_choice"] = (
                 {"type": "any"} if tools else {"type": "tool", "name": FORMAT_TOOL_NAME}
             )
 
@@ -159,20 +168,18 @@ def prepare_anthropic_request(
                 messages, resolved_format.formatting_instructions
             )
 
-    if not anthropic_tools:
-        anthropic_tools = NotGiven()
+    if anthropic_tools:
+        kwargs["tools"] = anthropic_tools
 
     system_message_content, remaining_messages = _base_utils.extract_system_message(
         messages
     )
 
-    return (
-        messages,
-        _encode_messages(remaining_messages),
-        system_message_content or NotGiven(),
-        anthropic_tools,
-        tool_choice,
-    )
+    kwargs["messages"] = _encode_messages(remaining_messages)
+    if system_message_content:
+        kwargs["system"] = system_message_content
+
+    return messages, kwargs
 
 
 def decode_response(
