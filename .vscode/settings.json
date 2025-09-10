@@ -26,5 +26,8 @@
   },
   "python.testing.pytestArgs": [
     "python"
-  ]
+  ],
+  "search.exclude": {
+    "**/cassettes": true
+  }
 }
