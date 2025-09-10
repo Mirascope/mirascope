@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from functools import lru_cache
 from typing import Literal, TypedDict
 
-from openai import NotGiven, Stream
+from openai import AsyncStream, NotGiven, Stream
 from openai.types import chat as openai_types, shared_params as shared_openai_types
 from openai.types.shared_params.response_format_json_schema import JSONSchema
 
@@ -26,6 +26,7 @@ from ...formatting import (
 )
 from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import (
+    AsyncChunkIterator,
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
@@ -324,60 +325,66 @@ def decode_response(
     return AssistantMessage(content=parts), finish_reason
 
 
-def convert_openai_stream_to_chunk_iterator(
-    openai_stream: Stream[openai_types.ChatCompletionChunk],
-) -> ChunkIterator:
-    """Returns a ChunkIterator converted from an OpenAI Stream[ChatCompletionChunk]"""
-    current_content_type: Literal["text", "tool_call"] | None = None
-    current_tool_index: int | None = None
+class _OpenAIChunkProcessor:
+    """Processes OpenAI chat completion chunks and maintains state across chunks."""
 
-    for chunk in openai_stream:
+    def __init__(self) -> None:
+        self.current_content_type: Literal["text", "tool_call"] | None = None
+        self.current_tool_index: int | None = None
+
+    def process_chunk(self, chunk: openai_types.ChatCompletionChunk) -> ChunkIterator:
+        """Process a single OpenAI chunk and yield the appropriate content chunks."""
         yield RawChunk(raw=chunk)
 
         choice = chunk.choices[0] if chunk.choices else None
         if not choice:
-            continue  # pragma: no cover
+            return  # pragma: no cover
 
         delta = choice.delta
 
         if delta.content is not None:
-            if current_content_type is None:
+            if self.current_content_type is None:
                 yield TextStartChunk()
-                current_content_type = "text"
-            elif current_content_type == "tool_call":
+                self.current_content_type = "text"
+            elif self.current_content_type == "tool_call":
                 raise RuntimeError(
                     "received text delta inside tool call"
                 )  # pragma: no cover
-            elif current_content_type != "text":
+            elif self.current_content_type != "text":
                 raise NotImplementedError
 
             yield TextChunk(delta=delta.content)
 
         if delta.tool_calls:
-            if current_content_type == "text":
+            if self.current_content_type == "text":
                 # In testing, I can't get OpenAI to emit text and tool calls in the same chunk
                 # But we handle this defensively.
                 yield TextEndChunk()  # pragma: no cover
-            elif current_content_type and current_content_type != "tool_call":
+            elif self.current_content_type and self.current_content_type != "tool_call":
                 raise RuntimeError(
-                    f"Unexpected current_content_type: {current_content_type}"
+                    f"Unexpected current_content_type: {self.current_content_type}"
                 )  # pragma: no cover
-            current_content_type = "tool_call"
+            self.current_content_type = "tool_call"
 
             for tool_call_delta in delta.tool_calls:
                 index = tool_call_delta.index
 
-                if current_tool_index is not None and current_tool_index > index:
+                if (
+                    self.current_tool_index is not None
+                    and self.current_tool_index > index
+                ):
                     raise RuntimeError(
                         f"Received tool data for already-finished tool at index {index}"
                     )  # pragma: no cover
 
-                if current_tool_index is not None and current_tool_index < index:
+                if (
+                    self.current_tool_index is not None
+                    and self.current_tool_index < index
+                ):
                     yield ToolCallEndChunk()
+                    self.current_tool_index = None
 
-                    current_tool_index = None
-
-                if current_tool_index is None:
+                if self.current_tool_index is None:
                     if not tool_call_delta.function or not (
                         name := tool_call_delta.function.name
                     ):
@@ -385,7 +392,7 @@ def convert_openai_stream_to_chunk_iterator(
                             f"Missing name for tool call at index {index}"
                         )  # pragma: no cover
 
-                    current_tool_index = index
+                    self.current_tool_index = index
                     if not (tool_id := tool_call_delta.id):
                         raise RuntimeError(
                             f"Missing id for tool call at index {index}"
@@ -400,11 +407,10 @@ def convert_openai_stream_to_chunk_iterator(
                     yield ToolCallChunk(delta=tool_call_delta.function.arguments)
 
         if choice.finish_reason:
-            if current_content_type == "text":
+            if self.current_content_type == "text":
                 yield TextEndChunk()
-            elif current_content_type == "tool_call":
+            elif self.current_content_type == "tool_call":
                 yield ToolCallEndChunk()
-
             else:
                 raise NotImplementedError
 
@@ -412,6 +418,25 @@ def convert_openai_stream_to_chunk_iterator(
                 choice.finish_reason, FinishReason.UNKNOWN
             )
             yield FinishReasonChunk(finish_reason=finish_reason)
+
+
+def convert_openai_stream_to_chunk_iterator(
+    openai_stream: Stream[openai_types.ChatCompletionChunk],
+) -> ChunkIterator:
+    """Returns a ChunkIterator converted from an OpenAI Stream[ChatCompletionChunk]"""
+    processor = _OpenAIChunkProcessor()
+    for chunk in openai_stream:
+        yield from processor.process_chunk(chunk)
+
+
+async def convert_openai_stream_to_async_chunk_iterator(
+    openai_stream: AsyncStream[openai_types.ChatCompletionChunk],
+) -> AsyncChunkIterator:
+    """Returns an AsyncChunkIterator converted from an OpenAI AsyncStream[ChatCompletionChunk]"""
+    processor = _OpenAIChunkProcessor()
+    async for chunk in openai_stream:
+        for item in processor.process_chunk(chunk):
+            yield item
 
 
 def create_strict_response_format(
