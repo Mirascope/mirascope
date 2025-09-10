@@ -98,19 +98,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        input_messages, message_params, tool_params, response_format, tool_choice = (
-            _utils.prepare_openai_request(
-                model_id=model_id, messages=messages, tools=tools, format=format
-            )
+        input_messages, kwargs = _utils.prepare_openai_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
         )
 
-        openai_response = self.client.chat.completions.create(
-            model=model_id,
-            messages=message_params,
-            tools=tool_params,
-            response_format=response_format,
-            tool_choice=tool_choice,
-        )
+        openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(openai_response)
 
@@ -312,18 +304,12 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         if params:
             raise NotImplementedError("param use not yet supported")
 
-        input_messages, message_params, tool_params, response_format, tool_choice = (
-            _utils.prepare_openai_request(
-                model_id=model_id, messages=messages, tools=tools, format=format
-            )
+        input_messages, kwargs = _utils.prepare_openai_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
         )
 
         openai_stream = self.client.chat.completions.create(
-            model=model_id,
-            messages=message_params,
-            tools=tool_params,
-            response_format=response_format,
-            tool_choice=tool_choice,
+            **kwargs,
             stream=True,
         )
 
