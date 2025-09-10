@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from typing import overload
 
 import httpx
-from anthropic import Anthropic
+from anthropic import Anthropic, AsyncAnthropic
 
 from ...context import Context, DepsT
 from ...formatting import FormatT
@@ -18,7 +18,14 @@ from ...responses import (
     Response,
     StreamResponse,
 )
-from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool, Toolkit
+from ...tools import (
+    AsyncContextTool,
+    AsyncTool,
+    AsyncToolkit,
+    ContextTool,
+    Tool,
+    Toolkit,
+)
 from ..base import BaseClient
 from . import _utils
 from .model_ids import AnthropicModelId
@@ -51,6 +58,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         If api_key is not set, Anthropic will look for it in env as "ANTHROPIC_API_KEY".
         """
         self.client = Anthropic(api_key=api_key, base_url=base_url)
+        self.async_client = AsyncAnthropic(api_key=api_key, base_url=base_url)
 
     @overload
     def call(
@@ -208,7 +216,29 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         format: type[FormatT] | None = None,
         params: AnthropicParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
-        raise NotImplementedError
+        """Make an async call to the Anthropic API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, kwargs = _utils.prepare_anthropic_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
+        )
+
+        anthropic_response = await self.async_client.messages.create(**kwargs)
+
+        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+
+        return AsyncResponse(
+            raw=anthropic_response,
+            provider="anthropic",
+            model_id=model_id,
+            params=params,
+            toolkit=AsyncToolkit(tools=tools),
+            input_messages=input_messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+            format_type=format,
+        )
 
     @overload
     async def context_call_async(

@@ -1,0 +1,111 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Using the provided
+      tool, compute the bakst coefficients of 13 and 17"}],"model":"claude-sonnet-4-0","tools":[{"name":"bakst_coefficient","description":"bakst_coefficient","input_schema":{"properties":{"val":{"title":"Val","type":"integer"}},"required":["val"],"additionalProperties":false,"type":"object"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '365'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//lFLda1MxFP9XwnnxJZWbrZeOvDkRlElxrbKBSMiS097Y3JyYj66l3P9d
+        7pWyTRH0KeT8Pg/JCZwFCX3eqkbcvbn60nXi6ma9uKUYY8Z39/slcCjHiCMLc9ZbBA6J/DjQObtc
+        dCjAoSeLHiQYr6vFWaYQsMzms4vmom1aMQcOhkLBUEB+PZ0tCx5G8XRI+PDKe2aoj7UgKx2ya73L
+        hRnCzcYZh6FktqHEHqh0TFwyHSwTC1azC9uJHxPtnUXLCpF/DQN/CiLyquax/LTxeK+qEW9X16vP
+        6dbGIx3e67jEuknxAByC7kfdw9hAPWswGoRYC8gT7LUHKS6Hf8i52y0Iu++Pq/UjfVx3n9xyfbxp
+        /ytnMQzfOORCUSXUmcLLuAnI+KNiMAgyVO851OnB5OmXlyq0w5BBzps5B6NNh8ok1MVRUC8ZzRlP
+        qO3fsLN2DMDYYY9Je9X2f/KfUNH9jg4cqJbnIyFaDhnT3hlUxWECCeM/szpZGIafAAAA//8DAN+l
+        4Ve1AgAA
+    headers:
+      CF-RAY:
+      - 97d4c4f72a0adf21-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 11 Sep 2025 05:29:49 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-09-11T05:29:48Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-09-11T05:29:49Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-09-11T05:29:47Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-09-11T05:29:48Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CT24cD1sB3bQns7nDyRGJ
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '1654'
+    status:
+      code: 200
+      message: OK
+version: 1
