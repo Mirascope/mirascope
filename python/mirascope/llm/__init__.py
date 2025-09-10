@@ -5,6 +5,9 @@ including messages, tools, response formatting, and streaming. It allows you to 
 code that works with multiple LLM providers without changing your application logic.
 """
 
+# TODO: Across the API, audit docstrings to ensure they are compliant Google-style docstrings
+# (Write some tooling to ensure this happens consistently + in CI)
+
 from . import (
     calls,
     clients,

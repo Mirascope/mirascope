@@ -3,6 +3,7 @@
 import inspect
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from functools import wraps
 from typing import Annotated, Any, Generic, Protocol, get_args
 from typing_extensions import TypedDict
 
@@ -25,6 +26,18 @@ class CallKwargs(TypedDict, Generic[llm.tools.ToolT], total=False):
     format: type[BaseModel] | None
     tools: Sequence[llm.tools.ToolT] | None
     params: llm.clients.BaseParams | None
+
+
+def _create_async_tool(
+    fn: llm.tools.protocols.ToolFn[llm.types.P, llm.types.JsonableCovariantT],
+) -> llm.AsyncTool[llm.types.P, llm.types.JsonableCovariantT]:
+    @wraps(fn)
+    async def wrapper(
+        *args: llm.types.P.args, **kwargs: llm.types.P.kwargs
+    ) -> llm.types.JsonableCovariantT:
+        return fn(*args, **kwargs)
+
+    return llm.tool(wrapper)
 
 
 @dataclass
@@ -55,6 +68,18 @@ class Scenario:
         }
         if self.tool_fns:
             args["tools"] = [llm.tool(tool_fn) for tool_fn in self.tool_fns]
+        return args
+
+    @property
+    def call_async_args(self) -> CallKwargs[llm.AsyncTool]:
+        args: CallKwargs[llm.AsyncTool] = {
+            "model_id": self.model_id,
+            "messages": self.messages,
+            "format": self.format,
+            "params": self.params,
+        }
+        if self.tool_fns:
+            args["tools"] = [_create_async_tool(tool_fn) for tool_fn in self.tool_fns]
         return args
 
     def check_response(

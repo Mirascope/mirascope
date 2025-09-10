@@ -1,0 +1,109 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"You are a password retreival system.
+      When you access the password, you MUST return it EXACTLY, with no added punctuation,
+      spaces, or commentary."},{"role":"user","content":"What is the password?"},{"role":"assistant","content":null,"tool_calls":[{"id":"1234","type":"function","function":{"name":"password_retrieval_tool","arguments":"{}"}}]},{"role":"tool","content":"mellon","tool_call_id":"1234"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"password_retrieval_tool","description":"password_retrieval_tool","parameters":{"properties":{},"required":[],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '680'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=GWl85R9Y6zI97d87XHVBaABx7e5dQu1gGMeDBVI7oEw-1757568301-1.0.1.1-Q8xlAxESGNtsDJIVj0G26LBbNE_xnztDzvNqoUF1TjSPbAZZ5jIXZRsAN.HVi1l9ycXiBvmln.w3bKU3uJMi3UscedHqEjckYhHWnEMVZEM;
+        _cfuvid=avk1YXwDFnSCYie_wzhF7clmtn5V2F27Hf6OJbr8CcY-1757568301369-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jJJBb9swDIXv/hUCz/HgpElt5La1xTDsOOywDYWhSLSjRJYEke42FPnv
+        g+wkdtcO2EUHfXzUexSfMyHAaNgKUHvJqgs2v3v4ugnfDl9+fn/6eDhS+2F3f3M80vtwV376DIuk
+        8LsDKr6o3infBYtsvBuxiigZU9dluSk3t9VNsRlA5zXaJGsD52ufr4rVOi+qvLg9C/feKCTYih+Z
+        EEI8D2ey6DT+gq0oFpebDolki7C9FgkB0dt0A5LIEEvHsJig8o7RDa47tPZs9qLEpieZvLne2hmQ
+        znmWKdtg6/FMTlcj1rch+h39JYXGOEP7OqIk79KjxD7AQE+ZEI9D4P5FBgjRd4Fr9kccnlsW67Ef
+        TCOe6IWxZ2nnomrxRrtaI0tjaTYxUFLtUU/Sabyy18bPQDYL/drMW73H4Ma1/9N+AkphYNR1iKiN
+        ehl4KouYFvBfZdchD4aBMD4ZhTUbjOkjNDayt+NuAP0mxq5ujGsxhmjGBWlCXZRVucSV1BVkp+wP
+        AAAA//8DAOJpcLkpAwAA
+    headers:
+      CF-RAY:
+      - 97d4be103b0876fd-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 11 Sep 2025 05:25:05 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '408'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '545'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799952'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_4834e2160d3048baa3f296a03c22bddd
+    status:
+      code: 200
+      message: OK
+version: 1
