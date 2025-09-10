@@ -3,6 +3,7 @@
 from .base_stream_response import AsyncChunkIterator, ChunkIterator, RawChunk
 from .finish_reason import FinishReason, FinishReasonChunk
 from .response import AsyncContextResponse, AsyncResponse, ContextResponse, Response
+from .root_response import RootResponse
 from .stream_response import (
     AsyncContextStreamResponse,
     AsyncStreamResponse,
@@ -23,5 +24,6 @@ __all__ = [
     "FinishReasonChunk",
     "RawChunk",
     "Response",
+    "RootResponse",
     "StreamResponse",
 ]

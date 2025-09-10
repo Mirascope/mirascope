@@ -1,0 +1,65 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Extract the book: The Name of the Wind
+      by Patrick Rothfuss"}], "role": "user"}], "generationConfig": {"responseMimeType":
+      "application/json", "responseSchema": {"properties": {"title": {"title": "Title",
+      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}}, "propertyOrdering":
+      ["title", "author"], "required": ["title", "author"], "title": "Book", "type":
+      "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '418'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQ0U/CMBDG3/dXNPcMRlQEfDNgIhJ1wQVNnA+V3VhD1y7rLUGX/e92G4Mu9qG5
+        3fft7uuv9BiDLVeRiDihgTv2aTuMlc1da1oRKrJC17LNjOd09randGprITzUP0EZAgmSGNqPEIIE
+        2QtPkemYka3fhYpCGFiFF5TovHX5nHKx3bO1piQujAmhAmd6daq/BudMuZZYL0x1hLKzV50BYqGE
+        SdbIjVa17S149eGk2hh4sO1Lr1vQjIbC8B0+I3FLh58YQJbrNKNA71HNddHQGd20wxyYfX161EkT
+        lz1pNhr8G2sWdqmQLmSHv30jl4J+6ocEDx8BOByon6oD4Tm8wKIudgn1E45n3hFYy3CDuREtrB2m
+        Ft/w6mI8jCU3SbMPcjSZVgaXUZNDfM/5U3y98FePv5OlP1zdTvb3U/Aq7w8QYhE2ZQIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 11 Sep 2025 01:30:54 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=969
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,66 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Produce a formatted output"}], "role":
+      "user"}], "generationConfig": {"responseMimeType": "application/json", "responseSchema":
+      {"description": "An output. The `first` value should be the number 17.", "properties":
+      {"first": {"title": "First", "type": "INTEGER"}, "second": {"description": "Should
+      be the number 13", "title": "Second", "type": "INTEGER"}}, "propertyOrdering":
+      ["first", "second"], "required": ["first", "second"], "title": "Output", "type":
+      "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '504'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQUU+DMBSF3/kV5D5vZsxsJHudmszEOBV1yeZDlTtoLC1pL25K+O+2IFuJPBC4
+        5/Tcnq8OwhA+mEx5yggNLMKtnYRh3b6dpiShJCv0Izssmaazt3tq79taCI/uENQ72HNtaAeLKB7t
+        wKBNTN3fZQPekeb0/TY6L9JKoEspVIqitze9wSZLbvJHZEZJZ3tK7tdwUrlM8WjHk6Bf0EZDZViG
+        d0jMVmanYlBqVZSUqE+US1W1lWddlgdoIEfRn06KmBhI8Xz0L9Vc2Z1c+OA8prYiE5y+XY/kepOA
+        h4EGl+oxBB4toFxVWU7DC85d9RZXR/AFteEdqgwLC288vZiN94KZvF0HGk2ppMFV6jzPy/clu90c
+        blhFP/FqLb6mr4eHCQRN8AtiBV3pOAIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 11 Sep 2025 01:30:56 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=753
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

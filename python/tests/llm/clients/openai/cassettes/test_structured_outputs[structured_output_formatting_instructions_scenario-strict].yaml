@@ -1,0 +1,111 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Please output a book recommendation
+      in JSON form.\nIt should have the format {title: str, author: str} and the \ntitle
+      and author should both be in all caps."},{"role":"user","content":"Extract the
+      book: The Name of the Wind by Patrick Rothfuss"}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object","additionalProperties":false},"strict":true}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '593'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=ns5DrRcABJFXRdZhDTQTCiZOp4gTYzsf1D39poTai30-1757551965-1.0.1.1-n1CdiTmhVoEkb4M_O7YbmFnRz.l7JYgpDn6eoWX_dKPsAHK9ss4UDL0XE2_tcPLj0zmhE_gfFGMhWyJrqK9PxHQvzv60dakcgu40j4rAwq4;
+        _cfuvid=Z1Uj26Qu8pT2l1DK6mLvSauyL0OvphibDedlBVRvnig-1757551965026-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFLBbtpAEL37K1ZzhgooBuJbRIkSVU2iQNVDHVnLemwvXe+udseoLeLf
+        ozUEO20q9WJZ8+a9fW9mDhFjIHNIGIiKk6itGi5Xj/t5tXP79Tg2S26vcPHbLOOdX1RFBYPAMNsd
+        CnplfRCmtgpJGn2ChUNOGFTH83gex5PJLG6B2uSoAq20NJya4WQ0mQ5Hi+FodiZWRgr0kLDvEWOM
+        HdpvsKhz/AkJGw1eKzV6z0uE5NLEGDijQgW499IT1wSDDhRGE+rW9SEFkqQwhSSFze2K3V9/WbGH
+        Gxb+v93df0phkAJvqDKu7Xm83jzdLT+zp4fN7c3X9TqFY1/aYdF4HpLpRqkewLU2xMNk2lDPZ+R4
+        iaFMaZ3Z+j+oUEgtfZU55N7oYNmTsdCix4ix53ZczZsJgHWmtpSR+YHtc+PR9KQH3YJ66NUZJENc
+        9eqTj4N39LIciUvlewMHwUWFeUfttsObXJoeEPVS/+3mPe1TcqnL/5HvACHQEuaZdZhL8TZx1+Yw
+        3O+/2i5Tbg2DR7eXAjOS6MImcix4o06nBf6XJ6yzQuoSnXXydF+FzcS2GM8XcTybQ3SMXgAAAP//
+        AwD6kULRaAMAAA==
+    headers:
+      CF-RAY:
+      - 97d3367c4ffd75ca-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 11 Sep 2025 00:57:46 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '275'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '301'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799942'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_64cf4a707e84485da0c94dc3b723ef98
+    status:
+      code: 200
+      message: OK
+version: 1

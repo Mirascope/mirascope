@@ -1,7 +1,6 @@
 interactions:
 - request:
-    body: '{"contents": [{"parts": [{"text": "Hello, say ''Hi'' back to me"}], "role":
-      "user"}]}'
+    body: '{"contents": [{"parts": [{"text": "What is 8200 + 82?"}], "role": "user"}]}'
     headers:
       accept:
       - '*/*'
@@ -10,7 +9,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '83'
+      - '75'
       content-type:
       - application/json
       host:
@@ -20,16 +19,17 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61R0U6DMBR95yuwz2MBxpj4ZtTEJS4SJYuJGlPljjWDFumdUxf+3RYGK/pqH5rm
-        ntN77jl3b9k2eaM8ZSlFkOTMflQV2943t8YER+CogK6kiiWt8Mhtz954KwrCp/5ErtnJEycGVvfv
-        59GxYyVy0PRCpJB39LojkBXjTK7vgErBNe0+uY1Jj9KP7EZkZSVe9VCOO3Zd9zSMpr4b+lEQTGee
-        NwusTryRJVtJM1gAUuWb9u6IalKUmIgN8AuxbXxHrY6R0gCeHGAUSPMB4vmjP03lpZJkuRmekaty
-        T3OGX9picvWQECMhHMzUJWQZQf6e8J+0JkMt67CXdlVLqCRrd5JBobbk+GPXWeVUrpuGpAJZCi5h
-        nmrOxmcvNI6Xc/zevaOMdyFIeb4gVm39ADOhwO6KAgAA
+        H4sIAAAAAAAC/2WRTWuDQBCG7/6KYY/GBJOQtgn0UNIeQkgbGimFWsq2TlSqu+KukA/y3zu7xkTp
+        HnSY992Z2WeODgD74SJKI65RsRl8UAbgaL9Gk0Kj0CQ0KUoWvNRXb32OrZgsGnfmEgskbFMRgU4Q
+        VJWD3MLdyPehRz8P9rIC6g48so4ctIyRgnIWilBQHeMNRQ9sGIp+fc6SyYRiI71rSbgH1zWK6w5Y
+        a6LTJf70ru8oZYZmyFxGmDX2U2NgNHiqklfkSgpj2wQva3ZR6VW4o7TvNA1saVYpHuMKNSei/MKN
+        FaXMCx3IXxRzWVmiw3FdrLWAjj6ZnnUtNc+6V4dD719d9Uhd06y9mdbS6JE8S/XebuXpPWAtELo7
+        VkPCaQFjOpFVnOjuiOOpcyZWQ3zDUqU1rRhz4tcfDSb9bcZVYvuxElUhhcJFZInuv+d8uVzNv5bJ
+        4XaxPqzF882Dz5yT8wemr+8AmgIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -38,11 +38,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Mon, 08 Sep 2025 23:36:51 GMT
+      - Thu, 11 Sep 2025 01:30:51 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=363
+      - gfet4t7; dur=923
       Transfer-Encoding:
       - chunked
       Vary:

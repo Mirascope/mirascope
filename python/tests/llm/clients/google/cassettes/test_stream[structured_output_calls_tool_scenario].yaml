@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Use the retrieve book tool and format
+      the response"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "When you are ready to respond to the user, call the __mirascope_formatted_output_tool__
+      tool to output a structured response.\nDo NOT output any text in addition to
+      the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in Book format for a final response.", "name":
+      "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"properties":
+      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
+      "type": "string"}}, "required": ["title", "author"], "title": "Book", "type":
+      "object"}}, {"description": "retrieve_book_tool", "name": "retrieve_book_tool",
+      "parameters": {"properties": {}, "required": [], "type": "OBJECT"}}]}], "generationConfig":
+      {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '890'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"retrieve_book_tool\",\"args\": {}},\"thoughtSignature\": \"CiQB0e2Kb4LzWsij14al4Y1ccuWU8fWgHB8uyeEkzkjQQNUD3ogKbAHR7YpvWNZH2/QXZRTywRrJh9uKHtTjsfphB+8YC/lT1gFPZMWQaCxiRg55zXKqMVHBmh0oiO671Ddry4xqcBRzvDliqDIG6/C207OzEbtztEH1MGKKXx6qBH9Jmq39TwZ+SjegW1XupSy1gAr0AQHR7YpvKIaG7CHkV/S5/x5F07pR8yLkYDN/kP9g90T+IWfpNtt2e57x96A8ARLCPbp+rErL5cT3R49oqSKkeLop0TEyv+TH2vydWbOqkQTdVwumnsvXvKe0rvmiPvoMHOyCSS71tGoqc1nfVBEUDpAslB3NVICb3+cdf9ojBvIz1+sC8nsxXdU2CurRKQJMkSpMZaUvWg/g6GIrVDpdpVuadJnNb7GZ/JfzzrN01P/oIVPM2s76p+rQXAQAkooe0DreNnEyPwCsE5Ki8JJfWedIF+xu+TueCp2LDBYQv0LdSv9Qv9aBJvBRYrKYs/9LhONSQaMKwAEB0e2Kb+erTmTHtzuvZM5W2udqYvN+AX/8wnS7gfmU8LLOUwMsC7QcwL2myNWJ0O4WQ/HgB/kfHsY4vPZjNuARVkTjBQaz9bMrhuhH9SEmPaRAhFKbwjYqLhVtWdmmvqEY0YrUHCZU3gxjL68jtC69DJQncsez6JIZh7+7k9HZUE0BuFNyU+ckdWyFhf8zRI5vVPO9E6dXqlJn8fLBKmzXq2tin/MCD/oqVaDZgwchfd002C6zZWBrXRtPHYVngqUKQQHR7YpvCfKyufrqkRoUMmzCql7YZUqRx+BHLi9eMOTSrACLPGIzYz1VMTqqQii/s2PebZ75H3gsB5tjfOp+Dblo\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        146,\"candidatesTokenCount\": 12,\"totalTokenCount\": 285,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 146}],\"thoughtsTokenCount\": 127},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"ZybCaMfoH7mtz7IPg4_U-Q4\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Thu, 11 Sep 2025 01:31:20 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=964
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
