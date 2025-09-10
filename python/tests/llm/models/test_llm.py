@@ -102,13 +102,14 @@ def test_call(
     """Test that call method passes parameters correctly to client.call."""
     mock_client.call.return_value = mock_response
 
-    result = mocked_llm.call(messages=messages, tools=tools)
+    result: llm.Response = mocked_llm.call(messages=messages, tools=tools)
 
     mock_client.call.assert_called_once_with(
         model_id="gpt-4o-mini",
         messages=messages,
         tools=tools,
         params=params,
+        format=None,
     )
     assert result is mock_response
 
@@ -124,7 +125,9 @@ def test_structured_call(
     """Test that call method passes format parameter correctly to client.call."""
     mock_client.call.return_value = mock_response
 
-    result = mocked_llm.call(messages=messages, tools=tools, format=Format)
+    result: llm.Response[Format] = mocked_llm.call(
+        messages=messages, tools=tools, format=Format
+    )
 
     mock_client.call.assert_called_once_with(
         model_id="gpt-4o-mini",
@@ -148,13 +151,16 @@ async def test_call_async(
     """Test that call_async method passes parameters correctly to client.call_async."""
     mock_client.call_async = AsyncMock(return_value=mock_response)
 
-    result = await mocked_llm.call_async(messages=messages, tools=async_tools)
+    result: llm.AsyncResponse = await mocked_llm.call_async(
+        messages=messages, tools=async_tools
+    )
 
     mock_client.call_async.assert_called_once_with(
         model_id="gpt-4o-mini",
         messages=messages,
         tools=async_tools,
         params=params,
+        format=None,
     )
     assert result is mock_response
 
@@ -171,7 +177,7 @@ async def test_structured_call_async(
     """Test that call_async method passes format parameters correctly to client.call_async."""
     mock_client.call_async = AsyncMock(return_value=mock_response)
 
-    result = await mocked_llm.call_async(
+    result: llm.AsyncResponse[Format] = await mocked_llm.call_async(
         messages=messages, tools=async_tools, format=Format
     )
 
@@ -196,13 +202,14 @@ def test_stream(
     """Test that stream method passes parameters correctly to client.stream."""
     mock_client.stream.return_value = mock_stream_response
 
-    result = mocked_llm.stream(messages=messages, tools=tools)
+    result: llm.StreamResponse = mocked_llm.stream(messages=messages, tools=tools)
 
     mock_client.stream.assert_called_once_with(
         model_id="gpt-4o-mini",
         messages=messages,
         tools=tools,
         params=params,
+        format=None,
     )
     assert result is mock_stream_response
 
@@ -218,7 +225,9 @@ def test_structured_stream(
     """Test that stream method passes format parameters correctly to client.stream."""
     mock_client.stream.return_value = mock_stream_response
 
-    result = mocked_llm.stream(messages=messages, tools=tools, format=Format)
+    result: llm.StreamResponse[Format] = mocked_llm.stream(
+        messages=messages, tools=tools, format=Format
+    )
 
     mock_client.stream.assert_called_once_with(
         model_id="gpt-4o-mini",
@@ -242,13 +251,16 @@ async def test_stream_async(
     """Test that stream_async method passes parameters correctly to client.stream_async."""
     mock_client.stream_async = AsyncMock(return_value=mock_async_stream_response)
 
-    result = await mocked_llm.stream_async(messages=messages, tools=async_tools)
+    result: llm.AsyncStreamResponse = await mocked_llm.stream_async(
+        messages=messages, tools=async_tools
+    )
 
     mock_client.stream_async.assert_called_once_with(
         model_id="gpt-4o-mini",
         messages=messages,
         tools=async_tools,
         params=params,
+        format=None,
     )
     assert result is mock_async_stream_response
 
@@ -265,7 +277,7 @@ async def test_structured_stream_async(
     """Test that stream_async method passes format parameters correctly to client.stream_async."""
     mock_client.stream_async = AsyncMock(return_value=mock_async_stream_response)
 
-    result = await mocked_llm.stream_async(
+    result: llm.AsyncStreamResponse[Format] = await mocked_llm.stream_async(
         messages=messages, tools=async_tools, format=Format
     )
 
