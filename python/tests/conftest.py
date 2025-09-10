@@ -5,6 +5,8 @@ mirascope test suite, including VCR configuration for HTTP recording/playback.
 """
 
 import os
+from collections.abc import Callable
+from typing import Any
 from typing_extensions import TypedDict
 
 import pytest
@@ -57,6 +59,19 @@ class VCRConfig(TypedDict):
     Useful for removing sensitive data from request bodies.
     """
 
+    before_record_response: Callable | None
+    """Callback function to modify responses before recording to cassettes.
+    
+    Function should accept a response dict and return the modified response.
+    Used to filter or transform response data before it's saved to cassette files.
+    """
+
+
+def strip_response_headers(response: dict[str, Any]) -> dict[str, Any]:
+    """Remove all response headers from VCR cassettes."""
+    response["headers"] = {}
+    return response
+
 
 @pytest.fixture(scope="session")
 def vcr_config() -> VCRConfig:
@@ -81,6 +96,7 @@ def vcr_config() -> VCRConfig:
             "anthropic-organization-id",  # Anthropic org identifiers
         ],
         "filter_post_data_parameters": [],
+        "before_record_response": strip_response_headers,
     }
 
 
