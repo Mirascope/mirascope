@@ -78,6 +78,17 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> Response[FormatT]: ...
 
+    @overload
+    def call(
+        self,
+        *,
+        model_id: GoogleModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        format: type[FormatT] | None,
+        params: GoogleParams | None = None,
+    ) -> Response | Response[FormatT]: ...
+
     def call(
         self,
         *,
@@ -139,6 +150,18 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> ContextResponse[DepsT, FormatT]: ...
 
+    @overload
+    def context_call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: GoogleModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        format: type[FormatT] | None,
+        params: GoogleParams | None = None,
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]: ...
+
     def context_call(
         self,
         *,
@@ -172,6 +195,17 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> AsyncResponse[FormatT]: ...
+
+    @overload
+    async def call_async(
+        self,
+        *,
+        model_id: GoogleModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        format: type[FormatT] | None,
+        params: GoogleParams | None = None,
+    ) -> AsyncResponse | AsyncResponse[FormatT]: ...
 
     async def call_async(
         self,
@@ -208,6 +242,18 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
+    @overload
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: GoogleModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        format: type[FormatT] | None,
+        params: GoogleParams | None = None,
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]: ...
+
     async def context_call_async(
         self,
         *,
@@ -241,6 +287,17 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> StreamResponse[FormatT]: ...
+
+    @overload
+    def stream(
+        self,
+        *,
+        model_id: GoogleModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        format: type[FormatT] | None,
+        params: GoogleParams | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]: ...
 
     def stream(
         self,
@@ -300,6 +357,18 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> StreamResponse[FormatT]: ...
 
+    @overload
+    def context_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: GoogleModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        format: type[FormatT] | None,
+        params: GoogleParams | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]: ...
+
     def context_stream(
         self,
         *,
@@ -333,6 +402,17 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
+
+    @overload
+    async def stream_async(
+        self,
+        *,
+        model_id: GoogleModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        format: type[FormatT] | None,
+        params: GoogleParams | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
 
     async def stream_async(
         self,
@@ -368,6 +448,18 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         format: type[FormatT],
         params: GoogleParams | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
+
+    @overload
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: GoogleModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        format: type[FormatT] | None,
+        params: GoogleParams | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
 
     async def context_stream_async(
         self,

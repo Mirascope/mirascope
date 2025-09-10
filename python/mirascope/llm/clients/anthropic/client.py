@@ -74,6 +74,17 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> Response[FormatT]: ...
 
+    @overload
+    def call(
+        self,
+        *,
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        format: type[FormatT] | None,
+        params: AnthropicParams | None = None,
+    ) -> Response | Response[FormatT]: ...
+
     def call(
         self,
         *,
@@ -140,6 +151,18 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> ContextResponse[DepsT, FormatT]: ...
 
+    @overload
+    def context_call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        format: type[FormatT] | None,
+        params: AnthropicParams | None = None,
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]: ...
+
     def context_call(
         self,
         *,
@@ -173,6 +196,17 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> AsyncResponse[FormatT]: ...
+
+    @overload
+    async def call_async(
+        self,
+        *,
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        format: type[FormatT] | None,
+        params: AnthropicParams | None = None,
+    ) -> AsyncResponse | AsyncResponse[FormatT]: ...
 
     async def call_async(
         self,
@@ -209,6 +243,18 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
+    @overload
+    async def context_call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        format: type[FormatT] | None,
+        params: AnthropicParams | None = None,
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]: ...
+
     async def context_call_async(
         self,
         *,
@@ -242,6 +288,17 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> StreamResponse[FormatT]: ...
+
+    @overload
+    def stream(
+        self,
+        *,
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | None = None,
+        format: type[FormatT] | None,
+        params: AnthropicParams | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]: ...
 
     def stream(
         self,
@@ -309,6 +366,18 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> StreamResponse[FormatT]: ...
 
+    @overload
+    def context_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]],
+        format: type[FormatT] | None,
+        params: AnthropicParams | None = None,
+    ) -> StreamResponse | StreamResponse[FormatT]: ...
+
     def context_stream(
         self,
         *,
@@ -342,6 +411,17 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
+
+    @overload
+    async def stream_async(
+        self,
+        *,
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool] | None = None,
+        format: type[FormatT] | None,
+        params: AnthropicParams | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
 
     async def stream_async(
         self,
@@ -377,6 +457,18 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> AsyncStreamResponse[FormatT]: ...
+
+    @overload
+    async def context_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        format: type[FormatT] | None,
+        params: AnthropicParams | None = None,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
 
     async def context_stream_async(
         self,
