@@ -2,7 +2,7 @@
 
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import Literal
+from typing import Literal, TypedDict
 
 from openai import NotGiven, Stream
 from openai.types import chat as openai_types, shared_params as shared_openai_types
@@ -87,6 +87,20 @@ MODELS_WITHOUT_JSON_OBJECT_SUPPORT = {
     "o1-mini",
     "o1-mini-2024-09-12",
 }
+
+
+class ChatCompletionCreateKwargs(TypedDict, total=False):
+    """Kwargs for OpenAI ChatCompletion.create method."""
+
+    model: str
+    messages: Sequence[openai_types.ChatCompletionMessageParam]
+    tools: Sequence[openai_types.ChatCompletionToolParam] | NotGiven
+    response_format: (
+        shared_openai_types.ResponseFormatJSONObject
+        | shared_openai_types.ResponseFormatJSONSchema
+        | NotGiven
+    )
+    tool_choice: openai_types.ChatCompletionToolChoiceOptionParam | NotGiven
 
 
 def _ensure_additional_properties_false(obj: object) -> None:
@@ -215,15 +229,7 @@ def prepare_openai_request(
     messages: Sequence[Message],
     tools: Sequence[Tool] | None = None,
     format: type[FormatT] | None = None,
-) -> tuple[
-    Sequence[Message],
-    Sequence[openai_types.ChatCompletionMessageParam],
-    Sequence[openai_types.ChatCompletionToolParam] | NotGiven,
-    shared_openai_types.ResponseFormatJSONObject
-    | shared_openai_types.ResponseFormatJSONSchema
-    | NotGiven,
-    openai_types.ChatCompletionToolChoiceOptionParam | NotGiven,
-]:
+) -> tuple[Sequence[Message], ChatCompletionCreateKwargs]:
     """Prepare OpenAI API request parameters.
 
     Args:
@@ -237,23 +243,15 @@ def prepare_openai_request(
         A tuple containing:
             - A sequence of Mirascope `Message`s, which may include modifications to the
               system message (e.g. with instructions for JSON mode formatting).
-            - A sequence of `ChatCompletionMessageParam` representing encoded message content.
-            - A sequence of `ChatCompletionToolParam`, or `NotGiven`. This includes encoded tools,
-              and potentially a response format tool.
-            - A `ResponseFormat` specifier if needed and supported, or else `NotGiven`
+            - A ChatCompletionCreateKwargs dict with parameters for OpenAI's create method.
     """
+
+    kwargs: ChatCompletionCreateKwargs = {
+        "model": model_id,
+    }
+
     openai_tools: list[openai_types.ChatCompletionToolParam] | NotGiven = (
         [_convert_tool_to_tool_param(tool) for tool in tools] if tools else []
-    )
-
-    response_format: (
-        shared_openai_types.ResponseFormatJSONObject
-        | shared_openai_types.ResponseFormatJSONSchema
-        | NotGiven
-    ) = NotGiven()
-
-    tool_choice: openai_types.ChatCompletionToolChoiceOptionParam | NotGiven = (
-        NotGiven()
     )
 
     if format:
@@ -267,30 +265,33 @@ def prepare_openai_request(
             model_has_native_json_support=model_has_native_json_support,
         )
         if resolved_format.mode == "strict":
-            response_format = create_strict_response_format(resolved_format.info)
+            kwargs["response_format"] = create_strict_response_format(
+                resolved_format.info
+            )
         elif resolved_format.mode == "tool":
-            tool_choice = (
+            kwargs["tool_choice"] = (
                 "required"
                 if tools
                 else {"type": "function", "function": {"name": FORMAT_TOOL_NAME}}
             )
             openai_tools.append(create_format_tool_param(resolved_format.info))
         elif resolved_format.mode == "json" and model_has_native_json_support:
-            response_format = {"type": "json_object"}
+            kwargs["response_format"] = {"type": "json_object"}
 
         if resolved_format.formatting_instructions:
             messages = _base_utils.add_system_instructions(
                 messages, resolved_format.formatting_instructions
             )
 
-    if not openai_tools:
-        openai_tools = NotGiven()
+    if openai_tools:
+        kwargs["tools"] = openai_tools
 
     encoded_messages: list[openai_types.ChatCompletionMessageParam] = []
     for message in messages:
         encoded_messages.extend(_encode_message(message))
+    kwargs["messages"] = encoded_messages
 
-    return messages, encoded_messages, openai_tools, response_format, tool_choice
+    return messages, kwargs
 
 
 def decode_response(
