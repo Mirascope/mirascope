@@ -110,6 +110,10 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
 
         text = "".join(text.text for text in self.texts)
 
+        # Some models output json as a code block
+        if text.startswith("```json") and text.endswith("```"):
+            text = text[7:-3].strip()
+
         parsed_json = json.loads(text)
         return self.format_type.model_validate(parsed_json)
 

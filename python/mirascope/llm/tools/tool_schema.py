@@ -162,7 +162,7 @@ class ToolSchema(Generic[ToolFnT]):
             ValueError: If the tool has a reserved name.
         """
         name = fn.__name__
-        if name == FORMAT_TOOL_NAME:
+        if name.startswith(FORMAT_TOOL_NAME):
             raise ValueError(
                 f"Cannot use reserved name {FORMAT_TOOL_NAME} as tool name."
             )

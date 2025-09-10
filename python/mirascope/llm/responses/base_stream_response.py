@@ -182,7 +182,9 @@ class BaseStreamResponse(
     def _transform_format_tool_chunks(
         self, chunk: AssistantContentChunk
     ) -> AssistantContentChunk:
-        if chunk.type == "tool_call_start_chunk" and chunk.name == FORMAT_TOOL_NAME:
+        if chunk.type == "tool_call_start_chunk" and chunk.name.startswith(
+            FORMAT_TOOL_NAME
+        ):
             self._processing_format_tool = True
             return TextStartChunk()
         if self._processing_format_tool and chunk.type == "tool_call_chunk":

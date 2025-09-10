@@ -1,0 +1,111 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Extract the book:
+      The Name of the Wind by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Please
+      output a book recommendation in JSON form.\nIt should have the format {title:
+      str, author: str} and the \ntitle and author should both be in all caps."}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '316'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SRXWvCQBBF/0q4zyvEVCvdN2kV7YcWtRRpStgmgwkmu7o7WyyS/16itZ/0aYY5
+        5w4Ms0eRQaJyqyRs965fbKSXw94yv916Mt5fzHZrCPDbhhqLnFMrgoA1ZTNQzhWOlWYIVCajEhJp
+        qXxGLWe0Jm51WlEYdcNuuwOB1GgmzZBP+9NKpl0TPhSJfayDIAYXXFIMGcRYjAbBpH83CKbDoOkf
+        x5OrGOLoKc+5sUfxvr+YjS9vgtl0MRo+zOcxYl2jfhZwbDaJJeWMhgTpLGFvNT6Ao60nnRKk9mUp
+        4A8Xyj0KvfGcsFmTdpDnoUCq0pyS1JLiwujkp/DJLansP3bKNvtpk1NFVpVJt/rrf9F2/pvWAsbz
+        99FZJODIvhYpJVyQhUTzlkzZDHX9DgAA//8DAO1URyHkAQAA
+    headers:
+      CF-RAY:
+      - 97d3535dda49758c-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 11 Sep 2025 01:17:29 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-09-11T01:17:29Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-09-11T01:17:29Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-09-11T01:17:28Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-09-11T01:17:29Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CT1jNGMBst871hPUVmf9e
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '1201'
+    status:
+      code: 200
+      message: OK
+version: 1

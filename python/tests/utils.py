@@ -1,6 +1,6 @@
 """Test utilities for response testing."""
 
-from typing import cast
+from typing import Any, cast
 
 from mirascope import llm
 
@@ -12,7 +12,7 @@ def get_format(x: type[llm.formatting.FormatT]) -> llm.FormatInfo:
     return format
 
 
-def response_snapshot_dict(response: llm.Response) -> dict:
+def response_snapshot_dict(response: llm.responses.RootResponse[Any, Any]) -> dict:
     dict_copy = response.__dict__.copy()
 
     # Remove raw response because it is too noisy (test separately if needed)

@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Using the provided tool, compute the
+      bakst coefficients of 13 and 17"}], "role": "user"}], "tools": [{"functionDeclarations":
+      [{"description": "bakst_coefficient", "name": "bakst_coefficient", "parameters":
+      {"properties": {"val": {"title": "Val", "type": "INTEGER"}}, "required": ["val"],
+      "type": "OBJECT"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '370'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/8VTXXOaQBR951c4vJJUI/hBZ/qgKIkWxQ801E4ns8ACK8susgsqmfz3osZE07Sv
+        5YGBey7nnnvY8yxUKqILiIc8wCETv1Z+lpVK5fl4P2CUcEh4CZxLZTEBKX/vPV3PF89li58RlyNK
+        NIDx1cevOAExLOuiAyLGn1wKfR+56DDp5mMrSAP2CUWJ5ODAfSd/QF6u3l+uCUUe0iwI+RwFBPAs
+        ParQctbteA8cxe21a5tpxzYL7E0b3y26XY539Zns/JAWwVbHgT4NmwpXM7lNfc1JrXEtdB2U+2rY
+        2myZJNtSqK80CRZks8fLvRd6ZjxE1SVWwXBn9hfrVtPfbZcOmhe9QQvoy14770yzkRMYXSXKG3Bu
+        TNdBVlUGlNA+KdbrKR/v1KSlW8P2nibWoAsXujysSyoYVWmR3kN729kg20hXZrDRvltGuu5BuX9v
+        L0iSdYqBqZOomjp4mHdmoRM7dIyyh9kqseXVbNJ2+DoyzIIbs3T2OHQfWn2aRj7WvcnEn8NQcx9Z
+        Pa+hzqabKZJSNZmuBvWY5ZJuSHcDHLaj0SrXAjKq7dVms/6QgX3V2TWjb6Lwl3/wH09K698nRfjs
+        +df7GDGl+Kglph7E5wXflhN9RBALZxAwSg5tc8ucvKkUEfHgrizXhPOAI7WYMRDAEeSgjCB4ky8m
+        KY0TbtEIEo1mxwg2mieyi8Re4bLyinPKAb6C7hT15g9e1iunInwZ5YuUl0sCjPj+sInVt60Lv8sB
+        V7LOTggXhp2Ddi2xoQqvjp1MXMKUoZNbAYxL/27rXxq3PgYsPM4TU8gSShgceIeex3mugZGxG43z
+        RdEaTJKnva9Mt6LwIvwGsuZNOMsEAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 11 Sep 2025 01:52:25 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=835
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
