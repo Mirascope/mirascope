@@ -4,7 +4,7 @@ interactions:
       The Name of the Wind by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"When
       you are ready to respond to the user, call the __mirascope_formatted_output_tool__
       tool to output a structured response.\nDo NOT output any text in addition to
-      the tool call.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__"},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      the tool call.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object"}}]}'
     headers:
       accept:
@@ -16,7 +16,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '732'
+      - '765'
       content-type:
       - application/json
       host:
@@ -36,7 +36,7 @@ interactions:
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '1'
+      - '0'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
@@ -48,16 +48,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJFRSwMxEIT/yrHPKVxrK/Wei4q2orZQRCSEZNsLvWTPZFMo5f675EqV
-        Kj5mv9nZYXIEa6ACF7eyHD7o8X558C+rudn77eywvjWWpyCADy1mFcaotggCAjV5oGK0kZVnEODI
-        YAMV6EYlg4NI3iMPxoNROZqUk+EYBGjyjJ6hej+eLZmokSlmzz5IfidZDhd397Z2bfu4mPn5YfmG
-        zpC9BgFeubwnpbNBRU0tyg0Fp5jRSErcJpa9qcyWvk0M1RHYch94VWPxpBwWtCm4xmJtvQEBKnFN
-        ASp4Vhys3hWvxPUmxQhd9yEgMrUyoIrkLyP3IOJnQq8RKp+aRkDqO6qOp+uSaYc+QjW+uRKgla5R
-        6oCKLXl5qSjPPKAy/7Hzbj6AbY0Og2rkxP3V/9Bh/Zt2Ar67Oo0mUwERw95qlGwxl5F/1qhgoOu+
-        AAAA//8DAMet1JEnAgAA
+        H4sIAAAAAAAAA3SR4UsjMRDF/5VlPqewq63U/SYIghURFeXuOEJMpt3gJrPNTIpa9n8/sndWPPFj
+        8nvz5vFmD95BC4E3um5uOTQ/3e7pbmtfLtcPu8vrJ5+XoEBeBywqZDYbBAWJ+vJhmD2LiQIKAjns
+        oQXbm+xwxhQjymw+O6qPFvWimYMCS1EwCrS/9u+WQtTrzMVzClLeWdfN2fEJvT1cXK3Sj7Babs/9
+        8mzpz0FBNKHMaR18MmxpQL2mFIwIOk1Zhix6MtXFMg5ZoN2DeJkC33dYXZuAFa0r6bB69NGBApOl
+        owQt3BhJ3j5XtyTdOjPDOP5WwEKDTmiY4ufIE2DcZowWoY257xXkqaN2/3e7FnrGyNDOF7UCa2yH
+        2iY04inqz4oDT2jcd+x9tizAocOAyfR6Eb7qP2jT/U9HBYeu/sU7VcCYdt6iFo+ljHJZZ5KDcfwD
+        AAD//wMAQ9wCKScCAAA=
     headers:
       CF-RAY:
-      - 97d4c50e6dac9917-SEA
+      - 97da5382eade5ea8-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,7 +65,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 11 Sep 2025 05:29:52 GMT
+      - Thu, 11 Sep 2025 21:40:56 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -79,35 +79,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-11T05:29:52Z'
+      - '2025-09-11T21:40:56Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-11T05:29:52Z'
+      - '2025-09-11T21:40:56Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-11T05:29:51Z'
+      - '2025-09-11T21:40:54Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-11T05:29:52Z'
+      - '2025-09-11T21:40:56Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CT24cUtM8dgWCR7fNChxL
+      - req_011CT3LfMX3WySSYUcKjRB5p
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1498'
+      - '1497'
     status:
       code: 200
       message: OK

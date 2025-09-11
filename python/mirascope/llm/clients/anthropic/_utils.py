@@ -165,9 +165,14 @@ def prepare_anthropic_request(
         )
         if resolved_format.mode == "tool":
             anthropic_tools.append(create_format_tool_param(resolved_format.info))
-            kwargs["tool_choice"] = (
-                {"type": "any"} if tools else {"type": "tool", "name": FORMAT_TOOL_NAME}
-            )
+            if tools:
+                kwargs["tool_choice"] = {"type": "any"}
+            else:
+                kwargs["tool_choice"] = {
+                    "type": "tool",
+                    "name": FORMAT_TOOL_NAME,
+                    "disable_parallel_tool_use": True,
+                }
 
         if resolved_format.formatting_instructions:
             messages = _base_utils.add_system_instructions(

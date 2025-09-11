@@ -3,7 +3,7 @@ interactions:
     body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Extract the book:
       The Name of the Wind by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Please
       output a book recommendation in JSON form.\nIt should have the format {title:
-      str, author: str} and the \ntitle and author should both be in all caps.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__"},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      str, author: str} and the \ntitle and author should both be in all caps.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object"}}]}'
     headers:
       accept:
@@ -15,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '710'
+      - '743'
       content-type:
       - application/json
       host:
@@ -47,16 +47,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dFHRTsJAEPwVss9H0hJqmr6hgiChEMCAMeZytiuttHf1bo+ITf/dXAka
-        NL7t7szOTmZryFOIoDQ77vmzpcj0/W76Nnj8HCtxHYZ0jB+AAR0rdCw0RuwQGGhVuIEwJjckJAGD
-        UqVYQARJIWyKXaOkROr2uz2vF3iB3wcGiZKEkiB6qs+SpFTBrXGarRHXW+75cdiL75bVfrRdyJej
-        2n4cgmxTAgMpSrfHeZlrYRJVIX9VuhREmHJlqbLEW1HuJGVlCaIaKKfW8Ho87MSD2bAzH3VcvZnE
-        t8BAWMqUhggWg/VycjPtLOfr8ehhtYKmeWZgSFVcozBKXlpuAYPvFmWCEElbFAxsm1FUn65zUnuU
-        BqJ+GDJIRJIhTzQKypXklwzvjGsU6X/YedcdwCrDErUoeFD+5f+gfvYbbRh8Z3UaXXkMDOpDniCn
-        HF0Y7rOp0Ck0zRcAAAD//wMAE8bk4ycCAAA=
+        H4sIAAAAAAAAA3RRXUvDQBD8K2Wfr5DURCFvRftF27T0Q7Eix5GsTTB3F+/2WqTkv8ulVKni2+7O
+        7Owwe4IyhwSk3fMg7Jk7XYc3h9F9SrtVOqfUTp+3wIA+a/QstFbsERgYXfmBsLa0JBQBA6lzrCCB
+        rBIux67VSiF1o24v6MVBHEbAINOKUBEkL6eLJGldcWe9ZmvE944H4aM8mjXtR8vb2WxgKd4dhYx2
+        wEAJ6fc4l6URNtM18jdtpCDCnGtHtSPeinIvqWpHkJyASmoNb8aDTtqfDzqLYcfXT5P0ARgIR4U2
+        kMCyv1lN7qed1WIzHm7Xa2iaVwaWdM0NCqvVteUWsPjhUGUIiXJVxcC1GSWn83VO+h2VhSSKYgaZ
+        yArkmUFBpVb8mhFccIMi/w+77PoDWBco0YiKx/Iv/wcNi99ow+A7q/MoDhlYNIcyQ04l+jD8Z3Nh
+        cmiaLwAAAP//AwA/QAU7JwIAAA==
     headers:
       CF-RAY:
-      - 97d3af9dba546826-SEA
+      - 97da53fd8a14759c-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -64,7 +64,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 11 Sep 2025 02:20:28 GMT
+      - Thu, 11 Sep 2025 21:41:16 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -78,35 +78,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-11T02:20:28Z'
+      - '2025-09-11T21:41:15Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-11T02:20:28Z'
+      - '2025-09-11T21:41:16Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-11T02:20:27Z'
+      - '2025-09-11T21:41:14Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-11T02:20:28Z'
+      - '2025-09-11T21:41:15Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CT1pAo8MeST3Ptw3sFL9x
+      - req_011CT3LgoPZVQzDYWHdtjdec
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1403'
+      - '1808'
     status:
       code: 200
       message: OK

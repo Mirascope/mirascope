@@ -3,7 +3,7 @@ interactions:
     body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Extract the book:
       The Name of the Wind by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Please
       output a book recommendation in JSON form.\nIt should have the format {title:
-      str, author: str} and the \ntitle and author should both be in all caps.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__"},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      str, author: str} and the \ntitle and author should both be in all caps.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object"}}]}'
     headers:
       accept:
@@ -15,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '710'
+      - '743'
       content-type:
       - application/json
       host:
@@ -47,16 +47,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dFHbasJAEP0VmecVkuKNvIlVlHqrxqYXyrLdTE1osht3Zwsi+feyEVts
-        6dvMnDNnDmdOkKcQQWn3PAiXcXJYPGx3g/thL08nyZMR/WQHDOhYoWehtWKPwMDowg+EtbkloQgY
-        lDrFAiKQhXAptq1WCqndad8EN92gG3aAgdSKUBFEL6eLJGldcGe9ZmPE944H4RbX9m3itB09zrNl
-        Mu/LMD4+AwMlSr/HeZkbYaWukL9rUwoiTLl2VDnijSj3kqpyBNEJKKfGcDwdt5bDxbi1mrR8ncyW
-        t8BAOMq0gQjWw3gzG921Nqt4Otltt1DXrwws6YobFFara8sNYPHgUEmESLmiYOCajKLT+Ton/YHK
-        QtQZDBhIITPk0qCgXCt+zQguuEGR/odddv0BrDIs0YiCd8u//B80zH6jNYPvrM6jXsDAovnMJXLK
-        0YfhP5sKk0JdfwEAAP//AwC4v635JwIAAA==
+        H4sIAAAAAAAAAwAAAP//dFHRTgIxEPwVss8luSMc0XsjCoIGVMCYaEyzXhc4vWtruyUquX83PYNG
+        jW+7O7Ozk9k9lApyqP1GJulAnT1mt/P3XjqfTe6eZiMcPOE5COA3S5FF3uOGQIAzVRyg96Vn1AwC
+        aqOoghyKCoOirjdaE3f73V7Sy5Is7YOAwmgmzZDf7w+SbEwlg4+arZHYB5mk54Ns3Zu8PltlMbPr
+        o6V5O95dgwCNddyTsi4d+sJYkmvjamQmJU1gG1i2ojJKahsY8j1wya3h1WTUmQ9no87luBPr2+n8
+        FARg4K1xkMPVcLWYnlx0FperyfhmuYSmeRDg2VjpCL3RPy23gKeXQLogyHWoKgGhzSjff16XbJ5J
+        e8j7/UxAgcWWZOEIuTRa/mQkB9wRqv+ww248QHZLNTmsZFb/5X+j6fY32gj4yupzlKUCPLldWZDk
+        kmIY8bMKnYKm+QAAAP//AwDDQi2eJwIAAA==
     headers:
       CF-RAY:
-      - 97d3af916d336826-SEA
+      - 97da54097d1d759c-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -64,7 +64,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 11 Sep 2025 02:20:27 GMT
+      - Thu, 11 Sep 2025 21:41:17 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -78,35 +78,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-11T02:20:26Z'
+      - '2025-09-11T21:41:17Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-11T02:20:27Z'
+      - '2025-09-11T21:41:17Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-11T02:20:25Z'
+      - '2025-09-11T21:41:16Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-11T02:20:26Z'
+      - '2025-09-11T21:41:17Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CT1pAejL7c7Kbkk7dZkfF
+      - req_011CT3Lgwf9k95NAACQBPsLf
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1858'
+      - '1211'
     status:
       code: 200
       message: OK

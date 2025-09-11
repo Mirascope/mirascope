@@ -4,7 +4,7 @@ interactions:
       The Name of the Wind by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"When
       you are ready to respond to the user, call the __mirascope_formatted_output_tool__
       tool to output a structured response.\nDo NOT output any text in addition to
-      the tool call.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__"},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      the tool call.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object"}}]}'
     headers:
       accept:
@@ -16,7 +16,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '732'
+      - '765'
       content-type:
       - application/json
       host:
@@ -48,16 +48,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3SRW0scQRCF/8pQz70wqzvEnbcoKIgJ5kJEJTRFd+1OZ6cv6aoWdZn/HnpkE4z4
-        2PWdOnU4vQdnoQfPW90ubz5u5fbX86Udvjx/S/7T+cldlwQUyFOiqiJm3BIoyHGsA2R2LBiqxkdL
-        I/RgRiyWFhxDIFmsFkftUdd2yxUoMDEIBYH+fn+wlBhHXbh6zkHqu+h2uU7naz692P34wHj8ZB/X
-        Z+nq9hoUBPR1T2vvMrKJifQmZo8iZHUskoro2VRXy5CKQL8HcTIH/j5Q8xk9NXHTyEDNjQsWFGCR
-        IWbo4RolO7NrvkYZNoUZpumnApaYdCbkGF5HngHT70LBEPShjKOCMnfU71+ua4k7Cgz9an2swKAZ
-        SJtMKC4G/VrRHngmtO+xw249QGkgTxlH3fm3+n90OfxPJwV/u3oZdScKmPKDM6TFUS2j/qzFbGGa
-        /gAAAP//AwC6iv3+JwIAAA==
+        H4sIAAAAAAAAAwAAAP//dJFRaxsxEIT/yrHPMtzFdmjvrbhuwIQQSmgKpYhFWvuET9qLdlVazP33
+        omuTkpY+St/s7DB7geChhygn23b73Xnq8vF6v5bh/bvHw8nl9acPYEB/TFRVJIInAgOZx/qBIkEU
+        k4KByJ5G6MGNWDythFMiXW1WV+3Vtt12GzDgOCklhf7L5dlSmUdbpHouQeq72Lb7/BD9jZ7f7DZ+
+        d3vC74f9mg8IBhLGOmdtDBnF8UT2yDmiKnnLRaeidjG11TJNRaG/gAZdAj8M1NxhpIaPjQ7UPIbk
+        wQAWHThDD/eoObhz85F1OBYRmOevBkR5splQOL2OvAChp0LJEfSpjKOBsnTUX35tt8pnSgL9Ztsa
+        cOgGsi4TauBkXyteeCb0/2PPs3UBTQNFyjjabfxX/4d2w990NvDS1e94bw0I5W/BkdVAtYx6WY/Z
+        wzz/BAAA//8DAL6LoZQnAgAA
     headers:
       CF-RAY:
-      - 97d3af883c276826-SEA
+      - 97da53e41a78759c-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,7 +65,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 11 Sep 2025 02:20:25 GMT
+      - Thu, 11 Sep 2025 21:41:12 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -79,35 +79,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-11T02:20:24Z'
+      - '2025-09-11T21:41:11Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-11T02:20:25Z'
+      - '2025-09-11T21:41:12Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-11T02:20:23Z'
+      - '2025-09-11T21:41:10Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-11T02:20:24Z'
+      - '2025-09-11T21:41:11Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CT1pAYTYrRVEqzWPp8jv2
+      - req_011CT3LgW1YnrPYiv1XbFY8u
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1352'
+      - '1651'
     status:
       code: 200
       message: OK
