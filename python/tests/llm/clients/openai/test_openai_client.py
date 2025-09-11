@@ -51,6 +51,11 @@ def test_structured_outputs(
     scenario.check_response(response)
 
 
+#####################################
+#  OpenAI-specific Edge Case Tests  #
+#####################################
+
+
 @pytest.mark.parametrize(
     # For gpt-4, strict will fail, strict-or-tool should succeed (tool mode), and
     # strict-or-json should succeed (json mode). Testing tool or json mode directly would
@@ -77,17 +82,13 @@ def test_structured_output_legacy_model(
     try:
         response = openai_client.call(**scenario.call_args)
         scenario.check_response(response)
-    except openai.BadRequestError as e:
-        if formatting_mode == "strict":
-            pass  # Expected, gpt-4 does not support strict mode.
-        else:
-            raise e
+    except openai.BadRequestError:
+        assert (
+            formatting_mode == "strict"
+        )  # Expected, gpt-4 doesn't support strict mode
     except AssertionError as e:
-        if formatting_mode == "strict-or-json" and e.args == (
+        # Known issue: gpt-4 will not call tools with json.
+        # Call seems correct so considering this a model quirk.
+        assert formatting_mode == "strict-or-json" and e.args == (
             "Expected 1 tool call, got 0: []",
-        ):
-            # Known issue: gpt-4 will not call tools with json.
-            # Call seems correct so considering this a model quirk.
-            pass
-        else:
-            raise e
+        )

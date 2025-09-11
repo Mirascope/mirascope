@@ -6,6 +6,7 @@ from typing_extensions import TypeVar
 
 from pydantic import BaseModel
 
+# TODO: Support primitive types (e.g. `format=list[Book]`)
 FormatT = TypeVar("FormatT", bound=BaseModel | None, default=None)
 """Type variable for structured response format types.
 

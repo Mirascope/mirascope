@@ -1,7 +1,5 @@
 """Tests for AnthropicClient using shared scenarios."""
 
-import json
-
 import pytest
 
 from mirascope import llm
@@ -55,10 +53,8 @@ def test_structured_outputs(
     try:
         response = anthropic_client.call(**scenario.call_args)
         scenario.check_response(response)
-    except json.decoder.JSONDecodeError as e:
-        if formatting_mode == "strict":
-            # Expected; anthropic has no strict mode, so the call to .format() will fail
-            # TODO: Raise FeatureNotSupported error or something
-            pass
-        else:
-            raise e
+    except ValueError:
+        # Anthropic has no strict mode, so the model outputs regular text with no guidance
+        # on formatting.
+        # TODO: Have it raise FeatureNotImplementedError or similar
+        assert formatting_mode == "strict"
