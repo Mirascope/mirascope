@@ -1,0 +1,64 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Hello zebra"}], "role": "user"}, {"parts":
+      [{"text": "zebra"}, {"text": "what else?"}], "role": "model"}, {"parts": [{"text":
+      "Hello lion!"}, {"text": "Hello walrus!"}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Reply by naming every animal mentioned, all lowercase."}],
+      "role": "user"}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '364'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/1WQzU7DMBCE73kKy2eKaAAVcUPlR0VEjSAUJMRhIdvEwrEjeyNKo7w7TtKkjg+W
+        tTPe3fnqgDH+DSoVKRBafs0+XIWxurtbTStCRU4YSq5YgqGjtz+193YWwl37ie/xywCTQiv2C9JU
+        lnu+Znx/nhy7Gy2x/VroFOVgbwYD3wolbP6MYLVqbS/JOuajKlSKO1c+C4YBXWteWcgwQgKXE8Y0
+        vDS6KCnRP6iWuupyhou+mYdlol8cZNIEcqLM54PmtbW3bqiQPi6PpMsIUtBfGyS5e0+4x4GmWw0g
+        Ao8Xp1xXWU7TDa/OgwOwnuEGjRU9rAwLh28Wnl7OthJs3s3jBm2plcVV2nqit2QJsbhfPz697her
+        OLQPUNxEPGiCf/ojYa4vAgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 11 Sep 2025 05:54:57 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=928
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

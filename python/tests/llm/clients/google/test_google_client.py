@@ -34,10 +34,21 @@ def test_call(
 
 @pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
 @pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_call_async(
+    google_client: llm.GoogleClient,
+    scenario_id: str,
+) -> None:
+    scenario = get_scenario(scenario_id, model_id=TEST_MODEL_ID)
+    response = await google_client.call_async(**scenario.call_async_args)
+    scenario.check_response(response)
+
+
+@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
+@pytest.mark.vcr()
 def test_stream(
     google_client: llm.GoogleClient,
     scenario_id: str,
-    request: pytest.FixtureRequest,
 ) -> None:
     """Test stream method with all scenarios."""
 
