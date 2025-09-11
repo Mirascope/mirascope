@@ -1,5 +1,6 @@
 """The Responses module for LLM responses."""
 
+from . import _utils
 from .base_stream_response import AsyncChunkIterator, ChunkIterator, RawChunk
 from .finish_reason import FinishReason, FinishReasonChunk
 from .response import AsyncContextResponse, AsyncResponse, ContextResponse, Response
@@ -26,4 +27,5 @@ __all__ = [
     "Response",
     "RootResponse",
     "StreamResponse",
+    "_utils",
 ]

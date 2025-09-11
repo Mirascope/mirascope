@@ -10,6 +10,7 @@ from ..formatting import FormatT, Partial
 from ..messages import Message
 from ..tools import ToolkitT
 from ..types import NoneType
+from . import _utils
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
@@ -110,11 +111,9 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
 
         text = "".join(text.text for text in self.texts)
 
-        # Some models output json as a code block
-        if text.startswith("```json") and text.endswith("```"):
-            text = text[7:-3].strip()
+        json_text = _utils.extract_serialized_json(text)
 
-        parsed_json = json.loads(text)
+        parsed_json = json.loads(json_text)
         return self.format_type.model_validate(parsed_json)
 
     def pretty(self) -> str:

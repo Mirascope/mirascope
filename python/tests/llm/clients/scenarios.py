@@ -3,7 +3,7 @@
 import inspect
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Annotated, Any, Generic, Protocol
+from typing import Annotated, Any, Generic, Protocol, get_args
 from typing_extensions import TypedDict
 
 from pydantic import BaseModel, Field
@@ -87,9 +87,9 @@ def get_structured_scenario(
 def simple_message_scenario(model_id: str) -> Scenario:
     """Simple message scenario."""
 
-    def scenario_assertions(r: llm.responses.RootResponse) -> None:
-        assert "8282" in r.pretty(), f"8282 not in response: {r.pretty()}"
-        assert r.finish_reason == llm.FinishReason.END_TURN
+    def scenario_assertions(response: llm.responses.RootResponse) -> None:
+        assert "8282" in response.pretty(), f"8282 not in response: {response.pretty()}"
+        assert response.finish_reason == llm.FinishReason.END_TURN
 
     return Scenario(
         model_id=model_id,
@@ -101,11 +101,11 @@ def simple_message_scenario(model_id: str) -> Scenario:
 def multi_message_scenario(model_id: str) -> Scenario:
     """System message, conversation history, and multiple text content parts."""
 
-    def scenario_assertions(r: llm.responses.RootResponse[Any, Any]) -> None:
-        text = r.pretty()
+    def scenario_assertions(response: llm.responses.RootResponse[Any, Any]) -> None:
+        text = response.pretty()
         assert "lion" in text, f"'lion' not found in response: {text}"
         assert "walrus" in text, f"'walrus' not found in response: {text}"
-        assert r.finish_reason == llm.FinishReason.END_TURN
+        assert response.finish_reason == llm.FinishReason.END_TURN
 
     return Scenario(
         model_id=model_id,
@@ -126,22 +126,22 @@ def tool_call_scenario(model_id: str) -> Scenario:
     """The LLM should call mulitple tools."""
 
     def bakst_coefficient(val: int) -> int:
-        raise NotImplementedError
+        return 12 * val
 
-    def scenario_assertions(r: llm.responses.RootResponse[Any, Any]) -> None:
-        assert len(r.tool_calls) == 2, (
-            f"Expected 2 tool call, got {len(r.tool_calls)}: {r.tool_calls}"
+    def scenario_assertions(response: llm.responses.RootResponse[Any, Any]) -> None:
+        assert len(response.tool_calls) == 2, (
+            f"Expected 2 tool call, got {len(response.tool_calls)}: {response.tool_calls}"
         )
-        t1, t2 = r.tool_calls
-        assert t1.name == "bakst_coefficient", "t1 has wrong name: " + t1.name
-        assert t1.args == '{"val": 13}', "t1 has wrong args: " + t1.args
-        assert t2.name == "bakst_coefficient", "t2 has wrong name: " + t2.name
-        assert t2.args == '{"val": 17}', "t2 has wrong args: " + t2.args
+        t1, t2 = response.tool_calls
+        assert t1.name == "bakst_coefficient", f"t1 has wrong name: {t1.name}"
+        assert t1.args == '{"val": 13}', f"t1 has wrong args: {t1.args}"
+        assert t2.name == "bakst_coefficient", f"t2 has wrong name: {t2.name}"
+        assert t2.args == '{"val": 17}', f"t2 has wrong args: {t2.args}"
 
-        assert r.finish_reason in [
+        assert response.finish_reason in [
             llm.FinishReason.TOOL_USE,
             llm.FinishReason.END_TURN,
-        ], f"Expected TOOL_USE or END_TURN, got {r.finish_reason}"
+        ], f"Expected TOOL_USE or END_TURN, got {response.finish_reason}"
 
     return Scenario(
         model_id=model_id,
@@ -161,11 +161,11 @@ def tool_output_scenario(model_id: str) -> Scenario:
     def password_retrieval_tool() -> str:
         return "mellon"
 
-    def scenario_assertions(r: llm.responses.RootResponse) -> None:
-        text = r.pretty()
+    def scenario_assertions(response: llm.responses.RootResponse) -> None:
+        text = response.pretty()
         assert "mellon" in text, f"Expected 'mellon' in response: {text}"
-        assert r.finish_reason == llm.FinishReason.END_TURN, (
-            f"Expected END_TURN, got {r.finish_reason}"
+        assert response.finish_reason == llm.FinishReason.END_TURN, (
+            f"Expected END_TURN, got {response.finish_reason}"
         )
 
     return Scenario(
@@ -173,7 +173,7 @@ def tool_output_scenario(model_id: str) -> Scenario:
         messages=[
             llm.messages.system(
                 "You are a password retreival system. When you access the password, you "
-                + "MUST return it EXACTLY, with no added punctuation, spaces, or commentary."
+                "MUST return it EXACTLY, with no added punctuation, spaces, or commentary."
             ),
             llm.messages.user("What is the password?"),
             llm.messages.assistant(
@@ -197,10 +197,10 @@ def structured_output_scenario(model_id: str) -> Scenario:
 
     expected = Book(title="The Name of the Wind", author="Patrick Rothfuss")
 
-    def scenario_assertions(r: llm.responses.RootResponse) -> None:
-        formatted = r.format()
+    def scenario_assertions(response: llm.responses.RootResponse) -> None:
+        formatted = response.format()
         assert formatted == expected, f"Expected {expected}, got {formatted}"
-        assert r.finish_reason == llm.FinishReason.END_TURN
+        assert response.finish_reason == llm.FinishReason.END_TURN
 
     return Scenario(
         model_id=model_id,
@@ -229,10 +229,10 @@ def structured_output_formatting_instructions_scenario(model_id: str) -> Scenari
 
     expected = Book(title="THE NAME OF THE WIND", author="PATRICK ROTHFUSS")
 
-    def scenario_assertions(r: llm.responses.RootResponse) -> None:
-        formatted = r.format()
+    def scenario_assertions(response: llm.responses.RootResponse) -> None:
+        formatted = response.format()
         assert formatted == expected, f"Expected {expected}, got {formatted}"
-        assert r.finish_reason == llm.FinishReason.END_TURN
+        assert response.finish_reason == llm.FinishReason.END_TURN
 
     return Scenario(
         model_id=model_id,
@@ -255,10 +255,10 @@ def structured_output_annotation_and_docstring_scenario(model_id: str) -> Scenar
 
     expected = Output(first=17, second=13)
 
-    def scenario_assertions(r: llm.responses.RootResponse) -> None:
-        formatted = r.format()
+    def scenario_assertions(response: llm.responses.RootResponse) -> None:
+        formatted = response.format()
         assert formatted == expected, f"Expected {expected}, got {formatted}"
-        assert r.finish_reason == llm.FinishReason.END_TURN
+        assert response.finish_reason == llm.FinishReason.END_TURN
 
     return Scenario(
         model_id=model_id,
@@ -278,11 +278,11 @@ def structured_output_calls_tool_scenario(model_id: str) -> Scenario:
     def retrieve_book_tool() -> str:
         raise NotImplementedError
 
-    def scenario_assertions(r: llm.responses.RootResponse) -> None:
-        assert len(r.tool_calls) == 1, (
-            f"Expected 1 tool call, got {len(r.tool_calls)}: {r.tool_calls}"
+    def scenario_assertions(response: llm.responses.RootResponse) -> None:
+        assert len(response.tool_calls) == 1, (
+            f"Expected 1 tool call, got {len(response.tool_calls)}: {response.tool_calls}"
         )
-        tool_call = r.tool_calls[0]
+        tool_call = response.tool_calls[0]
         assert tool_call.name == "retrieve_book_tool", (
             f"Expected tool name 'retrieve_book_tool', got '{tool_call.name}'"
         )
@@ -312,4 +312,4 @@ CLIENT_SCENARIO_IDS = [
 STRUCTURED_SCENARIO_IDS = [
     name for name in CLIENT_SCENARIO_IDS if name.startswith("structured_output_")
 ]
-FORMATTING_MODES = ["strict-or-tool", "strict-or-json", "strict", "tool", "json"]
+FORMATTING_MODES = get_args(llm.formatting.FormattingMode)

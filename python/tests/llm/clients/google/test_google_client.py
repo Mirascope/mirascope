@@ -60,11 +60,13 @@ def test_structured_outputs(
         response = google_client.call(**scenario.call_args)
         scenario.check_response(response)
     except GoogleClientError:
-        if (
-            scenario_id == "structured_output_calls_tools_scenario"
-            and formatting_mode in ["strict", "strict-or-json", "json"]
-        ):
-            pass  # Known issue, Google doesn't allow tool calling in strict or json mode.
+        # Known issue, Google doesn't allow tool calling in strict or json mode.
+        assert scenario_id == "structured_output_calls_tool_scenario", (
+            f"Unexpected GoogleClientError in scenario: {scenario_id}"
+        )
+        assert formatting_mode in ["strict", "strict-or-json", "json"], (
+            f"Unexpected failure in format mode: {formatting_mode}"
+        )
 
 
 def test_custom_base_url() -> None:
@@ -85,7 +87,11 @@ def test_custom_base_url() -> None:
         assert google_client.client is mock_client_instance
 
 
-# Line coverage for a Google-specific edge case
+#####################################
+#  Google-specific Edge Case Tests  #
+#####################################
+
+
 @pytest.mark.vcr()
 def test_call_no_output(google_client: llm.GoogleClient) -> None:
     """Test call where assistant generates nothing."""
@@ -95,7 +101,7 @@ def test_call_no_output(google_client: llm.GoogleClient) -> None:
     ]
 
     response = google_client.call(
-        model_id="gemini-2.0-flash",  # Note: Does not proc with gemini-2.5-flash
+        model_id="gemini-2.0-flash",  # NOTE: Not reproducible for gemini-2.5-flash
         messages=messages,
     )
 
