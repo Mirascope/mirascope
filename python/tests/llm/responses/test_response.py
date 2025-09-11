@@ -355,6 +355,260 @@ def test_response_format_no_format_type() -> None:
     assert response.format() is None
 
 
+def test_response_format_with_text_before_json() -> None:
+    """Test that Response.format() extracts JSON when there's text before it."""
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: str
+        pages: int
+
+    # Text with explanation before JSON
+    text_with_prefix = 'Sure thing! Here\'s the JSON:\n{"title": "The Hobbit", "author": "J.R.R. Tolkien", "pages": 310}'
+    text_content = [llm.Text(text=text_with_prefix)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        raw={"test": "response"},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params=None,
+        toolkit=llm.Toolkit(tools=[]),
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        format_type=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.title == "The Hobbit"
+    assert book.author == "J.R.R. Tolkien"
+    assert book.pages == 310
+
+
+def test_response_format_with_text_after_json() -> None:
+    """Test that Response.format() extracts JSON when there's text after it."""
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: str
+        pages: int
+
+    # Text with explanation after JSON
+    text_with_suffix = '{"title": "The Hobbit", "author": "J.R.R. Tolkien", "pages": 310}\n\nThere you go! That\'s the book information in JSON format.'
+    text_content = [llm.Text(text=text_with_suffix)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        raw={"test": "response"},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params=None,
+        toolkit=llm.Toolkit(tools=[]),
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        format_type=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.title == "The Hobbit"
+    assert book.author == "J.R.R. Tolkien"
+    assert book.pages == 310
+
+
+def test_response_format_with_text_before_and_after_json() -> None:
+    """Test that Response.format() extracts JSON when there's text before and after it."""
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: str
+        pages: int
+
+    # Text with explanation before and after JSON
+    text_wrapped = 'Let me provide the book details:\n\n{"title": "The Hobbit", "author": "J.R.R. Tolkien", "pages": 310}\n\nHope this helps!'
+    text_content = [llm.Text(text=text_wrapped)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        raw={"test": "response"},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params=None,
+        toolkit=llm.Toolkit(tools=[]),
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        format_type=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.title == "The Hobbit"
+    assert book.author == "J.R.R. Tolkien"
+    assert book.pages == 310
+
+
+def test_response_format_with_json_code_block() -> None:
+    """Test that Response.format() extracts JSON from markdown code blocks."""
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: str
+        pages: int
+
+    # JSON wrapped in markdown code block
+    code_block_text = """Here's the book information:
+
+```json
+{"title": "The Hobbit", "author": "J.R.R. Tolkien", "pages": 310}
+```
+
+Let me know if you need anything else!"""
+    text_content = [llm.Text(text=code_block_text)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        raw={"test": "response"},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params=None,
+        toolkit=llm.Toolkit(tools=[]),
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        format_type=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.title == "The Hobbit"
+    assert book.author == "J.R.R. Tolkien"
+    assert book.pages == 310
+
+
+def test_response_format_with_nested_json() -> None:
+    """Test that Response.format() handles nested JSON objects with extra text."""
+
+    @llm.format()
+    class Author(BaseModel):
+        name: str
+        birth_year: int
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: Author
+        pages: int
+
+    # Nested JSON with text before and after
+    nested_json_text = """I'll create the nested book structure for you:
+
+{"title": "The Hobbit", "author": {"name": "J.R.R. Tolkien", "birth_year": 1892}, "pages": 310}
+
+This includes the author information as a nested object."""
+    text_content = [llm.Text(text=nested_json_text)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        raw={"test": "response"},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params=None,
+        toolkit=llm.Toolkit(tools=[]),
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        format_type=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.title == "The Hobbit"
+    assert book.author.name == "J.R.R. Tolkien"
+    assert book.author.birth_year == 1892
+    assert book.pages == 310
+
+
+def test_response_format_with_json_array() -> None:
+    """Test that Response.format() handles JSON arrays with extra text."""
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    @llm.format()
+    class BookList(BaseModel):
+        books: list[Book]
+
+    # JSON array wrapped in object with text wrapper
+    array_text = """Here are the books in the series:
+
+{"books": [{"title": "The Hobbit", "author": "J.R.R. Tolkien"}, {"title": "The Fellowship of the Ring", "author": "J.R.R. Tolkien"}]}
+
+That's the complete list!"""
+    text_content = [llm.Text(text=array_text)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        raw={"test": "response"},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params=None,
+        toolkit=llm.Toolkit(tools=[]),
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        format_type=BookList,
+    )
+
+    book_list = response.format()
+    assert isinstance(book_list, BookList)
+    assert len(book_list.books) == 2
+    assert book_list.books[0].title == "The Hobbit"
+    assert book_list.books[1].title == "The Fellowship of the Ring"
+
+
+def test_response_format_with_multiple_json_objects() -> None:
+    """Test that Response.format() extracts the first json object if multiple are present."""
+
+    @llm.format()
+    class Book(BaseModel):
+        title: str
+        author: str
+
+    # This may happen in practice if e.g. the model uses parallel tool calling with the format tool
+    text_1 = "Sure, I can output some books for you."
+    text_2 = '{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+    text_3 = '{"title": "The Lord of the Rings", "author": "J.R.R. Tolkien"}'
+    text_content = [llm.Text(text=text_1), llm.Text(text=text_2), llm.Text(text=text_3)]
+    assistant_message = llm.messages.assistant(text_content)
+
+    response = llm.Response(
+        raw={"test": "response"},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params=None,
+        toolkit=llm.Toolkit(tools=[]),
+        input_messages=[],
+        assistant_message=assistant_message,
+        finish_reason=llm.FinishReason.END_TURN,
+        format_type=Book,
+    )
+
+    book = response.format()
+    assert isinstance(book, Book)
+    assert book.title == "The Name of the Wind"
+    assert book.author == "Patrick Rothfuss"
+
+
 def test_response_format_tool_handling() -> None:
     """Test that Response correctly converts FORMAT_TOOL_NAME tool calls to text."""
     input_messages = [llm.messages.user("Format a book for me")]
