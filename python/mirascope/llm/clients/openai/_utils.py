@@ -99,6 +99,7 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
         | NotGiven
     )
     tool_choice: openai_types.ChatCompletionToolChoiceOptionParam | NotGiven
+    parallel_tool_calls: bool | NotGiven
 
 
 def _ensure_additional_properties_false(obj: object) -> None:
@@ -269,11 +270,14 @@ def prepare_openai_request(
                 resolved_format.info
             )
         elif resolved_format.mode == "tool":
-            kwargs["tool_choice"] = (
-                "required"
-                if tools
-                else {"type": "function", "function": {"name": FORMAT_TOOL_NAME}}
-            )
+            if tools:
+                kwargs["tool_choice"] = "required"
+            else:
+                kwargs["tool_choice"] = {
+                    "type": "function",
+                    "function": {"name": FORMAT_TOOL_NAME},
+                }
+                kwargs["parallel_tool_calls"] = False
             openai_tools.append(create_format_tool_param(resolved_format.info))
         elif resolved_format.mode == "json" and model_has_native_json_support:
             kwargs["response_format"] = {"type": "json_object"}
