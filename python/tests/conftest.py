@@ -111,7 +111,8 @@ def anthropic_client(anthropic_api_key: str) -> llm.AnthropicClient:
     return llm.clients.AnthropicClient(api_key=anthropic_api_key)
 
 
-@pytest.fixture(scope="session")
+# Use function scope to work around Google async "event loop closed" issues
+@pytest.fixture(scope="function")
 def google_client(google_api_key: str) -> llm.GoogleClient:
     """Create a GoogleClient instance with appropriate API key."""
     return llm.clients.GoogleClient(api_key=google_api_key)

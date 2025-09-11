@@ -18,7 +18,14 @@ from ...responses import (
     Response,
     StreamResponse,
 )
-from ...tools import AsyncContextTool, AsyncTool, ContextTool, Tool, Toolkit
+from ...tools import (
+    AsyncContextTool,
+    AsyncTool,
+    AsyncToolkit,
+    ContextTool,
+    Tool,
+    Toolkit,
+)
 from ..base import BaseClient
 from . import _utils
 from .model_ids import GoogleModelId
@@ -216,7 +223,33 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         format: type[FormatT] | None = None,
         params: GoogleParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
-        raise NotImplementedError
+        """Make an async call to the Google GenAI API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, contents, config = _utils.prepare_google_request(
+            messages, tools, format
+        )
+
+        google_response = await self.client.aio.models.generate_content(
+            model=model_id,
+            contents=contents,
+            config=config,
+        )
+
+        assistant_message, finish_reason = _utils.decode_response(google_response)
+
+        return AsyncResponse(
+            raw=google_response,
+            provider="google",
+            model_id=model_id,
+            params=params,
+            toolkit=AsyncToolkit(tools=tools),
+            input_messages=input_messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+            format_type=format,
+        )
 
     @overload
     async def context_call_async(
