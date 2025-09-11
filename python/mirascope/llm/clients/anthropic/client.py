@@ -444,7 +444,29 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         format: type[FormatT] | None = None,
         params: AnthropicParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
-        raise NotImplementedError
+        """Make an async streaming call to the Anthropic API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, kwargs = _utils.prepare_anthropic_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
+        )
+
+        anthropic_stream = self.async_client.messages.stream(**kwargs)
+
+        chunk_iterator = _utils.convert_anthropic_stream_to_async_chunk_iterator(
+            anthropic_stream
+        )
+
+        return AsyncStreamResponse(
+            provider="anthropic",
+            model_id=model_id,
+            params=params,
+            toolkit=AsyncToolkit(tools=tools),
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+            format_type=format,
+        )
 
     @overload
     async def context_stream_async(
