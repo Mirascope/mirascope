@@ -58,6 +58,20 @@ def test_stream(
     scenario.check_response(response)
 
 
+@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_stream_async(
+    google_client: llm.GoogleClient,
+    scenario_id: str,
+) -> None:
+    scenario = get_scenario(scenario_id, model_id=TEST_MODEL_ID)
+    response = await google_client.stream_async(**scenario.call_async_args)
+    async for _ in response.chunk_stream():
+        pass
+    scenario.check_response(response)
+
+
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.parametrize("scenario_id", STRUCTURED_SCENARIO_IDS)
 @pytest.mark.vcr()

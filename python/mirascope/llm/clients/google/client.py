@@ -456,7 +456,33 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         format: type[FormatT] | None = None,
         params: GoogleParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
-        raise NotImplementedError
+        """Make an async streaming call to the Google GenAI API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, contents, config = _utils.prepare_google_request(
+            messages, tools, format
+        )
+
+        google_stream = await self.client.aio.models.generate_content_stream(
+            model=model_id,
+            contents=contents,
+            config=config,
+        )
+
+        chunk_iterator = _utils.convert_google_stream_to_async_chunk_iterator(
+            google_stream
+        )
+
+        return AsyncStreamResponse(
+            provider="google",
+            model_id=model_id,
+            params=params,
+            toolkit=AsyncToolkit(tools=tools),
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+            format_type=format,
+        )
 
     @overload
     async def context_stream_async(

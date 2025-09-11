@@ -1,7 +1,7 @@
 """Google message types and conversion utilities."""
 
 import json
-from collections.abc import Iterator, Sequence
+from collections.abc import AsyncIterator, Iterator, Sequence
 from functools import lru_cache
 from typing import Literal
 
@@ -26,7 +26,13 @@ from ...formatting import (
     _utils as _formatting_utils,
 )
 from ...messages import AssistantMessage, Message, UserMessage, assistant
-from ...responses import ChunkIterator, FinishReason, FinishReasonChunk, RawChunk
+from ...responses import (
+    AsyncChunkIterator,
+    ChunkIterator,
+    FinishReason,
+    FinishReasonChunk,
+    RawChunk,
+)
 from ...tools import (
     FORMAT_TOOL_NAME,
     ToolSchema,
@@ -260,47 +266,48 @@ def decode_response(
     return assistant_message, finish_reason
 
 
-def convert_google_stream_to_chunk_iterator(
-    google_stream: Iterator[genai_types.GenerateContentResponse],
-) -> ChunkIterator:
-    current_content_type: Literal["text", "tool_call"] | None = None
+class _GoogleChunkProcessor:
+    """Processes Google stream chunks and maintains state across chunks."""
 
-    for chunk in google_stream:
+    def __init__(self) -> None:
+        self.current_content_type: Literal["text", "tool_call"] | None = None
+
+    def process_chunk(
+        self, chunk: genai_types.GenerateContentResponse
+    ) -> ChunkIterator:
+        """Process a single Google chunk and yield the appropriate content chunks."""
         yield RawChunk(raw=chunk)
 
         candidate = chunk.candidates[0] if chunk.candidates else None
         if not candidate or not candidate.content or not candidate.content.parts:
-            continue  # pragma: no cover
+            return  # pragma: no cover
 
         for part in candidate.content.parts:
             if part.thought:
                 raise NotImplementedError
 
             elif part.text:
-                if current_content_type == "tool_call":
+                if self.current_content_type == "tool_call":
                     # In testing, Gemini never emits tool calls and text in the same message
                     # (even when specifically asked in system and user prompt), so
                     # the following code is uncovered but included for completeness
-                    yield (  # pragma: no cover
-                        ToolCallEndChunk(),
-                        chunk,
-                    )
-                    current_content_type = None  # pragma: no cover
+                    yield ToolCallEndChunk()  # pragma: no cover
+                    self.current_content_type = None  # pragma: no cover
 
-                if current_content_type is None:
+                if self.current_content_type is None:
                     yield TextStartChunk()
-                    current_content_type = "text"
-                elif current_content_type != "text":
+                    self.current_content_type = "text"
+                elif self.current_content_type != "text":
                     raise NotImplementedError
 
                 yield TextChunk(delta=part.text)
 
             elif function_call := part.function_call:
-                if current_content_type == "text":
+                if self.current_content_type == "text":
                     # Similar to above, this does not seem to happen in practice but is
                     # included for safety.
                     yield TextEndChunk()  # pragma: no cover
-                    current_content_type = None  # pragma: no cover
+                    self.current_content_type = None  # pragma: no cover
 
                 if not function_call.name:
                     raise RuntimeError(
@@ -320,17 +327,36 @@ def convert_google_stream_to_chunk_iterator(
                 yield ToolCallEndChunk()
 
         if candidate.finish_reason:
-            if current_content_type == "text":
+            if self.current_content_type == "text":
                 yield TextEndChunk()
-            elif current_content_type is not None:
+            elif self.current_content_type is not None:
                 raise NotImplementedError
 
-            current_content_type = None
+            self.current_content_type = None
 
             finish_reason = GOOGLE_FINISH_REASON_MAP.get(
                 candidate.finish_reason, FinishReason.UNKNOWN
             )
             yield FinishReasonChunk(finish_reason=finish_reason)
+
+
+def convert_google_stream_to_chunk_iterator(
+    google_stream: Iterator[genai_types.GenerateContentResponse],
+) -> ChunkIterator:
+    """Returns a ChunkIterator converted from a Google stream."""
+    processor = _GoogleChunkProcessor()
+    for chunk in google_stream:
+        yield from processor.process_chunk(chunk)
+
+
+async def convert_google_stream_to_async_chunk_iterator(
+    google_stream: AsyncIterator[genai_types.GenerateContentResponse],
+) -> AsyncChunkIterator:
+    """Returns an AsyncChunkIterator converted from a Google async stream."""
+    processor = _GoogleChunkProcessor()
+    async for chunk in google_stream:
+        for item in processor.process_chunk(chunk):
+            yield item
 
 
 def _convert_format_info_to_schema(format_info: FormatInfo) -> dict:
