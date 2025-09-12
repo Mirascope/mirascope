@@ -5,12 +5,10 @@ from .utils import (
     async_prompt,
     async_tool,
     context_prompt,
-    context_prompt_deps,
     context_tool,
-    context_tool_deps,
+    context_tool_other_deps,
     prompt,
     tool,
-    tool_other_deps,
 )
 
 
@@ -19,14 +17,11 @@ def test_agent_prompt_deps():
         provider="openai",
         model_id="gpt-4o-mini",
     )(prompt)
-    x2: agents.AgentTemplate[None] = agents.agent(  # noqa: F841
-        provider="openai",
-        model_id="gpt-4o-mini",
-    )(context_prompt)
+
     x3: agents.AgentTemplate[Deps] = agents.agent(  # noqa: F841
         provider="openai",
         model_id="gpt-4o-mini",
-    )(context_prompt_deps)
+    )(context_prompt)
 
 
 def test_sync_async_agent():
@@ -63,31 +58,20 @@ def test_sync_async_agent():
 
 
 def test_agent_tool_deps():
-    x1: agents.AgentTemplate[None] = agents.agent(  # noqa: F841
+    x1: agents.AgentTemplate[Deps] = agents.agent(  # noqa: F841
         provider="openai", model_id="gpt-4o-mini", tools=[context_tool]
     )(context_prompt)
 
-    x2: agents.AgentTemplate[Deps] = agents.agent(  # noqa: F841
-        provider="openai", model_id="gpt-4o-mini", tools=[context_tool_deps]
-    )(context_prompt_deps)
-
-    # deps mismatch between the context_tool and the context_prompt_deps
+    # deps mismatch between the context_tool and the context_prompt
     agents.AgentTemplate = agents.agent(
-        provider="openai", model_id="gpt-4o-mini", tools=[context_tool]
+        provider="openai", model_id="gpt-4o-mini", tools=[context_tool_other_deps]
     )(
-        context_prompt_deps  # pyright: ignore[reportArgumentType]
-    )
-
-    # type mismatch between tool_other_deps and context_prompt_deps
-    agents.AgentTemplate = agents.agent(
-        provider="openai", model_id="gpt-4o-mini", tools=[tool_other_deps]
-    )(
-        context_prompt_deps  # pyright: ignore[reportArgumentType]
+        context_prompt  # pyright: ignore[reportArgumentType]
     )
 
     # deps mismatch between context_tool_deps and tool_other_deps
     agents.AgentTemplate = agents.agent(
         provider="openai",
         model_id="gpt-4o-mini",
-        tools=[context_tool_deps, tool_other_deps],
-    )(context_prompt_deps)  # pyright: ignore[reportCallIssue]
+        tools=[context_tool, context_tool_other_deps],
+    )(context_prompt)  # pyright: ignore[reportCallIssue]

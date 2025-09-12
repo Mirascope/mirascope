@@ -245,7 +245,7 @@ class ContextPromptTemplateDecorator(Protocol[DepsT]):
 @overload
 def context_prompt(
     __fn: ContextPrompt[P, DepsT],
-) -> ContextMessagesPrompt[P]:
+) -> ContextMessagesPrompt[P, DepsT]:
     """Create a decorator for sync ContextPrompt functions (no arguments)."""
     ...
 
@@ -253,7 +253,7 @@ def context_prompt(
 @overload
 def context_prompt(
     __fn: AsyncContextPrompt[P, DepsT],
-) -> AsyncContextMessagesPrompt[P]:
+) -> AsyncContextMessagesPrompt[P, DepsT]:
     """Create a decorator for async ContextPrompt functions (no arguments)."""
     ...
 
@@ -280,8 +280,8 @@ def context_prompt(
     *,
     template: str | None = None,
 ) -> (
-    ContextMessagesPrompt[P]
-    | AsyncContextMessagesPrompt[P]
+    ContextMessagesPrompt[P, DepsT]
+    | AsyncContextMessagesPrompt[P, DepsT]
     | ContextPromptDecorator
     | ContextPromptTemplateDecorator
 ):
