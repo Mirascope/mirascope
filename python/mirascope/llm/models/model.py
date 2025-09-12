@@ -331,7 +331,14 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormatT] | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         """Generate a response using the model."""
-        raise NotImplementedError()
+        return self.client.context_call(
+            ctx=ctx,
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=self.params,
+        )
 
     @overload
     async def context_call_async(
@@ -372,7 +379,14 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormatT] | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         """Generate a response asynchronously using the model."""
-        raise NotImplementedError()
+        return await self.client.context_call_async(
+            ctx=ctx,
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=self.params,
+        )
 
     @overload
     def context_stream(
@@ -413,7 +427,14 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormatT] | None = None,
     ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]:
         """Stream a response using the model."""
-        raise NotImplementedError()
+        return self.client.context_stream(
+            ctx=ctx,
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=self.params,
+        )
 
     @overload
     async def context_stream_async(
@@ -460,7 +481,14 @@ class Model(Generic[ClientT, ParamsT]):
         | AsyncContextStreamResponse[DepsT, FormatT]
     ):
         """Stream a response asynchronously using the model."""
-        raise NotImplementedError()
+        return await self.client.context_stream_async(
+            ctx=ctx,
+            model_id=self.model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=self.params,
+        )
 
 
 @overload
