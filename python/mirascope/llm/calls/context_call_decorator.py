@@ -1,50 +1,56 @@
-"""The `llm.call` decorator for turning `Prompt` functions into LLM calls."""
+"""The `context_call` decorator for turning context prompts into ContextCall instances."""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Protocol, overload
+from collections.abc import Sequence
+from dataclasses import dataclass
+from typing import Generic, Literal, cast, overload
 from typing_extensions import Unpack
 
+from ..clients import (
+    AnthropicModelId,
+    AnthropicParams,
+    BaseParams,
+    GoogleModelId,
+    GoogleParams,
+    ModelId,
+    OpenAIModelId,
+    OpenAIParams,
+    Provider,
+    get_client,
+)
+from ..context import DepsT
+from ..formatting import FormatT
+from ..models import Model, _utils as _model_utils
 from ..prompts import (
     AsyncContextPrompt,
     ContextPrompt,
+    _utils as _prompt_utils,
 )
-from ..tools import AsyncContextTool, AsyncTool, ContextTool, ContextToolT, Tool
+from ..tools import (
+    AsyncContextTool,
+    AsyncContextToolkit,
+    AsyncTool,
+    ContextTool,
+    ContextToolkit,
+    ContextToolT,
+    Tool,
+)
+from ..types import P
 from .context_call import AsyncContextCall, ContextCall
 
-if TYPE_CHECKING:
-    from ..clients import (
-        AnthropicClient,
-        AnthropicModelId,
-        AnthropicParams,
-        BaseClient,
-        BaseParams,
-        GoogleClient,
-        GoogleModelId,
-        GoogleParams,
-        ModelId,
-        OpenAIClient,
-        OpenAIModelId,
-        OpenAIParams,
-        Provider,
-    )
 
-
-from ..context import DepsT
-from ..formatting import FormatT
-from ..types import P
-
-
-class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
+@dataclass(kw_only=True)
+class ContextCallDecorator(Generic[ContextToolT, FormatT]):
     """A decorator for converting context prompts to context calls."""
+
+    model: Model
+    tools: Sequence[ContextToolT] | None
+    format: type[FormatT] | None
 
     @overload
     def __call__(
-        self: ContextCallDecorator[
-            P,
-            AsyncTool | AsyncContextTool[DepsT],
-            FormatT,
-        ],
+        self: ContextCallDecorator[AsyncTool | AsyncContextTool[DepsT], FormatT],
         fn: AsyncContextPrompt[P, DepsT],
     ) -> AsyncContextCall[P, DepsT, FormatT]:
         """Decorate an async context prompt into an AsyncContextCall."""
@@ -52,26 +58,35 @@ class ContextCallDecorator(Protocol[P, ContextToolT, FormatT]):
 
     @overload
     def __call__(
-        self: ContextCallDecorator[
-            P,
-            Tool | ContextTool[DepsT],
-            FormatT,
-        ],
+        self: ContextCallDecorator[Tool | ContextTool[DepsT], FormatT],
         fn: ContextPrompt[P, DepsT],
     ) -> ContextCall[P, DepsT, FormatT]:
         """Decorate a context prompt into a ContextCall."""
         ...
 
     def __call__(
-        self: ContextCallDecorator[
-            P,
-            Tool | AsyncTool | ContextTool[DepsT] | AsyncContextTool[DepsT],
-            FormatT,
-        ],
+        self,
         fn: ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT],
     ) -> ContextCall[P, DepsT, FormatT] | AsyncContextCall[P, DepsT, FormatT]:
         """Decorates a context prompt into a ContextCall."""
-        raise NotImplementedError()
+        if _prompt_utils.is_async_prompt(fn):
+            tools = cast(
+                Sequence[AsyncTool | AsyncContextTool[DepsT]] | None, self.tools
+            )
+            return AsyncContextCall(
+                fn=fn,
+                default_model=self.model,
+                format=self.format,
+                toolkit=AsyncContextToolkit(tools=tools),
+            )
+        else:
+            tools = cast(Sequence[Tool | ContextTool[DepsT]] | None, self.tools)
+            return ContextCall(
+                fn=fn,
+                default_model=self.model,
+                format=self.format,
+                toolkit=ContextToolkit(tools=tools),
+            )
 
 
 @overload
@@ -81,9 +96,8 @@ def context_call(
     model_id: AnthropicModelId,
     tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
-    client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> ContextCallDecorator[..., ContextToolT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, FormatT]:
     """Decorate a context prompt into a ContextCall using Anthropic models."""
     ...
 
@@ -95,9 +109,8 @@ def context_call(
     model_id: GoogleModelId,
     tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
-    client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> ContextCallDecorator[..., ContextToolT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, FormatT]:
     """Decorate a context prompt into a ContextCall using Google models."""
     ...
 
@@ -109,36 +122,20 @@ def context_call(
     model_id: OpenAIModelId,
     tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
-    client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> ContextCallDecorator[..., ContextToolT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, FormatT]:
     """Decorate a context prompt into a ContextCall using OpenAI models."""
     ...
 
 
-@overload
 def context_call(
     *,
     provider: Provider,
     model_id: ModelId,
     tools: list[ContextToolT] | None = None,
     format: type[FormatT] | None = None,
-    client: None = None,
     **params: Unpack[BaseParams],
-) -> ContextCallDecorator[..., ContextToolT, FormatT]:
-    """Decorate a context prompt into a ContextCall using any registered model."""
-    ...
-
-
-def context_call(
-    *,
-    provider: Provider,
-    model_id: ModelId,
-    tools: list[ContextToolT] | None = None,
-    format: type[FormatT] | None = None,
-    client: BaseClient | None = None,
-    **params: Unpack[BaseParams],
-) -> ContextCallDecorator[..., ContextToolT, FormatT]:
+) -> ContextCallDecorator[ContextToolT, FormatT]:
     """Returns a decorator for turning context prompts into ContextCalls.
 
     Example:
@@ -168,4 +165,7 @@ def context_call(
         print(response)
         ```
     """
-    raise NotImplementedError()
+    llm = _model_utils.assumed_safe_llm_create(
+        provider=provider, model_id=model_id, client=get_client(provider), params=params
+    )
+    return ContextCallDecorator(model=llm, tools=tools, format=format)
