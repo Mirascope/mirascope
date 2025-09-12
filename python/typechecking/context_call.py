@@ -95,9 +95,11 @@ async def test_tool_sync_or_async_must_match_prompt():
     llm.context_call(provider="openai", model_id="gpt-4o-mini", tools=[tool])(
         context_prompt
     )
+    # Error: Async tool with sync prompt
     llm.context_call(provider="openai", model_id="gpt-4o-mini", tools=[async_tool])(
         context_prompt  # pyright: ignore[reportArgumentType]
     )
+    # Error: Mixed tools with sync prompt
     llm.context_call(
         provider="openai", model_id="gpt-4o-mini", tools=[tool, async_tool]
     )(context_prompt)  # pyright: ignore[reportCallIssue]
@@ -106,9 +108,11 @@ async def test_tool_sync_or_async_must_match_prompt():
     llm.context_call(provider="openai", model_id="gpt-4o-mini", tools=[async_tool])(
         async_context_prompt
     )
+    # Error: Sync tool with async prompt
     llm.context_call(provider="openai", model_id="gpt-4o-mini", tools=[tool])(
         async_context_prompt  # pyright: ignore[reportArgumentType]
     )
+    # Error: Mixed tools with async prompt
     llm.context_call(
         provider="openai", model_id="gpt-4o-mini", tools=[tool, async_tool]
     )(async_context_prompt)  # pyright: ignore[reportCallIssue]
