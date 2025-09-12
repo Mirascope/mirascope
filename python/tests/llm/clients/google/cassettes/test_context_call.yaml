@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is 8200 + 82?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '75'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VRTWuDQBC9+yuGPVoTjJJQAj01hbZQkrT2A2oPSx2jRHfFHduEkP/eXY3JSvcg
+        43tv582+OTgA7JuLJE84oWJz+NQIwKH9Gk4KQkGa6CENVrymi7Y7B6vWEsKducQiCWkuEqAMQTUl
+        yBSuA98HbakLD/ayAe0PPGk15TwWsTCKWFxpQSxG5hjI/MTiRXpdA8PCDbiuYVx3zCz/47n+8i5T
+        17JAM1IpEyx6+bEXMD1mrrJn5EoKI3uJlit2ZvUbcKdh3+kN2tasUXyDT0hc58fPKbGqlmVFkdyi
+        uJVNm98k7JpZcQ/46ezEkyReDKjQn3j/+qqFds0Lew/WivQjeZHTvt3B3UfErCBoOFafhGMFxiiT
+        zSaj4YhBGDinyLoU37BWeRfXBksd4CgYT0dpwVXWGrIaVSWFwofEaKpZuOCP75P7Zfla0na1TVc/
+        v+s1c47OH1PxN4qJAgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 12 Sep 2025 05:20:39 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1831
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
