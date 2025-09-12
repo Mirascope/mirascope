@@ -1,0 +1,110 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"What is 8200 + 82?"}],"model":"gpt-4o"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '78'
+      content-type:
+      - application/json
+      cookie:
+      - _cfuvid=avk1YXwDFnSCYie_wzhF7clmtn5V2F27Hf6OJbr8CcY-1757568301369-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFLLbtswELzrK4i91gpkwrJVH1MEBnru41AEAkOuJCYUSZOrIkXgfy8o
+        2ZbcB5CLDjs7o5nhvmWMgVawZyA7QbL3Jv/0cCy/901z/+2z7oI83H98OB5evlZfdpvDK6wSwz09
+        o6QL60663hsk7ewEy4CCMKmud+VuW/Kq3IxA7xSaRGs95RuX84Jv8qLKi+2Z2DktMcKe/cgYY+xt
+        /CaLVuEr7Fmxukx6jFG0CPvrEmMQnEkTEDHqSMISrGZQOktoR9cVLwr2gVWc4XEQJrKKV/xuuRyw
+        GaJIXu1gzAIQ1joSKeto8/GMnK7GjGt9cE/xDyo02urY1QFFdDaZiOQ8jOgpY+xxLGC4yQQ+uN5T
+        Te4Fx9+tt5MczI0vwHM5QI6Emef8QrpRqxWS0CYuCgQpZIdqZs5ti0FptwCyRea/zfxLe8qtbfse
+        +RmQEj2hqn1ApeVt4HktYLrH/61dOx4NQ8TwU0usSWNI76CwEYOZTgXir0jY1422LQYf9HQvja/X
+        Fd8pVciyhOyU/QYAAP//AwDq/rV4OAMAAA==
+    headers:
+      CF-RAY:
+      - 97dcce450b36759e-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 12 Sep 2025 04:54:15 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=SZrcXjtmaSfsRdLju0nrQHuj0FLmoU3383XbKp_IN18-1757652855-1.0.1.1-FXR98Bx515jmar6UcSVrmW6nreEyH98eVhSBkQPJHwrucW.VV8GseBc.NSqplXkgmOKHMQTuyRqPhSy.KuDmiPaUH3DPQuvQevrv4AOiqyg;
+        path=/; expires=Fri, 12-Sep-25 05:24:15 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '547'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '593'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799993'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_780035cfdedb421d972890f8102fe19f
+    status:
+      code: 200
+      message: OK
+version: 1
