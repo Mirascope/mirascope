@@ -182,7 +182,7 @@ class ContextResponse(
         finish_reason: FinishReason | None,
     ) -> None:
         """Initialize a `ContextResponse`."""
-        super().__init__(  # pragma: no cover # TODO remove upstack
+        super().__init__(
             raw=raw,
             provider=provider,
             model_id=model_id,
@@ -259,7 +259,7 @@ class AsyncContextResponse(
         finish_reason: FinishReason | None,
     ) -> None:
         """Initialize an `AsyncContextResponse`."""
-        super().__init__(  # pragma: no cover # TODO remove upstack
+        super().__init__(
             raw=raw,
             provider=provider,
             model_id=model_id,

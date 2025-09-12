@@ -96,7 +96,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: None = None,
         params: ParamsT | None = None,
     ) -> ContextResponse[DepsT, None]: ...
@@ -109,7 +109,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
     ) -> ContextResponse[DepsT, FormatT]: ...
@@ -122,7 +122,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: ParamsT | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]: ...
@@ -134,7 +134,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
@@ -198,7 +198,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
         params: ParamsT | None = None,
     ) -> AsyncContextResponse[DepsT, None]: ...
@@ -211,7 +211,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
     ) -> AsyncContextResponse[DepsT, FormatT]: ...
@@ -224,7 +224,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: ParamsT | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]: ...
@@ -236,7 +236,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
@@ -300,7 +300,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: None = None,
         params: ParamsT | None = None,
     ) -> ContextStreamResponse[DepsT, None]: ...
@@ -313,7 +313,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
     ) -> ContextStreamResponse[DepsT, FormatT]: ...
@@ -326,7 +326,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: ParamsT | None = None,
     ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]: ...
@@ -338,7 +338,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
     ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]:
@@ -402,7 +402,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
         params: ParamsT | None = None,
     ) -> AsyncContextStreamResponse[DepsT, None]: ...
@@ -415,7 +415,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT],
         params: ParamsT | None = None,
     ) -> AsyncContextStreamResponse[DepsT, FormatT]: ...
@@ -428,7 +428,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: ParamsT | None = None,
     ) -> (
@@ -443,7 +443,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         ctx: Context[DepsT],
         model_id: ModelIdT,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
     ) -> (
