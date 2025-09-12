@@ -38,6 +38,7 @@ from ...tools import (
     ToolSchema,
 )
 from ..base import _utils as _base_utils
+from .params import GoogleParams
 
 GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
     "STOP": FinishReason.END_TURN,
@@ -184,9 +185,13 @@ def prepare_google_request(
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | None = None,
     format: type[FormatT] | None = None,
+    params: GoogleParams | None = None,
 ) -> tuple[
     Sequence[Message], genai_types.ContentListUnionDict, GenerateContentConfig | None
 ]:
+    if params:
+        raise NotImplementedError("param use not yet supported")
+
     config_params = {}
     google_tools: list[genai_types.Tool] = []
 
