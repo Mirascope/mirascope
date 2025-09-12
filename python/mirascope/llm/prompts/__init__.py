@@ -5,7 +5,8 @@ python functions.
 """
 
 from . import _utils
-from .decorator import context_prompt, prompt
+from .context_prompt_decorator import context_prompt
+from .prompt_decorator import prompt
 from .types import (
     AsyncContextMessagesPrompt,
     AsyncContextPrompt,
