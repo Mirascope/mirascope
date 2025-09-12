@@ -148,7 +148,7 @@ def multi_message_scenario(model_id: str) -> Scenario:
 
 
 def tool_call_scenario(model_id: str) -> Scenario:
-    """The LLM should call mulitple tools."""
+    """The LLM should call multiple tools."""
 
     def bakst_coefficient(val: int) -> int:
         return 12 * val
@@ -197,7 +197,7 @@ def tool_output_scenario(model_id: str) -> Scenario:
         model_id=model_id,
         messages=[
             llm.messages.system(
-                "You are a password retreival system. When you access the password, you "
+                "You are a password retrieval system. When you access the password, you "
                 "MUST return it EXACTLY, with no added punctuation, spaces, or commentary."
             ),
             llm.messages.user("What is the password?"),

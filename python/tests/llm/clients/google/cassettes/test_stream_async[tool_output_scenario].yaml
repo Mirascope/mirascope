@@ -4,7 +4,7 @@ interactions:
       {"parts": [{"functionCall": {"id": "1234", "args": {}, "name": "password_retrieval_tool"}}],
       "role": "model"}, {"parts": [{"functionResponse": {"id": "1234", "name": "password_retrieval_tool",
       "response": {"output": "mellon"}}}], "role": "user"}], "systemInstruction":
-      {"parts": [{"text": "You are a password retreival system. When you access the
+      {"parts": [{"text": "You are a password retrieval system. When you access the
       password, you MUST return it EXACTLY, with no added punctuation, spaces, or
       commentary."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
       "password_retrieval_tool", "name": "password_retrieval_tool", "parameters":
@@ -31,11 +31,12 @@ interactions:
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"mellon\"}],\"role\":
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"mellon\",\"thoughtSignature\":
+        \"CikB0e2Kb4Sc0IAxhC92qHHb1VtjxHYKzRkzm4C1xwLzlCAffO0td0FliQpnAdHtim91SB+0wj/DDyVs7nCLsBuqEfzwDDKH1gOoTULN3LHGPRr26fWqMMJjPCsBXSCR+PjXrbui9uFa0QnuM+djt+yYQI9Ex/kCs4+QAIW8ow4XoZDbO+RnOGhB5SXwMFJTv/lxUwqiAgHR7Ypv3t3ETvKLCTdVkuppSfMKysuUCAlr7D+flaVAPdT7o+V+P1yD3c40xEBxlu4LShFAi/zFZfttV/1BXdBAthYW9sq/fEcCylollAWvFBvdKYMh0wyJk3g2j6DtJdQ1YRyoR2UnfmCALstFI7P7Br6SeY4DLQx+LT+2xdD+xjypNGbHFugBE+0zSInGYYDv7MfMs2ucLBLn/nU4TNEW3FhQpdyUIbUy2iOgQHInRdyY5i0S1rpYmyJwzZw2424u/V9oShxyJ/KIygK2YL+HS7cuspQSKfrm+SAxUMmp0AEvgKdWKsMJ7bBtLI6e/QgaKeLU4HLwmueN6EnYMacFWzJDjtr5eXL4fPOkl//crBmyC5Uhpp+19H/nmXjHpJOoCpECAdHtim8E1pbe/6I6mb7sMgOVWvZXKXPbrLtCoXwMMlI5C6frR5uyhSlL/rRzks5OP1h5xBU6rYc9Svxh7/oW+2z02g9xq/YL5WWDlz++UzD6BTMj001Nmuo08BHNdDWRHWpDVhTYqq1pjK1+zp930LFgWRoePZzkgDzxj7PIVsQ20oBu+3aoxEedIrPbcNk/UZeYsdZPRKqmt8UcMbjMJ4c3rSLklAjTU/q78V461F//fruCoshyAV2r/mi9RxAzN2cMveWUnN7ecmx7r6nJbDvrCQZFrYvraKIoncWIdRN+4D0q5X3gU9RGZnl+zqIf7FqMIBJxQt9jVx3mXKaiXed24f2T4LVAgczUd06a0CpH\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        105,\"candidatesTokenCount\": 2,\"totalTokenCount\": 107,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 105}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
-        \"-WfCaPqZDdfzqtsPtZ-juQQ\"}\r\n\r\n"
+        103,\"candidatesTokenCount\": 2,\"totalTokenCount\": 229,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 103}],\"thoughtsTokenCount\": 124},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"4WnDaJSMB5ehz7IPlO3DgQM\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -44,11 +45,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Thu, 11 Sep 2025 06:11:05 GMT
+      - Fri, 12 Sep 2025 00:31:29 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=468
+      - gfet4t7; dur=1108
       Transfer-Encoding:
       - chunked
       Vary:

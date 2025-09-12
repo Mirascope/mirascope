@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"messages":[{"role":"system","content":"You are a password retreival system.
+    body: '{"messages":[{"role":"system","content":"You are a password retrieval system.
       When you access the password, you MUST return it EXACTLY, with no added punctuation,
       spaces, or commentary."},{"role":"user","content":"What is the password?"},{"role":"assistant","content":null,"tool_calls":[{"id":"1234","type":"function","function":{"name":"password_retrieval_tool","arguments":"{}"}}]},{"role":"tool","content":"mellon","tool_call_id":"1234"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"password_retrieval_tool","description":"password_retrieval_tool","parameters":{"properties":{},"required":[],"additionalProperties":false,"type":"object"},"strict":false}}]}'
     headers:
@@ -15,8 +15,7 @@ interactions:
       content-type:
       - application/json
       cookie:
-      - __cf_bm=ns5DrRcABJFXRdZhDTQTCiZOp4gTYzsf1D39poTai30-1757551965-1.0.1.1-n1CdiTmhVoEkb4M_O7YbmFnRz.l7JYgpDn6eoWX_dKPsAHK9ss4UDL0XE2_tcPLj0zmhE_gfFGMhWyJrqK9PxHQvzv60dakcgu40j4rAwq4;
-        _cfuvid=Z1Uj26Qu8pT2l1DK6mLvSauyL0OvphibDedlBVRvnig-1757551965026-0.0.1.1-604800000
+      - _cfuvid=Z1Uj26Qu8pT2l1DK6mLvSauyL0OvphibDedlBVRvnig-1757551965026-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -44,17 +43,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jJJBb9swDIXv/hUCz3FhF3GS5VYU3bDDgKGHAkVRGIpEO2plUZPodkOR
-        /z7ITmJ364BddNDHR71H8S0TAoyGrQC1l6w6b/Prm+8/vj5fPd3dv5gvr438fFNeXd/dmp0K999g
-        kRS0e0LFJ9WFos5bZENuxCqgZExdy3W1rqry02o1gI402iRrPedLyi+Ly2VebPJidRTuySiMsBUP
-        mRBCvA1nsug0/oStKBanmw5jlC3C9lwkBASy6QZkjCaydAyLCSpyjG5w3aG1R7MnJTZ9lMmb662d
-        AekcsUzZBluPR3I4G7HU+kC7+IcUGuNM3NcBZSSXHo1MHgZ6yIR4HAL37zKAD9R5rpmecXiuLJZj
-        P5hGPNETY2Jp56LN4oN2tUaWxsbZxEBJtUc9Safxyl4bmoFsFvpvMx/1HoMb1/5P+wkohZ5R1z6g
-        Nup94KksYFrAf5WdhzwYhojhxSis2WBIH6Gxkb0ddwPir8jY1Y1xLQYfzLggja/VrinXm6parSE7
-        ZL8BAAD//wMAsUJMCCkDAAA=
+        H4sIAAAAAAAAAwAAAP//jJJBb9swDIXv/hUCz/GgJF7S5joUKNBhtx2GoTBUibbVypIg0sW6Iv99
+        kJ3EbtcBu+igj496j+JrIQRYAwcBulOs++jKLzfu9+236OPXa/tjS113RTcvz99v76q1foRVVoSH
+        R9R8Vn3SoY8O2QY/YZ1QMeau6/3n/W67l9frEfTBoMuyNnJZhXIjN1Upr0q5Owm7YDUSHMTPQggh
+        XsczW/QGf8FByNX5pkci1SIcLkVCQAou34AissTKM6xmqINn9KPrHp07mT0rsRlIZW9+cG4BlPeB
+        Vc422ro/kePFiAttTOGB3kmhsd5SVydUFHx+lDhEGOmxEOJ+DDy8yQAxhT5yzeEJx+fWcjP1g3nE
+        M61OjAMrtxTtVh+0qw2yso4WEwOtdIdmls7jVYOxYQGKRei/zXzUewpuffs/7WegNUZGU8eExuq3
+        geeyhHkB/1V2GfJoGAjTs9VYs8WUP8JgowY37QbQCzH2dWN9iykmOy1IE+tmu91VUlVSQnEs/gAA
+        AP//AwAgbvFJKQMAAA==
     headers:
       CF-RAY:
-      - 97d32f2d4ef56816-SEA
+      - 97db4d699eb2b9e0-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -62,9 +61,13 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 11 Sep 2025 00:52:46 GMT
+      - Fri, 12 Sep 2025 00:31:31 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=4733OgxQFvRqKMnuU0y5JSeqQBBtxssj61Dik2ydoRk-1757637091-1.0.1.1-OEqUNzLHRNDlnYnRTcii.IBOxwYYh6xJRx8GnbiY6Jn5T1hxEzNhm_.kA.O6fVqaoftN1NtBvdbZ9xDT_WhBD05O7iwzY5tLJSFctBFd3rs;
+        path=/; expires=Fri, 12-Sep-25 01:01:31 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -80,13 +83,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '292'
+      - '625'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '307'
+      - '760'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -102,7 +105,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 3ms
       x-request-id:
-      - req_fc9a789fe10a424098f4390b1fe09304
+      - req_89cc8d533a61415b8b2bfacda297b64e
     status:
       code: 200
       message: OK
