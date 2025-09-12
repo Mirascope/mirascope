@@ -137,3 +137,149 @@ class TestValueErrorOnEmptyPrompts:
 
         with pytest.raises(ValueError, match="Prompt returned empty content"):
             await empty_prompt()
+
+
+class TestSyncContextPromptDecorator:
+    def test_context_decorator_call_patterns(self) -> None:
+        """Test that context_prompt decorator can be called with and without parentheses."""
+
+        def context_prompt_fn(ctx: llm.Context, name: str) -> str:
+            return f"Hello {name}"
+
+        called_on_fn = llm.context_prompt(context_prompt_fn)
+        constructed_decorator = llm.context_prompt()(context_prompt_fn)
+
+        context = llm.Context(deps=None)
+        assert called_on_fn(context, "Alice") == constructed_decorator(context, "Alice")
+
+    def test_sync_context_prompt_with_string_return(self) -> None:
+        """Test sync context prompt decorator with string return value."""
+
+        @llm.context_prompt
+        def simple_context_prompt(ctx: llm.Context, name: str, *, title: str) -> str:
+            return f"Hello {title} {name}, how are you?"
+
+        context = llm.Context(deps=None)
+        result = simple_context_prompt(context, "Alice", title="Miss")
+        assert result == [llm.messages.user("Hello Miss Alice, how are you?")]
+
+    def test_sync_context_prompt_with_mixed_return(
+        self, mixed_content: llm.messages.UserContent
+    ) -> None:
+        """Test sync context prompt decorator with mixed return value."""
+
+        @llm.context_prompt
+        def context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
+            return mixed_content
+
+        context = llm.Context(deps=None)
+        result = context_prompt(context)
+        assert result == [llm.messages.user(mixed_content)]
+
+    def test_sync_context_prompt_with_messages_return(
+        self, expected_messages: list[llm.Message]
+    ) -> None:
+        """Test sync context prompt decorator with messages return value."""
+
+        @llm.context_prompt
+        def messages_context_prompt(ctx: llm.Context) -> list[llm.Message]:
+            return expected_messages
+
+        context = llm.Context(deps=None)
+        assert messages_context_prompt(context) == expected_messages
+
+    def test_sync_context_prompt_with_deps(self) -> None:
+        """Test sync context prompt decorator with context dependencies."""
+
+        @llm.context_prompt
+        def context_prompt_with_deps(ctx: llm.Context[dict], query: str) -> str:
+            user_id = ctx.deps["user_id"]
+            return f"User {user_id} asks: {query}"
+
+        context = llm.Context(deps={"user_id": "12345"})
+        result = context_prompt_with_deps(context, "How are you?")
+        assert result == [llm.messages.user("User 12345 asks: How are you?")]
+
+
+@pytest.mark.asyncio
+class TestAsyncContextPromptDecorator:
+    async def test_async_context_prompt_with_string_return(self) -> None:
+        """Test async context prompt decorator with string return value."""
+
+        @llm.context_prompt
+        async def simple_context_prompt(
+            ctx: llm.Context, name: str, *, title: str
+        ) -> str:
+            return f"Hello {title} {name}, how are you?"
+
+        context = llm.Context(deps=None)
+        result = await simple_context_prompt(context, "Alice", title="Miss")
+        assert result == [llm.messages.user("Hello Miss Alice, how are you?")]
+
+    async def test_async_context_prompt_with_mixed_return(
+        self, mixed_content: llm.messages.UserContent
+    ) -> None:
+        """Test async context prompt decorator with mixed return value."""
+
+        @llm.context_prompt
+        async def context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
+            return mixed_content
+
+        context = llm.Context(deps=None)
+        result = await context_prompt(context)
+        assert result == [llm.messages.user(mixed_content)]
+
+    async def test_async_context_prompt_with_messages_return(
+        self, expected_messages: list[llm.Message]
+    ) -> None:
+        """Test async context prompt decorator with messages return value."""
+
+        @llm.context_prompt
+        async def messages_context_prompt(ctx: llm.Context) -> list[llm.Message]:
+            return expected_messages
+
+        context = llm.Context(deps=None)
+        assert await messages_context_prompt(context) == expected_messages
+
+    async def test_async_context_prompt_with_deps(self) -> None:
+        """Test async context prompt decorator with context dependencies."""
+
+        @llm.context_prompt
+        async def context_prompt_with_deps(ctx: llm.Context[dict], query: str) -> str:
+            user_id = ctx.deps["user_id"]
+            return f"User {user_id} asks: {query}"
+
+        context = llm.Context(deps={"user_id": "12345"})
+        result = await context_prompt_with_deps(context, "How are you?")
+        assert result == [llm.messages.user("User 12345 asks: How are you?")]
+
+
+class TestValueErrorOnEmptyContextPrompts:
+    @pytest.mark.parametrize("empty_value", [[], ""])
+    def test_sync_context_prompt_with_empty_return(
+        self, empty_value: llm.messages.UserContent
+    ) -> None:
+        """Test sync context prompt decorator with empty return value."""
+
+        @llm.context_prompt
+        def empty_context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
+            return empty_value
+
+        context = llm.Context(deps=None)
+        with pytest.raises(ValueError, match="Prompt returned empty content"):
+            empty_context_prompt(context)
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("empty_value", [[], ""])
+    async def test_async_context_prompt_with_empty_return(
+        self, empty_value: llm.messages.UserContent
+    ) -> None:
+        """Test async context prompt decorator with empty return value."""
+
+        @llm.context_prompt
+        async def empty_context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
+            return empty_value
+
+        context = llm.Context(deps=None)
+        with pytest.raises(ValueError, match="Prompt returned empty content"):
+            await empty_context_prompt(context)

@@ -64,7 +64,7 @@ from .exceptions import (
 from .formatting import FormatInfo, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import Model, model
-from .prompts import prompt
+from .prompts import context_prompt, prompt
 from .responses import (
     AsyncChunkIterator,
     AsyncContextResponse,
@@ -163,6 +163,7 @@ __all__ = [
     "clients",
     "content",
     "context_call",
+    "context_prompt",
     "context_tool",
     "exceptions",
     "format",
