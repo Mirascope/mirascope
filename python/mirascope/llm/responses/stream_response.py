@@ -353,7 +353,7 @@ class ContextStreamResponse(
         chunk_iterator: ChunkIterator,
     ) -> None:
         """Initialize a `ContextStreamResponse`."""
-        super().__init__(  # pragma: no cover # TODO remove upstack
+        super().__init__(
             provider=provider,
             model_id=model_id,
             params=params,
@@ -485,7 +485,7 @@ class AsyncContextStreamResponse(
         chunk_iterator: AsyncChunkIterator,
     ) -> None:
         """Initialize an `AsyncContextStreamResponse`."""
-        super().__init__(  # pragma: no cover # TODO remove upstack
+        super().__init__(
             provider=provider,
             model_id=model_id,
             params=params,
