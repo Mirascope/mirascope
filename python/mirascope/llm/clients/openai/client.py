@@ -12,9 +12,11 @@ from ...formatting import FormatT
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
+    AsyncContextStreamResponse,
     AsyncResponse,
     AsyncStreamResponse,
     ContextResponse,
+    ContextStreamResponse,
     Response,
     StreamResponse,
 )
@@ -368,7 +370,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: None = None,
         params: OpenAIParams | None = None,
-    ) -> StreamResponse: ...
+    ) -> ContextStreamResponse: ...
 
     @overload
     def context_stream(
@@ -380,7 +382,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
-    ) -> StreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse[FormatT]: ...
 
     @overload
     def context_stream(
@@ -392,7 +394,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None,
         params: OpenAIParams | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse | ContextStreamResponse[FormatT]: ...
 
     def context_stream(
         self,
@@ -403,7 +405,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]:
+    ) -> ContextStreamResponse | ContextStreamResponse[FormatT]:
         raise NotImplementedError
 
     @overload
@@ -485,7 +487,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse: ...
+    ) -> AsyncContextStreamResponse: ...
 
     @overload
     async def context_stream_async(
@@ -497,7 +499,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse[FormatT]: ...
+    ) -> AsyncContextStreamResponse[FormatT]: ...
 
     @overload
     async def context_stream_async(
@@ -509,7 +511,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None,
         params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
+    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[FormatT]: ...
 
     async def context_stream_async(
         self,
@@ -520,5 +522,5 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
+    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[FormatT]:
         raise NotImplementedError

@@ -12,9 +12,11 @@ from ...formatting import FormatT
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
+    AsyncContextStreamResponse,
     AsyncResponse,
     AsyncStreamResponse,
     ContextResponse,
+    ContextStreamResponse,
     Response,
     StreamResponse,
 )
@@ -376,7 +378,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: None = None,
         params: GoogleParams | None = None,
-    ) -> StreamResponse: ...
+    ) -> ContextStreamResponse: ...
 
     @overload
     def context_stream(
@@ -388,7 +390,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> StreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse[FormatT]: ...
 
     @overload
     def context_stream(
@@ -400,7 +402,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None,
         params: GoogleParams | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse | ContextStreamResponse[FormatT]: ...
 
     def context_stream(
         self,
@@ -411,7 +413,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None = None,
         params: GoogleParams | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]:
+    ) -> ContextStreamResponse | ContextStreamResponse[FormatT]:
         raise NotImplementedError
 
     @overload
@@ -494,7 +496,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: None = None,
         params: GoogleParams | None = None,
-    ) -> AsyncStreamResponse: ...
+    ) -> AsyncContextStreamResponse: ...
 
     @overload
     async def context_stream_async(
@@ -506,7 +508,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: GoogleParams | None = None,
-    ) -> AsyncStreamResponse[FormatT]: ...
+    ) -> AsyncContextStreamResponse[FormatT]: ...
 
     @overload
     async def context_stream_async(
@@ -518,7 +520,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None,
         params: GoogleParams | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
+    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[FormatT]: ...
 
     async def context_stream_async(
         self,
@@ -529,5 +531,5 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None = None,
         params: GoogleParams | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
+    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[FormatT]:
         raise NotImplementedError

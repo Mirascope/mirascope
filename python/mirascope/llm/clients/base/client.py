@@ -12,9 +12,11 @@ from ...formatting import FormatT
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
+    AsyncContextStreamResponse,
     AsyncResponse,
     AsyncStreamResponse,
     ContextResponse,
+    ContextStreamResponse,
     Response,
     StreamResponse,
 )
@@ -301,7 +303,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: None = None,
         params: ParamsT | None = None,
-    ) -> StreamResponse: ...
+    ) -> ContextStreamResponse[DepsT, None]: ...
 
     @overload
     @abstractmethod
@@ -314,7 +316,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> StreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse[DepsT, FormatT]: ...
 
     @overload
     @abstractmethod
@@ -327,7 +329,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None,
         params: ParamsT | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]: ...
 
     @abstractmethod
     def context_stream(
@@ -339,7 +341,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         tools: Sequence[Tool | ContextTool[DepsT]],
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]:
+    ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]:
         """Stream a context response."""
         ...
 
@@ -403,7 +405,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStreamResponse: ...
+    ) -> AsyncContextStreamResponse[DepsT, None]: ...
 
     @overload
     @abstractmethod
@@ -416,7 +418,7 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT],
         params: ParamsT | None = None,
-    ) -> AsyncStreamResponse[FormatT]: ...
+    ) -> AsyncContextStreamResponse[DepsT, FormatT]: ...
 
     @overload
     @abstractmethod
@@ -429,7 +431,10 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None,
         params: ParamsT | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
+    ) -> (
+        AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormatT]
+    ): ...
 
     @abstractmethod
     async def context_stream_async(
@@ -441,6 +446,9 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
         format: type[FormatT] | None = None,
         params: ParamsT | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
+    ) -> (
+        AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormatT]
+    ):
         """Stream a context response asynchronously."""
         ...

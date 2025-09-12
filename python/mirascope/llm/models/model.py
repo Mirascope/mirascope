@@ -12,7 +12,16 @@ from ..clients import ClientT, ParamsT, get_client
 from ..context import Context, DepsT
 from ..formatting import FormatT
 from ..messages import Message
-from ..responses import AsyncResponse, AsyncStreamResponse, Response, StreamResponse
+from ..responses import (
+    AsyncContextResponse,
+    AsyncContextStreamResponse,
+    AsyncResponse,
+    AsyncStreamResponse,
+    ContextResponse,
+    ContextStreamResponse,
+    Response,
+    StreamResponse,
+)
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 if TYPE_CHECKING:
@@ -291,7 +300,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: None = None,
-    ) -> Response: ...
+    ) -> ContextResponse[DepsT, None]: ...
 
     @overload
     def context_call(
@@ -301,7 +310,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT],
-    ) -> Response[FormatT]: ...
+    ) -> ContextResponse[DepsT, FormatT]: ...
 
     @overload
     def context_call(
@@ -311,7 +320,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
-    ) -> Response | Response[FormatT]: ...
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]: ...
 
     def context_call(
         self,
@@ -320,7 +329,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
-    ) -> Response | Response[FormatT]:
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         """Generate a response using the model."""
         raise NotImplementedError()
 
@@ -332,7 +341,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
-    ) -> Response: ...
+    ) -> AsyncContextResponse[DepsT, None]: ...
 
     @overload
     async def context_call_async(
@@ -342,7 +351,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT],
-    ) -> Response[FormatT]: ...
+    ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
     @overload
     async def context_call_async(
@@ -352,7 +361,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
-    ) -> Response | Response[FormatT]: ...
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]: ...
 
     async def context_call_async(
         self,
@@ -361,7 +370,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
-    ) -> Response | Response[FormatT]:
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         """Generate a response asynchronously using the model."""
         raise NotImplementedError()
 
@@ -373,7 +382,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: None = None,
-    ) -> StreamResponse: ...
+    ) -> ContextStreamResponse[DepsT, None]: ...
 
     @overload
     def context_stream(
@@ -383,7 +392,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT],
-    ) -> StreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse[DepsT, FormatT]: ...
 
     @overload
     def context_stream(
@@ -393,7 +402,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
-    ) -> StreamResponse | StreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]: ...
 
     def context_stream(
         self,
@@ -402,7 +411,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]:
+    ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]:
         """Stream a response using the model."""
         raise NotImplementedError()
 
@@ -414,7 +423,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: list[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
-    ) -> AsyncStreamResponse: ...
+    ) -> AsyncContextStreamResponse[DepsT, None]: ...
 
     @overload
     async def context_stream_async(
@@ -424,7 +433,7 @@ class Model(Generic[ClientT, ParamsT]):
         messages: list[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT],
-    ) -> AsyncStreamResponse[FormatT]: ...
+    ) -> AsyncContextStreamResponse[DepsT, FormatT]: ...
 
     @overload
     async def context_stream_async(
@@ -434,7 +443,10 @@ class Model(Generic[ClientT, ParamsT]):
         messages: list[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
+    ) -> (
+        AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormatT]
+    ): ...
 
     async def context_stream_async(
         self,
@@ -443,7 +455,10 @@ class Model(Generic[ClientT, ParamsT]):
         messages: list[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
+    ) -> (
+        AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormatT]
+    ):
         """Stream a response asynchronously using the model."""
         raise NotImplementedError()
 
