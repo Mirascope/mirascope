@@ -2,14 +2,31 @@
 
 import asyncio
 from collections.abc import Sequence
-from typing import Generic, overload
+from typing import TYPE_CHECKING, Generic, overload
 
 from ..content import ToolOutput
 from ..context import Context, DepsT
 from ..formatting import FormatT
-from ..messages import UserContent, user
-from ..tools import AsyncContextToolkit, AsyncToolkit, ContextToolkit, Toolkit
-from .base_stream_response import BaseAsyncStreamResponse, BaseSyncStreamResponse
+from ..messages import Message, UserContent, user
+from ..tools import (
+    AsyncContextTool,
+    AsyncContextToolkit,
+    AsyncTool,
+    AsyncToolkit,
+    ContextTool,
+    ContextToolkit,
+    Tool,
+    Toolkit,
+)
+from .base_stream_response import (
+    AsyncChunkIterator,
+    BaseAsyncStreamResponse,
+    BaseSyncStreamResponse,
+    ChunkIterator,
+)
+
+if TYPE_CHECKING:
+    from ..clients import BaseParams, ModelId, Provider
 
 
 class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
@@ -72,6 +89,28 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
         print()
         ```
     """
+
+    def __init__(
+        self,
+        *,
+        provider: "Provider",
+        model_id: "ModelId",
+        params: "BaseParams | None",
+        tools: Sequence[Tool] | None = None,
+        format_type: type[FormatT] | None = None,
+        input_messages: Sequence[Message],
+        chunk_iterator: ChunkIterator,
+    ) -> None:
+        """Initialize a `StreamResponse`."""
+        super().__init__(
+            provider=provider,
+            model_id=model_id,
+            params=params,
+            toolkit=Toolkit(tools=tools),
+            format_type=format_type,
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+        )
 
     def execute_tools(self) -> Sequence[ToolOutput]:
         """Execute and return all of the tool calls in the response.
@@ -174,6 +213,28 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
         print()
         ```
     """
+
+    def __init__(
+        self,
+        *,
+        provider: "Provider",
+        model_id: "ModelId",
+        params: "BaseParams | None",
+        tools: Sequence[AsyncTool] | None = None,
+        format_type: type[FormatT] | None = None,
+        input_messages: Sequence[Message],
+        chunk_iterator: AsyncChunkIterator,
+    ) -> None:
+        """Initialize an `AsyncStreamResponse`."""
+        super().__init__(
+            provider=provider,
+            model_id=model_id,
+            params=params,
+            toolkit=AsyncToolkit(tools=tools),
+            format_type=format_type,
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+        )
 
     async def execute_tools(self) -> Sequence[ToolOutput]:
         """Execute and return all of the tool calls in the response.
@@ -279,6 +340,28 @@ class ContextStreamResponse(
         print()
         ```
     """
+
+    def __init__(
+        self,
+        *,
+        provider: "Provider",
+        model_id: "ModelId",
+        params: "BaseParams | None",
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        format_type: type[FormatT] | None = None,
+        input_messages: Sequence[Message],
+        chunk_iterator: ChunkIterator,
+    ) -> None:
+        """Initialize a `ContextStreamResponse`."""
+        super().__init__(  # pragma: no cover # TODO remove upstack
+            provider=provider,
+            model_id=model_id,
+            params=params,
+            toolkit=ContextToolkit(tools=tools),
+            format_type=format_type,
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+        )
 
     def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput]:
         """Execute and return all of the tool calls in the response.
@@ -389,6 +472,28 @@ class AsyncContextStreamResponse(
         print()
         ```
     """
+
+    def __init__(
+        self,
+        *,
+        provider: "Provider",
+        model_id: "ModelId",
+        params: "BaseParams | None",
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        format_type: type[FormatT] | None = None,
+        input_messages: Sequence[Message],
+        chunk_iterator: AsyncChunkIterator,
+    ) -> None:
+        """Initialize an `AsyncContextStreamResponse`."""
+        super().__init__(  # pragma: no cover # TODO remove upstack
+            provider=provider,
+            model_id=model_id,
+            params=params,
+            toolkit=AsyncContextToolkit(tools=tools),
+            format_type=format_type,
+            input_messages=input_messages,
+            chunk_iterator=chunk_iterator,
+        )
 
     async def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput]:
         """Execute and return all of the tool calls in the response.

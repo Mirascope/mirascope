@@ -23,10 +23,8 @@ from ...responses import (
 from ...tools import (
     AsyncContextTool,
     AsyncTool,
-    AsyncToolkit,
     ContextTool,
     Tool,
-    Toolkit,
 )
 from ..base import BaseClient
 from . import _utils
@@ -128,7 +126,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
             provider="google",
             model_id=model_id,
             params=params,
-            toolkit=Toolkit(tools=tools),
+            tools=tools,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -246,7 +244,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
             provider="google",
             model_id=model_id,
             params=params,
-            toolkit=AsyncToolkit(tools=tools),
+            tools=tools,
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
@@ -362,7 +360,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
             provider="google",
             model_id=model_id,
             params=params,
-            toolkit=Toolkit(tools=tools),
+            tools=tools,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format_type=format,
@@ -480,7 +478,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
             provider="google",
             model_id=model_id,
             params=params,
-            toolkit=AsyncToolkit(tools=tools),
+            tools=tools,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
             format_type=format,
