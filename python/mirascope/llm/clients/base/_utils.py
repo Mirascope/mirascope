@@ -56,7 +56,7 @@ class CallResult(Generic[FormatT]):
     format_type: type[FormatT] | None
     input_messages: Sequence[Message]
     assistant_message: AssistantMessage
-    finish_reason: FinishReason
+    finish_reason: FinishReason | None
 
     def to_response(
         self, *, tools: Sequence[Tool] | None = None

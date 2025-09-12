@@ -11,10 +11,12 @@ from ...context import Context, DepsT
 from ...formatting import FormatT
 from ...messages import Message
 from ...responses import (
+    AsyncChunkIterator,
     AsyncContextResponse,
     AsyncContextStreamResponse,
     AsyncResponse,
     AsyncStreamResponse,
+    ChunkIterator,
     ContextResponse,
     ContextStreamResponse,
     Response,
@@ -23,12 +25,11 @@ from ...responses import (
 from ...tools import (
     AsyncContextTool,
     AsyncTool,
-    AsyncToolkit,
     ContextTool,
     Tool,
-    Toolkit,
 )
 from ..base import BaseClient
+from ..base._utils import CallResult, StreamResult
 from . import _utils
 from .model_ids import AnthropicModelId
 from .params import AnthropicParams
@@ -61,6 +62,140 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         """
         self.client = Anthropic(api_key=api_key, base_url=base_url)
         self.async_client = AsyncAnthropic(api_key=api_key, base_url=base_url)
+
+    def _make_call(
+        self,
+        *,
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool] | None = None,
+        format: type[FormatT] | None = None,
+        params: AnthropicParams | None = None,
+    ) -> CallResult[None] | CallResult[FormatT]:
+        """Core logic for making a call to the Anthropic API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, kwargs = _utils.prepare_anthropic_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
+        )
+
+        anthropic_response = self.client.messages.create(**kwargs)
+
+        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+
+        return CallResult(
+            raw=anthropic_response,
+            provider="anthropic",
+            model_id=model_id,
+            params=params,
+            format_type=format,
+            input_messages=input_messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+        )
+
+    async def _make_call_async(
+        self,
+        *,
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool] | None = None,
+        format: type[FormatT] | None = None,
+        params: AnthropicParams | None = None,
+    ) -> CallResult[None] | CallResult[FormatT]:
+        """Core logic for making an async call to the Anthropic API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, kwargs = _utils.prepare_anthropic_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+        )
+
+        anthropic_response = await self.async_client.messages.create(**kwargs)
+
+        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+
+        return CallResult(
+            raw=anthropic_response,
+            provider="anthropic",
+            model_id=model_id,
+            params=params,
+            format_type=format,
+            input_messages=input_messages,
+            assistant_message=assistant_message,
+            finish_reason=finish_reason,
+        )
+
+    def _make_stream(
+        self,
+        *,
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool] | None = None,
+        format: type[FormatT] | None = None,
+        params: AnthropicParams | None = None,
+    ) -> StreamResult[ChunkIterator, None] | StreamResult[ChunkIterator, FormatT]:
+        """Core logic for making a streaming call to the Anthropic API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, kwargs = _utils.prepare_anthropic_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
+        )
+
+        anthropic_stream = self.client.messages.stream(**kwargs)
+
+        chunk_iterator = _utils.convert_anthropic_stream_to_chunk_iterator(
+            anthropic_stream
+        )
+
+        return StreamResult(
+            provider="anthropic",
+            model_id=model_id,
+            input_messages=input_messages,
+            format_type=format,
+            params=params,
+            chunk_iterator=chunk_iterator,
+        )
+
+    async def _make_stream_async(
+        self,
+        *,
+        model_id: AnthropicModelId,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool] | None = None,
+        format: type[FormatT] | None = None,
+        params: AnthropicParams | None = None,
+    ) -> (
+        StreamResult[AsyncChunkIterator, None]
+        | StreamResult[AsyncChunkIterator, FormatT]
+    ):
+        """Core logic for making an async streaming call to the Anthropic API."""
+        if params:
+            raise NotImplementedError("param use not yet supported")
+
+        input_messages, kwargs = _utils.prepare_anthropic_request(
+            model_id=model_id, messages=messages, tools=tools, format=format
+        )
+
+        anthropic_stream = self.async_client.messages.stream(**kwargs)
+
+        chunk_iterator = _utils.convert_anthropic_stream_to_async_chunk_iterator(
+            anthropic_stream
+        )
+
+        return StreamResult(
+            provider="anthropic",
+            model_id=model_id,
+            input_messages=input_messages,
+            format_type=format,
+            params=params,
+            chunk_iterator=chunk_iterator,
+        )
 
     @overload
     def call(
@@ -105,28 +240,13 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> Response | Response[FormatT]:
         """Make a call to the Anthropic API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
-        input_messages, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
-        )
-
-        anthropic_response = self.client.messages.create(**kwargs)
-
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
-
-        return Response(
-            raw=anthropic_response,
-            provider="anthropic",
+        return self._make_call(
             model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
             params=params,
-            toolkit=Toolkit(tools=tools),
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            format_type=format,
-        )
+        ).to_response(tools=tools)
 
     @overload
     def context_call(
@@ -135,7 +255,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: None = None,
         params: AnthropicParams | None = None,
     ) -> ContextResponse[DepsT, None]: ...
@@ -147,7 +267,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> ContextResponse[DepsT, FormatT]: ...
@@ -159,7 +279,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: AnthropicParams | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]: ...
@@ -170,11 +290,17 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: AnthropicParams | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
-        raise NotImplementedError
+        return self._make_call(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        ).to_context_response(ctx=ctx, tools=tools)
 
     @overload
     async def call_async(
@@ -219,28 +345,14 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
         """Make an async call to the Anthropic API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
-        input_messages, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
-        )
-
-        anthropic_response = await self.async_client.messages.create(**kwargs)
-
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
-
-        return AsyncResponse(
-            raw=anthropic_response,
-            provider="anthropic",
+        result = await self._make_call_async(
             model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
             params=params,
-            toolkit=AsyncToolkit(tools=tools),
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            format_type=format,
         )
+        return result.to_async_response(tools=tools)
 
     @overload
     async def context_call_async(
@@ -249,7 +361,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
         params: AnthropicParams | None = None,
     ) -> AsyncContextResponse[DepsT, None]: ...
@@ -261,7 +373,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT],
         params: AnthropicParams | None = None,
     ) -> AsyncContextResponse[DepsT, FormatT]: ...
@@ -273,7 +385,7 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: AnthropicParams | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]: ...
@@ -284,11 +396,18 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: AnthropicParams | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
-        raise NotImplementedError
+        result = await self._make_call_async(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+        return result.to_async_context_response(ctx=ctx, tools=tools)
 
     @overload
     def stream(
@@ -333,28 +452,14 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
         """Make a streaming call to the Anthropic API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
-        input_messages, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
-        )
-
-        anthropic_stream = self.client.messages.stream(**kwargs)
-
-        chunk_iterator = _utils.convert_anthropic_stream_to_chunk_iterator(
-            anthropic_stream
-        )
-
-        return StreamResponse(
-            provider="anthropic",
+        result = self._make_stream(
             model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
             params=params,
-            toolkit=Toolkit(tools=tools),
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format_type=format,
         )
+        return result.to_stream_response(tools=tools)
 
     @overload
     def context_stream(
@@ -363,10 +468,10 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: None = None,
         params: AnthropicParams | None = None,
-    ) -> ContextStreamResponse: ...
+    ) -> ContextStreamResponse[DepsT, None]: ...
 
     @overload
     def context_stream(
@@ -375,10 +480,10 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT],
         params: AnthropicParams | None = None,
-    ) -> ContextStreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse[DepsT, FormatT]: ...
 
     @overload
     def context_stream(
@@ -387,10 +492,10 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: AnthropicParams | None = None,
-    ) -> ContextStreamResponse | ContextStreamResponse[FormatT]: ...
+    ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]: ...
 
     def context_stream(
         self,
@@ -398,11 +503,18 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: AnthropicParams | None = None,
-    ) -> ContextStreamResponse | ContextStreamResponse[FormatT]:
-        raise NotImplementedError
+    ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]:
+        result = self._make_stream(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+        return result.to_context_stream_response(ctx=ctx, tools=tools)
 
     @overload
     async def stream_async(
@@ -447,28 +559,14 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         """Make an async streaming call to the Anthropic API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
-        input_messages, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
-        )
-
-        anthropic_stream = self.async_client.messages.stream(**kwargs)
-
-        chunk_iterator = _utils.convert_anthropic_stream_to_async_chunk_iterator(
-            anthropic_stream
-        )
-
-        return AsyncStreamResponse(
-            provider="anthropic",
+        result = await self._make_stream_async(
             model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
             params=params,
-            toolkit=AsyncToolkit(tools=tools),
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format_type=format,
         )
+        return result.to_async_stream_response(tools=tools)
 
     @overload
     async def context_stream_async(
@@ -477,10 +575,10 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
         params: AnthropicParams | None = None,
-    ) -> AsyncContextStreamResponse: ...
+    ) -> AsyncContextStreamResponse[DepsT, None]: ...
 
     @overload
     async def context_stream_async(
@@ -489,10 +587,10 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT],
         params: AnthropicParams | None = None,
-    ) -> AsyncContextStreamResponse[FormatT]: ...
+    ) -> AsyncContextStreamResponse[DepsT, FormatT]: ...
 
     @overload
     async def context_stream_async(
@@ -501,10 +599,13 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: AnthropicParams | None = None,
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[FormatT]: ...
+    ) -> (
+        AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormatT]
+    ): ...
 
     async def context_stream_async(
         self,
@@ -512,8 +613,18 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: AnthropicParams | None = None,
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[FormatT]:
-        raise NotImplementedError
+    ) -> (
+        AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormatT]
+    ):
+        result = await self._make_stream_async(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+        return result.to_async_context_stream_response(ctx=ctx, tools=tools)
