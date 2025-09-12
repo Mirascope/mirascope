@@ -5,7 +5,7 @@ python functions.
 """
 
 from . import _utils
-from .decorator import prompt
+from .decorator import context_prompt, prompt
 from .types import (
     AsyncContextMessagesPrompt,
     AsyncContextPrompt,
@@ -37,5 +37,6 @@ __all__ = [
     "PromptT",
     "SystemPrompt",
     "_utils",
+    "context_prompt",
     "prompt",
 ]
