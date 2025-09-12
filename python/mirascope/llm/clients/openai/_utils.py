@@ -35,6 +35,7 @@ from ...responses import (
 from ...tools import FORMAT_TOOL_NAME, ToolSchema
 from ..base import _utils as _base_utils
 from .model_ids import OpenAIModelId
+from .params import OpenAIParams
 
 OPENAI_FINISH_REASON_MAP = {
     "stop": FinishReason.END_TURN,
@@ -230,6 +231,7 @@ def prepare_openai_request(
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | None = None,
     format: type[FormatT] | None = None,
+    params: OpenAIParams | None = None,
 ) -> tuple[Sequence[Message], ChatCompletionCreateKwargs]:
     """Prepare OpenAI API request parameters.
 
@@ -246,6 +248,8 @@ def prepare_openai_request(
               system message (e.g. with instructions for JSON mode formatting).
             - A ChatCompletionCreateKwargs dict with parameters for OpenAI's create method.
     """
+    if params:
+        raise NotImplementedError("param use not yet supported")
 
     kwargs: ChatCompletionCreateKwargs = {
         "model": model_id,

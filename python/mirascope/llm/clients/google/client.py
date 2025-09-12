@@ -106,11 +106,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> Response | Response[FormatT]:
         """Make a call to the Google GenAI API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format
+            messages, tools, format, params=params
         )
 
         google_response = self.client.models.generate_content(
@@ -224,11 +221,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
         """Make an async call to the Google GenAI API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format
+            messages, tools, format, params=params
         )
 
         google_response = await self.client.aio.models.generate_content(
@@ -341,11 +335,9 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         format: type[FormatT] | None = None,
         params: GoogleParams | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
+        """Make a streaming call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format
+            messages, tools, format, params=params
         )
 
         google_stream = self.client.models.generate_content_stream(
@@ -457,11 +449,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         """Make an async streaming call to the Google GenAI API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format
+            messages, tools, format, params=params
         )
 
         google_stream = await self.client.aio.models.generate_content_stream(

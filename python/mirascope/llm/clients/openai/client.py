@@ -103,11 +103,12 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         params: OpenAIParams | None = None,
     ) -> Response | Response[FormatT]:
         """Make a call to the OpenAI ChatCompletions API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, kwargs = _utils.prepare_openai_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         openai_response = self.client.chat.completions.create(**kwargs)
@@ -217,11 +218,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         params: OpenAIParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
         """Make an async call to the OpenAI ChatCompletions API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, kwargs = _utils.prepare_openai_request(
             model_id=model_id,
+            params=params,
             messages=messages,
             tools=tools,
             format=format,
@@ -334,11 +333,12 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         params: OpenAIParams | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
         """Make a streaming call to the OpenAI API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, kwargs = _utils.prepare_openai_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         openai_stream = self.client.chat.completions.create(
@@ -449,11 +449,12 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         params: OpenAIParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         """Make an async streaming call to the OpenAI API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, kwargs = _utils.prepare_openai_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         openai_stream = await self.async_client.chat.completions.create(

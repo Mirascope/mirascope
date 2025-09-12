@@ -103,11 +103,12 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> Response | Response[FormatT]:
         """Make a call to the Anthropic API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         anthropic_response = self.client.messages.create(**kwargs)
@@ -217,11 +218,12 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]:
         """Make an async call to the Anthropic API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         anthropic_response = await self.async_client.messages.create(**kwargs)
@@ -331,11 +333,12 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]:
         """Make a streaming call to the Anthropic API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         anthropic_stream = self.client.messages.stream(**kwargs)
@@ -445,11 +448,12 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         params: AnthropicParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         """Make an async streaming call to the Anthropic API."""
-        if params:
-            raise NotImplementedError("param use not yet supported")
-
         input_messages, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id, messages=messages, tools=tools, format=format
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         anthropic_stream = self.async_client.messages.stream(**kwargs)
