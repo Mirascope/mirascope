@@ -4,22 +4,20 @@ from mirascope import llm
 
 
 @dataclass
-class Deps: ...
+class Deps:
+    bar: int
 
 
 @dataclass
-class OtherDeps: ...
+class OtherDeps:
+    foo: str
 
 
 def prompt() -> str:
     return "hello world"
 
 
-def context_prompt(ctx: llm.Context) -> str:
-    return "hello world"
-
-
-def context_prompt_deps(ctx: llm.Context[Deps]) -> str:
+def context_prompt(ctx: llm.Context[Deps]) -> str:
     return "hello world"
 
 
@@ -27,12 +25,12 @@ async def async_prompt() -> str:
     return "hello world"
 
 
-async def async_context_prompt(ctx: llm.Context) -> str:
+async def async_context_prompt(ctx: llm.Context[Deps]) -> str:
     return "hello world"
 
 
-async def async_context_prompt_deps(ctx: llm.Context[Deps]) -> str:
-    return "hello world"
+def context() -> llm.Context[Deps]:
+    return llm.Context(deps=Deps(bar=3))
 
 
 @llm.tool
@@ -41,13 +39,8 @@ def tool() -> int:
 
 
 @llm.context_tool
-def context_tool(ctx: llm.Context) -> int:
+def context_tool(ctx: llm.Context[Deps]) -> int:
     return 42
-
-
-@llm.context_tool
-def context_tool_deps(ctx: llm.Context[Deps]) -> int:
-    return 43
 
 
 @llm.tool
@@ -56,22 +49,17 @@ async def async_tool() -> int:
 
 
 @llm.context_tool
-async def async_context_tool(ctx: llm.Context) -> int:
+async def async_context_tool(ctx: llm.Context[Deps]) -> int:
     return 42
 
 
 @llm.context_tool
-async def async_context_tool_deps(ctx: llm.Context[Deps]) -> int:
-    return 43
-
-
-@llm.context_tool
-def tool_other_deps(ctx: llm.Context[OtherDeps]):
+def context_tool_other_deps(ctx: llm.Context[OtherDeps]):
     return 41
 
 
 @llm.context_tool
-async def async_tool_other_deps(ctx: llm.Context[OtherDeps]):
+async def async_context_tool_other_deps(ctx: llm.Context[OtherDeps]):
     return 41
 
 
@@ -80,26 +68,20 @@ def tool_call() -> llm.ToolCall:
 
 
 def expect_call(x: llm.calls.Call): ...
-def expect_context_call(x: llm.calls.ContextCall): ...
-def expect_context_call_deps(x: llm.calls.ContextCall[..., Deps]): ...
 def expect_async_call(x: llm.calls.AsyncCall): ...
-def expect_async_context_call(x: llm.calls.AsyncContextCall): ...
-def expect_async_context_call_deps(x: llm.calls.AsyncContextCall[..., Deps]): ...
+def expect_context_call(x: llm.calls.ContextCall[..., Deps]): ...
+def expect_async_context_call(x: llm.calls.AsyncContextCall[..., Deps]): ...
 
 
 def expect_tool(x: llm.tools.Tool): ...
-def expect_context_tool(x: llm.tools.ContextTool): ...
-def expect_context_tool_deps(x: llm.tools.ContextTool[Deps, ...]): ...
 def expect_async_tool(x: llm.tools.AsyncTool): ...
-def expect_async_context_tool(x: llm.tools.AsyncContextTool): ...
-def expect_async_context_tool_deps(x: llm.tools.AsyncContextTool[Deps, ...]): ...
+def expect_context_tool(x: llm.tools.ContextTool[Deps]): ...
+def expect_async_context_tool(x: llm.tools.AsyncContextTool[Deps]): ...
 
 
 def sanity_checks():
     expect_tool(tool)
     expect_context_tool(context_tool)
-    expect_context_tool_deps(context_tool_deps)
 
     expect_async_tool(async_tool)
     expect_async_context_tool(async_context_tool)
-    expect_async_context_tool_deps(async_context_tool_deps)

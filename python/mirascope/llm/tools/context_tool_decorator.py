@@ -5,16 +5,16 @@ from dataclasses import dataclass
 from typing import overload
 from typing_extensions import TypeIs
 
-from ..context import RequiredDepsT
+from ..context import DepsT
 from ..types import JsonableCovariantT, P
 from .context_tool import AsyncContextTool, ContextTool
 from .protocols import AsyncContextToolFn, ContextToolFn
 
 
 def _is_async_context_tool_fn(
-    fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT]
-    | AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT],
-) -> TypeIs[AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT]]:
+    fn: ContextToolFn[DepsT, P, JsonableCovariantT]
+    | AsyncContextToolFn[DepsT, P, JsonableCovariantT],
+) -> TypeIs[AsyncContextToolFn[DepsT, P, JsonableCovariantT]]:
     return inspect.iscoroutinefunction(fn)
 
 
@@ -27,49 +27,49 @@ class ContextToolDecorator:
 
     @overload
     def __call__(
-        self, fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT]
-    ) -> ContextTool[RequiredDepsT, P, JsonableCovariantT]:
+        self, fn: ContextToolFn[DepsT, P, JsonableCovariantT]
+    ) -> ContextTool[DepsT, P, JsonableCovariantT]:
         """Call the decorator with a sync function."""
         ...
 
     @overload
     def __call__(
-        self, fn: AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT]
-    ) -> AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]:
+        self, fn: AsyncContextToolFn[DepsT, P, JsonableCovariantT]
+    ) -> AsyncContextTool[DepsT, P, JsonableCovariantT]:
         """Call the decorator with an async function."""
         ...
 
     def __call__(
         self,
-        fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT]
-        | AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT],
+        fn: ContextToolFn[DepsT, P, JsonableCovariantT]
+        | AsyncContextToolFn[DepsT, P, JsonableCovariantT],
     ) -> (
-        ContextTool[RequiredDepsT, P, JsonableCovariantT]
-        | AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]
+        ContextTool[DepsT, P, JsonableCovariantT]
+        | AsyncContextTool[DepsT, P, JsonableCovariantT]
     ):
         """Call the decorator with a function."""
         if _is_async_context_tool_fn(fn):
-            return AsyncContextTool[RequiredDepsT, P, JsonableCovariantT](
+            return AsyncContextTool[DepsT, P, JsonableCovariantT](
                 fn, strict=self.strict, is_context_tool=True
             )
         else:
-            return ContextTool[RequiredDepsT, P, JsonableCovariantT](
+            return ContextTool[DepsT, P, JsonableCovariantT](
                 fn, strict=self.strict, is_context_tool=True
             )
 
 
 @overload
 def context_tool(
-    __fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT],
-) -> ContextTool[RequiredDepsT, P, JsonableCovariantT]:
+    __fn: ContextToolFn[DepsT, P, JsonableCovariantT],
+) -> ContextTool[DepsT, P, JsonableCovariantT]:
     """Overload for no arguments, which uses default settings."""
     ...
 
 
 @overload
 def context_tool(
-    __fn: AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT],
-) -> AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]:
+    __fn: AsyncContextToolFn[DepsT, P, JsonableCovariantT],
+) -> AsyncContextTool[DepsT, P, JsonableCovariantT]:
     """Overload for async functions with no arguments."""
     ...
 
@@ -81,15 +81,15 @@ def context_tool(*, strict: bool = False) -> ContextToolDecorator:
 
 
 def context_tool(
-    __fn: ContextToolFn[RequiredDepsT, P, JsonableCovariantT]
-    | AsyncContextToolFn[RequiredDepsT, P, JsonableCovariantT]
+    __fn: ContextToolFn[DepsT, P, JsonableCovariantT]
+    | AsyncContextToolFn[DepsT, P, JsonableCovariantT]
     | None = None,
     *,
-    deps_type: type[RequiredDepsT] | type[None] | None = None,
+    deps_type: type[DepsT] | type[None] | None = None,
     strict: bool = False,
 ) -> (
-    ContextTool[RequiredDepsT, P, JsonableCovariantT]
-    | AsyncContextTool[RequiredDepsT, P, JsonableCovariantT]
+    ContextTool[DepsT, P, JsonableCovariantT]
+    | AsyncContextTool[DepsT, P, JsonableCovariantT]
     | ContextToolDecorator
 ):
     '''Decorator that turns a function into a context tool definition.
