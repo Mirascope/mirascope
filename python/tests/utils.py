@@ -36,7 +36,10 @@ def response_snapshot_dict(response: llm.responses.RootResponse[Any, Any]) -> di
 
 
 def stream_response_snapshot_dict(
-    response: llm.StreamResponse | llm.AsyncStreamResponse,
+    response: llm.StreamResponse
+    | llm.AsyncStreamResponse
+    | llm.ContextStreamResponse
+    | llm.AsyncContextStreamResponse,
 ) -> dict:
     """Return a dictionary of public fields for snapshot testing.
 
@@ -48,7 +51,6 @@ def stream_response_snapshot_dict(
         "model_id": response.model_id,
         "finish_reason": response.finish_reason,
         "messages": list(response.messages),
-        "consumed": response.consumed,
         "n_chunks": len(
             response.chunks
         ),  # Just snapshot the number of chunks to minimize bloat. Chunk reconstruction is tested separately.

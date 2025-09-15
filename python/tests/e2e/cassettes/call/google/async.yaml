@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '75'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RTU/DMAy991dEubJO6ecQEifGYdImBpQPCTh41OvK2qRqMgSq9t9J2nVL4UoO
+        VuT37Gc/Nw4h9B14mqegUNIL8qIzhDRtNJjgCrnSQJ/SyQpqdeJ2r7H+mqLwyxTR0GeMnJHQJ5c6
+        hP4rpxZxf/y/jU7ta1GgqS1FikVP3/cEus55Ljd3CFJwQ7tPbpb0iMJnNhdZVYuVmdBlY8ZYHEVx
+        fB5EAQs95gVs4vTirSzdSchwgQq0CXBcleomZaUSsUV+JXatCZ7fCVmeDfHogCuhoBhA/mT0p62c
+        atG8sL20bNb7Q5Grb7Nkcv2cUMsjNZyqN8mxvPw943+JRUMx53Cb7lyPWMu8u0uGpb6U64+Zuy5A
+        btqOtEZZCS5xlhqOC8EM5is+XTzJUm2XHys3k7cP1Nk7P7KI8libAgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Sep 2025 00:23:21 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=530
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
