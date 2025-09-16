@@ -2,7 +2,7 @@
 
 import os
 from collections.abc import Sequence
-from typing import overload
+from typing import cast, overload
 
 from google.genai import Client
 from google.genai.types import HttpOptions
@@ -96,42 +96,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> Response | Response[FormatT]: ...
 
-    def call(
-        self,
-        *,
-        model_id: GoogleModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT] | None = None,
-        params: GoogleParams | None = None,
-    ) -> Response | Response[FormatT]:
-        """Make a call to the Google GenAI API."""
-        input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
-        )
-
-        google_response = self.client.models.generate_content(
-            model=model_id,
-            contents=contents,
-            config=config,
-        )
-
-        assistant_message, finish_reason = _utils.decode_response(google_response)
-
-        return Response(
-            raw=google_response,
-            provider="google",
-            model_id=model_id,
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            format_type=format,
-        )
-
     @overload
-    def context_call(
+    def call(
         self,
         *,
         ctx: Context[DepsT],
@@ -140,10 +106,10 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: None = None,
         params: GoogleParams | None = None,
-    ) -> ContextResponse[DepsT, None]: ...
+    ) -> ContextResponse[DepsT]: ...
 
     @overload
-    def context_call(
+    def call(
         self,
         *,
         ctx: Context[DepsT],
@@ -155,7 +121,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> ContextResponse[DepsT, FormatT]: ...
 
     @overload
-    def context_call(
+    def call(
         self,
         *,
         ctx: Context[DepsT],
@@ -164,18 +130,23 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: GoogleParams | None = None,
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]: ...
+    ) -> ContextResponse[DepsT] | ContextResponse[DepsT, FormatT]: ...
 
-    def context_call(
+    def call(
         self,
         *,
-        ctx: Context[DepsT],
+        ctx: Context[DepsT] | None = None,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool] | Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: GoogleParams | None = None,
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
+    ) -> (
+        Response
+        | Response[FormatT]
+        | ContextResponse[DepsT]
+        | ContextResponse[DepsT, FormatT]
+    ):
         """Make a call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
             messages, tools, format, params=params
@@ -189,17 +160,31 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
 
         assistant_message, finish_reason = _utils.decode_response(google_response)
 
-        return ContextResponse(
-            raw=google_response,
-            provider="google",
-            model_id=model_id,
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            format_type=format,
-        )
+        if ctx is not None:
+            return ContextResponse(
+                raw=google_response,
+                provider="google",
+                model_id=model_id,
+                params=params,
+                tools=tools,
+                input_messages=input_messages,
+                assistant_message=assistant_message,
+                finish_reason=finish_reason,
+                format_type=format,
+            )
+        else:
+            tools = cast(Sequence[Tool] | None, tools)
+            return Response(
+                raw=google_response,
+                provider="google",
+                model_id=model_id,
+                params=params,
+                tools=tools,
+                input_messages=input_messages,
+                assistant_message=assistant_message,
+                finish_reason=finish_reason,
+                format_type=format,
+            )
 
     @overload
     async def call_async(
@@ -234,42 +219,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormatT]: ...
 
-    async def call_async(
-        self,
-        *,
-        model_id: GoogleModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT] | None = None,
-        params: GoogleParams | None = None,
-    ) -> AsyncResponse | AsyncResponse[FormatT]:
-        """Make an async call to the Google GenAI API."""
-        input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
-        )
-
-        google_response = await self.client.aio.models.generate_content(
-            model=model_id,
-            contents=contents,
-            config=config,
-        )
-
-        assistant_message, finish_reason = _utils.decode_response(google_response)
-
-        return AsyncResponse(
-            raw=google_response,
-            provider="google",
-            model_id=model_id,
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            format_type=format,
-        )
-
     @overload
-    async def context_call_async(
+    async def call_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -278,10 +229,10 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
         params: GoogleParams | None = None,
-    ) -> AsyncContextResponse[DepsT, None]: ...
+    ) -> AsyncContextResponse[DepsT]: ...
 
     @overload
-    async def context_call_async(
+    async def call_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -293,7 +244,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> AsyncContextResponse[DepsT, FormatT]: ...
 
     @overload
-    async def context_call_async(
+    async def call_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -302,18 +253,25 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: GoogleParams | None = None,
-    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]: ...
+    ) -> AsyncContextResponse[DepsT] | AsyncContextResponse[DepsT, FormatT]: ...
 
-    async def context_call_async(
+    async def call_async(
         self,
         *,
-        ctx: Context[DepsT],
+        ctx: Context[DepsT] | None = None,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool]
+        | Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | None = None,
         format: type[FormatT] | None = None,
         params: GoogleParams | None = None,
-    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
+    ) -> (
+        AsyncResponse
+        | AsyncResponse[FormatT]
+        | AsyncContextResponse[DepsT]
+        | AsyncContextResponse[DepsT, FormatT]
+    ):
         """Make an async call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
             messages, tools, format, params=params
@@ -327,17 +285,31 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
 
         assistant_message, finish_reason = _utils.decode_response(google_response)
 
-        return AsyncContextResponse(
-            raw=google_response,
-            provider="google",
-            model_id=model_id,
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            assistant_message=assistant_message,
-            finish_reason=finish_reason,
-            format_type=format,
-        )
+        if ctx is not None:
+            return AsyncContextResponse(
+                raw=google_response,
+                provider="google",
+                model_id=model_id,
+                params=params,
+                tools=tools,
+                input_messages=input_messages,
+                assistant_message=assistant_message,
+                finish_reason=finish_reason,
+                format_type=format,
+            )
+        else:
+            tools = cast(Sequence[AsyncTool] | None, tools)
+            return AsyncResponse(
+                raw=google_response,
+                provider="google",
+                model_id=model_id,
+                params=params,
+                tools=tools,
+                input_messages=input_messages,
+                assistant_message=assistant_message,
+                finish_reason=finish_reason,
+                format_type=format,
+            )
 
     @overload
     def stream(
@@ -372,40 +344,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> StreamResponse | StreamResponse[FormatT]: ...
 
-    def stream(
-        self,
-        *,
-        model_id: GoogleModelId,
-        messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
-        format: type[FormatT] | None = None,
-        params: GoogleParams | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]:
-        """Make a streaming call to the Google GenAI API."""
-        input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
-        )
-
-        google_stream = self.client.models.generate_content_stream(
-            model=model_id,
-            contents=contents,
-            config=config,
-        )
-
-        chunk_iterator = _utils.convert_google_stream_to_chunk_iterator(google_stream)
-
-        return StreamResponse(
-            provider="google",
-            model_id=model_id,
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format_type=format,
-        )
-
     @overload
-    def context_stream(
+    def stream(
         self,
         *,
         ctx: Context[DepsT],
@@ -417,7 +357,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> ContextStreamResponse[DepsT]: ...
 
     @overload
-    def context_stream(
+    def stream(
         self,
         *,
         ctx: Context[DepsT],
@@ -429,7 +369,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> ContextStreamResponse[DepsT, FormatT]: ...
 
     @overload
-    def context_stream(
+    def stream(
         self,
         *,
         ctx: Context[DepsT],
@@ -440,16 +380,21 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormatT]: ...
 
-    def context_stream(
+    def stream(
         self,
         *,
-        ctx: Context[DepsT],
+        ctx: Context[DepsT] | None = None,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool] | Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
         params: GoogleParams | None = None,
-    ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormatT]:
+    ) -> (
+        StreamResponse
+        | StreamResponse[FormatT]
+        | ContextStreamResponse[DepsT]
+        | ContextStreamResponse[DepsT, FormatT]
+    ):
         """Make a streaming call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
             messages, tools, format, params=params
@@ -463,15 +408,27 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
 
         chunk_iterator = _utils.convert_google_stream_to_chunk_iterator(google_stream)
 
-        return ContextStreamResponse(
-            provider="google",
-            model_id=model_id,
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format_type=format,
-        )
+        if ctx is not None:
+            return ContextStreamResponse(
+                provider="google",
+                model_id=model_id,
+                params=params,
+                tools=tools,
+                input_messages=input_messages,
+                chunk_iterator=chunk_iterator,
+                format_type=format,
+            )
+        else:
+            tools = cast(Sequence[Tool] | None, tools)
+            return StreamResponse(
+                provider="google",
+                model_id=model_id,
+                params=params,
+                tools=tools,
+                input_messages=input_messages,
+                chunk_iterator=chunk_iterator,
+                format_type=format,
+            )
 
     @overload
     async def stream_async(
@@ -506,42 +463,8 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         params: GoogleParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
 
-    async def stream_async(
-        self,
-        *,
-        model_id: GoogleModelId,
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT] | None = None,
-        params: GoogleParams | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
-        """Make an async streaming call to the Google GenAI API."""
-        input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
-        )
-
-        google_stream = await self.client.aio.models.generate_content_stream(
-            model=model_id,
-            contents=contents,
-            config=config,
-        )
-
-        chunk_iterator = _utils.convert_google_stream_to_async_chunk_iterator(
-            google_stream
-        )
-
-        return AsyncStreamResponse(
-            provider="google",
-            model_id=model_id,
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format_type=format,
-        )
-
     @overload
-    async def context_stream_async(
+    async def stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -553,7 +476,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> AsyncContextStreamResponse[DepsT]: ...
 
     @overload
-    async def context_stream_async(
+    async def stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -565,7 +488,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> AsyncContextStreamResponse[DepsT, FormatT]: ...
 
     @overload
-    async def context_stream_async(
+    async def stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -574,18 +497,27 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
         params: GoogleParams | None = None,
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormatT]: ...
+    ) -> (
+        AsyncContextStreamResponse[DepsT] | AsyncContextStreamResponse[DepsT, FormatT]
+    ): ...
 
-    async def context_stream_async(
+    async def stream_async(
         self,
         *,
-        ctx: Context[DepsT],
+        ctx: Context[DepsT] | None = None,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool]
+        | Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | None = None,
         format: type[FormatT] | None = None,
         params: GoogleParams | None = None,
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormatT]:
+    ) -> (
+        AsyncStreamResponse
+        | AsyncStreamResponse[FormatT]
+        | AsyncContextStreamResponse[DepsT]
+        | AsyncContextStreamResponse[DepsT, FormatT]
+    ):
         """Make an async streaming call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
             messages, tools, format, params=params
@@ -601,12 +533,24 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
             google_stream
         )
 
-        return AsyncContextStreamResponse(
-            provider="google",
-            model_id=model_id,
-            params=params,
-            tools=tools,
-            input_messages=input_messages,
-            chunk_iterator=chunk_iterator,
-            format_type=format,
-        )
+        if ctx is not None:
+            return AsyncContextStreamResponse(
+                provider="google",
+                model_id=model_id,
+                params=params,
+                tools=tools,
+                input_messages=input_messages,
+                chunk_iterator=chunk_iterator,
+                format_type=format,
+            )
+        else:
+            tools = cast(Sequence[AsyncTool] | None, tools)
+            return AsyncStreamResponse(
+                provider="google",
+                model_id=model_id,
+                params=params,
+                tools=tools,
+                input_messages=input_messages,
+                chunk_iterator=chunk_iterator,
+                format_type=format,
+            )

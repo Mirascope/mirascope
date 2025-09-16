@@ -241,7 +241,7 @@ class ContextResponse(
             A new `ContextResponse` instance generated from the extended message history.
         """
         messages = self.messages + [user(content)]
-        return self.model.context_call(
+        return self.model.call(
             ctx=ctx,
             messages=messages,
             tools=self.toolkit.tools,
@@ -325,7 +325,7 @@ class AsyncContextResponse(
             A new `AsyncContextResponse` instance generated from the extended message history.
         """
         messages = self.messages + [user(content)]
-        return await self.model.context_call_async(
+        return await self.model.call_async(
             ctx=ctx,
             messages=messages,
             tools=self.toolkit.tools,

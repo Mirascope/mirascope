@@ -67,7 +67,7 @@ class ContextCall(
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         """Generates a response using the LLM."""
         messages = context_prompt(self.fn)(ctx, *args, **kwargs)
-        return self.model.context_call(
+        return self.model.call(
             ctx=ctx, messages=messages, tools=self.toolkit.tools, format=self.format
         )
 
@@ -92,7 +92,7 @@ class ContextCall(
     ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]:
         """Generates a streaming response using the LLM."""
         messages = context_prompt(self.fn)(ctx, *args, **kwargs)
-        return self.model.context_stream(
+        return self.model.stream(
             ctx=ctx, messages=messages, tools=self.toolkit.tools, format=self.format
         )
 
@@ -147,7 +147,7 @@ class AsyncContextCall(
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         """Generates a response using the LLM asynchronously."""
         messages = await context_prompt(self.fn)(ctx, *args, **kwargs)
-        return await self.model.context_call_async(
+        return await self.model.call_async(
             ctx=ctx, messages=messages, tools=self.toolkit.tools, format=self.format
         )
 
@@ -175,6 +175,6 @@ class AsyncContextCall(
     ):
         """Generates a streaming response using the LLM asynchronously."""
         messages = await context_prompt(self.fn)(ctx, *args, **kwargs)
-        return await self.model.context_stream_async(
+        return await self.model.stream_async(
             ctx=ctx, messages=messages, tools=self.toolkit.tools, format=self.format
         )

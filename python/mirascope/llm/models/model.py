@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import TYPE_CHECKING, Generic, Literal, overload
+from typing import TYPE_CHECKING, Generic, Literal, cast, overload
 from typing_extensions import Unpack
 
 from ..clients import ClientT, ParamsT, get_client
@@ -147,21 +147,68 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormatT] | None,
     ) -> Response | Response[FormatT]: ...
 
+    @overload
     def call(
         self,
         *,
+        ctx: Context[DepsT],
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        format: None = None,
+    ) -> ContextResponse[DepsT]: ...
+
+    @overload
+    def call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        format: type[FormatT],
+    ) -> ContextResponse[DepsT, FormatT]: ...
+
+    @overload
+    def call(
+        self,
+        *,
+        ctx: Context[DepsT],
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        format: type[FormatT] | None,
+    ) -> ContextResponse[DepsT] | ContextResponse[DepsT, FormatT]: ...
+
+    def call(
+        self,
+        *,
+        ctx: Context[DepsT] | None = None,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
-    ) -> Response | Response[FormatT]:
+    ) -> (
+        Response
+        | Response[FormatT]
+        | ContextResponse[DepsT]
+        | ContextResponse[DepsT, FormatT]
+    ):
         """Generate a response using the model."""
-        return self.client.call(
-            model_id=self.model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=self.params,
-        )
+        if ctx is not None:
+            return self.client.call(
+                ctx=ctx,
+                model_id=self.model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                params=self.params,
+            )
+        else:
+            tools = cast(Sequence[Tool] | None, tools)
+            return self.client.call(
+                model_id=self.model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                params=self.params,
+            )
 
     @overload
     async def call_async(
@@ -190,21 +237,70 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormatT] | None,
     ) -> AsyncResponse | AsyncResponse[FormatT]: ...
 
+    @overload
     async def call_async(
         self,
         *,
+        ctx: Context[DepsT],
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        format: None = None,
+    ) -> AsyncContextResponse[DepsT]: ...
+
+    @overload
+    async def call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        format: type[FormatT],
+    ) -> AsyncContextResponse[DepsT, FormatT]: ...
+
+    @overload
+    async def call_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        format: type[FormatT] | None,
+    ) -> AsyncContextResponse[DepsT] | AsyncContextResponse[DepsT, FormatT]: ...
+
+    async def call_async(
+        self,
+        *,
+        ctx: Context[DepsT] | None = None,
+        messages: Sequence[Message],
+        tools: Sequence[AsyncTool]
+        | Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | None = None,
         format: type[FormatT] | None = None,
-    ) -> AsyncResponse | AsyncResponse[FormatT]:
+    ) -> (
+        AsyncResponse
+        | AsyncResponse[FormatT]
+        | AsyncContextResponse[DepsT]
+        | AsyncContextResponse[DepsT, FormatT]
+    ):
         """Generate a response asynchronously using the model."""
-        return await self.client.call_async(
-            model_id=self.model_id,
-            messages=messages,
-            tools=tools,
-            params=self.params,
-            format=format,
-        )
+        if ctx is not None:
+            return await self.client.call_async(
+                ctx=ctx,
+                model_id=self.model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                params=self.params,
+            )
+        else:
+            tools = cast(Sequence[AsyncTool] | None, tools)
+            return await self.client.call_async(
+                model_id=self.model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                params=self.params,
+            )
 
     @overload
     def stream(
@@ -233,21 +329,68 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormatT] | None,
     ) -> StreamResponse | StreamResponse[FormatT]: ...
 
+    @overload
     def stream(
         self,
         *,
+        ctx: Context[DepsT],
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        format: None = None,
+    ) -> ContextStreamResponse[DepsT]: ...
+
+    @overload
+    def stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        format: type[FormatT],
+    ) -> ContextStreamResponse[DepsT, FormatT]: ...
+
+    @overload
+    def stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        messages: Sequence[Message],
+        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        format: type[FormatT] | None,
+    ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormatT]: ...
+
+    def stream(
+        self,
+        *,
+        ctx: Context[DepsT] | None = None,
+        messages: Sequence[Message],
+        tools: Sequence[Tool] | Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormatT] | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]:
+    ) -> (
+        StreamResponse
+        | StreamResponse[FormatT]
+        | ContextStreamResponse[DepsT]
+        | ContextStreamResponse[DepsT, FormatT]
+    ):
         """Stream a response using the model."""
-        return self.client.stream(
-            model_id=self.model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=self.params,
-        )
+        if ctx is not None:
+            return self.client.stream(
+                ctx=ctx,
+                model_id=self.model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                params=self.params,
+            )
+        else:
+            tools = cast(Sequence[Tool] | None, tools)
+            return self.client.stream(
+                model_id=self.model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                params=self.params,
+            )
 
     @overload
     async def stream_async(
@@ -276,178 +419,18 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormatT] | None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
 
+    @overload
     async def stream_async(
         self,
         *,
-        messages: list[Message],
-        tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT] | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
-        """Stream a response asynchronously using the model."""
-        return await self.client.stream_async(
-            model_id=self.model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=self.params,
-        )
-
-    @overload
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: None = None,
-    ) -> ContextResponse[DepsT, None]: ...
-
-    @overload
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT],
-    ) -> ContextResponse[DepsT, FormatT]: ...
-
-    @overload
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None,
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]: ...
-
-    def context_call(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None = None,
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
-        """Generate a response using the model."""
-        return self.client.context_call(
-            ctx=ctx,
-            model_id=self.model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=self.params,
-        )
-
-    @overload
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: None = None,
-    ) -> AsyncContextResponse[DepsT, None]: ...
-
-    @overload
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: type[FormatT],
-    ) -> AsyncContextResponse[DepsT, FormatT]: ...
-
-    @overload
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None,
-    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]: ...
-
-    async def context_call_async(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None = None,
-    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
-        """Generate a response asynchronously using the model."""
-        return await self.client.context_call_async(
-            ctx=ctx,
-            model_id=self.model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=self.params,
-        )
-
-    @overload
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: None = None,
-    ) -> ContextStreamResponse[DepsT, None]: ...
-
-    @overload
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT],
-    ) -> ContextStreamResponse[DepsT, FormatT]: ...
-
-    @overload
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None,
-    ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]: ...
-
-    def context_stream(
-        self,
-        *,
-        ctx: Context[DepsT],
-        messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None = None,
-    ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]:
-        """Stream a response using the model."""
-        return self.client.context_stream(
-            ctx=ctx,
-            model_id=self.model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=self.params,
-        )
-
-    @overload
-    async def context_stream_async(
-        self,
-        *,
         ctx: Context[DepsT],
         messages: list[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
-    ) -> AsyncContextStreamResponse[DepsT, None]: ...
+    ) -> AsyncContextStreamResponse[DepsT]: ...
 
     @overload
-    async def context_stream_async(
+    async def stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -457,7 +440,7 @@ class Model(Generic[ClientT, ParamsT]):
     ) -> AsyncContextStreamResponse[DepsT, FormatT]: ...
 
     @overload
-    async def context_stream_async(
+    async def stream_async(
         self,
         *,
         ctx: Context[DepsT],
@@ -465,30 +448,43 @@ class Model(Generic[ClientT, ParamsT]):
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormatT] | None,
     ) -> (
-        AsyncContextStreamResponse[DepsT, None]
-        | AsyncContextStreamResponse[DepsT, FormatT]
+        AsyncContextStreamResponse[DepsT] | AsyncContextStreamResponse[DepsT, FormatT]
     ): ...
 
-    async def context_stream_async(
+    async def stream_async(
         self,
         *,
-        ctx: Context[DepsT],
+        ctx: Context[DepsT] | None = None,
         messages: list[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool]
+        | Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | None = None,
         format: type[FormatT] | None = None,
     ) -> (
-        AsyncContextStreamResponse[DepsT, None]
+        AsyncStreamResponse
+        | AsyncStreamResponse[FormatT]
+        | AsyncContextStreamResponse[DepsT]
         | AsyncContextStreamResponse[DepsT, FormatT]
     ):
         """Stream a response asynchronously using the model."""
-        return await self.client.context_stream_async(
-            ctx=ctx,
-            model_id=self.model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=self.params,
-        )
+        if ctx is not None:
+            return await self.client.stream_async(
+                ctx=ctx,
+                model_id=self.model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                params=self.params,
+            )
+        else:
+            tools = cast(Sequence[AsyncTool] | None, tools)
+            return await self.client.stream_async(
+                model_id=self.model_id,
+                messages=messages,
+                tools=tools,
+                format=format,
+                params=self.params,
+            )
 
 
 @overload

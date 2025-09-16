@@ -410,7 +410,7 @@ class ContextStreamResponse(
             A new `ContextStreamResponse` instance generated from the extended message history.
         """
         messages = self.messages + [user(content)]
-        return self.model.context_stream(
+        return self.model.stream(
             ctx=ctx,
             messages=messages,
             tools=self.toolkit.tools,
@@ -553,7 +553,7 @@ class AsyncContextStreamResponse(
             A new `AsyncContextStreamResponse` instance generated from the extended message history.
         """
         messages = self.messages + [user(content)]
-        return await self.model.context_stream_async(
+        return await self.model.stream_async(
             ctx=ctx,
             messages=messages,
             tools=self.toolkit.tools,
