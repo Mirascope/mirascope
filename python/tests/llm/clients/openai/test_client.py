@@ -10,7 +10,6 @@ from tests.llm.clients.scenarios import (
     STRUCTURED_SCENARIO_IDS,
     get_scenario,
     get_structured_scenario,
-    simple_message_scenario,
 )
 
 TEST_MODEL_ID = "gpt-4o"
@@ -76,54 +75,6 @@ def test_structured_outputs(
     scenario = get_structured_scenario(scenario_id, TEST_MODEL_ID, formatting_mode)
     response = openai_client.call(**scenario.call_args)
     scenario.check_response(response)
-
-
-# TODO: context_call will be tested on all scenarios when we switch to decorator-level
-# integration testing.
-@pytest.mark.vcr()
-def test_context_call(openai_client: llm.OpenAIClient) -> None:
-    scenario = simple_message_scenario(TEST_MODEL_ID)
-    ctx = llm.Context(deps=42)
-
-    response = openai_client.context_call(ctx=ctx, **scenario.call_args)
-    scenario.check_response(response)
-
-
-@pytest.mark.vcr()
-def test_context_stream(openai_client: llm.OpenAIClient) -> None:
-    scenario = simple_message_scenario(TEST_MODEL_ID)
-    ctx = llm.Context(deps=42)
-
-    stream_response = openai_client.context_stream(ctx=ctx, **scenario.call_args)
-    for _ in stream_response.chunk_stream():
-        pass
-    scenario.check_response(stream_response)
-
-
-@pytest.mark.vcr()
-@pytest.mark.asyncio
-async def test_context_call_async(openai_client: llm.OpenAIClient) -> None:
-    scenario = simple_message_scenario(TEST_MODEL_ID)
-    ctx = llm.Context(deps=42)
-
-    async_response = await openai_client.context_call_async(
-        ctx=ctx, **scenario.call_async_args
-    )
-    scenario.check_response(async_response)
-
-
-@pytest.mark.vcr()
-@pytest.mark.asyncio
-async def test_context_stream_async(openai_client: llm.OpenAIClient) -> None:
-    scenario = simple_message_scenario(TEST_MODEL_ID)
-    ctx = llm.Context(deps=42)
-
-    async_stream_response = await openai_client.context_stream_async(
-        ctx=ctx, **scenario.call_async_args
-    )
-    async for _ in async_stream_response.chunk_stream():
-        pass
-    scenario.check_response(async_stream_response)
 
 
 #####################################
