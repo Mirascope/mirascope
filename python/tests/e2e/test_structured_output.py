@@ -46,7 +46,7 @@ def test_structured_output_sync_context(
         title: str
         author: str
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         format=Book,
@@ -102,7 +102,7 @@ async def test_structured_output_async_context(
         title: str
         author: str
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         format=Book,
@@ -160,7 +160,7 @@ def test_structured_output_stream_context(
         title: str
         author: str
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         format=Book,
@@ -224,7 +224,7 @@ async def test_structured_output_async_stream_context(
         title: str
         author: str
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         format=Book,

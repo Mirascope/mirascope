@@ -59,7 +59,7 @@ def test_call_with_tools_sync_context(
         """A tool that requires a password to retrieve a secret."""
         return ctx.deps.get(password, "Invalid password!")
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[secret_retrieval_tool],
@@ -141,7 +141,7 @@ async def test_call_with_tools_async_context(
         """A tool that requires a password to retrieve a secret."""
         return ctx.deps.get(password, "Invalid password!")
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[secret_retrieval_tool],
@@ -224,7 +224,7 @@ def test_call_with_tools_stream_context(
         """A tool that requires a password to retrieve a secret."""
         return ctx.deps.get(password, "Invalid password!")
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[secret_retrieval_tool],
@@ -318,7 +318,7 @@ async def test_call_with_tools_async_stream_context(
         """A tool that requires a password to retrieve a secret."""
         return ctx.deps.get(password, "Invalid password!")
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[secret_retrieval_tool],

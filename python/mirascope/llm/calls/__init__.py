@@ -6,10 +6,6 @@ from .call_decorator import (
     call,
 )
 from .context_call import AsyncContextCall, ContextCall
-from .context_call_decorator import (
-    ContextCallDecorator,
-    context_call,
-)
 
 __all__ = [
     "AsyncCall",
@@ -17,7 +13,5 @@ __all__ = [
     "Call",
     "CallDecorator",
     "ContextCall",
-    "ContextCallDecorator",
     "call",
-    "context_call",
 ]
