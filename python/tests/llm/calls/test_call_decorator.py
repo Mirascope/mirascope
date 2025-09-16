@@ -25,6 +25,17 @@ def tools() -> list[llm.Tool]:
 
 
 @pytest.fixture
+def context_tools() -> list[llm.ContextTool]:
+    """Create a mock context tool for testing."""
+
+    @llm.tool
+    def context_tool(ctx: llm.Context[int]) -> int:
+        return ctx.deps
+
+    return [context_tool]
+
+
+@pytest.fixture
 def async_tools() -> list[llm.AsyncTool]:
     """Create a mock tool for testing."""
 
@@ -36,134 +47,337 @@ def async_tools() -> list[llm.AsyncTool]:
 
 
 @pytest.fixture
+def async_context_tools() -> list[llm.AsyncContextTool]:
+    """Create a mock async context tool for testing."""
+
+    @llm.tool
+    async def async_context_tool(ctx: llm.Context[int]) -> int:
+        return ctx.deps
+
+    return [async_context_tool]
+
+
+@pytest.fixture
 def params() -> llm.clients.BaseParams:
     return {"temperature": 0.7, "max_tokens": 100}
 
 
-def test_call_decorator_creation_openai(
-    tools: list[llm.Tool], params: llm.clients.BaseParams
-) -> None:
-    """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
+class TestCall:
+    """Tests for regular call decorator (no context dependency)."""
 
-    decorator = llm.call(
-        provider="openai",
-        model_id="gpt-4o-mini",
-        tools=tools,
-        format=Format,
-        **params,
-    )
+    def test_call_decorator_creation_openai(
+        self, tools: list[llm.Tool], params: llm.clients.BaseParams
+    ) -> None:
+        """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
-    assert decorator.tools is tools
-    assert decorator.format is Format
-    assert decorator.model.provider == "openai"
-    assert decorator.model.model_id == "gpt-4o-mini"
-    assert decorator.model.params == params
+        decorator = llm.call(
+            provider="openai",
+            model_id="gpt-4o-mini",
+            tools=tools,
+            format=Format,
+            **params,
+        )
 
+        assert decorator.tools is tools
+        assert decorator.format is Format
+        assert decorator.model.provider == "openai"
+        assert decorator.model.model_id == "gpt-4o-mini"
+        assert decorator.model.params == params
 
-def test_creating_sync_call(
-    tools: list[llm.Tool], params: llm.clients.BaseParams
-) -> None:
-    """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
+    def test_creating_sync_call(
+        self, tools: list[llm.Tool], params: llm.clients.BaseParams
+    ) -> None:
+        """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
-    def prompt() -> str:
-        return "Please recommend a fantasy book."
+        def prompt() -> str:
+            return "Please recommend a fantasy book."
 
-    call = llm.call(
-        provider="openai",
-        model_id="gpt-4o-mini",
-        tools=tools,
-        format=Format,
-        **params,
-    )(prompt)
+        call = llm.call(
+            provider="openai",
+            model_id="gpt-4o-mini",
+            tools=tools,
+            format=Format,
+            **params,
+        )(prompt)
 
-    assert isinstance(call, llm.calls.Call)
+        assert isinstance(call, llm.calls.Call)
 
-    assert call.model.provider == "openai"
-    assert call.model.model_id == "gpt-4o-mini"
-    assert call.model.params == params
+        assert call.model.provider == "openai"
+        assert call.model.model_id == "gpt-4o-mini"
+        assert call.model.params == params
 
-    assert call.toolkit == llm.Toolkit(tools=tools)
-    assert call.format is Format
-    assert call.fn is prompt
+        assert call.toolkit == llm.Toolkit(tools=tools)
+        assert call.format is Format
+        assert call.fn is prompt
 
+    @pytest.mark.asyncio
+    async def test_creating_async_call(
+        self, async_tools: list[llm.AsyncTool], params: llm.clients.BaseParams
+    ) -> None:
+        """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
-@pytest.mark.asyncio
-async def test_creating_async_call(
-    async_tools: list[llm.AsyncTool], params: llm.clients.BaseParams
-) -> None:
-    """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
+        async def async_prompt() -> str:
+            return "Please recommend a fantasy book."
 
-    async def async_prompt() -> str:
-        return "Please recommend a fantasy book."
+        call = llm.call(
+            provider="openai",
+            model_id="gpt-4o-mini",
+            tools=async_tools,
+            format=Format,
+            **params,
+        )(async_prompt)
 
-    call = llm.call(
-        provider="openai",
-        model_id="gpt-4o-mini",
-        tools=async_tools,
-        format=Format,
-        **params,
-    )(async_prompt)
+        assert isinstance(call, llm.calls.AsyncCall)
 
-    assert isinstance(call, llm.calls.AsyncCall)
+        assert call.model.provider == "openai"
+        assert call.model.model_id == "gpt-4o-mini"
+        assert call.model.params == params
 
-    assert call.model.provider == "openai"
-    assert call.model.model_id == "gpt-4o-mini"
-    assert call.model.params == params
+        assert call.toolkit == llm.AsyncToolkit(tools=async_tools)
+        assert call.format is Format
+        assert call.fn is async_prompt
 
-    assert call.toolkit == llm.AsyncToolkit(tools=async_tools)
-    assert call.format is Format
-    assert call.fn is async_prompt
+    @pytest.mark.vcr()
+    def test_call_decorator_e2e_model_override(self) -> None:
+        # TODO: Remove e2e tests from non-e2e test directory; either add model
+        # override test coverage to e2e, or refactor this to use mocking etc.
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        def call() -> str:
+            return "What company created you? Answer in just one word."
 
+        assert call().pretty() == snapshot("OpenAI.")
+        with llm.model(provider="google", model_id="gemini-2.0-flash"):
+            assert call().pretty() == snapshot("Google.\n")
+            with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+                assert call().pretty() == snapshot("Anthropic")
 
-@pytest.mark.vcr()
-def test_call_decorator_e2e_anthropic() -> None:
-    @llm.call(provider="anthropic", model_id="claude-sonnet-4-0")
-    def call() -> str:
-        return "Please recommend a fantasy book. Answer concisely in just one sentence."
-
-    response = call()
-    assert response.pretty() == snapshot(
-        'I recommend "The Name of the Wind" by Patrick Rothfuss for its beautiful prose and compelling story of Kvothe, a legendary figure recounting his youth as a gifted student of magic.'
-    )
-
-
-@pytest.mark.vcr()
-def test_call_decorator_e2e_google() -> None:
-    @llm.call(provider="google", model_id="gemini-2.0-flash")
-    def call() -> str:
-        return "Please recommend a fantasy book. Answer concisely in just one sentence."
-
-    response = call()
-    assert response.pretty() == snapshot(
-        'For a captivating blend of political intrigue, epic battles, and compelling characters, read "The Lies of Locke Lamora" by Scott Lynch.\n'
-    )
+    def test_value_error_invalid_provider(self) -> None:
+        with pytest.raises(ValueError, match="Unknown provider: nonexistent"):
+            llm.call(provider="nonexistent", model_id="gpt-4o-mini")  # pyright: ignore[reportCallIssue, reportArgumentType]
 
 
-@pytest.mark.vcr()
-def test_call_decorator_e2e_openai() -> None:
-    @llm.call(provider="openai", model_id="gpt-4o-mini")
-    def call() -> str:
-        return "Please recommend a fantasy book. Answer concisely in just one sentence."
+class TestContextCall:
+    """Tests for context call decorator (with context dependency)."""
 
-    response = call()
-    assert response.pretty() == snapshot(
-        'I recommend "The Name of the Wind" by Patrick Rothfuss for its rich storytelling and captivating protagonist.'
-    )
+    def test_context_call_decorator_creation_openai(
+        self, context_tools: list[llm.ContextTool], params: llm.clients.BaseParams
+    ) -> None:
+        """Test that context_call decorator creates ContextCallDecorator with correct parameters for OpenAI."""
 
+        decorator = llm.call(
+            provider="openai",
+            model_id="gpt-4o-mini",
+            tools=context_tools,
+            format=Format,
+            **params,
+        )
 
-@pytest.mark.vcr()
-def test_call_decorator_e2e_model_override() -> None:
-    @llm.call(provider="openai", model_id="gpt-4o-mini")
-    def call() -> str:
-        return "What company created you? Answer in just one word."
+        assert decorator.tools is context_tools
+        assert decorator.format is Format
+        assert decorator.model.provider == "openai"
+        assert decorator.model.model_id == "gpt-4o-mini"
+        assert decorator.model.params == params
 
-    assert call().pretty() == snapshot("OpenAI.")
-    with llm.model(provider="google", model_id="gemini-2.0-flash"):
-        assert call().pretty() == snapshot("Google.\n")
-        with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
-            assert call().pretty() == snapshot("Anthropic")
+    def test_creating_sync_context_call(
+        self, context_tools: list[llm.ContextTool], params: llm.clients.BaseParams
+    ) -> None:
+        """Test that context_call decorator creates ContextCall with correct parameters."""
 
+        def context_prompt(ctx: llm.Context[int]) -> str:
+            return f"Please recommend a fantasy book. My context value is {ctx.deps}."
 
-def test_value_error_invalid_provider() -> None:
-    with pytest.raises(ValueError, match="Unknown provider: nonexistent"):
-        llm.call(provider="nonexistent", model_id="gpt-4o-mini")  # pyright: ignore[reportCallIssue, reportArgumentType]
+        call = llm.call(
+            provider="openai",
+            model_id="gpt-4o-mini",
+            tools=context_tools,
+            format=Format,
+            **params,
+        )(context_prompt)
+
+        assert isinstance(call, llm.calls.ContextCall)
+
+        assert call.model.provider == "openai"
+        assert call.model.model_id == "gpt-4o-mini"
+        assert call.model.params == params
+
+        assert call.toolkit == llm.ContextToolkit(tools=context_tools)
+        assert call.format is Format
+        assert call.fn is context_prompt
+
+    @pytest.mark.asyncio
+    async def test_creating_async_context_call(
+        self,
+        async_context_tools: list[llm.AsyncContextTool],
+        params: llm.clients.BaseParams,
+    ) -> None:
+        """Test that context_call decorator creates AsyncContextCall with correct parameters."""
+
+        async def async_context_prompt(ctx: llm.Context[int]) -> str:
+            return f"Please recommend a fantasy book. My context value is {ctx.deps}."
+
+        call = llm.call(
+            provider="openai",
+            model_id="gpt-4o-mini",
+            tools=async_context_tools,
+            format=Format,
+            **params,
+        )(async_context_prompt)
+
+        assert isinstance(call, llm.calls.AsyncContextCall)
+
+        assert call.model.provider == "openai"
+        assert call.model.model_id == "gpt-4o-mini"
+        assert call.model.params == params
+
+        assert call.toolkit == llm.AsyncContextToolkit(tools=async_context_tools)
+        assert call.format is Format
+        assert call.fn is async_context_prompt
+
+    def test_context_call_decorator_with_mixed_tools(
+        self, tools: list[llm.Tool], params: llm.clients.BaseParams
+    ) -> None:
+        """Test that context_call decorator works with regular tools too."""
+
+        def context_prompt(ctx: llm.Context[int]) -> str:
+            return f"Please recommend a fantasy book. My context value is {ctx.deps}."
+
+        call = llm.call(
+            provider="openai",
+            model_id="gpt-4o-mini",
+            tools=tools,
+            format=Format,
+            **params,
+        )(context_prompt)
+
+        assert isinstance(call, llm.calls.ContextCall)
+        assert call.toolkit == llm.ContextToolkit(tools=tools)
+
+    @pytest.mark.vcr()
+    def test_context_call_decorator_e2e_model_override(self) -> None:
+        # TODO: Remove e2e tests from non-e2e test directory; either add model
+        # override test coverage to e2e, or refactor this to use mocking etc.
+        ctx = llm.Context(deps="Who created you?")
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        def call(ctx: llm.Context[str]) -> str:
+            return f"Answer the question in just one word: {ctx.deps}."
+
+        assert call(ctx).pretty() == snapshot("OpenAI.")
+        with llm.model(provider="google", model_id="gemini-2.0-flash"):
+            assert call(ctx).pretty() == snapshot("Google.\n")
+            with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+                assert call(ctx).pretty() == snapshot("Anthropic.")
+
+    def test_context_parameter_name_independence(self) -> None:
+        """Test that context prompts work regardless of first parameter name."""
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        def context_weird_name(special_context: llm.Context[str]) -> str:
+            return f"Value: {special_context.deps}"
+
+        assert isinstance(context_weird_name, llm.calls.ContextCall)
+
+    def test_async_context_parameter_name_independence(self) -> None:
+        """Test that async context prompts work regardless of first parameter name."""
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        async def context_weird_name(special_context: llm.Context[str]) -> str:
+            return f"Value: {special_context.deps}"
+
+        assert isinstance(context_weird_name, llm.calls.AsyncContextCall)
+
+    def test_non_context_typed_parameter(self) -> None:
+        """Test that non-Context typed parameters are not treated as context prompts."""
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        def non_context_prompt(ctx: int) -> str:
+            return f"Value: {ctx}"
+
+        assert isinstance(non_context_prompt, llm.calls.Call)
+
+    def test_async_non_context_typed_parameter(self) -> None:
+        """Test that non-Context typed async parameters are not treated as context prompts."""
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        async def non_context_prompt(ctx: int) -> str:
+            return f"Value: {ctx}"
+
+        assert isinstance(non_context_prompt, llm.calls.AsyncCall)
+
+    def test_missing_type_annotation(self) -> None:
+        """Test that missing type annotations are not treated as context prompts."""
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        def missing_annotation_prompt(ctx) -> str:  # noqa: ANN001
+            return "hi"
+
+        assert isinstance(missing_annotation_prompt, llm.calls.Call)
+
+    def test_async_missing_type_annotation(self) -> None:
+        """Test that missing type annotations are not treated as async context prompts."""
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        async def missing_annotation_prompt(ctx) -> str:  # noqa: ANN001
+            return "hi"
+
+        assert isinstance(missing_annotation_prompt, llm.calls.AsyncCall)
+
+    def test_method_with_context_after_self(self) -> None:
+        """Test that methods with self as first arg and Context as second arg are context prompts."""
+
+        class TestClass:
+            @llm.call(provider="openai", model_id="gpt-4o-mini")
+            def method_with_context(self, ctx: llm.Context[str]) -> str:
+                return f"Value: {ctx.deps}"
+
+        assert isinstance(TestClass.method_with_context, llm.calls.ContextCall)
+
+    def test_async_method_with_context_after_self(self) -> None:
+        """Test that async methods with self as first arg and Context as second arg are context prompts."""
+
+        class TestClass:
+            @llm.call(provider="openai", model_id="gpt-4o-mini")
+            async def method_with_context(self, ctx: llm.Context[str]) -> str:
+                return f"Value: {ctx.deps}"
+
+        assert isinstance(TestClass.method_with_context, llm.calls.AsyncContextCall)
+
+    def test_context_not_first_parameter(self) -> None:
+        """Test that Context as second parameter (after non-self) is not treated as context prompt."""
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        def second_arg_context(regular_param: int, ctx: llm.Context[str]) -> str:
+            return f"Value: {regular_param}-{ctx.deps}"
+
+        assert isinstance(second_arg_context, llm.calls.Call)
+
+    def test_async_context_not_first_parameter(self) -> None:
+        """Test that Context as second parameter (after non-self) is not treated as async context prompt."""
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        async def second_arg_context(regular_param: int, ctx: llm.Context[str]) -> str:
+            return f"Value: {regular_param}-{ctx.deps}"
+
+        assert isinstance(second_arg_context, llm.calls.AsyncCall)
+
+    def test_context_subclass_detection(self) -> None:
+        """Test that Context subclasses are properly detected as context prompts."""
+
+        class CustomContext(llm.Context[str]): ...
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        def with_custom_context(ctx: CustomContext) -> str:
+            return str(ctx.deps)
+
+        assert isinstance(with_custom_context, llm.calls.ContextCall)
+
+    def test_async_context_subclass_detection(self) -> None:
+        """Test that Context subclasses are properly detected as async context prompts."""
+
+        class CustomContext(llm.Context[str]): ...
+
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        async def with_custom_context(ctx: CustomContext) -> str:
+            return str(ctx.deps)
+
+        assert isinstance(with_custom_context, llm.calls.AsyncContextCall)
