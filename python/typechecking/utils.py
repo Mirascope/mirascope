@@ -38,7 +38,7 @@ def tool() -> int:
     return 41
 
 
-@llm.context_tool
+@llm.tool
 def context_tool(ctx: llm.Context[Deps]) -> int:
     return 42
 
@@ -48,17 +48,17 @@ async def async_tool() -> int:
     return 41
 
 
-@llm.context_tool
+@llm.tool
 async def async_context_tool(ctx: llm.Context[Deps]) -> int:
     return 42
 
 
-@llm.context_tool
+@llm.tool
 def context_tool_other_deps(ctx: llm.Context[OtherDeps]):
     return 41
 
 
-@llm.context_tool
+@llm.tool
 async def async_context_tool_other_deps(ctx: llm.Context[OtherDeps]):
     return 41
 

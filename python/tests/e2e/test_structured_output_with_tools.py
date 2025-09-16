@@ -71,7 +71,7 @@ def test_structured_output_with_tools_sync_context(
 ) -> None:
     """Test synchronous structured output with tools and context."""
 
-    @llm.context_tool
+    @llm.tool
     def get_book_info(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
@@ -169,7 +169,7 @@ async def test_structured_output_with_tools_async_context(
 ) -> None:
     """Test asynchronous structured output with tools and context."""
 
-    @llm.context_tool
+    @llm.tool
     async def get_book_info(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
@@ -272,7 +272,7 @@ def test_structured_output_with_tools_stream_context(
 ) -> None:
     """Test streaming structured output with tools and context."""
 
-    @llm.context_tool
+    @llm.tool
     def get_book_info(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
@@ -384,7 +384,7 @@ async def test_structured_output_with_tools_async_stream_context(
 ) -> None:
     """Test async streaming structured output with tools and context."""
 
-    @llm.context_tool
+    @llm.tool
     async def get_book_info(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")

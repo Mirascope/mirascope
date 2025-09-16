@@ -137,7 +137,7 @@ def context_tool_call() -> llm.ToolCall:
 def context_tool() -> llm.ContextTool:
     """Create mock context tool for testing."""
 
-    @llm.context_tool
+    @llm.tool
     def deps_tool(ctx: llm.Context) -> str:
         return f"deps: {ctx.deps}"
 
@@ -148,7 +148,7 @@ def context_tool() -> llm.ContextTool:
 def async_context_tool() -> llm.AsyncContextTool:
     """Create mock context tool for testing."""
 
-    @llm.context_tool
+    @llm.tool
     async def deps_tool(ctx: llm.Context) -> str:
         return f"deps: {ctx.deps}"
 
