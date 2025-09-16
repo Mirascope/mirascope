@@ -401,7 +401,7 @@ def test_context_tool_equivalence() -> None:
         return example
 
     def make_context() -> llm.tools.ToolSchema:
-        @llm.context_tool
+        @llm.tool
         def example(ctx: llm.Context[None], arg: str) -> str:
             return arg
 

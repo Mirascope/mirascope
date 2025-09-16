@@ -153,7 +153,7 @@ class ToolSchema(Generic[ToolFnT]):
         Args:
             fn: The function to extract schema from
             strict: Whether the tool should use strict mode when supported
-            is_context_tool: Whether this is a context tool (skips 'ctx' parameter)
+            is_context_tool: Whether this is a context tool (skips the context parameter)
 
         Returns:
             a `ToolSchema` representing the function
@@ -173,13 +173,16 @@ class ToolSchema(Generic[ToolFnT]):
         field_definitions = {}
         hints = get_type_hints(fn, include_extras=True)
 
+        context_param_skipped = False
         for param in inspect.signature(fn).parameters.values():
             # Skip args that are provided by Python or Mirascope, not LLM-generated.
             # TODO: Handling of FromCallArgs
             if param.name in ("self", "cls"):
                 continue
 
-            if is_context_tool and param.name == "ctx":
+            # For context tools, skip the first non-self/cls parameter (the context parameter)
+            if is_context_tool and not context_param_skipped:
+                context_param_skipped = True
                 continue
 
             param_type = hints.get(param.name, Any)
