@@ -1,0 +1,224 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please retrieve
+      the secrets associated with each of these passwords: mellon,radiance"}],"model":"claude-sonnet-4-0","tools":[{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '435'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//nJFda9swFIb/ijk3u1GGHeJBfTmafcAulpC1pKMIRTqx1cg6no6cLAn+
+        70Pu0q4bg7ErIb0fj3R0BmuggpZrmRc3p/fXiuanxcOX2zd2oz+U68N8CQLiscPkQmZVIwgI5NKB
+        YrYclY8goCWDDirQTvUGJ0zeY5zMJtN8WuZlMQMBmnxEH6H6er5URvyewuNSwcdXzmUBY7C4xyw2
+        mDHqgJGzLYVsQ7HJOsV8oGA4O1KfdYH21qB5DYN47iRysud0z/Fxad/LvCgP8/WVWb3rcLVbrpeL
+        082m3m1AgFdtyj2y5E++cjIFU4nv+gjVGS7scRTOkYfhH7CrxV29/Xy3PT5M336i2y0u+Lpu/w8b
+        lLHKa4RhuBfAkToZUDH5l/xRYPzWY/JWvndOQD/+XXV+LJaRdugZqlmRC9BKNyh1QBUtefnS8aQH
+        VOZv2iWbANg12GJQTpbtn/5ntWh+VwcB1Mdfj4r8SgBj2FuNMloMaWJReaOCgWH4AQAA//8DAAX4
+        0SHAAgAA
+    headers:
+      CF-RAY:
+      - 97fd17972baac382-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Sep 2025 02:56:45 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-09-16T02:56:44Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-09-16T02:56:45Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-09-16T02:56:42Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-09-16T02:56:44Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CTBKyhaCwAGYDAchLwdaZ
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '3031'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please retrieve
+      the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"type":"text","text":"I''ll
+      retrieve the secrets for both passwords you provided."},{"type":"tool_use","id":"toolu_015wEY9dTFpeTkRYRQzVbgkb","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_01TQZgfPZfyj2BLoWfeQsDgm","name":"secret_retrieval_tool","input":{"password":"radiance"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_015wEY9dTFpeTkRYRQzVbgkb","content":"Welcome
+      to Moria!"},{"type":"tool_result","tool_use_id":"toolu_01TQZgfPZfyj2BLoWfeQsDgm","content":"Life
+      before Death"}]}],"model":"claude-sonnet-4-0","tools":[{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '1020'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SRwWobQQyGX2Wq4zIG27ELnmOpSQ4x9NZDXZbJzO/s0FnNRqO1U4zfvWwa0zah
+        JyF9nySQzpQiOerrYztfbO9vN7txe1o+H1anu4fdp+642D6RJf05YLJQq38EWZKSp4KvNVX1rGSp
+        LxGZHIXsx4hZLczQ2Wq2nC/X8/ViRZZCYQUruW/n60jF89T8EhzdQWC8wGgHUxEEWo1AJeGIaA5F
+        DHzozOBrPRWJbs97npkvr6nZU4+cC+/Jmab5ihxKD6PF7Iok/6Fp3tjiY/Ic8Nu/TweYBxyKwHyG
+        165p6PLdUtUytAJfC5MjcGx1FKZXUPE0ggPI8ZizpfHlRO5MiYdRWy0/wJXcevPRUvChQxsEXlPh
+        9l9jfuUCH//Hrr3TAgwdeojP7bp/7/+hi+4tvVgqo/5dutlYqpBjCmg1QcjR9NjoJdLl8gsAAP//
+        AwDTWLFOJgIAAA==
+    headers:
+      CF-RAY:
+      - 97fd17ab2ba5c382-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Sep 2025 02:56:46 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-09-16T02:56:46Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-09-16T02:56:46Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-09-16T02:56:45Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-09-16T02:56:46Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CTBKywCkSfMLDAawNSifG
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '1445'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -174,11 +174,13 @@ class ToolSchema(Generic[ToolFnT]):
         hints = get_type_hints(fn, include_extras=True)
 
         for param in inspect.signature(fn).parameters.values():
+            # Skip args that are provided by Python or Mirascope, not LLM-generated.
+            # TODO: Handling of FromCallArgs
             if param.name in ("self", "cls"):
                 continue
 
             if is_context_tool and param.name == "ctx":
-                continue  # TODO: Revisit as we finalize context handling
+                continue
 
             param_type = hints.get(param.name, Any)
             default = ... if param.default is inspect.Parameter.empty else param.default
