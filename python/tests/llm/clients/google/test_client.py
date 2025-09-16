@@ -14,7 +14,6 @@ from tests.llm.clients.scenarios import (
     STRUCTURED_SCENARIO_IDS,
     get_scenario,
     get_structured_scenario,
-    simple_message_scenario,
 )
 
 TEST_MODEL_ID = "gemini-2.5-flash"
@@ -71,54 +70,6 @@ async def test_stream_async(
     async for _ in response.chunk_stream():
         pass
     scenario.check_response(response)
-
-
-# TODO: context_call will be tested on all scenarios when we switch to decorator-level
-# integration testing.
-@pytest.mark.vcr()
-def test_context_call(google_client: llm.GoogleClient) -> None:
-    scenario = simple_message_scenario(TEST_MODEL_ID)
-    ctx = llm.Context(deps=42)
-
-    response = google_client.context_call(ctx=ctx, **scenario.call_args)
-    scenario.check_response(response)
-
-
-@pytest.mark.vcr()
-def test_context_stream(google_client: llm.GoogleClient) -> None:
-    scenario = simple_message_scenario(TEST_MODEL_ID)
-    ctx = llm.Context(deps=42)
-
-    stream_response = google_client.context_stream(ctx=ctx, **scenario.call_args)
-    for _ in stream_response.chunk_stream():
-        pass
-    scenario.check_response(stream_response)
-
-
-@pytest.mark.vcr()
-@pytest.mark.asyncio
-async def test_context_call_async(google_client: llm.GoogleClient) -> None:
-    scenario = simple_message_scenario(TEST_MODEL_ID)
-    ctx = llm.Context(deps=42)
-
-    async_response = await google_client.context_call_async(
-        ctx=ctx, **scenario.call_async_args
-    )
-    scenario.check_response(async_response)
-
-
-@pytest.mark.vcr()
-@pytest.mark.asyncio
-async def test_context_stream_async(google_client: llm.GoogleClient) -> None:
-    scenario = simple_message_scenario(TEST_MODEL_ID)
-    ctx = llm.Context(deps=42)
-
-    async_stream_response = await google_client.context_stream_async(
-        ctx=ctx, **scenario.call_async_args
-    )
-    async for _ in async_stream_response.chunk_stream():
-        pass
-    scenario.check_response(async_stream_response)
 
 
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
