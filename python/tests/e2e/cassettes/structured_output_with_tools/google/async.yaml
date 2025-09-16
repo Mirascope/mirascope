@@ -1,0 +1,156 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "When you are ready to respond to the user, call the __mirascope_formatted_output_tool__
+      tool to output a structured response.\nDo NOT output any text in addition to
+      the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in BookSummary format for a final response.",
+      "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"properties":
+      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
+      "type": "string"}, "pages": {"title": "Pages", "type": "integer"}, "publication_year":
+      {"title": "Publication Year", "type": "integer"}, "recommendation_score": {"description":
+      "Should be 7 for testing purposes", "title": "Recommendation Score", "type":
+      "integer"}}, "required": ["title", "author", "pages", "publication_year", "recommendation_score"],
+      "title": "BookSummary", "type": "object"}}, {"description": "Look up book information
+      by ISBN.", "name": "get_book_info", "parameters": {"properties": {"isbn": {"title":
+      "Isbn", "type": "STRING"}}, "required": ["isbn"], "type": "OBJECT"}}]}], "toolConfig":
+      {"functionCallingConfig": {"mode": "ANY"}}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1371'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RXW+CMBR951eQPosBQQp71W3Zsu+RxWRZzEUKdpYWaTVZjP99BUTBbW/rQ9Pe
+        c3rO7T07wzTRAnhCE1BEogvzXVdMc1fvFSa4IlxpoC3pYgGlOnGbteucNSXd8IWigk+Asd7jA84h
+        J7qOMqLmsRCrOeWpQINzGpSZ/OW5RqiMeSVgW9gfu5bj4MCaoTPe3vjrdjp/nExRKVjdVS4Swlqx
+        fUtAKeVULl8ISFF7v0aPT8eeEWyzO5EVpYirlvFw5Ad+6IfYc7GHvXFALBsbrXftijYSMnJPFOjp
+        w/GfSGvkhYrEivCJ2NTTdxyvMeqk1SeEB1wJBawPue7gh7CcalvKujF2EtYDAEbVV/XL6HIWdZLR
+        Bv2+2jEZnWmed/lfbmHfzDik0wT2RkpJm2QykuusrNHQtlIGclkropLIQnBJbpKK87me3sLDtLyC
+        6+1ayadtPEmCZxsZe+MbbenieBcDAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Sep 2025 17:38:23 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=850
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "role": "user"}, {"parts":
+      [{"functionCall": {"args": {"isbn": "0-7653-1178-X"}, "name": "get_book_info"}}],
+      "role": "model"}, {"parts": [{"functionResponse": {"name": "get_book_info",
+      "response": {"output": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson,
+      Pages: 544, Published: 2006-07-25"}}}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "When you are ready to respond to the user, call the __mirascope_formatted_output_tool__
+      tool to output a structured response.\nDo NOT output any text in addition to
+      the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in BookSummary format for a final response.",
+      "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"properties":
+      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
+      "type": "string"}, "pages": {"title": "Pages", "type": "integer"}, "publication_year":
+      {"title": "Publication Year", "type": "integer"}, "recommendation_score": {"description":
+      "Should be 7 for testing purposes", "title": "Recommendation Score", "type":
+      "integer"}}, "required": ["title", "author", "pages", "publication_year", "recommendation_score"],
+      "title": "BookSummary", "type": "object"}}, {"description": "Look up book information
+      by ISBN.", "name": "get_book_info", "parameters": {"properties": {"isbn": {"title":
+      "Isbn", "type": "STRING"}}, "required": ["isbn"], "type": "OBJECT"}}]}], "toolConfig":
+      {"functionCallingConfig": {"mode": "ANY"}}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1682'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61SwY6bMBC98xXI52blkJDs7q3dbKWtuuqqi9pKVYUm4BC3xsPaQ6Uoyr93gLCB
+        NL2VAxi/5/fGb2YfhKHIwOY6B1Je3IbfeScM9+27wdCSssRAv8WbFTg6cbtnP1gzZVPbjDTaOzBm
+        dPiIWygV74s0LbUDn2Gl0g26EohUnmJNVU0pIZo0FW/OD4Mr/AVRRkiTaXUftac1OnsbJlsVvtcW
+        THhfVtqpv+T4mFMZlqWyHALXnHI5rlFZXqBWULQ5xfP5JbReG511KjsFjomRlIsLTKhpiw0u3jnO
+        H234zB/lPFpxxj4E//o7rX+cLITDLoMSc2V6sUNPEBtttd9+VtBYMe05+fT0GoqA38VHLCqH6+aW
+        E3klpZwu4pvFdSQjGc9jKeProDdvbUXtOZRHRcD5wWtjBIuUFSX4S9k7rNshmi5nndNg6EaE2fSI
+        ExKYERTJY+JDYb9iW22G0zgYVE4AjKZdc83k/lsy6D0bjOvqcwoGcZ5X+Z/cZtOxWXBsT9exLzwE
+        umtNoUpu1iS6kpONAb9tFXlafYXWq4e84fxcrD7Ag5usXr6WL+SfdtnypnjrRXAI/gDwlArV3gMA
+        AA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Sep 2025 17:38:24 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1029
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
