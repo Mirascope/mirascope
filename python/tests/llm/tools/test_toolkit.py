@@ -125,3 +125,66 @@ async def test_async_toolkit_execute(
     output = await toolkit.execute(tool_call)
 
     assert output.value == "result: value"
+
+
+@pytest.fixture
+def context_tool_call() -> llm.ToolCall:
+    """Create a mock tool call for testing."""
+    return llm.ToolCall(name="deps_tool", id="bef", args="{}")
+
+
+@pytest.fixture
+def context_tool() -> llm.ContextTool:
+    """Create mock context tool for testing."""
+
+    @llm.context_tool
+    def deps_tool(ctx: llm.Context) -> str:
+        return f"deps: {ctx.deps}"
+
+    return deps_tool
+
+
+@pytest.fixture
+def async_context_tool() -> llm.AsyncContextTool:
+    """Create mock context tool for testing."""
+
+    @llm.context_tool
+    async def deps_tool(ctx: llm.Context) -> str:
+        return f"deps: {ctx.deps}"
+
+    return deps_tool
+
+
+def test_context_toolkit_execute(
+    tools: list[llm.Tool],
+    context_tool: llm.ContextTool,
+    tool_call: llm.ToolCall,
+    context_tool_call: llm.ToolCall,
+) -> None:
+    """Test that execute runs the correct tool and returns output, including context tools."""
+    toolkit = llm.ContextToolkit(tools=[*tools, context_tool])
+    ctx = llm.Context(deps=None)
+
+    output = toolkit.execute(ctx, tool_call)
+    assert output.value == "result: value"
+
+    output = toolkit.execute(ctx, context_tool_call)
+    assert output.value == "deps: None"
+
+
+@pytest.mark.asyncio
+async def test_async_context_toolkit_execute(
+    async_tools: list[llm.AsyncTool],
+    async_context_tool: llm.AsyncContextTool,
+    tool_call: llm.ToolCall,
+    context_tool_call: llm.ToolCall,
+) -> None:
+    """Test that execute runs the correct tool and returns output, including context tools."""
+    toolkit = llm.AsyncContextToolkit(tools=[*async_tools, async_context_tool])
+    ctx = llm.Context(deps=None)
+
+    output = await toolkit.execute(ctx, tool_call)
+    assert output.value == "result: value"
+
+    output = await toolkit.execute(ctx, context_tool_call)
+    assert output.value == "deps: None"

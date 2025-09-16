@@ -274,7 +274,10 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
         Returns:
             A new `AsyncStreamResponse` instance generated from the extended message history.
         """
-        raise NotImplementedError
+        messages = self.messages + [user(content)]
+        return await self.model.stream_async(
+            messages=messages, tools=self.toolkit.tools, format=self.format_type
+        )
 
 
 class ContextStreamResponse(
@@ -376,7 +379,7 @@ class ContextStreamResponse(
             ToolNotFoundError: If one of the response's tool calls has no matching tool.
             Exception: If one of the tools throws an exception.
         """
-        raise NotImplementedError
+        return [self.toolkit.execute(ctx, tool_call) for tool_call in self.tool_calls]
 
     @overload
     def resume(
@@ -406,7 +409,13 @@ class ContextStreamResponse(
         Returns:
             A new `ContextStreamResponse` instance generated from the extended message history.
         """
-        raise NotImplementedError
+        messages = self.messages + [user(content)]
+        return self.model.context_stream(
+            ctx=ctx,
+            messages=messages,
+            tools=self.toolkit.tools,
+            format=self.format_type,
+        )
 
 
 class AsyncContextStreamResponse(
@@ -508,7 +517,8 @@ class AsyncContextStreamResponse(
             ToolNotFoundError: If one of the response's tool calls has no matching tool.
             Exception: If one of the tools throws an exception.
         """
-        raise NotImplementedError
+        tasks = [self.toolkit.execute(ctx, tool_call) for tool_call in self.tool_calls]
+        return await asyncio.gather(*tasks)
 
     @overload
     async def resume(
@@ -542,4 +552,10 @@ class AsyncContextStreamResponse(
         Returns:
             A new `AsyncContextStreamResponse` instance generated from the extended message history.
         """
-        raise NotImplementedError
+        messages = self.messages + [user(content)]
+        return await self.model.context_stream_async(
+            ctx=ctx,
+            messages=messages,
+            tools=self.toolkit.tools,
+            format=self.format_type,
+        )

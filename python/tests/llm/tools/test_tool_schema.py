@@ -390,3 +390,27 @@ def test_cannot_use_reserved_names() -> None:
 
     with pytest.raises(ValueError, match="reserved name"):
         llm.tools.ToolSchema(__mirascope_formatted_output_tool__)
+
+
+def test_context_tool_equivalence() -> None:
+    def make_non_context() -> llm.tools.ToolSchema:
+        @llm.tool
+        def example(arg: str) -> str:
+            return arg
+
+        return example
+
+    def make_context() -> llm.tools.ToolSchema:
+        @llm.context_tool
+        def example(ctx: llm.Context[None], arg: str) -> str:
+            return arg
+
+        return example
+
+    non_context_schema = make_non_context()
+    context_schema = make_context()
+
+    assert non_context_schema.name == context_schema.name
+    assert non_context_schema.description == context_schema.description
+    assert non_context_schema.parameters == context_schema.parameters
+    assert hash(non_context_schema) == hash(context_schema)

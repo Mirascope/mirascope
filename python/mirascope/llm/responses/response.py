@@ -160,7 +160,10 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormatT]):
         Returns:
             A new `AsyncResponse` instance generated from the extended message history.
         """
-        raise NotImplementedError
+        messages = self.messages + [user(content)]
+        return await self.model.call_async(
+            messages=messages, tools=self.toolkit.tools, format=self.format_type
+        )
 
 
 class ContextResponse(
@@ -207,7 +210,7 @@ class ContextResponse(
             ToolNotFoundError: If one of the response's tool calls has no matching tool.
             Exception: If one of the tools throws an exception.
         """
-        raise NotImplementedError
+        return [self.toolkit.execute(ctx, tool_call) for tool_call in self.tool_calls]
 
     @overload
     def resume(
@@ -237,7 +240,13 @@ class ContextResponse(
         Returns:
             A new `ContextResponse` instance generated from the extended message history.
         """
-        raise NotImplementedError
+        messages = self.messages + [user(content)]
+        return self.model.context_call(
+            ctx=ctx,
+            messages=messages,
+            tools=self.toolkit.tools,
+            format=self.format_type,
+        )
 
 
 class AsyncContextResponse(
@@ -284,7 +293,8 @@ class AsyncContextResponse(
             ToolNotFoundError: If one of the response's tool calls has no matching tool.
             Exception: If one of the tools throws an exception.
         """
-        raise NotImplementedError
+        tasks = [self.toolkit.execute(ctx, tool_call) for tool_call in self.tool_calls]
+        return await asyncio.gather(*tasks)
 
     @overload
     async def resume(
@@ -314,4 +324,10 @@ class AsyncContextResponse(
         Returns:
             A new `AsyncContextResponse` instance generated from the extended message history.
         """
-        raise NotImplementedError
+        messages = self.messages + [user(content)]
+        return await self.model.context_call_async(
+            ctx=ctx,
+            messages=messages,
+            tools=self.toolkit.tools,
+            format=self.format_type,
+        )
