@@ -1,0 +1,114 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"When
+      you are ready to respond to the user, call the __mirascope_formatted_output_tool__
+      tool to output a structured response.\nDo NOT output any text in addition to
+      the tool call.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '765'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SRW0vEMBCF/0qZ5yx0tavYNxEvKCxeEREJIZ21cZtMzUy8Lf3vkuoqKj4m35kz
+        hzMrcA3U4Plel9Pr7c3no9fKHT480c1Vugj7fPbmQYG89phVyGzuERRE6vKHYXYsJggo8NRgBzXY
+        zqQGJ0whoEyqyUa5MStn0woUWAqCQaC+Xa0thajTibPnGCS/ky6nB/PF/vHuyRL3XmhO81autg62
+        3kBBMD7Pae1dNGypR72g6I0INpqS9En0aKqzZeiTQL0CcTIGvmyxmBuPBS0KabG4dqEBBSZJSxFq
+        ODUSnV0W5yTtIjHDMNwpYKFeRzRM4WfkETA+JgwWoQ6p6xSksaN69bFdCy0xMNRVta3AGtuithGN
+        OAr6p6Jc84im+Y+tZ/MC7Fv0GE2nZ/6v/ptO2990UPDV1We8HQWM8clZ1OIwl5Ev25jYwDC8AwAA
+        //8DAMHwZrknAgAA
+    headers:
+      CF-RAY:
+      - 9801f75dac56c39b-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 16 Sep 2025 17:08:32 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-09-16T17:08:32Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-09-16T17:08:32Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-09-16T17:08:31Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-09-16T17:08:32Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CTCSw9xShtp4TefxVGfT9
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '1895'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,66 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
+      by Patrick Rothfuss"}], "role": "user"}], "generationConfig": {"responseMimeType":
+      "application/json", "responseSchema": {"properties": {"title": {"title": "Title",
+      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}}, "propertyOrdering":
+      ["title", "author"], "required": ["title", "author"], "title": "Book", "type":
+      "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '418'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61RTU+DQBC98ys2e26bBdsSPfpxqLG1VqJG8bCWAVZgl7CDUQn/3aWUFvQqh81k
+        3mPezHuVRQjdchmIgCNoekZeTIeQavc2mJIIEg3QtUwz5wUeue1X9WpDQfhsfqKVLwnxKQpMwTcN
+        n3oxkBXPgKiQoKkfhQx8Omp5vMRYFS1xzbEQ24RsFMZhqbVPfVnTnkx9qF9Hx+UKlUKjnKkA0o5e
+        dwQaCil0vAGulWxo997tmh5Q/hHdqCgv1Ftz35hNGGM2O2Vsap/MbXd6aruOY3XiO1laah7BEpAb
+        C/nBKGqGZDl6KgF5ocqdhY7TCvUcH+KzPY4KeTqApu7oz1h9aURF2k+iF5K5n6cCv5ojvasnj/Y8
+        wuFWnUlWz8vfO/6X2GwoZu2zaeN6gEKLNpcIMpPU2JmwcZhyHe8m0gJ0rqSGRdBwkmd5zZdcns/e
+        k293sS7nsNJ3ilq19QPP7oSh2QIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Sep 2025 17:08:33 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=605
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
