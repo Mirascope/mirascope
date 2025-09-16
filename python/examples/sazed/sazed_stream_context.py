@@ -8,7 +8,7 @@ class Coppermind:
     repository: str
 
 
-@llm.context_call(
+@llm.call(
     provider="openai",
     model_id="gpt-4o-mini",
 )

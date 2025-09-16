@@ -85,7 +85,7 @@ def test_structured_output_with_tools_sync_context(
             int, Field(description="Should be 7 for testing purposes")
         ]
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
@@ -183,7 +183,7 @@ async def test_structured_output_with_tools_async_context(
             int, Field(description="Should be 7 for testing purposes")
         ]
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
@@ -286,7 +286,7 @@ def test_structured_output_with_tools_stream_context(
             int, Field(description="Should be 7 for testing purposes")
         ]
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
@@ -398,7 +398,7 @@ async def test_structured_output_with_tools_async_stream_context(
             int, Field(description="Should be 7 for testing purposes")
         ]
 
-    @llm.context_call(
+    @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
