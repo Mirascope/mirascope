@@ -36,10 +36,10 @@ def response_snapshot_dict(response: llm.responses.RootResponse[Any, Any]) -> di
 
 
 def stream_response_snapshot_dict(
-    response: llm.StreamResponse
-    | llm.AsyncStreamResponse
-    | llm.ContextStreamResponse
-    | llm.AsyncContextStreamResponse,
+    response: llm.StreamResponse[Any]
+    | llm.AsyncStreamResponse[Any]
+    | llm.ContextStreamResponse[Any, Any]
+    | llm.AsyncContextStreamResponse[Any, Any],
 ) -> dict:
     """Return a dictionary of public fields for snapshot testing.
 
