@@ -30,7 +30,7 @@ def tools() -> list[llm.Tool]:
 def context_tools() -> list[llm.ContextTool]:
     """Create a mock context tool for testing."""
 
-    @llm.context_tool
+    @llm.tool
     def context_tool(ctx: llm.Context[int]) -> int:
         return ctx.deps
 
@@ -52,7 +52,7 @@ def async_tools() -> list[llm.AsyncTool]:
 def async_context_tools() -> list[llm.AsyncContextTool]:
     """Create a mock async context tool for testing."""
 
-    @llm.context_tool
+    @llm.tool
     async def async_context_tool(ctx: llm.Context[int]) -> int:
         return ctx.deps
 

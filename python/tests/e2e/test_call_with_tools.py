@@ -54,7 +54,7 @@ def test_call_with_tools_sync_context(
 ) -> None:
     """Test synchronous tool call with context."""
 
-    @llm.context_tool
+    @llm.tool
     def secret_retrieval_tool(ctx: llm.Context[dict[str, str]], password: str) -> str:
         """A tool that requires a password to retrieve a secret."""
         return ctx.deps.get(password, "Invalid password!")
@@ -134,7 +134,7 @@ async def test_call_with_tools_async_context(
 ) -> None:
     """Test asynchronous tool call with context."""
 
-    @llm.context_tool
+    @llm.tool
     async def secret_retrieval_tool(
         ctx: llm.Context[dict[str, str]], password: str
     ) -> str:
@@ -219,7 +219,7 @@ def test_call_with_tools_stream_context(
 ) -> None:
     """Test streaming tool call with context."""
 
-    @llm.context_tool
+    @llm.tool
     def secret_retrieval_tool(ctx: llm.Context[dict[str, str]], password: str) -> str:
         """A tool that requires a password to retrieve a secret."""
         return ctx.deps.get(password, "Invalid password!")
@@ -311,7 +311,7 @@ async def test_call_with_tools_async_stream_context(
 ) -> None:
     """Test async streaming tool call with context."""
 
-    @llm.context_tool
+    @llm.tool
     async def secret_retrieval_tool(
         ctx: llm.Context[dict[str, str]], password: str
     ) -> str:

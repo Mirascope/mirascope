@@ -9,7 +9,7 @@ from mirascope import llm
 
 
 def test_sync_context_tool_basic() -> None:
-    @llm.context_tool
+    @llm.tool
     def add_with_constant(ctx: llm.Context[int], a: int) -> int:
         """Add number to constant from context."""
         return a + ctx.deps
@@ -34,7 +34,7 @@ def test_sync_context_tool_basic() -> None:
 
 
 def test_sync_context_tool_with_strict() -> None:
-    @llm.context_tool(strict=True)
+    @llm.tool(strict=True)
     def multiply_with_base(ctx: llm.Context[int], x: int, y: int = 2) -> int:
         """Multiply two numbers and add base from context."""
         return (x * y) + ctx.deps
@@ -45,7 +45,7 @@ def test_sync_context_tool_with_strict() -> None:
 
 
 def test_sync_context_tool_with_annotated_descriptions() -> None:
-    @llm.context_tool
+    @llm.tool
     def get_weather_with_api(
         ctx: llm.Context[str],
         location: Annotated[str, Field(description="The city and state")],
@@ -67,7 +67,7 @@ def test_sync_context_tool_with_annotated_descriptions() -> None:
 
 @pytest.mark.asyncio
 async def test_async_context_tool_basic() -> None:
-    @llm.context_tool
+    @llm.tool
     async def async_add_with_base(ctx: llm.Context[int], a: int) -> int:
         """Add number to base from context asynchronously."""
         return a + ctx.deps
@@ -91,12 +91,12 @@ async def test_async_context_tool_basic() -> None:
 
 
 def test_context_tool_decorator_syntax() -> None:
-    @llm.context_tool
+    @llm.tool
     def without_parens(ctx: llm.Context[int]) -> str:
         """A simple context tool."""
         return f"simple-{ctx.deps}"
 
-    @llm.context_tool()
+    @llm.tool()
     def with_parens(ctx: llm.Context[int]) -> str:
         """Another simple context tool."""
         return f"another-{ctx.deps}"
@@ -119,8 +119,8 @@ def test_context_tool_decorator_modes_equivalence() -> None:
         """A function to be decorated."""
         return f"{y}: {x + ctx.deps}"
 
-    decorated = llm.context_tool(base_func)
-    via_factory = llm.context_tool()(base_func)
+    decorated = llm.tool(base_func)
+    via_factory = llm.tool()(base_func)
 
     assert decorated == via_factory
 
@@ -132,8 +132,8 @@ def test_context_tool_decorator_modes_equivalence_async() -> None:
         """A function to be decorated."""
         return f"{y}: {x + ctx.deps}"
 
-    decorated = llm.context_tool(base_func)
-    via_factory = llm.context_tool()(base_func)
+    decorated = llm.tool(base_func)
+    via_factory = llm.tool()(base_func)
 
     assert decorated == via_factory
 
@@ -141,7 +141,7 @@ def test_context_tool_decorator_modes_equivalence_async() -> None:
 def test_context_tool_parameter_filtering() -> None:
     """Test that context parameter is filtered out of tool schema."""
 
-    @llm.context_tool
+    @llm.tool
     def test_func(ctx: llm.Context[str], param1: int, param2: str = "default") -> str:
         """Test function with context and regular parameters."""
         return f"{param2}-{param1}-{ctx.deps}"

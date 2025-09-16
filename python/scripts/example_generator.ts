@@ -117,7 +117,7 @@ class Coppermind:
       ? `You consult ${repository}, and recall the following about {query}...`
       : `You recall the following about {query}...`;
     return `
-@llm.${this.context ? "context_" : ""}tool
+@llm.tool
 ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
     """Search your coppermind for information."""
     return f"${message}"\n\n`;
