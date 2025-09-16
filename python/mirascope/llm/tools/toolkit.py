@@ -119,7 +119,11 @@ class ContextToolkit(BaseToolkit[Tool | ContextTool[DepsT]], Generic[DepsT]):
         Raises:
             ToolNotFoundError: If the requested tool is not found.
         """
-        raise NotImplementedError
+        tool = self.get(tool_call)
+        if isinstance(tool, ContextTool):
+            return tool.execute(ctx, tool_call)
+        else:
+            return tool.execute(tool_call)
 
 
 class AsyncContextToolkit(
@@ -142,4 +146,8 @@ class AsyncContextToolkit(
         Raises:
             ToolNotFoundError: If the requested tool is not found.
         """
-        raise NotImplementedError
+        tool = self.get(tool_call)
+        if isinstance(tool, AsyncContextTool):
+            return await tool.execute(ctx, tool_call)
+        else:
+            return await tool.execute(tool_call)

@@ -1,0 +1,135 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please retrieve the secrets associated
+      with each of these passwords: mellon,radiance"}], "role": "user"}], "tools":
+      [{"functionDeclarations": [{"description": "A tool that requires a password
+      to retrieve a secret.", "name": "secret_retrieval_tool", "parameters": {"properties":
+      {"password": {"title": "Password", "type": "STRING"}}, "required": ["password"],
+      "type": "OBJECT"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '440'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/81STUvDQBC951eEPTfF9CONXlvBgmLVIIJImSbTdOlmJ+xuK1L6390mTZpUPQge
+        DCRs5s2+9+Zj57gui0EmPAGDml25rzbiurvie8BIGpTGAlXIBnNQ5pRbPrvG2aYsNzI2nOQYhGhd
+        PuISMrRxpjFWaOb2VRy3IOaGSLDOeTqoVH9DU3jR+p1UciDLUAiS7Cxp7/z0t+/8swIUJBxkjL8o
+        oT6/nTSZIlGYyyhBUZHV1bIll1yvHhG07ZZNe4ruZ7VlBtv0ltJc0eLg2PO7QTAKRj2/5w/C/sAP
+        A/Quhk4lXsiyjYYU79CAXSOo62SWJMtNRGuUY9oUa9QflUKNrWvhfnjEDRkQLWg47Hyh1RMrykVz
+        GxuLausHwc3Hocjo+iVqzMXyt1xVTXIavTz3+EdiftgWc46zKcf1jErzci4pZnZSXq974S0F6FXB
+        yBTqnKTGabEyo8ubKcyi8YSCXmbWs3CwiPkDMWfvfAILyxzA3QMAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Sep 2025 02:56:47 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=576
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please retrieve the secrets associated
+      with each of these passwords: mellon,radiance"}], "role": "user"}, {"parts":
+      [{"functionCall": {"args": {"password": "mellon"}, "name": "secret_retrieval_tool"}},
+      {"functionCall": {"args": {"password": "radiance"}, "name": "secret_retrieval_tool"}}],
+      "role": "model"}, {"parts": [{"functionResponse": {"name": "secret_retrieval_tool",
+      "response": {"output": "Welcome to Moria!"}}}, {"functionResponse": {"name":
+      "secret_retrieval_tool", "response": {"output": "Life before Death"}}}], "role":
+      "user"}], "tools": [{"functionDeclarations": [{"description": "A tool that requires
+      a password to retrieve a secret.", "name": "secret_retrieval_tool", "parameters":
+      {"properties": {"password": {"title": "Password", "type": "STRING"}}, "required":
+      ["password"], "type": "OBJECT"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '875'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61Ry27CMBC85ytcnwElROXRWwVIpQIVtfQhlR6WZAMWjp3a25cQ/14nIRBa9VYf
+        LHtnvLOe2XqM8QhULGIgtPyCPbsKY9tizzGtCBU5oCq5YgaGjtxybWtnRyH8zB/x+RqZxcggsUQb
+        Ru6agbUf2sRswVOUUqsFZ8K62yPKSKfISLOpNgLOHOBGKx793cNALEBFWHWZiATZEh0T2RCB1gve
+        WiheG293OL80jp8yWmI+capjlBV9VxF4IpSw61sEq1VOu5vfzPgBhffVRK8yo5e5L02/5QdB0Dnv
+        B91eu93ze/3Qq5QLTf5mYYVTJHC+w8Fd7jqkGc31BtVAvxW+d7ulSi2mEzwM9zhpAnkCBYHf+NXX
+        Dp2qkPX8atG634MU9FVkN3qa85pDdDpWZZFXc/LnkP8kFoanYt4+mTKsBzRWlKmsMHU5Ndstv5lI
+        sOuiIzdoM60sjuOc0+1fjeFamantBK9kZx0ajDaX99zbed/Hi9iPDwMAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 16 Sep 2025 02:56:48 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=675
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
