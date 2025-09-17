@@ -1,5 +1,11 @@
 """Mirascope exception hierarchy for unified error handling across providers."""
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .clients import ModelId, Provider
+    from .formatting import FormattingMode
+
 
 class MirascopeError(Exception):
     """Base exception for all Mirascope errors."""
@@ -35,6 +41,37 @@ class NotFoundError(APIError):
 
 class ToolNotFoundError(MirascopeError):
     """Raised if a tool_call cannot be converted to any corresponding tool."""
+
+
+class FeatureNotSupportedError(MirascopeError):
+    """Raised if a Mirascope feature is unsupported by chosen provider and model."""
+
+    provider: "Provider"
+    model_id: "ModelId"
+
+    def __init__(
+        self,
+        provider: "Provider",
+        model_id: "ModelId",
+    ) -> None:
+        super().__init__()
+        self.provider = provider
+        self.model_id = model_id
+
+
+class FormattingModeNotSupportedError(FeatureNotSupportedError):
+    """Raised when trying to use a formatting mode that is not supported by the chosen model."""
+
+    formatting_mode: "FormattingMode"
+
+    def __init__(
+        self,
+        formatting_mode: "FormattingMode",
+        provider: "Provider",
+        model_id: "ModelId",
+    ) -> None:
+        super().__init__(provider=provider, model_id=model_id)
+        self.formatting_mode = formatting_mode
 
 
 class RateLimitError(APIError):

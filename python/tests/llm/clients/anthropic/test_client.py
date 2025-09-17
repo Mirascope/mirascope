@@ -79,8 +79,8 @@ def test_structured_outputs(
     try:
         response = anthropic_client.call(**scenario.call_args)
         scenario.check_response(response)
-    except ValueError:
-        # Anthropic has no strict mode, so the model outputs regular text with no guidance
-        # on formatting.
-        # TODO: Have it raise FeatureNotImplementedError or similar
+    except llm.FormattingModeNotSupportedError as e:
         assert formatting_mode == "strict"
+        assert e.formatting_mode == "strict"
+        assert e.provider == "anthropic"
+        assert e.model_id == TEST_MODEL_ID
