@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import inspect
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Generic, Literal, cast, get_origin, overload
+from typing import Generic, Literal, cast, overload
 from typing_extensions import TypeIs, Unpack
 
 from ..clients import (
@@ -20,7 +19,7 @@ from ..clients import (
     Provider,
     get_client,
 )
-from ..context import Context, DepsT
+from ..context import DepsT, _utils as _context_utils
 from ..formatting import FormatT
 from ..models import Model, _utils as _model_utils
 from ..prompts import (
@@ -138,32 +137,8 @@ def _is_context_prompt_fn(
     | Prompt[P]
     | AsyncPrompt[P],
 ) -> TypeIs[ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT]]:
-    """Return whether a prompt function is interpreted as a context prompt.
-
-    If there are no parameters, it isn't a context prompt.
-    If the first non-self/cls parameter is typed as Context[T] or subclass of Context, then it is a context prompt.
-    """
-    sig = inspect.signature(fn)
-    params = list(sig.parameters.values())
-    if not params:
-        return False
-
-    first_param = None
-    for param in params:
-        if param.name not in ("self", "cls"):
-            first_param = param
-            break
-
-    if first_param is None or first_param.annotation == inspect.Parameter.empty:
-        return False
-
-    origin = get_origin(first_param.annotation)
-    if origin is Context:
-        return True
-
-    return isinstance(first_param.annotation, type) and issubclass(
-        first_param.annotation, Context
-    )
+    """Return whether a prompt function is interpreted as a context prompt."""
+    return _context_utils.first_param_is_context(fn)
 
 
 @overload

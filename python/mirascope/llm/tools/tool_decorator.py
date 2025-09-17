@@ -2,10 +2,10 @@
 
 import inspect
 from dataclasses import dataclass
-from typing import get_origin, overload
+from typing import overload
 from typing_extensions import TypeIs
 
-from ..context import Context, DepsT
+from ..context import DepsT, _utils as _context_utils
 from ..types import JsonableCovariantT, P
 from .context_tool import AsyncContextTool, ContextTool
 from .protocols import AsyncContextToolFn, AsyncToolFn, ContextToolFn, ToolFn
@@ -90,32 +90,8 @@ def _is_context_tool_fn(
     ContextToolFn[DepsT, P, JsonableCovariantT]
     | AsyncContextToolFn[DepsT, P, JsonableCovariantT]
 ]:
-    """Return whether a ToolFn is interpreted as a context tool.
-
-    If there are no parameters, it isn't a context tool.
-    If the first parameter is typed as Context[T] or subclass of Context, then it is a context tool.
-    """
-    sig = inspect.signature(fn)
-    params = list(sig.parameters.values())
-    if not params:
-        return False
-
-    first_param = None
-    for param in params:
-        if param.name not in ("self", "cls"):
-            first_param = param
-            break
-
-    if first_param is None or first_param.annotation == inspect.Parameter.empty:
-        return False
-
-    origin = get_origin(first_param.annotation)
-    if origin is Context:
-        return True
-
-    return isinstance(first_param.annotation, type) and issubclass(
-        first_param.annotation, Context
-    )
+    """Return whether a ToolFn is interpreted as a context tool."""
+    return _context_utils.first_param_is_context(fn)
 
 
 def _is_async_context_tool_fn(

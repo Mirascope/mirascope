@@ -276,19 +276,19 @@ class TestContextTool:
         assert "ctx" not in params.properties
         assert params.required == ["param1"]
 
-    def test_context_parameter_name_independence(self) -> None:
-        """Test that context tools work regardless of first parameter name."""
+    def test_context_parameter_name_must_be_ctx(self) -> None:
+        """Test that context tools work require the first parameter be named `ctx`."""
 
         @llm.tool
         def context_weird_name(special_context: llm.Context[str], value: int) -> str:
             return f"{special_context.deps}-{value}"
 
-        assert isinstance(context_weird_name, llm.ContextTool)
-        assert "special_context" not in context_weird_name.parameters.properties
+        assert isinstance(context_weird_name, llm.Tool)
+        assert "special_context" in context_weird_name.parameters.properties
         assert "value" in context_weird_name.parameters.properties
 
-    def test_async_context_parameter_name_independence(self) -> None:
-        """Test that async context tools work regardless of first parameter name."""
+    def test_async_context_parameter_name_must_be_ctx(self) -> None:
+        """Test that async context tools work require the first parameter be named `ctx`."""
 
         @llm.tool
         async def context_weird_name(
@@ -296,8 +296,8 @@ class TestContextTool:
         ) -> str:
             return f"{special_context.deps}-{value}"
 
-        assert isinstance(context_weird_name, llm.AsyncContextTool)
-        assert "special_context" not in context_weird_name.parameters.properties
+        assert isinstance(context_weird_name, llm.AsyncTool)
+        assert "special_context" in context_weird_name.parameters.properties
         assert "value" in context_weird_name.parameters.properties
 
     def test_untyped_parameter(self) -> None:
