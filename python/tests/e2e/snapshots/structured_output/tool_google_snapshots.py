@@ -10,8 +10,8 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "anthropic",
-        "model_id": "claude-sonnet-4-0",
+        "provider": "google",
+        "model_id": "gemini-2.0-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
@@ -42,8 +42,8 @@ Do NOT output any text in addition to the tool call.\
 )
 async_snapshot = snapshot(
     {
-        "provider": "anthropic",
-        "model_id": "claude-sonnet-4-0",
+        "provider": "google",
+        "model_id": "gemini-2.0-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
@@ -74,8 +74,8 @@ Do NOT output any text in addition to the tool call.\
 )
 stream_snapshot = snapshot(
     {
-        "provider": "anthropic",
-        "model_id": "claude-sonnet-4-0",
+        "provider": "google",
+        "model_id": "gemini-2.0-flash",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
             SystemMessage(
@@ -101,13 +101,13 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "n_chunks": 13,
+        "n_chunks": 3,
     },
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "anthropic",
-        "model_id": "claude-sonnet-4-0",
+        "provider": "google",
+        "model_id": "gemini-2.0-flash",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
             SystemMessage(
@@ -128,11 +128,11 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+                        text='{"author": "Patrick Rothfuss", "title": "The Name of the Wind"}'
                     )
                 ]
             ),
         ],
-        "n_chunks": 14,
+        "n_chunks": 3,
     },
 )

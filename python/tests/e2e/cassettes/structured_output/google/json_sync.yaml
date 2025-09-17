@@ -1,11 +1,13 @@
 interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
-      by Patrick Rothfuss"}], "role": "user"}], "generationConfig": {"responseMimeType":
-      "application/json", "responseSchema": {"properties": {"title": {"title": "Title",
-      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}}, "propertyOrdering":
-      ["title", "author"], "required": ["title", "author"], "title": "Book", "type":
-      "OBJECT"}}}'
+      by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Respond with valid JSON that matches this exact schema:\n{\n  \"properties\":
+      {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\"\n  ],\n  \"title\": \"Book\",\n  \"type\":
+      \"object\"\n}"}], "role": "user"}, "generationConfig": {"responseMimeType":
+      "application/json"}}'
     headers:
       accept:
       - '*/*'
@@ -14,7 +16,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '418'
+      - '601'
       content-type:
       - application/json
       host:
@@ -28,13 +30,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61RTU+DQBC98ys2e26bBdsSPfpxqLG1VqJG8bCWAVZgl7CDUQn/3aWUFvQqh81k
-        3mPezHuVRQjdchmIgCNoekZeTIeQavc2mJIIEg3QtUwz5wUeue1X9WpDQfhsfqKVLwnxKQpMwTcN
-        n3oxkBXPgKiQoKkfhQx8Omp5vMRYFS1xzbEQ24RsFMZhqbVPfVnTnkx9qF9Hx+UKlUKjnKkA0o5e
-        dwQaCil0vAGulWxo997tmh5Q/hHdqCgv1Ftz35hNGGM2O2Vsap/MbXd6aruOY3XiO1laah7BEpAb
-        C/nBKGqGZDl6KgF5ocqdhY7TCvUcH+KzPY4KeTqApu7oz1h9aURF2k+iF5K5n6cCv5ojvasnj/Y8
-        wuFWnUlWz8vfO/6X2GwoZu2zaeN6gEKLNpcIMpPU2JmwcZhyHe8m0gJ0rqSGRdBwkmd5zZdcns/e
-        k293sS7nsNJ3ilq19QPP7oSh2QIAAA==
+        H4sIAAAAAAAC/61RwW6DMAy98xVRzqUqtHTdbtO6A1LboQ5tk8YOWTEQFRJETLUO8e8LUFq6XRdF
+        kWU/+znvVQYhdMdEyEOGoOgdedcZQqr2bWpSIAjUhT6lkzkr8ILtTjWINQThq2miVSAICShyTCHQ
+        iYD6CZANy4DIiKCOX7kIAzrqcKzERBYd0GNY8N2ebCUmUalUQANR0wFNfY4/RpflCplCw5zJENIe
+        XvcAGnHBVbIFpqRoYM/+k0fPVXaIVzLOC/nZ/M+0xnPbWjj29HY+cZoL5sQxeu6WlZaKxbAGZFpB
+        dtaJ6hlZjr7cg3iQZaugZS06ooHiVwDbOdVRIkuve2fT0Z/BaqlpeTq0YuCSFoClHI/NL/3HN58O
+        RMJfe/UyGQM1f2/5T2y2c01mnNzpDHuBQvHOmRgy7ZVpjydmlDKVtBNpASqXQoEbNpj1cbVim+XW
+        cw/i+8b1ZtJ25X1Mjdr4ATHfQHnbAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -43,11 +45,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 16 Sep 2025 17:08:33 GMT
+      - Wed, 17 Sep 2025 21:03:48 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=605
+      - gfet4t7; dur=659
       Transfer-Encoding:
       - chunked
       Vary:

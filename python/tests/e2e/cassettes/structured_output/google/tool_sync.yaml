@@ -1,0 +1,72 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
+      by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "When you are ready to respond to the user, call the __mirascope_formatted_output_tool__
+      tool to output a structured response.\nDo NOT output any text in addition to
+      the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
+      "Use this tool to extract data in Book format for a final response.", "name":
+      "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"properties":
+      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
+      "type": "string"}}, "required": ["title", "author"], "title": "Book", "type":
+      "object"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames":
+      ["__mirascope_formatted_output_tool__"]}}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '884'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/61STU/DMAy991dEOTO0dYNuXIHDpDEGjA+BUGXWtI1I4ypxkWDafydtV9ZucKOH
+        yvGz33P8svYY4yvQkYyAhOVn7MVlGFtX/xJDTUKTA5qUS+ZgaFdbf+tW7EriQq9Ioj4HpTrNW1xD
+        Jlyeh2EmDdgV5iKM0WRAJKIQC8oLCglRhSE/2m8Gk9hfSB1CklTFu0wFmzsNhjEjFz9KHR0QlVQF
+        pWjKjgWQkat3douUxoW1fK944/112sWvOwVusJ4kw0iohmzTFPBYamnTWwEWdVl2t7xe/AzI4SOZ
+        YZIbfCsv6h8Px/3ReDA69Uf90UlwMhS9/qnXaFeqvLCQiCtB4JyEn+1wx5HltMR3oc+xqJwMxrVO
+        y/gO7g+2OCGB6kCTydEBrb1wolK1H0Trrbjrg5L0WZly+bRsmeD4O1M1O/Jaq9yf8Z/E/EFXzNta
+        U7v1IIyVtS2JyJxRPf+434sV2LRi5EbYHLUV06ismd/NZjCF+TQI7r+C6YKenas3Cfc23jdzV46n
+        YAMAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 17 Sep 2025 21:03:50 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=664
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

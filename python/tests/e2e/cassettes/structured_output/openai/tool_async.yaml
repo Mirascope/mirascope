@@ -1,0 +1,113 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"When you are ready to respond
+      to the user, call the __mirascope_formatted_output_tool__ tool to output a structured
+      response.\nDo NOT output any text in addition to the tool call."},{"role":"user","content":"Please
+      recommend the most popular book by Patrick Rothfuss"}],"model":"gpt-4o","parallel_tool_calls":false,"tool_choice":{"type":"function","function":{"name":"__mirascope_formatted_output_tool__"}},"tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object","additionalProperties":false},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '839'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=rYsmggQ6IJCm_XlNiYf06v0F8sAgKI8scYhKPPlmOY4-1758143507-1.0.1.1-0_ViS2gVdKhzyY5ThOu8aSZ9hKucRzX2YtnNZAPoAv30lJdpq6aMQDHnZUPszLqq0Kd9E3zKNsE3W3mFuJjVQTG1pEZGu5Zq_SIn55O1M9c;
+        _cfuvid=zY.lmwUAKjqRlkWAMfMLVB2Vruhg8VSGy6MA.P1kdCk-1758042515144-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFNNb9swDL3nVwg8J4OTuB/Ibci6tZe16wps2FIIqkzbamVJkKiuRZD/
+        PkhuY/djwHwwBD7y8fGJ2k4YA1XBioFsBcnO6dn6C92efz+rr84u1K+P7qE4vfq0uL905+XRSQPT
+        VGFvblHSc9UHaTunkZQ1PSw9CsLEOj86OJ6Xy4N5mYHOVqhTWeNoVtrZoliUs+J4Vhw+FbZWSQyw
+        Yr8njDG2zf8k0VT4ACtWTJ8jHYYgGoTVPokx8FanCIgQVCBhCKYDKK0hNEm1iVqPALJWcym0Hhr3
+        33Z0HnwSWvN4d+koqs/Hazptf9L5ycX625/o6lG/nvrRZUF1NHLvzwjfx1evmjEGRnS5lvNOeRGk
+        dchr6ztBhBW3kVwknrXzV7SMgfBN7NBQGgm2GyBFGjew2sBVi+yr6JDZmlGL7Icy1QamGxCRWutz
+        zoUgr+Qdu7TU1jGEDezgRYfd5L3z9chUj3UMQr91WxhjSaShs93XT8huf7PaNs7bm/CqFGplVGi5
+        RxGyYRDIul5WkpCbQ3yxFOC87Vxy6Q5zu/nyqOeDYWdH6OETSJaEHsUPltN3+HiFJFTemv2iSiFb
+        rIbSYWFFrJQdAZPR1G/VvMfdT65M8z/0AyAlurQxzmOl5MuJhzSP6Un/K23vchYMAf29kshJoU83
+        UWEtou5fG4THQNjxWpkGvfMqPzmoHa+Xy8OyEGVRwGQ3+QsAAP//AwCKBGVZewQAAA==
+    headers:
+      CF-RAY:
+      - 980b9941abfaa9ba-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 17 Sep 2025 21:11:55 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '559'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '776'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799938'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_e00ccb9905314503a089454aee1c8d3b
+    status:
+      code: 200
+      message: OK
+version: 1

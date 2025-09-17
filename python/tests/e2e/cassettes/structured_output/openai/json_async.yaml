@@ -1,7 +1,11 @@
 interactions:
 - request:
-    body: '{"messages":[{"role":"user","content":"Please recommend the most popular
-      book by Patrick Rothfuss"}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object","additionalProperties":false},"strict":true}}}'
+    body: '{"messages":[{"role":"system","content":"Respond with valid JSON that matches
+      this exact schema:\n{\n  \"properties\": {\n    \"title\": {\n      \"title\":
+      \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\": {\n      \"title\":
+      \"Author\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}"},{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"model":"gpt-4o","response_format":{"type":"json_object"}}'
     headers:
       accept:
       - application/json
@@ -10,17 +14,19 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '405'
+      - '550'
       content-type:
       - application/json
+      cookie:
+      - _cfuvid=zY.lmwUAKjqRlkWAMfMLVB2Vruhg8VSGy6MA.P1kdCk-1758042515144-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
-      - OpenAI/Python 1.100.2
+      - AsyncOpenAI/Python 1.100.2
       x-stainless-arch:
       - arm64
       x-stainless-async:
-      - 'false'
+      - async:asyncio
       x-stainless-lang:
       - python
       x-stainless-os:
@@ -40,17 +46,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFLBbtswDL37KwSe48FOnDTItUCHXYqt7VAMc2GoMh1rlUVBoocOQf59
-        sJzG7tYCvejAx/f0HslDIgToGnYCVCtZdc6kl5/vbr/c41WhL77l311+s/pxdevl5TMHuobFwKDH
-        X6j4hfVJUecMsiY7wsqjZBxU84v1NiuW6zyLQEc1moG2d5wWlC6zZZFm2zTbnIgtaYUBduJnIoQQ
-        h/gOFm2Nz7ATUSZWOgxB7hF25yYhwJMZKiBD0IGlZVhMoCLLaKPrQwms2WAJuxLuWhTXskNBjeAW
-        xb22dQmLEmTPLfnY81Wy1+pJ3BC3TR9CCce5tMemD3JIZntjZoC0llgOk4mhHk7I8RzD0N55egz/
-        UKHRVoe28igD2cFyYHIQ0WMixEMcV/9qAuA8dY4rpieM323WoxxM+5nAfHMCmViaqb7NF2+oVTWy
-        1CbMxg1KqhbriTntRva1phmQzDL/b+Yt7TG3tvuPyE+AUugY68p5rLV6HXhq8zhc73tt5xlHwxDQ
-        /9YKK9bohz3U2MjejIcF4U9g7KpG2z165/V4XY2rmtVqU2SyyDJIjslfAAAA//8DAEJEtfBmAwAA
+        H4sIAAAAAAAAAwAAAP//jFLBbtswDL37Kwie7cFJnKbLtYf00nZohxVbXRiqTNtqZUmQ6GFDkH8f
+        bKexu3VALzrwvUe9R3IfAaAqcQsoG8GydTq52PHz5dVu9219ubm5Nnc/7u6/3zY3V3Wj9WeMe4V9
+        eibJr6pP0rZOEytrRlh6Ekx918Vmfb7IVut0MwCtLUn3stpxktlkmS6zJD1P0rOjsLFKUsAtPEQA
+        APvh7S2akn7hFtL4tdJSCKIm3J5IAOit7isoQlCBhWGMJ1Baw2QG1/vcAOTIijXluIUcvzYE16Il
+        sBVwQ3CvTJljPPJEx431I/GLYK/kC9xabqouhBxzc5h/46nqguhTmk7rGSCMsSz6KQ0BH4/I4RRJ
+        29p5+xT+kmKljApN4UkEa3r7ga3DAT1EAI/D6Lo300Dnbeu4YPtCw3eLxXLsh9OyJnS5OoJsWeiZ
+        arWO3+lXlMRC6TAbPkohGyon6bQp0ZXKzoBolvpfN+/1HpMrU3+k/QRISY6pLJynUsm3iSeap/6W
+        /0c7TXkwjIH8TyWpYEW+30RJlej0eGYYfgemtqiUqck7r8Zbq1xRrVZnWSqyNMXoEP0BAAD//wMA
+        xVENyXQDAAA=
     headers:
       CF-RAY:
-      - 9801f756381dd801-SEA
+      - 980b9912ce75585c-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -58,15 +65,13 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 16 Sep 2025 17:08:30 GMT
+      - Wed, 17 Sep 2025 21:11:47 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=Z33Wgls9xmouzJKuurcqs4W2HJVep2AGQV7xIh_9izg-1758042510-1.0.1.1-u9p17avgQ.2o.aqt4VjV5fJI4MYJJXAP1.23ppNQ7uDI1cKzvnDHb73f8sQjKU.SRXubIKQjLbTp9UVxmmgsAaaJ5dXkQ1x87iUss9FGF_M;
-        path=/; expires=Tue, 16-Sep-25 17:38:30 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=rYsmggQ6IJCm_XlNiYf06v0F8sAgKI8scYhKPPlmOY4-1758143507-1.0.1.1-0_ViS2gVdKhzyY5ThOu8aSZ9hKucRzX2YtnNZAPoAv30lJdpq6aMQDHnZUPszLqq0Kd9E3zKNsE3W3mFuJjVQTG1pEZGu5Zq_SIn55O1M9c;
+        path=/; expires=Wed, 17-Sep-25 21:41:47 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=v.89CVAtX1FJcY6N2_WPFvXDX5hr.RZ6FPCll1yewfQ-1758042510843-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -82,13 +87,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '537'
+      - '904'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '704'
+      - '1159'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -98,13 +103,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799983'
+      - '799906'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 1ms
+      - 7ms
       x-request-id:
-      - req_04064d2946774d37ab37e81306692cda
+      - req_dbb7de1ee7dd478a891bd7a6881d03a2
     status:
       code: 200
       message: OK

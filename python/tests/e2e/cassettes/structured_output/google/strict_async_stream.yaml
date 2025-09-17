@@ -30,21 +30,21 @@ interactions:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\"}],\"role\":
         \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 11,\"totalTokenCount\":
         11,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 11}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"mpnJaMbcGoWam9IPkt6N-A4\"}\r\n\r\ndata:
+        \"gemini-2.0-flash\",\"responseId\": \"QiTLaKCqCuyDm9IP57ak6As\"}\r\n\r\ndata:
         {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\n  \\\"\"}],\"role\":
         \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 11,\"totalTokenCount\":
         11,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 11}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"mpnJaMbcGoWam9IPkt6N-A4\"}\r\n\r\ndata:
+        \"gemini-2.0-flash\",\"responseId\": \"QiTLaKCqCuyDm9IP57ak6As\"}\r\n\r\ndata:
         {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"title\\\": \\\"The
         Name of the Wind\\\",\\n  \\\"author\\\": \\\"Patrick\"}],\"role\": \"model\"}}],\"usageMetadata\":
         {\"promptTokenCount\": 11,\"totalTokenCount\": 11,\"promptTokensDetails\":
         [{\"modality\": \"TEXT\",\"tokenCount\": 11}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"mpnJaMbcGoWam9IPkt6N-A4\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        \"QiTLaKCqCuyDm9IP57ak6As\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
         {\"parts\": [{\"text\": \" Rothfuss\\\"\\n}\"}],\"role\": \"model\"},\"finishReason\":
         \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\": 22,\"candidatesTokenCount\":
         25,\"totalTokenCount\": 47,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
         22}],\"candidatesTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        25}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"mpnJaMbcGoWam9IPkt6N-A4\"}\r\n\r\n"
+        25}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"QiTLaKCqCuyDm9IP57ak6As\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -53,11 +53,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 16 Sep 2025 17:08:42 GMT
+      - Wed, 17 Sep 2025 21:12:34 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=555
+      - gfet4t7; dur=497
       Transfer-Encoding:
       - chunked
       Vary:

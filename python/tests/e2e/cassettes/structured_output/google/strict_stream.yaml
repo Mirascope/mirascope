@@ -30,21 +30,21 @@ interactions:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\"}],\"role\":
         \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 11,\"totalTokenCount\":
         11,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 11}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"lZnJaN26BIeLqsMPgZ2tyAQ\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\n  \"}],\"role\":
+        \"gemini-2.0-flash\",\"responseId\": \"HyTLaPSVMYfnld8PqbqK-Qw\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\n  \\\"\"}],\"role\":
         \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 11,\"totalTokenCount\":
         11,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 11}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"lZnJaN26BIeLqsMPgZ2tyAQ\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\\"title\\\": \\\"The
-        Name of the Wind\\\",\\n  \\\"author\\\": \\\"\"}],\"role\": \"model\"}}],\"usageMetadata\":
+        \"gemini-2.0-flash\",\"responseId\": \"HyTLaPSVMYfnld8PqbqK-Qw\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"title\\\": \\\"The
+        Name of the Wind\\\",\\n  \\\"author\\\": \\\"Patrick\"}],\"role\": \"model\"}}],\"usageMetadata\":
         {\"promptTokenCount\": 11,\"totalTokenCount\": 11,\"promptTokensDetails\":
         [{\"modality\": \"TEXT\",\"tokenCount\": 11}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"lZnJaN26BIeLqsMPgZ2tyAQ\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
-        {\"parts\": [{\"text\": \"Patrick Rothfuss\\\"\\n}\"}],\"role\": \"model\"},\"finishReason\":
+        \"HyTLaPSVMYfnld8PqbqK-Qw\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \" Rothfuss\\\"\\n}\"}],\"role\": \"model\"},\"finishReason\":
         \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\": 22,\"candidatesTokenCount\":
         25,\"totalTokenCount\": 47,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
         22}],\"candidatesTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        25}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"lZnJaN26BIeLqsMPgZ2tyAQ\"}\r\n\r\n"
+        25}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"HyTLaPSVMYfnld8PqbqK-Qw\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -53,11 +53,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 16 Sep 2025 17:08:37 GMT
+      - Wed, 17 Sep 2025 21:12:00 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=476
+      - gfet4t7; dur=485
       Transfer-Encoding:
       - chunked
       Vary:
