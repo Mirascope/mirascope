@@ -32,6 +32,10 @@ CallType = Literal[
 CALL_TYPES: tuple[CallType] = get_args(CallType)
 
 
+FORMATTING_MODES: tuple[llm.formatting.ConcreteFormattingMode] = get_args(
+    llm.formatting.ConcreteFormattingMode
+)
+
 Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
 
 
@@ -147,9 +151,21 @@ def _fix_duplicate_snapshots(snapshot_file: Path) -> None:
 
     result = []
     discard_this_section = False
+    inside_string_literal = False
     for line in lines:
         if not discard_this_section:
             result.append(line)
+
+        # Our duplicate snapshot detection logic depends on indentation, but may get a
+        # false positive if we are inside a triple-quote multiline string literal.
+        # So we disable it in that case.
+        if line.endswith('="""\\'):
+            inside_string_literal = True
+        elif line == '"""':
+            inside_string_literal = False
+
+        if inside_string_literal:
+            continue
 
         # With zero leading indentation, this always means we ended a snapshot.
         if line == ")" and discard_this_section:

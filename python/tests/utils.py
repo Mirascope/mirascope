@@ -55,3 +55,17 @@ def stream_response_snapshot_dict(
             response.chunks
         ),  # Just snapshot the number of chunks to minimize bloat. Chunk reconstruction is tested separately.
     }
+
+
+def exception_snapshot_dict(exception: Exception) -> dict:
+    """Convert an exception to a dictionary for snapshot testing.
+
+    (inline-snapshot is not able to serialize and reproduce Exceptions.)"""
+    return {
+        "type": type(exception).__name__,
+        **{
+            attr: getattr(exception, attr)
+            for attr in dir(exception)
+            if not attr.startswith("_") and not callable(getattr(exception, attr))
+        },
+    }
