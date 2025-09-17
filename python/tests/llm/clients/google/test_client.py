@@ -3,7 +3,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from google.genai.errors import ClientError as GoogleClientError
 from inline_snapshot import snapshot
 
 from mirascope import llm
@@ -84,13 +83,18 @@ def test_structured_outputs(
     try:
         response = google_client.call(**scenario.call_args)
         scenario.check_response(response)
-    except GoogleClientError:
+    except llm.FeatureNotSupportedError as e:
         # Known issue, Google doesn't allow tool calling in strict or json mode.
         assert scenario_id == "structured_output_calls_tool_scenario", (
             f"Unexpected GoogleClientError in scenario: {scenario_id}"
         )
         assert formatting_mode in ["strict", "strict-or-json", "json"], (
             f"Unexpected failure in format mode: {formatting_mode}"
+        )
+        assert e.provider == "google"
+        assert e.feature in (
+            "formatting_mode:strict with tools",
+            "formatting_mode:json with tools",
         )
 
 

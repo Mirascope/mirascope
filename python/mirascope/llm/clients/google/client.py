@@ -107,7 +107,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> Response | Response[FormatT]:
         """Make a call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
+            model_id, messages, tools, format, params=params
         )
 
         google_response = self.client.models.generate_content(
@@ -178,7 +178,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
         """Make a call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
+            model_id, messages, tools, format, params=params
         )
 
         google_response = self.client.models.generate_content(
@@ -245,7 +245,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> AsyncResponse | AsyncResponse[FormatT]:
         """Make an async call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
+            model_id, messages, tools, format, params=params
         )
 
         google_response = await self.client.aio.models.generate_content(
@@ -316,7 +316,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
         """Make an async call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
+            model_id, messages, tools, format, params=params
         )
 
         google_response = await self.client.aio.models.generate_content(
@@ -383,7 +383,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> StreamResponse | StreamResponse[FormatT]:
         """Make a streaming call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
+            model_id, messages, tools, format, params=params
         )
 
         google_stream = self.client.models.generate_content_stream(
@@ -452,7 +452,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormatT]:
         """Make a streaming call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
+            model_id, messages, tools, format, params=params
         )
 
         google_stream = self.client.models.generate_content_stream(
@@ -517,7 +517,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
         """Make an async streaming call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
+            model_id, messages, tools, format, params=params
         )
 
         google_stream = await self.client.aio.models.generate_content_stream(
@@ -588,7 +588,7 @@ class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormatT]:
         """Make an async streaming call to the Google GenAI API."""
         input_messages, contents, config = _utils.prepare_google_request(
-            messages, tools, format, params=params
+            model_id, messages, tools, format, params=params
         )
 
         google_stream = await self.client.aio.models.generate_content_stream(

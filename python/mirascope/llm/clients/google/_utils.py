@@ -20,6 +20,7 @@ from ...content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from ...exceptions import FeatureNotSupportedError
 from ...formatting import (
     FormatInfo,
     FormatT,
@@ -38,6 +39,7 @@ from ...tools import (
     ToolSchema,
 )
 from ..base import _utils as _base_utils
+from .model_ids import GoogleModelId
 from .params import GoogleParams
 
 GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
@@ -182,6 +184,7 @@ def _convert_tool_to_function_declaration(
 
 
 def prepare_google_request(
+    model_id: GoogleModelId,
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | None = None,
     format: type[FormatT] | None = None,
@@ -203,6 +206,13 @@ def prepare_google_request(
             model_supports_strict_mode=not tools,
             model_has_native_json_support=True,
         )
+
+        if resolved_format.mode in ("strict", "json") and tools:
+            raise FeatureNotSupportedError(
+                feature=f"formatting_mode:{resolved_format.mode} with tools",
+                provider="google",
+                model_id=model_id,
+            )
 
         if resolved_format.mode == "strict":
             config_params["response_mime_type"] = "application/json"

@@ -48,13 +48,19 @@ class FeatureNotSupportedError(MirascopeError):
 
     provider: "Provider"
     model_id: "ModelId"
+    feature: str
 
     def __init__(
         self,
+        feature: str,
         provider: "Provider",
         model_id: "ModelId",
+        message: str | None = None,
     ) -> None:
-        super().__init__()
+        if message is None:
+            message = f"Feature '{feature}' is not supported by provider '{provider}' for model '{model_id}'"
+        super().__init__(message)
+        self.feature = feature
         self.provider = provider
         self.model_id = model_id
 
@@ -69,8 +75,16 @@ class FormattingModeNotSupportedError(FeatureNotSupportedError):
         formatting_mode: "FormattingMode",
         provider: "Provider",
         model_id: "ModelId",
+        message: str | None = None,
     ) -> None:
-        super().__init__(provider=provider, model_id=model_id)
+        if message is None:
+            message = f"Formatting mode '{formatting_mode}' is not supported by provider '{provider}' for model '{model_id}'"
+        super().__init__(
+            feature=f"formatting_mode:{formatting_mode}",
+            provider=provider,
+            model_id=model_id,
+            message=message,
+        )
         self.formatting_mode = formatting_mode
 
 
