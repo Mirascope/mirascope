@@ -269,22 +269,22 @@ class TestContextCall:
                 assert call(ctx).pretty() == snapshot("Anthropic.")
 
     def test_context_parameter_name_independence(self) -> None:
-        """Test that context prompts work regardless of first parameter name."""
+        """Test that context prompts require the first parameter be named ctx."""
 
         @llm.call(provider="openai", model_id="gpt-4o-mini")
         def context_weird_name(special_context: llm.Context[str]) -> str:
             return f"Value: {special_context.deps}"
 
-        assert isinstance(context_weird_name, llm.calls.ContextCall)
+        assert isinstance(context_weird_name, llm.calls.Call)
 
     def test_async_context_parameter_name_independence(self) -> None:
-        """Test that async context prompts work regardless of first parameter name."""
+        """Test that async context prompts require the first parameter be named ctx."""
 
         @llm.call(provider="openai", model_id="gpt-4o-mini")
         async def context_weird_name(special_context: llm.Context[str]) -> str:
             return f"Value: {special_context.deps}"
 
-        assert isinstance(context_weird_name, llm.calls.AsyncContextCall)
+        assert isinstance(context_weird_name, llm.calls.AsyncCall)
 
     def test_non_context_typed_parameter(self) -> None:
         """Test that non-Context typed parameters are not treated as context prompts."""
