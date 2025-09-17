@@ -36,6 +36,8 @@ Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
 
 
 class ProviderRequest(pytest.FixtureRequest):
+    """Request for the `provider` fixture parameter."""
+
     param: llm.clients.Provider
 
 
@@ -43,6 +45,26 @@ class ProviderRequest(pytest.FixtureRequest):
 def provider(request: ProviderRequest) -> llm.clients.Provider:
     """Get provider from test parameters."""
     return request.param
+
+
+class FormattingModeRequest(pytest.FixtureRequest):
+    """Request for the `formatting_mode` fixture parameter.
+
+    If `formatting_mode` is `None`, then accessing param will raise `AttributeError`.
+    """
+
+    param: llm.formatting.ConcreteFormattingMode
+
+
+@pytest.fixture
+def formatting_mode(
+    request: FormattingModeRequest,
+) -> llm.formatting.ConcreteFormattingMode | None:
+    """Get formatting_mode from test parameters."""
+    try:
+        return request.param
+    except AttributeError:
+        return None
 
 
 def _parse_test_name(test_name: str) -> tuple[str, CallType]:
@@ -56,7 +78,6 @@ def _parse_test_name(test_name: str) -> tuple[str, CallType]:
     Raises:
         ValueError: If test name doesn't follow expected convention
     """
-    # Remove test_ prefix and any parametrization
     name = test_name.split("[")[0]
     if not name.startswith("test_"):
         raise ValueError(f"Test name must start with 'test_': {test_name}")
@@ -90,7 +111,11 @@ def _parse_test_name(test_name: str) -> tuple[str, CallType]:
 
 
 @pytest.fixture
-def vcr_cassette_name(request: FixtureRequest, provider: llm.clients.Provider) -> str:
+def vcr_cassette_name(
+    request: FixtureRequest,
+    provider: llm.clients.Provider,
+    formatting_mode: llm.formatting.ConcreteFormattingMode | None,
+) -> str:
     """Generate VCR cassette name based on test name and provider."""
     test_name = request.node.name
     scenario, call_type = _parse_test_name(test_name)
@@ -98,7 +123,11 @@ def vcr_cassette_name(request: FixtureRequest, provider: llm.clients.Provider) -
     # Context and non-context calls share the same cassettes.
     cassette_call_type = call_type.replace("_context", "")
 
-    return f"{scenario}/{provider}/{cassette_call_type}"
+    return (
+        f"{scenario}/{provider}/{cassette_call_type}"
+        if formatting_mode is None
+        else f"{scenario}/{provider}/{formatting_mode}_{cassette_call_type}"
+    )
 
 
 def _fix_duplicate_snapshots(snapshot_file: Path) -> None:
@@ -137,12 +166,20 @@ def _fix_duplicate_snapshots(snapshot_file: Path) -> None:
 
 
 @pytest.fixture
-def snapshot(request: FixtureRequest, provider: llm.clients.Provider) -> Snapshot:
+def snapshot(
+    request: FixtureRequest,
+    provider: llm.clients.Provider,
+    formatting_mode: llm.formatting.FormattingMode | None,
+) -> Snapshot:
     """Get snapshot for current test configuration."""
     test_name = request.node.name
     scenario, call_type = _parse_test_name(test_name)
 
-    file_name = f"{provider}_snapshots"
+    file_name = (
+        f"{provider}_snapshots"
+        if formatting_mode is None
+        else f"{formatting_mode}_{provider}_snapshots"
+    )
     module_path = f"e2e.snapshots.{scenario}.{file_name}"
     snapshot_file = Path(__file__).parent / "snapshots" / scenario / f"{file_name}.py"
 
