@@ -34,30 +34,29 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAC/61RXW+CMBR951eQPosBQQp71W3Zsu+RxWRZzEUKdpYWaTVZjP99BUTBbW/rQ9Pe
-        c3rO7T07wzTRAnhCE1BEogvzXVdMc1fvFSa4IlxpoC3pYgGlOnGbteucNSXd8IWigk+Asd7jA84h
-        J7qOMqLmsRCrOeWpQINzGpSZ/OW5RqiMeSVgW9gfu5bj4MCaoTPe3vjrdjp/nExRKVjdVS4Swlqx
-        fUtAKeVULl8ISFF7v0aPT8eeEWyzO5EVpYirlvFw5Ad+6IfYc7GHvXFALBsbrXftijYSMnJPFOjp
-        w/GfSGvkhYrEivCJ2NTTdxyvMeqk1SeEB1wJBawPue7gh7CcalvKujF2EtYDAEbVV/XL6HIWdZLR
-        Bv2+2jEZnWmed/lfbmHfzDik0wT2RkpJm2QykuusrNHQtlIGclkropLIQnBJbpKK87me3sLDtLyC
-        6+1ayadtPEmCZxsZe+MbbenieBcDAAA=
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"get_book_info\",\"args\": {\"isbn\": \"0-7653-1178-X\"}}}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\":
+        114,\"candidatesTokenCount\": 19,\"totalTokenCount\": 133,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 114}],\"candidatesTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 19}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
+        \"cibLaIKtAv6An9kP3bqzmAo\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Encoding:
-      - gzip
+      Content-Disposition:
+      - attachment
       Content-Type:
-      - application/json; charset=UTF-8
+      - text/event-stream
       Date:
-      - Tue, 16 Sep 2025 17:38:23 GMT
+      - Wed, 17 Sep 2025 21:21:54 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=850
+      - gfet4t7; dur=703
       Transfer-Encoding:
       - chunked
       Vary:
@@ -112,32 +111,30 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAC/61SwY6bMBC98xXI52blkJDs7q3dbKWtuuqqi9pKVYUm4BC3xsPaQ6Uoyr93gLCB
-        NL2VAxi/5/fGb2YfhKHIwOY6B1Je3IbfeScM9+27wdCSssRAv8WbFTg6cbtnP1gzZVPbjDTaOzBm
-        dPiIWygV74s0LbUDn2Gl0g26EohUnmJNVU0pIZo0FW/OD4Mr/AVRRkiTaXUftac1OnsbJlsVvtcW
-        THhfVtqpv+T4mFMZlqWyHALXnHI5rlFZXqBWULQ5xfP5JbReG511KjsFjomRlIsLTKhpiw0u3jnO
-        H234zB/lPFpxxj4E//o7rX+cLITDLoMSc2V6sUNPEBtttd9+VtBYMe05+fT0GoqA38VHLCqH6+aW
-        E3klpZwu4pvFdSQjGc9jKeProDdvbUXtOZRHRcD5wWtjBIuUFSX4S9k7rNshmi5nndNg6EaE2fSI
-        ExKYERTJY+JDYb9iW22G0zgYVE4AjKZdc83k/lsy6D0bjOvqcwoGcZ5X+Z/cZtOxWXBsT9exLzwE
-        umtNoUpu1iS6kpONAb9tFXlafYXWq4e84fxcrD7Ag5usXr6WL+SfdtnypnjrRXAI/gDwlArV3gMA
-        AA==
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"pages\": 544,\"title\":
+        \"Mistborn: The Final Empire\",\"recommendation_score\": 7,\"author\": \"Brandon
+        Sanderson\",\"publication_year\": 2006}}}],\"role\": \"model\"},\"finishReason\":
+        \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\": 173,\"candidatesTokenCount\":
+        31,\"totalTokenCount\": 204,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        173}],\"candidatesTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        31}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"cibLaMmlLsffx_APrarxkA4\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Encoding:
-      - gzip
+      Content-Disposition:
+      - attachment
       Content-Type:
-      - application/json; charset=UTF-8
+      - text/event-stream
       Date:
-      - Tue, 16 Sep 2025 17:38:24 GMT
+      - Wed, 17 Sep 2025 21:21:55 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1029
+      - gfet4t7; dur=892
       Transfer-Encoding:
       - chunked
       Vary:

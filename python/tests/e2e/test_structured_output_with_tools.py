@@ -6,8 +6,12 @@ import pytest
 from pydantic import BaseModel, Field
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
-from tests.utils import response_snapshot_dict, stream_response_snapshot_dict
+from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS, Snapshot
+from tests.utils import (
+    exception_snapshot_dict,
+    response_snapshot_dict,
+    stream_response_snapshot_dict,
+)
 
 BOOK_DB = {
     "0-7653-1178-X": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25"
@@ -17,10 +21,12 @@ BOOK_DB = {
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_sync(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
+    formatting_mode: llm.formatting.ConcreteFormattingMode,
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with tool calls."""
@@ -30,6 +36,7 @@ def test_structured_output_with_tools_sync(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
+    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
@@ -48,26 +55,33 @@ def test_structured_output_with_tools_sync(
     def analyze_book(isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
 
-    response = analyze_book("0-7653-1178-X")
-    assert len(response.tool_calls) == 1
+    try:
+        response = analyze_book("0-7653-1178-X")
+        assert len(response.tool_calls) == 1
 
-    tool_outputs = response.execute_tools()
-    response = response.resume(tool_outputs)
+        tool_outputs = response.execute_tools()
+        response = response.resume(tool_outputs)
 
-    assert response_snapshot_dict(response) == snapshot
+        assert response_snapshot_dict(response) == snapshot
 
-    book_summary = response.format()
-    assert book_summary.title == "Mistborn: The Final Empire"
-    assert book_summary.author == "Brandon Sanderson"
-    assert book_summary.pages == 544
-    assert book_summary.publication_year == 2006
-    assert book_summary.recommendation_score == 7
+        book_summary = response.format()
+        assert book_summary.title == "Mistborn: The Final Empire"
+        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.pages == 544
+        assert book_summary.publication_year == 2006
+        assert book_summary.recommendation_score == 7
+    except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
+        assert exception_snapshot_dict(e) == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_sync_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.clients.Provider,
+    model_id: llm.clients.ModelId,
+    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with tools and context."""
 
@@ -76,6 +90,7 @@ def test_structured_output_with_tools_sync_context(
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
 
+    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
@@ -95,30 +110,37 @@ def test_structured_output_with_tools_sync_context(
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
 
     ctx = llm.Context(deps=BOOK_DB)
-    response = analyze_book(ctx, "0-7653-1178-X")
-    assert len(response.tool_calls) == 1
+    try:
+        response = analyze_book(ctx, "0-7653-1178-X")
+        assert len(response.tool_calls) == 1
 
-    tool_outputs = response.execute_tools(ctx)
-    response = response.resume(ctx, tool_outputs)
+        tool_outputs = response.execute_tools(ctx)
+        response = response.resume(ctx, tool_outputs)
 
-    assert response_snapshot_dict(response) == snapshot
+        assert response_snapshot_dict(response) == snapshot
 
-    book_summary = response.format()
-    assert book_summary.title == "Mistborn: The Final Empire"
-    assert book_summary.author == "Brandon Sanderson"
-    assert book_summary.pages == 544
-    assert book_summary.publication_year == 2006
-    assert book_summary.recommendation_score == 7
+        book_summary = response.format()
+        assert book_summary.title == "Mistborn: The Final Empire"
+        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.pages == 544
+        assert book_summary.publication_year == 2006
+        assert book_summary.recommendation_score == 7
+    except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
+        assert exception_snapshot_dict(e) == snapshot
 
 
 # ============= ASYNC TESTS =============
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_with_tools_async(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.clients.Provider,
+    model_id: llm.clients.ModelId,
+    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with tool calls."""
 
@@ -127,6 +149,7 @@ async def test_structured_output_with_tools_async(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
+    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
@@ -145,27 +168,34 @@ async def test_structured_output_with_tools_async(
     async def analyze_book(isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
 
-    response = await analyze_book("0-7653-1178-X")
-    assert len(response.tool_calls) == 1
+    try:
+        response = await analyze_book("0-7653-1178-X")
+        assert len(response.tool_calls) == 1
 
-    tool_outputs = await response.execute_tools()
-    response = await response.resume(tool_outputs)
+        tool_outputs = await response.execute_tools()
+        response = await response.resume(tool_outputs)
 
-    assert response_snapshot_dict(response) == snapshot
+        assert response_snapshot_dict(response) == snapshot
 
-    book_summary = response.format()
-    assert book_summary.title == "Mistborn: The Final Empire"
-    assert book_summary.author == "Brandon Sanderson"
-    assert book_summary.pages == 544
-    assert book_summary.publication_year == 2006
-    assert book_summary.recommendation_score == 7
+        book_summary = response.format()
+        assert book_summary.title == "Mistborn: The Final Empire"
+        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.pages == 544
+        assert book_summary.publication_year == 2006
+        assert book_summary.recommendation_score == 7
+    except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
+        assert exception_snapshot_dict(e) == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_with_tools_async_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.clients.Provider,
+    model_id: llm.clients.ModelId,
+    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with tools and context."""
 
@@ -174,6 +204,7 @@ async def test_structured_output_with_tools_async_context(
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
 
+    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
@@ -193,29 +224,36 @@ async def test_structured_output_with_tools_async_context(
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
 
     ctx = llm.Context(deps=BOOK_DB)
-    response = await analyze_book(ctx, "0-7653-1178-X")
-    assert len(response.tool_calls) == 1
+    try:
+        response = await analyze_book(ctx, "0-7653-1178-X")
+        assert len(response.tool_calls) == 1
 
-    tool_outputs = await response.execute_tools(ctx)
-    response = await response.resume(ctx, tool_outputs)
+        tool_outputs = await response.execute_tools(ctx)
+        response = await response.resume(ctx, tool_outputs)
 
-    assert response_snapshot_dict(response) == snapshot
+        assert response_snapshot_dict(response) == snapshot
 
-    book_summary = response.format()
-    assert book_summary.title == "Mistborn: The Final Empire"
-    assert book_summary.author == "Brandon Sanderson"
-    assert book_summary.pages == 544
-    assert book_summary.publication_year == 2006
-    assert book_summary.recommendation_score == 7
+        book_summary = response.format()
+        assert book_summary.title == "Mistborn: The Final Empire"
+        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.pages == 544
+        assert book_summary.publication_year == 2006
+        assert book_summary.recommendation_score == 7
+    except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
+        assert exception_snapshot_dict(e) == snapshot
 
 
 # ============= STREAM TESTS =============
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_stream(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.clients.Provider,
+    model_id: llm.clients.ModelId,
+    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with tool calls."""
 
@@ -224,6 +262,7 @@ def test_structured_output_with_tools_stream(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
+    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
@@ -242,33 +281,40 @@ def test_structured_output_with_tools_stream(
     def analyze_book(isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
 
-    response = analyze_book.stream("0-7653-1178-X")
+    try:
+        response = analyze_book.stream("0-7653-1178-X")
 
-    for _ in response.chunk_stream():
-        pass
+        for _ in response.chunk_stream():
+            pass
 
-    assert len(response.tool_calls) == 1
+        assert len(response.tool_calls) == 1
 
-    tool_outputs = response.execute_tools()
-    response = response.resume(tool_outputs)
+        tool_outputs = response.execute_tools()
+        response = response.resume(tool_outputs)
 
-    for _ in response.chunk_stream():
-        pass
+        for _ in response.chunk_stream():
+            pass
 
-    assert stream_response_snapshot_dict(response) == snapshot
+        assert stream_response_snapshot_dict(response) == snapshot
 
-    book_summary = response.format()
-    assert book_summary.title == "Mistborn: The Final Empire"
-    assert book_summary.author == "Brandon Sanderson"
-    assert book_summary.pages == 544
-    assert book_summary.publication_year == 2006
-    assert book_summary.recommendation_score == 7
+        book_summary = response.format()
+        assert book_summary.title == "Mistborn: The Final Empire"
+        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.pages == 544
+        assert book_summary.publication_year == 2006
+        assert book_summary.recommendation_score == 7
+    except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
+        assert exception_snapshot_dict(e) == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_stream_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.clients.Provider,
+    model_id: llm.clients.ModelId,
+    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with tools and context."""
 
@@ -277,6 +323,7 @@ def test_structured_output_with_tools_stream_context(
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
 
+    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
@@ -296,37 +343,44 @@ def test_structured_output_with_tools_stream_context(
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
 
     ctx = llm.Context(deps=BOOK_DB)
-    response = analyze_book.stream(ctx, "0-7653-1178-X")
+    try:
+        response = analyze_book.stream(ctx, "0-7653-1178-X")
 
-    for _ in response.chunk_stream():
-        pass
+        for _ in response.chunk_stream():
+            pass
 
-    assert len(response.tool_calls) == 1
+        assert len(response.tool_calls) == 1
 
-    tool_outputs = response.execute_tools(ctx)
-    response = response.resume(ctx, tool_outputs)
+        tool_outputs = response.execute_tools(ctx)
+        response = response.resume(ctx, tool_outputs)
 
-    for _ in response.chunk_stream():
-        pass
+        for _ in response.chunk_stream():
+            pass
 
-    assert stream_response_snapshot_dict(response) == snapshot
+        assert stream_response_snapshot_dict(response) == snapshot
 
-    book_summary = response.format()
-    assert book_summary.title == "Mistborn: The Final Empire"
-    assert book_summary.author == "Brandon Sanderson"
-    assert book_summary.pages == 544
-    assert book_summary.publication_year == 2006
-    assert book_summary.recommendation_score == 7
+        book_summary = response.format()
+        assert book_summary.title == "Mistborn: The Final Empire"
+        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.pages == 544
+        assert book_summary.publication_year == 2006
+        assert book_summary.recommendation_score == 7
+    except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
+        assert exception_snapshot_dict(e) == snapshot
 
 
 # ============= ASYNC STREAM TESTS =============
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_with_tools_async_stream(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.clients.Provider,
+    model_id: llm.clients.ModelId,
+    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with tool calls."""
 
@@ -335,6 +389,7 @@ async def test_structured_output_with_tools_async_stream(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
+    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
@@ -353,34 +408,41 @@ async def test_structured_output_with_tools_async_stream(
     async def analyze_book(isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
 
-    response = await analyze_book.stream("0-7653-1178-X")
+    try:
+        response = await analyze_book.stream("0-7653-1178-X")
 
-    async for _ in response.chunk_stream():
-        pass
+        async for _ in response.chunk_stream():
+            pass
 
-    assert len(response.tool_calls) == 1
+        assert len(response.tool_calls) == 1
 
-    tool_outputs = await response.execute_tools()
-    response = await response.resume(tool_outputs)
+        tool_outputs = await response.execute_tools()
+        response = await response.resume(tool_outputs)
 
-    async for _ in response.chunk_stream():
-        pass
+        async for _ in response.chunk_stream():
+            pass
 
-    assert stream_response_snapshot_dict(response) == snapshot
+        assert stream_response_snapshot_dict(response) == snapshot
 
-    book_summary = response.format()
-    assert book_summary.title == "Mistborn: The Final Empire"
-    assert book_summary.author == "Brandon Sanderson"
-    assert book_summary.pages == 544
-    assert book_summary.publication_year == 2006
-    assert book_summary.recommendation_score == 7
+        book_summary = response.format()
+        assert book_summary.title == "Mistborn: The Final Empire"
+        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.pages == 544
+        assert book_summary.publication_year == 2006
+        assert book_summary.recommendation_score == 7
+    except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
+        assert exception_snapshot_dict(e) == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_with_tools_async_stream_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.clients.Provider,
+    model_id: llm.clients.ModelId,
+    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with tools and context."""
 
@@ -389,6 +451,7 @@ async def test_structured_output_with_tools_async_stream_context(
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
 
+    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
@@ -408,24 +471,27 @@ async def test_structured_output_with_tools_async_stream_context(
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
 
     ctx = llm.Context(deps=BOOK_DB)
-    response = await analyze_book.stream(ctx, "0-7653-1178-X")
+    try:
+        response = await analyze_book.stream(ctx, "0-7653-1178-X")
 
-    async for _ in response.chunk_stream():
-        pass
+        async for _ in response.chunk_stream():
+            pass
 
-    assert len(response.tool_calls) == 1
+        assert len(response.tool_calls) == 1
 
-    tool_outputs = await response.execute_tools(ctx)
-    response = await response.resume(ctx, tool_outputs)
+        tool_outputs = await response.execute_tools(ctx)
+        response = await response.resume(ctx, tool_outputs)
 
-    async for _ in response.chunk_stream():
-        pass
+        async for _ in response.chunk_stream():
+            pass
 
-    assert stream_response_snapshot_dict(response) == snapshot
+        assert stream_response_snapshot_dict(response) == snapshot
 
-    book_summary = response.format()
-    assert book_summary.title == "Mistborn: The Final Empire"
-    assert book_summary.author == "Brandon Sanderson"
-    assert book_summary.pages == 544
-    assert book_summary.publication_year == 2006
-    assert book_summary.recommendation_score == 7
+        book_summary = response.format()
+        assert book_summary.title == "Mistborn: The Final Empire"
+        assert book_summary.author == "Brandon Sanderson"
+        assert book_summary.pages == 544
+        assert book_summary.publication_year == 2006
+        assert book_summary.recommendation_score == 7
+    except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
+        assert exception_snapshot_dict(e) == snapshot

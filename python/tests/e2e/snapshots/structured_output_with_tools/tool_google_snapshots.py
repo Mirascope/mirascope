@@ -53,7 +53,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"publication_year": 2006, "author": "Brandon Sanderson", "recommendation_score": 7, "title": "Mistborn: The Final Empire", "pages": 544}'
+                        text='{"publication_year": 2006, "pages": 544, "recommendation_score": 7, "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson"}'
                     )
                 ]
             ),
@@ -103,7 +103,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title": "Mistborn: The Final Empire", "recommendation_score": 7, "pages": 544, "publication_year": 2006, "author": "Brandon Sanderson"}'
+                        text='{"author": "Brandon Sanderson", "publication_year": 2006, "recommendation_score": 7, "title": "Mistborn: The Final Empire", "pages": 544}'
                     )
                 ]
             ),
@@ -152,7 +152,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"author": "Brandon Sanderson", "title": "Mistborn: The Final Empire", "recommendation_score": 7, "pages": 544, "publication_year": 2006}'
+                        text='{"pages": 544, "title": "Mistborn: The Final Empire", "recommendation_score": 7, "author": "Brandon Sanderson", "publication_year": 2006}'
                     )
                 ]
             ),
@@ -202,7 +202,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"pages": 544, "title": "Mistborn: The Final Empire", "publication_year": 2006, "recommendation_score": 7, "author": "Brandon Sanderson"}'
+                        text='{"publication_year": 2006, "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "recommendation_score": 7}'
                     )
                 ]
             ),
