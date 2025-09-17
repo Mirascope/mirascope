@@ -34,29 +34,30 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
   response:
     body:
-      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"get_book_info\",\"args\": {\"isbn\": \"0-7653-1178-X\"}}}],\"role\":
-        \"model\"},\"finishReason\": \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\":
-        114,\"candidatesTokenCount\": 19,\"totalTokenCount\": 133,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 114}],\"candidatesTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 19}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"mKDJaNPcBf6An9kP3bqzmAo\"}\r\n\r\n"
+      string: !!binary |
+        H4sIAAAAAAAC/61R0W6CMBR95ytIn8VQURx7W5xZlmk0G1nMlsUUKdhYehktJovx31eKKLjtbX1o
+        2ntOz7m952DZNtoQEbOYKCrRrf2uK7Z9MHuFgVBUKA00JV3MSaEu3HodWmdNSUqxUQzEhHDeeXzC
+        BcmorqOUqnUEsFszkQDqXdNIkcpfnmuEyUhUAq4z9keeg/H4xlmhK97R+ut2OX9cTFEB3HSVQUx5
+        I3ZsCChhgsntMyUSjPdLuFiee0Zkn84gzQuIqpZxf+B7rjvCw6HnjgIceNRxfavxNq6olCSlc6qI
+        nj45/xNpjSxXIeyomEBppo/xsDZqpdUlBCdcgSK8C3le74ewvNe2jLdjbCWsB0A4U1/VL8PpKmwl
+        ow26fTVjslrTvO7yv9yCrpl1SqcO7JUWktXJpDTTWTmDvusknMitUUQFlTkISR9j4zSJZuRp8Tad
+        fwKe75ZsXz74d4Cso/UNRAZH9hcDAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Disposition:
-      - attachment
+      Content-Encoding:
+      - gzip
       Content-Type:
-      - text/event-stream
+      - application/json; charset=UTF-8
       Date:
-      - Tue, 16 Sep 2025 17:38:32 GMT
+      - Wed, 17 Sep 2025 21:21:17 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=703
+      - gfet4t7; dur=971
       Transfer-Encoding:
       - chunked
       Vary:
@@ -111,30 +112,31 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
   response:
     body:
-      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"author\":
-        \"Brandon Sanderson\",\"title\": \"Mistborn: The Final Empire\",\"recommendation_score\":
-        7,\"pages\": 544,\"publication_year\": 2006}}}],\"role\": \"model\"},\"finishReason\":
-        \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\": 173,\"candidatesTokenCount\":
-        31,\"totalTokenCount\": 204,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        173}],\"candidatesTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        31}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"mKDJaKK8OcWCn9kPq_3YwA8\"}\r\n\r\n"
+      string: !!binary |
+        H4sIAAAAAAAC/61STW+bQBC98yvQnusIbBJbOTZxpEi2ktYoilRVaIA13mTZQbtDq9Tyf+8AJgbL
+        vRUJdpl5M+/Nx97zfZGByVUOJJ249X+wxff37bfxoSFpiB29iY0VWDphu2c/uDNkW5uMFJo70HoU
+        fPQbKCXbRZKUyoLLsJLJFm0JRDJPsKaqpoQQdZKIL+fBYAt3IWmjrE61yqBhTj4kWEZNg+DmPENb
+        Q9HWex1FF7xWZliW0uRdKtZnG7nzC1BSpNtS1spRitbc+vFO+g/KgPaXZaU48kIY1LTDRp/4arn/
+        aPwNH9I6NOIMffD+9Xe6/zxRCIudoBJzqftkhx4gtsoot/suoaFi2CZ+ev5UKOBXscKispg23ZkE
+        V0EQhNeLMFpEi/m0eRezG68nb2lF7biZa0nA7YLPwQhOUlYU47s0d1i3SxTOZx3TYOlGgFl49BMS
+        6JFrGhwnNUzs7plW6eE2DhaVOwBa0UdTZrx8jQeDYIKxrr5P3qCd5yr/E9ssHJN5x/F0E3vhJVDd
+        aApZ8rAm06tgstXgdm1GXk5XoXHyMW+ZNukKVunbcn3/8mf++GwjaX5/K4R38P4Cwycm+94DAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Disposition:
-      - attachment
+      Content-Encoding:
+      - gzip
       Content-Type:
-      - text/event-stream
+      - application/json; charset=UTF-8
       Date:
-      - Tue, 16 Sep 2025 17:38:33 GMT
+      - Wed, 17 Sep 2025 21:21:17 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=839
+      - gfet4t7; dur=828
       Transfer-Encoding:
       - chunked
       Vary:

@@ -43,7 +43,7 @@ interactions:
         114,\"candidatesTokenCount\": 19,\"totalTokenCount\": 133,\"promptTokensDetails\":
         [{\"modality\": \"TEXT\",\"tokenCount\": 114}],\"candidatesTokensDetails\":
         [{\"modality\": \"TEXT\",\"tokenCount\": 19}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"pKDJaL6_NdCAn9kPko-ssQs\"}\r\n\r\n"
+        \"hybLaLLIOMGDmNAPrKOTuQk\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -52,11 +52,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 16 Sep 2025 17:38:45 GMT
+      - Wed, 17 Sep 2025 21:22:16 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=776
+      - gfet4t7; dur=661
       Transfer-Encoding:
       - chunked
       Vary:
@@ -115,13 +115,13 @@ interactions:
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"pages\": 544,\"title\":
-        \"Mistborn: The Final Empire\",\"publication_year\": 2006,\"recommendation_score\":
-        7,\"author\": \"Brandon Sanderson\"}}}],\"role\": \"model\"},\"finishReason\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"publication_year\":
+        2006,\"title\": \"Mistborn: The Final Empire\",\"author\": \"Brandon Sanderson\",\"pages\":
+        544,\"recommendation_score\": 7}}}],\"role\": \"model\"},\"finishReason\":
         \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\": 173,\"candidatesTokenCount\":
         31,\"totalTokenCount\": 204,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
         173}],\"candidatesTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        31}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"paDJaNeoKq-Hn9kPtMb12Q0\"}\r\n\r\n"
+        31}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"iCbLaNLVJ8WCn9kPq_3YwA8\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -130,11 +130,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 16 Sep 2025 17:38:46 GMT
+      - Wed, 17 Sep 2025 21:22:17 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=878
+      - gfet4t7; dur=784
       Transfer-Encoding:
       - chunked
       Vary:

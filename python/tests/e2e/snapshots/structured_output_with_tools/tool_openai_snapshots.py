@@ -3,6 +3,7 @@ from inline_snapshot import snapshot
 from mirascope.llm import (
     AssistantMessage,
     FinishReason,
+    SystemMessage,
     Text,
     ToolCall,
     ToolOutput,
@@ -16,6 +17,14 @@ sync_snapshot = snapshot(
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(
+                content=Text(
+                    text="""\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.\
+"""
+                )
+            ),
             UserMessage(
                 content=[
                     Text(
@@ -26,7 +35,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_5bIT0H5PoYvtIsnrbMs3xHls",
+                        id="call_PetJpqxV4lVD0TIV9Spb5lrM",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -35,7 +44,7 @@ sync_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_5bIT0H5PoYvtIsnrbMs3xHls",
+                        id="call_PetJpqxV4lVD0TIV9Spb5lrM",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -58,6 +67,14 @@ async_snapshot = snapshot(
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(
+                content=Text(
+                    text="""\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.\
+"""
+                )
+            ),
             UserMessage(
                 content=[
                     Text(
@@ -68,7 +85,7 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_B82X9HYqCOczJemY2OcPDdzj",
+                        id="call_yWUEmtnZfnscXEOQrmD7u9UV",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -77,7 +94,7 @@ async_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_B82X9HYqCOczJemY2OcPDdzj",
+                        id="call_yWUEmtnZfnscXEOQrmD7u9UV",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -99,6 +116,14 @@ stream_snapshot = snapshot(
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(
+                content=Text(
+                    text="""\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.\
+"""
+                )
+            ),
             UserMessage(
                 content=[
                     Text(
@@ -109,7 +134,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_68woNO3uP3ts2MLKbvGKjOxH",
+                        id="call_X0lEMO4i4I8Ves20nWhgjaDf",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -118,7 +143,7 @@ stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_68woNO3uP3ts2MLKbvGKjOxH",
+                        id="call_X0lEMO4i4I8Ves20nWhgjaDf",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -132,7 +157,7 @@ stream_snapshot = snapshot(
                 ]
             ),
         ],
-        "n_chunks": 36,
+        "n_chunks": 35,
     },
 )
 async_stream_snapshot = snapshot(
@@ -141,6 +166,14 @@ async_stream_snapshot = snapshot(
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(
+                content=Text(
+                    text="""\
+When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
+Do NOT output any text in addition to the tool call.\
+"""
+                )
+            ),
             UserMessage(
                 content=[
                     Text(
@@ -151,7 +184,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_e1tUo0Vw0hHVjol8zpjmT8xi",
+                        id="call_riMokxjHT7ql3fxeb5pepVyq",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -160,7 +193,7 @@ async_stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_e1tUo0Vw0hHVjol8zpjmT8xi",
+                        id="call_riMokxjHT7ql3fxeb5pepVyq",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -174,6 +207,6 @@ async_stream_snapshot = snapshot(
                 ]
             ),
         ],
-        "n_chunks": 36,
+        "n_chunks": 35,
     },
 )
