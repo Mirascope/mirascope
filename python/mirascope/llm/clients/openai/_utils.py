@@ -19,6 +19,7 @@ from ...content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from ...exceptions import FormattingModeNotSupportedError
 from ...formatting import (
     FormatInfo,
     FormatT,
@@ -270,6 +271,10 @@ def prepare_openai_request(
             model_has_native_json_support=model_has_native_json_support,
         )
         if resolved_format.mode == "strict":
+            if not model_supports_strict:
+                raise FormattingModeNotSupportedError(
+                    formatting_mode="strict", provider="openai", model_id=model_id
+                )
             kwargs["response_format"] = create_strict_response_format(
                 resolved_format.info
             )

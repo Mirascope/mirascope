@@ -1,6 +1,5 @@
 """Tests for OpenAIClient using VCR.py for HTTP request recording/playback."""
 
-import openai
 import pytest
 
 from mirascope import llm
@@ -108,10 +107,12 @@ def test_structured_output_legacy_model(
     try:
         response = openai_client.call(**scenario.call_args)
         scenario.check_response(response)
-    except openai.BadRequestError:
-        assert (
-            formatting_mode == "strict"
-        )  # Expected, gpt-4 doesn't support strict mode
+    except llm.FormattingModeNotSupportedError as e:
+        # Expected, gpt-4 doesn't support strict mode
+        assert formatting_mode == "strict"
+        assert e.formatting_mode == "strict"
+        assert e.provider == "openai"
+        assert e.model_id == "gpt-4"
     except AssertionError as e:
         # Known issue: gpt-4 will not call tools with json.
         # Call seems correct so considering this a model quirk.

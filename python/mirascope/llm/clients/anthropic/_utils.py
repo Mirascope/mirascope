@@ -20,6 +20,7 @@ from ...content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
+from ...exceptions import FormattingModeNotSupportedError
 from ...formatting import (
     FormatInfo,
     FormatT,
@@ -168,7 +169,11 @@ def prepare_anthropic_request(
             model_supports_strict_mode=False,
             model_has_native_json_support=False,
         )
-        if resolved_format.mode == "tool":
+        if resolved_format.mode == "strict":
+            raise FormattingModeNotSupportedError(
+                formatting_mode="strict", provider="anthropic", model_id=model_id
+            )
+        elif resolved_format.mode == "tool":
             anthropic_tools.append(create_format_tool_param(resolved_format.info))
             if tools:
                 kwargs["tool_choice"] = {"type": "any"}
