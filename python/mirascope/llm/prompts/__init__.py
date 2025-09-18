@@ -5,39 +5,29 @@ python functions.
 """
 
 from . import _utils
-from .context_prompt_decorator import context_prompt
-from .prompt_decorator import prompt
-from .types import (
-    AsyncContextMessagesPrompt,
+from .decorator import prompt
+from .protocols import (
     AsyncContextPrompt,
-    AsyncContextSystemPrompt,
-    AsyncMessagesPrompt,
+    AsyncContextPromptable,
     AsyncPrompt,
-    AsyncSystemPrompt,
-    ContextMessagesPrompt,
+    AsyncPromptable,
     ContextPrompt,
-    ContextSystemPrompt,
-    MessagesPrompt,
+    ContextPromptable,
     Prompt,
+    Promptable,
     PromptT,
-    SystemPrompt,
 )
 
 __all__ = [
-    "AsyncContextMessagesPrompt",
     "AsyncContextPrompt",
-    "AsyncContextSystemPrompt",
-    "AsyncMessagesPrompt",
+    "AsyncContextPromptable",
     "AsyncPrompt",
-    "AsyncSystemPrompt",
-    "ContextMessagesPrompt",
+    "AsyncPromptable",
     "ContextPrompt",
-    "ContextSystemPrompt",
-    "MessagesPrompt",
+    "ContextPromptable",
     "Prompt",
     "PromptT",
-    "SystemPrompt",
+    "Promptable",
     "_utils",
-    "context_prompt",
     "prompt",
 ]

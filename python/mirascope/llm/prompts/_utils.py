@@ -1,4 +1,3 @@
-import inspect
 from typing_extensions import TypeIs
 
 from ..messages import (
@@ -8,10 +7,6 @@ from ..messages import (
     UserContent,
     UserMessage,
     user,
-)
-from .types import (
-    AsyncPrompt,
-    Prompt,
 )
 
 
@@ -34,8 +29,3 @@ def promote_to_messages(result: list[Message] | UserContent) -> list[Message]:
     if is_messages(result):
         return result
     return [user(result)]
-
-
-def is_async_prompt(fn: Prompt | AsyncPrompt) -> TypeIs[AsyncPrompt]:
-    """Distinguish `Prompt` from `AsyncPrompt`, returning `TypeIs[AsyncPrompt]`"""
-    return inspect.iscoroutinefunction(fn)

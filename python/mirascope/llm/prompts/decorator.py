@@ -1,18 +1,23 @@
 """The `prompt` decorator for writing messages as string templates."""
 
-from collections.abc import Awaitable, Callable
-from typing import overload
+import inspect
+from typing import cast, overload
 
+from ..context import Context, DepsT, _utils as _context_utils
 from ..messages import (
     Message,
 )
 from ..types import P
 from . import _utils
-from .types import (
-    AsyncMessagesPrompt,
+from .protocols import (
+    AsyncContextPrompt,
+    AsyncContextPromptable,
     AsyncPrompt,
-    MessagesPrompt,
+    AsyncPromptable,
+    ContextPrompt,
+    ContextPromptable,
     Prompt,
+    Promptable,
 )
 
 
@@ -22,24 +27,73 @@ class PromptDecorator:
     @overload
     def __call__(
         self,
-        fn: Prompt[P],
-    ) -> MessagesPrompt[P]:
+        fn: ContextPromptable[P, DepsT],
+    ) -> ContextPrompt[P, DepsT]:
+        """Decorator for creating context prompts."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: AsyncContextPromptable[P, DepsT],
+    ) -> AsyncContextPrompt[P, DepsT]:
+        """Decorator for creating async context prompts."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: Promptable[P],
+    ) -> Prompt[P]:
         """Decorator for creating prompts."""
         ...
 
     @overload
     def __call__(
         self,
-        fn: AsyncPrompt[P],
-    ) -> AsyncMessagesPrompt[P]:
+        fn: AsyncPromptable[P],
+    ) -> AsyncPrompt[P]:
         """Decorator for creating async prompts."""
         ...
 
     def __call__(
-        self, fn: Prompt[P] | AsyncPrompt[P]
-    ) -> MessagesPrompt[P] | AsyncMessagesPrompt[P]:
+        self,
+        fn: ContextPromptable[P, DepsT]
+        | AsyncContextPromptable[P, DepsT]
+        | Promptable[P]
+        | AsyncPromptable[P],
+    ) -> (
+        Prompt[P]
+        | AsyncPrompt[P]
+        | ContextPrompt[P, DepsT]
+        | AsyncContextPrompt[P, DepsT]
+    ):
         """Decorator for creating a prompt."""
-        if _utils.is_async_prompt(fn):
+        is_context = _context_utils.first_param_is_context(fn)
+        is_async = inspect.iscoroutinefunction(fn)
+
+        if is_context and is_async:
+            fn = cast(AsyncContextPromptable[P, DepsT], fn)
+
+            async def async_context_prompt(
+                ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+            ) -> list[Message]:
+                result = await fn(ctx, *args, **kwargs)
+                return _utils.promote_to_messages(result)
+
+            return async_context_prompt
+        elif is_context:
+            fn = cast(ContextPromptable[P, DepsT], fn)
+
+            def context_prompt(
+                ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
+            ) -> list[Message]:
+                result = fn(ctx, *args, **kwargs)
+                return _utils.promote_to_messages(result)
+
+            return context_prompt
+        elif is_async:
+            fn = cast(AsyncPrompt[P], fn)
 
             async def async_prompt(*args: P.args, **kwargs: P.kwargs) -> list[Message]:
                 result = await fn(*args, **kwargs)
@@ -47,6 +101,7 @@ class PromptDecorator:
 
             return async_prompt
         else:
+            fn = cast(Prompt[P], fn)
 
             def prompt(*args: P.args, **kwargs: P.kwargs) -> list[Message]:
                 result = fn(*args, **kwargs)
@@ -61,38 +116,79 @@ class PromptTemplateDecorator:
     @overload
     def __call__(
         self,
-        fn: Callable[P, None],
-    ) -> MessagesPrompt[P]:
+        fn: ContextPromptable[P, DepsT],
+    ) -> ContextPrompt[P, DepsT]:
+        """Decorator for creating context prompts from template functions."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: AsyncContextPromptable[P, DepsT],
+    ) -> AsyncContextPrompt[P, DepsT]:
+        """Decorator for creating async context prompts from template functions."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: Promptable[P],
+    ) -> Prompt[P]:
         """Decorator for creating prompts from template functions."""
         ...
 
     @overload
     def __call__(
         self,
-        fn: Callable[P, Awaitable[None]],
-    ) -> AsyncMessagesPrompt[P]:
+        fn: AsyncPromptable[P],
+    ) -> AsyncPrompt[P]:
         """Decorator for creating async prompts from template functions."""
         ...
 
     def __call__(
-        self, fn: Callable[P, None] | Callable[P, Awaitable[None]]
-    ) -> MessagesPrompt[P] | AsyncMessagesPrompt[P]:
+        self,
+        fn: ContextPromptable[P, DepsT]
+        | AsyncContextPromptable[P, DepsT]
+        | Promptable[P]
+        | AsyncPromptable[P],
+    ) -> (
+        Prompt[P]
+        | AsyncPrompt[P]
+        | ContextPrompt[P, DepsT]
+        | AsyncContextPrompt[P, DepsT]
+    ):
         """Decorator for creating a prompt from a template function."""
         raise NotImplementedError()
 
 
 @overload
 def prompt(
-    __fn: Prompt[P],
-) -> MessagesPrompt[P]:
+    __fn: ContextPromptable[P, DepsT],
+) -> ContextPrompt[P, DepsT]:
+    """Create a decorator for sync ContextPrompt functions (no arguments)."""
+    ...
+
+
+@overload
+def prompt(
+    __fn: AsyncContextPromptable[P, DepsT],
+) -> AsyncContextPrompt[P, DepsT]:
+    """Create a decorator for async ContextPrompt functions (no arguments)."""
+    ...
+
+
+@overload
+def prompt(
+    __fn: Promptable[P],
+) -> Prompt[P]:
     """Create a decorator for sync Prompt functions (no arguments)."""
     ...
 
 
 @overload
 def prompt(
-    __fn: AsyncPrompt[P],
-) -> AsyncMessagesPrompt[P]:
+    __fn: AsyncPromptable[P],
+) -> AsyncPrompt[P]:
     """Create a decorator for async Prompt functions (no arguments)."""
     ...
 
@@ -115,20 +211,29 @@ def prompt(
 
 
 def prompt(
-    __fn: Prompt[P] | AsyncPrompt[P] | None = None,
+    __fn: ContextPromptable[P, DepsT]
+    | AsyncContextPromptable[P, DepsT]
+    | Promptable[P]
+    | AsyncPromptable[P]
+    | None = None,
     *,
     template: str | None = None,
 ) -> (
-    MessagesPrompt[P]
-    | AsyncMessagesPrompt[P]
+    ContextPrompt[P, DepsT]
+    | AsyncContextPrompt[P, DepsT]
+    | Prompt[P]
+    | AsyncPrompt[P]
     | PromptDecorator
     | PromptTemplateDecorator
 ):
-    '''Prompt decorator for turning functions (or "Prompts") into prompts.
+    """Prompt decorator for turning functions (or "Prompts") into prompts.
 
     This decorator transforms a function into a Prompt, i.e. a function that
     returns `list[llm.Message]`. Its behavior depends on whether it's called with a spec
     string.
+
+    If the first parameter is named 'ctx' or typed as `llm.Context[T]`, it creates
+    a ContextPrompt. Otherwise, it creates a regular Prompt.
 
     With a template string, it returns a PromptTemplateDecorator, in which case it uses
     the provided template to decorate an function with an empty body, and uses arguments
@@ -162,18 +267,15 @@ def prompt(
 
     Examples:
         ```python
-        @llm.prompt("""
-            [SYSTEM] You are a helpful assistant specializing in {{ domain }}.
-            [USER] {{ question }}
-        """)
-        def domain_question(domain: str, question: str) -> None:
-            pass
-
-        @llm.prompt()
+        @llm.prompt
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
+
+        @llm.prompt
+        def answer_with_context(ctx: llm.Context[str], question: str) -> str:
+            return f"Using context {ctx.deps}, answer: {question}"
         ```
-    '''  # TODO(docs): Update this docstring
+    """  # TODO(docs): Update this docstring
     if template:
         raise NotImplementedError()
     decorator = PromptDecorator()

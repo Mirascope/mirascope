@@ -5,12 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, Protocol, overload
 from typing_extensions import TypeVar, Unpack
 
-from ..prompts import (
-    AsyncContextSystemPrompt,
-    AsyncSystemPrompt,
-    ContextSystemPrompt,
-    SystemPrompt,
-)
 from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from .agent_template import AgentTemplate, AsyncAgentTemplate
 
@@ -31,7 +25,7 @@ if TYPE_CHECKING:
         Provider,
     )
 
-from ..context import DepsT
+from ..context import Context, DepsT
 from ..formatting import FormatT
 from ..types import P
 
@@ -41,6 +35,30 @@ AgentToolT = TypeVar(
     covariant=True,
     default=None,
 )
+
+
+class SystemPrompt(Protocol[P]):
+    """Protocol for a prompt template function that returns a system prompt as a string (no context)."""
+
+    def __call__(self) -> str: ...
+
+
+class ContextSystemPrompt(Protocol[P, DepsT]):
+    """Protocol for a prompt template function that returns a system prompt as a string (with context)."""
+
+    def __call__(self, ctx: Context[DepsT]) -> str: ...
+
+
+class AsyncSystemPrompt(Protocol[P]):
+    """Protocol for an async prompt template function that returns a system prompt as a string (no context)."""
+
+    async def __call__(self) -> str: ...
+
+
+class AsyncContextSystemPrompt(Protocol[P, DepsT]):
+    """Protocol for an async prompt template function that returns a system prompt as a string (with context)."""
+
+    async def __call__(self, ctx: Context[DepsT]) -> str: ...
 
 
 class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
