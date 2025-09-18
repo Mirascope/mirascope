@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import importlib
-import sys
 from pathlib import Path
 from typing import Any, Literal, TypeAlias, get_args
 
@@ -134,53 +133,6 @@ def vcr_cassette_name(
     )
 
 
-def _fix_duplicate_snapshots(snapshot_file: Path) -> None:
-    """Fix duplicate snapshot entries caused by parallel test runs.
-
-    Explanation: We structure tests so that the context and non context call types of the
-    test use the same cassettes and snapshot. However, when using the create or fix flags
-    to inline-snapshot, it seemingly batches all the snapshot changes and then tries to apply
-    them—with the result that if both tests failed due to a missing snapshot, they will
-    both try to apply updates, and the result is an invalid snapshot that has two separate
-    snapshot values. To avoid the needless duplication of snapshots, we instead have this
-    simple helper which checks if a snapshot has duplicate values, and if so discards
-    the extras before the snapshot is loaded from disk.
-    """
-    content = snapshot_file.read_text()
-    lines = content.split("\n")
-
-    result = []
-    discard_this_section = False
-    inside_string_literal = False
-    for line in lines:
-        if not discard_this_section:
-            result.append(line)
-
-        # Our duplicate snapshot detection logic depends on indentation, but may get a
-        # false positive if we are inside a triple-quote multiline string literal.
-        # So we disable it in that case.
-        if line.endswith('="""\\'):
-            inside_string_literal = True
-        elif line == '"""':
-            inside_string_literal = False
-
-        if inside_string_literal:
-            continue
-
-        # With zero leading indentation, this always means we ended a snapshot.
-        if line == ")" and discard_this_section:
-            discard_this_section = False
-            result.append(")")
-
-        # With exactly four leading spaces, this only occurs when we are ending an
-        # object being passed directly to the snapshot function. Include this closing brace
-        # in the snapshot, but discard everything else we see until the snapshot call closes.
-        if line == "    },":
-            discard_this_section = True
-
-    snapshot_file.write_text("\n".join(result))
-
-
 @pytest.fixture
 def snapshot(
     request: FixtureRequest,
@@ -229,14 +181,6 @@ def snapshot(
             "stream_snapshot = snapshot()\n"
             "async_stream_snapshot = snapshot()\n"
         )
-    else:
-        _fix_duplicate_snapshots(snapshot_file)
-    if module_path in sys.modules:
-        del sys.modules[module_path]
-
-    e2e_dir = str(Path(__file__).parent.parent)
-    if e2e_dir not in sys.path:
-        sys.path.insert(0, e2e_dir)
 
     module = importlib.import_module(module_path)
     snapshot_variable = call_type.removesuffix("_context") + "_snapshot"

@@ -49,7 +49,7 @@ sync_snapshot = snapshot(
                 ]
             ),
         ],
-    },
+    }
 )
 async_snapshot = snapshot(
     {
@@ -91,7 +91,7 @@ async_snapshot = snapshot(
                 ]
             ),
         ],
-    },
+    }
 )
 stream_snapshot = snapshot(
     {
@@ -133,7 +133,7 @@ stream_snapshot = snapshot(
             ),
         ],
         "n_chunks": 36,
-    },
+    }
 )
 async_stream_snapshot = snapshot(
     {
@@ -175,5 +175,5 @@ async_stream_snapshot = snapshot(
             ),
         ],
         "n_chunks": 36,
-    },
+    }
 )

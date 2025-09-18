@@ -9,7 +9,7 @@ sync_snapshot = snapshot(
         "feature": "formatting_mode:strict with tools",
         "model_id": "gemini-2.0-flash",
         "provider": "google",
-    },
+    }
 )
 async_snapshot = snapshot(
     {
@@ -20,7 +20,7 @@ async_snapshot = snapshot(
         "feature": "formatting_mode:strict with tools",
         "model_id": "gemini-2.0-flash",
         "provider": "google",
-    },
+    }
 )
 stream_snapshot = snapshot(
     {
@@ -31,7 +31,7 @@ stream_snapshot = snapshot(
         "feature": "formatting_mode:strict with tools",
         "model_id": "gemini-2.0-flash",
         "provider": "google",
-    },
+    }
 )
 async_stream_snapshot = snapshot(
     {
@@ -42,5 +42,5 @@ async_stream_snapshot = snapshot(
         "feature": "formatting_mode:strict with tools",
         "model_id": "gemini-2.0-flash",
         "provider": "google",
-    },
+    }
 )

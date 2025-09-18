@@ -10,7 +10,7 @@ sync_snapshot = snapshot(
         "formatting_mode": "strict",
         "model_id": "claude-sonnet-4-0",
         "provider": "anthropic",
-    },
+    }
 )
 async_snapshot = snapshot(
     {
@@ -22,7 +22,7 @@ async_snapshot = snapshot(
         "formatting_mode": "strict",
         "model_id": "claude-sonnet-4-0",
         "provider": "anthropic",
-    },
+    }
 )
 stream_snapshot = snapshot(
     {
@@ -34,7 +34,7 @@ stream_snapshot = snapshot(
         "formatting_mode": "strict",
         "model_id": "claude-sonnet-4-0",
         "provider": "anthropic",
-    },
+    }
 )
 async_stream_snapshot = snapshot(
     {
@@ -46,5 +46,5 @@ async_stream_snapshot = snapshot(
         "formatting_mode": "strict",
         "model_id": "claude-sonnet-4-0",
         "provider": "anthropic",
-    },
+    }
 )
