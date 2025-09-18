@@ -138,6 +138,10 @@ class ResolvedFormatInfo:
     were provided.
     """
 
+    # TODO: Make ResolvedFormatInfo accessible from the response somehow, which will make
+    # it possible for users of e.g. "strict-or-tool" to see which concrete formatting mode
+    # was invoked, as well as making formatting_instructions more discoverable.
+
     mode: ConcreteFormattingMode
     """The concrete formatting mode that will be used."""
 

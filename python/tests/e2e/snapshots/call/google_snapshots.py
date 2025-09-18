@@ -17,6 +17,7 @@ sync_snapshot = snapshot(
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(content=[Text(text="4200 + 42 = 4242\n")]),
         ],
+        "format_type": None,
     }
 )
 async_snapshot = snapshot(
@@ -29,6 +30,7 @@ async_snapshot = snapshot(
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(content=[Text(text="4200 + 42 = 4242\n")]),
         ],
+        "format_type": None,
     }
 )
 stream_snapshot = snapshot(
@@ -40,6 +42,7 @@ stream_snapshot = snapshot(
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(content=[Text(text="4200 + 42 = 4242\n")]),
         ],
+        "format_type": None,
         "n_chunks": 5,
     }
 )
@@ -52,6 +55,7 @@ async_stream_snapshot = snapshot(
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(content=[Text(text="4200 + 42 = 4242\n")]),
         ],
+        "format_type": None,
         "n_chunks": 5,
     }
 )
