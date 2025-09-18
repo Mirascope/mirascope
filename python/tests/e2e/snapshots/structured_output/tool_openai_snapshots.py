@@ -38,6 +38,20 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "tool",
+        },
     }
 )
 async_snapshot = snapshot(
@@ -70,6 +84,20 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "tool",
+        },
     }
 )
 stream_snapshot = snapshot(
@@ -101,6 +129,20 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "tool",
+        },
         "n_chunks": 18,
     }
 )
@@ -133,6 +175,20 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "tool",
+        },
         "n_chunks": 18,
     }
 )

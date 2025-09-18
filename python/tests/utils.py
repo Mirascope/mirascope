@@ -12,6 +12,20 @@ def get_format(x: type[llm.formatting.FormatT]) -> llm.FormatInfo:
     return format
 
 
+def format_snapshot_dict(
+    format_type: type[llm.formatting.FormatT] | None,
+) -> dict | None:
+    if format_type is None:
+        return None
+    format_info = get_format(format_type)
+    return {
+        "name": format_info.name,
+        "description": format_info.description,
+        "schema": format_info.schema,
+        "mode": format_info.mode,
+    }
+
+
 def response_snapshot_dict(response: llm.responses.RootResponse[Any, Any]) -> dict:
     dict_copy = response.__dict__.copy()
 
@@ -28,10 +42,9 @@ def response_snapshot_dict(response: llm.responses.RootResponse[Any, Any]) -> di
     dict_copy.pop("thoughts")
     dict_copy.pop("tool_calls")
 
-    # Remove format_type and toolkit because they are difficult to snapshot
-    # (should be tested separately where appropriate)
-    dict_copy.pop("format_type")  # Difficult to snapshot, test separately
-    dict_copy.pop("toolkit")  # Tools are difficult to snapshot
+    format_type = dict_copy.pop("format_type")
+    dict_copy["format_type"] = format_snapshot_dict(format_type)
+    dict_copy.pop("toolkit")  # TODO: Snapshot tools in similar fashion to format types
     return dict_copy
 
 
@@ -51,6 +64,7 @@ def stream_response_snapshot_dict(
         "model_id": response.model_id,
         "finish_reason": response.finish_reason,
         "messages": list(response.messages),
+        "format_type": format_snapshot_dict(response.format_type),
         "n_chunks": len(
             response.chunks
         ),  # Just snapshot the number of chunks to minimize bloat. Chunk reconstruction is tested separately.

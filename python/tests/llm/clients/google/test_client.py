@@ -150,5 +150,6 @@ def test_call_no_output(google_client: llm.GoogleClient) -> None:
                 llm.UserMessage(content=[llm.Text(text="")]),
                 llm.AssistantMessage(content=[]),
             ],
+            "format_type": None,
         }
     )

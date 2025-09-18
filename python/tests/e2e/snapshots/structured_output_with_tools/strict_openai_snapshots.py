@@ -49,6 +49,36 @@ sync_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                    "recommendation_score": {
+                        "description": "Should be 7 for testing purposes",
+                        "title": "Recommendation Score",
+                        "type": "integer",
+                    },
+                },
+                "required": [
+                    "title",
+                    "author",
+                    "pages",
+                    "publication_year",
+                    "recommendation_score",
+                ],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "strict",
+        },
     }
 )
 async_snapshot = snapshot(
@@ -91,6 +121,36 @@ async_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                    "recommendation_score": {
+                        "description": "Should be 7 for testing purposes",
+                        "title": "Recommendation Score",
+                        "type": "integer",
+                    },
+                },
+                "required": [
+                    "title",
+                    "author",
+                    "pages",
+                    "publication_year",
+                    "recommendation_score",
+                ],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "strict",
+        },
     }
 )
 stream_snapshot = snapshot(
@@ -132,6 +192,36 @@ stream_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                    "recommendation_score": {
+                        "description": "Should be 7 for testing purposes",
+                        "title": "Recommendation Score",
+                        "type": "integer",
+                    },
+                },
+                "required": [
+                    "title",
+                    "author",
+                    "pages",
+                    "publication_year",
+                    "recommendation_score",
+                ],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "strict",
+        },
         "n_chunks": 36,
     }
 )
@@ -174,6 +264,36 @@ async_stream_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                    "recommendation_score": {
+                        "description": "Should be 7 for testing purposes",
+                        "title": "Recommendation Score",
+                        "type": "integer",
+                    },
+                },
+                "required": [
+                    "title",
+                    "author",
+                    "pages",
+                    "publication_year",
+                    "recommendation_score",
+                ],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "strict",
+        },
         "n_chunks": 36,
     }
 )

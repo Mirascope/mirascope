@@ -34,6 +34,20 @@ sync_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "strict",
+        },
     }
 )
 async_snapshot = snapshot(
@@ -63,6 +77,20 @@ async_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "strict",
+        },
     }
 )
 stream_snapshot = snapshot(
@@ -91,6 +119,20 @@ stream_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "strict",
+        },
         "n_chunks": 6,
     }
 )
@@ -120,6 +162,20 @@ async_stream_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "strict",
+        },
         "n_chunks": 6,
     }
 )

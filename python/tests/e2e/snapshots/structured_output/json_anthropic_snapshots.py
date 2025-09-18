@@ -62,6 +62,20 @@ Respond ONLY with valid JSON, and no other text.\
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+        },
     }
 )
 async_snapshot = snapshot(
@@ -118,6 +132,20 @@ Respond ONLY with valid JSON, and no other text.\
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+        },
     }
 )
 stream_snapshot = snapshot(
@@ -173,6 +201,20 @@ Respond ONLY with valid JSON, and no other text.\
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "n_chunks": 6,
     }
 )
@@ -229,6 +271,20 @@ Respond ONLY with valid JSON, and no other text.\
                 ]
             ),
         ],
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                },
+                "required": ["title", "author"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "n_chunks": 5,
     }
 )

@@ -59,6 +59,7 @@ sync_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": None,
     }
 )
 async_snapshot = snapshot(
@@ -111,6 +112,7 @@ async_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": None,
     }
 )
 stream_snapshot = snapshot(
@@ -162,6 +164,7 @@ stream_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": None,
         "n_chunks": 5,
     }
 )
@@ -214,6 +217,7 @@ async_stream_snapshot = snapshot(
                 ]
             ),
         ],
+        "format_type": None,
         "n_chunks": 5,
     }
 )
