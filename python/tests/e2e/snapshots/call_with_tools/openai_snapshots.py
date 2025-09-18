@@ -64,7 +64,7 @@ The secrets associated with the passwords are as follows:
                 ]
             ),
         ],
-    },
+    }
 )
 async_snapshot = snapshot(
     {
@@ -121,7 +121,7 @@ The secrets associated with the passwords are as follows:
                 ]
             ),
         ],
-    },
+    }
 )
 stream_snapshot = snapshot(
     {
@@ -178,7 +178,7 @@ The secrets associated with the provided passwords are:
             ),
         ],
         "n_chunks": 33,
-    },
+    }
 )
 async_stream_snapshot = snapshot(
     {
@@ -235,5 +235,5 @@ Here are the secrets associated with the provided passwords:
             ),
         ],
         "n_chunks": 37,
-    },
+    }
 )

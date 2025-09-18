@@ -67,7 +67,7 @@ Here are the secrets retrieved for each password:
                 ]
             ),
         ],
-    },
+    }
 )
 async_snapshot = snapshot(
     {
@@ -127,7 +127,7 @@ Here are the secrets retrieved for each password:
                 ]
             ),
         ],
-    },
+    }
 )
 stream_snapshot = snapshot(
     {
@@ -187,7 +187,7 @@ Here are the secrets retrieved for each password:
             ),
         ],
         "n_chunks": 6,
-    },
+    }
 )
 async_stream_snapshot = snapshot(
     {
@@ -247,5 +247,5 @@ Here are the secrets retrieved for each password:
             ),
         ],
         "n_chunks": 6,
-    },
+    }
 )

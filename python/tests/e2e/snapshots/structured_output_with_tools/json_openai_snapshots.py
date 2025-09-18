@@ -99,7 +99,7 @@ Respond with valid JSON that matches this exact schema:
                 ]
             ),
         ],
-    },
+    }
 )
 async_snapshot = snapshot(
     {
@@ -190,7 +190,7 @@ Respond with valid JSON that matches this exact schema:
                 ]
             ),
         ],
-    },
+    }
 )
 stream_snapshot = snapshot(
     {
@@ -281,7 +281,7 @@ Respond with valid JSON that matches this exact schema:
             ),
         ],
         "n_chunks": 52,
-    },
+    }
 )
 async_stream_snapshot = snapshot(
     {
@@ -372,5 +372,5 @@ Respond with valid JSON that matches this exact schema:
             ),
         ],
         "n_chunks": 52,
-    },
+    }
 )

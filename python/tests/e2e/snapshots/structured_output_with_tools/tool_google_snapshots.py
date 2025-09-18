@@ -58,7 +58,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-    },
+    }
 )
 async_snapshot = snapshot(
     {
@@ -108,7 +108,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-    },
+    }
 )
 stream_snapshot = snapshot(
     {
@@ -158,7 +158,7 @@ Do NOT output any text in addition to the tool call.\
             ),
         ],
         "n_chunks": 3,
-    },
+    }
 )
 async_stream_snapshot = snapshot(
     {
@@ -208,5 +208,5 @@ Do NOT output any text in addition to the tool call.\
             ),
         ],
         "n_chunks": 3,
-    },
+    }
 )

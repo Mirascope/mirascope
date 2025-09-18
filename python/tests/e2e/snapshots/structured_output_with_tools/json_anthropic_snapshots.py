@@ -101,7 +101,7 @@ Respond ONLY with valid JSON, and no other text.\
                 ]
             ),
         ],
-    },
+    }
 )
 async_snapshot = snapshot(
     {
@@ -194,7 +194,7 @@ Respond ONLY with valid JSON, and no other text.\
                 ]
             ),
         ],
-    },
+    }
 )
 stream_snapshot = snapshot(
     {
@@ -287,7 +287,7 @@ Respond ONLY with valid JSON, and no other text.\
             ),
         ],
         "n_chunks": 10,
-    },
+    }
 )
 async_stream_snapshot = snapshot(
     {
@@ -380,5 +380,5 @@ Respond ONLY with valid JSON, and no other text.\
             ),
         ],
         "n_chunks": 10,
-    },
+    }
 )
