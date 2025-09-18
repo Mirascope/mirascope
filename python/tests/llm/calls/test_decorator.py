@@ -108,7 +108,7 @@ class TestCall:
 
         assert call.toolkit == llm.Toolkit(tools=tools)
         assert call.format is Format
-        assert call.fn is prompt
+        assert call.fn() == [llm.messages.user("Please recommend a fantasy book.")]
 
     @pytest.mark.asyncio
     async def test_creating_async_call(
@@ -135,7 +135,9 @@ class TestCall:
 
         assert call.toolkit == llm.AsyncToolkit(tools=async_tools)
         assert call.format is Format
-        assert call.fn is async_prompt
+        assert await call.fn() == [
+            llm.messages.user("Please recommend a fantasy book.")
+        ]
 
     @pytest.mark.vcr()
     def test_call_decorator_e2e_model_override(self) -> None:
@@ -202,7 +204,12 @@ class TestContextCall:
 
         assert call.toolkit == llm.ContextToolkit(tools=context_tools)
         assert call.format is Format
-        assert call.fn is context_prompt
+        ctx = llm.Context(deps=42)
+        assert call.fn(ctx) == [
+            llm.messages.user(
+                "Please recommend a fantasy book. My context value is 42."
+            )
+        ]
 
     @pytest.mark.asyncio
     async def test_creating_async_context_call(
@@ -231,7 +238,12 @@ class TestContextCall:
 
         assert call.toolkit == llm.AsyncContextToolkit(tools=async_context_tools)
         assert call.format is Format
-        assert call.fn is async_context_prompt
+        ctx = llm.Context(deps=42)
+        assert await call.fn(ctx) == [
+            llm.messages.user(
+                "Please recommend a fantasy book. My context value is 42."
+            )
+        ]
 
     def test_context_call_decorator_with_mixed_tools(
         self, tools: list[llm.Tool], params: llm.clients.BaseParams

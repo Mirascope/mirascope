@@ -146,8 +146,8 @@ class TestSyncContextPromptDecorator:
         def context_prompt_fn(ctx: llm.Context, name: str) -> str:
             return f"Hello {name}"
 
-        called_on_fn = llm.context_prompt(context_prompt_fn)
-        constructed_decorator = llm.context_prompt()(context_prompt_fn)
+        called_on_fn = llm.prompt(context_prompt_fn)
+        constructed_decorator = llm.prompt()(context_prompt_fn)
 
         context = llm.Context(deps=None)
         assert called_on_fn(context, "Alice") == constructed_decorator(context, "Alice")
@@ -155,7 +155,7 @@ class TestSyncContextPromptDecorator:
     def test_sync_context_prompt_with_string_return(self) -> None:
         """Test sync context prompt decorator with string return value."""
 
-        @llm.context_prompt
+        @llm.prompt
         def simple_context_prompt(ctx: llm.Context, name: str, *, title: str) -> str:
             return f"Hello {title} {name}, how are you?"
 
@@ -168,7 +168,7 @@ class TestSyncContextPromptDecorator:
     ) -> None:
         """Test sync context prompt decorator with mixed return value."""
 
-        @llm.context_prompt
+        @llm.prompt
         def context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
             return mixed_content
 
@@ -181,7 +181,7 @@ class TestSyncContextPromptDecorator:
     ) -> None:
         """Test sync context prompt decorator with messages return value."""
 
-        @llm.context_prompt
+        @llm.prompt
         def messages_context_prompt(ctx: llm.Context) -> list[llm.Message]:
             return expected_messages
 
@@ -191,7 +191,7 @@ class TestSyncContextPromptDecorator:
     def test_sync_context_prompt_with_deps(self) -> None:
         """Test sync context prompt decorator with context dependencies."""
 
-        @llm.context_prompt
+        @llm.prompt
         def context_prompt_with_deps(ctx: llm.Context[dict], query: str) -> str:
             user_id = ctx.deps["user_id"]
             return f"User {user_id} asks: {query}"
@@ -206,7 +206,7 @@ class TestAsyncContextPromptDecorator:
     async def test_async_context_prompt_with_string_return(self) -> None:
         """Test async context prompt decorator with string return value."""
 
-        @llm.context_prompt
+        @llm.prompt
         async def simple_context_prompt(
             ctx: llm.Context, name: str, *, title: str
         ) -> str:
@@ -221,7 +221,7 @@ class TestAsyncContextPromptDecorator:
     ) -> None:
         """Test async context prompt decorator with mixed return value."""
 
-        @llm.context_prompt
+        @llm.prompt
         async def context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
             return mixed_content
 
@@ -234,7 +234,7 @@ class TestAsyncContextPromptDecorator:
     ) -> None:
         """Test async context prompt decorator with messages return value."""
 
-        @llm.context_prompt
+        @llm.prompt
         async def messages_context_prompt(ctx: llm.Context) -> list[llm.Message]:
             return expected_messages
 
@@ -244,7 +244,7 @@ class TestAsyncContextPromptDecorator:
     async def test_async_context_prompt_with_deps(self) -> None:
         """Test async context prompt decorator with context dependencies."""
 
-        @llm.context_prompt
+        @llm.prompt
         async def context_prompt_with_deps(ctx: llm.Context[dict], query: str) -> str:
             user_id = ctx.deps["user_id"]
             return f"User {user_id} asks: {query}"
@@ -261,7 +261,7 @@ class TestValueErrorOnEmptyContextPrompts:
     ) -> None:
         """Test sync context prompt decorator with empty return value."""
 
-        @llm.context_prompt
+        @llm.prompt
         def empty_context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
             return empty_value
 
@@ -276,7 +276,7 @@ class TestValueErrorOnEmptyContextPrompts:
     ) -> None:
         """Test async context prompt decorator with empty return value."""
 
-        @llm.context_prompt
+        @llm.prompt
         async def empty_context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
             return empty_value
 
