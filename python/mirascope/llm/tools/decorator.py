@@ -2,14 +2,12 @@
 
 import inspect
 from dataclasses import dataclass
-from typing import overload
-from typing_extensions import TypeIs
+from typing import cast, overload
 
 from ..context import DepsT, _utils as _context_utils
 from ..types import JsonableCovariantT, P
-from .context_tool import AsyncContextTool, ContextTool
 from .protocols import AsyncContextToolFn, AsyncToolFn, ContextToolFn, ToolFn
-from .tool import AsyncTool, Tool
+from .tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 
 @dataclass(kw_only=True)
@@ -60,43 +58,23 @@ class ToolDecorator:
         | AsyncTool[P, JsonableCovariantT]
     ):
         """Call the decorator with a function."""
-        if _is_context_tool_fn(fn):
-            if _is_async_context_tool_fn(fn):
-                return AsyncContextTool[DepsT, P, JsonableCovariantT](
-                    fn, strict=self.strict
-                )
-            else:
-                return ContextTool[DepsT, P, JsonableCovariantT](fn, strict=self.strict)
-        elif _is_async_tool_fn(fn):
+        is_context = _context_utils.first_param_is_context(fn)
+        is_async = inspect.iscoroutinefunction(fn)
+
+        if is_context and is_async:
+            fn = cast(AsyncContextToolFn[DepsT, P, JsonableCovariantT], fn)
+            return AsyncContextTool[DepsT, P, JsonableCovariantT](
+                fn, strict=self.strict
+            )
+        elif is_context:
+            fn = cast(ContextToolFn[DepsT, P, JsonableCovariantT], fn)
+            return ContextTool[DepsT, P, JsonableCovariantT](fn, strict=self.strict)
+        elif is_async:
+            fn = cast(AsyncToolFn[P, JsonableCovariantT], fn)
             return AsyncTool[P, JsonableCovariantT](fn, strict=self.strict)
         else:
+            fn = cast(ToolFn[P, JsonableCovariantT], fn)
             return Tool[P, JsonableCovariantT](fn, strict=self.strict)
-
-
-def _is_async_tool_fn(
-    fn: ToolFn | AsyncToolFn,
-) -> TypeIs[AsyncToolFn[P, JsonableCovariantT]]:
-    return inspect.iscoroutinefunction(fn)
-
-
-def _is_context_tool_fn(
-    fn: ContextToolFn[DepsT, P, JsonableCovariantT]
-    | AsyncContextToolFn[DepsT, P, JsonableCovariantT]
-    | ToolFn[P, JsonableCovariantT]
-    | AsyncToolFn[P, JsonableCovariantT],
-) -> TypeIs[
-    ContextToolFn[DepsT, P, JsonableCovariantT]
-    | AsyncContextToolFn[DepsT, P, JsonableCovariantT]
-]:
-    """Return whether a ToolFn is interpreted as a context tool."""
-    return _context_utils.first_param_is_context(fn)
-
-
-def _is_async_context_tool_fn(
-    fn: ContextToolFn[DepsT, P, JsonableCovariantT]
-    | AsyncContextToolFn[DepsT, P, JsonableCovariantT],
-) -> TypeIs[AsyncContextToolFn[DepsT, P, JsonableCovariantT]]:
-    return inspect.iscoroutinefunction(fn)
 
 
 @overload

@@ -36,9 +36,9 @@ from ..tools import (
     AsyncToolkit,
     ContextTool,
     ContextToolkit,
-    ContextToolT,
     Tool,
     Toolkit,
+    ToolT,
 )
 from ..types import P
 from .call import AsyncCall, Call
@@ -46,11 +46,11 @@ from .context_call import AsyncContextCall, ContextCall
 
 
 @dataclass(kw_only=True)
-class CallDecorator(Generic[ContextToolT, FormatT]):
+class CallDecorator(Generic[ToolT, FormatT]):
     """A decorator for converting prompts to calls."""
 
     model: Model
-    tools: Sequence[ContextToolT] | None
+    tools: Sequence[ToolT] | None
     format: type[FormatT] | None
 
     @overload
@@ -146,10 +146,10 @@ def call(
     *,
     provider: Literal["anthropic"],
     model_id: AnthropicModelId,
-    tools: list[ContextToolT] | None = None,
+    tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
     **params: Unpack[AnthropicParams],
-) -> CallDecorator[ContextToolT, FormatT]:
+) -> CallDecorator[ToolT, FormatT]:
     """Decorate a prompt into a Call using Anthropic models."""
     ...
 
@@ -159,10 +159,10 @@ def call(
     *,
     provider: Literal["google"],
     model_id: GoogleModelId,
-    tools: list[ContextToolT] | None = None,
+    tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
     **params: Unpack[GoogleParams],
-) -> CallDecorator[ContextToolT, FormatT]:
+) -> CallDecorator[ToolT, FormatT]:
     """Decorate a prompt into a Call using Google models."""
     ...
 
@@ -172,10 +172,10 @@ def call(
     *,
     provider: Literal["openai"],
     model_id: OpenAIModelId,
-    tools: list[ContextToolT] | None = None,
+    tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
     **params: Unpack[OpenAIParams],
-) -> CallDecorator[ContextToolT, FormatT]:
+) -> CallDecorator[ToolT, FormatT]:
     """Decorate a prompt into a Call using OpenAI models."""
     ...
 
@@ -184,10 +184,10 @@ def call(
     *,
     provider: Provider,
     model_id: ModelId,
-    tools: list[ContextToolT] | None = None,
+    tools: list[ToolT] | None = None,
     format: type[FormatT] | None = None,
     **params: Unpack[BaseParams],
-) -> CallDecorator[ContextToolT, FormatT]:
+) -> CallDecorator[ToolT, FormatT]:
     """Returns a decorator for turning prompt template functions into generations.
 
     This decorator creates a `Call` or `ContextCall` that can be used with prompt functions.

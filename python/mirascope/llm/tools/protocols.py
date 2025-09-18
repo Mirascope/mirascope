@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Any, Protocol
 
 from ..context import Context, DepsT
 from ..types import JsonableCovariantT, P
@@ -50,3 +50,47 @@ class AsyncContextToolFn(Protocol[DepsT, P, JsonableCovariantT]):
     ) -> JsonableCovariantT:
         """Call the function with the given arguments."""
         raise NotImplementedError()
+
+
+class _KwargsCallable(Protocol[JsonableCovariantT]):
+    """Protocol for functions that can be called with `Any`-typed kwargs.
+
+    Used internally to type-cast tool functions for compatibility with
+    json.loads() output when executing tool calls.
+    """
+
+    def __call__(self, **kwargs: dict[str, Any]) -> JsonableCovariantT: ...
+
+
+class _AsyncKwargsCallable(Protocol[JsonableCovariantT]):
+    """Protocol for async functions that can be called with `Any`-typed kwargs.
+
+    Used internally to type-cast async tool functions for compatibility with
+    json.loads() output when executing tool calls.
+    """
+
+    async def __call__(self, **kwargs: dict[str, Any]) -> JsonableCovariantT: ...
+
+
+class _ContextKwargsCallable(Protocol[DepsT, JsonableCovariantT]):
+    """Protocol for context functions that can be called with `Any`-typed kwargs.
+
+    Used internally to type-cast context tool functions for compatibility with
+    json.loads() output when executing tool calls.
+    """
+
+    def __call__(
+        self, ctx: Context[DepsT], **kwargs: dict[str, Any]
+    ) -> JsonableCovariantT: ...
+
+
+class _AsyncJsonKwargsCallable(Protocol[DepsT, JsonableCovariantT]):
+    """Protocol for async context functions that can be called with `Any`-typed kwargs.
+
+    Used internally to type-cast async context tool functions for compatibility with
+    json.loads() output when executing tool calls.
+    """
+
+    async def __call__(
+        self, ctx: Context[DepsT], **kwargs: dict[str, Any]
+    ) -> JsonableCovariantT: ...

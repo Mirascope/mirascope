@@ -37,3 +37,25 @@ def context_tool_deps():
     x: llm.ContextTool[int] = ctx_tool  # noqa: F841
     # Following line must type error, shows that we infer the deps type correctly
     y: llm.ContextTool[str] = ctx_tool  # pyright: ignore[reportAssignmentType]  # noqa: F841
+
+
+def decorate_tool_fn(fn: llm.tools.protocols.ToolFn) -> llm.Tool:
+    """Decorating a ToolFn returns a Tool"""
+    return llm.tool(fn)
+
+
+def decorate_async_tool_fn(fn: llm.tools.protocols.AsyncToolFn) -> llm.AsyncTool:
+    """Decorating an AsyncToolFn returns an AsyncTool"""
+    return llm.tool(fn)
+
+
+def decorate_context_tool_fn(fn: llm.tools.protocols.ContextToolFn) -> llm.ContextTool:
+    """Decorating a ContextToolFn returns a Tool"""
+    return llm.tool(fn)
+
+
+def decorate_async_context_tool_fn(
+    fn: llm.tools.protocols.AsyncContextToolFn,
+) -> llm.AsyncContextTool:
+    """Decorating an AsyncToolFn returns an AsyncTool"""
+    return llm.tool(fn)
