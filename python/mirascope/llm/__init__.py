@@ -23,7 +23,7 @@ from . import (
     tools,
     types,
 )
-from .calls import call, context_call
+from .calls import call
 from .clients import AnthropicClient, GoogleClient, OpenAIClient
 from .content import (
     AssistantContentChunk,
@@ -164,7 +164,6 @@ __all__ = [
     "calls",
     "clients",
     "content",
-    "context_call",
     "context_prompt",
     "exceptions",
     "format",

@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import inspect
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic, Literal, cast, overload
-from typing_extensions import TypeIs, Unpack
+from typing_extensions import Unpack
 
 from ..clients import (
     AnthropicModelId,
@@ -27,7 +28,6 @@ from ..prompts import (
     AsyncPrompt,
     ContextPrompt,
     Prompt,
-    _utils as _prompt_utils,
 )
 from ..tools import (
     AsyncContextTool,
@@ -41,8 +41,7 @@ from ..tools import (
     ToolT,
 )
 from ..types import P
-from .call import AsyncCall, Call
-from .context_call import AsyncContextCall, ContextCall
+from .calls import AsyncCall, AsyncContextCall, Call, ContextCall
 
 
 @dataclass(kw_only=True)
@@ -94,26 +93,31 @@ class CallDecorator(Generic[ToolT, FormatT]):
         | AsyncCall[P, FormatT]
     ):
         """Decorates a prompt into a Call or ContextCall."""
-        if _is_context_prompt_fn(fn):
-            if _prompt_utils.is_async_prompt(fn):
-                tools = cast(
-                    Sequence[AsyncTool | AsyncContextTool[DepsT]] | None, self.tools
-                )
-                return AsyncContextCall(
-                    fn=fn,
-                    default_model=self.model,
-                    format=self.format,
-                    toolkit=AsyncContextToolkit(tools=tools),
-                )
-            else:
-                tools = cast(Sequence[Tool | ContextTool[DepsT]] | None, self.tools)
-                return ContextCall(
-                    fn=fn,
-                    default_model=self.model,
-                    format=self.format,
-                    toolkit=ContextToolkit(tools=tools),
-                )
-        elif _prompt_utils.is_async_prompt(fn):
+        is_context = _context_utils.first_param_is_context(fn)
+        is_async = inspect.iscoroutinefunction(fn)
+
+        if is_context and is_async:
+            fn = cast(AsyncContextPrompt[P, DepsT], fn)
+            tools = cast(
+                Sequence[AsyncTool | AsyncContextTool[DepsT]] | None, self.tools
+            )
+            return AsyncContextCall(
+                fn=fn,
+                default_model=self.model,
+                format=self.format,
+                toolkit=AsyncContextToolkit(tools=tools),
+            )
+        elif is_context:
+            fn = cast(ContextPrompt[P, DepsT], fn)
+            tools = cast(Sequence[Tool | ContextTool[DepsT]] | None, self.tools)
+            return ContextCall(
+                fn=fn,
+                default_model=self.model,
+                format=self.format,
+                toolkit=ContextToolkit(tools=tools),
+            )
+        elif is_async:
+            fn = cast(AsyncPrompt[P], fn)
             tools = cast(Sequence[AsyncTool] | None, self.tools)
             return AsyncCall(
                 fn=fn,
@@ -122,6 +126,7 @@ class CallDecorator(Generic[ToolT, FormatT]):
                 toolkit=AsyncToolkit(tools=tools),
             )
         else:
+            fn = cast(Prompt[P], fn)
             tools = cast(Sequence[Tool] | None, self.tools)
             return Call(
                 fn=fn,
@@ -129,16 +134,6 @@ class CallDecorator(Generic[ToolT, FormatT]):
                 format=self.format,
                 toolkit=Toolkit(tools=tools),
             )
-
-
-def _is_context_prompt_fn(
-    fn: ContextPrompt[P, DepsT]
-    | AsyncContextPrompt[P, DepsT]
-    | Prompt[P]
-    | AsyncPrompt[P],
-) -> TypeIs[ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT]]:
-    """Return whether a prompt function is interpreted as a context prompt."""
-    return _context_utils.first_param_is_context(fn)
 
 
 @overload
