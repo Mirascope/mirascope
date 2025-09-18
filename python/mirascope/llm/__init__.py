@@ -90,7 +90,6 @@ from .tools import (
     ContextToolkit,
     Tool,
     Toolkit,
-    context_tool,
     tool,
 )
 
@@ -152,7 +151,6 @@ __all__ = [
     "ThinkingStartChunk",
     "TimeoutError",
     "Tool",
-    "Tool",
     "ToolCall",
     "ToolCallChunk",
     "ToolCallEndChunk",
@@ -168,7 +166,6 @@ __all__ = [
     "content",
     "context_call",
     "context_prompt",
-    "context_tool",
     "exceptions",
     "format",
     "formatting",

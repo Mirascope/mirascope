@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Protocol, overload
-from typing_extensions import Unpack
+from typing import TYPE_CHECKING, Any, Literal, Protocol, overload
+from typing_extensions import TypeVar, Unpack
 
 from ..prompts import (
     AsyncContextSystemPrompt,
@@ -11,7 +11,7 @@ from ..prompts import (
     ContextSystemPrompt,
     SystemPrompt,
 )
-from ..tools import AgentToolT, AsyncContextTool, AsyncTool, ContextTool, Tool
+from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 from .agent_template import AgentTemplate, AsyncAgentTemplate
 
 if TYPE_CHECKING:
@@ -34,6 +34,13 @@ if TYPE_CHECKING:
 from ..context import DepsT
 from ..formatting import FormatT
 from ..types import P
+
+AgentToolT = TypeVar(
+    "AgentToolT",
+    bound="Tool | AsyncTool | ContextTool[Any] | AsyncContextTool[Any] | None",
+    covariant=True,
+    default=None,
+)
 
 
 class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
