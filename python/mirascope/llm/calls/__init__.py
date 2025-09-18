@@ -1,11 +1,10 @@
 """The `llm.calls` module."""
 
-from .call import AsyncCall, Call
-from .call_decorator import (
+from .calls import AsyncCall, AsyncContextCall, Call, ContextCall
+from .decorator import (
     CallDecorator,
     call,
 )
-from .context_call import AsyncContextCall, ContextCall
 
 __all__ = [
     "AsyncCall",
@@ -13,5 +12,5 @@ __all__ = [
     "Call",
     "CallDecorator",
     "ContextCall",
-    "call",
+    "calls",
 ]
