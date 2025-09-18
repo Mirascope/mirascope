@@ -33,6 +33,11 @@ class Tool(
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
+    def __init__(
+        self, fn: ToolFn[AnyP, JsonableCovariantT], *, strict: bool = False
+    ) -> None:
+        super().__init__(fn, strict=strict, is_context_tool=False)
+
     def __call__(self, *args: AnyP.args, **kwargs: AnyP.kwargs) -> JsonableCovariantT:
         """Call the underlying function directly."""
         return self.fn(*args, **kwargs)
@@ -55,6 +60,11 @@ class AsyncTool(
 
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
+
+    def __init__(
+        self, fn: AsyncToolFn[AnyP, JsonableCovariantT], *, strict: bool = False
+    ) -> None:
+        super().__init__(fn, strict=strict, is_context_tool=False)
 
     def __call__(
         self, *args: AnyP.args, **kwargs: AnyP.kwargs

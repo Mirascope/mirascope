@@ -63,12 +63,10 @@ class ToolDecorator:
         if _is_context_tool_fn(fn):
             if _is_async_context_tool_fn(fn):
                 return AsyncContextTool[DepsT, P, JsonableCovariantT](
-                    fn, strict=self.strict, is_context_tool=True
+                    fn, strict=self.strict
                 )
             else:
-                return ContextTool[DepsT, P, JsonableCovariantT](
-                    fn, strict=self.strict, is_context_tool=True
-                )
+                return ContextTool[DepsT, P, JsonableCovariantT](fn, strict=self.strict)
         elif _is_async_tool_fn(fn):
             return AsyncTool[P, JsonableCovariantT](fn, strict=self.strict)
         else:

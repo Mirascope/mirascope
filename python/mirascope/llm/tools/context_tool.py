@@ -45,6 +45,14 @@ class ContextTool(
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
 
+    def __init__(
+        self,
+        fn: ContextToolFn[DepsT, AnyP, JsonableCovariantT],
+        *,
+        strict: bool = False,
+    ) -> None:
+        super().__init__(fn, strict=strict, is_context_tool=True)
+
     def __call__(
         self,
         ctx: Context[DepsT],
@@ -76,6 +84,14 @@ class AsyncContextTool(
 
     This class is not instantiated directly but created by the `@tool()` decorator.
     """
+
+    def __init__(
+        self,
+        fn: AsyncContextToolFn[DepsT, AnyP, JsonableCovariantT],
+        *,
+        strict: bool = False,
+    ) -> None:
+        super().__init__(fn, strict=strict, is_context_tool=True)
 
     def __call__(
         self,
