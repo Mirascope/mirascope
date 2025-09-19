@@ -41,7 +41,7 @@ def _create_async_tool(
 
 
 @dataclass
-class Scenario:
+class Scenario(Generic[llm.types.P]):
     """A specific scenario for client testing.
 
     Scenario should have deterministic outputs for cross-provider consistency.
@@ -55,7 +55,7 @@ class Scenario:
     model_id: str
     messages: Sequence[llm.Message]
     format: type[BaseModel] | None = None
-    tool_fns: Sequence[llm.tools.protocols.ToolFn] | None = None
+    tool_fns: Sequence[llm.tools.protocols.ToolFn[llm.types.P]] | None = None
     params: llm.clients.BaseParams | None = None
 
     @property
