@@ -1,11 +1,11 @@
 """The `llm.tool` decorator for turning functions into tools."""
 
-import inspect
 from dataclasses import dataclass
-from typing import cast, overload
+from typing import overload
 
-from ..context import DepsT, _utils as _context_utils
+from ..context import DepsT
 from ..types import JsonableCovariantT, P
+from . import _utils as _tool_utils
 from .protocols import AsyncContextToolFn, AsyncToolFn, ContextToolFn, ToolFn
 from .tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
@@ -58,31 +58,19 @@ class ToolDecorator:
         | AsyncTool[P, JsonableCovariantT]
     ):
         """Call the decorator with a function."""
-        is_context = _context_utils.first_param_is_context(fn)
-        is_async = inspect.iscoroutinefunction(fn)
+        is_context = _tool_utils.is_context_tool_fn(fn)
+        is_async = _tool_utils.is_async_tool_fn(fn)
 
         if is_context and is_async:
-            fn = cast(AsyncContextToolFn[DepsT, P, JsonableCovariantT], fn)
             return AsyncContextTool[DepsT, P, JsonableCovariantT](
                 fn, strict=self.strict
             )
         elif is_context:
-            fn = cast(ContextToolFn[DepsT, P, JsonableCovariantT], fn)
             return ContextTool[DepsT, P, JsonableCovariantT](fn, strict=self.strict)
         elif is_async:
-            fn = cast(AsyncToolFn[P, JsonableCovariantT], fn)
             return AsyncTool[P, JsonableCovariantT](fn, strict=self.strict)
         else:
-            fn = cast(ToolFn[P, JsonableCovariantT], fn)
             return Tool[P, JsonableCovariantT](fn, strict=self.strict)
-
-
-@overload
-def tool(  # pyright:ignore[reportOverlappingOverload]
-    __fn: ContextToolFn[DepsT, P, JsonableCovariantT],
-) -> ContextTool[DepsT, P, JsonableCovariantT]:
-    """Overload for context tool functions."""
-    ...
 
 
 @overload
@@ -94,14 +82,22 @@ def tool(  # pyright:ignore[reportOverlappingOverload]
 
 
 @overload
-def tool(__fn: ToolFn[P, JsonableCovariantT]) -> Tool[P, JsonableCovariantT]:
-    """Overload for regular sync tool functions."""
+def tool(  # pyright:ignore[reportOverlappingOverload]
+    __fn: ContextToolFn[DepsT, P, JsonableCovariantT],
+) -> ContextTool[DepsT, P, JsonableCovariantT]:
+    """Overload for context tool functions."""
     ...
 
 
 @overload
 def tool(__fn: AsyncToolFn[P, JsonableCovariantT]) -> AsyncTool[P, JsonableCovariantT]:
     """Overload for regular async tool functions."""
+    ...
+
+
+@overload
+def tool(__fn: ToolFn[P, JsonableCovariantT]) -> Tool[P, JsonableCovariantT]:
+    """Overload for regular sync tool functions."""
     ...
 
 
