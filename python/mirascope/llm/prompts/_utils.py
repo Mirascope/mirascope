@@ -1,5 +1,7 @@
+import inspect
 from typing_extensions import TypeIs
 
+from ..context import DepsT, _utils as _context_utils
 from ..messages import (
     AssistantMessage,
     Message,
@@ -7,6 +9,13 @@ from ..messages import (
     UserContent,
     UserMessage,
     user,
+)
+from ..types import P
+from .protocols import (
+    AsyncContextPromptable,
+    AsyncPromptable,
+    ContextPromptable,
+    Promptable,
 )
 
 
@@ -29,3 +38,23 @@ def promote_to_messages(result: list[Message] | UserContent) -> list[Message]:
     if is_messages(result):
         return result
     return [user(result)]
+
+
+def is_context_promptable(
+    fn: ContextPromptable[P, DepsT]
+    | AsyncContextPromptable[P, DepsT]
+    | Promptable[P]
+    | AsyncPromptable[P],
+) -> TypeIs[ContextPromptable[P, DepsT] | AsyncContextPromptable[P, DepsT]]:
+    """Type guard to check if a function is a context promptable function."""
+    return _context_utils.first_param_is_context(fn)
+
+
+def is_async_promptable(
+    fn: ContextPromptable[P, DepsT]
+    | AsyncContextPromptable[P, DepsT]
+    | Promptable[P]
+    | AsyncPromptable[P],
+) -> TypeIs[AsyncPromptable[P] | AsyncContextPromptable[P, DepsT]]:
+    """Type guard to check if a function is an async promptable function."""
+    return inspect.iscoroutinefunction(fn)

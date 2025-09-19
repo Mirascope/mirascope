@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import inspect
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Generic, Literal, cast, overload
@@ -20,7 +19,7 @@ from ..clients import (
     Provider,
     get_client,
 )
-from ..context import DepsT, _utils as _context_utils
+from ..context import DepsT
 from ..formatting import FormatT
 from ..models import Model, _utils as _model_utils
 from ..prompts import (
@@ -28,6 +27,7 @@ from ..prompts import (
     AsyncPromptable,
     ContextPromptable,
     Promptable,
+    _utils as _prompt_utils,
     prompt,
 )
 from ..tools import (
@@ -96,11 +96,10 @@ class CallDecorator(Generic[ToolT, FormatT]):
         | AsyncCall[P, FormatT]
     ):
         """Decorates a prompt into a Call or ContextCall."""
-        is_context = _context_utils.first_param_is_context(fn)
-        is_async = inspect.iscoroutinefunction(fn)
+        is_context = _prompt_utils.is_context_promptable(fn)
+        is_async = _prompt_utils.is_async_promptable(fn)
 
         if is_context and is_async:
-            fn = cast(AsyncContextPromptable[P, DepsT], fn)
             tools = cast(
                 Sequence[AsyncTool | AsyncContextTool[DepsT]] | None, self.tools
             )
@@ -111,7 +110,6 @@ class CallDecorator(Generic[ToolT, FormatT]):
                 toolkit=AsyncContextToolkit(tools=tools),
             )
         elif is_context:
-            fn = cast(ContextPromptable[P, DepsT], fn)
             tools = cast(Sequence[Tool | ContextTool[DepsT]] | None, self.tools)
             return ContextCall(
                 fn=prompt(fn),
@@ -120,7 +118,6 @@ class CallDecorator(Generic[ToolT, FormatT]):
                 toolkit=ContextToolkit(tools=tools),
             )
         elif is_async:
-            fn = cast(AsyncPromptable[P], fn)
             tools = cast(Sequence[AsyncTool] | None, self.tools)
             return AsyncCall(
                 fn=prompt(fn),
@@ -129,7 +126,6 @@ class CallDecorator(Generic[ToolT, FormatT]):
                 toolkit=AsyncToolkit(tools=tools),
             )
         else:
-            fn = cast(Promptable[P], fn)
             tools = cast(Sequence[Tool] | None, self.tools)
             return Call(
                 fn=prompt(fn),

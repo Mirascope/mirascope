@@ -1,9 +1,8 @@
 """The `prompt` decorator for writing messages as string templates."""
 
-import inspect
-from typing import cast, overload
+from typing import overload
 
-from ..context import Context, DepsT, _utils as _context_utils
+from ..context import Context, DepsT
 from ..messages import (
     Message,
 )
@@ -69,11 +68,14 @@ class PromptDecorator:
         | AsyncContextPrompt[P, DepsT]
     ):
         """Decorator for creating a prompt."""
-        is_context = _context_utils.first_param_is_context(fn)
-        is_async = inspect.iscoroutinefunction(fn)
+        is_context = _utils.is_context_promptable(fn)
+        is_async = _utils.is_async_promptable(fn)
 
+        # NOTE: unused `fn` expressions work around a Pyright bug
+        # TODO: Clean this up once the following Pyright bug is addressed:
+        # https://github.com/microsoft/pyright/issues/10951
         if is_context and is_async:
-            fn = cast(AsyncContextPromptable[P, DepsT], fn)
+            fn  # pyright: ignore[reportUnusedExpression]  # noqa: B018
 
             async def async_context_prompt(
                 ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -83,7 +85,7 @@ class PromptDecorator:
 
             return async_context_prompt
         elif is_context:
-            fn = cast(ContextPromptable[P, DepsT], fn)
+            fn  # pyright: ignore[reportUnusedExpression]  # noqa: B018
 
             def context_prompt(
                 ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -93,7 +95,7 @@ class PromptDecorator:
 
             return context_prompt
         elif is_async:
-            fn = cast(AsyncPrompt[P], fn)
+            fn  # pyright: ignore[reportUnusedExpression]  # noqa: B018
 
             async def async_prompt(*args: P.args, **kwargs: P.kwargs) -> list[Message]:
                 result = await fn(*args, **kwargs)
@@ -101,7 +103,7 @@ class PromptDecorator:
 
             return async_prompt
         else:
-            fn = cast(Prompt[P], fn)
+            fn  # pyright: ignore[reportUnusedExpression]  # noqa: B018
 
             def prompt(*args: P.args, **kwargs: P.kwargs) -> list[Message]:
                 result = fn(*args, **kwargs)
