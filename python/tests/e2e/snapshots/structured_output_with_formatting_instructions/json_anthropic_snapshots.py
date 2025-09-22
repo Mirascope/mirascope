@@ -14,21 +14,6 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "Book",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {"title": "Rating", "type": "integer"},
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -55,6 +40,26 @@ lucky number 7.\
                 ]
             ),
         ],
+        "format": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {"title": "Rating", "type": "integer"},
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+            "formatting_instructions": """\
+Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+The title should be in all caps, and the rating should always be the
+lucky number 7.\
+""",
+        },
         "tools": [],
     }
 )
@@ -64,21 +69,6 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "Book",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {"title": "Rating", "type": "integer"},
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -105,6 +95,26 @@ lucky number 7.\
                 ]
             ),
         ],
+        "format": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {"title": "Rating", "type": "integer"},
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+            "formatting_instructions": """\
+Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+The title should be in all caps, and the rating should always be the
+lucky number 7.\
+""",
+        },
         "tools": [],
     }
 )
@@ -139,7 +149,7 @@ lucky number 7.\
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": None,
             "schema": {
@@ -153,6 +163,11 @@ lucky number 7.\
                 "type": "object",
             },
             "mode": "json",
+            "formatting_instructions": """\
+Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+The title should be in all caps, and the rating should always be the
+lucky number 7.\
+""",
         },
         "tools": [],
         "n_chunks": 6,
@@ -179,17 +194,23 @@ lucky number 7.\
                 content=[
                     Text(
                         text="""\
+Here's a fantastic book recommendation for you:
+
+```json
 {
   "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
-}\
+}
+```
+
+This is the first book in The Kingkiller Chronicle series and follows Kvothe, a legendary figure telling his own story. It's a beautifully written fantasy novel with incredible world-building, magic systems, and storytelling within storytelling. Perfect for anyone who loves epic fantasy with rich prose and compelling characters!\
 """
                     )
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": None,
             "schema": {
@@ -203,8 +224,13 @@ lucky number 7.\
                 "type": "object",
             },
             "mode": "json",
+            "formatting_instructions": """\
+Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+The title should be in all caps, and the rating should always be the
+lucky number 7.\
+""",
         },
         "tools": [],
-        "n_chunks": 6,
+        "n_chunks": 12,
     }
 )

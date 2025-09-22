@@ -10,10 +10,10 @@ serves as an acknowledgment of the original author's contribution to this projec
 
 from typing import Generic, NoReturn
 
-from .types import FormatT
+from .format import FormattableT
 
 
-class Partial(Generic[FormatT]):
+class Partial(Generic[FormattableT]):
     """Generate a new class with all attributes optionals.
 
     Notes:
@@ -28,7 +28,7 @@ class Partial(Generic[FormatT]):
         cls,
         *args: object,  # noqa :ARG003
         **kwargs: object,  # noqa :ARG003
-    ) -> "Partial[FormatT]":
+    ) -> "Partial[FormattableT]":
         """Cannot instantiate.
 
         Raises:
@@ -50,8 +50,8 @@ class Partial(Generic[FormatT]):
 
     def __class_getitem__(
         cls,
-        wrapped_class: type[FormatT],
-    ) -> type[FormatT]:
+        wrapped_class: type[FormattableT],
+    ) -> type[FormattableT]:
         """Convert model to a partial model with all fields being optionals."""
         # TODO: Implement proper partial model generation
         # For now, return the original class to avoid import errors

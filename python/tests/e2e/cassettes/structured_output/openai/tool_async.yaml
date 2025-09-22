@@ -1,8 +1,7 @@
 interactions:
 - request:
-    body: '{"messages":[{"role":"system","content":"When you are ready to respond
-      to the user, call the __mirascope_formatted_output_tool__ tool to output a structured
-      response.\nDo NOT output any text in addition to the tool call."},{"role":"user","content":"Please
+    body: '{"messages":[{"role":"system","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"role":"user","content":"Please
       recommend the most popular book by Patrick Rothfuss"}],"model":"gpt-4o","parallel_tool_calls":false,"tool_choice":{"type":"function","function":{"name":"__mirascope_formatted_output_tool__"}},"tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.\nA book with
       a rating. The title should be in all caps!","parameters":{"description":"A book
@@ -16,12 +15,12 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1081'
+      - '1010'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=OimQeEix7Qq.jCdhln3.KabeaTxLDqP4KYXb9.ZdV64-1758601746-1.0.1.1-ZJBUraWxWj1EWqTUL1MNw2D.GySLXiNdLJ7V7Dxh_YnCRDI1l3RA61kPHOrcbAWEMmtHKLDisLWBWvOkd2vWlLKiVhdX1sPpVzR0EFP5MHY;
-        _cfuvid=ohMaas8znjzx3TprZ5MGrRVHJiDJbcSjHY15UMXVT5o-1758601746647-0.0.1.1-604800000
+      - __cf_bm=7rtRaWrLaIhRFsFq24zeyFZPPbQtV5qHP3dTv3SLuvE-1758653687-1.0.1.1-6QejFMB2z6BmqwQ9jfWem7hgs9RUh0FIfzG76aTTsbuKYaZmX20_0oFsdyiYCygvafzfx4wZ9VtS87XcqFYgcJ.CXjBrgIczMF0eBN7wZPI;
+        _cfuvid=S4IEJ6KxPNl0NBgjmE_ekIwmg1kCuCTkEWCEsDMqN5Y-1758653687284-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -49,20 +48,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFPbbtswDH3PVwh8TganddvAb10vWLHe1q1Yi6UwFJl2tMqSINHJiiD/
-        PkhuYyftgPnBEHh4yMMjajVgDGQBGQMx5yRqq0YnF2Z5Vd/dJ9+Ox+dfT65q9X2pbvHh5PFysoBh
-        YJjZbxT0xvokTG0VkjS6hYVDThiqjo8OJofJ+OggjUBtClSBVlkapWa0l+ylo2QySg5fiXMjBXrI
-        2K8BY4yt4j9I1AX+gYwlw7dIjd7zCiHbJDEGzqgQAe699MQ1wbADhdGEOqjWjVI9gIxRueBKdY3b
-        b9U7dz5xpfJ6sfy8SNXlg7u8T2cHLzNPpzfLx6TXry39YqOgstFi408P38SznWaMgeZ15OZ5LR33
-        wljMS+NqToRFbhqyDeVRe75TljHgrmpq1BRGgtUUSJLCKWRT+PHljF0fX52xm3MWzj8vrk+nMJwC
-        b2huXMy55eSkeGZ3huZl433EHSepqylkR2vYarcefHR+6jnssGw8V++t51ob4sGB6P3TK7LeXLMy
-        lXVm5neoUEot/Tx3yH10DzwZ28oKEmJzaLY2BKwztQ2WPWNsN56kbT3oFrhD9153DcgQV/34G2ur
-        Xl4gcRlXaLO1gos5Fh21217eFNL0gEFv6vdqPqrdTi519T/lO0AItGF9rMNCiu2JuzSH4X3/K23j
-        chQMHt1CCsxJogs3UWDJG9U+PfAvnrDOS6krdNbJ+P6gtHm5v3+YJjxNEhisB38BAAD//wMAY1C7
-        ZIgEAAA=
+        H4sIAAAAAAAAAwAAAP//jFPbTtwwEH3fr7DmebcKewlL3iqgQKtu70VqF0XGmSQGx7bsCS1d7b9X
+        dmCTBSo1D5E1Z87MmePxZsQYyAIyBqLmJBqrJsdvp1+WC6U+HfLL81X15/u7s0Vx9Ese39QXDYwD
+        w1zfoKBH1ithGquQpNEdLBxywlD14HCxTBez9CiNQGMKVIFWWZrMzWSaTOeTZDlJ0gdibaRADxn7
+        OWKMsU38B4m6wN+QsWT8GGnQe14hZLskxsAZFSLAvZeeuCYY96AwmlAH1bpVagCQMSoXXKm+cfdt
+        BufeJ65Ufrr4oauTs9p/ODKzk2931yssjqupHPTrSt/bKKhstdj5M8B38exJM8ZA8yZy87yRjnth
+        LOalcQ0nwiI3LdmW8qg9f1KWMeCuahvUFEaCzRpIksI1ZGv4en7KVq/fn7IPb1g4X16sTtYwXgNv
+        qTYu5nzk5KS4ZZ8N1WXrfcQdJ6mrNWSHW9hrtx29dL4aOOywbD1Xz63nWhviwYHo/dUDst1dszKV
+        debaP6FCKbX0de6Q++geeDK2kxUkxObQ7m0IWGcaGyy7xdjuIE27etAvcI9OH3YNyBBXA9bykbVX
+        Ly+QuIwrtNtawUWNRU/tt5e3hTQDYDSY+rmal2p3k0td/U/5HhACbVgf67CQYn/iPs1heN//Stu5
+        HAWDR3cnBeYk0YWbKLDkreqeHvh7T9jkpdQVOutkfH9Q2ryczdJ5wudJAqPt6C8AAAD//wMAo7r8
+        q4gEAAA=
     headers:
       CF-RAY:
-      - 98374cc31c612672-SEA
+      - 983c40e07c73765e-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -70,7 +69,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 04:29:14 GMT
+      - Tue, 23 Sep 2025 18:54:57 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -88,13 +87,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '447'
+      - '868'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '464'
+      - '885'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -104,13 +103,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799938'
+      - '799955'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 4ms
+      - 3ms
       x-request-id:
-      - req_c4c2352bb2da4606b0fae94e16845934
+      - req_b811868d059147f3af99682b30201715
     status:
       code: 200
       message: OK

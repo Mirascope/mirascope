@@ -16,7 +16,6 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -67,6 +66,7 @@ The secrets associated with the passwords are as follows:
                 ]
             ),
         ],
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
@@ -97,7 +97,6 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -143,6 +142,7 @@ async_snapshot = snapshot(
                 ]
             ),
         ],
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
@@ -222,7 +222,7 @@ The secrets associated with the passwords are as follows:
                 ]
             ),
         ],
-        "format_type": None,
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
@@ -303,7 +303,7 @@ The secrets associated with the passwords are as follows:
                 ]
             ),
         ],
-        "format_type": None,
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",

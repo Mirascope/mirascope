@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from mirascope import llm
 
 
-@llm.format
 class KeeperEntry(BaseModel):
     topic: str
     summary: str
@@ -40,7 +39,7 @@ def main():
     ctx = llm.Context(deps=coppermind)
     query = "What are the Kandra?"
     response: llm.ContextResponse[Coppermind, KeeperEntry] = sazed(ctx, query)
-    entry: KeeperEntry = response.format()
+    entry: KeeperEntry = response.parse()
     print(entry)
 
 

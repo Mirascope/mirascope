@@ -8,7 +8,7 @@ import httpx
 from openai import AsyncOpenAI, OpenAI
 
 from ...context import Context, DepsT
-from ...formatting import FormatT
+from ...formatting import Format, FormattableT
 from ...messages import Message
 from ...responses import (
     AsyncContextResponse,
@@ -78,9 +78,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
+        format: type[FormattableT] | Format[FormattableT],
         params: OpenAIParams | None = None,
-    ) -> Response[FormatT]: ...
+    ) -> Response[FormattableT]: ...
 
     @overload
     def call(
@@ -89,9 +89,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        format: type[FormatT] | None,
+        format: type[FormattableT] | Format[FormattableT] | None,
         params: OpenAIParams | None = None,
-    ) -> Response | Response[FormatT]: ...
+    ) -> Response | Response[FormattableT]: ...
 
     def call(
         self,
@@ -99,11 +99,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        format: type[FormatT] | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> Response | Response[FormatT]:
+    ) -> Response | Response[FormattableT]:
         """Make a call to the OpenAI ChatCompletions API."""
-        input_messages, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_openai_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -124,7 +124,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
-            format_type=format,
+            format=format,
         )
 
     @overload
@@ -147,9 +147,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT],
+        format: type[FormattableT] | Format[FormattableT],
         params: OpenAIParams | None = None,
-    ) -> ContextResponse[DepsT, FormatT]: ...
+    ) -> ContextResponse[DepsT, FormattableT]: ...
 
     @overload
     def context_call(
@@ -159,9 +159,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None,
+        format: type[FormattableT] | Format[FormattableT] | None,
         params: OpenAIParams | None = None,
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]: ...
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
 
     def context_call(
         self,
@@ -170,11 +170,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Make a call to the OpenAI ChatCompletions API."""
-        input_messages, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_openai_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -195,7 +195,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
-            format_type=format,
+            format=format,
         )
 
     @overload
@@ -216,9 +216,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
+        format: type[FormattableT] | Format[FormattableT],
         params: OpenAIParams | None = None,
-    ) -> AsyncResponse[FormatT]: ...
+    ) -> AsyncResponse[FormattableT]: ...
 
     @overload
     async def call_async(
@@ -227,9 +227,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT] | None,
+        format: type[FormattableT] | Format[FormattableT] | None,
         params: OpenAIParams | None = None,
-    ) -> AsyncResponse | AsyncResponse[FormatT]: ...
+    ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
 
     async def call_async(
         self,
@@ -237,11 +237,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT] | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncResponse | AsyncResponse[FormatT]:
+    ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Make an async call to the OpenAI ChatCompletions API."""
-        input_messages, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_openai_request(
             model_id=model_id,
             params=params,
             messages=messages,
@@ -262,7 +262,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
-            format_type=format,
+            format=format,
         )
 
     @overload
@@ -285,9 +285,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: type[FormatT],
+        format: type[FormattableT] | Format[FormattableT],
         params: OpenAIParams | None = None,
-    ) -> AsyncContextResponse[DepsT, FormatT]: ...
+    ) -> AsyncContextResponse[DepsT, FormattableT]: ...
 
     @overload
     async def context_call_async(
@@ -297,9 +297,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None,
+        format: type[FormattableT] | Format[FormattableT] | None,
         params: OpenAIParams | None = None,
-    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]: ...
+    ) -> (
+        AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]
+    ): ...
 
     async def context_call_async(
         self,
@@ -308,11 +310,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Make an async call to the OpenAI ChatCompletions API."""
-        input_messages, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_openai_request(
             model_id=model_id,
             params=params,
             messages=messages,
@@ -333,7 +335,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             input_messages=input_messages,
             assistant_message=assistant_message,
             finish_reason=finish_reason,
-            format_type=format,
+            format=format,
         )
 
     @overload
@@ -354,9 +356,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        format: type[FormatT],
+        format: type[FormattableT] | Format[FormattableT],
         params: OpenAIParams | None = None,
-    ) -> StreamResponse[FormatT]: ...
+    ) -> StreamResponse[FormattableT]: ...
 
     @overload
     def stream(
@@ -365,9 +367,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        format: type[FormatT] | None,
+        format: type[FormattableT] | Format[FormattableT] | None,
         params: OpenAIParams | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]: ...
+    ) -> StreamResponse | StreamResponse[FormattableT]: ...
 
     def stream(
         self,
@@ -375,11 +377,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
-        format: type[FormatT] | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> StreamResponse | StreamResponse[FormatT]:
+    ) -> StreamResponse | StreamResponse[FormattableT]:
         """Make a streaming call to the OpenAI API."""
-        input_messages, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_openai_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -401,7 +403,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             tools=tools,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
-            format_type=format,
+            format=format,
         )
 
     @overload
@@ -424,9 +426,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT],
+        format: type[FormattableT] | Format[FormattableT],
         params: OpenAIParams | None = None,
-    ) -> ContextStreamResponse[DepsT, FormatT]: ...
+    ) -> ContextStreamResponse[DepsT, FormattableT]: ...
 
     @overload
     def context_stream(
@@ -436,9 +438,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None,
+        format: type[FormattableT] | Format[FormattableT] | None,
         params: OpenAIParams | None = None,
-    ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormatT]: ...
+    ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]: ...
 
     def context_stream(
         self,
@@ -447,11 +449,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormatT]:
+    ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
         """Make a streaming call to the OpenAI API."""
-        input_messages, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_openai_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -473,7 +475,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             tools=tools,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
-            format_type=format,
+            format=format,
         )
 
     @overload
@@ -494,9 +496,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT],
+        format: type[FormattableT] | Format[FormattableT],
         params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse[FormatT]: ...
+    ) -> AsyncStreamResponse[FormattableT]: ...
 
     @overload
     async def stream_async(
@@ -505,9 +507,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT] | None,
+        format: type[FormattableT] | Format[FormattableT] | None,
         params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]: ...
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]: ...
 
     async def stream_async(
         self,
@@ -515,11 +517,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
-        format: type[FormatT] | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormatT]:
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Make an async streaming call to the OpenAI API."""
-        input_messages, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_openai_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -543,7 +545,7 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             tools=tools,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
-            format_type=format,
+            format=format,
         )
 
     @overload
@@ -566,9 +568,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: type[FormatT],
+        format: type[FormattableT] | Format[FormattableT],
         params: OpenAIParams | None = None,
-    ) -> AsyncContextStreamResponse[DepsT, FormatT]: ...
+    ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
 
     @overload
     async def context_stream_async(
@@ -578,9 +580,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None,
+        format: type[FormattableT] | Format[FormattableT] | None,
         params: OpenAIParams | None = None,
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormatT]: ...
+    ) -> (
+        AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]
+    ): ...
 
     async def context_stream_async(
         self,
@@ -589,11 +593,11 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format: type[FormatT] | None = None,
+        format: type[FormattableT] | Format[FormattableT] | None = None,
         params: OpenAIParams | None = None,
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormatT]:
+    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]:
         """Make an async streaming call to the OpenAI API."""
-        input_messages, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_openai_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -617,5 +621,5 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
             tools=tools,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
-            format_type=format,
+            format=format,
         )

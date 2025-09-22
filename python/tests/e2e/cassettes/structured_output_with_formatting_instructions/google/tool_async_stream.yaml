@@ -34,13 +34,13 @@ interactions:
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"THE
-        NAME OF THE WIND\",\"author\": \"Patrick Rothfuss\",\"rating\": 7}},\"thoughtSignature\":
-        \"CiQB0e2Kb0qwzytbWe/uFBjakO2QarEHYYB6V4yBpjNy+9BbwroKfAHR7Ypv3nJycVR34ecbN+n3GrhdS8bhJivo3Ms1BtccmBjJR/l3xl8D7zI/ZM9VCwB8ajRZWJ1pBGxevagpFt9LAvmLD3ur0+5gs0E5565V69VpytgFVmYCcECTmXU0jOv3JlHC0NyGg1I33FUrXC83HxG2dM21yBQYwtUK1QEB0e2KbwEDNEaqaKNQfDYKzkZU823erp9Am1pu23oZSPBJtt7t3I31PpKWAsqZIZZawI7g9pXubCvInTtga9OGKBhVstUJXxJYVGbc8MKXQvbZ2anWAwCP5r56Ps2RHNe+ZHVznKnuVKamMkLxOZx+byEwrzBHVljQeioXe0DmM0hn82CF/jEtdIo8q61H0fOWeoE7QAM/L71z3mGKPog1sbxnKcuss+u813c4QoLdtqhkLrhuowXW5Qmz/3LpdnfOWGwgUC0g4BDXGl6MTGv4qCHumSsKtgEB0e2Kb/yglb3+ErDgmxN1fbZbdZPacfVhaDrVr6Wi4lW/IhxKptG7FcSJq5rPUiA9Rpb/YZzI4618VEbCaC7cpDD1osRPZRWjeJMGlaOjncr2fPGay6CSZl7Tq3bAmAOMLOOoxWwDoiQdkaL6KGpGF4n17QOJAjRS/6lBQQVRrHTc86U4nDv2N7WIJoCkU5eUtWrFZb2kRAABaMSVI928GzINQByOmDQzHV8tuCpkEtePyMWxjgpCAdHtim8YPTo2lRdHbCKBy1giuu9o3K/p/MwwQqOljyxFR0As2mENh73LZdFDnKmI7uNWQHGWhhzH1Y7S9IIu7QsN\"}],\"role\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"rating\":
+        7,\"title\": \"THE NAME OF THE WIND\",\"author\": \"Patrick Rothfuss\"}},\"thoughtSignature\":
+        \"CiQB0e2Kbzws0iorFgVkzCACmXFf+PAkFzzsppnW+bQcxGNGUEIKiAEB0e2Kb3DK5yJFs8FuuPxeNA4uuC3IogFO5kNcfBNXsulOn/KZl3eBin9k4kH1byOowrLEFUkob81T3dt3zThC4Ps/m3P2QTo5BxN2rXpIKc7P+6z3zfgomViAyRJf8EVYrpKVhqA/UfSSRJW1jcC+xjD38OSxeVDz1cHVLXx97WulYuYTz4QTCtEBAdHtim/Ep/95asyV3u1HTXzt+xRuFkY6fLK6F6TzcmXDnxjS6/K5I0oEWo8Du8lVGw/DbqJ7ReR4Om3pyx8j3NgqrKlFUspLC/xN9jtIAY955M/KP2zM0iGmk+H6lUViW7SrnX7BTM1bZf5FArM9d+GBtUiURD3sLd3Yf1bf5noqZzux+q0jttZQSOyEHeLgndJJ/VWU2hgiieAZ/UX9VUbYuG3lTP0lLK48yUZOr+KPsdyhaF/OOB6JMobKJU+XVrvDqnkMw1RCuXdenPYmVCoKtgEB0e2Kb+FMjytiVNjQCn9/DcpG1PzIiBAlOTJ1Dp+67RLVuCGcP00lHEy1k7qEQ/N40kVrgBxzRQop/G9g0e2yY65p00oV7NkMeJiokJpXOFn2CsJiegT9eW9X7MM25nnhxBvFnWmlUIIl32IheVQQHEEyjTcpPOO5XFudnIjC+1Jt2uT4lNBOdRIQYB2YoHnfCgDzJzZd8EqGoeKOoyIoawmQl96YKrUbVAvlwzp/4q4K+BvPmgo4AdHtim+zwwMnn8c2Et1kTI3nMT6IBYQIUFhGV9btwlPxxDFSoTxKOFYav5DoXjruw6ciZVIcz0M=\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        137,\"candidatesTokenCount\": 37,\"totalTokenCount\": 303,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 137}],\"thoughtsTokenCount\": 129},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"HiPSaOfqEeK_qtsPxYuA4Q8\"}\r\n\r\n"
+        137,\"candidatesTokenCount\": 37,\"totalTokenCount\": 301,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 137}],\"thoughtsTokenCount\": 127},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"aO3SaJGiDuarqtsPs9iUuA4\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -49,11 +49,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 04:33:34 GMT
+      - Tue, 23 Sep 2025 18:56:41 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1157
+      - gfet4t7; dur=1305
       Transfer-Encoding:
       - chunked
       Vary:

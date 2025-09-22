@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from mirascope import llm
 
 
-@llm.format
 class KeeperEntry(BaseModel):
     topic: str
     summary: str
@@ -52,7 +51,7 @@ def main():
     while response.tool_calls:
         tool_outputs = response.execute_tools(ctx)
         response = response.resume(ctx, tool_outputs)
-    entry: KeeperEntry = response.format()
+    entry: KeeperEntry = response.parse()
     print(entry)
 
 

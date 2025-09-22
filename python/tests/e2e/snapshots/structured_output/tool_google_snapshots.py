@@ -14,33 +14,10 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "tool",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -58,16 +35,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "tools": [],
-    }
-)
-async_snapshot = snapshot(
-    {
-        "provider": "google",
-        "model_id": "gemini-2.5-flash",
-        "params": {},
-        "finish_reason": FinishReason.END_TURN,
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -86,14 +54,21 @@ async_snapshot = snapshot(
                 "type": "object",
             },
             "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
+        "tools": [],
+    }
+)
+async_snapshot = snapshot(
+    {
+        "provider": "google",
+        "model_id": "gemini-2.5-flash",
+        "params": {},
+        "finish_reason": FinishReason.END_TURN,
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -106,11 +81,32 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title": "THE NAME OF THE WIND", "rating": 7, "author": "Patrick Rothfuss"}'
+                        text='{"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss", "rating": 7}'
                     )
                 ]
             ),
         ],
+        "format": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+        },
         "tools": [],
     }
 )
@@ -122,10 +118,7 @@ stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -138,12 +131,12 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title": "THE NAME OF THE WIND", "rating": 7, "author": "Patrick Rothfuss"}'
+                        text='{"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss", "rating": 7}'
                     )
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -162,6 +155,7 @@ Do NOT output any text in addition to the tool call.\
                 "type": "object",
             },
             "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
         "n_chunks": 3,
@@ -175,10 +169,7 @@ async_stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -191,12 +182,12 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"rating": 7, "author": "Patrick Rothfuss", "title": "THE NAME OF THE WIND"}'
+                        text='{"author": "Patrick Rothfuss", "title": "THE NAME OF THE WIND", "rating": 7}'
                     )
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -215,6 +206,7 @@ Do NOT output any text in addition to the tool call.\
                 "type": "object",
             },
             "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
         "n_chunks": 3,

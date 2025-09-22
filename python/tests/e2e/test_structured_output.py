@@ -20,12 +20,11 @@ from tests.utils import (
 def test_structured_output_sync(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output without context."""
 
-    @llm.format(mode=formatting_mode)
     class Book(BaseModel):
         """A book with a rating. The title should be in all caps!"""
 
@@ -33,10 +32,14 @@ def test_structured_output_sync(
         author: str
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+        format=format,
     )
     def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
@@ -45,7 +48,7 @@ def test_structured_output_sync(
         response = recommend_book("Patrick Rothfuss")
         assert response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -59,12 +62,11 @@ def test_structured_output_sync(
 def test_structured_output_sync_context(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with context."""
 
-    @llm.format(mode=formatting_mode)
     class Book(BaseModel):
         """A book with a rating. The title should be in all caps!"""
 
@@ -72,10 +74,14 @@ def test_structured_output_sync_context(
         author: str
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
-        format=Book,
+        format=format,
     )
     def recommend_book(ctx: llm.Context[str]) -> str:
         return f"Please recommend the most popular book by {ctx.deps}"
@@ -85,7 +91,7 @@ def test_structured_output_sync_context(
         response = recommend_book(ctx)
         assert response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -103,12 +109,11 @@ def test_structured_output_sync_context(
 async def test_structured_output_async(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output without context."""
 
-    @llm.format(mode=formatting_mode)
     class Book(BaseModel):
         """A book with a rating. The title should be in all caps!"""
 
@@ -116,10 +121,14 @@ async def test_structured_output_async(
         author: str
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+        format=format,
     )
     async def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
@@ -128,7 +137,7 @@ async def test_structured_output_async(
         response = await recommend_book("Patrick Rothfuss")
         assert response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -143,12 +152,11 @@ async def test_structured_output_async(
 async def test_structured_output_async_context(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with context."""
 
-    @llm.format(mode=formatting_mode)
     class Book(BaseModel):
         """A book with a rating. The title should be in all caps!"""
 
@@ -156,10 +164,14 @@ async def test_structured_output_async_context(
         author: str
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
-        format=Book,
+        format=format,
     )
     async def recommend_book(ctx: llm.Context[str]) -> str:
         return f"Please recommend the most popular book by {ctx.deps}"
@@ -169,7 +181,7 @@ async def test_structured_output_async_context(
         response = await recommend_book(ctx)
         assert response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -186,12 +198,11 @@ async def test_structured_output_async_context(
 def test_structured_output_stream(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output without context."""
 
-    @llm.format(mode=formatting_mode)
     class Book(BaseModel):
         """A book with a rating. The title should be in all caps!"""
 
@@ -199,10 +210,14 @@ def test_structured_output_stream(
         author: str
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+        format=format,
     )
     def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
@@ -214,7 +229,7 @@ def test_structured_output_stream(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -228,12 +243,11 @@ def test_structured_output_stream(
 def test_structured_output_stream_context(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with context."""
 
-    @llm.format(mode=formatting_mode)
     class Book(BaseModel):
         """A book with a rating. The title should be in all caps!"""
 
@@ -241,10 +255,14 @@ def test_structured_output_stream_context(
         author: str
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
-        format=Book,
+        format=format,
     )
     def recommend_book(ctx: llm.Context[str]) -> str:
         return f"Please recommend the most popular book by {ctx.deps}"
@@ -257,7 +275,7 @@ def test_structured_output_stream_context(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -275,12 +293,11 @@ def test_structured_output_stream_context(
 async def test_structured_output_async_stream(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output without context."""
 
-    @llm.format(mode=formatting_mode)
     class Book(BaseModel):
         """A book with a rating. The title should be in all caps!"""
 
@@ -288,10 +305,14 @@ async def test_structured_output_async_stream(
         author: str
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+        format=format,
     )
     async def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
@@ -303,7 +324,7 @@ async def test_structured_output_async_stream(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -318,12 +339,11 @@ async def test_structured_output_async_stream(
 async def test_structured_output_async_stream_context(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with context."""
 
-    @llm.format(mode=formatting_mode)
     class Book(BaseModel):
         """A book with a rating. The title should be in all caps!"""
 
@@ -331,10 +351,14 @@ async def test_structured_output_async_stream_context(
         author: str
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
-        format=Book,
+        format=format,
     )
     async def recommend_book(ctx: llm.Context[str]) -> str:
         return f"Please recommend the most popular book by {ctx.deps}"
@@ -347,7 +371,7 @@ async def test_structured_output_async_stream_context(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7

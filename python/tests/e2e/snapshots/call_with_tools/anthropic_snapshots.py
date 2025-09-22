@@ -16,7 +16,6 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -70,6 +69,7 @@ Here are the secrets retrieved for each password:
                 ]
             ),
         ],
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
@@ -100,7 +100,6 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -154,6 +153,7 @@ Here are the secrets retrieved for each password:
                 ]
             ),
         ],
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
@@ -236,7 +236,7 @@ Here are the secrets retrieved for each password:
                 ]
             ),
         ],
-        "format_type": None,
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
@@ -320,7 +320,7 @@ Here are the secrets retrieved for each password:
                 ]
             ),
         ],
-        "format_type": None,
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",

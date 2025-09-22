@@ -1,15 +1,14 @@
 """Base interface for all LLM responses."""
 
-import json
 from abc import ABC
 from collections.abc import Sequence
+from types import NoneType
 from typing import TYPE_CHECKING, Any, Generic, Literal, overload
 
 from ..content import AssistantContentPart, Text, Thinking, ToolCall
-from ..formatting import FormatT, Partial
+from ..formatting import Format, FormattableT, Partial
 from ..messages import Message
 from ..tools import ToolkitT
-from ..types import NoneType
 from . import _utils
 from .finish_reason import FinishReason
 
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
     from ..models import Model
 
 
-class RootResponse(Generic[ToolkitT, FormatT], ABC):
+class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     """Base class for LLM responses."""
 
     raw: Any
@@ -54,11 +53,11 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
     finish_reason: FinishReason | None
     """The reason why the LLM finished generating a response, if available."""
 
-    format_type: type[FormatT] | None
-    """The type of output expected from formatting."""
+    format: Format[FormattableT] | None
+    """The `Format` describing the structured response format, if available."""
 
     @overload
-    def format(self: "RootResponse[ToolkitT, None]", partial: Literal[True]) -> None:
+    def parse(self: "RootResponse[ToolkitT, None]", partial: Literal[True]) -> None:
         """Format the response into a `Partial[BaseModel]` (with optional fields).
 
         This is useful for when the stream is only partially consumed, in which case the
@@ -67,9 +66,9 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
         ...
 
     @overload
-    def format(
-        self: "RootResponse[ToolkitT, FormatT]", partial: Literal[True]
-    ) -> Partial[FormatT]:
+    def parse(
+        self: "RootResponse[ToolkitT, FormattableT]", partial: Literal[True]
+    ) -> Partial[FormattableT]:
         """Format the response into a `Partial[BaseModel]` (with optional fields).
 
         This is useful for when the stream is only partially consumed, in which case the
@@ -78,20 +77,22 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
         ...
 
     @overload
-    def format(
+    def parse(
         self: "RootResponse[ToolkitT, None]", partial: Literal[False] = False
     ) -> None:
         """Overload when the format type is `None`."""
         ...
 
     @overload
-    def format(
-        self: "RootResponse[ToolkitT, FormatT]", partial: Literal[False] = False
-    ) -> FormatT:
+    def parse(
+        self: "RootResponse[ToolkitT, FormattableT]", partial: Literal[False] = False
+    ) -> FormattableT:
         """Overload when the format type is not `None`."""
         ...
 
-    def format(self, partial: bool = False) -> FormatT | Partial[FormatT] | None:
+    def parse(
+        self, partial: bool = False
+    ) -> FormattableT | Partial[FormattableT] | None:
         """Format the response according to the response format parser.
 
         Returns:
@@ -103,18 +104,20 @@ class RootResponse(Generic[ToolkitT, FormatT], ABC):
             pydantic.ValidationError: If the response's content fails validation for the
                 format type.
         """
-        if self.format_type is None or self.format_type is NoneType:
+        if self.format is None:
             return None
+
+        formattable = self.format.formattable
+        if formattable is None or formattable is NoneType:
+            return None  # pragma: no cover
 
         if partial:
             raise NotImplementedError
 
         text = "".join(text.text for text in self.texts)
-
         json_text = _utils.extract_serialized_json(text)
 
-        parsed_json = json.loads(json_text)
-        return self.format_type.model_validate(parsed_json)
+        return formattable.model_validate_json(json_text)
 
     def pretty(self) -> str:
         """Return a string representation of all response content.

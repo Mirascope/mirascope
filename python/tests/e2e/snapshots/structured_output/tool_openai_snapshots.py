@@ -14,7 +14,28 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
+        "messages": [
+            SystemMessage(
+                content=Text(
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
+                )
+            ),
+            UserMessage(
+                content=[
+                    Text(
+                        text="Please recommend the most popular book by Patrick Rothfuss"
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
+                    )
+                ]
+            ),
+        ],
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -33,31 +54,8 @@ sync_snapshot = snapshot(
                 "type": "object",
             },
             "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
-                    )
-                ]
-            ),
-        ],
         "tools": [],
     }
 )
@@ -67,7 +65,28 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
+        "messages": [
+            SystemMessage(
+                content=Text(
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
+                )
+            ),
+            UserMessage(
+                content=[
+                    Text(
+                        text="Please recommend the most popular book by Patrick Rothfuss"
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
+                    )
+                ]
+            ),
+        ],
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -86,31 +105,8 @@ async_snapshot = snapshot(
                 "type": "object",
             },
             "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
-                    )
-                ]
-            ),
-        ],
         "tools": [],
     }
 )
@@ -122,10 +118,7 @@ stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -143,7 +136,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -162,6 +155,7 @@ Do NOT output any text in addition to the tool call.\
                 "type": "object",
             },
             "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
         "n_chunks": 22,
@@ -175,10 +169,7 @@ async_stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -196,7 +187,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -215,6 +206,7 @@ Do NOT output any text in addition to the tool call.\
                 "type": "object",
             },
             "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
         "n_chunks": 22,

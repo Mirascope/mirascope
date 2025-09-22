@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
       by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
-      "Respond with valid JSON that matches this exact schema:\n{\n  \"description\":
+      "Respond only with valid JSON that matches this exact schema:\n{\n  \"description\":
       \"A book with a rating. The title should be in all caps!\",\n  \"properties\":
       {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
       {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\":
@@ -18,7 +18,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '858'
+      - '863'
       content-type:
       - application/json
       host:
@@ -34,10 +34,10 @@ interactions:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n
         \ \\\"title\\\": \\\"THE NAME OF THE WIND\\\",\\n  \\\"author\\\": \\\"Patrick
         Rothfuss\\\",\\n  \\\"rating\\\": 7\\n}\"}],\"role\": \"model\"},\"finishReason\":
-        \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 187,\"candidatesTokenCount\":
-        32,\"totalTokenCount\": 311,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        187}],\"thoughtsTokenCount\": 92},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
-        \"SSLSaPXUAe3Uz7IP2NS36Qg\"}\r\n\r\n"
+        \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 188,\"candidatesTokenCount\":
+        32,\"totalTokenCount\": 312,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        188}],\"thoughtsTokenCount\": 92},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"LO3SaPetCoCsqtsPuJuTgAQ\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -46,11 +46,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 04:30:01 GMT
+      - Tue, 23 Sep 2025 18:55:41 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1135
+      - gfet4t7; dur=1482
       Transfer-Encoding:
       - chunked
       Vary:

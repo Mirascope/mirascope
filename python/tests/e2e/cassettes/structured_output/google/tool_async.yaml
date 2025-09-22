@@ -2,11 +2,10 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
       by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
-      "When you are ready to respond to the user, call the __mirascope_formatted_output_tool__
-      tool to output a structured response.\nDo NOT output any text in addition to
-      the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
-      "Use this tool to extract data in Book format for a final response.\nA book
-      with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
+      "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in Book format for a final response.\nA
+      book with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
       "parametersJsonSchema": {"description": "A book with a rating. The title should
       be in all caps!", "properties": {"title": {"title": "Title", "type": "string"},
       "author": {"title": "Author", "type": "string"}, "rating": {"description": "For
@@ -22,7 +21,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1136'
+      - '1065'
       content-type:
       - application/json
       host:
@@ -36,27 +35,25 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        H4sIAAAAAAAC/21U25KiSBR8768weHV65SK3fUPA9gZ4QRA2NgyEAlGoQqoQpGP+fWh7eqadaR4I
+        OJknT5HBydenXo8KAxilUUAApv7t/ddVer3X+/0NQ5AASDrgo9QVi6Akv7nv1+un544SVzAkKYJq
+        kGUPzT9xGOSgq1P7fZ6WAQ5RAfYxKvOAEBDtUUWKiuwJQtl+T337szkoE/yFaIeQlGR3XXui90zF
+        0HvWuPf27E5N7S+hN6mKHFH51rEMSJmG594akWNcYfwVuwxICpOOLf6BfX94//7YSnUjquRINmkC
+        A1KV9wOqZKsr0YSk+WCYzBr6+BJca9JoRE084NpjOt85Uj6X45EQxtvVaKpuVDLc5VLspxlsjP7p
+        DMW1q6mT+KoLPNn5W1uNQhoHXriUxcaHNl1HCXfK8pf6yoJ1Y1v0bKuduHGf4VEMl8AhriaWw+VR
+        dq6DmWEOPNtmgIYUZqWcBZ6tDcko0BSh7Qle7VMuLXw6vplLe5KxLqMk7Vh21Uia8TXfJzpUT2HV
+        iL55u9HeRTcEXHMe69RmrcvioA0VOt0ehaHpcO6VGcv1rC/T7NRs5JfK5yRFssSZMnHCdlSD1p0z
+        7LbR4wu2oKPEUyvITTEwKlXu242zJLAVhFvNulpyjCSOIRWkQ/kMF2qjsySSqinsL5T1AE6jyWph
+        WRP+yo1Mb6gfnR0+5ddWNfKiEc71KosK3GfNuRKnUTOUw1EobRVQ+VPn5Xg9wdxajdTtyZLcKRB0
+        hlVSbXlbKZe+7rAu2XF20zJCmEgFw823Nh4LwvrW/SDnXHQOJjdwktLSDkKa05Un1LorsUXBTK7x
+        QFPdYbu+Lk2W89IX/XJeMYfSPfRJvzbFASNl89VGyM6Z77qLK2Nxtie6k7mhTHh6ORGtSctkELpt
+        nKODOKpw5hkz4tTGStMiK5ZOujUulyM5o5MNuJmqIJ6RWUE+ulhtqqJi6PF2w7R5MVaZHYeGKzqI
+        wo3BMMOzkc7Wfc3m1/IiapwSBOaY5w4pOJRjm654PQVFhAuXj3l2AFp/jmHEAlohsM/I5MJBq/S3
+        uRYnQFg4MruuXuTtyCNregewfZr5uyw9SJiThiN545nIVhyO9cqzn7vRSZ9bl0hCxSY0Fm2tUU9f
+        bdf/vzeLKtH7qucoAtkH/dfqUXEKU3xcgwAj+Ebb2Nby105TKYxA05Xpp48Bd2mqwkECDECCLg+D
+        XxlDFSXKC2KjM4Aqqu55yHDSu9qn/HwgcOJPnCASZI8Qy3/7Sxhr3dg0+xysnzK3+8ogS8ntHm76
+        zv4UT92Ax3N9ePH0ybKPEHo8I8O/GXA37d1HB5Q4fTcsAXln4TP7D/8cZwE+3idSJcAFghhMo3t8
+        P7ebYLZoZnO2vBC8lP2bX69W1NP3px9WF4yEWwYAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -65,11 +62,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 23 Sep 2025 04:29:13 GMT
+      - Tue, 23 Sep 2025 18:54:55 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1593
+      - gfet4t7; dur=2262
       Transfer-Encoding:
       - chunked
       Vary:

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Generic, overload
 
 from ..context import Context, DepsT
-from ..formatting import FormatT
+from ..formatting import FormattableT
 from ..prompts import (
     AsyncContextPrompt,
     AsyncPrompt,
@@ -32,7 +32,7 @@ from .base_call import BaseCall
 
 
 @dataclass
-class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
+class Call(BaseCall[P, Prompt, Toolkit, FormattableT], Generic[P, FormattableT]):
     """A class for generating responses using LLMs."""
 
     @overload
@@ -42,12 +42,12 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
 
     @overload
     def __call__(
-        self: "Call[P, FormatT]", *args: P.args, **kwargs: P.kwargs
-    ) -> Response[FormatT]: ...
+        self: "Call[P, FormattableT]", *args: P.args, **kwargs: P.kwargs
+    ) -> Response[FormattableT]: ...
 
     def __call__(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> Response | Response[FormatT]:
+    ) -> Response | Response[FormattableT]:
         """Generates a response using the LLM."""
         return self.call(*args, **kwargs)
 
@@ -56,10 +56,12 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
 
     @overload
     def call(
-        self: "Call[P, FormatT]", *args: P.args, **kwargs: P.kwargs
-    ) -> Response[FormatT]: ...
+        self: "Call[P, FormattableT]", *args: P.args, **kwargs: P.kwargs
+    ) -> Response[FormattableT]: ...
 
-    def call(self, *args: P.args, **kwargs: P.kwargs) -> Response | Response[FormatT]:
+    def call(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> Response | Response[FormattableT]:
         """Generates a response using the LLM."""
         messages = self.fn(*args, **kwargs)
         return self.model.call(
@@ -73,12 +75,12 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
 
     @overload
     def stream(
-        self: "Call[P, FormatT]", *args: P.args, **kwargs: P.kwargs
-    ) -> StreamResponse[FormatT]: ...
+        self: "Call[P, FormattableT]", *args: P.args, **kwargs: P.kwargs
+    ) -> StreamResponse[FormattableT]: ...
 
     def stream(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> StreamResponse | StreamResponse[FormatT]:
+    ) -> StreamResponse | StreamResponse[FormattableT]:
         """Generates a streaming response using the LLM."""
         messages = self.fn(*args, **kwargs)
         return self.model.stream(
@@ -88,8 +90,8 @@ class Call(BaseCall[P, Prompt, Toolkit, FormatT], Generic[P, FormatT]):
 
 @dataclass
 class AsyncCall(
-    BaseCall[P, AsyncPrompt, AsyncToolkit, FormatT],
-    Generic[P, FormatT],
+    BaseCall[P, AsyncPrompt, AsyncToolkit, FormattableT],
+    Generic[P, FormattableT],
 ):
     """A class for generating responses using LLMs asynchronously."""
 
@@ -100,12 +102,12 @@ class AsyncCall(
 
     @overload
     async def __call__(
-        self: "AsyncCall[P, FormatT]", *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncResponse[FormatT]: ...
+        self: "AsyncCall[P, FormattableT]", *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncResponse[FormattableT]: ...
 
     async def __call__(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncResponse | AsyncResponse[FormatT]:
+    ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generates a Asyncresponse using the LLM asynchronously."""
         return await self.call(*args, **kwargs)
 
@@ -116,12 +118,12 @@ class AsyncCall(
 
     @overload
     async def call(
-        self: "AsyncCall[P, FormatT]", *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncResponse[FormatT]: ...
+        self: "AsyncCall[P, FormattableT]", *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncResponse[FormattableT]: ...
 
     async def call(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncResponse | AsyncResponse[FormatT]:
+    ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generates a response using the LLM asynchronously."""
         messages = await self.fn(*args, **kwargs)
         return await self.model.call_async(
@@ -135,12 +137,12 @@ class AsyncCall(
 
     @overload
     async def stream(
-        self: "AsyncCall[P, FormatT]", *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStreamResponse[FormatT]: ...
+        self: "AsyncCall[P, FormattableT]", *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncStreamResponse[FormattableT]: ...
 
     async def stream(
         self, *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncStreamResponse[FormatT] | AsyncStreamResponse:
+    ) -> AsyncStreamResponse[FormattableT] | AsyncStreamResponse:
         """Generates a streaming response using the LLM asynchronously."""
         messages = await self.fn(*args, **kwargs)
         return await self.model.stream_async(
@@ -150,8 +152,8 @@ class AsyncCall(
 
 @dataclass
 class ContextCall(
-    BaseCall[P, ContextPrompt, ContextToolkit[DepsT], FormatT],
-    Generic[P, DepsT, FormatT],
+    BaseCall[P, ContextPrompt, ContextToolkit[DepsT], FormattableT],
+    Generic[P, DepsT, FormattableT],
 ):
     """A class for generating responses using LLMs."""
 
@@ -165,15 +167,15 @@ class ContextCall(
 
     @overload
     def __call__(
-        self: "ContextCall[P, DepsT, FormatT]",
+        self: "ContextCall[P, DepsT, FormattableT]",
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> ContextResponse[DepsT, FormatT]: ...
+    ) -> ContextResponse[DepsT, FormattableT]: ...
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generates a response using the LLM."""
         return self.call(ctx, *args, **kwargs)
 
@@ -187,15 +189,15 @@ class ContextCall(
 
     @overload
     def call(
-        self: "ContextCall[P, DepsT, FormatT]",
+        self: "ContextCall[P, DepsT, FormattableT]",
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> ContextResponse[DepsT, FormatT]: ...
+    ) -> ContextResponse[DepsT, FormattableT]: ...
 
     def call(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormatT]:
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generates a response using the LLM."""
         messages = self.fn(ctx, *args, **kwargs)
         return self.model.context_call(
@@ -212,15 +214,17 @@ class ContextCall(
 
     @overload
     def stream(
-        self: "ContextCall[P, DepsT, FormatT]",
+        self: "ContextCall[P, DepsT, FormattableT]",
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> ContextStreamResponse[DepsT, FormatT]: ...
+    ) -> ContextStreamResponse[DepsT, FormattableT]: ...
 
     def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormatT]:
+    ) -> (
+        ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
+    ):
         """Generates a streaming response using the LLM."""
         messages = self.fn(ctx, *args, **kwargs)
         return self.model.context_stream(
@@ -230,8 +234,8 @@ class ContextCall(
 
 @dataclass
 class AsyncContextCall(
-    BaseCall[P, AsyncContextPrompt, AsyncContextToolkit[DepsT], FormatT],
-    Generic[P, DepsT, FormatT],
+    BaseCall[P, AsyncContextPrompt, AsyncContextToolkit[DepsT], FormattableT],
+    Generic[P, DepsT, FormattableT],
 ):
     """A class for generating responses using LLMs asynchronously."""
 
@@ -245,15 +249,15 @@ class AsyncContextCall(
 
     @overload
     async def __call__(
-        self: "AsyncContextCall[P, DepsT, FormatT]",
+        self: "AsyncContextCall[P, DepsT, FormattableT]",
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> AsyncContextResponse[DepsT, FormatT]: ...
+    ) -> AsyncContextResponse[DepsT, FormattableT]: ...
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generates a response using the LLM asynchronously."""
         return await self.call(ctx, *args, **kwargs)
 
@@ -267,15 +271,15 @@ class AsyncContextCall(
 
     @overload
     async def call(
-        self: "AsyncContextCall[P, DepsT, FormatT]",
+        self: "AsyncContextCall[P, DepsT, FormattableT]",
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> AsyncContextResponse[DepsT, FormatT]: ...
+    ) -> AsyncContextResponse[DepsT, FormattableT]: ...
 
     async def call(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormatT]:
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generates a response using the LLM asynchronously."""
         messages = await self.fn(ctx, *args, **kwargs)
         return await self.model.context_call_async(
@@ -292,17 +296,17 @@ class AsyncContextCall(
 
     @overload
     async def stream(
-        self: "AsyncContextCall[P, DepsT, FormatT]",
+        self: "AsyncContextCall[P, DepsT, FormattableT]",
         ctx: Context[DepsT],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> AsyncContextStreamResponse[DepsT, FormatT]: ...
+    ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
 
     async def stream(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
     ) -> (
         AsyncContextStreamResponse[DepsT, None]
-        | AsyncContextStreamResponse[DepsT, FormatT]
+        | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
         """Generates a streaming response using the LLM asynchronously."""
         messages = await self.fn(ctx, *args, **kwargs)

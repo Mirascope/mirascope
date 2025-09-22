@@ -2,7 +2,7 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
       by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
-      "Respond with valid JSON that matches this exact schema:\n{\n  \"description\":
+      "Respond only with valid JSON that matches this exact schema:\n{\n  \"description\":
       \"A book with a rating. The title should be in all caps!\",\n  \"properties\":
       {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
       {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\":
@@ -18,7 +18,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '858'
+      - '863'
       content-type:
       - application/json
       host:
@@ -32,13 +32,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WRUU/CMBCA3/crmj6DgRkz45sRjEQGCIuaOGMqO7aG0S7tzaDL/jvtxsbAPTTN
-        3be763eFQwhdMxHxiCFoekc+TISQojptTgoEgSbRhEwwYwpPbP0VnbtBEPb2J1qEgpCQIscUQhMI
-        afA0JrN7f0zmj8Te3yazUUh7NcdyTKSqwQVDxddbspSYbHKtW0gx5CK2kBeKknYal+39s3caV8kU
-        7Cw7GUHa4GUD0A0XXCdLYFoKi62C+YK2WS4i2JvwwGkaVKVprlkMPiAz4lirh2ZK7jIM5BbEg8wr
-        ccNbr67WEX0GXLvHPEpk6UVq2PtXWI9MW552N9BZjnklSzn+2qcE4/eAdkzgxVyNC6ejjJoN5HGC
-        5zMOB65zlFZ7fAWleS0shp1R2HevbvqblOmk6kgV6EwKDZPIMs98umLTrx9/+p39eZOFB67YvvjU
-        KZ0D6FDBvoQCAAA=
+        H4sIAAAAAAAC/12RUW+CMBCA3/kVTZ91mZplZm9O3cYSlShuS8YeGjmgEVvWHokL4b+vhYF1PJDm
+        7uvd9bvKI4QemIh5zBA0fSCfJkJI1fxtTgoEgSbRhUywYAovbPtVztkgCGd7iVaRICSiyDGHyAQi
+        Gr4syXq2WpLNE7Hnd3+9iOig5ViJmVQtGDBU/HAkW4lZUmrdQ4ohF6mF7iNRU6dx3Z+/BpdxlczB
+        znKSMeQdXncATbjgOtsC01JYbBduAtpnuYjhbMK3XtegKU1LzVJYATIjjvV6aKHkqcBQHkHMZdmI
+        G02nbTVH9BUwGf/lUSLLr1OT7q5TWC9MW567G3CWY17Jco4/9inh8iOkjgn8N1fnwnOUUbOBMs3w
+        esbRyMKNtNbjGyjNW2EpnIzC4fjmbpjkTGdNR6pAF1Jo8GPLPA4nOxbwuZ/skm/UQfb67E9ne+rV
+        3i81yH4QhAIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -47,11 +47,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 23 Sep 2025 04:29:30 GMT
+      - Tue, 23 Sep 2025 18:55:03 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1110
+      - gfet4t7; dur=2431
       Transfer-Encoding:
       - chunked
       Vary:

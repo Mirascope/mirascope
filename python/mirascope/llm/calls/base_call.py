@@ -4,7 +4,7 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import Generic
 
-from ..formatting import FormatT
+from ..formatting import Format, FormattableT
 from ..models import Model, get_model_from_context
 from ..prompts import PromptT
 from ..tools import ToolkitT
@@ -12,7 +12,7 @@ from ..types import P
 
 
 @dataclass
-class BaseCall(Generic[P, PromptT, ToolkitT, FormatT], ABC):
+class BaseCall(Generic[P, PromptT, ToolkitT, FormattableT], ABC):
     """A base class for generating responses using LLMs."""
 
     default_model: Model
@@ -21,7 +21,7 @@ class BaseCall(Generic[P, PromptT, ToolkitT, FormatT], ABC):
     toolkit: ToolkitT
     """The toolkit containing this call's tools."""
 
-    format: type[FormatT] | None
+    format: type[FormattableT] | Format[FormattableT] | None
     """The response format for the generated response."""
 
     fn: PromptT

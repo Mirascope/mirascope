@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from mirascope import llm
 
 
-@llm.format
 class KeeperEntry(BaseModel):
     topic: str
     summary: str
@@ -63,7 +62,7 @@ async def main():
                     print()
                 case "text":
                     async for _ in stream:
-                        print("[Partial]: ", response.format(partial=True), flush=True)
+                        print("[Partial]: ", response.parse(partial=True), flush=True)
         if not response.tool_calls:
             break
         tool_outputs = await response.execute_tools(ctx)

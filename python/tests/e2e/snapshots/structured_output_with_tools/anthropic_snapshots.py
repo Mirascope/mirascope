@@ -16,7 +16,46 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
+        "messages": [
+            SystemMessage(
+                content=Text(
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
+                )
+            ),
+            UserMessage(
+                content=[
+                    Text(
+                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    ToolCall(
+                        id="toolu_0149h3mTFRJja7et1w7eGGik",
+                        name="get_book_info",
+                        args='{"isbn": "0-7653-1178-X"}',
+                    )
+                ]
+            ),
+            UserMessage(
+                content=[
+                    ToolOutput(
+                        id="toolu_0149h3mTFRJja7et1w7eGGik",
+                        name="get_book_info",
+                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
+                    )
+                ]
+            ),
+        ],
+        "format": {
             "name": "BookSummary",
             "description": None,
             "schema": {
@@ -33,50 +72,9 @@ sync_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "strict-or-tool",
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    ToolCall(
-                        id="toolu_01VUWX6bsMr7GDq1oW77j9nZ",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    )
-                ]
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_01VUWX6bsMr7GDq1oW77j9nZ",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
-                    )
-                ]
-            ),
-        ],
         "tools": [
             {
                 "name": "get_book_info",
@@ -107,7 +105,46 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
+        "messages": [
+            SystemMessage(
+                content=Text(
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
+                )
+            ),
+            UserMessage(
+                content=[
+                    Text(
+                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    ToolCall(
+                        id="toolu_019qFiAbk5E5QNNJ3uPF4MTR",
+                        name="get_book_info",
+                        args='{"isbn": "0-7653-1178-X"}',
+                    )
+                ]
+            ),
+            UserMessage(
+                content=[
+                    ToolOutput(
+                        id="toolu_019qFiAbk5E5QNNJ3uPF4MTR",
+                        name="get_book_info",
+                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
+                    )
+                ]
+            ),
+        ],
+        "format": {
             "name": "BookSummary",
             "description": None,
             "schema": {
@@ -124,50 +161,9 @@ async_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "strict-or-tool",
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    ToolCall(
-                        id="toolu_01W1314pyKnE89oyrEfx3Mgy",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    )
-                ]
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_01W1314pyKnE89oyrEfx3Mgy",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
-                    )
-                ]
-            ),
-        ],
         "tools": [
             {
                 "name": "get_book_info",
@@ -200,10 +196,7 @@ stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -216,7 +209,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="toolu_01YHjnCvPzGD1pS82214fSUH",
+                        id="toolu_01BsqozubHv7TU8fqpY2dezk",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -225,7 +218,7 @@ Do NOT output any text in addition to the tool call.\
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_01YHjnCvPzGD1pS82214fSUH",
+                        id="toolu_01BsqozubHv7TU8fqpY2dezk",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -239,7 +232,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "BookSummary",
             "description": None,
             "schema": {
@@ -256,7 +249,8 @@ Do NOT output any text in addition to the tool call.\
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "strict-or-tool",
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [
             {
@@ -280,7 +274,7 @@ Do NOT output any text in addition to the tool call.\
                 "strict": False,
             }
         ],
-        "n_chunks": 19,
+        "n_chunks": 18,
     }
 )
 async_stream_snapshot = snapshot(
@@ -291,10 +285,7 @@ async_stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -307,7 +298,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="toolu_01UrNjy3ZHRaghiRYQzhaS6t",
+                        id="toolu_013uwfr6r7wwydG4x8AFsjKA",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -316,7 +307,7 @@ Do NOT output any text in addition to the tool call.\
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_01UrNjy3ZHRaghiRYQzhaS6t",
+                        id="toolu_013uwfr6r7wwydG4x8AFsjKA",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -330,7 +321,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "BookSummary",
             "description": None,
             "schema": {
@@ -347,7 +338,8 @@ Do NOT output any text in addition to the tool call.\
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "strict-or-tool",
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [
             {
@@ -371,6 +363,6 @@ Do NOT output any text in addition to the tool call.\
                 "strict": False,
             }
         ],
-        "n_chunks": 23,
+        "n_chunks": 21,
     }
 )

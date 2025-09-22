@@ -1,10 +1,9 @@
 interactions:
 - request:
     body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please recommend
-      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"When
-      you are ready to respond to the user, call the __mirascope_formatted_output_tool__
-      tool to output a structured response.\nDo NOT output any text in addition to
-      the tool call.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Always
+      respond to the user''s query using the __mirascope_formatted_output_tool__ tool
+      for structured output.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.\nA book with
       a rating. The title should be in all caps!","input_schema":{"description":"A
       book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"description":"For
@@ -19,7 +18,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1007'
+      - '936'
       content-type:
       - application/json
       host:
@@ -51,16 +50,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dFFdaxsxEPwrZp9luAu+pNVbcVxcaJ2vgh9CEIu0vhO5ky7aVZpg7r8X
-        XXBDWvq22pmdHc0ewTvQMHBrqnr13d/k8HqHu8/u5WXf/Npfu/UtKJDXkQqLmLElUJBiXxrI7Fkw
-        CCgYoqMeNNges6MlxxBIlqvlWXXWVE29AgU2BqEgoO+PJ0mJsTeZi+ZspLyzqerLg2Qe3Ga79s/n
-        n9ptu77hu7Im4FDmjBl8QrZxJHOIaUARciZmGbOYWdQUyTBmAX0E8TIb/rndLHZffmwWV18Xpd5/
-        212CAszSxQQarlGSt4+L2yjdITOXr6L40IK+mKYHBSxxNImQY/jofgaYnjIFS6BD7nsFeY5LH9+M
-        GImPFBh0U68UWLQdGZsIxcdgPjKqE54I3f+w02xZQGNHAyXsTTP8y39H6+5vdFLwJ7a31vmFAqb0
-        7C0Z8VRyKUd2mBxM028AAAD//wMAvPNjyjICAAA=
+        H4sIAAAAAAAAAwAAAP//dFFdSwMxEPwrZZ9TuCttxbyJVmrh/AYpIiHm1rvQu+Sa3Si23H+XnFRR
+        8W2zMzs7md2DLUFCS5XK8qJy07uq2LXHp6u37W7h77fFYgUC+L3DxEIiXSEICL5JDU1kibVjEND6
+        EhuQYBodSxyTdw55PB1Pssksm+VTEGC8Y3QM8nF/kGTvGxUpaQ5G0juqLF/Pz3avgZ/r+fVtTuv1
+        zfJ8OSlAgNNtmlOqtUGT8R2qFx9azYyl8pG7yGoQVUnSdZFB7oEtD4bvl4vR5UmxGF2dj1L9cHF5
+        BgJ05NoHkHCtOVizGd16rl8iUfqqZusqkEd9/ySA2HcqoCbvfrofAMJtRGcQpItNIyAOccn9pxHF
+        foOOQE6P5wKMNjUqE1Cz9U79ZGQHPKAu/8MOs2kBdjW2GHSjZu1f/jea17/RXsBXbJ+t+ZEAwvBq
+        DSq2mHJJRy51KKHvPwAAAP//AwBABrf1MgIAAA==
     headers:
       CF-RAY:
-      - 98374d0a79e6ba3a-SEA
+      - 983c40e97d5bdee2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -68,7 +67,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 04:29:28 GMT
+      - Tue, 23 Sep 2025 18:54:59 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -82,35 +81,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-23T04:29:27Z'
+      - '2025-09-23T18:54:58Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-23T04:29:28Z'
+      - '2025-09-23T18:54:59Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-23T04:29:25Z'
+      - '2025-09-23T18:54:57Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-23T04:29:27Z'
+      - '2025-09-23T18:54:58Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTQhiDEa9hWF4s3koy5W5
+      - req_011CTRqiLrQGnogUgLftCY8z
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2613'
+      - '1769'
     status:
       code: 200
       message: OK

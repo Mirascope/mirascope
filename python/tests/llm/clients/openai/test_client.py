@@ -28,6 +28,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
                     content=[llm.Text(text="General "), llm.Text(text="Kenobi")]
                 ),
             ],
+            None,
             {
                 "model": "gpt-4o",
                 "messages": [
@@ -53,11 +54,12 @@ def test_strict_unsupported_legacy_model() -> None:
 
     messages = [llm.messages.user("I have a bad feeling about this...")]
 
-    @llm.format(mode="strict")
     class Book(BaseModel):
         pass
 
+    format = llm.format(Book, mode="strict")
+
     with pytest.raises(llm.FormattingModeNotSupportedError):
         openai_utils.prepare_openai_request(
-            model_id="gpt-4", messages=messages, format=Book
+            model_id="gpt-4", messages=messages, format=format
         )

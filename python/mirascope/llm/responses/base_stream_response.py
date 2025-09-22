@@ -20,7 +20,7 @@ from ..content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from ..formatting import FormatT, Partial
+from ..formatting import Format, FormattableT, Partial
 from ..messages import AssistantMessage, Message
 from ..streams import AsyncStream, Stream
 from ..tools import FORMAT_TOOL_NAME, ToolkitT
@@ -51,7 +51,8 @@ ChunkIteratorT = TypeVar("ChunkIteratorT", bound=ChunkIterator | AsyncChunkItera
 
 
 class BaseStreamResponse(
-    RootResponse[ToolkitT, FormatT], Generic[ChunkIteratorT, ToolkitT, FormatT]
+    RootResponse[ToolkitT, FormattableT],
+    Generic[ChunkIteratorT, ToolkitT, FormattableT],
 ):
     """Base class underpinning StreamResponse and AsyncStreamResponse.
 
@@ -119,7 +120,7 @@ class BaseStreamResponse(
         model_id: "ModelId",
         params: "BaseParams | None",
         toolkit: ToolkitT,
-        format_type: type[FormatT] | None = None,
+        format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIteratorT,
     ) -> None:
@@ -130,7 +131,7 @@ class BaseStreamResponse(
             model_id: The model identifier that generated the response.
             params: The params used to generate the response (or None).
             toolkit: Toolkit containing all the tools used to generate the response.
-            format_type: The type for the expected structured output format (or None).
+            format: The `Format` for the expected structured output format (or None).
             input_messages: The input messages that were sent to the LLM
 
         The BaseStreamResponse will process the tuples to build the chunks and raw lists
@@ -141,7 +142,7 @@ class BaseStreamResponse(
         self.model_id = model_id
         self.params = params
         self.toolkit = toolkit
-        self.format_type = format_type
+        self.format = format
 
         # Internal-only lists which we mutate (append) during chunk processing
         self._chunks: list[AssistantContentChunk] = []
@@ -327,7 +328,7 @@ class BaseStreamResponse(
                 return ""
 
 
-class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, FormatT]):
+class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, FormattableT]):
     """A base class for synchronous Stream Responses."""
 
     def streams(self) -> Iterator[Stream]:
@@ -414,7 +415,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, FormatT
 
     def structured_stream(
         self,
-    ) -> Iterator[Partial[FormatT]]:
+    ) -> Iterator[Partial[FormattableT]]:
         """Returns an iterator that yields partial structured objects as content streams.
 
         Returns:
@@ -432,7 +433,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, FormatT
 
 
 class BaseAsyncStreamResponse(
-    BaseStreamResponse[AsyncChunkIterator, ToolkitT, FormatT]
+    BaseStreamResponse[AsyncChunkIterator, ToolkitT, FormattableT]
 ):
     """A base class for asynchronous Stream Responses."""
 
@@ -521,7 +522,7 @@ class BaseAsyncStreamResponse(
 
     def structured_stream(
         self,
-    ) -> AsyncIterator[Partial[FormatT]]:
+    ) -> AsyncIterator[Partial[FormattableT]]:
         """Returns an async iterator that yields partial structured objects as content streams.
 
         Returns:

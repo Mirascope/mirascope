@@ -24,7 +24,7 @@ BOOK_DB = {
 def test_structured_output_with_tools_sync(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with tool calls."""
@@ -34,18 +34,23 @@ def test_structured_output_with_tools_sync(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
-    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
         pages: int
         publication_year: int
 
+    format = (
+        llm.format(BookSummary, mode=formatting_mode)
+        if formatting_mode is not None
+        else BookSummary
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
-        format=BookSummary,
+        format=format,
     )
     def analyze_book(isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
@@ -59,7 +64,7 @@ def test_structured_output_with_tools_sync(
 
         assert response_snapshot_dict(response) == snapshot
 
-        book_summary = response.format()
+        book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
@@ -74,7 +79,7 @@ def test_structured_output_with_tools_sync(
 def test_structured_output_with_tools_sync_context(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with tools and context."""
@@ -84,18 +89,23 @@ def test_structured_output_with_tools_sync_context(
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
 
-    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
         pages: int
         publication_year: int
 
+    format = (
+        llm.format(BookSummary, mode=formatting_mode)
+        if formatting_mode is not None
+        else BookSummary
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
-        format=BookSummary,
+        format=format,
     )
     def analyze_book(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
@@ -110,7 +120,7 @@ def test_structured_output_with_tools_sync_context(
 
         assert response_snapshot_dict(response) == snapshot
 
-        book_summary = response.format()
+        book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
@@ -129,7 +139,7 @@ def test_structured_output_with_tools_sync_context(
 async def test_structured_output_with_tools_async(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with tool calls."""
@@ -139,18 +149,23 @@ async def test_structured_output_with_tools_async(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
-    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
         pages: int
         publication_year: int
 
+    format = (
+        llm.format(BookSummary, mode=formatting_mode)
+        if formatting_mode is not None
+        else BookSummary
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
-        format=BookSummary,
+        format=format,
     )
     async def analyze_book(isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
@@ -164,7 +179,7 @@ async def test_structured_output_with_tools_async(
 
         assert response_snapshot_dict(response) == snapshot
 
-        book_summary = response.format()
+        book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
@@ -180,7 +195,7 @@ async def test_structured_output_with_tools_async(
 async def test_structured_output_with_tools_async_context(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with tools and context."""
@@ -190,18 +205,23 @@ async def test_structured_output_with_tools_async_context(
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
 
-    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
         pages: int
         publication_year: int
 
+    format = (
+        llm.format(BookSummary, mode=formatting_mode)
+        if formatting_mode is not None
+        else BookSummary
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
-        format=BookSummary,
+        format=format,
     )
     async def analyze_book(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
@@ -216,7 +236,7 @@ async def test_structured_output_with_tools_async_context(
 
         assert response_snapshot_dict(response) == snapshot
 
-        book_summary = response.format()
+        book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
@@ -234,7 +254,7 @@ async def test_structured_output_with_tools_async_context(
 def test_structured_output_with_tools_stream(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with tool calls."""
@@ -244,18 +264,23 @@ def test_structured_output_with_tools_stream(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
-    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
         pages: int
         publication_year: int
 
+    format = (
+        llm.format(BookSummary, mode=formatting_mode)
+        if formatting_mode is not None
+        else BookSummary
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
-        format=BookSummary,
+        format=format,
     )
     def analyze_book(isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
@@ -276,7 +301,7 @@ def test_structured_output_with_tools_stream(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book_summary = response.format()
+        book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
@@ -291,7 +316,7 @@ def test_structured_output_with_tools_stream(
 def test_structured_output_with_tools_stream_context(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with tools and context."""
@@ -301,18 +326,23 @@ def test_structured_output_with_tools_stream_context(
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
 
-    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
         pages: int
         publication_year: int
 
+    format = (
+        llm.format(BookSummary, mode=formatting_mode)
+        if formatting_mode is not None
+        else BookSummary
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
-        format=BookSummary,
+        format=format,
     )
     def analyze_book(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
@@ -334,7 +364,7 @@ def test_structured_output_with_tools_stream_context(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book_summary = response.format()
+        book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
@@ -353,7 +383,7 @@ def test_structured_output_with_tools_stream_context(
 async def test_structured_output_with_tools_async_stream(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with tool calls."""
@@ -363,18 +393,23 @@ async def test_structured_output_with_tools_async_stream(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
-    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
         pages: int
         publication_year: int
 
+    format = (
+        llm.format(BookSummary, mode=formatting_mode)
+        if formatting_mode is not None
+        else BookSummary
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
-        format=BookSummary,
+        format=format,
     )
     async def analyze_book(isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
@@ -395,7 +430,7 @@ async def test_structured_output_with_tools_async_stream(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book_summary = response.format()
+        book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
@@ -411,7 +446,7 @@ async def test_structured_output_with_tools_async_stream(
 async def test_structured_output_with_tools_async_stream_context(
     provider: llm.clients.Provider,
     model_id: llm.clients.ModelId,
-    formatting_mode: llm.formatting.ConcreteFormattingMode,
+    formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with tools and context."""
@@ -421,18 +456,23 @@ async def test_structured_output_with_tools_async_stream_context(
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
 
-    @llm.format(mode=formatting_mode)
     class BookSummary(BaseModel):
         title: str
         author: str
         pages: int
         publication_year: int
 
+    format = (
+        llm.format(BookSummary, mode=formatting_mode)
+        if formatting_mode is not None
+        else BookSummary
+    )
+
     @llm.call(
         provider=provider,
         model_id=model_id,
         tools=[get_book_info],
-        format=BookSummary,
+        format=format,
     )
     async def analyze_book(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
@@ -454,7 +494,7 @@ async def test_structured_output_with_tools_async_stream_context(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book_summary = response.format()
+        book_summary = response.parse()
         assert book_summary.title == "Mistborn: The Final Empire"
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544

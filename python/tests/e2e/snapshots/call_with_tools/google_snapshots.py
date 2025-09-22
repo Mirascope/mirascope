@@ -16,7 +16,6 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -65,6 +64,7 @@ Life before Death\
                 ]
             ),
         ],
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
@@ -95,7 +95,6 @@ async_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -146,6 +145,7 @@ For the password "radiance", the secret is "Life before Death"\
                 ]
             ),
         ],
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
@@ -220,7 +220,7 @@ stream_snapshot = snapshot(
                 ]
             ),
         ],
-        "format_type": None,
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
@@ -296,7 +296,7 @@ async_stream_snapshot = snapshot(
                 ]
             ),
         ],
-        "format_type": None,
+        "format": None,
         "tools": [
             {
                 "name": "secret_retrieval_tool",
