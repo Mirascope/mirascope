@@ -20,11 +20,7 @@ from ...content import (
     ToolCallStartChunk,
 )
 from ...exceptions import FormattingModeNotSupportedError
-from ...formatting import (
-    FormatInfo,
-    FormatT,
-    _utils as _formatting_utils,
-)
+from ...formatting import Format, FormattableT, resolve_format
 from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import (
     AsyncChunkIterator,
@@ -231,9 +227,9 @@ def prepare_openai_request(
     model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | None = None,
-    format: type[FormatT] | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
     params: OpenAIParams | None = None,
-) -> tuple[Sequence[Message], ChatCompletionCreateKwargs]:
+) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepare OpenAI API request parameters.
 
     Args:
@@ -260,25 +256,17 @@ def prepare_openai_request(
         [_convert_tool_to_tool_param(tool) for tool in tools] if tools else []
     )
 
-    if format:
-        model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
-        model_has_native_json_support = (
-            model_id not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
-        )
-        resolved_format = _formatting_utils.resolve_formattable(
-            format,
-            model_supports_strict_mode=model_supports_strict,
-            model_has_native_json_support=model_has_native_json_support,
-        )
-        if resolved_format.mode == "strict":
+    model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+    default_mode = "strict" if model_supports_strict else "tool"
+    format = resolve_format(format, default_mode=default_mode)
+    if format is not None:
+        if format.mode == "strict":
             if not model_supports_strict:
                 raise FormattingModeNotSupportedError(
                     formatting_mode="strict", provider="openai", model_id=model_id
                 )
-            kwargs["response_format"] = create_strict_response_format(
-                resolved_format.info
-            )
-        elif resolved_format.mode == "tool":
+            kwargs["response_format"] = create_strict_response_format(format)
+        elif format.mode == "tool":
             if tools:
                 kwargs["tool_choice"] = "required"
             else:
@@ -287,13 +275,15 @@ def prepare_openai_request(
                     "function": {"name": FORMAT_TOOL_NAME},
                 }
                 kwargs["parallel_tool_calls"] = False
-            openai_tools.append(create_format_tool_param(resolved_format.info))
-        elif resolved_format.mode == "json" and model_has_native_json_support:
+            openai_tools.append(create_format_tool_param(format))
+        elif (
+            format.mode == "json" and model_id not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+        ):
             kwargs["response_format"] = {"type": "json_object"}
 
-        if resolved_format.formatting_instructions:
+        if format.formatting_instructions:
             messages = _base_utils.add_system_instructions(
-                messages, resolved_format.formatting_instructions
+                messages, format.formatting_instructions
             )
 
     if openai_tools:
@@ -304,7 +294,7 @@ def prepare_openai_request(
         encoded_messages.extend(_encode_message(message))
     kwargs["messages"] = encoded_messages
 
-    return messages, kwargs
+    return messages, format, kwargs
 
 
 def decode_response(
@@ -453,27 +443,27 @@ async def convert_openai_stream_to_async_chunk_iterator(
 
 
 def create_strict_response_format(
-    format_info: FormatInfo,
+    format: Format[FormattableT],
 ) -> shared_openai_types.ResponseFormatJSONSchema:
     """Create OpenAI strict response format from a Mirascope Format.
 
     Args:
-        format_info: The `Format` instance containing schema and metadata
+        format: The `Format` instance containing schema and metadata
 
     Returns:
         Dictionary containing OpenAI response_format specification
     """
-    schema = format_info.schema.copy()
+    schema = format.schema.copy()
 
     _ensure_additional_properties_false(schema)
 
     json_schema = JSONSchema(
-        name=format_info.name,
+        name=format.name,
         schema=schema,
         strict=True,
     )
-    if format_info.description:
-        json_schema["description"] = format_info.description
+    if format.description:
+        json_schema["description"] = format.description
 
     return shared_openai_types.ResponseFormatJSONSchema(
         type="json_schema", json_schema=json_schema
@@ -481,17 +471,17 @@ def create_strict_response_format(
 
 
 def create_format_tool_param(
-    format_info: FormatInfo,
+    format: Format[FormattableT],
 ) -> openai_types.ChatCompletionToolParam:
-    """Create OpenAI `ChatCompletionToolParam` for format parsing from a Mirascope `FormatInfo`.
+    """Create OpenAI `ChatCompletionToolParam` for format parsing from a Mirascope `Format`.
 
     Args:
-        format_info: The `FormatInfo` instance containing schema and metadata
+        format: The `Format` instance containing schema and metadata
 
     Returns:
         OpenAI ChatCompletionToolParam for the format tool
     """
-    schema_dict = format_info.schema.copy()
+    schema_dict = format.schema.copy()
     schema_dict["type"] = "object"
 
     _ensure_additional_properties_false(schema_dict)
@@ -499,9 +489,11 @@ def create_format_tool_param(
     if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
         schema_dict["required"] = list(schema_dict["properties"].keys())
 
-    description = f"Use this tool to extract data in {format_info.name} format for a final response."
-    if format_info.description:
-        description += "\n" + format_info.description
+    description = (
+        f"Use this tool to extract data in {format.name} format for a final response."
+    )
+    if format.description:
+        description += "\n" + format.description
 
     return openai_types.ChatCompletionToolParam(
         type="function",

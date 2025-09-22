@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from mirascope import llm
 
 
-@llm.format
 class KeeperEntry(BaseModel):
     topic: str
     summary: str
@@ -33,7 +32,7 @@ async def sazed(query: str):
 async def main():
     query = "What are the Kandra?"
     response: llm.AsyncResponse[KeeperEntry] = await sazed(query)
-    entry: KeeperEntry = response.format()
+    entry: KeeperEntry = response.parse()
     print(entry)
 
 

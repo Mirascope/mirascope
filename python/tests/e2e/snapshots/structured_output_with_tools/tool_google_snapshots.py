@@ -16,32 +16,10 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "tool",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -77,6 +55,26 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
+        "format": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+        },
         "tools": [
             {
                 "name": "get_book_info",
@@ -107,32 +105,10 @@ async_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "tool",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -163,11 +139,31 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"author": "Brandon Sanderson", "title": "Mistborn: The Final Empire", "publication_year": 2006, "pages": 544}'
+                        text='{"pages": 544, "author": "Brandon Sanderson", "title": "Mistborn: The Final Empire", "publication_year": 2006}'
                     )
                 ]
             ),
         ],
+        "format": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+        },
         "tools": [
             {
                 "name": "get_book_info",
@@ -200,10 +196,7 @@ stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -234,12 +227,12 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"author": "Brandon Sanderson", "title": "Mistborn: The Final Empire", "publication_year": 2006, "pages": 544}'
+                        text='{"pages": 544, "author": "Brandon Sanderson", "title": "Mistborn: The Final Empire", "publication_year": 2006}'
                     )
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "BookSummary",
             "description": None,
             "schema": {
@@ -257,6 +250,7 @@ Do NOT output any text in addition to the tool call.\
                 "type": "object",
             },
             "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [
             {
@@ -291,10 +285,7 @@ async_stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -325,12 +316,12 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"pages": 544, "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "publication_year": 2006}'
+                        text='{"author": "Brandon Sanderson", "publication_year": 2006, "title": "Mistborn: The Final Empire", "pages": 544}'
                     )
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "BookSummary",
             "description": None,
             "schema": {
@@ -348,6 +339,7 @@ Do NOT output any text in addition to the tool call.\
                 "type": "object",
             },
             "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [
             {

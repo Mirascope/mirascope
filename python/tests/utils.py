@@ -1,28 +1,22 @@
 """Test utilities for response testing."""
 
-from typing import Any, cast
+from typing import Any
 
 from mirascope import llm
 
 
-def get_format(x: type[llm.formatting.FormatT]) -> llm.FormatInfo:
-    assert hasattr(x, "__mirascope_format_info__")
-    format = cast(llm.formatting.Formattable, x).__mirascope_format_info__
-    assert isinstance(format, llm.formatting.FormatInfo)
-    return format
-
-
-def format_snapshot_dict(
-    format_type: type[llm.formatting.FormatT] | None,
+def format_snapshot(
+    format: llm.formatting.Format[llm.formatting.FormattableT] | None,
 ) -> dict | None:
-    if format_type is None:
+    if format is None:
         return None
-    format_info = get_format(format_type)
+
     return {
-        "name": format_info.name,
-        "description": format_info.description,
-        "schema": format_info.schema,
-        "mode": format_info.mode,
+        "name": format.name,
+        "description": format.description,
+        "schema": format.schema,
+        "mode": format.mode,
+        "formatting_instructions": format.formatting_instructions,
     }
 
 
@@ -50,8 +44,8 @@ def response_snapshot_dict(response: llm.responses.RootResponse[Any, Any]) -> di
     dict_copy.pop("texts")
     dict_copy.pop("thoughts")
     dict_copy.pop("tool_calls")
-
-    dict_copy["format_type"] = format_snapshot_dict(response.format_type)
+    dict_copy.pop("format")
+    dict_copy["format"] = format_snapshot(response.format)
     dict_copy.pop("toolkit")
     dict_copy["tools"] = [tool_snapshot(tool) for tool in response.toolkit.tools]
     return dict_copy
@@ -73,7 +67,7 @@ def stream_response_snapshot_dict(
         "model_id": response.model_id,
         "finish_reason": response.finish_reason,
         "messages": list(response.messages),
-        "format_type": format_snapshot_dict(response.format_type),
+        "format": format_snapshot(response.format),
         "tools": [tool_snapshot(tool) for tool in response.toolkit.tools],
         "n_chunks": len(
             response.chunks

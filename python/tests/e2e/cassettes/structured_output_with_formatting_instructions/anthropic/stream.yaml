@@ -51,17 +51,17 @@ interactions:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"id":"msg_011Z3GAXLRcEZ1fZVVPGnnYt","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":471,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":19,"service_tier":"standard"}}       }
+        data: {"type":"message_start","message":{"id":"msg_01GaqWnFDVqmRKuacWTVdAom","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":471,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":19,"service_tier":"standard"}}      }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_018mtjmkmPYsbqCkW18eZExm","name":"__mirascope_formatted_output_tool__","input":{}}       }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_01Uvo6ATGVac7zRAxmXT7erZ","name":"__mirascope_formatted_output_tool__","input":{}}}
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}       }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}   }
 
 
         event: ping
@@ -71,7 +71,7 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"ti"}          }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"ti"}              }
 
 
         event: ping
@@ -81,8 +81,7 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"tle\":
-        \"THE N"}   }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"tl"}       }
 
 
         event: ping
@@ -92,8 +91,8 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"AME
-        OF T"}          }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"e\":
+        \"THE NAM"}         }
 
 
         event: ping
@@ -103,8 +102,8 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"HE
-        WIN"}   }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"E
+        "}       }
 
 
         event: ping
@@ -114,66 +113,74 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"D\""}}
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"OF
+        THE WIND"}            }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\""}              }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",
-        \"auth"} }
+        \"a"}           }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"or\":"}            }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"uthor\":
+        \""} }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"
-        \"Patrick "}            }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"Patrick
+        Roth"}    }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"Roth"}           }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"fuss\""}         }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"fuss\""}    }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",
-        \"rating\": "}           }
+        "}            }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"7}"}           }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\"rating\":
+        7}"}      }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0             }
+        data: {"type":"content_block_stop","index":0        }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":471,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":67}            }
+        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":471,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":67}   }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"          }
+        data: {"type":"message_stop"     }
 
 
         '
     headers:
       CF-RAY:
-      - 98377365ce4a27a7-SEA
+      - 983c430dcc61a3aa-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -181,7 +188,7 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Tue, 23 Sep 2025 04:55:37 GMT
+      - Tue, 23 Sep 2025 18:56:26 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -195,35 +202,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-23T04:55:36Z'
+      - '2025-09-23T18:56:25Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-23T04:55:36Z'
+      - '2025-09-23T18:56:25Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-23T04:55:36Z'
+      - '2025-09-23T18:56:25Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-23T04:55:36Z'
+      - '2025-09-23T18:56:25Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTQji2PCP77cQffYCkUeG
+      - req_011CTRqpovjtDQhbWMXnRoms
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1126'
+      - '1173'
     status:
       code: 200
       message: OK

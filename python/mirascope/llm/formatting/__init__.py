@@ -5,30 +5,18 @@ The `@format` decorator can be applied to classes to specify how LLM
 outputs should be structured and parsed.
 """
 
-from . import _utils
-from .decorator import format
+from .format import format, resolve_format
 from .from_call_args import FromCallArgs
 from .partial import Partial
-from .types import (
-    ConcreteFormattingMode,
-    FormatInfo,
-    FormatT,
-    Formattable,
-    FormattingMode,
-    RequiredFormatT,
-    ResolvedFormatInfo,
-)
+from .types import Format, FormattableT, FormattingMode
 
 __all__ = [
-    "ConcreteFormattingMode",
-    "FormatInfo",
-    "FormatT",
-    "Formattable",
+    "Format",
+    "FormattableT",
+    "FormattableT",
     "FormattingMode",
     "FromCallArgs",
     "Partial",
-    "RequiredFormatT",
-    "ResolvedFormatInfo",
-    "_utils",
     "format",
+    "resolve_format",
 ]

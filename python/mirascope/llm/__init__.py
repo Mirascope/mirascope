@@ -63,7 +63,7 @@ from .exceptions import (
     TimeoutError,
     ToolNotFoundError,
 )
-from .formatting import FormatInfo, Partial, format
+from .formatting import Format, FormattingMode, Partial, format
 from .messages import AssistantMessage, Message, SystemMessage, UserMessage
 from .models import Model, model
 from .prompts import prompt
@@ -122,7 +122,8 @@ __all__ = [
     "Document",
     "FeatureNotSupportedError",
     "FinishReason",
-    "FormatInfo",
+    "Format",
+    "FormattingMode",
     "FormattingModeNotSupportedError",
     "GoogleClient",
     "Image",

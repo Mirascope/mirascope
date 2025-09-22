@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     )
 
 from ..context import Context, DepsT
-from ..formatting import FormatT
+from ..formatting import FormattableT
 from ..types import P
 
 AgentToolT = TypeVar(
@@ -61,7 +61,7 @@ class AsyncContextSystemPrompt(Protocol[P, DepsT]):
     async def __call__(self, ctx: Context[DepsT]) -> str: ...
 
 
-class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
+class AgentDecorator(Protocol[P, AgentToolT, FormattableT]):
     """Protocol for the `agent` decorator."""
 
     @overload
@@ -69,10 +69,10 @@ class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
         self: AgentDecorator[
             P,
             None | Tool | ContextTool[DepsT],
-            FormatT,
+            FormattableT,
         ],
         fn: SystemPrompt[P] | ContextSystemPrompt[P, DepsT],
-    ) -> AgentTemplate[DepsT, FormatT]:
+    ) -> AgentTemplate[DepsT, FormattableT]:
         """Decorator for creating a sync agent."""
         ...
 
@@ -81,10 +81,10 @@ class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
         self: AgentDecorator[
             P,
             None | AsyncTool | AsyncContextTool[DepsT],
-            FormatT,
+            FormattableT,
         ],
         fn: AsyncSystemPrompt[P] | AsyncContextSystemPrompt[P, DepsT],
-    ) -> AsyncAgentTemplate[DepsT, FormatT]:
+    ) -> AsyncAgentTemplate[DepsT, FormattableT]:
         """Decorator for creating an async agent."""
         ...
 
@@ -94,7 +94,7 @@ class AgentDecorator(Protocol[P, AgentToolT, FormatT]):
         | ContextSystemPrompt[P, DepsT]
         | AsyncSystemPrompt[P]
         | AsyncContextSystemPrompt[P, DepsT],
-    ) -> AgentTemplate[DepsT, FormatT] | AsyncAgentTemplate[DepsT, FormatT]:
+    ) -> AgentTemplate[DepsT, FormattableT] | AsyncAgentTemplate[DepsT, FormattableT]:
         """Decorator for creating an agent."""
         raise NotImplementedError()
 
@@ -105,10 +105,10 @@ def agent(
     provider: Literal["anthropic"],
     model_id: AnthropicModelId,
     tools: list[AgentToolT] | None = None,
-    format: type[FormatT] | None = None,
+    format: type[FormattableT] | None = None,
     client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> AgentDecorator[..., AgentToolT, FormatT]:
+) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an Anthropic agent."""
     ...
 
@@ -119,10 +119,10 @@ def agent(
     provider: Literal["google"],
     model_id: GoogleModelId,
     tools: list[AgentToolT] | None = None,
-    format: type[FormatT] | None = None,
+    format: type[FormattableT] | None = None,
     client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> AgentDecorator[..., AgentToolT, FormatT]:
+) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating a Google agent."""
     ...
 
@@ -133,10 +133,10 @@ def agent(
     provider: Literal["openai"],
     model_id: OpenAIModelId,
     tools: list[AgentToolT] | None = None,
-    format: type[FormatT] | None = None,
+    format: type[FormattableT] | None = None,
     client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> AgentDecorator[..., AgentToolT, FormatT]:
+) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an OpenAI agent."""
     ...
 
@@ -147,10 +147,10 @@ def agent(
     provider: Provider,
     model_id: ModelId,
     tools: list[AgentToolT] | None = None,
-    format: type[FormatT] | None = None,
+    format: type[FormattableT] | None = None,
     client: None = None,
     **params: Unpack[BaseParams],
-) -> AgentDecorator[..., AgentToolT, FormatT]:
+) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an agent using any registered model."""
     ...
 
@@ -160,10 +160,10 @@ def agent(
     provider: Provider,
     model_id: ModelId,
     tools: list[AgentToolT] | None = None,
-    format: type[FormatT] | None = None,
+    format: type[FormattableT] | None = None,
     client: BaseClient | None = None,
     **params: Unpack[BaseParams],
-) -> AgentDecorator[..., AgentToolT, FormatT]:
+) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an agent or structured agent.
 
     Args:

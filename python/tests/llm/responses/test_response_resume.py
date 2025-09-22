@@ -88,13 +88,13 @@ def test_response_resume_with_format(openai_client: llm.OpenAIClient) -> None:
         format=Book,
     )
 
-    book = response.format()
+    book = response.parse()
     assert book.model_dump() == snapshot(
         {"title": "The Fifth Season", "author": "N.K. Jemisin", "genre": "Fantasy"}
     )
 
     response = response.resume("Now recommend a sci-fi book by the same author")
-    book = response.format()
+    book = response.parse()
     assert book.model_dump() == snapshot(
         {
             "title": "The Broken Earth Trilogy",

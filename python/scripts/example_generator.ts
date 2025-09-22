@@ -90,7 +90,6 @@ ${this.main_function}${this.invoke_main}
   private get format_def(): string {
     if (!this.structured) return "";
     return `
-@llm.format
 class KeeperEntry(BaseModel):
     topic: str
     summary: str
@@ -266,7 +265,7 @@ ${indent}        ${stream_print}`;
                         ${
                           !this.structured
                             ? `print(chunk.delta, flush=True, end="")`
-                            : `print("[Partial]: ", response.format(partial=True), flush=True)`
+                            : `print("[Partial]: ", response.parse(partial=True), flush=True)`
                         }
         if not response.tool_calls:
             break
@@ -309,7 +308,7 @@ ${indent}        ${stream_print}`;
 
     if (this.structured) {
       result += `
-    entry: KeeperEntry = response.format()
+    entry: KeeperEntry = response.parse()
     print(entry)`;
     } else {
       result += `

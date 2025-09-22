@@ -14,33 +14,10 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "strict-or-tool",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -58,6 +35,27 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
+        "format": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+        },
         "tools": [],
     }
 )
@@ -67,33 +65,10 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "strict-or-tool",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -111,6 +86,27 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
+        "format": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+        },
         "tools": [],
     }
 )
@@ -122,10 +118,7 @@ stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -143,7 +136,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -161,10 +154,11 @@ Do NOT output any text in addition to the tool call.\
                 "title": "Book",
                 "type": "object",
             },
-            "mode": "strict-or-tool",
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
-        "n_chunks": 16,
+        "n_chunks": 18,
     }
 )
 async_stream_snapshot = snapshot(
@@ -175,10 +169,7 @@ async_stream_snapshot = snapshot(
         "messages": [
             SystemMessage(
                 content=Text(
-                    text="""\
-When you are ready to respond to the user, call the __mirascope_formatted_output_tool__ tool to output a structured response.
-Do NOT output any text in addition to the tool call.\
-"""
+                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                 )
             ),
             UserMessage(
@@ -196,7 +187,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -214,9 +205,10 @@ Do NOT output any text in addition to the tool call.\
                 "title": "Book",
                 "type": "object",
             },
-            "mode": "strict-or-tool",
+            "mode": "tool",
+            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
-        "n_chunks": 18,
+        "n_chunks": 14,
     }
 )

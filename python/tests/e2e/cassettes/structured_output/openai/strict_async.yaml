@@ -16,6 +16,8 @@ interactions:
       - '662'
       content-type:
       - application/json
+      cookie:
+      - _cfuvid=_Owix95mBjuGK3hMa0_yNc2JBy8tSuXeqem.RUtS.eA-1758333943447-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -43,18 +45,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFLLbtswELzrK4g924XtyparW9q4aQ5Nm6BA0ESBQFMriQ1FsuSqdWD4
-        3wvKD8l9AL0QBGdnOTO724gxkAWkDETNSTRWjd9dm5+Xxerlzeb+u1Cvy83t6vaBX6m3F/HVVxgF
-        hll/Q0FH1ithGquQpNF7WDjkhKHrNJkvF5NpEs87oDEFqkCrLI1jM55NZvF4shxPFgdibaRADyl7
-        jBhjbNudQaIucAMpm4yOLw16zyuE9FTEGDijwgtw76UnrglGPSiMJtSd6m0GJElhBmkGXz6s2M3F
-        xxX79J6F+/31zWUGowx4S7VxXc1nTk6KZ3ZnqC5b7zvccZK6yiBNdsN/HJat58GmbpUaAFxrQzzE
-        1Dl8OiC7kydlKuvM2v9GhVJq6evcIfdGB/2ejIUO3UWMPXXZtWdxgHWmsZSTecbuu+lsuu8H/bR6
-        dHYIFsgQVwNWfGSd9csLJC6VH6QPgosai57aj4q3hTQDIBq4/lPN33rvnUtd/U/7HhACLWGRW4eF
-        FOeO+zKHYZn/VXZKuRMMHt0PKTAniS5MosCSt2q/Z+BfPGGTl1JX6KyT+2UrbS7W5TRZzueLBKJd
-        9AsAAP//AwAkxB5RdQMAAA==
+        H4sIAAAAAAAAAwAAAP//jFLLbtswELzrK4g924Xl+gXdHCdFW7RpEaQoiigQaHIlMaFIglwVTQ3/
+        e0H5IbkPoBeC4OwsZ2Z3lzAGSkLGQNScROP0ePN+evdC/j79EuT8+ttPqteb1dV603xI5ROMIsNu
+        n1DQifVK2MZpJGXNARYeOWHsmi7nq8X89WK16IDGStSRVjkaz+x4OpnOxpPVeLI4EmurBAbI2EPC
+        GGO77owSjcQfkLHJ6PTSYAi8QsjORYyBtzq+AA9BBeKGYNSDwhpC06ne5UCKNOaQ5XD/9obdrj/e
+        sE9vWLx/fXd7ncMoB95SbX1X85mTV+KZ3VmqyzaEDveclKlyyJb74T8eyzbwaNO0Wg8AbowlHmPq
+        HD4ekf3Zk7aV83YbfqNCqYwKdeGRB2ui/kDWQYfuE8Yeu+zaizjAeds4Ksg+Y/ddOk0P/aCfVo9O
+        j8ECWeJ6wJqdWBf9ConElQ6D9EFwUaPsqf2oeCuVHQDJwPWfav7W++Bcmep/2veAEOgIZeE8SiUu
+        HfdlHuMy/6vsnHInGAL670pgQQp9nITEkrf6sGcQXgJhU5TKVOidV4dlK10htmW6XM3niyUk++QX
+        AAAA//8DAEUamCZ1AwAA
     headers:
       CF-RAY:
-      - 98374c8bff7d27b3-SEA
+      - 983c40a2d8557687-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -62,14 +64,14 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 04:29:06 GMT
+      - Tue, 23 Sep 2025 18:54:47 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=OimQeEix7Qq.jCdhln3.KabeaTxLDqP4KYXb9.ZdV64-1758601746-1.0.1.1-ZJBUraWxWj1EWqTUL1MNw2D.GySLXiNdLJ7V7Dxh_YnCRDI1l3RA61kPHOrcbAWEMmtHKLDisLWBWvOkd2vWlLKiVhdX1sPpVzR0EFP5MHY;
-        path=/; expires=Tue, 23-Sep-25 04:59:06 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=7rtRaWrLaIhRFsFq24zeyFZPPbQtV5qHP3dTv3SLuvE-1758653687-1.0.1.1-6QejFMB2z6BmqwQ9jfWem7hgs9RUh0FIfzG76aTTsbuKYaZmX20_0oFsdyiYCygvafzfx4wZ9VtS87XcqFYgcJ.CXjBrgIczMF0eBN7wZPI;
+        path=/; expires=Tue, 23-Sep-25 19:24:47 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=ohMaas8znjzx3TprZ5MGrRVHJiDJbcSjHY15UMXVT5o-1758601746647-0.0.1.1-604800000;
+      - _cfuvid=S4IEJ6KxPNl0NBgjmE_ekIwmg1kCuCTkEWCEsDMqN5Y-1758653687284-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -86,13 +88,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1258'
+      - '846'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1292'
+      - '984'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -108,7 +110,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 1ms
       x-request-id:
-      - req_439672b807dc4912a9c43d63e6bee8c1
+      - req_d6efe1a75b74435a95ea823e9ddf403e
     status:
       code: 200
       message: OK

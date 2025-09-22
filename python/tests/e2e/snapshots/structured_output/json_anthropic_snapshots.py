@@ -14,31 +14,11 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
                     text="""\
-Respond with valid JSON that matches this exact schema:
+Respond only with valid JSON that matches this exact schema:
 {
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
@@ -63,9 +43,7 @@ Respond with valid JSON that matches this exact schema:
   ],
   "title": "Book",
   "type": "object"
-}
-
-Respond ONLY with valid JSON, and no other text.\
+}\
 """
                 )
             ),
@@ -80,16 +58,66 @@ Respond ONLY with valid JSON, and no other text.\
                 content=[
                     Text(
                         text="""\
+```json
 {
   "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
-}\
+}
+```\
 """
                     )
                 ]
             ),
         ],
+        "format": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+""",
+        },
         "tools": [],
     }
 )
@@ -99,31 +127,11 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
                     text="""\
-Respond with valid JSON that matches this exact schema:
+Respond only with valid JSON that matches this exact schema:
 {
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
@@ -148,9 +156,7 @@ Respond with valid JSON that matches this exact schema:
   ],
   "title": "Book",
   "type": "object"
-}
-
-Respond ONLY with valid JSON, and no other text.\
+}\
 """
                 )
             ),
@@ -165,16 +171,66 @@ Respond ONLY with valid JSON, and no other text.\
                 content=[
                     Text(
                         text="""\
+```json
 {
   "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
-}\
+}
+```\
 """
                     )
                 ]
             ),
         ],
+        "format": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+""",
+        },
         "tools": [],
     }
 )
@@ -187,7 +243,7 @@ stream_snapshot = snapshot(
             SystemMessage(
                 content=Text(
                     text="""\
-Respond with valid JSON that matches this exact schema:
+Respond only with valid JSON that matches this exact schema:
 {
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
@@ -212,9 +268,7 @@ Respond with valid JSON that matches this exact schema:
   ],
   "title": "Book",
   "type": "object"
-}
-
-Respond ONLY with valid JSON, and no other text.\
+}\
 """
                 )
             ),
@@ -229,17 +283,19 @@ Respond ONLY with valid JSON, and no other text.\
                 content=[
                     Text(
                         text="""\
+```json
 {
   "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
-}\
+}
+```\
 """
                     )
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -258,6 +314,34 @@ Respond ONLY with valid JSON, and no other text.\
                 "type": "object",
             },
             "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+""",
         },
         "tools": [],
         "n_chunks": 6,
@@ -272,7 +356,7 @@ async_stream_snapshot = snapshot(
             SystemMessage(
                 content=Text(
                     text="""\
-Respond with valid JSON that matches this exact schema:
+Respond only with valid JSON that matches this exact schema:
 {
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
@@ -297,9 +381,7 @@ Respond with valid JSON that matches this exact schema:
   ],
   "title": "Book",
   "type": "object"
-}
-
-Respond ONLY with valid JSON, and no other text.\
+}\
 """
                 )
             ),
@@ -314,17 +396,19 @@ Respond ONLY with valid JSON, and no other text.\
                 content=[
                     Text(
                         text="""\
+```json
 {
   "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
-}\
+}
+```\
 """
                     )
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
@@ -343,6 +427,34 @@ Respond ONLY with valid JSON, and no other text.\
                 "type": "object",
             },
             "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+""",
         },
         "tools": [],
         "n_chunks": 6,

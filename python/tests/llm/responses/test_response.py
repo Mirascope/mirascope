@@ -240,9 +240,8 @@ Finally, the third part.\
 
 
 def test_response_format_success() -> None:
-    """Test that Response.format() successfully parses valid JSON to BaseModel."""
+    """Test that response.parse() successfully parses valid JSON to BaseModel."""
 
-    @llm.format()
     class Book(BaseModel):
         title: str
         author: str
@@ -261,10 +260,10 @@ def test_response_format_success() -> None:
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        format_type=Book,
+        format=llm.format(Book, mode="tool"),
     )
 
-    book = response.format()
+    book = response.parse()
     assert isinstance(book, Book)
     assert book.title == "The Hobbit"
     assert book.author == "J.R.R. Tolkien"
@@ -272,9 +271,8 @@ def test_response_format_success() -> None:
 
 
 def test_response_format_invalid_json() -> None:
-    """Test that Response.format() raises ValueError for invalid JSON."""
+    """Test that response.parse() raises ValueError for invalid JSON."""
 
-    @llm.format()
     class Book(BaseModel):
         title: str
         author: str
@@ -294,17 +292,16 @@ def test_response_format_invalid_json() -> None:
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        format_type=Book,
+        format=llm.format(Book, mode="tool"),
     )
 
     with pytest.raises(ValueError):
-        response.format()
+        response.parse()
 
 
 def test_response_format_validation_error() -> None:
-    """Test that Response.format() raises ValueError for JSON that doesn't match schema."""
+    """Test that response.parse() raises ValueError for JSON that doesn't match schema."""
 
-    @llm.format()
     class Book(BaseModel):
         title: str
         author: str
@@ -325,15 +322,15 @@ def test_response_format_validation_error() -> None:
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        format_type=Book,
+        format=llm.format(Book, mode="tool"),
     )
 
     with pytest.raises(pydantic.ValidationError):
-        response.format()
+        response.parse()
 
 
 def test_response_format_no_format_type() -> None:
-    """Test that Response.format() raises ValueError when no format type is specified."""
+    """Test that response.parse() raises ValueError when no format type is specified."""
 
     text_content = [llm.Text(text='{"title": "The Hobbit"}')]
     assistant_message = llm.messages.assistant(text_content)
@@ -350,13 +347,12 @@ def test_response_format_no_format_type() -> None:
         finish_reason=llm.FinishReason.END_TURN,
     )
 
-    assert response.format() is None
+    assert response.parse() is None
 
 
 def test_response_format_with_text_before_and_after_json() -> None:
-    """Test that Response.format() extracts JSON when there's text before and after it."""
+    """Test that response.parse() extracts JSON when there's text before and after it."""
 
-    @llm.format()
     class Book(BaseModel):
         title: str
         author: str
@@ -376,10 +372,10 @@ def test_response_format_with_text_before_and_after_json() -> None:
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        format_type=Book,
+        format=llm.format(Book, mode="tool"),
     )
 
-    book = response.format()
+    book = response.parse()
     assert isinstance(book, Book)
     assert book.title == "The Hobbit"
     assert book.author == "J.R.R. Tolkien"
@@ -387,9 +383,8 @@ def test_response_format_with_text_before_and_after_json() -> None:
 
 
 def test_response_format_with_json_code_block() -> None:
-    """Test that Response.format() extracts JSON from markdown code blocks."""
+    """Test that response.parse() extracts JSON from markdown code blocks."""
 
-    @llm.format()
     class Book(BaseModel):
         title: str
         author: str
@@ -415,10 +410,10 @@ Let me know if you need anything else!"""
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        format_type=Book,
+        format=llm.format(Book, mode="tool"),
     )
 
-    book = response.format()
+    book = response.parse()
     assert isinstance(book, Book)
     assert book.title == "The Hobbit"
     assert book.author == "J.R.R. Tolkien"
@@ -426,14 +421,12 @@ Let me know if you need anything else!"""
 
 
 def test_response_format_with_nested_json() -> None:
-    """Test that Response.format() handles nested JSON objects with extra text."""
+    """Test that response.parse() handles nested JSON objects with extra text."""
 
-    @llm.format()
     class Author(BaseModel):
         name: str
         birth_year: int
 
-    @llm.format()
     class Book(BaseModel):
         title: str
         author: Author
@@ -457,10 +450,10 @@ This includes the author information as a nested object."""
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        format_type=Book,
+        format=llm.format(Book, mode="tool"),
     )
 
-    book = response.format()
+    book = response.parse()
     assert isinstance(book, Book)
     assert book.title == "The Hobbit"
     assert book.author.name == "J.R.R. Tolkien"
@@ -469,9 +462,8 @@ This includes the author information as a nested object."""
 
 
 def test_response_format_with_multiple_json_objects() -> None:
-    """Test that Response.format() extracts the first json object if multiple are present."""
+    """Test that response.parse() extracts the first json object if multiple are present."""
 
-    @llm.format()
     class Book(BaseModel):
         title: str
         author: str
@@ -492,10 +484,10 @@ def test_response_format_with_multiple_json_objects() -> None:
         input_messages=[],
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.END_TURN,
-        format_type=Book,
+        format=llm.format(Book, mode="tool"),
     )
 
-    book = response.format()
+    book = response.parse()
     assert isinstance(book, Book)
     assert book.title == "The Name of the Wind"
     assert book.author == "Patrick Rothfuss"

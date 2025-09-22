@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Generic, overload
 
 from ..content import ToolOutput
 from ..context import Context, DepsT
-from ..formatting import FormatT
+from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent, user
 from ..tools import (
     AsyncContextTool,
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from ..clients import BaseParams, ModelId, Provider
 
 
-class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
+class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
     """A `StreamResponse` wraps response content from the LLM with a streaming interface.
 
     This class supports iteration to process chunks as they arrive from the model.
@@ -97,7 +97,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
         model_id: "ModelId",
         params: "BaseParams | None",
         tools: Sequence[Tool] | None = None,
-        format_type: type[FormatT] | None = None,
+        format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIterator,
     ) -> None:
@@ -107,7 +107,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
             model_id=model_id,
             params=params,
             toolkit=Toolkit(tools=tools),
-            format_type=format_type,
+            format=format,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
         )
@@ -129,12 +129,12 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
 
     @overload
     def resume(
-        self: "StreamResponse[FormatT]", content: UserContent
-    ) -> "StreamResponse[FormatT]": ...
+        self: "StreamResponse[FormattableT]", content: UserContent
+    ) -> "StreamResponse[FormattableT]": ...
 
     def resume(
         self, content: UserContent
-    ) -> "StreamResponse | StreamResponse[FormatT]":
+    ) -> "StreamResponse | StreamResponse[FormattableT]":
         """Generate a new `StreamResponse` using this response's messages with additional user content.
 
         Uses this response's tools and format type. Also uses this response's provider,
@@ -149,11 +149,11 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormatT]):
         """
         messages = self.messages + [user(content)]
         return self.model.stream(
-            messages=messages, tools=self.toolkit.tools, format=self.format_type
+            messages=messages, tools=self.toolkit.tools, format=self.format
         )
 
 
-class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
+class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
     """An `AsyncStreamResponse` wraps response content from the LLM with a streaming interface.
 
     This class supports iteration to process chunks as they arrive from the model.
@@ -221,7 +221,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
         model_id: "ModelId",
         params: "BaseParams | None",
         tools: Sequence[AsyncTool] | None = None,
-        format_type: type[FormatT] | None = None,
+        format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: AsyncChunkIterator,
     ) -> None:
@@ -231,7 +231,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
             model_id=model_id,
             params=params,
             toolkit=AsyncToolkit(tools=tools),
-            format_type=format_type,
+            format=format,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
         )
@@ -256,12 +256,12 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
 
     @overload
     async def resume(
-        self: "AsyncStreamResponse[FormatT]", content: UserContent
-    ) -> "AsyncStreamResponse[FormatT]": ...
+        self: "AsyncStreamResponse[FormattableT]", content: UserContent
+    ) -> "AsyncStreamResponse[FormattableT]": ...
 
     async def resume(
         self, content: UserContent
-    ) -> "AsyncStreamResponse | AsyncStreamResponse[FormatT]":
+    ) -> "AsyncStreamResponse | AsyncStreamResponse[FormattableT]":
         """Generate a new `AsyncStreamResponse` using this response's messages with additional user content.
 
         Uses this response's tools and format type. Also uses this response's provider,
@@ -276,12 +276,14 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormatT]):
         """
         messages = self.messages + [user(content)]
         return await self.model.stream_async(
-            messages=messages, tools=self.toolkit.tools, format=self.format_type
+            messages=messages,
+            tools=self.toolkit.tools,
+            format=self.format,
         )
 
 
 class ContextStreamResponse(
-    BaseSyncStreamResponse[ContextToolkit, FormatT], Generic[DepsT, FormatT]
+    BaseSyncStreamResponse[ContextToolkit, FormattableT], Generic[DepsT, FormattableT]
 ):
     """A `ContextStreamResponse` wraps response content from the LLM with a streaming interface.
 
@@ -351,7 +353,7 @@ class ContextStreamResponse(
         model_id: "ModelId",
         params: "BaseParams | None",
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
-        format_type: type[FormatT] | None = None,
+        format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIterator,
     ) -> None:
@@ -361,7 +363,7 @@ class ContextStreamResponse(
             model_id=model_id,
             params=params,
             toolkit=ContextToolkit(tools=tools),
-            format_type=format_type,
+            format=format,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
         )
@@ -388,14 +390,14 @@ class ContextStreamResponse(
 
     @overload
     def resume(
-        self: "ContextStreamResponse[DepsT, FormatT]",
+        self: "ContextStreamResponse[DepsT, FormattableT]",
         ctx: Context[DepsT],
         content: UserContent,
-    ) -> "ContextStreamResponse[DepsT, FormatT]": ...
+    ) -> "ContextStreamResponse[DepsT, FormattableT]": ...
 
     def resume(
         self, ctx: Context[DepsT], content: UserContent
-    ) -> "ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormatT]":
+    ) -> "ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]":
         """Generate a new `ContextStreamResponse` using this response's messages with additional user content.
 
         Uses this response's tools and format type. Also uses this response's provider,
@@ -414,12 +416,13 @@ class ContextStreamResponse(
             ctx=ctx,
             messages=messages,
             tools=self.toolkit.tools,
-            format=self.format_type,
+            format=self.format,
         )
 
 
 class AsyncContextStreamResponse(
-    BaseAsyncStreamResponse[AsyncContextToolkit, FormatT], Generic[DepsT, FormatT]
+    BaseAsyncStreamResponse[AsyncContextToolkit, FormattableT],
+    Generic[DepsT, FormattableT],
 ):
     """An `AsyncContextStreamResponse` wraps response content from the LLM with a streaming interface.
 
@@ -489,7 +492,7 @@ class AsyncContextStreamResponse(
         model_id: "ModelId",
         params: "BaseParams | None",
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
-        format_type: type[FormatT] | None = None,
+        format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: AsyncChunkIterator,
     ) -> None:
@@ -499,7 +502,7 @@ class AsyncContextStreamResponse(
             model_id=model_id,
             params=params,
             toolkit=AsyncContextToolkit(tools=tools),
-            format_type=format_type,
+            format=format,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
         )
@@ -529,16 +532,14 @@ class AsyncContextStreamResponse(
 
     @overload
     async def resume(
-        self: "AsyncContextStreamResponse[DepsT, FormatT]",
+        self: "AsyncContextStreamResponse[DepsT, FormattableT]",
         ctx: Context[DepsT],
         content: UserContent,
-    ) -> "AsyncContextStreamResponse[DepsT, FormatT]": ...
+    ) -> "AsyncContextStreamResponse[DepsT, FormattableT]": ...
 
     async def resume(
         self, ctx: Context[DepsT], content: UserContent
-    ) -> (
-        "AsyncContextStreamResponse[DepsT] | AsyncContextStreamResponse[DepsT, FormatT]"
-    ):
+    ) -> "AsyncContextStreamResponse[DepsT] | AsyncContextStreamResponse[DepsT, FormattableT]":
         """Generate a new `AsyncContextStreamResponse` using this response's messages with additional user content.
 
         Uses this response's tools and format type. Also uses this response's provider,
@@ -557,5 +558,5 @@ class AsyncContextStreamResponse(
             ctx=ctx,
             messages=messages,
             tools=self.toolkit.tools,
-            format=self.format_type,
+            format=self.format,
         )

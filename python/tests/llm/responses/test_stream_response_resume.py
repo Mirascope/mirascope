@@ -96,7 +96,7 @@ def test_stream_response_resume_with_format(openai_client: llm.OpenAIClient) -> 
     )
     list(stream_response.chunk_stream())
 
-    book = stream_response.format()
+    book = stream_response.parse()
     assert book.model_dump() == snapshot(
         {"title": "The Fifth Season", "author": "N.K. Jemisin", "genre": "Fantasy"}
     )
@@ -104,7 +104,7 @@ def test_stream_response_resume_with_format(openai_client: llm.OpenAIClient) -> 
     resumed = stream_response.resume("Now recommend a sci-fi book by the same author")
     list(resumed.chunk_stream())
 
-    resumed_book = resumed.format()
+    resumed_book = resumed.parse()
     assert resumed_book.model_dump() == snapshot(
         {
             "title": "The City We Became",

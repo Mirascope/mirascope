@@ -21,11 +21,7 @@ from ...content import (
     ToolCallStartChunk,
 )
 from ...exceptions import FeatureNotSupportedError
-from ...formatting import (
-    FormatInfo,
-    FormatT,
-    _utils as _formatting_utils,
-)
+from ...formatting import Format, FormattableT, resolve_format
 from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import (
     AsyncChunkIterator,
@@ -187,10 +183,13 @@ def prepare_google_request(
     model_id: GoogleModelId,
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | None = None,
-    format: type[FormatT] | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
     params: GoogleParams | None = None,
 ) -> tuple[
-    Sequence[Message], genai_types.ContentListUnionDict, GenerateContentConfig | None
+    Sequence[Message],
+    Format[FormattableT] | None,
+    genai_types.ContentListUnionDict,
+    GenerateContentConfig | None,
 ]:
     if params:
         raise NotImplementedError("param use not yet supported")
@@ -198,29 +197,25 @@ def prepare_google_request(
     config_params = {}
     google_tools: list[genai_types.Tool] = []
 
-    if format:
-        resolved_format = _formatting_utils.resolve_formattable(
-            format,
-            # Google does not support strict outputs when tools are present
-            # (Gemini 2.5 will error, 2.0 and below will ignore tools)
-            model_supports_strict_mode=not tools,
-            model_has_native_json_support=True,
-        )
-
-        if resolved_format.mode in ("strict", "json") and tools:
+    format = resolve_format(
+        format,
+        # Google does not support strict outputs when tools are present
+        # (Gemini 2.5 will error, 2.0 and below will ignore tools)
+        default_mode="strict" if not tools else "tool",
+    )
+    if format is not None:
+        if format.mode in ("strict", "json") and tools:
             raise FeatureNotSupportedError(
-                feature=f"formatting_mode:{resolved_format.mode} with tools",
+                feature=f"formatting_mode:{format.mode} with tools",
                 provider="google",
                 model_id=model_id,
             )
 
-        if resolved_format.mode == "strict":
+        if format.mode == "strict":
             config_params["response_mime_type"] = "application/json"
-            config_params["response_schema"] = _convert_format_info_to_schema(
-                resolved_format.info
-            )
-        elif resolved_format.mode == "tool":
-            format_tool = create_format_tool_declaration(resolved_format.info)
+            config_params["response_schema"] = format.schema.copy()
+        elif format.mode == "tool":
+            format_tool = create_format_tool_declaration(format)
             google_tools.append(genai_types.Tool(function_declarations=[format_tool]))
             function_calling_config: genai_types.FunctionCallingConfigDict = {
                 "mode": genai_types.FunctionCallingConfigMode.ANY
@@ -231,12 +226,12 @@ def prepare_google_request(
             config_params["tool_config"] = {
                 "function_calling_config": function_calling_config
             }
-        elif resolved_format.mode == "json":
+        elif format.mode == "json":
             config_params["response_mime_type"] = "application/json"
 
-        if resolved_format.formatting_instructions:
+        if format.formatting_instructions:
             messages = _base_utils.add_system_instructions(
-                messages, resolved_format.formatting_instructions
+                messages, format.formatting_instructions
             )
 
     if tools:
@@ -259,7 +254,7 @@ def prepare_google_request(
 
     config = GenerateContentConfig(**config_params) if config_params else None
 
-    return messages, _encode_messages(remaining_messages), config
+    return messages, format, _encode_messages(remaining_messages), config
 
 
 def decode_response(
@@ -374,31 +369,27 @@ async def convert_google_stream_to_async_chunk_iterator(
             yield item
 
 
-def _convert_format_info_to_schema(format_info: FormatInfo) -> dict:
-    """Convert a Mirascope FormatInfo to Google's response schema format."""
-    schema = format_info.schema.copy()
-    return schema
-
-
 def create_format_tool_declaration(
-    format_info: FormatInfo,
+    format: Format[FormattableT],
 ) -> genai_types.FunctionDeclaration:
-    """Create Google FunctionDeclaration for format parsing from a Mirascope FormatInfo.
+    """Create Google FunctionDeclaration for format parsing from a Mirascope Format.
 
     Args:
-        format_info: The FormatInfo instance containing schema and metadata
+        format: The Format instance containing schema and metadata
 
     Returns:
         Google FunctionDeclaration for the format tool
     """
-    schema_dict = format_info.schema.copy()
+    schema_dict = format.schema.copy()
     schema_dict["type"] = "object"
     if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
         schema_dict["required"] = list(schema_dict["properties"].keys())
 
-    description = f"Use this tool to extract data in {format_info.name} format for a final response."
-    if format_info.description:
-        description += "\n" + format_info.description
+    description = (
+        f"Use this tool to extract data in {format.name} format for a final response."
+    )
+    if format.description:
+        description += "\n" + format.description
 
     return genai_types.FunctionDeclaration(
         name=FORMAT_TOOL_NAME,

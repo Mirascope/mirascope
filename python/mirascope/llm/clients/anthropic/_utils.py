@@ -22,9 +22,9 @@ from ...content import (
 )
 from ...exceptions import FormattingModeNotSupportedError
 from ...formatting import (
-    FormatInfo,
-    FormatT,
-    _utils as _formatting_utils,
+    Format,
+    FormattableT,
+    resolve_format,
 )
 from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import (
@@ -148,9 +148,9 @@ def prepare_anthropic_request(
     model_id: AnthropicModelId,
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | None = None,
-    format: type[FormatT] | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
     params: AnthropicParams | None = None,
-) -> tuple[Sequence[Message], MessageCreateKwargs]:
+) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     if params:
         raise NotImplementedError("param use not yet supported")
 
@@ -162,19 +162,14 @@ def prepare_anthropic_request(
     anthropic_tools: list[anthropic_types.ToolParam] | NotGiven = (
         [_convert_tool_to_tool_param(tool) for tool in tools] if tools else []
     )
-
-    if format:
-        resolved_format = _formatting_utils.resolve_formattable(
-            format,
-            model_supports_strict_mode=False,
-            model_has_native_json_support=False,
-        )
-        if resolved_format.mode == "strict":
+    format = resolve_format(format, default_mode="tool")
+    if format is not None:
+        if format.mode == "strict":
             raise FormattingModeNotSupportedError(
                 formatting_mode="strict", provider="anthropic", model_id=model_id
             )
-        elif resolved_format.mode == "tool":
-            anthropic_tools.append(create_format_tool_param(resolved_format.info))
+        elif format.mode == "tool":
+            anthropic_tools.append(create_format_tool_param(format))
             if tools:
                 kwargs["tool_choice"] = {"type": "any"}
             else:
@@ -184,9 +179,9 @@ def prepare_anthropic_request(
                     "disable_parallel_tool_use": True,
                 }
 
-        if resolved_format.formatting_instructions:
+        if format.formatting_instructions:
             messages = _base_utils.add_system_instructions(
-                messages, resolved_format.formatting_instructions
+                messages, format.formatting_instructions
             )
 
     if anthropic_tools:
@@ -200,7 +195,7 @@ def prepare_anthropic_request(
     if system_message_content:
         kwargs["system"] = system_message_content
 
-    return messages, kwargs
+    return messages, format, kwargs
 
 
 def decode_response(
@@ -293,25 +288,27 @@ async def convert_anthropic_stream_to_async_chunk_iterator(
 
 
 def create_format_tool_param(
-    format_info: FormatInfo,
+    format: Format[FormattableT],
 ) -> anthropic_types.ToolParam:
-    """Create Anthropic ToolParam for format parsing from a Mirascope FormatInfo.
+    """Create Anthropic `ToolParam` for format parsing from a Mirascope `Format`.
 
     Args:
-        format_info: The FormatInfo instance containing schema and metadata
+        format: The `Format` instance containing schema and metadata
 
     Returns:
-        Anthropic ToolParam for the format tool
+        Anthropic `ToolParam` for the format tool
     """
-    schema_dict = format_info.schema.copy()
+    schema_dict = format.schema.copy()
     schema_dict["type"] = "object"
 
     if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
         schema_dict["required"] = list(schema_dict["properties"].keys())
 
-    description = f"Use this tool to extract data in {format_info.name} format for a final response."
-    if format_info.description:
-        description += "\n" + format_info.description
+    description = (
+        f"Use this tool to extract data in {format.name} format for a final response."
+    )
+    if format.description:
+        description += "\n" + format.description
 
     return anthropic_types.ToolParam(
         name=FORMAT_TOOL_NAME,

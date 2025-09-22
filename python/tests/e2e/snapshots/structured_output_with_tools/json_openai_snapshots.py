@@ -16,30 +16,11 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
                     text="""\
-Respond with valid JSON that matches this exact schema:
+Respond only with valid JSON that matches this exact schema:
 {
   "properties": {
     "title": {
@@ -81,7 +62,7 @@ Respond with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_6vtJ8XPOzFGksXvHHkY28jM8",
+                        id="call_GtXudA5AwpvfbB4JxDqcabNO",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -90,7 +71,7 @@ Respond with valid JSON that matches this exact schema:
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_6vtJ8XPOzFGksXvHHkY28jM8",
+                        id="call_GtXudA5AwpvfbB4JxDqcabNO",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -111,6 +92,56 @@ Respond with valid JSON that matches this exact schema:
                 ]
             ),
         ],
+        "format": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+""",
+        },
         "tools": [
             {
                 "name": "get_book_info",
@@ -141,30 +172,11 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-        },
         "messages": [
             SystemMessage(
                 content=Text(
                     text="""\
-Respond with valid JSON that matches this exact schema:
+Respond only with valid JSON that matches this exact schema:
 {
   "properties": {
     "title": {
@@ -206,7 +218,7 @@ Respond with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_BSzPYr5QbNzViKY4epJPUdTp",
+                        id="call_N1EC4rbwD2Sb9jwPCqwu3nnM",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -215,7 +227,7 @@ Respond with valid JSON that matches this exact schema:
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_BSzPYr5QbNzViKY4epJPUdTp",
+                        id="call_N1EC4rbwD2Sb9jwPCqwu3nnM",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -236,6 +248,56 @@ Respond with valid JSON that matches this exact schema:
                 ]
             ),
         ],
+        "format": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+""",
+        },
         "tools": [
             {
                 "name": "get_book_info",
@@ -269,7 +331,7 @@ stream_snapshot = snapshot(
             SystemMessage(
                 content=Text(
                     text="""\
-Respond with valid JSON that matches this exact schema:
+Respond only with valid JSON that matches this exact schema:
 {
   "properties": {
     "title": {
@@ -311,7 +373,7 @@ Respond with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_vpqEpwjkBXgYqb3xaJeISWZU",
+                        id="call_xu4jyMWyA8g6fO7LcvqQNFVZ",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -320,7 +382,7 @@ Respond with valid JSON that matches this exact schema:
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_vpqEpwjkBXgYqb3xaJeISWZU",
+                        id="call_xu4jyMWyA8g6fO7LcvqQNFVZ",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -329,19 +391,12 @@ Respond with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     Text(
-                        text="""\
-{
-  "title": "Mistborn: The Final Empire",
-  "author": "Brandon Sanderson",
-  "pages": 544,
-  "publication_year": 2006
-}\
-"""
+                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "BookSummary",
             "description": None,
             "schema": {
@@ -359,6 +414,37 @@ Respond with valid JSON that matches this exact schema:
                 "type": "object",
             },
             "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+""",
         },
         "tools": [
             {
@@ -382,7 +468,7 @@ Respond with valid JSON that matches this exact schema:
                 "strict": False,
             }
         ],
-        "n_chunks": 43,
+        "n_chunks": 30,
     }
 )
 async_stream_snapshot = snapshot(
@@ -394,7 +480,7 @@ async_stream_snapshot = snapshot(
             SystemMessage(
                 content=Text(
                     text="""\
-Respond with valid JSON that matches this exact schema:
+Respond only with valid JSON that matches this exact schema:
 {
   "properties": {
     "title": {
@@ -436,7 +522,7 @@ Respond with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_9sZHuj1n8YthWu86ycXpqvla",
+                        id="call_vgS8SVlJ6JJ2hEgrp3dx6oP6",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -445,7 +531,7 @@ Respond with valid JSON that matches this exact schema:
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_9sZHuj1n8YthWu86ycXpqvla",
+                        id="call_vgS8SVlJ6JJ2hEgrp3dx6oP6",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -454,19 +540,12 @@ Respond with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     Text(
-                        text="""\
-{
-  "title": "Mistborn: The Final Empire",
-  "author": "Brandon Sanderson",
-  "pages": 544,
-  "publication_year": 2006
-}\
-"""
+                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
                 ]
             ),
         ],
-        "format_type": {
+        "format": {
             "name": "BookSummary",
             "description": None,
             "schema": {
@@ -484,6 +563,37 @@ Respond with valid JSON that matches this exact schema:
                 "type": "object",
             },
             "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+""",
         },
         "tools": [
             {
@@ -507,6 +617,6 @@ Respond with valid JSON that matches this exact schema:
                 "strict": False,
             }
         ],
-        "n_chunks": 43,
+        "n_chunks": 30,
     }
 )

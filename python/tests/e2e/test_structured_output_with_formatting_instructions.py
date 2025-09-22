@@ -40,11 +40,11 @@ def test_structured_output_with_formatting_instructions_sync(
             lucky number 7.
             """)
 
-    @llm.call(
-        provider=provider,
-        model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
+
+    @llm.call(provider=provider, model_id=model_id, format=format)
     def recommend_book(book: str) -> list[llm.Message]:
         return [
             llm.messages.system(f"Always recommend {book}."),
@@ -55,7 +55,7 @@ def test_structured_output_with_formatting_instructions_sync(
         response = recommend_book("The Name of the Wind")
         assert response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -87,11 +87,11 @@ def test_structured_output_with_formatting_instructions_sync_context(
             lucky number 7.
             """)
 
-    @llm.call(
-        provider=provider,
-        model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
+
+    @llm.call(provider=provider, model_id=model_id, format=format)
     def recommend_book(ctx: llm.Context[str]) -> list[llm.Message]:
         return [
             llm.messages.system(f"Always recommend {ctx.deps}."),
@@ -103,7 +103,7 @@ def test_structured_output_with_formatting_instructions_sync_context(
         response = recommend_book(ctx)
         assert response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -139,11 +139,11 @@ async def test_structured_output_with_formatting_instructions_async(
             lucky number 7.
             """)
 
-    @llm.call(
-        provider=provider,
-        model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
+
+    @llm.call(provider=provider, model_id=model_id, format=format)
     async def recommend_book(book: str) -> list[llm.Message]:
         return [
             llm.messages.system(f"Always recommend {book}."),
@@ -154,7 +154,7 @@ async def test_structured_output_with_formatting_instructions_async(
         response = await recommend_book("The Name of the Wind")
         assert response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -187,11 +187,11 @@ async def test_structured_output_with_formatting_instructions_async_context(
             lucky number 7.
             """)
 
-    @llm.call(
-        provider=provider,
-        model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
+
+    @llm.call(provider=provider, model_id=model_id, format=format)
     async def recommend_book(ctx: llm.Context[str]) -> list[llm.Message]:
         return [
             llm.messages.system(f"Always recommend {ctx.deps}."),
@@ -203,7 +203,7 @@ async def test_structured_output_with_formatting_instructions_async_context(
         response = await recommend_book(ctx)
         assert response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -238,11 +238,11 @@ def test_structured_output_with_formatting_instructions_stream(
             lucky number 7.
             """)
 
-    @llm.call(
-        provider=provider,
-        model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
+
+    @llm.call(provider=provider, model_id=model_id, format=format)
     def recommend_book(book: str) -> list[llm.Message]:
         return [
             llm.messages.system(f"Always recommend {book}."),
@@ -256,7 +256,7 @@ def test_structured_output_with_formatting_instructions_stream(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -288,11 +288,11 @@ def test_structured_output_with_formatting_instructions_stream_context(
             lucky number 7.
             """)
 
-    @llm.call(
-        provider=provider,
-        model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
+
+    @llm.call(provider=provider, model_id=model_id, format=format)
     def recommend_book(ctx: llm.Context[str]) -> list[llm.Message]:
         return [
             llm.messages.system(f"Always recommend {ctx.deps}."),
@@ -307,7 +307,7 @@ def test_structured_output_with_formatting_instructions_stream_context(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -343,11 +343,11 @@ async def test_structured_output_with_formatting_instructions_async_stream(
             lucky number 7.
             """)
 
-    @llm.call(
-        provider=provider,
-        model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
+
+    @llm.call(provider=provider, model_id=model_id, format=format)
     async def recommend_book(book: str) -> list[llm.Message]:
         return [
             llm.messages.system(f"Always recommend {book}."),
@@ -361,7 +361,7 @@ async def test_structured_output_with_formatting_instructions_async_stream(
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
@@ -394,11 +394,11 @@ async def test_structured_output_with_formatting_instructions_async_stream_conte
             lucky number 7.
             """)
 
-    @llm.call(
-        provider=provider,
-        model_id=model_id,
-        format=llm.format(Book, mode=formatting_mode),
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
+
+    @llm.call(provider=provider, model_id=model_id, format=format)
     async def recommend_book(ctx: llm.Context[str]) -> list[llm.Message]:
         return [
             llm.messages.system(f"Always recommend {ctx.deps}."),
@@ -413,7 +413,7 @@ async def test_structured_output_with_formatting_instructions_async_stream_conte
 
         assert stream_response_snapshot_dict(response) == snapshot
 
-        book = response.format()
+        book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
