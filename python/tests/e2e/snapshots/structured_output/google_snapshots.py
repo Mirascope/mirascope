@@ -13,6 +13,26 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "strict-or-tool",
+        },
         "messages": [
             UserMessage(
                 content=[
@@ -29,6 +49,15 @@ sync_snapshot = snapshot(
                 ]
             ),
         ],
+        "tools": [],
+    }
+)
+async_snapshot = snapshot(
+    {
+        "provider": "google",
+        "model_id": "gemini-2.5-flash",
+        "params": {},
+        "finish_reason": FinishReason.END_TURN,
         "format_type": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
@@ -49,14 +78,6 @@ sync_snapshot = snapshot(
             },
             "mode": "strict-or-tool",
         },
-    }
-)
-async_snapshot = snapshot(
-    {
-        "provider": "google",
-        "model_id": "gemini-2.5-flash",
-        "params": {},
-        "finish_reason": FinishReason.END_TURN,
         "messages": [
             UserMessage(
                 content=[
@@ -73,26 +94,7 @@ async_snapshot = snapshot(
                 ]
             ),
         ],
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "strict-or-tool",
-        },
+        "tools": [],
     }
 )
 stream_snapshot = snapshot(
@@ -136,6 +138,7 @@ stream_snapshot = snapshot(
             },
             "mode": "strict-or-tool",
         },
+        "tools": [],
         "n_chunks": 3,
     }
 )
@@ -186,6 +189,7 @@ async_stream_snapshot = snapshot(
             },
             "mode": "strict-or-tool",
         },
+        "tools": [],
         "n_chunks": 3,
     }
 )

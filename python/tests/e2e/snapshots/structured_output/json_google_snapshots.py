@@ -14,6 +14,26 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -68,26 +88,7 @@ Respond with valid JSON that matches this exact schema:
                 ]
             ),
         ],
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-        },
+        "tools": [],
     }
 )
 async_snapshot = snapshot(
@@ -96,6 +97,26 @@ async_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -150,26 +171,7 @@ Respond with valid JSON that matches this exact schema:
                 ]
             ),
         ],
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-        },
+        "tools": [],
     }
 )
 stream_snapshot = snapshot(
@@ -251,6 +253,7 @@ Respond with valid JSON that matches this exact schema:
             },
             "mode": "json",
         },
+        "tools": [],
         "n_chunks": 3,
     }
 )
@@ -333,6 +336,7 @@ Respond with valid JSON that matches this exact schema:
             },
             "mode": "json",
         },
+        "tools": [],
         "n_chunks": 3,
     }
 )

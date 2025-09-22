@@ -14,6 +14,26 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "strict-or-tool",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -38,26 +58,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "strict-or-tool",
-        },
+        "tools": [],
     }
 )
 async_snapshot = snapshot(
@@ -66,6 +67,26 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "Book",
+            "description": "A book with a rating. The title should be in all caps!",
+            "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "strict-or-tool",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -90,26 +111,7 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "strict-or-tool",
-        },
+        "tools": [],
     }
 )
 stream_snapshot = snapshot(
@@ -161,6 +163,7 @@ Do NOT output any text in addition to the tool call.\
             },
             "mode": "strict-or-tool",
         },
+        "tools": [],
         "n_chunks": 16,
     }
 )
@@ -213,6 +216,7 @@ Do NOT output any text in addition to the tool call.\
             },
             "mode": "strict-or-tool",
         },
+        "tools": [],
         "n_chunks": 18,
     }
 )

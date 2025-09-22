@@ -16,6 +16,25 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "tool",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -58,25 +77,28 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "tool",
-        },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 async_snapshot = snapshot(
@@ -85,6 +107,25 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "tool",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -127,25 +168,28 @@ Do NOT output any text in addition to the tool call.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "tool",
-        },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 stream_snapshot = snapshot(
@@ -214,6 +258,28 @@ Do NOT output any text in addition to the tool call.\
             },
             "mode": "tool",
         },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 29,
     }
 )
@@ -283,6 +349,28 @@ Do NOT output any text in addition to the tool call.\
             },
             "mode": "tool",
         },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 29,
     }
 )

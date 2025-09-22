@@ -16,6 +16,25 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -92,25 +111,28 @@ Respond with valid JSON that matches this exact schema:
                 ]
             ),
         ],
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-        },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 async_snapshot = snapshot(
@@ -119,6 +141,25 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -195,25 +236,28 @@ Respond with valid JSON that matches this exact schema:
                 ]
             ),
         ],
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-        },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 stream_snapshot = snapshot(
@@ -316,6 +360,28 @@ Respond with valid JSON that matches this exact schema:
             },
             "mode": "json",
         },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 43,
     }
 )
@@ -419,6 +485,28 @@ Respond with valid JSON that matches this exact schema:
             },
             "mode": "json",
         },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 43,
     }
 )

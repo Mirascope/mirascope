@@ -16,6 +16,7 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -64,7 +65,28 @@ Life before Death\
                 ]
             ),
         ],
-        "format_type": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 async_snapshot = snapshot(
@@ -73,6 +95,7 @@ async_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -123,7 +146,28 @@ For the password "radiance", the secret is "Life before Death"\
                 ]
             ),
         ],
-        "format_type": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 stream_snapshot = snapshot(
@@ -177,6 +221,28 @@ stream_snapshot = snapshot(
             ),
         ],
         "format_type": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 3,
     }
 )
@@ -231,6 +297,28 @@ async_stream_snapshot = snapshot(
             ),
         ],
         "format_type": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 3,
     }
 )

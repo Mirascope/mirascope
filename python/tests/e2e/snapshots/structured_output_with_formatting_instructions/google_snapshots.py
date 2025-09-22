@@ -14,6 +14,21 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {"title": "Rating", "type": "integer"},
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "strict-or-tool",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -34,21 +49,7 @@ lucky number 7.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "Book",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {"title": "Rating", "type": "integer"},
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "strict-or-tool",
-        },
+        "tools": [],
     }
 )
 async_snapshot = snapshot(
@@ -57,6 +58,21 @@ async_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {"title": "Rating", "type": "integer"},
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "strict-or-tool",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -77,21 +93,7 @@ lucky number 7.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "Book",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {"title": "Rating", "type": "integer"},
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "strict-or-tool",
-        },
+        "tools": [],
     }
 )
 stream_snapshot = snapshot(
@@ -134,6 +136,7 @@ lucky number 7.\
             },
             "mode": "strict-or-tool",
         },
+        "tools": [],
         "n_chunks": 3,
     }
 )
@@ -177,6 +180,7 @@ lucky number 7.\
             },
             "mode": "strict-or-tool",
         },
+        "tools": [],
         "n_chunks": 3,
     }
 )
