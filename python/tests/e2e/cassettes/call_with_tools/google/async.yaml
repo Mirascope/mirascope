@@ -1,7 +1,8 @@
 interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please retrieve the secrets associated
-      with each of these passwords: mellon,radiance"}], "role": "user"}], "tools":
+      with each of these passwords: mellon,radiance"}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Use parallel tool calling."}], "role": "user"}, "tools":
       [{"functionDeclarations": [{"description": "A tool that requires a password
       to retrieve a secret.", "name": "secret_retrieval_tool", "parameters": {"properties":
       {"password": {"title": "Password", "type": "STRING"}}, "required": ["password"],
@@ -14,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '440'
+      - '530'
       content-type:
       - application/json
       host:
@@ -24,17 +25,25 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/81STUvDQBC951eEPTfF9CONXlvBgmLVIIJImSbTdOlmJ+xuK1L6390mTZpUPQge
-        DCRs5s2+9+Zj57gui0EmPAGDml25rzbiurvie8BIGpTGAlXIBnNQ5pRbPrvG2aYsNzI2nOQYhGhd
-        PuISMrRxpjFWaOb2VRy3IOaGSLDOeTqoVH9DU3jR+p1UciDLUAiS7Cxp7/z0t+/8swIUJBxkjL8o
-        oT6/nTSZIlGYyyhBUZHV1bIll1yvHhG07ZZNe4ruZ7VlBtv0ltJc0eLg2PO7QTAKRj2/5w/C/sAP
-        A/Quhk4lXsiyjYYU79CAXSOo62SWJMtNRGuUY9oUa9QflUKNrWvhfnjEDRkQLWg47Hyh1RMrykVz
-        GxuLausHwc3Hocjo+iVqzMXyt1xVTXIavTz3+EdiftgWc46zKcf1jErzci4pZnZSXq974S0F6FXB
-        yBTqnKTGabEyo8ubKcyi8YSCXmbWs3CwiPkDMWfvfAILyxzA3QMAAA==
+        H4sIAAAAAAAC/81U246jOBB9z1e0eM3MQgK5rbQP4ZI7DUkIoXu1GrnBgBOwiW0cklb/+9DpSU8y
+        O9K+LhLI1ClOnTrY9dp4eJBCgCMUAQ6Z9OfD33Xk4eH18nzHCOYQ8xq4hupgASj/mftxvd6s65S4
+        xCFHBBsgy+4+/oFjkMM6LjEYUsi/1TdFUIDsGyckk778mg5own5Dc9HC2JHQ6J0sh1lGsPRL0tvd
+        +9s9t8RTUiYpX6MEA17SiyijCM1hNOEob9ozS+9SVCSHeXEoZbUyp/N0QXWxWHY0FZSt1iCWuY8x
+        MG3XOj8Fnjntxon3bFZEZLpj6G6CD6MDXE97R3UuYm8c5S0TKDxXgb/HQQzHpUwCl+YrU3P8nnya
+        IXedg7g3nQn76PnNpdifNcND2ohz0Dvw8zxY55GTeC+dx7YQfSdLY121S8faG8vgmY2S6bwXVnpY
+        FYETHfkCNFV2tp09C4DcmoCFPexaO/9wnk92Y1mbxAqrtFWV2iPPtw6kX8xO2Lb7Yz5soqQTySQX
+        KqrUTKy2pRYQwypPdOe4mzGWx51cXssjsGiehP/kJIrjoKm+S6IO6IPUGG5wSLqM6MX5yHxvtstM
+        eQuUteAxS8y2kLcTai2dZklFsD1YS9EsiaU10UbGnW2Wawz1+QtO8wEY5OrgGY56enuPO25XUdYt
+        x4xAidKR6qdyb6Ke95PwcdoywwFLc3jS7GDnJOOCwG0yrVanjQj40jXSIwXyS9daWJGaWpNKPimp
+        23KXbSelWyM6zrd2udZGXleARSnjyUw9dtPB0W2K58fkidWelWDMXkrlr9tddren/g8HgYIIARzC
+        /zgKjd+t//lZU6Iku4jLSQSzK9lnt1KMMGLpCgJWn7o6be057qdkCeEIVnVYaVwLXKilkoEE2pCD
+        euSAz16kgpK84B7ZQ2yQ8jJyesoH2c2EusO1K84JB9kd1FZaX/7Fy8y6KspuR9fNVKubBBnip/dO
+        PCvwbsyvC9zJujrRuDHsOknuJQ5ajR+OfZjoQ8rQh1sJzGv/vrb/6HyNM8DSSz2JQlYQzOD08iMH
+        Q+EAN1/p9MRyvneZ5qlkuJEab43vaABOA7sFAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -43,11 +52,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 16 Sep 2025 02:56:47 GMT
+      - Sat, 20 Sep 2025 02:05:40 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=576
+      - gfet4t7; dur=808
       Transfer-Encoding:
       - chunked
       Vary:
@@ -71,10 +80,11 @@ interactions:
       "role": "model"}, {"parts": [{"functionResponse": {"name": "secret_retrieval_tool",
       "response": {"output": "Welcome to Moria!"}}}, {"functionResponse": {"name":
       "secret_retrieval_tool", "response": {"output": "Life before Death"}}}], "role":
-      "user"}], "tools": [{"functionDeclarations": [{"description": "A tool that requires
-      a password to retrieve a secret.", "name": "secret_retrieval_tool", "parameters":
-      {"properties": {"password": {"title": "Password", "type": "STRING"}}, "required":
-      ["password"], "type": "OBJECT"}}]}], "generationConfig": {}}'
+      "user"}], "systemInstruction": {"parts": [{"text": "Use parallel tool calling."}],
+      "role": "user"}, "tools": [{"functionDeclarations": [{"description": "A tool
+      that requires a password to retrieve a secret.", "name": "secret_retrieval_tool",
+      "parameters": {"properties": {"password": {"title": "Password", "type": "STRING"}},
+      "required": ["password"], "type": "OBJECT"}}]}], "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -83,7 +93,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '875'
+      - '965'
       content-type:
       - application/json
       host:
@@ -93,17 +103,17 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61Ry27CMBC85ytcnwElROXRWwVIpQIVtfQhlR6WZAMWjp3a25cQ/14nIRBa9VYf
-        LHtnvLOe2XqM8QhULGIgtPyCPbsKY9tizzGtCBU5oCq5YgaGjtxybWtnRyH8zB/x+RqZxcggsUQb
-        Ru6agbUf2sRswVOUUqsFZ8K62yPKSKfISLOpNgLOHOBGKx793cNALEBFWHWZiATZEh0T2RCB1gve
-        WiheG293OL80jp8yWmI+capjlBV9VxF4IpSw61sEq1VOu5vfzPgBhffVRK8yo5e5L02/5QdB0Dnv
-        B91eu93ze/3Qq5QLTf5mYYVTJHC+w8Fd7jqkGc31BtVAvxW+d7ulSi2mEzwM9zhpAnkCBYHf+NXX
-        Dp2qkPX8atG634MU9FVkN3qa85pDdDpWZZFXc/LnkP8kFoanYt4+mTKsBzRWlKmsMHU5Ndstv5lI
-        sOuiIzdoM60sjuOc0+1fjeFamantBK9kZx0ajDaX99zbed/Hi9iPDwMAAA==
+        H4sIAAAAAAAC/21RXU/CMBR936+offEFjBIwgTcimqDyoS5q4nio9I41dL1Le0EI4b/bDQZD2cPW
+        nXN62nvOJmCMT4WRSgoCxzvsyyOMbYp3zqEhMOSJEvJgJiwdtbtnU1l7CcEq38T7l0tgFsgqWIJk
+        lABzMPWAYzHa4j+zuFTSk5lw7getdJ3IROahpPcoi3gKWqOJeK3iw5TzzAfoKabACNkArRIXET/r
+        YIVUwkzhnMezioF9g78WsB4ISiLOK0NtD+tJ7RiFRQ35nClK0KV8Wwp4rIxyySsIhyaXvYWjMT+w
+        ykhYefg6KA8orPnCiRkMgIQvRRyi5z6oNKMQ52DucFGUctNq7NwqJZ4Ims09T0hCn+5t39b+Gbue
+        P1bparuV4v2UQita56OE958hryRBf+5VZlF8J8E+lV1Q72Cd2iUyg9RnVG9cteqxFi4pLLkFl6Fx
+        0Je5pt1djsTjUzrE0SKl+Xg9VO1G94UH2+AXfmZwrsECAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -112,11 +122,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 16 Sep 2025 02:56:48 GMT
+      - Sat, 20 Sep 2025 02:05:40 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=675
+      - gfet4t7; dur=479
       Transfer-Encoding:
       - chunked
       Vary:

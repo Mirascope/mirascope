@@ -11,7 +11,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
@@ -33,20 +33,26 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+                        text='{"rating": 7, "author": "Patrick Rothfuss", "title": "THE NAME OF THE WIND"}'
                     )
                 ]
             ),
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
@@ -57,7 +63,7 @@ Do NOT output any text in addition to the tool call.\
 async_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
@@ -79,20 +85,26 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+                        text='{"title": "THE NAME OF THE WIND", "rating": 7, "author": "Patrick Rothfuss"}'
                     )
                 ]
             ),
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
@@ -103,7 +115,7 @@ Do NOT output any text in addition to the tool call.\
 stream_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
             SystemMessage(
@@ -124,20 +136,26 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title": "The Name of the Wind", "author": "Patrick Rothfuss"}'
+                        text='{"title": "THE NAME OF THE WIND", "rating": 7, "author": "Patrick Rothfuss"}'
                     )
                 ]
             ),
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
@@ -149,7 +167,7 @@ Do NOT output any text in addition to the tool call.\
 async_stream_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
             SystemMessage(
@@ -170,20 +188,26 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"author": "Patrick Rothfuss", "title": "The Name of the Wind"}'
+                        text='{"rating": 7, "author": "Patrick Rothfuss", "title": "THE NAME OF THE WIND"}'
                     )
                 ]
             ),
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },

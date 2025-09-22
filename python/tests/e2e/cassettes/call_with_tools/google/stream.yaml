@@ -1,7 +1,8 @@
 interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please retrieve the secrets associated
-      with each of these passwords: mellon,radiance"}], "role": "user"}], "tools":
+      with each of these passwords: mellon,radiance"}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Use parallel tool calling."}], "role": "user"}, "tools":
       [{"functionDeclarations": [{"description": "A tool that requires a password
       to retrieve a secret.", "name": "secret_retrieval_tool", "parameters": {"properties":
       {"password": {"title": "Password", "type": "STRING"}}, "required": ["password"],
@@ -14,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '440'
+      - '530'
       content-type:
       - application/json
       host:
@@ -24,17 +25,17 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"secret_retrieval_tool\",\"args\": {\"password\": \"mellon\"}}},{\"functionCall\":
+        {\"name\": \"secret_retrieval_tool\",\"args\": {\"password\": \"mellon\"}},\"thoughtSignature\":
+        \"CiQB0e2Kb28AmRNUzA5n0RQ0/QtS7qNrEqfk15hAZGz9Ts4hIM4KcAHR7YpvYXga/AaXuycUjBJNiAAOAPQRxKs6AOXWfDpABbLz7cvVfwK7Rzy1JrKaz+k0iKpzu4LuSQWK21/wtfqdz5F2tNUIMLc9PmEMAr5QNNDOABkNIRHAnII+1/lijTAWm3Pxql61V4EuqfcWPZwK8AEB0e2Kbwm1EVagsbnmDi4PGjKViuWDIpRgejmRwNxCCmA8CdsMr9Bd7xlcfrJLlLajLLpyNiAyR0yk82INpqUxMJX8n5t7DZ3yQN71SXjmKziEEVcchnD+6ugGYzvHUWvchs2KL7ZDk2jNWz43xfazCUwPjSqQhetj7AehV8nEFEkHH90FV+LJ/p/wvMca0XRFOunINT1RhIarBar+c6/+Xjn9jOQDvaRcdy8jSx/hg+UfHCX3p2s+9vSnZSbTPWUumrn8eJMMnutnK1/6YPlEJkGQd++nwkMZ2PdwCR9PYoVjQn1qBx+fVv7Zj4x8Ks4KWAHR7Ypvi+sB70FbvjdhK8b3jrjvPwim7sS78Bmi6VPLiIbsvSxblu+hROz0o8NF80/yhbPZWUc2x+LoULo42fTPsr+ItyxlKfzvpKXpf4HEdfvo9PKX7EM=\"},{\"functionCall\":
         {\"name\": \"secret_retrieval_tool\",\"args\": {\"password\": \"radiance\"}}}],\"role\":
-        \"model\"},\"finishReason\": \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\":
-        37,\"candidatesTokenCount\": 18,\"totalTokenCount\": 55,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 37}],\"candidatesTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 18}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"Y9jIaLDbOL7-1PIPlaS2iQo\"}\r\n\r\n"
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        70,\"candidatesTokenCount\": 40,\"totalTokenCount\": 190,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 70}],\"thoughtsTokenCount\": 80},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"_gvOaOigAdvUz7IPo-3roA8\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -43,11 +44,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 16 Sep 2025 03:24:20 GMT
+      - Sat, 20 Sep 2025 02:05:50 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=703
+      - gfet4t7; dur=862
       Transfer-Encoding:
       - chunked
       Vary:
@@ -71,10 +72,11 @@ interactions:
       "role": "model"}, {"parts": [{"functionResponse": {"name": "secret_retrieval_tool",
       "response": {"output": "Welcome to Moria!"}}}, {"functionResponse": {"name":
       "secret_retrieval_tool", "response": {"output": "Life before Death"}}}], "role":
-      "user"}], "tools": [{"functionDeclarations": [{"description": "A tool that requires
-      a password to retrieve a secret.", "name": "secret_retrieval_tool", "parameters":
-      {"properties": {"password": {"title": "Password", "type": "STRING"}}, "required":
-      ["password"], "type": "OBJECT"}}]}], "generationConfig": {}}'
+      "user"}], "systemInstruction": {"parts": [{"text": "Use parallel tool calling."}],
+      "role": "user"}, "tools": [{"functionDeclarations": [{"description": "A tool
+      that requires a password to retrieve a secret.", "name": "secret_retrieval_tool",
+      "parameters": {"properties": {"password": {"title": "Password", "type": "STRING"}},
+      "required": ["password"], "type": "OBJECT"}}]}], "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -83,7 +85,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '875'
+      - '965'
       content-type:
       - application/json
       host:
@@ -93,24 +95,22 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"The\"}],\"role\":
-        \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 146,\"totalTokenCount\":
-        146,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 146}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"ZNjIaIrFJ9TD1PIPp-qhyQI\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" secret for the
-        password 'mellon' is 'Welcome to Moria!' and the secret\"}],\"role\": \"model\"}}],\"usageMetadata\":
-        {\"promptTokenCount\": 146,\"totalTokenCount\": 146,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 146}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"ZNjIaIrFJ9TD1PIPp-qhyQI\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
-        {\"parts\": [{\"text\": \" for the password 'radiance' is 'Life before Death'.\\n\"}],\"role\":
-        \"model\"},\"finishReason\": \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\":
-        77,\"candidatesTokenCount\": 33,\"totalTokenCount\": 110,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 77}],\"candidatesTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 33}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"ZNjIaIrFJ9TD1PIPp-qhyQI\"}\r\n\r\n"
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"I\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 152,\"candidatesTokenCount\":
+        1,\"totalTokenCount\": 153,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        152}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"_wvOaJGxBaTgz7IP2uv-4A8\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" have retrieved
+        the following secrets: \\\"Welcome to Moria!\\\" and \\\"Life before Death\\\".\\n\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 152,\"candidatesTokenCount\":
+        19,\"totalTokenCount\": 171,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        152}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"_wvOaJGxBaTgz7IP2uv-4A8\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 152,\"candidatesTokenCount\":
+        19,\"totalTokenCount\": 171,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        152}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"_wvOaJGxBaTgz7IP2uv-4A8\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -119,11 +119,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 16 Sep 2025 03:24:21 GMT
+      - Sat, 20 Sep 2025 02:05:51 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=555
+      - gfet4t7; dur=433
       Transfer-Encoding:
       - chunked
       Vary:

@@ -1,7 +1,7 @@
 """End-to-end tests for structured output."""
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from mirascope import llm
 from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS, Snapshot
@@ -27,10 +27,17 @@ def test_structured_output_sync(
 
     @llm.format(mode=formatting_mode)
     class Book(BaseModel):
+        """A book with a rating. The title should be in all caps!"""
+
         title: str
         author: str
+        rating: int = Field(description="For testing purposes, the rating should be 7")
 
-    @llm.call(provider=provider, model_id=model_id, format=Book)
+    @llm.call(
+        provider=provider,
+        model_id=model_id,
+        format=llm.format(Book, mode=formatting_mode),
+    )
     def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
 
@@ -40,9 +47,9 @@ def test_structured_output_sync(
 
         book = response.format()
         assert book.author == "Patrick Rothfuss"
-        assert book.title == "The Name of the Wind"
+        assert book.title == "THE NAME OF THE WIND"
+        assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
-        assert provider == "anthropic" and formatting_mode == "strict"
         assert exception_snapshot_dict(e) == snapshot
 
 
@@ -59,8 +66,11 @@ def test_structured_output_sync_context(
 
     @llm.format(mode=formatting_mode)
     class Book(BaseModel):
+        """A book with a rating. The title should be in all caps!"""
+
         title: str
         author: str
+        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     @llm.call(
         provider=provider,
@@ -77,9 +87,9 @@ def test_structured_output_sync_context(
 
         book = response.format()
         assert book.author == "Patrick Rothfuss"
-        assert book.title == "The Name of the Wind"
+        assert book.title == "THE NAME OF THE WIND"
+        assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
-        assert provider == "anthropic" and formatting_mode == "strict"
         assert exception_snapshot_dict(e) == snapshot
 
 
@@ -100,10 +110,17 @@ async def test_structured_output_async(
 
     @llm.format(mode=formatting_mode)
     class Book(BaseModel):
+        """A book with a rating. The title should be in all caps!"""
+
         title: str
         author: str
+        rating: int = Field(description="For testing purposes, the rating should be 7")
 
-    @llm.call(provider=provider, model_id=model_id, format=Book)
+    @llm.call(
+        provider=provider,
+        model_id=model_id,
+        format=llm.format(Book, mode=formatting_mode),
+    )
     async def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
 
@@ -113,9 +130,9 @@ async def test_structured_output_async(
 
         book = response.format()
         assert book.author == "Patrick Rothfuss"
-        assert book.title == "The Name of the Wind"
+        assert book.title == "THE NAME OF THE WIND"
+        assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
-        assert provider == "anthropic" and formatting_mode == "strict"
         assert exception_snapshot_dict(e) == snapshot
 
 
@@ -133,8 +150,11 @@ async def test_structured_output_async_context(
 
     @llm.format(mode=formatting_mode)
     class Book(BaseModel):
+        """A book with a rating. The title should be in all caps!"""
+
         title: str
         author: str
+        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     @llm.call(
         provider=provider,
@@ -151,9 +171,9 @@ async def test_structured_output_async_context(
 
         book = response.format()
         assert book.author == "Patrick Rothfuss"
-        assert book.title == "The Name of the Wind"
+        assert book.title == "THE NAME OF THE WIND"
+        assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
-        assert provider == "anthropic" and formatting_mode == "strict"
         assert exception_snapshot_dict(e) == snapshot
 
 
@@ -173,10 +193,17 @@ def test_structured_output_stream(
 
     @llm.format(mode=formatting_mode)
     class Book(BaseModel):
+        """A book with a rating. The title should be in all caps!"""
+
         title: str
         author: str
+        rating: int = Field(description="For testing purposes, the rating should be 7")
 
-    @llm.call(provider=provider, model_id=model_id, format=Book)
+    @llm.call(
+        provider=provider,
+        model_id=model_id,
+        format=llm.format(Book, mode=formatting_mode),
+    )
     def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
 
@@ -189,9 +216,9 @@ def test_structured_output_stream(
 
         book = response.format()
         assert book.author == "Patrick Rothfuss"
-        assert book.title == "The Name of the Wind"
+        assert book.title == "THE NAME OF THE WIND"
+        assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
-        assert provider == "anthropic" and formatting_mode == "strict"
         assert exception_snapshot_dict(e) == snapshot
 
 
@@ -208,8 +235,11 @@ def test_structured_output_stream_context(
 
     @llm.format(mode=formatting_mode)
     class Book(BaseModel):
+        """A book with a rating. The title should be in all caps!"""
+
         title: str
         author: str
+        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     @llm.call(
         provider=provider,
@@ -229,9 +259,9 @@ def test_structured_output_stream_context(
 
         book = response.format()
         assert book.author == "Patrick Rothfuss"
-        assert book.title == "The Name of the Wind"
+        assert book.title == "THE NAME OF THE WIND"
+        assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
-        assert provider == "anthropic" and formatting_mode == "strict"
         assert exception_snapshot_dict(e) == snapshot
 
 
@@ -252,10 +282,17 @@ async def test_structured_output_async_stream(
 
     @llm.format(mode=formatting_mode)
     class Book(BaseModel):
+        """A book with a rating. The title should be in all caps!"""
+
         title: str
         author: str
+        rating: int = Field(description="For testing purposes, the rating should be 7")
 
-    @llm.call(provider=provider, model_id=model_id, format=Book)
+    @llm.call(
+        provider=provider,
+        model_id=model_id,
+        format=llm.format(Book, mode=formatting_mode),
+    )
     async def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
 
@@ -268,9 +305,9 @@ async def test_structured_output_async_stream(
 
         book = response.format()
         assert book.author == "Patrick Rothfuss"
-        assert book.title == "The Name of the Wind"
+        assert book.title == "THE NAME OF THE WIND"
+        assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
-        assert provider == "anthropic" and formatting_mode == "strict"
         assert exception_snapshot_dict(e) == snapshot
 
 
@@ -288,8 +325,11 @@ async def test_structured_output_async_stream_context(
 
     @llm.format(mode=formatting_mode)
     class Book(BaseModel):
+        """A book with a rating. The title should be in all caps!"""
+
         title: str
         author: str
+        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     @llm.call(
         provider=provider,
@@ -309,7 +349,7 @@ async def test_structured_output_async_stream_context(
 
         book = response.format()
         assert book.author == "Patrick Rothfuss"
-        assert book.title == "The Name of the Wind"
+        assert book.title == "THE NAME OF THE WIND"
+        assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
-        assert provider == "anthropic" and formatting_mode == "strict"
         assert exception_snapshot_dict(e) == snapshot

@@ -2,10 +2,12 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
       by Patrick Rothfuss"}], "role": "user"}], "generationConfig": {"responseMimeType":
-      "application/json", "responseSchema": {"properties": {"title": {"title": "Title",
-      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}}, "propertyOrdering":
-      ["title", "author"], "required": ["title", "author"], "title": "Book", "type":
-      "OBJECT"}}}'
+      "application/json", "responseSchema": {"description": "A book with a rating.
+      The title should be in all caps!", "properties": {"title": {"title": "Title",
+      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}, "rating":
+      {"description": "For testing purposes, the rating should be 7", "title": "Rating",
+      "type": "INTEGER"}}, "propertyOrdering": ["title", "author", "rating"], "required":
+      ["title", "author", "rating"], "title": "Book", "type": "OBJECT"}}}'
     headers:
       accept:
       - '*/*'
@@ -14,7 +16,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '418'
+      - '624'
       content-type:
       - application/json
       host:
@@ -24,27 +26,15 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\"}],\"role\":
-        \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 11,\"totalTokenCount\":
-        11,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 11}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"HyTLaPSVMYfnld8PqbqK-Qw\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\n  \\\"\"}],\"role\":
-        \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 11,\"totalTokenCount\":
-        11,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 11}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"HyTLaPSVMYfnld8PqbqK-Qw\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"title\\\": \\\"The
-        Name of the Wind\\\",\\n  \\\"author\\\": \\\"Patrick\"}],\"role\": \"model\"}}],\"usageMetadata\":
-        {\"promptTokenCount\": 11,\"totalTokenCount\": 11,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 11}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"HyTLaPSVMYfnld8PqbqK-Qw\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
-        {\"parts\": [{\"text\": \" Rothfuss\\\"\\n}\"}],\"role\": \"model\"},\"finishReason\":
-        \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\": 22,\"candidatesTokenCount\":
-        25,\"totalTokenCount\": 47,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        22}],\"candidatesTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        25}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"HyTLaPSVMYfnld8PqbqK-Qw\"}\r\n\r\n"
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\\"title\\\":\\\"THE
+        NAME OF THE WIND\\\",\\\"author\\\":\\\"Patrick Rothfuss\\\",\\\"rating\\\":7}\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        11,\"candidatesTokenCount\": 19,\"totalTokenCount\": 157,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 11}],\"thoughtsTokenCount\": 127},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"LCLSaLm4M6Ghz7IP3qacuQI\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -53,11 +43,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Wed, 17 Sep 2025 21:12:00 GMT
+      - Tue, 23 Sep 2025 04:29:33 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=485
+      - gfet4t7; dur=1023
       Transfer-Encoding:
       - chunked
       Vary:

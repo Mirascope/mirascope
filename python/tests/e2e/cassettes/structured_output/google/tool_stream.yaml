@@ -5,11 +5,14 @@ interactions:
       "When you are ready to respond to the user, call the __mirascope_formatted_output_tool__
       tool to output a structured response.\nDo NOT output any text in addition to
       the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
-      "Use this tool to extract data in Book format for a final response.", "name":
-      "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"properties":
-      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
-      "type": "string"}}, "required": ["title", "author"], "title": "Book", "type":
-      "object"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames":
+      "Use this tool to extract data in Book format for a final response.\nA book
+      with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
+      "parametersJsonSchema": {"description": "A book with a rating. The title should
+      be in all caps!", "properties": {"title": {"title": "Title", "type": "string"},
+      "author": {"title": "Author", "type": "string"}, "rating": {"description": "For
+      testing purposes, the rating should be 7", "title": "Rating", "type": "integer"}},
+      "required": ["title", "author", "rating"], "title": "Book", "type": "object"}}]}],
+      "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames":
       ["__mirascope_formatted_output_tool__"]}}, "generationConfig": {}}'
     headers:
       accept:
@@ -19,7 +22,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '884'
+      - '1136'
       content-type:
       - application/json
       host:
@@ -29,16 +32,17 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"The
-        Name of the Wind\",\"author\": \"Patrick Rothfuss\"}}}],\"role\": \"model\"},\"finishReason\":
-        \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\": 78,\"candidatesTokenCount\":
-        21,\"totalTokenCount\": 99,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        78}],\"candidatesTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        21}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"JCTLaIm8DoWam9IPkt6N-A4\"}\r\n\r\n"
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"THE
+        NAME OF THE WIND\",\"rating\": 7,\"author\": \"Patrick Rothfuss\"}},\"thoughtSignature\":
+        \"CiQB0e2Kb35F5wrzCQOyUTG+5Yi8iIvF3KYIGBWUdYXVhwXTiLwKZwHR7YpvElcxQ9jkj4Hy5oMy8NP14piDHowyA5oGnoNJ+GSDyQrPJmr/FMyOwFZUhwPdHmyIv5CHh8U8SFl4S4V2waXF1n9/97Z3IsIeEfbuoInSk1Hl1IKhgWmkBdJmEsLLMaQsRyQK0gEB0e2KbyaGR7reFGovn+3CFrBdXEXUZE9l6FrSkrPipqc25YIwpqVgvUEy7AQ/xENswRfPJ+aFlhgETA38k0U8yegFBGyzYgA7Bj7XFQyY/eptB7y3w6GiW1nm8KAzXb51EHsjL4fyEnEtELsMwjKED3wl8ZNf+eJet3/ZfuyEVIKE+0w2YMpFe6Kqw0lV2X0rjPA04Htr6vPevw9XgqfWu+ZhVDAUGBapkIPylk/IEY50dQcATMXbuwz9KJaDdYhb3hU3+/2he4N855NLrVoUiS0K2QEB0e2Kb3it8uqRnm/Rs6HXPpFJ6xNKctnj3dDpUUs0xVB586ZZ7bK117geV3Po7Jx/GCRcpJjdIK3DCP/DOmNYD1UiTSEnIFg+54uO+nZnGb3zLGi8QaUznpzqs4q9KdTAOVFbB+83UiyS0AkF4hnbjdc335MP4vDR0gXINiSjBsWek7a9WqczEu1HK5F0A7qv9/T/HuSE62TjYFgDH74Mnfm1QS94sHS9jackEZ6GuJD2VrtiBd/irJ+imGO4wlnQZKGaXRqXqVLeeIy2pqcTXIdPDbePGhJ/CtQBAdHtim/Cn8dRenz878tqhD5AqdXq8ESLrQ8CRmm2zjMzm+g3U3eHwTUGHn2oBaYmo2ElTj0gUvOfkXxb/CzMV4DXT5ud/Y1Sy2p1OLUIzasbs50CvsK51OJxZKaO8CMMeYs3672DtOtgBSUyK9AszTZ553V4VZkI31jFxZaS1mlzO9LY8YSo8ugPWXWsa8g0jXZxuMbF2/y5A5NTQg+HDj31q0mGP3fY+tKrJbPvpe3LcwwABhJ005kbXoEnZV4iHb1lxuee0UG3KaSzyJ6cl7d2SZ4KUAHR7YpvFjuCSMS6ItyxwuYzvi0LEqDBwfpSgd+Sf3IwBSC9YzNceCEJNiMwzoltc+HRxcZ1dI0Ref08HNlarJtb2K6snUmk6iazacFdB7EW\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        155,\"candidatesTokenCount\": 37,\"totalTokenCount\": 372,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 155}],\"thoughtsTokenCount\": 180},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"NSLSaKH2HpLqz7IP87jgkQQ\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -47,11 +51,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Wed, 17 Sep 2025 21:12:04 GMT
+      - Tue, 23 Sep 2025 04:29:42 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=612
+      - gfet4t7; dur=1615
       Transfer-Encoding:
       - chunked
       Vary:

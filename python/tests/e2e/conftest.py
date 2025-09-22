@@ -12,7 +12,7 @@ from mirascope import llm
 
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.clients.Provider, llm.clients.ModelId]] = [
     ("anthropic", "claude-sonnet-4-0"),
-    ("google", "gemini-2.0-flash"),
+    ("google", "gemini-2.5-flash"),
     ("openai", "gpt-4o"),
 ]
 
@@ -31,9 +31,9 @@ CallType = Literal[
 CALL_TYPES: tuple[CallType] = get_args(CallType)
 
 
-FORMATTING_MODES: tuple[llm.formatting.ConcreteFormattingMode] = get_args(
+FORMATTING_MODES: tuple[llm.formatting.FormattingMode | None] = get_args(
     llm.formatting.ConcreteFormattingMode
-)
+) + (None,)
 
 Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
 
@@ -64,9 +64,9 @@ def formatting_mode(
     request: FormattingModeRequest,
 ) -> llm.formatting.ConcreteFormattingMode | None:
     """Get formatting_mode from test parameters."""
-    try:
+    if hasattr(request, "param"):
         return request.param
-    except AttributeError:
+    else:
         return None
 
 

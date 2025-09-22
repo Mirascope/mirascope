@@ -2,10 +2,12 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
       by Patrick Rothfuss"}], "role": "user"}], "generationConfig": {"responseMimeType":
-      "application/json", "responseSchema": {"properties": {"title": {"title": "Title",
-      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}}, "propertyOrdering":
-      ["title", "author"], "required": ["title", "author"], "title": "Book", "type":
-      "OBJECT"}}}'
+      "application/json", "responseSchema": {"description": "A book with a rating.
+      The title should be in all caps!", "properties": {"title": {"title": "Title",
+      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}, "rating":
+      {"description": "For testing purposes, the rating should be 7", "title": "Rating",
+      "type": "INTEGER"}}, "propertyOrdering": ["title", "author", "rating"], "required":
+      ["title", "author", "rating"], "title": "Book", "type": "OBJECT"}}}'
     headers:
       accept:
       - '*/*'
@@ -14,7 +16,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '418'
+      - '624'
       content-type:
       - application/json
       host:
@@ -24,17 +26,17 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61RwU6DQBC98xWbPZcGiLTGa/VQrbVWojbiYVsG2BR2kR2MlfDvLlBa0KscNpN5
-        j3kz75UGIXTHRMADhqDoFXnTHULK5q0xKRAEaqBr6WbGcjxz26/s1ZqC8FX/REtfEOJT5JiArxs+
-        9WIgS5YCkSFBXb9wEfh01PJYgbHMW+KKYc53e7KWGIeFUj71RUV7MtWpfh+dl8tlArVyKgNIOnrV
-        EWjIBVfxGpiSoqY9eQ8rekLZZ7SQUZbLbX2faY8d17IntutOXGdq2ZcumJZrdOKNLC0Ui+AekGkL
-        2ckoqoekGXpyD2Imi8ZCx2mFeo4PcfeIo0SWDKCL6ejPWHWtRXnST6IXkr6fJRwP9ZHezatHex7h
-        cKvOJKPn5e8d/0vMHYoZx2zauJ4hV7zNJYJUJ2U6Y8sME6biZiLNQWVSKJgHNWc5WyzY7UTebbbR
-        93S++tiYzuFRUqMyfgAMjIB02QIAAA==
+        H4sIAAAAAAAC/2WRzW7CMBCE73kKa89QldKWwg0BFRz4EURtpaaqXLIkLsEO9kYCRXl3nIRAaHOw
+        VjuTnfXn1GEM1lz6wueEBnrs03YYS4sz15QklGSFqmWbMdd09ZZfWquthfCQ/wSpByQoQg96Hrjj
+        EZv1pyM2f2V5/T6ZDT1oeMATCpUuPAtOWqy3bKko3CTGFLrmJGRg9U4GtZzsUn81rttpFWEevVM+
+        RpU9qwywEVKYcIncKJnbVu58ARdVSB8Ptn3vVAHFaEgMD3CKxC0nfqEBsVa7mFy1RTlQScGp1SqH
+        1bDe6t2zTop4dCs9dxr/5pqhTRVRnXftKewleSTomN/EHX24UANBt2tVJJwaMLDckyCkPyu2O84Z
+        WUnxDbURJa4AdxZg8+HuqbmJuAmLQNBoYiUNTvzc0z2OV3zyLQfz/e+ezKL94w4f+y/gZM4Jw/Ah
+        eXECAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -43,11 +45,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 17 Sep 2025 21:03:49 GMT
+      - Tue, 23 Sep 2025 04:28:39 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=872
+      - gfet4t7; dur=1584
       Transfer-Encoding:
       - chunked
       Vary:

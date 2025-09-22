@@ -2,11 +2,14 @@ interactions:
 - request:
     body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please recommend
       the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Respond
-      with valid JSON that matches this exact schema:\n{\n  \"properties\": {\n    \"title\":
+      with valid JSON that matches this exact schema:\n{\n  \"description\": \"A book
+      with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
       {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
-      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-      [\n    \"title\",\n    \"author\"\n  ],\n  \"title\": \"Book\",\n  \"type\":
-      \"object\"\n}\n\nRespond ONLY with valid JSON, and no other text."}'
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\":
+      {\n      \"description\": \"For testing purposes, the rating should be 7\",\n      \"title\":
+      \"Rating\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}\n\nRespond ONLY with valid JSON, and no
+      other text."}'
     headers:
       accept:
       - application/json
@@ -17,7 +20,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '571'
+      - '828'
       content-type:
       - application/json
       host:
@@ -49,15 +52,15 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJFNSwMxEIb/SnjPKWzrlkJuHrwoiEqhgishbqbd0N1kTSZiWfa/y7YW
-        v/A08D7PzDDMAGeh0KWdLuZXq31n4819KnerzWXYPB7Wh5drSPChp8milMyOIBFDOwUmJZfYeIZE
-        Fyy1UKhbky3NUvCeeFbOFsViWSznJSTq4Jk8Qz0N55FM71PzsSgMlReiAjtuqYISFdYNiVvTkQhb
-        wQ2JjfO2gjx5JnMT4km8MxxdvRcPgZttTqlC5UeMzxKJQ68jmRQ8FMhbzTl6fIJEr5l8TVA+t61E
-        Pl6oBjjfZ9Yc9uQT1LxcSNSmbkjXkQy74PVPozjzSMb+x8690wLqG+oomlYvu7/+F503v+koETJ/
-        jy4KiUTxzdWk2VGEwvQXa6LFOH4AAAD//wMArLvkbuUBAAA=
+        H4sIAAAAAAAAA3SR20rDQBCGXyX811toaoO6d4IRBa2HCkWMhHUzNkuT3bg7K5aSd5e0nsWrGeb7
+        ZoZhNjAVJNqwLMfpYdY+P2bz/Gqez7r1tb64O18dLyDA644Gi0JQS4KAd81QUCGYwMoyBFpXUQMJ
+        3ahY0Sg4a4lH09FkPMnGWTqFgHaWyTLk/eZjJNPr0LwNEpvCJkkBNtxQAZkUuD3Nk9nRRZ5cniRD
+        vjibHRcQO09Frp3fiVeKvdGr5MZx/RRD+JS8YmOXg7Rf2B79g0Bg15WeVHAWEmSrkqO3eAeBniNZ
+        TZA2No1A3N4sNzC2i1yyW5ENkJN0LKCVrqnUnhQbZ8ufxif3pKr/2EfvsIC6mlryqimz9q//RdP6
+        N+0FXOTvpb0DgUD+xWgq2ZCHxPCpSvkKff8GAAD//wMAnfGe1PcBAAA=
     headers:
       CF-RAY:
-      - 980b8d51ddf830d4-SEA
+      - 98374bf7df9976c1-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,7 +68,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 17 Sep 2025 21:03:46 GMT
+      - Tue, 23 Sep 2025 04:28:43 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -79,35 +82,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-17T21:03:45Z'
+      - '2025-09-23T04:28:42Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-17T21:03:46Z'
+      - '2025-09-23T04:28:43Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-17T21:03:45Z'
+      - '2025-09-23T04:28:41Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-17T21:03:45Z'
+      - '2025-09-23T04:28:42Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTEegUHzxxhDtdu3e2ch1
+      - req_011CTQheyNJtC2XUsqkHwQVT
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1349'
+      - '1593'
     status:
       code: 200
       message: OK

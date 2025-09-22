@@ -19,16 +19,17 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61RTU/DMAy991dEubJO6ecQEifGYdImBpQPCTh41OvK2qRqMgSq9t9J2nVL4UoO
-        VuT37Gc/Nw4h9B14mqegUNIL8qIzhDRtNJjgCrnSQJ/SyQpqdeJ2r7H+mqLwyxTR0GeMnJHQJ5c6
-        hP4rpxZxf/y/jU7ta1GgqS1FikVP3/cEus55Ljd3CFJwQ7tPbpb0iMJnNhdZVYuVmdBlY8ZYHEVx
-        fB5EAQs95gVs4vTirSzdSchwgQq0CXBcleomZaUSsUV+JXatCZ7fCVmeDfHogCuhoBhA/mT0p62c
-        atG8sL20bNb7Q5Grb7Nkcv2cUMsjNZyqN8mxvPw943+JRUMx53Cb7lyPWMu8u0uGpb6U64+Zuy5A
-        btqOtEZZCS5xlhqOC8EM5is+XTzJUm2XHys3k7cP1Nk7P7KI8libAgAA
+        H4sIAAAAAAAC/2WRXWvCMBSG7/srDrmsrajTjQm72BfDgSizjME6RmaOttgmXZOiQ/zvnrRWW5aL
+        Npz3zfl4zt4BYEsuRSy4Qc3G8EkRgH35tZqSBqUhoQ5RMOO5uXirs2/cyWJwZx+xQMEqlgJMhKCL
+        FNQKhoNeDzr082CLQMWBi8ogi/QHcz0OZSgpiTWGsgPlNZR+dU6SjYRyobxLPrgD17WK63ZZo53D
+        +f7lXYbIVYK2w1QJTGr7oTYw6jrW0RtyraS1LYLZnJ1VGgl3FO45dYEyNSs0X+MUDSec/AyNZblK
+        MxOoDcpHVZQ4+1dVsgb9lj66PelGGZ60n/YH3r+8+omqxklzLY2N0ZA8ic1fuZLnj4A1QJh2WzUJ
+        pwGMmUgV68i0Wxza6UtiFcR32l1c0VpjSvz8QXfkrxKuo7Iey1FnSmqcCOt52N7M+OR7OHv9nV+L
+        zVxlL1P/fsmcg3MEAaNNnpcCAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -37,11 +38,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 16 Sep 2025 00:23:21 GMT
+      - Sat, 20 Sep 2025 02:14:31 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=530
+      - gfet4t7; dur=750
       Transfer-Encoding:
       - chunked
       Vary:

@@ -5,11 +5,14 @@ interactions:
       "When you are ready to respond to the user, call the __mirascope_formatted_output_tool__
       tool to output a structured response.\nDo NOT output any text in addition to
       the tool call."}], "role": "user"}, "tools": [{"functionDeclarations": [{"description":
-      "Use this tool to extract data in Book format for a final response.", "name":
-      "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"properties":
-      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
-      "type": "string"}}, "required": ["title", "author"], "title": "Book", "type":
-      "object"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames":
+      "Use this tool to extract data in Book format for a final response.\nA book
+      with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
+      "parametersJsonSchema": {"description": "A book with a rating. The title should
+      be in all caps!", "properties": {"title": {"title": "Title", "type": "string"},
+      "author": {"title": "Author", "type": "string"}, "rating": {"description": "For
+      testing purposes, the rating should be 7", "title": "Rating", "type": "integer"}},
+      "required": ["title", "author", "rating"], "title": "Book", "type": "object"}}]}],
+      "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames":
       ["__mirascope_formatted_output_tool__"]}}, "generationConfig": {}}'
     headers:
       accept:
@@ -19,7 +22,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '884'
+      - '1136'
       content-type:
       - application/json
       host:
@@ -29,18 +32,31 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61SwU7jMBC95yssnylqQ2gLN9RdIVBZKoh2EQhFQ+IkBscT2ZNFS9V/x0kamhT2
-        Rg7ReN7Me+N5XnuM8Rh0IhMgYfkpe3AZxtbNv8ZQk9DkgC7lkiUY2tW237oXu5K00jFJ1AtQatC8
-        xTUUwuV5FBXSgI2xFFGKpgAikURYUVlRRIgqivjBfjOYzH5B6hCSpBreMBfsl9NgmDJy8R+pk09E
-        NVVFOZq6YwVkZPzCbpDytLKW7xVvvP+ddvHjToEbbCcpMBGqI9t0BTyVWtr8RoBFXZfdhterjwE5
-        /M2WmJUGn+qL+odH83EwnwRTPxgHx7PjIzEaT71Ou1HllYVMXAkC5yR8bIc7jqKkEF+EXmDVODmb
-        tzo94we4P9nihARqAJ2cHHyitT+cqFT9B9F7K+76oCT9a0z5eRf2THD8g6m6HXm9Ve7P+E1i/mQo
-        5m2tad36LYyVrS2ZKJxRI/9wPEoV2Lxh5EbYErUVF0ldc74Il7Ccvl7e3z2/zS5WNr5+rc4C7m28
-        dwyE4zhgAwAA
+        H4sIAAAAAAAC/22VW3OiSBiG7/MrLG8zu4rIwb1DVEA5g2Lc2kq1nAW6oWlAmJr/viSZzCQzwwXV
+        fIf3a17g4evDZDL1AQzSAJCwnv4z+XeMTCZfX88vOQRJCMmYeA+NwRJg8rP27fj6YT2WRA30SYqg
+        CPL8U/P3PARFOManz89FikHtozJ8jhAuACFh8IwaUjbkmSCUPz9Pv/zaDHBc/0F0zJCU5K+6rryd
+        6IK2nRi7ycvaU/TNb0JjAwYkhfHYwf0hCRqSIPwiZwKCUz+b2IgkUVPX01+Kv326/vZZazqqNHFC
+        nDSGgDT4dYMiEXZCIJO04PdSl9M2nThc2/HLhBXy7H5RjWXObRfLgS6y+CYYEihhcKJvC397vnUz
+        Ye17zI1/lHb3UyjtrlhILDr3obTcbqIsjlnv2uTdzkvJ4eakjbhiF2dxMKrRh4PHgsbfKnGAWyZg
+        +14ST5EyrGV60Ls7mXUV5vO56RjtAEULNrS1OFA7WuOAORfoIJWYCAkHbdclq35Pzxh2lczFKF2h
+        fN7PnU0VqDGzE9BwMpZtb3l6ZNVWs4x6QTuD4uSWbex3aylgDpgF7lFNdBiv2bwLVq1wl52Zv689
+        f32wrkpxpli5d9PTgW/r+UWXqZltP6rWtXRFyeW8R3MzB9dNWjBZMcy22N7q8wDoVVFeHYMdTgNF
+        44BIFpD6ZXmXN4miOwvCUZzM0KKRw07rQt7jl42mnaKhFH3BNM3o4lX4JjNdeYn0vdZIIimvrWev
+        ZqCIeQPagk9zHGMOZpbwa7tJ9zJynLA2q723hibLg1Ol7sClOO5XKzogwfqSCycG32coexRQtMT5
+        YA3QDlaDiFa44RHKgosR275GBE6ntspVs7mAKX3HsQ8HwVGP3XW1BbSKLdjxZ2VxlXDub5qFOTDZ
+        4tYsRMOlhCcXq5Yc2Sd6XrcaktOFeKOUU6AkPCx5rqIjtqHsR6hlq2QdDKHuHRXaXiKmQqKli1ai
+        dwwslNIuLrx7VJaCQJuHgQOxjCyPVWtT3PDC9VzmW1ie7737pDG9p3E5x6vZbU7NNgIlPSrHU5SD
+        KODuepttBcs0kLxcL3t1XjCXrGNTpFZscYviUJSB2DiZUcltcu2vqmgamsuCEB/4XX6uKreDWbFl
+        amErzPoqxpv1YQEZ98Bn7FMTjQ/MSMNwtttRZtcvs6xah/tbcLw87QbFaylbcNdHWbQTQjOXygme
+        7qZeLQz3ll7wnRqAl3OP+z1mo6QQW9+MvTDPHdVneP+kb/BdXbuG5z1JIMXkLi54HtB2PxN9O5G1
+        DVTmC0OAuy5owUcK/CTAfz+//ilGbzgqUBDm7+U/8DCNUpjWiR2CGsGXMsc1zB+UmqYwCO9jeP7w
+        PuBVetrUIA61kICR2eAHB6clRkVJXJSFUETNK7MphnlT+8D4TwX0d+xNCSIg/yXFf/lNuN6MY9P8
+        I/w//BfGuwR5SvpXAG/P7gfgjgM+7+vdi4cPlr2D8vMeKZ59+G7am4+nENfpm2FxWIwW/rX4m/lr
+        fPPq5HXiFId1iWAdKsFLjeSoDti3Z0UTpYrUJm6qeS9Y04dvD/8Dmtt14v8GAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -49,11 +65,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 17 Sep 2025 21:11:53 GMT
+      - Tue, 23 Sep 2025 04:29:13 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=831
+      - gfet4t7; dur=1593
       Transfer-Encoding:
       - chunked
       Vary:

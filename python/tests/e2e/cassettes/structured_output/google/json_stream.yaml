@@ -2,12 +2,14 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
       by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
-      "Respond with valid JSON that matches this exact schema:\n{\n  \"properties\":
+      "Respond with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A book with a rating. The title should be in all caps!\",\n  \"properties\":
       {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
-      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-      [\n    \"title\",\n    \"author\"\n  ],\n  \"title\": \"Book\",\n  \"type\":
-      \"object\"\n}"}], "role": "user"}, "generationConfig": {"responseMimeType":
-      "application/json"}}'
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\":
+      {\n      \"description\": \"For testing purposes, the rating should be 7\",\n      \"title\":
+      \"Rating\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
     headers:
       accept:
       - '*/*'
@@ -16,7 +18,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '601'
+      - '858'
       content-type:
       - application/json
       host:
@@ -26,27 +28,16 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\"}],\"role\":
-        \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 120,\"totalTokenCount\":
-        120,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 120}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"HSTLaISoGev5ld8P_siJQA\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"\\n  \\\"\"}],\"role\":
-        \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 120,\"totalTokenCount\":
-        120,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 120}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"HSTLaISoGev5ld8P_siJQA\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"title\\\": \\\"The
-        Name of the Wind\\\",\\n  \\\"author\\\": \\\"Patrick\"}],\"role\": \"model\"}}],\"usageMetadata\":
-        {\"promptTokenCount\": 120,\"totalTokenCount\": 120,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 120}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"HSTLaISoGev5ld8P_siJQA\"}\r\n\r\ndata: {\"candidates\": [{\"content\": {\"parts\":
-        [{\"text\": \" Rothfuss\\\"\\n}\"}],\"role\": \"model\"},\"finishReason\":
-        \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\": 118,\"candidatesTokenCount\":
-        25,\"totalTokenCount\": 143,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        118}],\"candidatesTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        25}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\": \"HSTLaISoGev5ld8P_siJQA\"}\r\n\r\n"
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n
+        \ \\\"title\\\": \\\"THE NAME OF THE WIND\\\",\\n  \\\"author\\\": \\\"Patrick
+        Rothfuss\\\",\\n  \\\"rating\\\": 7\\n}\"}],\"role\": \"model\"},\"finishReason\":
+        \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 187,\"candidatesTokenCount\":
+        32,\"totalTokenCount\": 311,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        187}],\"thoughtsTokenCount\": 92},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"MSLSaNqqFKDVz7IPqrXSMA\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -55,11 +46,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Wed, 17 Sep 2025 21:11:57 GMT
+      - Tue, 23 Sep 2025 04:29:37 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=378
+      - gfet4t7; dur=1684
       Transfer-Encoding:
       - chunked
       Vary:

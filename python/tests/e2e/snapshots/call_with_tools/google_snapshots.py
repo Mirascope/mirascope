@@ -3,6 +3,7 @@ from inline_snapshot import snapshot
 from mirascope.llm import (
     AssistantMessage,
     FinishReason,
+    SystemMessage,
     Text,
     ToolCall,
     ToolOutput,
@@ -12,10 +13,11 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
                 content=[
                     Text(
@@ -54,7 +56,10 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text="The secret for the password 'mellon' is 'Welcome to Moria!' and the secret for the password 'radiance' is 'Life before Death'.\n"
+                        text="""\
+Welcome to Moria!
+Life before Death\
+"""
                     )
                 ]
             ),
@@ -65,10 +70,11 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
                 content=[
                     Text(
@@ -107,7 +113,12 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='The secret for the password "mellon" is "Welcome to Moria!" and the secret for the password "radiance" is "Life before Death".\n'
+                        text="""\
+I've retrieved the secrets for the provided passwords:
+
+For the password "mellon", the secret is "Welcome to Moria!"
+For the password "radiance", the secret is "Life before Death"\
+"""
                     )
                 ]
             ),
@@ -118,9 +129,10 @@ async_snapshot = snapshot(
 stream_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
-        "finish_reason": FinishReason.END_TURN,
+        "model_id": "gemini-2.5-flash",
+        "finish_reason": None,
         "messages": [
+            SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
                 content=[
                     Text(
@@ -159,21 +171,22 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text="The secret for the password 'mellon' is 'Welcome to Moria!' and the secret for the password 'radiance' is 'Life before Death'.\n"
+                        text='I have retrieved the following secrets: "Welcome to Moria!" and "Life before Death".\n'
                     )
                 ]
             ),
         ],
         "format_type": None,
-        "n_chunks": 5,
+        "n_chunks": 3,
     }
 )
 async_stream_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
-        "finish_reason": FinishReason.END_TURN,
+        "model_id": "gemini-2.5-flash",
+        "finish_reason": None,
         "messages": [
+            SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
                 content=[
                     Text(
@@ -212,12 +225,12 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='The secret for the password "mellon" is "Welcome to Moria!" and the secret for the password "radiance" is "Life before Death".\n'
+                        text='I have retrieved the following secrets: "Welcome to Moria!" and "Life before Death".\n'
                     )
                 ]
             ),
         ],
         "format_type": None,
-        "n_chunks": 5,
+        "n_chunks": 3,
     }
 )
