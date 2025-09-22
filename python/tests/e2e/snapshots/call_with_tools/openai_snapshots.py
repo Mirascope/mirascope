@@ -16,6 +16,7 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -66,7 +67,28 @@ The secrets associated with the passwords are as follows:
                 ]
             ),
         ],
-        "format_type": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 async_snapshot = snapshot(
@@ -75,6 +97,7 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": None,
         "messages": [
             SystemMessage(content=Text(text="Use parallel tool calling.")),
             UserMessage(
@@ -120,7 +143,28 @@ async_snapshot = snapshot(
                 ]
             ),
         ],
-        "format_type": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 stream_snapshot = snapshot(
@@ -179,6 +223,28 @@ The secrets associated with the passwords are as follows:
             ),
         ],
         "format_type": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 37,
     }
 )
@@ -238,6 +304,28 @@ The secrets associated with the passwords are as follows:
             ),
         ],
         "format_type": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 37,
     }
 )

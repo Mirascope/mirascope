@@ -13,22 +13,6 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
-                    )
-                ]
-            ),
-        ],
         "format_type": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
@@ -49,6 +33,23 @@ sync_snapshot = snapshot(
             },
             "mode": "strict",
         },
+        "messages": [
+            UserMessage(
+                content=[
+                    Text(
+                        text="Please recommend the most popular book by Patrick Rothfuss"
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
+                    )
+                ]
+            ),
+        ],
+        "tools": [],
     }
 )
 async_snapshot = snapshot(
@@ -57,22 +58,6 @@ async_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
-                    )
-                ]
-            ),
-        ],
         "format_type": {
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
@@ -93,6 +78,23 @@ async_snapshot = snapshot(
             },
             "mode": "strict",
         },
+        "messages": [
+            UserMessage(
+                content=[
+                    Text(
+                        text="Please recommend the most popular book by Patrick Rothfuss"
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
+                    )
+                ]
+            ),
+        ],
+        "tools": [],
     }
 )
 stream_snapshot = snapshot(
@@ -136,6 +138,7 @@ stream_snapshot = snapshot(
             },
             "mode": "strict",
         },
+        "tools": [],
         "n_chunks": 3,
     }
 )
@@ -180,6 +183,7 @@ async_stream_snapshot = snapshot(
             },
             "mode": "strict",
         },
+        "tools": [],
         "n_chunks": 3,
     }
 )

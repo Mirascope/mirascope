@@ -14,6 +14,21 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {"title": "Rating", "type": "integer"},
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -40,21 +55,7 @@ lucky number 7.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "Book",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {"title": "Rating", "type": "integer"},
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-        },
+        "tools": [],
     }
 )
 async_snapshot = snapshot(
@@ -63,6 +64,21 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {"title": "Rating", "type": "integer"},
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -89,21 +105,7 @@ lucky number 7.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "Book",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {"title": "Rating", "type": "integer"},
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-        },
+        "tools": [],
     }
 )
 stream_snapshot = snapshot(
@@ -152,6 +154,7 @@ lucky number 7.\
             },
             "mode": "json",
         },
+        "tools": [],
         "n_chunks": 33,
     }
 )
@@ -201,6 +204,7 @@ lucky number 7.\
             },
             "mode": "json",
         },
+        "tools": [],
         "n_chunks": 33,
     }
 )

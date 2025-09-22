@@ -26,6 +26,15 @@ def format_snapshot_dict(
     }
 
 
+def tool_snapshot(tool: llm.tools.ToolSchema) -> dict:
+    return {
+        "name": tool.name,
+        "description": tool.description,
+        "parameters": tool.parameters.model_dump_json(indent=2),
+        "strict": tool.strict,
+    }
+
+
 def response_snapshot_dict(response: llm.responses.RootResponse[Any, Any]) -> dict:
     dict_copy = response.__dict__.copy()
 
@@ -42,9 +51,9 @@ def response_snapshot_dict(response: llm.responses.RootResponse[Any, Any]) -> di
     dict_copy.pop("thoughts")
     dict_copy.pop("tool_calls")
 
-    format_type = dict_copy.pop("format_type")
-    dict_copy["format_type"] = format_snapshot_dict(format_type)
-    dict_copy.pop("toolkit")  # TODO: Snapshot tools in similar fashion to format types
+    dict_copy["format_type"] = format_snapshot_dict(response.format_type)
+    dict_copy.pop("toolkit")
+    dict_copy["tools"] = [tool_snapshot(tool) for tool in response.toolkit.tools]
     return dict_copy
 
 
@@ -65,6 +74,7 @@ def stream_response_snapshot_dict(
         "finish_reason": response.finish_reason,
         "messages": list(response.messages),
         "format_type": format_snapshot_dict(response.format_type),
+        "tools": [tool_snapshot(tool) for tool in response.toolkit.tools],
         "n_chunks": len(
             response.chunks
         ),  # Just snapshot the number of chunks to minimize bloat. Chunk reconstruction is tested separately.

@@ -13,11 +13,12 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": None,
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(content=[Text(text="4200 + 42 = 4242")]),
         ],
-        "format_type": None,
+        "tools": [],
     }
 )
 async_snapshot = snapshot(
@@ -26,11 +27,12 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": None,
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(content=[Text(text="4200 + 42 = 4242")]),
         ],
-        "format_type": None,
+        "tools": [],
     }
 )
 stream_snapshot = snapshot(
@@ -43,6 +45,7 @@ stream_snapshot = snapshot(
             AssistantMessage(content=[Text(text="4200 + 42 = 4242")]),
         ],
         "format_type": None,
+        "tools": [],
         "n_chunks": 3,
     }
 )
@@ -56,6 +59,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(content=[Text(text="4200 + 42 = 4242")]),
         ],
         "format_type": None,
+        "tools": [],
         "n_chunks": 3,
     }
 )

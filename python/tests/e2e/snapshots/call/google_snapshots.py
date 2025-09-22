@@ -13,6 +13,7 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": None,
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(
@@ -32,7 +33,7 @@ So, 4200 + 42 = **4242**.\
                 ]
             ),
         ],
-        "format_type": None,
+        "tools": [],
     }
 )
 async_snapshot = snapshot(
@@ -41,6 +42,7 @@ async_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": None,
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(
@@ -60,7 +62,7 @@ So, 4200 + 42 = **4242**.\
                 ]
             ),
         ],
-        "format_type": None,
+        "tools": [],
     }
 )
 stream_snapshot = snapshot(
@@ -90,6 +92,7 @@ So, 4200 + 42 = **4242**.\
             ),
         ],
         "format_type": None,
+        "tools": [],
         "n_chunks": 4,
     }
 )
@@ -118,6 +121,7 @@ So, 4200 + 42 = **4242**.\
             ),
         ],
         "format_type": None,
+        "tools": [],
         "n_chunks": 4,
     }
 )

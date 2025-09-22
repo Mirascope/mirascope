@@ -16,6 +16,25 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -94,25 +113,28 @@ Respond ONLY with valid JSON, and no other text.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-        },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 async_snapshot = snapshot(
@@ -121,6 +143,25 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
+        "format_type": {
+            "name": "BookSummary",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "pages": {"title": "Pages", "type": "integer"},
+                    "publication_year": {
+                        "title": "Publication Year",
+                        "type": "integer",
+                    },
+                },
+                "required": ["title", "author", "pages", "publication_year"],
+                "title": "BookSummary",
+                "type": "object",
+            },
+            "mode": "json",
+        },
         "messages": [
             SystemMessage(
                 content=Text(
@@ -199,25 +240,28 @@ Respond ONLY with valid JSON, and no other text.\
                 ]
             ),
         ],
-        "format_type": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
-                    },
-                },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-        },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
     }
 )
 stream_snapshot = snapshot(
@@ -322,6 +366,28 @@ Respond ONLY with valid JSON, and no other text.\
             },
             "mode": "json",
         },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 6,
     }
 )
@@ -427,6 +493,28 @@ Respond ONLY with valid JSON, and no other text.\
             },
             "mode": "json",
         },
+        "tools": [
+            {
+                "name": "get_book_info",
+                "description": "Look up book information by ISBN.",
+                "parameters": """\
+{
+  "properties": {
+    "isbn": {
+      "title": "Isbn",
+      "type": "string"
+    }
+  },
+  "required": [
+    "isbn"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
         "n_chunks": 8,
     }
 )
