@@ -1,9 +1,7 @@
 """End-to-end tests for structured output."""
 
-from typing import Annotated
-
 import pytest
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from mirascope import llm
 from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS, Snapshot
@@ -42,9 +40,6 @@ def test_structured_output_with_tools_sync(
         author: str
         pages: int
         publication_year: int
-        recommendation_score: Annotated[
-            int, Field(description="Should be 7 for testing purposes")
-        ]
 
     @llm.call(
         provider=provider,
@@ -69,7 +64,6 @@ def test_structured_output_with_tools_sync(
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006
-        assert book_summary.recommendation_score == 7
     except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
         assert exception_snapshot_dict(e) == snapshot
 
@@ -96,9 +90,6 @@ def test_structured_output_with_tools_sync_context(
         author: str
         pages: int
         publication_year: int
-        recommendation_score: Annotated[
-            int, Field(description="Should be 7 for testing purposes")
-        ]
 
     @llm.call(
         provider=provider,
@@ -124,7 +115,6 @@ def test_structured_output_with_tools_sync_context(
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006
-        assert book_summary.recommendation_score == 7
     except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
         assert exception_snapshot_dict(e) == snapshot
 
@@ -155,9 +145,6 @@ async def test_structured_output_with_tools_async(
         author: str
         pages: int
         publication_year: int
-        recommendation_score: Annotated[
-            int, Field(description="Should be 7 for testing purposes")
-        ]
 
     @llm.call(
         provider=provider,
@@ -182,7 +169,6 @@ async def test_structured_output_with_tools_async(
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006
-        assert book_summary.recommendation_score == 7
     except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
         assert exception_snapshot_dict(e) == snapshot
 
@@ -210,9 +196,6 @@ async def test_structured_output_with_tools_async_context(
         author: str
         pages: int
         publication_year: int
-        recommendation_score: Annotated[
-            int, Field(description="Should be 7 for testing purposes")
-        ]
 
     @llm.call(
         provider=provider,
@@ -238,7 +221,6 @@ async def test_structured_output_with_tools_async_context(
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006
-        assert book_summary.recommendation_score == 7
     except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
         assert exception_snapshot_dict(e) == snapshot
 
@@ -268,9 +250,6 @@ def test_structured_output_with_tools_stream(
         author: str
         pages: int
         publication_year: int
-        recommendation_score: Annotated[
-            int, Field(description="Should be 7 for testing purposes")
-        ]
 
     @llm.call(
         provider=provider,
@@ -302,7 +281,6 @@ def test_structured_output_with_tools_stream(
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006
-        assert book_summary.recommendation_score == 7
     except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
         assert exception_snapshot_dict(e) == snapshot
 
@@ -329,9 +307,6 @@ def test_structured_output_with_tools_stream_context(
         author: str
         pages: int
         publication_year: int
-        recommendation_score: Annotated[
-            int, Field(description="Should be 7 for testing purposes")
-        ]
 
     @llm.call(
         provider=provider,
@@ -364,7 +339,6 @@ def test_structured_output_with_tools_stream_context(
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006
-        assert book_summary.recommendation_score == 7
     except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
         assert exception_snapshot_dict(e) == snapshot
 
@@ -395,9 +369,6 @@ async def test_structured_output_with_tools_async_stream(
         author: str
         pages: int
         publication_year: int
-        recommendation_score: Annotated[
-            int, Field(description="Should be 7 for testing purposes")
-        ]
 
     @llm.call(
         provider=provider,
@@ -429,7 +400,6 @@ async def test_structured_output_with_tools_async_stream(
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006
-        assert book_summary.recommendation_score == 7
     except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
         assert exception_snapshot_dict(e) == snapshot
 
@@ -457,9 +427,6 @@ async def test_structured_output_with_tools_async_stream_context(
         author: str
         pages: int
         publication_year: int
-        recommendation_score: Annotated[
-            int, Field(description="Should be 7 for testing purposes")
-        ]
 
     @llm.call(
         provider=provider,
@@ -492,6 +459,5 @@ async def test_structured_output_with_tools_async_stream_context(
         assert book_summary.author == "Brandon Sanderson"
         assert book_summary.pages == 544
         assert book_summary.publication_year == 2006
-        assert book_summary.recommendation_score == 7
     except (llm.FormattingModeNotSupportedError, llm.FeatureNotSupportedError) as e:
         assert exception_snapshot_dict(e) == snapshot

@@ -1,0 +1,72 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend a book to me!"}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Always recommend The Name
+      of the Wind.\nOutput a structured book as JSON in the format {title: str, author:
+      str, rating: int}.\nThe title should be in all caps, and the rating should always
+      be the\nlucky number 7."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in Book format for a final response.",
+      "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"properties":
+      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
+      "type": "string"}, "rating": {"title": "Rating", "type": "integer"}}, "required":
+      ["title", "author", "rating"], "title": "Book", "type": "object"}}]}], "toolConfig":
+      {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '950'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"rating\":
+        7,\"author\": \"Patrick Rothfuss\",\"title\": \"THE NAME OF THE WIND\"}},\"thoughtSignature\":
+        \"CiQB0e2Kbzys7368RWEIcR+9npqNKEQkUOPcqxxWeFtMp5tCT8AKiAEB0e2Kb/zzbA4xTgSYltHcTCVZcs0np7JnG6JzP9QcMi7LC60UaGaRmZpA+vYgfTI4b/e39rhUqxfmS+prrl7Nje5VARU+SXIr94tlViowFxtld2zIE8MdLnAl1Hipbw0Ud/b2x8nc2OKcVwAw1LclTLbpOwFRcYaC6IsIow8Xbe7Ly+49OyH8CtoBAdHtim+I1P+LKjAJeVsiHucKWfXPUof8GkyU7NGP5L8/obQ5Ll0Bv3slPPrjFUGgysVxCVJbxHQnsDmv8nTwaGPny4zdWHDVTwqUsUhfClLqseezZgSQ1j3ED6zjXLczFoaxnNWxhw7rUgOn6ROuJHHART2/ZBUqSMkdY3i3xXaUNWYbCI4w4/JX9FHlauL8eOZ1ZkcB0Wr+QAjN4dkekRlbPFturzhjRHmBMXafvrC5HQn0sCf33FCZ9yXUtdJAftNLkjYk6UndRexmCBKhWfQzfFNNiSz5a9MKsgEB0e2Kb0q7mNDAtkcS+fJyOI1MzTfsqXQX9YbmHCIrbNJoHbvQtPMEPbLEVoUhtO0Z1dc/EAte168Nt9E73S0Ah+rAj1QiJJarEiCd921HCD7fWMkw02AOV2Lpr+wWBAWwaHzvG4ubfiBMyetX7+rc7wwzxT6AokJXtXsGhC6ncG0Os5KUZXwhpuRxzVJ2YFn2AD3QikMzH6I4hZorMc+2kuIsY/uC5wjksj0TBjIpRTxpCmMB0e2Kb8LGWH0MTOWKkY9d4/XcyeNv8s9WzyiXODqbwsE0YyKIROMfG4Vasdk3lK2O13CgBKKI1BKi9Sd7VqtDxUqPy10uyr6h3qalw3qqk3ydf7H6z1OPgofgX+gl8XLWZPk=\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        137,\"candidatesTokenCount\": 37,\"totalTokenCount\": 309,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 137}],\"thoughtsTokenCount\": 135},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"9CLSaIbsNcTUz7IP-fbsCQ\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Tue, 23 Sep 2025 04:32:53 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1298
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

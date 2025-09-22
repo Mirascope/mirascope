@@ -38,19 +38,13 @@ Respond with valid JSON that matches this exact schema:
     "publication_year": {
       "title": "Publication Year",
       "type": "integer"
-    },
-    "recommendation_score": {
-      "description": "Should be 7 for testing purposes",
-      "title": "Recommendation Score",
-      "type": "integer"
     }
   },
   "required": [
     "title",
     "author",
     "pages",
-    "publication_year",
-    "recommendation_score"
+    "publication_year"
   ],
   "title": "BookSummary",
   "type": "object"
@@ -70,7 +64,7 @@ Respond ONLY with valid JSON, and no other text.\
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="toolu_014syv9pxyXSsqhw9ow7KjQT",
+                        id="toolu_011wZPL5egbhGcaiuEa1cHZ7",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -79,7 +73,7 @@ Respond ONLY with valid JSON, and no other text.\
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_014syv9pxyXSsqhw9ow7KjQT",
+                        id="toolu_011wZPL5egbhGcaiuEa1cHZ7",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -93,8 +87,7 @@ Respond ONLY with valid JSON, and no other text.\
   "title": "Mistborn: The Final Empire",
   "author": "Brandon Sanderson",
   "pages": 544,
-  "publication_year": 2006,
-  "recommendation_score": 7
+  "publication_year": 2006
 }\
 """
                     )
@@ -113,19 +106,8 @@ Respond ONLY with valid JSON, and no other text.\
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
@@ -161,19 +143,13 @@ Respond with valid JSON that matches this exact schema:
     "publication_year": {
       "title": "Publication Year",
       "type": "integer"
-    },
-    "recommendation_score": {
-      "description": "Should be 7 for testing purposes",
-      "title": "Recommendation Score",
-      "type": "integer"
     }
   },
   "required": [
     "title",
     "author",
     "pages",
-    "publication_year",
-    "recommendation_score"
+    "publication_year"
   ],
   "title": "BookSummary",
   "type": "object"
@@ -193,7 +169,7 @@ Respond ONLY with valid JSON, and no other text.\
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="toolu_01BXnk8QZqNcrCUoHtBrvue6",
+                        id="toolu_01FfM8osBxGT6iMT51pte3eA",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -202,7 +178,7 @@ Respond ONLY with valid JSON, and no other text.\
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_01BXnk8QZqNcrCUoHtBrvue6",
+                        id="toolu_01FfM8osBxGT6iMT51pte3eA",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -216,8 +192,7 @@ Respond ONLY with valid JSON, and no other text.\
   "title": "Mistborn: The Final Empire",
   "author": "Brandon Sanderson",
   "pages": 544,
-  "publication_year": 2006,
-  "recommendation_score": 7
+  "publication_year": 2006
 }\
 """
                     )
@@ -236,19 +211,8 @@ Respond ONLY with valid JSON, and no other text.\
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
@@ -283,19 +247,13 @@ Respond with valid JSON that matches this exact schema:
     "publication_year": {
       "title": "Publication Year",
       "type": "integer"
-    },
-    "recommendation_score": {
-      "description": "Should be 7 for testing purposes",
-      "title": "Recommendation Score",
-      "type": "integer"
     }
   },
   "required": [
     "title",
     "author",
     "pages",
-    "publication_year",
-    "recommendation_score"
+    "publication_year"
   ],
   "title": "BookSummary",
   "type": "object"
@@ -315,7 +273,7 @@ Respond ONLY with valid JSON, and no other text.\
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="toolu_01H6zz68zKpYhCKurvEeuA1c",
+                        id="toolu_01RdKt7nkatoCMRgh5Rp8XmM",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -324,7 +282,7 @@ Respond ONLY with valid JSON, and no other text.\
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_01H6zz68zKpYhCKurvEeuA1c",
+                        id="toolu_01RdKt7nkatoCMRgh5Rp8XmM",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -336,10 +294,9 @@ Respond ONLY with valid JSON, and no other text.\
                         text="""\
 {
   "title": "Mistborn: The Final Empire",
-  "author": "Brandon Sanderson",
+  "author": "Brandon Sanderson", \n\
   "pages": 544,
-  "publication_year": 2006,
-  "recommendation_score": 7
+  "publication_year": 2006
 }\
 """
                     )
@@ -358,25 +315,14 @@ Respond ONLY with valid JSON, and no other text.\
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
             "mode": "json",
         },
-        "n_chunks": 10,
+        "n_chunks": 6,
     }
 )
 async_stream_snapshot = snapshot(
@@ -406,19 +352,13 @@ Respond with valid JSON that matches this exact schema:
     "publication_year": {
       "title": "Publication Year",
       "type": "integer"
-    },
-    "recommendation_score": {
-      "description": "Should be 7 for testing purposes",
-      "title": "Recommendation Score",
-      "type": "integer"
     }
   },
   "required": [
     "title",
     "author",
     "pages",
-    "publication_year",
-    "recommendation_score"
+    "publication_year"
   ],
   "title": "BookSummary",
   "type": "object"
@@ -438,7 +378,7 @@ Respond ONLY with valid JSON, and no other text.\
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="toolu_01Jhk4ZExrnWwE23ezd3Byk8",
+                        id="toolu_01Wx5nMUANpZZzhVfKNw9puK",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -447,7 +387,7 @@ Respond ONLY with valid JSON, and no other text.\
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_01Jhk4ZExrnWwE23ezd3Byk8",
+                        id="toolu_01Wx5nMUANpZZzhVfKNw9puK",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -461,8 +401,7 @@ Respond ONLY with valid JSON, and no other text.\
   "title": "Mistborn: The Final Empire",
   "author": "Brandon Sanderson",
   "pages": 544,
-  "publication_year": 2006,
-  "recommendation_score": 7
+  "publication_year": 2006
 }\
 """
                     )
@@ -481,24 +420,13 @@ Respond ONLY with valid JSON, and no other text.\
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
             "mode": "json",
         },
-        "n_chunks": 10,
+        "n_chunks": 8,
     }
 )

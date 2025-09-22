@@ -28,8 +28,13 @@ def test_call_with_tools_sync(
         model_id=model_id,
         tools=[secret_retrieval_tool],
     )
-    def call(passwords: list[str]) -> str:
-        return f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+    def call(passwords: list[str]) -> list[llm.Message]:
+        return [
+            llm.messages.system("Use parallel tool calling."),
+            llm.messages.user(
+                f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+            ),
+        ]
 
     response = call(["mellon", "radiance"])
     assert len(response.tool_calls) == 2, (
@@ -64,8 +69,15 @@ def test_call_with_tools_sync_context(
         model_id=model_id,
         tools=[secret_retrieval_tool],
     )
-    def call(ctx: llm.Context[dict[str, str]], passwords: list[str]) -> str:
-        return f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+    def call(
+        ctx: llm.Context[dict[str, str]], passwords: list[str]
+    ) -> list[llm.Message]:
+        return [
+            llm.messages.system("Use parallel tool calling."),
+            llm.messages.user(
+                f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+            ),
+        ]
 
     ctx = llm.Context(deps=PASSWORD_MAP)
     response = call(ctx, ["mellon", "radiance"])
@@ -107,8 +119,13 @@ async def test_call_with_tools_async(
         model_id=model_id,
         tools=[secret_retrieval_tool],
     )
-    async def call(passwords: list[str]) -> str:
-        return f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+    async def call(passwords: list[str]) -> list[llm.Message]:
+        return [
+            llm.messages.system("Use parallel tool calling."),
+            llm.messages.user(
+                f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+            ),
+        ]
 
     response = await call(["mellon", "radiance"])
     assert len(response.tool_calls) == 2, (
@@ -146,8 +163,15 @@ async def test_call_with_tools_async_context(
         model_id=model_id,
         tools=[secret_retrieval_tool],
     )
-    async def call(ctx: llm.Context[dict[str, str]], passwords: list[str]) -> str:
-        return f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+    async def call(
+        ctx: llm.Context[dict[str, str]], passwords: list[str]
+    ) -> list[llm.Message]:
+        return [
+            llm.messages.system("Use parallel tool calling."),
+            llm.messages.user(
+                f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+            ),
+        ]
 
     ctx = llm.Context(deps=PASSWORD_MAP)
     response = await call(ctx, ["mellon", "radiance"])
@@ -186,8 +210,13 @@ def test_call_with_tools_stream(
         model_id=model_id,
         tools=[secret_retrieval_tool],
     )
-    def call(passwords: list[str]) -> str:
-        return f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+    def call(passwords: list[str]) -> list[llm.Message]:
+        return [
+            llm.messages.system("Use parallel tool calling."),
+            llm.messages.user(
+                f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+            ),
+        ]
 
     response = call.stream(["mellon", "radiance"])
 
@@ -229,8 +258,15 @@ def test_call_with_tools_stream_context(
         model_id=model_id,
         tools=[secret_retrieval_tool],
     )
-    def call(ctx: llm.Context[dict[str, str]], passwords: list[str]) -> str:
-        return f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+    def call(
+        ctx: llm.Context[dict[str, str]], passwords: list[str]
+    ) -> list[llm.Message]:
+        return [
+            llm.messages.system("Use parallel tool calling."),
+            llm.messages.user(
+                f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+            ),
+        ]
 
     ctx = llm.Context(deps=PASSWORD_MAP)
     response = call.stream(ctx, ["mellon", "radiance"])
@@ -277,8 +313,13 @@ async def test_call_with_tools_async_stream(
         model_id=model_id,
         tools=[secret_retrieval_tool],
     )
-    async def call(passwords: list[str]) -> str:
-        return f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+    async def call(passwords: list[str]) -> list[llm.Message]:
+        return [
+            llm.messages.system("Use parallel tool calling."),
+            llm.messages.user(
+                f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+            ),
+        ]
 
     response = await call.stream(["mellon", "radiance"])
 
@@ -323,8 +364,15 @@ async def test_call_with_tools_async_stream_context(
         model_id=model_id,
         tools=[secret_retrieval_tool],
     )
-    async def call(ctx: llm.Context[dict[str, str]], passwords: list[str]) -> str:
-        return f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+    async def call(
+        ctx: llm.Context[dict[str, str]], passwords: list[str]
+    ) -> list[llm.Message]:
+        return [
+            llm.messages.system("Use parallel tool calling."),
+            llm.messages.user(
+                f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+            ),
+        ]
 
     ctx = llm.Context(deps=PASSWORD_MAP)
     response = await call.stream(ctx, ["mellon", "radiance"])

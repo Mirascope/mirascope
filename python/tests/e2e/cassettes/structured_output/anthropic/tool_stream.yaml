@@ -5,7 +5,10 @@ interactions:
       you are ready to respond to the user, call the __mirascope_formatted_output_tool__
       tool to output a structured response.\nDo NOT output any text in addition to
       the tool call.","tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
-      this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"stream":true}'
+      this tool to extract data in Book format for a final response.\nA book with
+      a rating. The title should be in all caps!","input_schema":{"description":"A
+      book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"stream":true}'
     headers:
       accept:
       - application/json
@@ -16,7 +19,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '779'
+      - '1021'
       content-type:
       - application/json
       host:
@@ -51,18 +54,28 @@ interactions:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"id":"msg_017fzWdDxxfVdMo8Xi9uG8yZ","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":447,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":20,"service_tier":"standard"}}            }
+        data: {"type":"message_start","message":{"id":"msg_01PtvHesPYiiQHdzoNPBBfZU","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":514,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":20,"service_tier":"standard"}}               }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_01SUYsMFX2Nvgmwnr9SRX4FC","name":"__mirascope_formatted_output_tool__","input":{}}
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_014K3fMYN7mkfvsXP3PFS1ts","name":"__mirascope_formatted_output_tool__","input":{}}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}
         }
 
 
+        event: ping
+
+        data: {"type": "ping"}
+
+
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}    }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\""}               }
 
 
         event: ping
@@ -72,8 +85,7 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"title\":
-        \"T"}        }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"title"}}
 
 
         event: ping
@@ -83,8 +95,7 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"he
-        Name of"}           }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\":"}}
 
 
         event: ping
@@ -95,7 +106,7 @@ interactions:
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"
-        t"}      }
+        \"THE NAME"}           }
 
 
         event: ping
@@ -105,8 +116,8 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"he
-        W"}      }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"
+        O"}         }
 
 
         event: ping
@@ -116,51 +127,100 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"ind\""}           }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"F
+        THE"}       }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"
+        W"}          }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"IND"}        }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"\""}  }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",
-        \"au"}           }
+        \"autho"}               }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"thor\":
-        \"P"}}
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"r\""}    }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"atrick
-        Ro"}      }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":":
+        \"Pat"}              }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"thfuss\"}"}     }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"rick
+        Roth"}        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"fuss\""}  }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":",
+        \"ra"}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"ting\":
+        7}"}        }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0       }
+        data: {"type":"content_block_stop","index":0      }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":447,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":49}    }
+        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":514,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":67}              }
 
 
         event: message_stop
 
-        data: {"type":"message_stop" }
+        data: {"type":"message_stop"   }
 
 
         '
     headers:
       CF-RAY:
-      - 980b997089b5a3a1-SEA
+      - 98374d5eed23c366-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -168,7 +228,7 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Wed, 17 Sep 2025 21:12:03 GMT
+      - Tue, 23 Sep 2025 04:29:40 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -182,35 +242,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-17T21:12:01Z'
+      - '2025-09-23T04:29:39Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-17T21:12:01Z'
+      - '2025-09-23T04:29:39Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-17T21:12:01Z'
+      - '2025-09-23T04:29:39Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-17T21:12:01Z'
+      - '2025-09-23T04:29:39Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTEfK4iCTuhruJNTB1m91
+      - req_011CTQhjCzxfaMjNr7mt8AVW
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2249'
+      - '1239'
     status:
       code: 200
       message: OK

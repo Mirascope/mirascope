@@ -20,6 +20,7 @@ sync_snapshot = snapshot(
                     text="""\
 Respond with valid JSON that matches this exact schema:
 {
+  "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
       "title": "Title",
@@ -28,11 +29,17 @@ Respond with valid JSON that matches this exact schema:
     "author": {
       "title": "Author",
       "type": "string"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
     }
   },
   "required": [
     "title",
-    "author"
+    "author",
+    "rating"
   ],
   "title": "Book",
   "type": "object"
@@ -54,8 +61,9 @@ Respond ONLY with valid JSON, and no other text.\
                     Text(
                         text="""\
 {
-  "title": "The Name of the Wind",
-  "author": "Patrick Rothfuss"
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
 }\
 """
                     )
@@ -64,13 +72,19 @@ Respond ONLY with valid JSON, and no other text.\
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
@@ -90,6 +104,7 @@ async_snapshot = snapshot(
                     text="""\
 Respond with valid JSON that matches this exact schema:
 {
+  "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
       "title": "Title",
@@ -98,11 +113,17 @@ Respond with valid JSON that matches this exact schema:
     "author": {
       "title": "Author",
       "type": "string"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
     }
   },
   "required": [
     "title",
-    "author"
+    "author",
+    "rating"
   ],
   "title": "Book",
   "type": "object"
@@ -124,8 +145,9 @@ Respond ONLY with valid JSON, and no other text.\
                     Text(
                         text="""\
 {
-  "title": "The Name of the Wind",
-  "author": "Patrick Rothfuss"
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
 }\
 """
                     )
@@ -134,13 +156,19 @@ Respond ONLY with valid JSON, and no other text.\
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
@@ -159,6 +187,7 @@ stream_snapshot = snapshot(
                     text="""\
 Respond with valid JSON that matches this exact schema:
 {
+  "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
       "title": "Title",
@@ -167,11 +196,17 @@ Respond with valid JSON that matches this exact schema:
     "author": {
       "title": "Author",
       "type": "string"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
     }
   },
   "required": [
     "title",
-    "author"
+    "author",
+    "rating"
   ],
   "title": "Book",
   "type": "object"
@@ -193,8 +228,9 @@ Respond ONLY with valid JSON, and no other text.\
                     Text(
                         text="""\
 {
-  "title": "The Name of the Wind",
-  "author": "Patrick Rothfuss"
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
 }\
 """
                     )
@@ -203,13 +239,19 @@ Respond ONLY with valid JSON, and no other text.\
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
@@ -229,6 +271,7 @@ async_stream_snapshot = snapshot(
                     text="""\
 Respond with valid JSON that matches this exact schema:
 {
+  "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
       "title": "Title",
@@ -237,11 +280,17 @@ Respond with valid JSON that matches this exact schema:
     "author": {
       "title": "Author",
       "type": "string"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
     }
   },
   "required": [
     "title",
-    "author"
+    "author",
+    "rating"
   ],
   "title": "Book",
   "type": "object"
@@ -263,8 +312,9 @@ Respond ONLY with valid JSON, and no other text.\
                     Text(
                         text="""\
 {
-  "title": "The Name of the Wind",
-  "author": "Patrick Rothfuss"
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
 }\
 """
                     )
@@ -273,18 +323,24 @@ Respond ONLY with valid JSON, and no other text.\
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
             "mode": "json",
         },
-        "n_chunks": 5,
+        "n_chunks": 6,
     }
 )

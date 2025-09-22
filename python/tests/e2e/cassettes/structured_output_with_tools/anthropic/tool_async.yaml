@@ -7,8 +7,7 @@ interactions:
       response.\nDo NOT output any text in addition to the tool call.","tool_choice":{"type":"any"},"tools":[{"name":"get_book_info","description":"Look
       up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}},{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in BookSummary format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
-      Year","type":"integer"},"recommendation_score":{"description":"Should be 7 for
-      testing purposes","title":"Recommendation Score","type":"integer"}},"required":["title","author","pages","publication_year","recommendation_score"],"title":"BookSummary","type":"object"}}]}'
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"title":"BookSummary","type":"object"}}]}'
     headers:
       accept:
       - application/json
@@ -19,7 +18,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1234'
+      - '1089'
       content-type:
       - application/json
       host:
@@ -51,15 +50,15 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3SRW0vDQBCF/8t53kASk172VUpBrRRBTRFZtptpG5rsxr0UteS/yxaKVvFx5jvn
-        zAxzRFODo3NbkWarBwqbarWYVp8jd13Pb6fVe5WBwX/0FFXknNwSGKxpY0M61zgvtQdDZ2pqwaFa
-        GWpKnNGafFIkeZqXaZkVYFBGe9Ie/OV4jvTGtCK4mHlaJNZBpNlyMSuen3KaHWY364O+n989Lq9y
-        MGjZRd+WvFgbsxeN3pho1n3w4Ec0bq3BkSbjUXmVZNl4klQYhlcG500vLEln9OXgE3D0FkgrAteh
-        bRnC6dIYGJOFN3vSDnxUjBmUVDsSypL0jdHiUpGeuSVZ/8fO3jiA+h11ZGUryu6v/ptmu990YDDB
-        /2wVEwZH9tAoEr4hC474n1raGsPwBQAA//8DAC6WKfXtAQAA
+        H4sIAAAAAAAAAwAAAP//dJFPT8JAEMW/yztvkxZbKL1p4MTNiMEYs1naERbanbp/CEj63c2SEEXj
+        ceb33puZzBm6QYXObWSa3Z/Wi3G3e1TzMD+WzeGkp5wfIeBPPUUVOac2BAHLbWwo57TzyngIdNxQ
+        iwp1q0JDiWNjyCd5MkpHRVpkOQRqNp6MR/V6vkZ65lYGFzMvi8Q6yDQrNuXxabl8WOye9/1nOVtl
+        ml9mEDCqi74Neblm3ktt3jmaTR88qjO0WxtUSJPJuLhLsmxSJisMw5uA89xLS8qxuR18AY4+Apma
+        UJnQtgLhcmkMjMnS856MQzVOpwK1qrcka0vKazbyVpFeuSXV/Meu3jiA+i11ZFUri+6v/ptm2990
+        EODgf7byUsCRPeiapNdkUSH+p1G2wTB8AQAA//8DAHoNAqTtAQAA
     headers:
       CF-RAY:
-      - 980ba7592f63a37b-SEA
+      - 983754b5ecb1fa3b-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -67,7 +66,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 17 Sep 2025 21:21:32 GMT
+      - Tue, 23 Sep 2025 04:34:42 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -81,50 +80,49 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-17T21:21:32Z'
+      - '2025-09-23T04:34:42Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-17T21:21:32Z'
+      - '2025-09-23T04:34:42Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-17T21:21:31Z'
+      - '2025-09-23T04:34:39Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-17T21:21:32Z'
+      - '2025-09-23T04:34:42Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTEg34VDuxEUt3ranRQ3K
+      - req_011CTQi7NRrgRCZZZVDnLWjN
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1171'
+      - '2693'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01PME4WV2eEvEJbvnNGLUP32","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01PME4WV2eEvEJbvnNGLUP32","content":"Title:
+      score"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_015g8xTUUBKjVkpz8DX1ioYD","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_015g8xTUUBKjVkpz8DX1ioYD","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25"}]}],"model":"claude-sonnet-4-0","system":"When you are ready to
       respond to the user, call the __mirascope_formatted_output_tool__ tool to output
       a structured response.\nDo NOT output any text in addition to the tool call.","tool_choice":{"type":"any"},"tools":[{"name":"get_book_info","description":"Look
       up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}},{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in BookSummary format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
-      Year","type":"integer"},"recommendation_score":{"description":"Should be 7 for
-      testing purposes","title":"Recommendation Score","type":"integer"}},"required":["title","author","pages","publication_year","recommendation_score"],"title":"BookSummary","type":"object"}}]}'
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"title":"BookSummary","type":"object"}}]}'
     headers:
       accept:
       - application/json
@@ -135,7 +133,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1587'
+      - '1442'
       content-type:
       - application/json
       host:
@@ -167,17 +165,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJJbbxMxEIX/SjTPjrSb7iaR31r1ggR9AYQoFbKm9rBrZX3BHgNVtP8d
-        eaOACuqj5ztzZubIR7AGJLg8qKa9+fWgx0/D4XAbR3N5f7G7+3n3/gsI4OdIVUU540AgIIWpFjBn
-        mxk9gwAXDE0gQU9YDK1z8J543a03zaZv+rYDATp4Js8gH49nSw5hUiVXz2WR+i6qaa/eDW8OlPfX
-        n9uE28E9vN13l1sQ4NHVPqWcTZh1iKS+heSQmYwKhWNhtZiqauljYZBHYMvLwvc281NIXq4+jrS6
-        tR6n1Y2LNtUFsPAYEki4SuhN8KsP6A2lHDwIiDhQBtl3nYBYniarkW3w6pkwgdw0zVZAIh2cI29O
-        KOuQCORunr8KyByiSoTV7cXZC8j0vZDXBNKXaRJQlpzl8XSB4nAgn0Hu+gsBGvVISic6TXmpaM48
-        EZrX2Lm3DqA4kqOEk+rd//q/tB3/pbOAP3mfSu1mLyBT+mE1KbZUs6zfw2AyMM+/AQAA//8DACuk
-        9UNsAgAA
+        H4sIAAAAAAAAA3RS22rcMBD9lWWetWAvdrrRY0qSUhIItA8ppYhZabJWIkuyNGoui/+9yMu2pKWP
+        mnOZMwcdwBqQMOa9atpt6ce7h2k4u7y525bpcYq757crEMCvkSqLcsY9gYAUXB1gzjYzegYBYzDk
+        QIJ2WAytc/CeeN2tN82mb/q2AwE6eCbPIL8fTpYcglMlV88lSH0X1bRt6j5fbF++5U8f9fX5/cvb
+        9LTbbEGAx7HqlBptwqxDJPUQ0ojMZFQoHAurxVRVSx8LgzwAW14C39rMu5C8XH0daHVlPbrV5Rht
+        qgGw8BASSLhI6E3wqy/oDaUcPAiIuKcMsu86AbHsnNXINnj1SphAbprmbJ5/CMgcokqEVfTuugXI
+        NBXymkD64pyAstQpD8egisMT+QzyQ9sL0KgHUjrRcc97RnPCE6H5H3bS1gUUBxopoVP9+C//D9oO
+        f6OzgN+1Hkdtcy4gU/ppNSm2VCurv8BgMjDPvwAAAP//AwDj1NAZUwIAAA==
     headers:
       CF-RAY:
-      - 980ba7615fb2a37b-SEA
+      - 983754c78a93fa3b-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -185,7 +182,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 17 Sep 2025 21:21:34 GMT
+      - Tue, 23 Sep 2025 04:34:46 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -199,35 +196,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-17T21:21:33Z'
+      - '2025-09-23T04:34:44Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-17T21:21:34Z'
+      - '2025-09-23T04:34:45Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-17T21:21:32Z'
+      - '2025-09-23T04:34:42Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-17T21:21:33Z'
+      - '2025-09-23T04:34:44Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTEg3A2r56PEkuzvS4m97
+      - req_011CTQi7aPCTgKgg2p9cx6N5
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1964'
+      - '3454'
     status:
       code: 200
       message: OK

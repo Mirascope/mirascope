@@ -24,20 +24,26 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"The Name of the Wind","author":"Patrick Rothfuss"}'
+                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
                     )
                 ]
             ),
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
@@ -62,20 +68,26 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"The Name of the Wind","author":"Patrick Rothfuss"}'
+                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
                     )
                 ]
             ),
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
@@ -99,26 +111,32 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"The Name of the Wind","author":"Patrick Rothfuss"}'
+                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
                     )
                 ]
             ),
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
             "mode": "strict",
         },
-        "n_chunks": 19,
+        "n_chunks": 23,
     }
 )
 async_stream_snapshot = snapshot(
@@ -137,25 +155,31 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"The Name of the Wind","author":"Patrick Rothfuss"}'
+                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
                     )
                 ]
             ),
         ],
         "format_type": {
             "name": "Book",
-            "description": None,
+            "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
                     "author": {"title": "Author", "type": "string"},
+                    "rating": {
+                        "description": "For testing purposes, the rating should be 7",
+                        "title": "Rating",
+                        "type": "integer",
+                    },
                 },
-                "required": ["title", "author"],
+                "required": ["title", "author", "rating"],
                 "title": "Book",
                 "type": "object",
             },
             "mode": "strict",
         },
-        "n_chunks": 19,
+        "n_chunks": 23,
     }
 )

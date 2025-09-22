@@ -1,0 +1,117 @@
+interactions:
+- request:
+    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Respond
+      with valid JSON that matches this exact schema:\n{\n  \"description\": \"A book
+      with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\":
+      {\n      \"description\": \"For testing purposes, the rating should be 7\",\n      \"title\":
+      \"Rating\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}\n\nRespond ONLY with valid JSON, and no
+      other text."}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '828'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dJHbSsNAEIZfJfzXW0gPsXbvBFsq2CqiKBgJazImS5PduDsrSsm7S6yt
+        J7yaYb5vZhhmC11AovFlFg9XY++PVsvZXbIIzeNidpNMzsspBPitpd4i71VJEHC27gvKe+1ZGYZA
+        YwuqIZHXKhQ08NYY4sFkMIpHSZwMJxDIrWEyDHm/3Y9keu2bP4LENjVRlII115RCRimul/NofbKa
+        RxeLqM9vz9anKcTOU4Er63bipWKn8010Zbl6Ct4fJKdYm7KXpqnp0D0IeLZt5kh5ayBBpsg4OINP
+        4Ok5kMkJ0oS6FggfN8sttGkDZ2w3ZDzkaBgL5CqvKMsdKdbWZD+NA3ekiv/YvrdfQG1FDTlVZ0nz
+        1/+iw+o37QRs4O+l8bGAJ/eic8pYk4NE/6lCuQJd9w4AAP//AwA0tj7u9wEAAA==
+    headers:
+      CF-RAY:
+      - 98374ceacadcb9bc-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 23 Sep 2025 04:29:22 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-09-23T04:29:21Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-09-23T04:29:22Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-09-23T04:29:20Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-09-23T04:29:21Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CTQhhqa5nLNWsNcBvZRHP
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '1592'
+    status:
+      code: 200
+      message: OK
+version: 1

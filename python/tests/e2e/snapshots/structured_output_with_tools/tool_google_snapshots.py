@@ -13,7 +13,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
@@ -53,7 +53,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"publication_year": 2006, "pages": 544, "recommendation_score": 7, "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson"}'
+                        text='{"pages": 544, "publication_year": 2006, "author": "Brandon Sanderson", "title": "Mistborn: The Final Empire"}'
                     )
                 ]
             ),
@@ -70,19 +70,8 @@ Do NOT output any text in addition to the tool call.\
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
@@ -93,7 +82,7 @@ Do NOT output any text in addition to the tool call.\
 async_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
@@ -133,7 +122,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"author": "Brandon Sanderson", "publication_year": 2006, "recommendation_score": 7, "title": "Mistborn: The Final Empire", "pages": 544}'
+                        text='{"author": "Brandon Sanderson", "title": "Mistborn: The Final Empire", "publication_year": 2006, "pages": 544}'
                     )
                 ]
             ),
@@ -150,19 +139,8 @@ Do NOT output any text in addition to the tool call.\
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
@@ -173,7 +151,7 @@ Do NOT output any text in addition to the tool call.\
 stream_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
             SystemMessage(
@@ -212,7 +190,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"pages": 544, "title": "Mistborn: The Final Empire", "recommendation_score": 7, "author": "Brandon Sanderson", "publication_year": 2006}'
+                        text='{"author": "Brandon Sanderson", "title": "Mistborn: The Final Empire", "publication_year": 2006, "pages": 544}'
                     )
                 ]
             ),
@@ -229,19 +207,8 @@ Do NOT output any text in addition to the tool call.\
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
@@ -253,7 +220,7 @@ Do NOT output any text in addition to the tool call.\
 async_stream_snapshot = snapshot(
     {
         "provider": "google",
-        "model_id": "gemini-2.0-flash",
+        "model_id": "gemini-2.5-flash",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
             SystemMessage(
@@ -292,7 +259,7 @@ Do NOT output any text in addition to the tool call.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"publication_year": 2006, "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "recommendation_score": 7}'
+                        text='{"pages": 544, "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "publication_year": 2006}'
                     )
                 ]
             ),
@@ -309,19 +276,8 @@ Do NOT output any text in addition to the tool call.\
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },

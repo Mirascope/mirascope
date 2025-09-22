@@ -1,0 +1,68 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
+      by Patrick Rothfuss"}], "role": "user"}], "generationConfig": {"responseMimeType":
+      "application/json", "responseSchema": {"description": "A book with a rating.
+      The title should be in all caps!", "properties": {"title": {"title": "Title",
+      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}, "rating":
+      {"description": "For testing purposes, the rating should be 7", "title": "Rating",
+      "type": "INTEGER"}}, "propertyOrdering": ["title", "author", "rating"], "required":
+      ["title", "author", "rating"], "title": "Book", "type": "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '624'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WRX0+DMBTF3/kUzX3ejMyZGd+Mm5Ho/rgRNRFj6uigAVrSXswM4bvbwmAQeSCX
+        e07vuf1ROoTAnoqQhxSZhlvyYTqElPXbalIgE2iEtmWaOVV49jZP2auNBdnRHoIyAOSYssB8BOA/
+        Lsjqbrkg6wdi6zdvNQ9gZBRaYCxV49pQVHyfkK3E+FBo3TgURS4i65hV0AuruvpzdF5RyZTZ/EyG
+        LG3tVWuAAxdcx1tGtRTWtvPXG+hULkJ2NO1Lpw2oR0OhacSWDKmBRTskkCuZ5ejLhIl7WdSwXLcZ
+        1mM70CfTk44SaTo8OpuN/s3Vc5PK0z703v8wl6Qpx197E3/x7kMPBA7Xakk4PWBg0BdRjMMV3enE
+        OSFrKL4ypXmDK2KZATieXFyPDynVcR0IiulcCs280Hrm/HlHvacr72eXZJhs3K9vKl9uwKmcP9gh
+        cct2AgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 23 Sep 2025 04:29:02 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1454
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

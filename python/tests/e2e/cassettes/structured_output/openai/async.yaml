@@ -1,0 +1,112 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Please recommend the most popular
+      book by Patrick Rothfuss"}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"description":"A
+      book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object","additionalProperties":false},"strict":true,"description":"A
+      book with a rating. The title should be in all caps!"}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '662'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=OimQeEix7Qq.jCdhln3.KabeaTxLDqP4KYXb9.ZdV64-1758601746-1.0.1.1-ZJBUraWxWj1EWqTUL1MNw2D.GySLXiNdLJ7V7Dxh_YnCRDI1l3RA61kPHOrcbAWEMmtHKLDisLWBWvOkd2vWlLKiVhdX1sPpVzR0EFP5MHY;
+        _cfuvid=ohMaas8znjzx3TprZ5MGrRVHJiDJbcSjHY15UMXVT5o-1758601746647-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFLLbtswELzrK4g924Vt2JarW9C4TYomDZqiPUSBQFMriQ1FEuQqrmH4
+        3wtKtiX3AfRCEJyd5czs7iPGQOaQMBAVJ1FbNX53a7aba/dxvSs/PO6K+bcHXMafbrZ321fXwCgw
+        zOYHCjqx3ghTW4Ukje5g4ZAThq7TeLFaTqbx8m0L1CZHFWilpfHcjGeT2Xw8WY0nyyOxMlKgh4Q9
+        RYwxtm/PIFHn+BMSNhmdXmr0npcIybmIMXBGhRfg3ktPXBOMelAYTahb1fsUSJLCFJIUvt6s2f3V
+        3Zp9fs/C/fvt/XUKoxR4Q5Vxbc0DJyfFC/tiqCoa71vccZK6TCGJD8N/HBaN58GmbpQaAFxrQzzE
+        1Dp8PiKHsydlSuvMxv9GhUJq6avMIfdGB/2ejIUWPUSMPbfZNRdxgHWmtpSRecH2u+ls2vWDflo9
+        OjsGC2SIqwFrfmJd9MtyJC6VH6QPgosK857aj4o3uTQDIBq4/lPN33p3zqUu/6d9DwiBljDPrMNc
+        ikvHfZnDsMz/Kjun3AoGj+5VCsxIoguTyLHgjer2DPzOE9ZZIXWJzjrZLVthM7EppvFqsVjGEB2i
+        XwAAAP//AwDRHkDbdQMAAA==
+    headers:
+      CF-RAY:
+      - 98374d2099ecdc11-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 23 Sep 2025 04:29:29 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '468'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '488'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799983'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 1ms
+      x-request-id:
+      - req_f33ce598b78d45d4a8042d9a79ad1dab
+    status:
+      code: 200
+      message: OK
+version: 1

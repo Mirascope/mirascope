@@ -2,12 +2,14 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
       by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
-      "Respond with valid JSON that matches this exact schema:\n{\n  \"properties\":
+      "Respond with valid JSON that matches this exact schema:\n{\n  \"description\":
+      \"A book with a rating. The title should be in all caps!\",\n  \"properties\":
       {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
-      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    }\n  },\n  \"required\":
-      [\n    \"title\",\n    \"author\"\n  ],\n  \"title\": \"Book\",\n  \"type\":
-      \"object\"\n}"}], "role": "user"}, "generationConfig": {"responseMimeType":
-      "application/json"}}'
+      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\":
+      {\n      \"description\": \"For testing purposes, the rating should be 7\",\n      \"title\":
+      \"Rating\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
     headers:
       accept:
       - '*/*'
@@ -16,7 +18,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '601'
+      - '858'
       content-type:
       - application/json
       host:
@@ -26,17 +28,17 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/61RwW6DMAy98xVRzqUqtHTdbtO6A1LboQ5tk8YOWTEQFRJETLUO8e8LUFq6XRdF
-        kWU/+znvVQYhdMdEyEOGoOgdedcZQqr2bWpSIAjUhT6lkzkr8ILtTjWINQThq2miVSAICShyTCHQ
-        iYD6CZANy4DIiKCOX7kIAzrqcKzERBYd0GNY8N2ebCUmUalUQANR0wFNfY4/RpflCplCw5zJENIe
-        XvcAGnHBVbIFpqRoYM/+k0fPVXaIVzLOC/nZ/M+0xnPbWjj29HY+cZoL5sQxeu6WlZaKxbAGZFpB
-        dtaJ6hlZjr7cg3iQZaugZS06ooHiVwDbOdVRIkuve2fT0Z/BaqlpeTq0YuCSFoClHI/NL/3HN58O
-        RMJfe/UyGQM1f2/5T2y2c01mnNzpDHuBQvHOmRgy7ZVpjydmlDKVtBNpASqXQoEbNpj1cbVim+XW
-        cw/i+8b1ZtJ25X1Mjdr4ATHfQHnbAgAA
+        H4sIAAAAAAAC/2WRUU/CMBCA3/crmj6DEQwOfUPBQAywyKImzpiGHVvD1o72ZjDL/rvtxsbQPTTN
+        3be763eFQwjdMhHykCFoek8+TISQojptTgoEgSbRhEwwYwrPbP0VnbtBEI72J1oEgpCAIscEAhMI
+        qD+fkdVkOSPrJ2Lvb4vVNKC9mmM5xlLVoMdQ8e2evEiMd7nWLaQYchFZyA1ESTuNy/b+2TuPq2QC
+        dpZUhpA0eNkAdMcF1/ELMC2FxTb+2qNtlosQjiZ87TQNqtI01yyCJSAz4lirh2ZKphn6cg/iUeaV
+        uMHYrat1RF8AN8NTHiWy5DJ1N+r9K6ynpi1PuhvoLMe8kiUcf+xT/Nm7Tzsm8M9cjQuno4yaDeRR
+        jJczDtxb5ySt9vgKSvNaWASpUdgfXo36u4TpuOpIFehMCg2L0DJfm/mGrdznBzZND6i974PH08mY
+        OqXzC0YnWRqEAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -45,11 +47,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 17 Sep 2025 21:03:48 GMT
+      - Tue, 23 Sep 2025 04:28:45 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=659
+      - gfet4t7; dur=1842
       Transfer-Encoding:
       - chunked
       Vary:

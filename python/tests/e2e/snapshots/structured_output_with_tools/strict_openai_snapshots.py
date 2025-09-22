@@ -26,7 +26,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_CXeMfU0FJVvMCAxHN3O4v0df",
+                        id="call_HCzAwAg2qydjq0Eq5dj1q7AC",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -35,7 +35,7 @@ sync_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_CXeMfU0FJVvMCAxHN3O4v0df",
+                        id="call_HCzAwAg2qydjq0Eq5dj1q7AC",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -44,7 +44,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006,"recommendation_score":7}'
+                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
                 ]
             ),
@@ -61,19 +61,8 @@ sync_snapshot = snapshot(
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
@@ -98,7 +87,7 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_wTwBiXTXhpiOJBxhiBUbt6op",
+                        id="call_MoE3SHhm7vihmSrX4b7hvRrm",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -107,7 +96,7 @@ async_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_wTwBiXTXhpiOJBxhiBUbt6op",
+                        id="call_MoE3SHhm7vihmSrX4b7hvRrm",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -116,7 +105,7 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006,"recommendation_score":7}'
+                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
                 ]
             ),
@@ -133,19 +122,8 @@ async_snapshot = snapshot(
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
@@ -169,7 +147,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_JxqxrN30kkw34iPmrrT9TNTA",
+                        id="call_LnxbqrNgJ7OzZZhOEV8ztqjl",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -178,7 +156,7 @@ stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_JxqxrN30kkw34iPmrrT9TNTA",
+                        id="call_LnxbqrNgJ7OzZZhOEV8ztqjl",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -187,7 +165,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006,"recommendation_score":7}'
+                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
                 ]
             ),
@@ -204,25 +182,14 @@ stream_snapshot = snapshot(
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
             "mode": "strict",
         },
-        "n_chunks": 36,
+        "n_chunks": 30,
     }
 )
 async_stream_snapshot = snapshot(
@@ -241,7 +208,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_GvkukvzGZwztSs8iBic9TId7",
+                        id="call_QDrcjyPUGrfI7xxRUr1CBHmB",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -250,7 +217,7 @@ async_stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_GvkukvzGZwztSs8iBic9TId7",
+                        id="call_QDrcjyPUGrfI7xxRUr1CBHmB",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -259,7 +226,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006,"recommendation_score":7}'
+                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
                 ]
             ),
@@ -276,24 +243,13 @@ async_stream_snapshot = snapshot(
                         "title": "Publication Year",
                         "type": "integer",
                     },
-                    "recommendation_score": {
-                        "description": "Should be 7 for testing purposes",
-                        "title": "Recommendation Score",
-                        "type": "integer",
-                    },
                 },
-                "required": [
-                    "title",
-                    "author",
-                    "pages",
-                    "publication_year",
-                    "recommendation_score",
-                ],
+                "required": ["title", "author", "pages", "publication_year"],
                 "title": "BookSummary",
                 "type": "object",
             },
             "mode": "strict",
         },
-        "n_chunks": 36,
+        "n_chunks": 30,
     }
 )

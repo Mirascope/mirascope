@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend a book to me!"}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Always recommend The Name
+      of the Wind.\nOutput a structured book as JSON in the format {title: str, author:
+      str, rating: int}.\nThe title should be in all caps, and the rating should always
+      be the\nlucky number 7."}], "role": "user"}, "generationConfig": {"responseMimeType":
+      "application/json", "responseSchema": {"properties": {"title": {"title": "Title",
+      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}, "rating":
+      {"title": "Rating", "type": "INTEGER"}}, "propertyOrdering": ["title", "author",
+      "rating"], "required": ["title", "author", "rating"], "title": "Book", "type":
+      "OBJECT"}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '737'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/1WRX2+CMBTF3/kUTZ91mWZjy97MdJlx/omSzWTsoZErdNaWtZdEQ/jua0G08EAu
+        95zec/ujDAihOyYTnjAEQ1/It+0QUtZvpymJINEKbcs2c6bx5m2e0qutBeHkDtEypshRQGw/Yhq9
+        T8hiNJ+Q5Rtx9dd0MY5pzyqswEzpxrViqPnuQNYKs31hTOPQDLlMneOpol5Yda1/ercVtRLg8o8q
+        AdHaq9ZA91xyk62BGSWdbRMtV/SqcpnAybbvgzagHk0Lw1KYAzILi12R0FyrY46ROoB8VUUNKxw2
+        wzy2HX34cNFRIRNd6b496801Y5vKhQ/d+x/2kkxwPLubRJNtRD0Q2F2rJRF4wKhFX6QZdlccDMLg
+        gqyh+Ana8AZXCkcLsD+8e+zvBTNZHUg1mFxJA9PEeYrzx4bNZr/TXdj/Q7PK8u02HD3ToAr+AXVN
+        5d12AgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 23 Sep 2025 04:31:55 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1368
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

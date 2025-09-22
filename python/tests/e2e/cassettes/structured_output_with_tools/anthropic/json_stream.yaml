@@ -7,10 +7,8 @@ interactions:
       \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\": {\n      \"title\":
       \"Author\",\n      \"type\": \"string\"\n    },\n    \"pages\": {\n      \"title\":
       \"Pages\",\n      \"type\": \"integer\"\n    },\n    \"publication_year\": {\n      \"title\":
-      \"Publication Year\",\n      \"type\": \"integer\"\n    },\n    \"recommendation_score\":
-      {\n      \"description\": \"Should be 7 for testing purposes\",\n      \"title\":
-      \"Recommendation Score\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
-      [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\",\n    \"recommendation_score\"\n  ],\n  \"title\":
+      \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
       \"BookSummary\",\n  \"type\": \"object\"\n}\n\nRespond ONLY with valid JSON,
       and no other text.","tools":[{"name":"get_book_info","description":"Look up
       book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}}],"stream":true}'
@@ -24,7 +22,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1296'
+      - '1089'
       content-type:
       - application/json
       host:
@@ -59,54 +57,59 @@ interactions:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"id":"msg_01RXe3AcTUezAAfJ6yD2ctGg","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":658,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}         }
+        data: {"type":"message_start","message":{"id":"msg_01F4t6Gd9FipbgoQweeT34Sj","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":607,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}}
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_01H6zz68zKpYhCKurvEeuA1c","name":"get_book_info","input":{}}            }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"tool_use","id":"toolu_01RdKt7nkatoCMRgh5Rp8XmM","name":"get_book_info","input":{}}         }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}               }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":""}  }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"isbn\":"}     }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"{\"isbn\":
+        \"0-"}              }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"
-        \"0-7653-"}     }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"7653-11"}               }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"1178-X\"}"}         }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"78"}             }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"input_json_delta","partial_json":"-X\"}"}     }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0       }
+        data: {"type":"content_block_stop","index":0    }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":658,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":63}       }
+        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":607,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":63}     }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"             }
+        data: {"type":"message_stop"       }
 
 
         '
     headers:
       CF-RAY:
-      - 980ba791af027669-SEA
+      - 983755b3981cd443-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -114,7 +117,7 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Wed, 17 Sep 2025 21:21:41 GMT
+      - Tue, 23 Sep 2025 04:35:21 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -128,52 +131,50 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-17T21:21:40Z'
+      - '2025-09-23T04:35:20Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-17T21:21:40Z'
+      - '2025-09-23T04:35:20Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-17T21:21:40Z'
+      - '2025-09-23T04:35:20Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-17T21:21:40Z'
+      - '2025-09-23T04:35:20Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTEg3j5hGimKZUYjX6ZQj
+      - req_011CTQiAMtwoYhRWtXGmRz3s
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1592'
+      - '967'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01H6zz68zKpYhCKurvEeuA1c","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01H6zz68zKpYhCKurvEeuA1c","content":"Title:
+      score"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01RdKt7nkatoCMRgh5Rp8XmM","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01RdKt7nkatoCMRgh5Rp8XmM","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25"}]}],"model":"claude-sonnet-4-0","system":"Respond with valid JSON
       that matches this exact schema:\n{\n  \"properties\": {\n    \"title\": {\n      \"title\":
       \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\": {\n      \"title\":
       \"Author\",\n      \"type\": \"string\"\n    },\n    \"pages\": {\n      \"title\":
       \"Pages\",\n      \"type\": \"integer\"\n    },\n    \"publication_year\": {\n      \"title\":
-      \"Publication Year\",\n      \"type\": \"integer\"\n    },\n    \"recommendation_score\":
-      {\n      \"description\": \"Should be 7 for testing purposes\",\n      \"title\":
-      \"Recommendation Score\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
-      [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\",\n    \"recommendation_score\"\n  ],\n  \"title\":
+      \"Publication Year\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\":
+      [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
       \"BookSummary\",\n  \"type\": \"object\"\n}\n\nRespond ONLY with valid JSON,
       and no other text.","tools":[{"name":"get_book_info","description":"Look up
       book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}}],"stream":true}'
@@ -187,7 +188,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1649'
+      - '1442'
       content-type:
       - application/json
       host:
@@ -222,23 +223,23 @@ interactions:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"id":"msg_01TEFK6jJUY2kmcENStwCEwK","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":765,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}}
+        data: {"type":"message_start","message":{"id":"msg_01Ci6tuG9JxwVTbqY6VUHXqB","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":714,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}           }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}             }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}    }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"{"}      }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"{"}  }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\n  \"title\":
-        \"Mist"}          }
+        \"Mistborn: The Final Empire\",\n  "}}
 
 
         event: ping
@@ -248,58 +249,35 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"born:
-        The Final Empire\",\n  "}           }
-
-
-        event: content_block_delta
-
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\"author\":
-        \"Brandon Sanderson"}             }
+        \"Brandon Sanderson\", \n  \"pages\": 544"}}
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\",\n  \"pages\":
-        544"}        }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":",\n  \"publication_year\":"}      }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        2006,\n  \"recommendation"}   }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"_score\":
-        7\n}"}               }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":",\n  \"publication_year\":
+        2006\n}"}               }
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0}
+        data: {"type":"content_block_stop","index":0           }
 
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":765,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":59}      }
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":714,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":50}           }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"}
+        data: {"type":"message_stop"           }
 
 
         '
     headers:
       CF-RAY:
-      - 980ba79fea667669-SEA
+      - 983755bdbafdd443-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -307,7 +285,7 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Wed, 17 Sep 2025 21:21:44 GMT
+      - Tue, 23 Sep 2025 04:35:22 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -321,35 +299,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-17T21:21:42Z'
+      - '2025-09-23T04:35:21Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-17T21:21:42Z'
+      - '2025-09-23T04:35:21Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-17T21:21:42Z'
+      - '2025-09-23T04:35:21Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-17T21:21:42Z'
+      - '2025-09-23T04:35:21Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTEg3tv3GtwEAJv2xzx4w
+      - req_011CTQiAUtdSCDFLjzdK9v7T
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2060'
+      - '1028'
     status:
       code: 200
       message: OK

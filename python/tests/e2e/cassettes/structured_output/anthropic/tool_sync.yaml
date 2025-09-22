@@ -5,7 +5,10 @@ interactions:
       you are ready to respond to the user, call the __mirascope_formatted_output_tool__
       tool to output a structured response.\nDo NOT output any text in addition to
       the tool call.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
-      this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"title":"Book","type":"object"}}]}'
+      this tool to extract data in Book format for a final response.\nA book with
+      a rating. The title should be in all caps!","input_schema":{"description":"A
+      book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object"}}]}'
     headers:
       accept:
       - application/json
@@ -16,7 +19,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '765'
+      - '1007'
       content-type:
       - application/json
       host:
@@ -48,16 +51,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3SRUUvDMBSF/0q5zxm0s0XW1+kcDsYYQxGREJO7Nlub1ORmQ0b/u6Q6ZYqPyXfu
-        uYdzT6AVlND6iqfZfFFsHq6q9SxbLW+fjsddN5/fEDCg9w6jCr0XFQIDZ5v4IbzXnoSJmtYqbKAE
-        2YigcOStMUijfDROx0VaZDkwkNYQGoLy+XS2JGsbHnz0HILEd+BpNhmv7pV8nd5VerpR9aGgxXI3
-        AwZGtHGO81Y74aXtkG+tawURKm4DdYH4YMqjpekCQXkC0jQE3tSYLEWLid0mVGPyqI0CBiJQbR2U
-        sBLktNwna0v1NngPff/CwJPtuEPhrbmMPACPbwGNRChNaBoGYeioPH1u52T3aDyUeX7NQApZI5cO
-        BWlr+KUiPXOHQv3HzrNxAXY1tuhEw4v2r/6HZvVv2jP47uor3oSBR3fQEjlpjGXEyyrhFPT9BwAA
-        AP//AwCLipa4JwIAAA==
+        H4sIAAAAAAAAAwAAAP//dFHZTsMwEPyVap9dKYEewm+gFoHUhvsSQpZxto1FYgfvmkNV/h05qCBA
+        vK13ZmfHsxuwJUhoaK2yfGHidDkr3iIXR6/ly3o1ms3wAgTwe4uJhUR6jSAg+Do1NJEl1o5BQONL
+        rEGCqXUscUjeOeThaLiT7YyzcT4CAcY7Rscg7zdbSfa+VpGSZm8kvaPK8tuzq2LverJwZvfufTJ/
+        rM7zAzoFAU43aU6pxgZNxreoVj40mhlL5SO3kVUvqpKkayOD3ABb7g1fHs0Hxf5yPjg5HKT65riY
+        gQAdufIBJJxqDtY8Dc49V6tIlL6q2bo1yGnXPQgg9q0KqMm7n+57gPA5ojMI0sW6FhD7uOTm04hi
+        /4SOQI7zkQCjTYXKBNRsvVM/GdkWD6jL/7DtbFqAbYUNBl2rcfOX/43m1W+0E/AV22drMhVAGF6s
+        QcUWUy7pyKUOJXTdBwAAAP//AwBkVpp3MgIAAA==
     headers:
       CF-RAY:
-      - 980b8d5b1b0a30d4-SEA
+      - 98374c12fe8876c1-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,7 +68,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 17 Sep 2025 21:03:47 GMT
+      - Tue, 23 Sep 2025 04:28:48 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -79,35 +82,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-17T21:03:47Z'
+      - '2025-09-23T04:28:47Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-17T21:03:47Z'
+      - '2025-09-23T04:28:47Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-17T21:03:46Z'
+      - '2025-09-23T04:28:45Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-17T21:03:47Z'
+      - '2025-09-23T04:28:47Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTEegafybeN7Cinre83DA
+      - req_011CTQhfHvGbqjW6SrnvHV4R
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1227'
+      - '2008'
     status:
       code: 200
       message: OK
