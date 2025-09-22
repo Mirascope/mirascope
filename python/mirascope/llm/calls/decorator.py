@@ -17,7 +17,6 @@ from ..clients import (
     OpenAIModelId,
     OpenAIParams,
     Provider,
-    get_client,
 )
 from ..context import DepsT
 from ..formatting import Format, FormattableT
@@ -229,6 +228,6 @@ def call(
         ```
     """
     llm = _model_utils.assumed_safe_llm_create(
-        provider=provider, model_id=model_id, client=get_client(provider), params=params
+        provider=provider, model_id=model_id, params=params
     )
     return CallDecorator(model=llm, tools=tools, format=format)

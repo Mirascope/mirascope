@@ -133,7 +133,6 @@ def test_stream_response_resume_model_override(
 
     with llm.model(
         provider="anthropic",
-        client=anthropic_client,
         model_id="claude-3-5-haiku-latest",
     ):
         resumed = stream_response.resume("Are you sure?")

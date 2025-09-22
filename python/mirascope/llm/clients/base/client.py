@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from contextvars import ContextVar, Token
+from types import TracebackType
 from typing import Generic, overload
-from typing_extensions import TypeVar
+from typing_extensions import Self, TypeVar
 
 from ...context import Context, DepsT
 from ...formatting import Format, FormattableT
@@ -38,6 +40,29 @@ class BaseClient(Generic[ParamsT, ModelIdT, ProviderClientT], ABC):
     """
 
     client: ProviderClientT
+    _token: Token | None = None
+
+    @property
+    @abstractmethod
+    def _context_var(self) -> ContextVar:
+        """The ContextVar for this client type."""
+        ...
+
+    def __enter__(self) -> Self:
+        """Sets the client context and stores the token."""
+        self._token = self._context_var.set(self)
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        """Restores the client context to the token from the last setting."""
+        if self._token is not None:
+            self._context_var.reset(self._token)
+            self._token = None
 
     @overload
     @abstractmethod

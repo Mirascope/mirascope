@@ -157,7 +157,6 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     @property
     def model(self) -> "Model":
         """A `Model` with parameters matching this response."""
-        from ..clients import get_client
         from ..models import _utils as _model_utils, get_model_from_context
 
         if context_model := get_model_from_context():
@@ -166,6 +165,5 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
         return _model_utils.assumed_safe_llm_create(
             provider=self.provider,
             model_id=self.model_id,
-            client=get_client(self.provider),
             params=self.params,
         )
