@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import Sequence
+from contextvars import ContextVar
 from typing import overload
 
 from google.genai import Client
@@ -33,6 +34,10 @@ from .params import GoogleParams
 
 _global_client: "GoogleClient | None" = None
 
+GOOGLE_CLIENT_CONTEXT: ContextVar["GoogleClient | None"] = ContextVar(
+    "GOOGLE_CLIENT_CONTEXT", default=None
+)
+
 
 def get_google_client() -> "GoogleClient":
     """Get a global Google client instance.
@@ -40,6 +45,10 @@ def get_google_client() -> "GoogleClient":
     Returns:
         A Google client instance. Multiple calls return the same instance.
     """
+    ctx_client = GOOGLE_CLIENT_CONTEXT.get()
+    if ctx_client is not None:
+        return ctx_client
+
     global _global_client
     if _global_client is None:
         api_key = os.getenv("GOOGLE_API_KEY")
@@ -49,6 +58,10 @@ def get_google_client() -> "GoogleClient":
 
 class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
     """The client for the Google LLM model."""
+
+    @property
+    def _context_var(self) -> ContextVar["GoogleClient | None"]:
+        return GOOGLE_CLIENT_CONTEXT
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None

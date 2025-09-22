@@ -24,7 +24,7 @@ from . import (
     types,
 )
 from .calls import call
-from .clients import AnthropicClient, GoogleClient, OpenAIClient
+from .clients import AnthropicClient, GoogleClient, OpenAIClient, get_client
 from .content import (
     AssistantContentChunk,
     AssistantContentPart,
@@ -168,6 +168,7 @@ __all__ = [
     "exceptions",
     "format",
     "formatting",
+    "get_client",
     "mcp",
     "messages",
     "model",

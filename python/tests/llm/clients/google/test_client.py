@@ -21,3 +21,26 @@ def test_custom_base_url() -> None:
         assert call_args.kwargs["http_options"].base_url == example_url
 
         assert google_client.client is mock_client_instance
+
+
+def test_context_manager() -> None:
+    """Test nested context manager behavior and get_client() integration."""
+
+    global_client = llm.get_client("google")
+
+    client1 = llm.GoogleClient(api_key="key1")
+    client2 = llm.GoogleClient(api_key="key2")
+
+    assert llm.get_client("google") is global_client
+
+    with client1 as ctx1:
+        assert ctx1 is client1
+        assert llm.get_client("google") is client1
+
+        with client2 as ctx2:
+            assert ctx2 is client2
+            assert llm.get_client("google") is client2
+
+        assert llm.get_client("google") is client1
+
+    assert llm.get_client("google") is global_client

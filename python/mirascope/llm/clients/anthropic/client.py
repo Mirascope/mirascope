@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import Sequence
+from contextvars import ContextVar
 from typing import overload
 
 import httpx
@@ -33,6 +34,10 @@ from .params import AnthropicParams
 
 _global_client: "AnthropicClient | None" = None
 
+ANTHROPIC_CLIENT_CONTEXT: ContextVar["AnthropicClient | None"] = ContextVar(
+    "ANTHROPIC_CLIENT_CONTEXT", default=None
+)
+
 
 def get_anthropic_client() -> "AnthropicClient":
     """Get a global Anthropic client instance.
@@ -40,6 +45,10 @@ def get_anthropic_client() -> "AnthropicClient":
     Returns:
         An Anthropic client instance. Multiple calls return the same instance.
     """
+    ctx_client = ANTHROPIC_CLIENT_CONTEXT.get()
+    if ctx_client is not None:
+        return ctx_client
+
     global _global_client
     if _global_client is None:
         api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -49,6 +58,10 @@ def get_anthropic_client() -> "AnthropicClient":
 
 class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
     """The client for the Anthropic LLM model."""
+
+    @property
+    def _context_var(self) -> ContextVar["AnthropicClient | None"]:
+        return ANTHROPIC_CLIENT_CONTEXT
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | httpx.URL | None = None

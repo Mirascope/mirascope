@@ -8,7 +8,7 @@ from types import TracebackType
 from typing import TYPE_CHECKING, Generic, Literal, overload
 from typing_extensions import Unpack
 
-from ..clients import ClientT, ParamsT, get_client
+from ..clients import ParamsT, get_client
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
 from ..messages import Message
@@ -26,15 +26,12 @@ from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 
 if TYPE_CHECKING:
     from ..clients import (
-        AnthropicClient,
         AnthropicModelId,
         AnthropicParams,
         BaseParams,
-        GoogleClient,
         GoogleModelId,
         GoogleParams,
         ModelId,
-        OpenAIClient,
         OpenAIModelId,
         OpenAIParams,
         Provider,
@@ -49,7 +46,7 @@ def get_model_from_context() -> Model | None:
     return MODEL_CONTEXT.get()
 
 
-class Model(Generic[ClientT, ParamsT]):
+class Model(Generic[ParamsT]):
     """The unified LLM interface that delegates to provider-specific clients.
 
     NOTE: this class cannot be instantiated directly and must be created using the
@@ -94,9 +91,6 @@ class Model(Generic[ClientT, ParamsT]):
     model_id: ModelId
     """The model being used (e.g. `gpt-4o-mini`)."""
 
-    client: ClientT
-    """The client object used to interact with the model API."""
-
     params: ParamsT | None
     """The default parameters for the model (temperature, max_tokens, etc.)."""
 
@@ -104,7 +98,7 @@ class Model(Generic[ClientT, ParamsT]):
         """LLM is not created via `__init__`; use `llm.model(...)` instead."""
         raise TypeError("Use `llm.model(...)` instead")
 
-    def __enter__(self) -> Model[ClientT, ParamsT]:
+    def __enter__(self) -> Model[ParamsT]:
         """Sets MODEL_CONTEXT with this LLM and stores the token."""
         self._token = MODEL_CONTEXT.set(self)
         return self
@@ -155,7 +149,7 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> Response | Response[FormattableT]:
         """Generate a response using the model."""
-        return self.client.call(
+        return get_client(self.provider).call(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
@@ -198,7 +192,7 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
         """Generate a response asynchronously using the model."""
-        return await self.client.call_async(
+        return await get_client(self.provider).call_async(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
@@ -241,7 +235,7 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> StreamResponse | StreamResponse[FormattableT]:
         """Stream a response using the model."""
-        return self.client.stream(
+        return get_client(self.provider).stream(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
@@ -284,7 +278,7 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
         """Stream a response asynchronously using the model."""
-        return await self.client.stream_async(
+        return await get_client(self.provider).stream_async(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
@@ -331,7 +325,7 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
         """Generate a response using the model."""
-        return self.client.context_call(
+        return get_client(self.provider).context_call(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -381,7 +375,7 @@ class Model(Generic[ClientT, ParamsT]):
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
         """Generate a response asynchronously using the model."""
-        return await self.client.context_call_async(
+        return await get_client(self.provider).context_call_async(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -433,7 +427,7 @@ class Model(Generic[ClientT, ParamsT]):
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
         """Stream a response using the model."""
-        return self.client.context_stream(
+        return get_client(self.provider).context_stream(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -487,7 +481,7 @@ class Model(Generic[ClientT, ParamsT]):
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
         """Stream a response asynchronously using the model."""
-        return await self.client.context_stream_async(
+        return await get_client(self.provider).context_stream_async(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -502,9 +496,8 @@ def model(
     *,
     provider: Literal["anthropic"],
     model_id: AnthropicModelId,
-    client: AnthropicClient | None = None,
     **params: Unpack[AnthropicParams],
-) -> Model[AnthropicClient, AnthropicParams]:
+) -> Model[AnthropicParams]:
     """Overload for Anthropic models."""
     ...
 
@@ -514,9 +507,8 @@ def model(
     *,
     provider: Literal["google"],
     model_id: GoogleModelId,
-    client: GoogleClient | None = None,
     **params: Unpack[GoogleParams],
-) -> Model[GoogleClient, GoogleParams]:
+) -> Model[GoogleParams]:
     """Overload for Google models."""
     ...
 
@@ -526,9 +518,8 @@ def model(
     *,
     provider: Literal["openai"],
     model_id: OpenAIModelId,
-    client: OpenAIClient | None = None,
     **params: Unpack[OpenAIParams],
-) -> Model[OpenAIClient, OpenAIParams]:
+) -> Model[OpenAIParams]:
     """Overload for OpenAI models."""
     ...
 
@@ -537,17 +528,11 @@ def model(
     *,
     provider: Provider,
     model_id: ModelId,
-    client: AnthropicClient | GoogleClient | OpenAIClient | None = None,
     **params: Unpack[BaseParams],
-) -> (
-    Model[AnthropicClient, AnthropicParams]
-    | Model[GoogleClient, GoogleParams]
-    | Model[OpenAIClient, OpenAIParams]
-):
+) -> Model[AnthropicParams] | Model[GoogleParams] | Model[OpenAIParams]:
     """Returns an `LLM` instance with the given settings."""
     llm = Model.__new__(Model)
     llm.provider = provider
     llm.model_id = model_id
-    llm.client = client or get_client(provider)
     llm.params = params
     return llm

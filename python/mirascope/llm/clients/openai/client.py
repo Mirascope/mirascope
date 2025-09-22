@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import Sequence
+from contextvars import ContextVar
 from typing import overload
 
 import httpx
@@ -33,6 +34,10 @@ from .params import OpenAIParams
 
 _global_client: "OpenAIClient | None" = None
 
+OPENAI_CLIENT_CONTEXT: ContextVar["OpenAIClient | None"] = ContextVar(
+    "OPENAI_CLIENT_CONTEXT", default=None
+)
+
 
 def get_openai_client() -> "OpenAIClient":
     """Get a global OpenAI client instance.
@@ -40,6 +45,10 @@ def get_openai_client() -> "OpenAIClient":
     Returns:
         An OpenAI client instance. Multiple calls return the same instance.
     """
+    ctx_client = OPENAI_CLIENT_CONTEXT.get()
+    if ctx_client is not None:
+        return ctx_client
+
     global _global_client
     if _global_client is None:
         api_key = os.getenv("OPENAI_API_KEY")
@@ -49,6 +58,10 @@ def get_openai_client() -> "OpenAIClient":
 
 class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
     """The client for the OpenAI LLM model."""
+
+    @property
+    def _context_var(self) -> ContextVar["OpenAIClient | None"]:
+        return OPENAI_CLIENT_CONTEXT
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | httpx.URL | None = None

@@ -63,3 +63,26 @@ def test_strict_unsupported_legacy_model() -> None:
         openai_utils.prepare_openai_request(
             model_id="gpt-4", messages=messages, format=format
         )
+
+
+def test_context_manager() -> None:
+    """Test nested context manager behavior and get_client() integration."""
+
+    global_client = llm.get_client("openai")
+
+    client1 = llm.OpenAIClient(api_key="key1")
+    client2 = llm.OpenAIClient(api_key="key2")
+
+    assert llm.get_client("openai") is global_client
+
+    with client1 as ctx1:
+        assert ctx1 is client1
+        assert llm.get_client("openai") is client1
+
+        with client2 as ctx2:
+            assert ctx2 is client2
+            assert llm.get_client("openai") is client2
+
+        assert llm.get_client("openai") is client1
+
+    assert llm.get_client("openai") is global_client
