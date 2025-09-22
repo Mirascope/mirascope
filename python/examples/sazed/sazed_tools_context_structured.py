@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from mirascope import llm
 
 
-@llm.format(mode="strict-or-tool")
+@llm.format
 class KeeperEntry(BaseModel):
     topic: str
     summary: str
