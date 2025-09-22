@@ -90,7 +90,7 @@ ${this.main_function}${this.invoke_main}
   private get format_def(): string {
     if (!this.structured) return "";
     return `
-@llm.format(mode="strict-or-tool")
+@llm.format
 class KeeperEntry(BaseModel):
     topic: str
     summary: str
