@@ -116,13 +116,13 @@ def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
                 "Google function_call does not match spec"
             )  # pragma: no cover
         return ToolCall(id=id or UNKNOWN_TOOL_ID, name=name, args=json.dumps(args))
-    elif part.function_response:
+    elif part.function_response:  # pragma: no cover
         raise NotImplementedError(
             "function_response part does not decode to AssistantContent."
         )
-    elif part.thought_signature:
+    elif part.thought_signature:  # pragma: no cover
         raise NotImplementedError("Support for thought signature not implemented.")
-    else:
+    else:  # pragma: no cover
         # Per Part docstring, this should never happen:
         # >  Exactly one field within a Part should be set, representing the specific type
         # >  of content being conveyed. Using multiple fields within the same `Part`
