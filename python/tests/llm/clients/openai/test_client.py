@@ -1,121 +1,63 @@
-"""Tests for OpenAIClient using VCR.py for HTTP request recording/playback."""
+"""Tests for OpenAIClient"""
 
 import pytest
+from inline_snapshot import snapshot
+from pydantic import BaseModel
 
 from mirascope import llm
-from tests.llm.clients.scenarios import (
-    CLIENT_SCENARIO_IDS,
-    FORMATTING_MODES,
-    STRUCTURED_SCENARIO_IDS,
-    get_scenario,
-    get_structured_scenario,
-)
-
-TEST_MODEL_ID = "gpt-4o"
+from mirascope.llm.clients.openai import _utils as openai_utils
 
 
-@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
-@pytest.mark.vcr()
-def test_call(
-    openai_client: llm.OpenAIClient,
-    scenario_id: str,
-) -> None:
-    scenario = get_scenario(scenario_id, model_id=TEST_MODEL_ID)
-    response = openai_client.call(**scenario.call_args)
-    scenario.check_response(response)
+def test_prepare_message_multiple_assistant_text_parts() -> None:
+    """Test preparing an OpenAI request with multiple text parts in an assistant message.
+
+    Included for code coverage.
+    """
+
+    messages = [
+        llm.messages.user("Hello there"),
+        llm.messages.assistant(["General ", "Kenobi"]),
+    ]
+    assert openai_utils.prepare_openai_request(
+        model_id="gpt-4o", messages=messages
+    ) == snapshot(
+        (
+            [
+                llm.UserMessage(content=[llm.Text(text="Hello there")]),
+                llm.AssistantMessage(
+                    content=[llm.Text(text="General "), llm.Text(text="Kenobi")]
+                ),
+            ],
+            {
+                "model": "gpt-4o",
+                "messages": [
+                    {"role": "user", "content": "Hello there"},
+                    {
+                        "role": "assistant",
+                        "content": [
+                            {"text": "General ", "type": "text"},
+                            {"text": "Kenobi", "type": "text"},
+                        ],
+                    },
+                ],
+            },
+        )
+    )
 
 
-@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
-@pytest.mark.vcr()
-@pytest.mark.asyncio
-async def test_call_async(
-    openai_client: llm.OpenAIClient,
-    scenario_id: str,
-) -> None:
-    scenario = get_scenario(scenario_id, model_id=TEST_MODEL_ID)
-    response = await openai_client.call_async(**scenario.call_async_args)
-    scenario.check_response(response)
+def test_strict_unsupported_legacy_model() -> None:
+    """Test the error thrown on a legacy model that doesn't support strict mode formatting.
 
+    Included for code coverage.
+    """
 
-@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
-@pytest.mark.vcr()
-def test_stream(
-    openai_client: llm.OpenAIClient,
-    scenario_id: str,
-) -> None:
-    scenario = get_scenario(scenario_id, model_id=TEST_MODEL_ID)
-    response = openai_client.stream(**scenario.call_args)
-    list(response.chunk_stream())
-    scenario.check_response(response)
+    messages = [llm.messages.user("I have a bad feeling about this...")]
 
-
-@pytest.mark.parametrize("scenario_id", CLIENT_SCENARIO_IDS)
-@pytest.mark.vcr()
-@pytest.mark.asyncio
-async def test_stream_async(
-    openai_client: llm.OpenAIClient,
-    scenario_id: str,
-) -> None:
-    scenario = get_scenario(scenario_id, model_id=TEST_MODEL_ID)
-    response = await openai_client.stream_async(**scenario.call_async_args)
-    async for _ in response.chunk_stream():
+    @llm.format(mode="strict")
+    class Book(BaseModel):
         pass
-    scenario.check_response(response)
 
-
-@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
-@pytest.mark.parametrize("scenario_id", STRUCTURED_SCENARIO_IDS)
-@pytest.mark.vcr()
-def test_structured_outputs(
-    openai_client: llm.OpenAIClient,
-    formatting_mode: llm.formatting.FormattingMode,
-    scenario_id: str,
-) -> None:
-    scenario = get_structured_scenario(scenario_id, TEST_MODEL_ID, formatting_mode)
-    response = openai_client.call(**scenario.call_args)
-    scenario.check_response(response)
-
-
-#####################################
-#  OpenAI-specific Edge Case Tests  #
-#####################################
-
-
-@pytest.mark.parametrize(
-    # For gpt-4, strict will fail, strict-or-tool should succeed (tool mode), and
-    # strict-or-json should succeed (json mode). Testing tool or json mode directly would
-    # be redundant
-    "formatting_mode",
-    ["strict", "strict-or-tool", "strict-or-json"],
-)
-@pytest.mark.parametrize(
-    # Test two scenarios to make sure tool calling and complex format parsing still work
-    # for the legacy mode. More would be redundant
-    "scenario_id",
-    [
-        "structured_output_calls_tool_scenario",
-        "structured_output_annotation_and_docstring_scenario",
-    ],
-)
-@pytest.mark.vcr()
-def test_structured_output_legacy_model(
-    openai_client: llm.OpenAIClient,
-    formatting_mode: llm.formatting.FormattingMode,
-    scenario_id: str,
-) -> None:
-    scenario = get_structured_scenario(scenario_id, "gpt-4", formatting_mode)
-    try:
-        response = openai_client.call(**scenario.call_args)
-        scenario.check_response(response)
-    except llm.FormattingModeNotSupportedError as e:
-        # Expected, gpt-4 doesn't support strict mode
-        assert formatting_mode == "strict"
-        assert e.formatting_mode == "strict"
-        assert e.provider == "openai"
-        assert e.model_id == "gpt-4"
-    except AssertionError as e:
-        # Known issue: gpt-4 will not call tools with json.
-        # Call seems correct so considering this a model quirk.
-        assert formatting_mode == "strict-or-json" and e.args == (
-            "Expected 1 tool call, got 0: []",
+    with pytest.raises(llm.FormattingModeNotSupportedError):
+        openai_utils.prepare_openai_request(
+            model_id="gpt-4", messages=messages, format=Book
         )
