@@ -13,7 +13,7 @@ from .base import (
 )
 from .google import GoogleClient, GoogleModelId, GoogleParams
 from .openai import OpenAIClient, OpenAIModelId, OpenAIParams
-from .providers import ModelId, Provider, get_client
+from .providers import ModelId, Provider, client, get_client
 
 __all__ = [
     "AnthropicClient",
@@ -31,5 +31,6 @@ __all__ = [
     "OpenAIParams",
     "ParamsT",
     "Provider",
+    "client",
     "get_client",
 ]

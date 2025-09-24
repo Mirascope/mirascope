@@ -1,12 +1,13 @@
-"""Anthropic client implementation."""
+"""Google client implementation."""
 
 import os
 from collections.abc import Sequence
 from contextvars import ContextVar
+from functools import lru_cache
 from typing import overload
 
-import httpx
-from anthropic import Anthropic, AsyncAnthropic
+from google.genai import Client
+from google.genai.types import HttpOptions
 
 from ...context import Context, DepsT
 from ...formatting import Format, FormattableT
@@ -29,108 +30,126 @@ from ...tools import (
 )
 from ..base import BaseClient
 from . import _utils
-from .model_ids import AnthropicModelId
-from .params import AnthropicParams
+from .model_ids import GoogleModelId
+from .params import GoogleParams
 
-_global_client: "AnthropicClient | None" = None
-
-ANTHROPIC_CLIENT_CONTEXT: ContextVar["AnthropicClient | None"] = ContextVar(
-    "ANTHROPIC_CLIENT_CONTEXT", default=None
+GOOGLE_CLIENT_CONTEXT: ContextVar["GoogleClient | None"] = ContextVar(
+    "GOOGLE_CLIENT_CONTEXT", default=None
 )
 
 
-def get_anthropic_client() -> "AnthropicClient":
-    """Get a global Anthropic client instance.
+@lru_cache(maxsize=256)
+def _google_singleton(api_key: str | None, base_url: str | None) -> "GoogleClient":
+    """Return a cached Google client instance for the given parameters."""
+    return GoogleClient(api_key=api_key, base_url=base_url)
+
+
+def client(
+    *, api_key: str | None = None, base_url: str | None = None
+) -> "GoogleClient":
+    """Create or retrieve a Google client with the given parameters.
+
+    If a client has already been created with these parameters, it will be
+    retrieved from cache and returned.
+
+    Args:
+        api_key: API key for authentication. If None, uses GOOGLE_API_KEY env var.
+        base_url: Base URL for the API. If None, uses GOOGLE_BASE_URL env var.
 
     Returns:
-        An Anthropic client instance. Multiple calls return the same instance.
+        A Google client instance.
     """
-    ctx_client = ANTHROPIC_CLIENT_CONTEXT.get()
-    if ctx_client is not None:
-        return ctx_client
-
-    global _global_client
-    if _global_client is None:
-        api_key = os.getenv("ANTHROPIC_API_KEY")
-        _global_client = AnthropicClient(api_key=api_key)
-    return _global_client
+    api_key = api_key or os.getenv("GOOGLE_API_KEY")
+    base_url = base_url or os.getenv("GOOGLE_BASE_URL")
+    return _google_singleton(api_key, base_url)
 
 
-class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
-    """The client for the Anthropic LLM model."""
+def get_client() -> "GoogleClient":
+    """Retrieve the current Google client from context, or a global default.
+
+    Returns:
+        The current Google client from context if available, otherwise
+        a global default client based on environment variables.
+    """
+    ctx_client = GOOGLE_CLIENT_CONTEXT.get()
+    return ctx_client or client()
+
+
+class GoogleClient(BaseClient[GoogleParams, GoogleModelId, Client]):
+    """The client for the Google LLM model."""
 
     @property
-    def _context_var(self) -> ContextVar["AnthropicClient | None"]:
-        return ANTHROPIC_CLIENT_CONTEXT
+    def _context_var(self) -> ContextVar["GoogleClient | None"]:
+        return GOOGLE_CLIENT_CONTEXT
 
     def __init__(
-        self, *, api_key: str | None = None, base_url: str | httpx.URL | None = None
+        self, *, api_key: str | None = None, base_url: str | None = None
     ) -> None:
-        """Initialize the AnthropicClient with optional API key.
+        """Initialize the Google client."""
+        http_options = None
+        if base_url:
+            http_options = HttpOptions(base_url=base_url)
 
-        If api_key is not set, Anthropic will look for it in env as "ANTHROPIC_API_KEY".
-        """
-        self.client = Anthropic(api_key=api_key, base_url=base_url)
-        self.async_client = AsyncAnthropic(api_key=api_key, base_url=base_url)
+        self.client = Client(api_key=api_key, http_options=http_options)
 
     @overload
     def call(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> Response: ...
 
     @overload
     def call(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormattableT] | Format[FormattableT],
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> Response[FormattableT]: ...
 
     @overload
     def call(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> Response | Response[FormattableT]: ...
 
     def call(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> Response | Response[FormattableT]:
-        """Make a call to the Anthropic API."""
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=params,
+        """Make a call to the Google GenAI API."""
+        input_messages, format, contents, config = _utils.prepare_google_request(
+            model_id, messages, tools, format, params=params
         )
 
-        anthropic_response = self.client.messages.create(**kwargs)
+        google_response = self.client.models.generate_content(
+            model=model_id,
+            contents=contents,
+            config=config,
+        )
 
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+        assistant_message, finish_reason = _utils.decode_response(google_response)
 
         return Response(
-            raw=anthropic_response,
-            provider="anthropic",
+            raw=google_response,
+            provider="google",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -145,11 +164,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> ContextResponse[DepsT, None]: ...
 
     @overload
@@ -157,11 +176,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT],
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> ContextResponse[DepsT, FormattableT]: ...
 
     @overload
@@ -169,39 +188,39 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
 
     def context_call(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
-        """Make a call to the Anthropic API."""
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=params,
+        """Make a call to the Google GenAI API."""
+        input_messages, format, contents, config = _utils.prepare_google_request(
+            model_id, messages, tools, format, params=params
         )
 
-        anthropic_response = self.client.messages.create(**kwargs)
+        google_response = self.client.models.generate_content(
+            model=model_id,
+            contents=contents,
+            config=config,
+        )
 
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+        assistant_message, finish_reason = _utils.decode_response(google_response)
 
         return ContextResponse(
-            raw=anthropic_response,
-            provider="anthropic",
+            raw=google_response,
+            provider="google",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -215,60 +234,60 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
     async def call_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncResponse: ...
 
     @overload
     async def call_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormattableT] | Format[FormattableT],
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncResponse[FormattableT]: ...
 
     @overload
     async def call_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
 
     async def call_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
-        """Make an async call to the Anthropic API."""
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=params,
+        """Make an async call to the Google GenAI API."""
+        input_messages, format, contents, config = _utils.prepare_google_request(
+            model_id, messages, tools, format, params=params
         )
 
-        anthropic_response = await self.async_client.messages.create(**kwargs)
+        google_response = await self.client.aio.models.generate_content(
+            model=model_id,
+            contents=contents,
+            config=config,
+        )
 
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+        assistant_message, finish_reason = _utils.decode_response(google_response)
 
         return AsyncResponse(
-            raw=anthropic_response,
-            provider="anthropic",
+            raw=google_response,
+            provider="google",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -283,11 +302,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncContextResponse[DepsT, None]: ...
 
     @overload
@@ -295,11 +314,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT],
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncContextResponse[DepsT, FormattableT]: ...
 
     @overload
@@ -307,11 +326,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> (
         AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]
     ): ...
@@ -320,28 +339,28 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
-        """Make an async call to the Anthropic API."""
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=params,
+        """Make an async call to the Google GenAI API."""
+        input_messages, format, contents, config = _utils.prepare_google_request(
+            model_id, messages, tools, format, params=params
         )
 
-        anthropic_response = await self.async_client.messages.create(**kwargs)
+        google_response = await self.client.aio.models.generate_content(
+            model=model_id,
+            contents=contents,
+            config=config,
+        )
 
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+        assistant_message, finish_reason = _utils.decode_response(google_response)
 
         return AsyncContextResponse(
-            raw=anthropic_response,
-            provider="anthropic",
+            raw=google_response,
+            provider="google",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -355,61 +374,59 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
     def stream(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> StreamResponse: ...
 
     @overload
     def stream(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormattableT] | Format[FormattableT],
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> StreamResponse[FormattableT]: ...
 
     @overload
     def stream(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> StreamResponse | StreamResponse[FormattableT]: ...
 
     def stream(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> StreamResponse | StreamResponse[FormattableT]:
-        """Make a streaming call to the Anthropic API."""
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=params,
+        """Make a streaming call to the Google GenAI API."""
+        input_messages, format, contents, config = _utils.prepare_google_request(
+            model_id, messages, tools, format, params=params
         )
 
-        anthropic_stream = self.client.messages.stream(**kwargs)
-
-        chunk_iterator = _utils.convert_anthropic_stream_to_chunk_iterator(
-            anthropic_stream
+        google_stream = self.client.models.generate_content_stream(
+            model=model_id,
+            contents=contents,
+            config=config,
         )
+
+        chunk_iterator = _utils.convert_google_stream_to_chunk_iterator(google_stream)
 
         return StreamResponse(
-            provider="anthropic",
+            provider="google",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -423,11 +440,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> ContextStreamResponse[DepsT]: ...
 
     @overload
@@ -435,11 +452,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT],
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> ContextStreamResponse[DepsT, FormattableT]: ...
 
     @overload
@@ -447,40 +464,38 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]: ...
 
     def context_stream(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
-        """Make a streaming call to the Anthropic API."""
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=params,
+        """Make a streaming call to the Google GenAI API."""
+        input_messages, format, contents, config = _utils.prepare_google_request(
+            model_id, messages, tools, format, params=params
         )
 
-        anthropic_stream = self.client.messages.stream(**kwargs)
-
-        chunk_iterator = _utils.convert_anthropic_stream_to_chunk_iterator(
-            anthropic_stream
+        google_stream = self.client.models.generate_content_stream(
+            model=model_id,
+            contents=contents,
+            config=config,
         )
+
+        chunk_iterator = _utils.convert_google_stream_to_chunk_iterator(google_stream)
 
         return ContextStreamResponse(
-            provider="anthropic",
+            provider="google",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -493,61 +508,61 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
     async def stream_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse: ...
 
     @overload
     async def stream_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormattableT] | Format[FormattableT],
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse[FormattableT]: ...
 
     @overload
     async def stream_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]: ...
 
     async def stream_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
-        """Make an async streaming call to the Anthropic API."""
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=params,
+        """Make an async streaming call to the Google GenAI API."""
+        input_messages, format, contents, config = _utils.prepare_google_request(
+            model_id, messages, tools, format, params=params
         )
 
-        anthropic_stream = self.async_client.messages.stream(**kwargs)
+        google_stream = await self.client.aio.models.generate_content_stream(
+            model=model_id,
+            contents=contents,
+            config=config,
+        )
 
-        chunk_iterator = _utils.convert_anthropic_stream_to_async_chunk_iterator(
-            anthropic_stream
+        chunk_iterator = _utils.convert_google_stream_to_async_chunk_iterator(
+            google_stream
         )
 
         return AsyncStreamResponse(
-            provider="anthropic",
+            provider="google",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -561,11 +576,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncContextStreamResponse[DepsT]: ...
 
     @overload
@@ -573,11 +588,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT],
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
 
     @overload
@@ -585,11 +600,11 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> (
         AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]
     ): ...
@@ -598,29 +613,29 @@ class AnthropicClient(BaseClient[AnthropicParams, AnthropicModelId, Anthropic]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: GoogleModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
-        params: AnthropicParams | None = None,
+        params: GoogleParams | None = None,
     ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]:
-        """Make an async streaming call to the Anthropic API."""
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
-            model_id=model_id,
-            messages=messages,
-            tools=tools,
-            format=format,
-            params=params,
+        """Make an async streaming call to the Google GenAI API."""
+        input_messages, format, contents, config = _utils.prepare_google_request(
+            model_id, messages, tools, format, params=params
         )
 
-        anthropic_stream = self.async_client.messages.stream(**kwargs)
+        google_stream = await self.client.aio.models.generate_content_stream(
+            model=model_id,
+            contents=contents,
+            config=config,
+        )
 
-        chunk_iterator = _utils.convert_anthropic_stream_to_async_chunk_iterator(
-            anthropic_stream
+        chunk_iterator = _utils.convert_google_stream_to_async_chunk_iterator(
+            google_stream
         )
 
         return AsyncContextStreamResponse(
-            provider="anthropic",
+            provider="google",
             model_id=model_id,
             params=params,
             tools=tools,

@@ -17,7 +17,7 @@ def test_client_pulled_from_context_at_call_time() -> None:
     """Test that models get client at call time, not construction time."""
     model = llm.model(provider="openai", model_id="gpt-4o")
 
-    custom_client = llm.OpenAIClient(api_key="test-key")
+    custom_client = llm.client("openai", api_key="test-key")
 
     mock_call = MagicMock(return_value=MagicMock())
     custom_client.call = mock_call
