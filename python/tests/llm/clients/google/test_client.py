@@ -9,11 +9,11 @@ def test_custom_base_url() -> None:
     """Test that custom base URL is used for API requests."""
     example_url = "https://example.com"
 
-    with patch("mirascope.llm.clients.google.client.Client") as mock_client_class:
+    with patch("mirascope.llm.clients.google.clients.Client") as mock_client_class:
         mock_client_instance = MagicMock()
         mock_client_class.return_value = mock_client_instance
 
-        google_client = llm.GoogleClient(base_url=example_url)
+        google_client = llm.client("google", base_url=example_url)
 
         mock_client_class.assert_called_once()
         call_args = mock_client_class.call_args
@@ -28,8 +28,8 @@ def test_context_manager() -> None:
 
     global_client = llm.get_client("google")
 
-    client1 = llm.GoogleClient(api_key="key1")
-    client2 = llm.GoogleClient(api_key="key2")
+    client1 = llm.client("google", api_key="key1")
+    client2 = llm.client("google", api_key="key2")
 
     assert llm.get_client("google") is global_client
 
@@ -44,3 +44,28 @@ def test_context_manager() -> None:
         assert llm.get_client("google") is client1
 
     assert llm.get_client("google") is global_client
+
+
+def test_client_caching() -> None:
+    """Test that client() returns cached instances for identical parameters."""
+    client1 = llm.client(
+        "google", api_key="test-key", base_url="https://api.example.com"
+    )
+    client2 = llm.client(
+        "google", api_key="test-key", base_url="https://api.example.com"
+    )
+    assert client1 is client2
+
+    client3 = llm.client(
+        "google", api_key="different-key", base_url="https://api.example.com"
+    )
+    assert client1 is not client3
+
+    client4 = llm.client(
+        "google", api_key="test-key", base_url="https://different.example.com"
+    )
+    assert client1 is not client4
+
+    client5 = llm.client("google", api_key=None, base_url=None)
+    client6 = llm.get_client("google")
+    assert client5 is client6

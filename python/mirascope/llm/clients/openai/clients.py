@@ -3,9 +3,9 @@
 import os
 from collections.abc import Sequence
 from contextvars import ContextVar
+from functools import lru_cache
 from typing import overload
 
-import httpx
 from openai import AsyncOpenAI, OpenAI
 
 from ...context import Context, DepsT
@@ -32,28 +32,46 @@ from . import _utils
 from .model_ids import OpenAIModelId
 from .params import OpenAIParams
 
-_global_client: "OpenAIClient | None" = None
-
 OPENAI_CLIENT_CONTEXT: ContextVar["OpenAIClient | None"] = ContextVar(
     "OPENAI_CLIENT_CONTEXT", default=None
 )
 
 
-def get_openai_client() -> "OpenAIClient":
-    """Get a global OpenAI client instance.
+@lru_cache(maxsize=256)
+def _openai_singleton(api_key: str | None, base_url: str | None) -> "OpenAIClient":
+    """Return a cached OpenAI client instance for the given parameters."""
+    return OpenAIClient(api_key=api_key, base_url=base_url)
+
+
+def client(
+    *, api_key: str | None = None, base_url: str | None = None
+) -> "OpenAIClient":
+    """Create or retrieve an OpenAI client with the given parameters.
+
+    If a client has already been created with these parameters, it will be
+    retrieved from cache and returned.
+
+    Args:
+        api_key: API key for authentication. If None, uses OPENAI_API_KEY env var.
+        base_url: Base URL for the API. If None, uses OPENAI_BASE_URL env var.
 
     Returns:
-        An OpenAI client instance. Multiple calls return the same instance.
+        An OpenAI client instance.
+    """
+    api_key = api_key or os.getenv("OPENAI_API_KEY")
+    base_url = base_url or os.getenv("OPENAI_BASE_URL")
+    return _openai_singleton(api_key, base_url)
+
+
+def get_client() -> "OpenAIClient":
+    """Retrieve the current OpenAI client from context, or a global default.
+
+    Returns:
+        The current OpenAI client from context if available, otherwise
+        a global default client based on environment variables.
     """
     ctx_client = OPENAI_CLIENT_CONTEXT.get()
-    if ctx_client is not None:
-        return ctx_client
-
-    global _global_client
-    if _global_client is None:
-        api_key = os.getenv("OPENAI_API_KEY")
-        _global_client = OpenAIClient(api_key=api_key)
-    return _global_client
+    return ctx_client or client()
 
 
 class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
@@ -64,12 +82,9 @@ class OpenAIClient(BaseClient[OpenAIParams, OpenAIModelId, OpenAI]):
         return OPENAI_CLIENT_CONTEXT
 
     def __init__(
-        self, *, api_key: str | None = None, base_url: str | httpx.URL | None = None
+        self, *, api_key: str | None = None, base_url: str | None = None
     ) -> None:
-        """Initialize the OpenAIClient with optional API key.
-
-        If api_key is not set, OpenAI will look for it in env as "OPENAI_API_KEY".
-        """
+        """Initialize the OpenAI client."""
         self.client = OpenAI(api_key=api_key, base_url=base_url)
         self.async_client = AsyncOpenAI(api_key=api_key, base_url=base_url)
 

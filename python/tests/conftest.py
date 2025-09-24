@@ -106,19 +106,18 @@ def openai_api_key() -> str:
 
 
 @pytest.fixture(scope="session")
-def anthropic_client(anthropic_api_key: str) -> llm.AnthropicClient:
+def anthropic_client(anthropic_api_key: str) -> llm.clients.AnthropicClient:
     """Create an AnthropicClient instance with appropriate API key."""
-    return llm.clients.AnthropicClient(api_key=anthropic_api_key)
-
-
-# Use function scope to work around Google async "event loop closed" issues
-@pytest.fixture(scope="function")
-def google_client(google_api_key: str) -> llm.GoogleClient:
-    """Create a GoogleClient instance with appropriate API key."""
-    return llm.clients.GoogleClient(api_key=google_api_key)
+    return llm.client("anthropic", api_key=anthropic_api_key)
 
 
 @pytest.fixture(scope="session")
-def openai_client(openai_api_key: str) -> llm.OpenAIClient:
+def google_client(google_api_key: str) -> llm.clients.GoogleClient:
+    """Create a GoogleClient instance with appropriate API key."""
+    return llm.client("google", api_key=google_api_key)
+
+
+@pytest.fixture(scope="session")
+def openai_client(openai_api_key: str) -> llm.clients.OpenAIClient:
     """Create an OpenAIClient instance with appropriate API key."""
-    return llm.clients.OpenAIClient(api_key=openai_api_key)
+    return llm.client("openai", api_key=openai_api_key)

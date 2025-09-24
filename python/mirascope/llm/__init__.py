@@ -24,7 +24,7 @@ from . import (
     types,
 )
 from .calls import call
-from .clients import AnthropicClient, GoogleClient, OpenAIClient, get_client
+from .clients import client, get_client
 from .content import (
     AssistantContentChunk,
     AssistantContentPart,
@@ -95,7 +95,6 @@ from .tools import (
 
 __all__ = [
     "APIError",
-    "AnthropicClient",
     "AssistantContentChunk",
     "AssistantContentPart",
     "AssistantMessage",
@@ -125,14 +124,12 @@ __all__ = [
     "Format",
     "FormattingMode",
     "FormattingModeNotSupportedError",
-    "GoogleClient",
     "Image",
     "ImageUrl",
     "Message",
     "MirascopeError",
     "Model",
     "NotFoundError",
-    "OpenAIClient",
     "Partial",
     "PermissionError",
     "RateLimitError",
@@ -163,6 +160,7 @@ __all__ = [
     "UserMessage",
     "call",
     "calls",
+    "client",
     "clients",
     "content",
     "exceptions",
