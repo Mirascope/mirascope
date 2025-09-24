@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic, overload
 from ..content import ToolOutput
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
-from ..messages import AssistantMessage, Message, UserContent, user
+from ..messages import AssistantMessage, Message, UserContent
 from ..tools import (
     AsyncContextTool,
     AsyncContextToolkit,
@@ -87,11 +87,9 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         Returns:
             A new `Response` instance generated from the extended message history.
         """
-        messages = self.messages + [user(content)]
-        return self.model.call(
-            messages=messages,
-            tools=self.toolkit.tools,
-            format=self.format,
+        return self.model.resume(
+            response=self,
+            content=content,
         )
 
 
@@ -162,11 +160,9 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         Returns:
             A new `AsyncResponse` instance generated from the extended message history.
         """
-        messages = self.messages + [user(content)]
-        return await self.model.call_async(
-            messages=messages,
-            tools=self.toolkit.tools,
-            format=self.format,
+        return await self.model.resume_async(
+            response=self,
+            content=content,
         )
 
 
@@ -244,12 +240,10 @@ class ContextResponse(
         Returns:
             A new `ContextResponse` instance generated from the extended message history.
         """
-        messages = self.messages + [user(content)]
-        return self.model.context_call(
+        return self.model.context_resume(
             ctx=ctx,
-            messages=messages,
-            tools=self.toolkit.tools,
-            format=self.format,
+            response=self,
+            content=content,
         )
 
 
@@ -328,10 +322,8 @@ class AsyncContextResponse(
         Returns:
             A new `AsyncContextResponse` instance generated from the extended message history.
         """
-        messages = self.messages + [user(content)]
-        return await self.model.context_call_async(
+        return await self.model.context_resume_async(
             ctx=ctx,
-            messages=messages,
-            tools=self.toolkit.tools,
-            format=self.format,
+            response=self,
+            content=content,
         )
