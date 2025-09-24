@@ -2,12 +2,18 @@ interactions:
 - request:
     body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please recommend
       the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Respond
-      only with valid JSON that matches this exact schema:\n{\n  \"description\":
-      \"A book with a rating. The title should be in all caps!\",\n  \"properties\":
-      {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
-      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\":
-      {\n      \"description\": \"For testing purposes, the rating should be 7\",\n      \"title\":
-      \"Rating\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      only with valid JSON that matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\":
+      {\n      \"description\": \"The author of a book.\",\n      \"properties\":
+      {\n        \"first_name\": {\n          \"title\": \"First Name\",\n          \"type\":
+      \"string\"\n        },\n        \"last_name\": {\n          \"title\": \"Last
+      Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
       \"Book\",\n  \"type\": \"object\"\n}"}'
     headers:
       accept:
@@ -19,7 +25,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '781'
+      - '1247'
       content-type:
       - application/json
       host:
@@ -51,15 +57,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJHbSgNBDIZfZfmvp9DaltK5U2ytF1YRQcWV3WE3dsfuZupMxgNl311W
-        rUe8Ssj3JYFkC1tCowmrrD+YNnJQxufhfHRxZBfXw/mVP3BPUJCXDXUWhWBWBAXv6q5gQrBBDAsU
-        GldSDY2iNrGkXnDMJL1Rb6+/N+6PByMoFI6FWKBvtruRQs9d81vQyPP8PjhOeZtykqQQKzWl0EmK
-        i8UsWe6fzJLTedLll8fLwxTq3TNRKuffxTMj3hbr5NxJdRdD+JS8EcurTpqk3Kac5znaW4UgbpN5
-        MsExNIjLTKJnfIBAD5G4IGiOda0Q3y6gt7C8iZKJWxMH6MF0olCYoqKs8GTEOs5+Gv0d92TK/9iu
-        t1tAm4oa8qbOxs1f/4sOqt+0VXBRvpdGQ4VA/tEWlIklD43ub6XxJdr2FQAA//8DAELE4XsFAgAA
+        H4sIAAAAAAAAA3SRW0sDMRCF/8pynlNoa6uSN7WKIl4QwQdXQtiddqO7k5pMRC373yW1xRs+JZzv
+        OzOQrOBqaHRxYYajXXd0OFrMDsOke/fP7jzdzvn1EQrytqRsUYx2QVAIvs2BjdFFsSxQ6HxNLTSq
+        1qaaBtEzkwwmg/FwPB1ORxMoVJ6FWKDvV9uRQq+5vD40ViUXRQlx0lIJXZS4PT0uLg8ujourkyLf
+        784uZyXUp2eTND5kcV3M0dyFKIZtt+lfWwmuetpUstHaH8KNl2aeYiyRhX4zOVhxvMjGXsk9+geF
+        KH5pAtnoGRrEtZEUGBsQ6TkRVwTNqW0V0vqh9AqOl0mM+CfiCL0z3leobNWQqQJZcZ7NT2O45YFs
+        /R/bdvMCWjbUUbCtmXZ//S86an7TXsEn+R5N9xUihRdXkRFHARr5e2sbavT9BwAAAP//AwBg21eC
+        LAIAAA==
     headers:
       CF-RAY:
-      - 983c403799f376c1-SEA
+      - 984552fb2ebb767c-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -67,7 +74,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 18:54:31 GMT
+      - Wed, 24 Sep 2025 21:20:11 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -81,35 +88,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-23T18:54:31Z'
+      - '2025-09-24T21:20:10Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-23T18:54:31Z'
+      - '2025-09-24T21:20:11Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-23T18:54:29Z'
+      - '2025-09-24T21:20:09Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-23T18:54:31Z'
+      - '2025-09-24T21:20:10Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTRqgFAYE4QAdvLPQ4iPx
+      - req_011CTTvbTH11cMFpAPPjHpV1
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2608'
+      - '1973'
     status:
       code: 200
       message: OK

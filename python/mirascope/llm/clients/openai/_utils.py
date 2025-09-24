@@ -20,7 +20,12 @@ from ...content import (
     ToolCallStartChunk,
 )
 from ...exceptions import FormattingModeNotSupportedError
-from ...formatting import Format, FormattableT, resolve_format
+from ...formatting import (
+    Format,
+    FormattableT,
+    _utils as _formatting_utils,
+    resolve_format,
+)
 from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import (
     AsyncChunkIterator,
@@ -211,6 +216,7 @@ def _convert_tool_to_tool_param(
     """Convert a single Mirascope `Tool` to OpenAI ChatCompletionToolParam with caching."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
+    _ensure_additional_properties_false(schema_dict)
     return openai_types.ChatCompletionToolParam(
         type="function",
         function={
@@ -219,6 +225,34 @@ def _convert_tool_to_tool_param(
             "parameters": schema_dict,
             "strict": tool.strict,
         },
+    )
+
+
+def _create_strict_response_format(
+    format: Format[FormattableT],
+) -> shared_openai_types.ResponseFormatJSONSchema:
+    """Create OpenAI strict response format from a Mirascope Format.
+
+    Args:
+        format: The `Format` instance containing schema and metadata
+
+    Returns:
+        Dictionary containing OpenAI response_format specification
+    """
+    schema = format.schema.copy()
+
+    _ensure_additional_properties_false(schema)
+
+    json_schema = JSONSchema(
+        name=format.name,
+        schema=schema,
+        strict=True,
+    )
+    if format.description:
+        json_schema["description"] = format.description
+
+    return shared_openai_types.ResponseFormatJSONSchema(
+        type="json_schema", json_schema=json_schema
     )
 
 
@@ -265,7 +299,7 @@ def prepare_openai_request(
                 raise FormattingModeNotSupportedError(
                     formatting_mode="strict", provider="openai", model_id=model_id
                 )
-            kwargs["response_format"] = create_strict_response_format(format)
+            kwargs["response_format"] = _create_strict_response_format(format)
         elif format.mode == "tool":
             if tools:
                 kwargs["tool_choice"] = "required"
@@ -275,7 +309,8 @@ def prepare_openai_request(
                     "function": {"name": FORMAT_TOOL_NAME},
                 }
                 kwargs["parallel_tool_calls"] = False
-            openai_tools.append(create_format_tool_param(format))
+            format_tool_schema = _formatting_utils.create_tool_schema(format)
+            openai_tools.append(_convert_tool_to_tool_param(format_tool_schema))
         elif (
             format.mode == "json" and model_id not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
         ):
@@ -440,67 +475,3 @@ async def convert_openai_stream_to_async_chunk_iterator(
     async for chunk in openai_stream:
         for item in processor.process_chunk(chunk):
             yield item
-
-
-def create_strict_response_format(
-    format: Format[FormattableT],
-) -> shared_openai_types.ResponseFormatJSONSchema:
-    """Create OpenAI strict response format from a Mirascope Format.
-
-    Args:
-        format: The `Format` instance containing schema and metadata
-
-    Returns:
-        Dictionary containing OpenAI response_format specification
-    """
-    schema = format.schema.copy()
-
-    _ensure_additional_properties_false(schema)
-
-    json_schema = JSONSchema(
-        name=format.name,
-        schema=schema,
-        strict=True,
-    )
-    if format.description:
-        json_schema["description"] = format.description
-
-    return shared_openai_types.ResponseFormatJSONSchema(
-        type="json_schema", json_schema=json_schema
-    )
-
-
-def create_format_tool_param(
-    format: Format[FormattableT],
-) -> openai_types.ChatCompletionToolParam:
-    """Create OpenAI `ChatCompletionToolParam` for format parsing from a Mirascope `Format`.
-
-    Args:
-        format: The `Format` instance containing schema and metadata
-
-    Returns:
-        OpenAI ChatCompletionToolParam for the format tool
-    """
-    schema_dict = format.schema.copy()
-    schema_dict["type"] = "object"
-
-    _ensure_additional_properties_false(schema_dict)
-
-    if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
-        schema_dict["required"] = list(schema_dict["properties"].keys())
-
-    description = (
-        f"Use this tool to extract data in {format.name} format for a final response."
-    )
-    if format.description:
-        description += "\n" + format.description
-
-    return openai_types.ChatCompletionToolParam(
-        type="function",
-        function={
-            "name": FORMAT_TOOL_NAME,
-            "description": description,
-            "parameters": schema_dict,
-            "strict": True,
-        },
-    )

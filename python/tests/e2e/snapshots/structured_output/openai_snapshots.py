@@ -24,7 +24,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
+                        text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
                 ]
             ),
@@ -33,10 +33,23 @@ sync_snapshot = snapshot(
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "$defs": {
+                    "Author": {
+                        "description": "The author of a book.",
+                        "properties": {
+                            "first_name": {"title": "First Name", "type": "string"},
+                            "last_name": {"title": "Last Name", "type": "string"},
+                        },
+                        "required": ["first_name", "last_name"],
+                        "title": "Author",
+                        "type": "object",
+                        "additionalProperties": False,
+                    }
+                },
                 "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
+                    "author": {"$ref": "#/$defs/Author"},
                     "rating": {
                         "description": "For testing purposes, the rating should be 7",
                         "title": "Rating",
@@ -70,7 +83,7 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
+                        text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
                 ]
             ),
@@ -79,10 +92,23 @@ async_snapshot = snapshot(
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "$defs": {
+                    "Author": {
+                        "description": "The author of a book.",
+                        "properties": {
+                            "first_name": {"title": "First Name", "type": "string"},
+                            "last_name": {"title": "Last Name", "type": "string"},
+                        },
+                        "required": ["first_name", "last_name"],
+                        "title": "Author",
+                        "type": "object",
+                        "additionalProperties": False,
+                    }
+                },
                 "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
+                    "author": {"$ref": "#/$defs/Author"},
                     "rating": {
                         "description": "For testing purposes, the rating should be 7",
                         "title": "Rating",
@@ -115,7 +141,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
+                        text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
                 ]
             ),
@@ -124,10 +150,23 @@ stream_snapshot = snapshot(
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "$defs": {
+                    "Author": {
+                        "description": "The author of a book.",
+                        "properties": {
+                            "first_name": {"title": "First Name", "type": "string"},
+                            "last_name": {"title": "Last Name", "type": "string"},
+                        },
+                        "required": ["first_name", "last_name"],
+                        "title": "Author",
+                        "type": "object",
+                        "additionalProperties": False,
+                    }
+                },
                 "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
+                    "author": {"$ref": "#/$defs/Author"},
                     "rating": {
                         "description": "For testing purposes, the rating should be 7",
                         "title": "Rating",
@@ -142,7 +181,7 @@ stream_snapshot = snapshot(
             "formatting_instructions": None,
         },
         "tools": [],
-        "n_chunks": 23,
+        "n_chunks": 32,
     }
 )
 async_stream_snapshot = snapshot(
@@ -161,7 +200,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
+                        text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
                 ]
             ),
@@ -170,10 +209,23 @@ async_stream_snapshot = snapshot(
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "$defs": {
+                    "Author": {
+                        "description": "The author of a book.",
+                        "properties": {
+                            "first_name": {"title": "First Name", "type": "string"},
+                            "last_name": {"title": "Last Name", "type": "string"},
+                        },
+                        "required": ["first_name", "last_name"],
+                        "title": "Author",
+                        "type": "object",
+                        "additionalProperties": False,
+                    }
+                },
                 "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
+                    "author": {"$ref": "#/$defs/Author"},
                     "rating": {
                         "description": "For testing purposes, the rating should be 7",
                         "title": "Rating",
@@ -188,6 +240,6 @@ async_stream_snapshot = snapshot(
             "formatting_instructions": None,
         },
         "tools": [],
-        "n_chunks": 23,
+        "n_chunks": 32,
     }
 )

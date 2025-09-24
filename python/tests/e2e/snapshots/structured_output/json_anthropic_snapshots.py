@@ -20,6 +20,27 @@ sync_snapshot = snapshot(
                     text="""\
 Respond only with valid JSON that matches this exact schema:
 {
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
@@ -27,8 +48,7 @@ Respond only with valid JSON that matches this exact schema:
       "type": "string"
     },
     "author": {
-      "title": "Author",
-      "type": "string"
+      "$ref": "#/$defs/Author"
     },
     "rating": {
       "description": "For testing purposes, the rating should be 7",
@@ -58,13 +78,14 @@ Respond only with valid JSON that matches this exact schema:
                 content=[
                     Text(
                         text="""\
-```json
 {
   "title": "THE NAME OF THE WIND",
-  "author": "Patrick Rothfuss",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
   "rating": 7
-}
-```\
+}\
 """
                     )
                 ]
@@ -74,10 +95,22 @@ Respond only with valid JSON that matches this exact schema:
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "$defs": {
+                    "Author": {
+                        "description": "The author of a book.",
+                        "properties": {
+                            "first_name": {"title": "First Name", "type": "string"},
+                            "last_name": {"title": "Last Name", "type": "string"},
+                        },
+                        "required": ["first_name", "last_name"],
+                        "title": "Author",
+                        "type": "object",
+                    }
+                },
                 "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
+                    "author": {"$ref": "#/$defs/Author"},
                     "rating": {
                         "description": "For testing purposes, the rating should be 7",
                         "title": "Rating",
@@ -92,6 +125,27 @@ Respond only with valid JSON that matches this exact schema:
             "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
@@ -99,8 +153,7 @@ Respond only with valid JSON that matches this exact schema:
       "type": "string"
     },
     "author": {
-      "title": "Author",
-      "type": "string"
+      "$ref": "#/$defs/Author"
     },
     "rating": {
       "description": "For testing purposes, the rating should be 7",
@@ -133,6 +186,27 @@ async_snapshot = snapshot(
                     text="""\
 Respond only with valid JSON that matches this exact schema:
 {
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
@@ -140,8 +214,7 @@ Respond only with valid JSON that matches this exact schema:
       "type": "string"
     },
     "author": {
-      "title": "Author",
-      "type": "string"
+      "$ref": "#/$defs/Author"
     },
     "rating": {
       "description": "For testing purposes, the rating should be 7",
@@ -174,7 +247,10 @@ Respond only with valid JSON that matches this exact schema:
 ```json
 {
   "title": "THE NAME OF THE WIND",
-  "author": "Patrick Rothfuss",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
   "rating": 7
 }
 ```\
@@ -187,10 +263,22 @@ Respond only with valid JSON that matches this exact schema:
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "$defs": {
+                    "Author": {
+                        "description": "The author of a book.",
+                        "properties": {
+                            "first_name": {"title": "First Name", "type": "string"},
+                            "last_name": {"title": "Last Name", "type": "string"},
+                        },
+                        "required": ["first_name", "last_name"],
+                        "title": "Author",
+                        "type": "object",
+                    }
+                },
                 "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
+                    "author": {"$ref": "#/$defs/Author"},
                     "rating": {
                         "description": "For testing purposes, the rating should be 7",
                         "title": "Rating",
@@ -205,6 +293,27 @@ Respond only with valid JSON that matches this exact schema:
             "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
@@ -212,8 +321,7 @@ Respond only with valid JSON that matches this exact schema:
       "type": "string"
     },
     "author": {
-      "title": "Author",
-      "type": "string"
+      "$ref": "#/$defs/Author"
     },
     "rating": {
       "description": "For testing purposes, the rating should be 7",
@@ -245,6 +353,27 @@ stream_snapshot = snapshot(
                     text="""\
 Respond only with valid JSON that matches this exact schema:
 {
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
@@ -252,8 +381,7 @@ Respond only with valid JSON that matches this exact schema:
       "type": "string"
     },
     "author": {
-      "title": "Author",
-      "type": "string"
+      "$ref": "#/$defs/Author"
     },
     "rating": {
       "description": "For testing purposes, the rating should be 7",
@@ -283,13 +411,14 @@ Respond only with valid JSON that matches this exact schema:
                 content=[
                     Text(
                         text="""\
-```json
 {
   "title": "THE NAME OF THE WIND",
-  "author": "Patrick Rothfuss",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
   "rating": 7
-}
-```\
+}\
 """
                     )
                 ]
@@ -299,10 +428,22 @@ Respond only with valid JSON that matches this exact schema:
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "$defs": {
+                    "Author": {
+                        "description": "The author of a book.",
+                        "properties": {
+                            "first_name": {"title": "First Name", "type": "string"},
+                            "last_name": {"title": "Last Name", "type": "string"},
+                        },
+                        "required": ["first_name", "last_name"],
+                        "title": "Author",
+                        "type": "object",
+                    }
+                },
                 "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
+                    "author": {"$ref": "#/$defs/Author"},
                     "rating": {
                         "description": "For testing purposes, the rating should be 7",
                         "title": "Rating",
@@ -317,6 +458,27 @@ Respond only with valid JSON that matches this exact schema:
             "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
@@ -324,8 +486,7 @@ Respond only with valid JSON that matches this exact schema:
       "type": "string"
     },
     "author": {
-      "title": "Author",
-      "type": "string"
+      "$ref": "#/$defs/Author"
     },
     "rating": {
       "description": "For testing purposes, the rating should be 7",
@@ -344,7 +505,7 @@ Respond only with valid JSON that matches this exact schema:
 """,
         },
         "tools": [],
-        "n_chunks": 6,
+        "n_chunks": 9,
     }
 )
 async_stream_snapshot = snapshot(
@@ -358,6 +519,27 @@ async_stream_snapshot = snapshot(
                     text="""\
 Respond only with valid JSON that matches this exact schema:
 {
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
@@ -365,8 +547,7 @@ Respond only with valid JSON that matches this exact schema:
       "type": "string"
     },
     "author": {
-      "title": "Author",
-      "type": "string"
+      "$ref": "#/$defs/Author"
     },
     "rating": {
       "description": "For testing purposes, the rating should be 7",
@@ -396,13 +577,14 @@ Respond only with valid JSON that matches this exact schema:
                 content=[
                     Text(
                         text="""\
-```json
 {
   "title": "THE NAME OF THE WIND",
-  "author": "Patrick Rothfuss",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
   "rating": 7
-}
-```\
+}\
 """
                     )
                 ]
@@ -412,10 +594,22 @@ Respond only with valid JSON that matches this exact schema:
             "name": "Book",
             "description": "A book with a rating. The title should be in all caps!",
             "schema": {
+                "$defs": {
+                    "Author": {
+                        "description": "The author of a book.",
+                        "properties": {
+                            "first_name": {"title": "First Name", "type": "string"},
+                            "last_name": {"title": "Last Name", "type": "string"},
+                        },
+                        "required": ["first_name", "last_name"],
+                        "title": "Author",
+                        "type": "object",
+                    }
+                },
                 "description": "A book with a rating. The title should be in all caps!",
                 "properties": {
                     "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
+                    "author": {"$ref": "#/$defs/Author"},
                     "rating": {
                         "description": "For testing purposes, the rating should be 7",
                         "title": "Rating",
@@ -430,6 +624,27 @@ Respond only with valid JSON that matches this exact schema:
             "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
   "description": "A book with a rating. The title should be in all caps!",
   "properties": {
     "title": {
@@ -437,8 +652,7 @@ Respond only with valid JSON that matches this exact schema:
       "type": "string"
     },
     "author": {
-      "title": "Author",
-      "type": "string"
+      "$ref": "#/$defs/Author"
     },
     "rating": {
       "description": "For testing purposes, the rating should be 7",
@@ -457,6 +671,6 @@ Respond only with valid JSON that matches this exact schema:
 """,
         },
         "tools": [],
-        "n_chunks": 6,
+        "n_chunks": 10,
     }
 )

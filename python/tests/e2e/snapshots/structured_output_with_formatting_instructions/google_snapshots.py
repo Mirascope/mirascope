@@ -78,7 +78,7 @@ lucky number 7.\
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss", "rating": 7}'
+                        text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
                     )
                 ]
             ),

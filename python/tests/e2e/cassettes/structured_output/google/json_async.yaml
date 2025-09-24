@@ -2,12 +2,18 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
       by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
-      "Respond only with valid JSON that matches this exact schema:\n{\n  \"description\":
-      \"A book with a rating. The title should be in all caps!\",\n  \"properties\":
-      {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
-      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\":
-      {\n      \"description\": \"For testing purposes, the rating should be 7\",\n      \"title\":
-      \"Rating\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      "Respond only with valid JSON that matches this exact schema:\n{\n  \"$defs\":
+      {\n    \"Author\": {\n      \"description\": \"The author of a book.\",\n      \"properties\":
+      {\n        \"first_name\": {\n          \"title\": \"First Name\",\n          \"type\":
+      \"string\"\n        },\n        \"last_name\": {\n          \"title\": \"Last
+      Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
       \"Book\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
       {"responseMimeType": "application/json"}}'
     headers:
@@ -18,7 +24,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '863'
+      - '1329'
       content-type:
       - application/json
       host:
@@ -32,13 +38,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/12RUW+CMBCA3/kVTZ91mZplZm9O3cYSlShuS8YeGjmgEVvWHokL4b+vhYF1PJDm
-        7uvd9bvKI4QemIh5zBA0fSCfJkJI1fxtTgoEgSbRhUywYAovbPtVztkgCGd7iVaRICSiyDGHyAQi
-        Gr4syXq2WpLNE7Hnd3+9iOig5ViJmVQtGDBU/HAkW4lZUmrdQ4ohF6mF7iNRU6dx3Z+/BpdxlczB
-        znKSMeQdXncATbjgOtsC01JYbBduAtpnuYjhbMK3XtegKU1LzVJYATIjjvV6aKHkqcBQHkHMZdmI
-        G02nbTVH9BUwGf/lUSLLr1OT7q5TWC9MW567G3CWY17Jco4/9inh8iOkjgn8N1fnwnOUUbOBMs3w
-        esbRyMKNtNbjGyjNW2EpnIzC4fjmbpjkTGdNR6pAF1Jo8GPLPA4nOxbwuZ/skm/UQfb67E9ne+rV
-        3i81yH4QhAIAAA==
+        H4sIAAAAAAAC/12RW2+CMBTH3/kUTZ91ES8x2ZuZLvjgJY5tJmNZqhRohBbbQ+JC+O5ruWgZD6T5
+        n9+5/U/pIITPhIcsJEAVfkZfWkGorP8mJjhQDjrQSVrMiYQH23yl9dYI0JtJwmXAEQowMEhpoIUA
+        +94KbRebFdq9IvP+XG+XAR40HCkgEdKAdaKRIiYV/HCStfl7ApKdL22KIVLSAw4CkqhQKsAGqNrK
+        kgDjsSHmAa+wNW11f38PHjtKkVKzQCZCmnZ41QF6Ks5UcqBECW6wN3+3x/co4yG9aXnkdA3q0rhQ
+        JKYbCkS7Te6e4lyKLAdfXCh/EUXt9sSdN9Ws6/SA2biNgwCS9kNuF7MKq6Vuy1L7bNZF9ZYkZfBr
+        VvFXRx9bTsC/uTovHMsyrM9WxAn0Z3SnE6c1rfHxg0rFGsNimmkLh+On2TDSB0zqjlhSlQuu6Do0
+        DBt772TngXc9Xa6g9qNT5KrFFDuV8wdoKYp+uQIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -47,11 +53,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 23 Sep 2025 18:55:03 GMT
+      - Wed, 24 Sep 2025 21:24:27 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2431
+      - gfet4t7; dur=1490
       Transfer-Encoding:
       - chunked
       Vary:

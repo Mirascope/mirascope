@@ -11,6 +11,22 @@ from tests.utils import (
     stream_response_snapshot_dict,
 )
 
+
+class Author(BaseModel):
+    """The author of a book."""
+
+    first_name: str
+    last_name: str
+
+
+class Book(BaseModel):
+    """A book with a rating. The title should be in all caps!"""
+
+    title: str
+    author: Author
+    rating: int = Field(description="For testing purposes, the rating should be 7")
+
+
 # ============= SYNC TESTS =============
 
 
@@ -24,13 +40,6 @@ def test_structured_output_sync(
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output without context."""
-
-    class Book(BaseModel):
-        """A book with a rating. The title should be in all caps!"""
-
-        title: str
-        author: str
-        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -49,7 +58,8 @@ def test_structured_output_sync(
         assert response_snapshot_dict(response) == snapshot
 
         book = response.parse()
-        assert book.author == "Patrick Rothfuss"
+        assert book.author.first_name == "Patrick"
+        assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
@@ -66,13 +76,6 @@ def test_structured_output_sync_context(
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with context."""
-
-    class Book(BaseModel):
-        """A book with a rating. The title should be in all caps!"""
-
-        title: str
-        author: str
-        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -92,7 +95,8 @@ def test_structured_output_sync_context(
         assert response_snapshot_dict(response) == snapshot
 
         book = response.parse()
-        assert book.author == "Patrick Rothfuss"
+        assert book.author.first_name == "Patrick"
+        assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
@@ -114,13 +118,6 @@ async def test_structured_output_async(
 ) -> None:
     """Test asynchronous structured output without context."""
 
-    class Book(BaseModel):
-        """A book with a rating. The title should be in all caps!"""
-
-        title: str
-        author: str
-        rating: int = Field(description="For testing purposes, the rating should be 7")
-
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
@@ -138,7 +135,8 @@ async def test_structured_output_async(
         assert response_snapshot_dict(response) == snapshot
 
         book = response.parse()
-        assert book.author == "Patrick Rothfuss"
+        assert book.author.first_name == "Patrick"
+        assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
@@ -156,13 +154,6 @@ async def test_structured_output_async_context(
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with context."""
-
-    class Book(BaseModel):
-        """A book with a rating. The title should be in all caps!"""
-
-        title: str
-        author: str
-        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -182,7 +173,8 @@ async def test_structured_output_async_context(
         assert response_snapshot_dict(response) == snapshot
 
         book = response.parse()
-        assert book.author == "Patrick Rothfuss"
+        assert book.author.first_name == "Patrick"
+        assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
@@ -202,13 +194,6 @@ def test_structured_output_stream(
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output without context."""
-
-    class Book(BaseModel):
-        """A book with a rating. The title should be in all caps!"""
-
-        title: str
-        author: str
-        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -230,7 +215,8 @@ def test_structured_output_stream(
         assert stream_response_snapshot_dict(response) == snapshot
 
         book = response.parse()
-        assert book.author == "Patrick Rothfuss"
+        assert book.author.first_name == "Patrick"
+        assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
@@ -247,13 +233,6 @@ def test_structured_output_stream_context(
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with context."""
-
-    class Book(BaseModel):
-        """A book with a rating. The title should be in all caps!"""
-
-        title: str
-        author: str
-        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -276,7 +255,8 @@ def test_structured_output_stream_context(
         assert stream_response_snapshot_dict(response) == snapshot
 
         book = response.parse()
-        assert book.author == "Patrick Rothfuss"
+        assert book.author.first_name == "Patrick"
+        assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
@@ -298,13 +278,6 @@ async def test_structured_output_async_stream(
 ) -> None:
     """Test async streaming structured output without context."""
 
-    class Book(BaseModel):
-        """A book with a rating. The title should be in all caps!"""
-
-        title: str
-        author: str
-        rating: int = Field(description="For testing purposes, the rating should be 7")
-
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
@@ -325,7 +298,8 @@ async def test_structured_output_async_stream(
         assert stream_response_snapshot_dict(response) == snapshot
 
         book = response.parse()
-        assert book.author == "Patrick Rothfuss"
+        assert book.author.first_name == "Patrick"
+        assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:
@@ -343,13 +317,6 @@ async def test_structured_output_async_stream_context(
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with context."""
-
-    class Book(BaseModel):
-        """A book with a rating. The title should be in all caps!"""
-
-        title: str
-        author: str
-        rating: int = Field(description="For testing purposes, the rating should be 7")
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -372,7 +339,8 @@ async def test_structured_output_async_stream_context(
         assert stream_response_snapshot_dict(response) == snapshot
 
         book = response.parse()
-        assert book.author == "Patrick Rothfuss"
+        assert book.author.first_name == "Patrick"
+        assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
     except llm.FormattingModeNotSupportedError as e:

@@ -50,24 +50,24 @@ interactions:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"id":"msg_014ujHfMQ8V1MiHtuuYuqZiG","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":67,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":4,"service_tier":"standard"}}              }
+        data: {"type":"message_start","message":{"id":"msg_01Fvj4DGu5rzWyZ1NsFb4opK","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":67,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}           }
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}}
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}
+        }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Here''s
-        a fantastic"}}
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"{"}          }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        book recommendation for you:\n\n```json\n{\n  \"title\":"}           }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\n  \"title\":
+        \"THE NAME OF THE WIND\",\n  "}            }
 
 
         event: ping
@@ -77,50 +77,13 @@ interactions:
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        \"THE NAME OF THE WIND\",\n  \"author\": \"Patrick Rothf"}        }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"\"author\":
+        \"Patrick Rothfuss\",\n  \"rating\": "} }
 
 
         event: content_block_delta
 
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"uss\",\n  \"rating\":
-        7\n}\n```\n\nThis is"}        }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        the first book in The Kingkiller Chronicle series and follows"}             }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        Kvothe, a legendary figure telling his own story. It"}          }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"''s
-        a beautifully written fantasy novel with"} }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        incredible world-building, magic systems, and storyt"}      }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"elling
-        within storytelling. Perfect for anyone who loves epic"}               }
-
-
-        event: content_block_delta
-
-        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
-        fantasy with rich prose and compelling characters!"}               }
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"7\n}"}         }
 
 
         event: content_block_stop
@@ -130,18 +93,18 @@ interactions:
 
         event: message_delta
 
-        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":67,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":121}        }
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":67,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":38}          }
 
 
         event: message_stop
 
-        data: {"type":"message_stop"           }
+        data: {"type":"message_stop"      }
 
 
         '
     headers:
       CF-RAY:
-      - 983c433adbed76eb-SEA
+      - 984555cfd94fb9f4-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -149,7 +112,7 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Tue, 23 Sep 2025 18:56:33 GMT
+      - Wed, 24 Sep 2025 21:22:06 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -163,35 +126,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-23T18:56:32Z'
+      - '2025-09-24T21:22:05Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-23T18:56:32Z'
+      - '2025-09-24T21:22:05Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-23T18:56:32Z'
+      - '2025-09-24T21:22:05Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-23T18:56:32Z'
+      - '2025-09-24T21:22:05Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTRqqLtKxvRoATDw4iD7U
+      - req_011CTTvk18988rXiAsBfW2Ld
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '868'
+      - '864'
     status:
       code: 200
       message: OK

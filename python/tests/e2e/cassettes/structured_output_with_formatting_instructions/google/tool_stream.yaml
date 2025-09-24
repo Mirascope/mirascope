@@ -6,11 +6,11 @@ interactions:
       str, rating: int}.\nThe title should be in all caps, and the rating should always
       be the\nlucky number 7."}], "role": "user"}, "tools": [{"functionDeclarations":
       [{"description": "Use this tool to extract data in Book format for a final response.",
-      "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"properties":
-      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
-      "type": "string"}, "rating": {"title": "Rating", "type": "integer"}}, "required":
-      ["title", "author", "rating"], "title": "Book", "type": "object"}}]}], "toolConfig":
-      {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "name": "__mirascope_formatted_output_tool__", "parameters": {"properties":
+      {"title": {"title": "Title", "type": "STRING"}, "author": {"title": "Author",
+      "type": "STRING"}, "rating": {"title": "Rating", "type": "INTEGER"}}, "required":
+      ["title", "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
       "generationConfig": {}}'
     headers:
       accept:
@@ -20,7 +20,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '950'
+      - '923'
       content-type:
       - application/json
       host:
@@ -34,13 +34,13 @@ interactions:
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"THE
-        NAME OF THE WIND\",\"author\": \"Patrick Rothfuss\",\"rating\": 7}},\"thoughtSignature\":
-        \"CiQB0e2Kb3IGtEgjVZFG6CuW++UuZLtv0Riu1F1BnL6vIp42FAoKfAHR7YpvsqXYeyDeS8X1M64IYDGqsNONtoYxnYQhkFzZBBWavLqK7qr07bS2UVwk7BB18yLFCjF4LYKXGRSXzHBMPAhE7/jOHeJRP9OKMFcZ2JK/wvJjn2AtULzazijNgQDcftco3ybyk9x83I4hyUbzXRgsPLkVkDjtekgK4AEB0e2KbyV0rW5Q5E4eLvC+aoAEQuj4xNGRVTiPNgEgnnbIPz/wYSJI363/Zp/8I5cIHUzdhhb0uNG+nsjAHFYyEx/NAnFnfI1Kt0iXUcnX9BVfteUhIh/js63MzRTNbss558bhx8HP6Gql9B/iFZgmY3FHIfXytrahX730LWA8vwfUJy5e+8li3lLAo8Qg/086dYhdeeBVHV4qcNX1hD8mmay+jITJsygTGRGD50r6LK3POBl9U7P9qaO4mxPFPkJytNTudqh63goa34NyOBrsCC3ExfpYUKlV2TsTlf9OEQq4AQHR7Ypv4+CMSDr7BHcL+OQ4FmFT33FaXqMz4siNKVta0OVBoDq+8LQGhIJh2GsaKqXE3RbCm4QS9606128AbhkRUEs+5gLUcmg43UKhHt/ry+LyHQ/33cvfXAHEMbrcZDLja0jvtg4+b/63I3SLghlz5Y0dnzX+AHwjXDIxQSNXjpTGjeDnaK0cZnA7iQbTO1Xqhmo03L3tI6hWfXOXUBw4X1GQ4XvdU/Q4sHMbCnNFfUZlHdzxEt0KdAHR7YpvLwZTE8RKBtt+jslCDYJe3AE8BhYn5Dzp/aUggIrV6zPXqYH0Kz7YGu8H/iAI2EUcKp8AEHshEshvxHo9cEHIaus8vQPuDdnjHGzAz6x9Ilhy+ZIuiGMond2Xijbc9oMSHbjgu/voK65DI8xKYcCT\"}],\"role\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"author\":
+        \"Patrick Rothfuss\",\"title\": \"THE NAME OF THE WIND\",\"rating\": 7}},\"thoughtSignature\":
+        \"CiQB0e2Kbxjf/ErzVoDz8m2pd4BAO9DszU/Hkum5WuVH+P2i3qgKiAEB0e2Kb28K9AwLadzxVV+Ni2MVUVGZ4NkVJdx/2fD8GZDUS04D7V7nu0Pdkir2mi1b3GQohP1LMgcIQ0ckrTegHwTWiwuVIJwj+Lno5rnRRRd2oUWj6d0p7OOYXQDCOycqse+cXY5VVukNzhWBwSwHfK79JuezNONmWUQCxXJkaXfoNf6LregSCuQBAdHtim/q0dMDcCnL5Gly87DCrJKwQsSw6XaJ/jpgJRq4ka0NI6ypIDHwANXVr9RWH6V0XPmxFlw0C70rNcA6kbD22N6VN9Di2Z/ylSs5/yV4AcrKT1HSEJcXeACjXDjQcbA2bdjUjB3BJb45tR/SyVxCgNWWdp07oKuxLmVsNLALXkfDnAo28smQFNUUg9/6U8zNqg/c1aLKTUMlDsUV/xG1QGOfzD7GjqJcGmpsgCDKXhEOM281EZ66ThHVLRgLEgtDMbi84rULxvUKucXiZoNL6a9+kK3nKCaxGco8xWic2KvBCswBAdHtim+OZSZjL1WDa+0mB47H6DCJuyXtSpQ4Gggoj5uYruMKhPEQ8uCJ6hutULcbuU0qxOrUuOw/bpSVEEMr5AXO4aiEqIlLNxlNx7OGBSlf4dJG5FgqeZJnW6724bV6GmTLqs5bzs7DzYHhBSEdP36Olq+zIL2viClRktgOPwCoQvUeMVh5f0d7CFOaONbxj5hOSdwOmKKoQ1WX988O/dcAcFQImtund9bVJpdEQ61oTaN2Sub+rXUgbDlPbnBLkYeKOk18QomdPkogCs4BAdHtim8ySnx0+JAieDTEWzAiQ6iY6F3lLxgRF4qwYd38ooexGVg6HJnQ2TNT2OdPpx86V8iZUN7S5TI+vt1ZqwNkQDuFRugjX69HANkywkuInnbkoUWo3VbGn/lioWro1iqXshYefySW0R9jp4nl1V7amq1DCzEYkRf/ZWjSbnySOwRpT6GsxfwuI/4A3XJ9WyRG9YzVjdoul9VWsnNCEnQCVnKBcHS8tdU1ZvzJi5BE8OeP8siuMUmTLrkgfknPd/FWBbH9tbd+orshEHEKPwHR7YpvE2Olgz4YqEbiclTXj5Fxz0GH9kLRkYZy87Q4IbiD8kTR7ZXnnMQnZIeiJ2ThGaFyyjVJMrah6ZCxoA==\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        137,\"candidatesTokenCount\": 37,\"totalTokenCount\": 318,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 137}],\"thoughtsTokenCount\": 144},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"V-3SaP3rGffqz7IPoPzasAo\"}\r\n\r\n"
+        137,\"candidatesTokenCount\": 37,\"totalTokenCount\": 353,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 137}],\"thoughtsTokenCount\": 179},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"82DUaJ-dL4WdqtsPtfe8uQg\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -49,11 +49,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 18:56:24 GMT
+      - Wed, 24 Sep 2025 21:21:57 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1382
+      - gfet4t7; dur=1881
       Transfer-Encoding:
       - chunked
       Vary:

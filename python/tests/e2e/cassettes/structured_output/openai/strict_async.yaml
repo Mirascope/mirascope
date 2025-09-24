@@ -1,8 +1,10 @@
 interactions:
 - request:
     body: '{"messages":[{"role":"user","content":"Please recommend the most popular
-      book by Patrick Rothfuss"}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"description":"A
-      book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"description":"For
+      book by Patrick Rothfuss"}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"description":"A
+      book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
       testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object","additionalProperties":false},"strict":true,"description":"A
       book with a rating. The title should be in all caps!"}}}'
     headers:
@@ -13,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '662'
+      - '929'
       content-type:
       - application/json
       cookie:
@@ -45,18 +47,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFLLbtswELzrK4g924Xl+gXdHCdFW7RpEaQoiigQaHIlMaFIglwVTQ3/
-        e0H5IbkPoBeC4OwsZ2Z3lzAGSkLGQNScROP0ePN+evdC/j79EuT8+ttPqteb1dV603xI5ROMIsNu
-        n1DQifVK2MZpJGXNARYeOWHsmi7nq8X89WK16IDGStSRVjkaz+x4OpnOxpPVeLI4EmurBAbI2EPC
-        GGO77owSjcQfkLHJ6PTSYAi8QsjORYyBtzq+AA9BBeKGYNSDwhpC06ne5UCKNOaQ5XD/9obdrj/e
-        sE9vWLx/fXd7ncMoB95SbX1X85mTV+KZ3VmqyzaEDveclKlyyJb74T8eyzbwaNO0Wg8AbowlHmPq
-        HD4ekf3Zk7aV83YbfqNCqYwKdeGRB2ui/kDWQYfuE8Yeu+zaizjAeds4Ksg+Y/ddOk0P/aCfVo9O
-        j8ECWeJ6wJqdWBf9ConElQ6D9EFwUaPsqf2oeCuVHQDJwPWfav7W++Bcmep/2veAEOgIZeE8SiUu
-        HfdlHuMy/6vsnHInGAL670pgQQp9nITEkrf6sGcQXgJhU5TKVOidV4dlK10htmW6XM3niyUk++QX
-        AAAA//8DAEUamCZ1AwAA
+        H4sIAAAAAAAAAwAAAP//jJJRb9MwEMff8ymse05RG9ql5G0ahQFioDE2JDJFrnNJzBzbsi8VqOp3
+        R066JoMh8RJF97v/+e5/t48YA1lCxkA0nERr1ezi/fXFjdD0hT5cbram3X1tz7e33beX7a58C3FQ
+        mO0PFPSoeiFMaxWSNHrAwiEnDFUX6WqdLtfrZNWD1pSogqy2NFuaWTJPlrP5ejY/OwobIwV6yNj3
+        iDHG9v03tKhL/AkZm8ePkRa95zVCdkpiDJxRIQLce+mJa4J4hMJoQt13vc+BJCnMIcvh5nLDrs4/
+        btinNyz83727ep1DnAPvqDEuh2yfQyWdp0LzdtB85uSkeOjTFJ+Sa0NN1XmfwyHOwXGSus4hSw/T
+        VhxWnefBCd0pNQFca0M8ONmbcH8kh9PYytTWma3/QwqV1NI3hUPujQ4jejIWenqIGLvv7e2eOAbW
+        mdZSQeYB++cWaTLUg3GhI01eHSEZ4moSny/iZ+oVJRKXyk8WBIKLBstROm6Td6U0ExBNpv67m+dq
+        D5NLXf9P+REIgZawLKzDUoqnE49pDsO9/yvt5HLfMHh0OymwIIkubKLEindqOEXwvzxhW1RS1+is
+        k8M9VrYQ22qRrlersxSiQ/QbAAD//wMA6vrX25gDAAA=
     headers:
       CF-RAY:
-      - 983c40a2d8557687-SEA
+      - 984553600d2730a6-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -64,14 +66,14 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 18:54:47 GMT
+      - Wed, 24 Sep 2025 21:20:26 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=7rtRaWrLaIhRFsFq24zeyFZPPbQtV5qHP3dTv3SLuvE-1758653687-1.0.1.1-6QejFMB2z6BmqwQ9jfWem7hgs9RUh0FIfzG76aTTsbuKYaZmX20_0oFsdyiYCygvafzfx4wZ9VtS87XcqFYgcJ.CXjBrgIczMF0eBN7wZPI;
-        path=/; expires=Tue, 23-Sep-25 19:24:47 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=86sN._mE.r8J1zIv3TCt9l4f3F0TQhWW7ENkcNb.9fo-1758748826-1.0.1.1-lzp8MtMCcsk2O0uqtqEkvyJHkxoR3wvo.dfpk3BQPrMcAXcey69ZI95BdGb9kpnvS6Vj6Ayre6kG677zMVYzNf4m5TK3rWDOivmKB6Ld60A;
+        path=/; expires=Wed, 24-Sep-25 21:50:26 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=S4IEJ6KxPNl0NBgjmE_ekIwmg1kCuCTkEWCEsDMqN5Y-1758653687284-0.0.1.1-604800000;
+      - _cfuvid=Y8hCqDJt47VZayVBUK.0Oax026f6U6TaTKTnAflKvco-1758748826665-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -88,13 +90,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '846'
+      - '950'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '984'
+      - '972'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -110,7 +112,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 1ms
       x-request-id:
-      - req_d6efe1a75b74435a95ea823e9ddf403e
+      - req_18a3ab99d9b548bca40ab4e666c9a76b
     status:
       code: 200
       message: OK

@@ -4,10 +4,13 @@ interactions:
       by Patrick Rothfuss"}], "role": "user"}], "generationConfig": {"responseMimeType":
       "application/json", "responseSchema": {"description": "A book with a rating.
       The title should be in all caps!", "properties": {"title": {"title": "Title",
-      "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}, "rating":
-      {"description": "For testing purposes, the rating should be 7", "title": "Rating",
-      "type": "INTEGER"}}, "propertyOrdering": ["title", "author", "rating"], "required":
-      ["title", "author", "rating"], "title": "Book", "type": "OBJECT"}}}'
+      "type": "STRING"}, "author": {"description": "The author of a book.", "properties":
+      {"first_name": {"title": "First Name", "type": "STRING"}, "last_name": {"title":
+      "Last Name", "type": "STRING"}}, "property_ordering": ["first_name", "last_name"],
+      "required": ["first_name", "last_name"], "title": "Author", "type": "OBJECT"},
+      "rating": {"description": "For testing purposes, the rating should be 7", "title":
+      "Rating", "type": "INTEGER"}}, "propertyOrdering": ["title", "author", "rating"],
+      "required": ["title", "author", "rating"], "title": "Book", "type": "OBJECT"}}}'
     headers:
       accept:
       - '*/*'
@@ -16,7 +19,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '624'
+      - '883'
       content-type:
       - application/json
       host:
@@ -30,13 +33,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WRQW+CQBCF7/yKzZy1qQ2N0ZutNvWgopK2SelhIyNsxF26OzS2hP/eBQSx5bCZ
-        zHvMm/02dxiDHZehCDmhgTF7tx3G8uosNSUJJVmhadlmyjVdvPWXd2prITyVP0EeAAlKMIBxAP7z
-        jC0nixlbPbGyfp0vpwH0AuAZxUpXHo+TFrsD2yiK95kxla45CRlZfVhAJ6do64/eZTutEiyjjyrE
-        pLEXjQH2QgoTb5AbJUvb1l950KpChniy7VunCahGQ2Z4hAskbjnxlgakWh1T8tUB5aPKKk6DQT2s
-        g/VaH511UsSTa2no9v7NNVObKpIu785T2EvyRNB3eRN/9uZDBwRdr9WQcDrAwHLPopj+rOi6zhlZ
-        TfEFtRE1rgiPFmD/7ua+v0+4iatA0GhSJQ3Ow9Izyn623JNfE96Xn2Q8cqcPh/UanML5BYhgfPJx
-        AgAA
+        H4sIAAAAAAAC/1WR206DQBCG73kKMtetsUSt9s7YmpLYgxVbEzFmU7awKeyS3cG0Nry7A0i7cEE2
+        8/9z+ubkuC5smYxExJAbGLmfFHHdU/2vNCWRSyShDVEwZxov3uY7WW+yID9USXAKAQWmPIRRCMF0
+        4s4fZxN38exW740/H4fQC4EVmChNHrLvhDb4LVnW5CwZarHd17aU2cpKYbIrjAmhJE0zFDImYViC
+        NUp5fn/1LgtolfJqukxFPG3tZWugEaQwyYozo2RlewsWSzirQkb8QOFrp21Ql4bCsJjPODJCyc7A
+        INcqyzFQey6fVFGjHAyaYhb5ju49/OuokKXd1Ps216prxtRVpPZJrGvRkiwVeKw2CSYfAVggsDtW
+        S8KxgAGdpogT7I44uKnMNbKG4pprIxpcMc8IYN+7uu3v6GRJ3RA0N7mShvtRTX4zfmf+0Zvevax+
+        h/7Sw591/GrAKZ0/MpZLsJQCAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -45,11 +48,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 23 Sep 2025 18:54:46 GMT
+      - Wed, 24 Sep 2025 21:20:25 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1715
+      - gfet4t7; dur=1799
       Transfer-Encoding:
       - chunked
       Vary:

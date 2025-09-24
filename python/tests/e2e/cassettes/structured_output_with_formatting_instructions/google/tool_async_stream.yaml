@@ -6,11 +6,11 @@ interactions:
       str, rating: int}.\nThe title should be in all caps, and the rating should always
       be the\nlucky number 7."}], "role": "user"}, "tools": [{"functionDeclarations":
       [{"description": "Use this tool to extract data in Book format for a final response.",
-      "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema": {"properties":
-      {"title": {"title": "Title", "type": "string"}, "author": {"title": "Author",
-      "type": "string"}, "rating": {"title": "Rating", "type": "integer"}}, "required":
-      ["title", "author", "rating"], "title": "Book", "type": "object"}}]}], "toolConfig":
-      {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "name": "__mirascope_formatted_output_tool__", "parameters": {"properties":
+      {"title": {"title": "Title", "type": "STRING"}, "author": {"title": "Author",
+      "type": "STRING"}, "rating": {"title": "Rating", "type": "INTEGER"}}, "required":
+      ["title", "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
       "generationConfig": {}}'
     headers:
       accept:
@@ -20,7 +20,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '950'
+      - '923'
       content-type:
       - application/json
       host:
@@ -35,12 +35,12 @@ interactions:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
         {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"rating\":
-        7,\"title\": \"THE NAME OF THE WIND\",\"author\": \"Patrick Rothfuss\"}},\"thoughtSignature\":
-        \"CiQB0e2Kbzws0iorFgVkzCACmXFf+PAkFzzsppnW+bQcxGNGUEIKiAEB0e2Kb3DK5yJFs8FuuPxeNA4uuC3IogFO5kNcfBNXsulOn/KZl3eBin9k4kH1byOowrLEFUkob81T3dt3zThC4Ps/m3P2QTo5BxN2rXpIKc7P+6z3zfgomViAyRJf8EVYrpKVhqA/UfSSRJW1jcC+xjD38OSxeVDz1cHVLXx97WulYuYTz4QTCtEBAdHtim/Ep/95asyV3u1HTXzt+xRuFkY6fLK6F6TzcmXDnxjS6/K5I0oEWo8Du8lVGw/DbqJ7ReR4Om3pyx8j3NgqrKlFUspLC/xN9jtIAY955M/KP2zM0iGmk+H6lUViW7SrnX7BTM1bZf5FArM9d+GBtUiURD3sLd3Yf1bf5noqZzux+q0jttZQSOyEHeLgndJJ/VWU2hgiieAZ/UX9VUbYuG3lTP0lLK48yUZOr+KPsdyhaF/OOB6JMobKJU+XVrvDqnkMw1RCuXdenPYmVCoKtgEB0e2Kb+FMjytiVNjQCn9/DcpG1PzIiBAlOTJ1Dp+67RLVuCGcP00lHEy1k7qEQ/N40kVrgBxzRQop/G9g0e2yY65p00oV7NkMeJiokJpXOFn2CsJiegT9eW9X7MM25nnhxBvFnWmlUIIl32IheVQQHEEyjTcpPOO5XFudnIjC+1Jt2uT4lNBOdRIQYB2YoHnfCgDzJzZd8EqGoeKOoyIoawmQl96YKrUbVAvlwzp/4q4K+BvPmgo4AdHtim+zwwMnn8c2Et1kTI3nMT6IBYQIUFhGV9btwlPxxDFSoTxKOFYav5DoXjruw6ciZVIcz0M=\"}],\"role\":
+        7,\"author\": \"Patrick Rothfuss\",\"title\": \"THE NAME OF THE WIND\"}},\"thoughtSignature\":
+        \"CiQB0e2Kb2B3+JaCNyLriNMbSHmxoGSyFw7rouJRPfL8lst8cLYKiwEB0e2Kb9TwJ7zXDHGM6QECeHV9nc5gFaBGyNAjb7qNlg7MiK0805e1IoVBgFNReWDVWT7u1jPRbNUwis5ioZn4IaDC9Dgvvsizv/QH/BPRGOUMwHmNFm1npZuoaVNTMGBg9UFj9rMz9mfK+xv2ySimUnrghtu9gOOj4ldwhG3eBKr5GIHAyDZn2KGkCsYBAdHtim/Szb6BAotICXjJOaa/1ami9jTYd6jYA38dun856uid3/dsLM4Sya5Ux/8Wfa5u/pAJO0JrOAW7mP0LpZ0XCOoZknwO9fm6oeYe+kTy/axudnI+VFSCiLaIvIm5o4yZ936ORSfPES8qLsX3LXA+OUf0NrRdwOHbcsCJkKANBgnzKOi+o3JvV10151x4V5nLUeHcjZgGYZbZqYTFSi1n71UASAulQXCFkspJOPV83XygcfIzxCWR7KJaKG6KeVX7VN45CtYBAdHtim+2jICJk3Rurb510HiCJ3OVIg2NGLQR6gj0R0UfQ0iK5ckBhFnnpdsEAhGAybffADhzfojg+mlSiDJZn5gWIam4Ihncwk41ElbfQ8gQBN9u/5HHaVG3NcQIvKLgvu4ESCmH1ey8rj8IUR5qP+Tz22KSfIqjb9vHqA9+S5yvD2d9IrvInSawwwTMwm5yub9mWllLhLAyfuGDl8ryoEUwLoyb59wuKNnQs611+DZD04nbtPCXKBlPwMpofJpQx6irxl11DLumS5tuMff7S13U3n3MoQqFAQHR7YpvK2J//xeeqRjS3dlQhQ4MwFk69mN+hyxfWOpiN8Ir7wq0n94iBwqMoDhbb3VDb9JzTI2TAKHysYGdU7ixELflHu9AXQkGQAnS45OtSc6/PZFUw2gmZYycykKw2KTP/B7HMjoZujp/2VJzXv4ceE5uF3Zg09SO0LZrYUav+JWPz0g=\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        137,\"candidatesTokenCount\": 37,\"totalTokenCount\": 301,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 137}],\"thoughtsTokenCount\": 127},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"aO3SaJGiDuarqtsPs9iUuA4\"}\r\n\r\n"
+        137,\"candidatesTokenCount\": 37,\"totalTokenCount\": 321,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 137}],\"thoughtsTokenCount\": 147},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"A2HUaJuDJqqhqtsPtIyVuQg\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -49,11 +49,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 18:56:41 GMT
+      - Wed, 24 Sep 2025 21:22:12 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1305
+      - gfet4t7; dur=1445
       Transfer-Encoding:
       - chunked
       Vary:

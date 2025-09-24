@@ -24,6 +24,7 @@ from ...exceptions import FormattingModeNotSupportedError
 from ...formatting import (
     Format,
     FormattableT,
+    _utils as _formatting_utils,
     resolve_format,
 )
 from ...messages import AssistantMessage, Message, UserMessage, assistant
@@ -169,7 +170,8 @@ def prepare_anthropic_request(
                 formatting_mode="strict", provider="anthropic", model_id=model_id
             )
         elif format.mode == "tool":
-            anthropic_tools.append(create_format_tool_param(format))
+            format_tool_schema = _formatting_utils.create_tool_schema(format)
+            anthropic_tools.append(_convert_tool_to_tool_param(format_tool_schema))
             if tools:
                 kwargs["tool_choice"] = {"type": "any"}
             else:
@@ -285,33 +287,3 @@ async def convert_anthropic_stream_to_async_chunk_iterator(
         async for event in stream._raw_stream:
             for item in processor.process_event(event):
                 yield item
-
-
-def create_format_tool_param(
-    format: Format[FormattableT],
-) -> anthropic_types.ToolParam:
-    """Create Anthropic `ToolParam` for format parsing from a Mirascope `Format`.
-
-    Args:
-        format: The `Format` instance containing schema and metadata
-
-    Returns:
-        Anthropic `ToolParam` for the format tool
-    """
-    schema_dict = format.schema.copy()
-    schema_dict["type"] = "object"
-
-    if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
-        schema_dict["required"] = list(schema_dict["properties"].keys())
-
-    description = (
-        f"Use this tool to extract data in {format.name} format for a final response."
-    )
-    if format.description:
-        description += "\n" + format.description
-
-    return anthropic_types.ToolParam(
-        name=FORMAT_TOOL_NAME,
-        description=description,
-        input_schema=schema_dict,
-    )

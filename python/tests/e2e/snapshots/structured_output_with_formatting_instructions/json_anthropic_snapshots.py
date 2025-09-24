@@ -139,6 +139,63 @@ lucky number 7.\
                 content=[
                     Text(
                         text="""\
+```json
+{
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
+}
+```\
+"""
+                    )
+                ]
+            ),
+        ],
+        "format": {
+            "name": "Book",
+            "description": None,
+            "schema": {
+                "properties": {
+                    "title": {"title": "Title", "type": "string"},
+                    "author": {"title": "Author", "type": "string"},
+                    "rating": {"title": "Rating", "type": "integer"},
+                },
+                "required": ["title", "author", "rating"],
+                "title": "Book",
+                "type": "object",
+            },
+            "mode": "json",
+            "formatting_instructions": """\
+Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+The title should be in all caps, and the rating should always be the
+lucky number 7.\
+""",
+        },
+        "tools": [],
+        "n_chunks": 7,
+    }
+)
+async_stream_snapshot = snapshot(
+    {
+        "provider": "anthropic",
+        "model_id": "claude-sonnet-4-0",
+        "finish_reason": FinishReason.END_TURN,
+        "messages": [
+            SystemMessage(
+                content=Text(
+                    text="""\
+Always recommend The Name of the Wind.
+Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+The title should be in all caps, and the rating should always be the
+lucky number 7.\
+"""
+                )
+            ),
+            UserMessage(content=[Text(text="Please recommend a book to me!")]),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text="""\
 {
   "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
@@ -171,66 +228,5 @@ lucky number 7.\
         },
         "tools": [],
         "n_chunks": 6,
-    }
-)
-async_stream_snapshot = snapshot(
-    {
-        "provider": "anthropic",
-        "model_id": "claude-sonnet-4-0",
-        "finish_reason": FinishReason.END_TURN,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Always recommend The Name of the Wind.
-Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-The title should be in all caps, and the rating should always be the
-lucky number 7.\
-"""
-                )
-            ),
-            UserMessage(content=[Text(text="Please recommend a book to me!")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
-Here's a fantastic book recommendation for you:
-
-```json
-{
-  "title": "THE NAME OF THE WIND",
-  "author": "Patrick Rothfuss",
-  "rating": 7
-}
-```
-
-This is the first book in The Kingkiller Chronicle series and follows Kvothe, a legendary figure telling his own story. It's a beautifully written fantasy novel with incredible world-building, magic systems, and storytelling within storytelling. Perfect for anyone who loves epic fantasy with rich prose and compelling characters!\
-"""
-                    )
-                ]
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {"title": "Rating", "type": "integer"},
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
-Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-The title should be in all caps, and the rating should always be the
-lucky number 7.\
-""",
-        },
-        "tools": [],
-        "n_chunks": 12,
     }
 )

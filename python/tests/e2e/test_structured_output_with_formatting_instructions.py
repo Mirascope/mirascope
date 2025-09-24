@@ -13,6 +13,21 @@ from tests.utils import (
     stream_response_snapshot_dict,
 )
 
+
+class Book(BaseModel):
+    title: str
+    author: str
+    rating: int
+
+    @classmethod
+    def formatting_instructions(cls) -> str:
+        return inspect.cleandoc("""
+        Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+        The title should be in all caps, and the rating should always be the
+        lucky number 7.
+        """)
+
+
 # ============= SYNC TESTS =============
 
 
@@ -26,19 +41,6 @@ def test_structured_output_with_formatting_instructions_sync(
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output without context."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-        rating: int
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return inspect.cleandoc("""
-            Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-            The title should be in all caps, and the rating should always be the
-            lucky number 7.
-            """)
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -73,19 +75,6 @@ def test_structured_output_with_formatting_instructions_sync_context(
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with context."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-        rating: int
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return inspect.cleandoc("""
-            Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-            The title should be in all caps, and the rating should always be the
-            lucky number 7.
-            """)
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -126,19 +115,6 @@ async def test_structured_output_with_formatting_instructions_async(
 ) -> None:
     """Test asynchronous structured output without context."""
 
-    class Book(BaseModel):
-        title: str
-        author: str
-        rating: int
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return inspect.cleandoc("""
-            Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-            The title should be in all caps, and the rating should always be the
-            lucky number 7.
-            """)
-
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
@@ -173,19 +149,6 @@ async def test_structured_output_with_formatting_instructions_async_context(
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with context."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-        rating: int
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return inspect.cleandoc("""
-            Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-            The title should be in all caps, and the rating should always be the
-            lucky number 7.
-            """)
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -225,19 +188,6 @@ def test_structured_output_with_formatting_instructions_stream(
 ) -> None:
     """Test streaming structured output without context."""
 
-    class Book(BaseModel):
-        title: str
-        author: str
-        rating: int
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return inspect.cleandoc("""
-            Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-            The title should be in all caps, and the rating should always be the
-            lucky number 7.
-            """)
-
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
@@ -274,19 +224,6 @@ def test_structured_output_with_formatting_instructions_stream_context(
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with context."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-        rating: int
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return inspect.cleandoc("""
-            Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-            The title should be in all caps, and the rating should always be the
-            lucky number 7.
-            """)
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
@@ -330,19 +267,6 @@ async def test_structured_output_with_formatting_instructions_async_stream(
 ) -> None:
     """Test async streaming structured output without context."""
 
-    class Book(BaseModel):
-        title: str
-        author: str
-        rating: int
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return inspect.cleandoc("""
-            Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-            The title should be in all caps, and the rating should always be the
-            lucky number 7.
-            """)
-
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
@@ -380,19 +304,6 @@ async def test_structured_output_with_formatting_instructions_async_stream_conte
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with context."""
-
-    class Book(BaseModel):
-        title: str
-        author: str
-        rating: int
-
-        @classmethod
-        def formatting_instructions(cls) -> str:
-            return inspect.cleandoc("""
-            Output a structured book as JSON in the format {title: str, author: str, rating: int}.
-            The title should be in all caps, and the rating should always be the
-            lucky number 7.
-            """)
 
     format = (
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book

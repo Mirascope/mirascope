@@ -6,13 +6,15 @@ interactions:
       tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
       [{"description": "Use this tool to extract data in Book format for a final response.\nA
       book with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
-      "parametersJsonSchema": {"description": "A book with a rating. The title should
-      be in all caps!", "properties": {"title": {"title": "Title", "type": "string"},
-      "author": {"title": "Author", "type": "string"}, "rating": {"description": "For
-      testing purposes, the rating should be 7", "title": "Rating", "type": "integer"}},
-      "required": ["title", "author", "rating"], "title": "Book", "type": "object"}}]}],
-      "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames":
-      ["__mirascope_formatted_output_tool__"]}}, "generationConfig": {}}'
+      "parameters": {"properties": {"title": {"title": "Title", "type": "STRING"},
+      "author": {"description": "The author of a book.", "properties": {"first_name":
+      {"title": "First Name", "type": "STRING"}, "last_name": {"title": "Last Name",
+      "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
+      "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
+      should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -21,7 +23,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1065'
+      - '1174'
       content-type:
       - application/json
       host:
@@ -35,13 +37,13 @@ interactions:
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"THE
-        NAME OF THE WIND\",\"author\": \"Patrick Rothfuss\",\"rating\": 7}},\"thoughtSignature\":
-        \"CiQB0e2Kb8DhGRimWBaxTYlCE1/Ro4NZBuSmIaGI1FFgGW1TavoKdwHR7YpvCJK6ViyNXSXOkU2CEEkc22Xd+tPdjkXstOxhkHc4WNy47ui8I8mqnhmI+9kRoewhCK4OTMp9hrWBlfsREDvS47C9SIi5nUQ+7XlMuvAJMPC7/8oBemR4sYpih27m/qw+Cf29hElpKQBE+rFDn49ANFomCv0BAdHtim/WdkpzgvCmpYM4u2E8Xi9yaM6utZcr9RgDRWiO7qpF4WVONR7qHZ5R7WI7FHMCQ2D0AOjOBjqXQOF34lD4T7kn8DUtSxwHqmHXUfCE8ggGCO8aCYPwmgE664QblDyKgXPctY0tocqIdaUmqFgxbaM4oegqMSW8j3U1quFW0msIjHFFZAWYxo0HFBxyEQruBYefV2hh3Z7gtdSVNMD/EBkCcgVjQQqNXdnbY2DK7chmakSuqbQbOhV7j2YFALqDrzrCq7M0IYZUKEaHgtp4uGZes63daI25I9WvNwXbayxTxoyyU39X9zYmufZQgfzBhj7QnwZJvP0XUQr+AQHR7YpvJxu+Y+d0Ck1Xk9RjSvkcE4ANBbRuIcsQyvH87x7YLimF5X5sL4RGMEIsKBDQkV/z+cwqq/YN45/Opzt3+E1pR13j9lpRuVfG+Ivr8GmFWBcGF4m9bqIp2eak5wiXEzFq+SuOEzIVIX3gyw6aZXjf7y5RYwlUoj91ltpJy0RQaFtr+V6dkAQ3huyosyeMaAdFRjfwGEMCEcJpFn6GclOCgEwubWfJ4UVyJfg6lZcuKoruHXPH1kTjskvXsdIwu5I0ozARfP425i+j7pTx6AeDukmNyjCt6Uq/Xb9mt9IjakK5hz/aLa25LoTobs2CG+lPNPyUOkRc7M2/CnQB0e2Kb/ZcZuBW27nB6KI2uyqaJcKu4iK1bekSEzKCxxpr4gL2fk2RpYIC54aRLxn8OfTE1wET77HdIWUb8Phh6Y0R1rKnlFR77c7JHlHZC0AJT9uW0Ac+hW8J1zyuXOZ5opiJwuMgKmtuTK53GxMp/3p7wg==\"}],\"role\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"author\":
+        {\"last_name\": \"Rothfuss\",\"first_name\": \"Patrick\"},\"rating\": 7,\"title\":
+        \"THE NAME OF THE WIND\"}},\"thoughtSignature\": \"CiQB0e2Kb1OpapOwotnClNAHfzlnk0tA+iJ34wR3FsTgW+pKGLwKbAHR7YpvV+6gh8X20tg0MJQEaV67xvTrMGpcftbmVHk9a9jusIqkYVZC3RgPhH6euEgZqUALsH5bmCGnmJFZIv1Phq38pGRwHZfbrUELd9E/MfGfaXp9Fo/uozup8qrhNxESNtgMtUESCLv30grqAQHR7YpvrGpvsmCxBjp87g/XhaVLnpnodyfCZ9Xk1eiQvHIBuv1hr2l9Yl5fJyvclngqDsvvgS/LmiduAUwub30ZAKeD9wjfCpkxIFe4kkk8ypIrxkzmP0BwzNmTZeDomwa6d9GM4jzPPoJ9wN80scq9urOAtn2pXhkSjIx4Qq7vRTIHheyMX1OlpUJ0fvdQsATVxQk7lh7jFJA/k94gsP6kePPf2Fj4OlHitm/9DF3kVE2RuesntajHgxTCwHV35RB7xKUX7aBfKVq+4qrNrptPkU5xjla7LPjEIyH+MYrmzAKSrw6i+UlJkAruAQHR7Ypvy7kQ7MBy8/s5h8CLBy/F0dHD2z7UDuRY1djUE1ZH/CXAst/M5GhUsSVmN7H7QQgoK7bqXWqvkCzih216xR2Hv1I/27xczTUWHDg6BtAF7YZ/bPVCAnvuZeL/bZ4wUjQve2E6ZqN/thL5XWCGKbCjtkf9ehZs8FqT4Oiv9Cs3ip9xxgy3gn+LRgqvlllJQezgoZOjphH7h7yFaaTYliKltRKVI7qtgs5BhXuQ17yWugJZz20Kuim6E8BiMLeckitKLH7zJL4dnBcHW5HDsh5qEI5et4xx7VUyoGvrvpZUX8RuX9BzC90LMcsKjQIB0e2Kb01Cg3S1yTbtkXBCVAw1EAjefL1rSFM117R3kANRRvemJRNBoS/JOvlz8VoAeOUxYeEt4AsexJhtoZIcle1He9ZUgDCWXgX4eTyj1c9qDtG6qhkUVHTY8JSSWPA5ywEOhFLuZXRw78sqAmzd5l+qPzCXKe0vId9VV4UimoYubPnlpm2hsZBemDwe0UdZhQgvAch5eYq5tk6pf0vpFmlUpw52LJoF/0BHWRuUwXvLvbKjtPLcHIhjZPJsHg2Gqer8I8rMiQCvrKq3sMHEMRhA+hwiAZhiU8NcmFDmcy0Q1TX4BDeen72AurNMmuYluYYDrPy+mbr9WuptEzei194LnpbNMq7Lu92c+griAQHR7YpvjaVT7dfn60ViqLz6ZnjxGGqwfqYkWk7L/enH2y8/PCm7dsJ7D/BbNDkto/TnbArYvlpeafF5C16FM4be9z4jAdswUdXLdPwBsZfFqk+icDjqvmQ//u+fLcQZ+5y/1wW7vz8xvjY9AdJlaUJc10dUMLARguGqbFNmmwuv4gf7wbX24TWzFXtzVrB5IDZMS3xNohzWXL/AIsmWUeEzbUBMS+QRfji1hFw6w9/PDPx0F6WvY4OPJ9mgvlyJMSOiq09rYx7oO9IUZfalljs7JE9ZomumKRU2zi9slk5730gKzwEB0e2Kb6cT/3Q5UoYbF7/bTqJRdgUBk7X4oVjP8ncmgrjubLYXaqrCC35OG6jGgkSDFlzob0lj1fGpp74JMsf5PKk/mrU/zgxHgxjyp5pxxCFMzXyrdR/5oPf4J4uayyE2lIJJWxyITuUfU8LPh6Pku6VbyClLM5uu55AirldJxQPvCbDJ1v98AHE6LViOJagQkorz4mHHAqDu/wqKYSFmBHY/ri++d588XKzWSoPo1Z4s8CdypEd+YuP+E9ai48eTJFbQt+eVtO3T5gJc1mkKVgHR7YpvXU909N/aJyQSPTzOLkeqGAI53fDEsQUrROe092kP/q5XqG0I9u7Ta1ne9vOoIGOkyl0InSlw2yszSJTQ4FVd/9ys83szuhXaIU8iDGhgjcsa\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        138,\"candidatesTokenCount\": 37,\"totalTokenCount\": 326,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 138}],\"thoughtsTokenCount\": 151},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"FO3SaN_BGNXYqtsPx-TGoA8\"}\r\n\r\n"
+        217,\"candidatesTokenCount\": 49,\"totalTokenCount\": 550,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 217}],\"thoughtsTokenCount\": 284},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"-2PUaKCsBfjVz7IP8JqOwQQ\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -50,11 +52,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 18:55:17 GMT
+      - Wed, 24 Sep 2025 21:34:53 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1369
+      - gfet4t7; dur=2358
       Transfer-Encoding:
       - chunked
       Vary:

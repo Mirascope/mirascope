@@ -50,7 +50,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"pages": 544, "publication_year": 2006, "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson"}'
+                        text='{"author": "Brandon Sanderson", "title": "Mistborn: The Final Empire", "pages": 544, "publication_year": 2006}'
                     )
                 ]
             ),
@@ -139,7 +139,7 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"author": "Brandon Sanderson", "publication_year": 2006, "pages": 544, "title": "Mistborn: The Final Empire"}'
+                        text='{"publication_year": 2006, "author": "Brandon Sanderson", "pages": 544, "title": "Mistborn: The Final Empire"}'
                     )
                 ]
             ),
@@ -227,7 +227,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"pages": 544, "publication_year": 2006, "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson"}'
+                        text='{"publication_year": 2006, "author": "Brandon Sanderson", "pages": 544, "title": "Mistborn: The Final Empire"}'
                     )
                 ]
             ),
@@ -316,7 +316,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title": "Mistborn: The Final Empire", "publication_year": 2006, "author": "Brandon Sanderson", "pages": 544}'
+                        text='{"title": "Mistborn: The Final Empire", "pages": 544, "publication_year": 2006, "author": "Brandon Sanderson"}'
                     )
                 ]
             ),

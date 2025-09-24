@@ -62,7 +62,7 @@ Respond only with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_GtXudA5AwpvfbB4JxDqcabNO",
+                        id="call_Jst9famRKxdcWS5c9GKUfRUd",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -71,7 +71,7 @@ Respond only with valid JSON that matches this exact schema:
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_GtXudA5AwpvfbB4JxDqcabNO",
+                        id="call_Jst9famRKxdcWS5c9GKUfRUd",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -218,7 +218,7 @@ Respond only with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_N1EC4rbwD2Sb9jwPCqwu3nnM",
+                        id="call_RWEFEmszCxipS3lj838AJbDe",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -227,7 +227,7 @@ Respond only with valid JSON that matches this exact schema:
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_N1EC4rbwD2Sb9jwPCqwu3nnM",
+                        id="call_RWEFEmszCxipS3lj838AJbDe",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -373,7 +373,7 @@ Respond only with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_xu4jyMWyA8g6fO7LcvqQNFVZ",
+                        id="call_gQS5c1vZckyC70czakz6nT2r",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -382,7 +382,7 @@ Respond only with valid JSON that matches this exact schema:
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_xu4jyMWyA8g6fO7LcvqQNFVZ",
+                        id="call_gQS5c1vZckyC70czakz6nT2r",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -391,7 +391,7 @@ Respond only with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
+                        text='{ "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006 }'
                     )
                 ]
             ),
@@ -468,7 +468,7 @@ Respond only with valid JSON that matches this exact schema:
                 "strict": False,
             }
         ],
-        "n_chunks": 30,
+        "n_chunks": 38,
     }
 )
 async_stream_snapshot = snapshot(
@@ -522,7 +522,7 @@ Respond only with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_vgS8SVlJ6JJ2hEgrp3dx6oP6",
+                        id="call_kt0AyI4y0FRQbfphwsvXvNN3",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -531,7 +531,7 @@ Respond only with valid JSON that matches this exact schema:
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_vgS8SVlJ6JJ2hEgrp3dx6oP6",
+                        id="call_kt0AyI4y0FRQbfphwsvXvNN3",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -540,7 +540,14 @@ Respond only with valid JSON that matches this exact schema:
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
+                        text="""\
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}\
+"""
                     )
                 ]
             ),
@@ -617,6 +624,6 @@ Respond only with valid JSON that matches this exact schema:
                 "strict": False,
             }
         ],
-        "n_chunks": 30,
+        "n_chunks": 43,
     }
 )

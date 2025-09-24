@@ -31,12 +31,12 @@ interactions:
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\\"title\\\":\\\"THE
-        NAME OF THE WIND\\\",\\\"author\\\":\\\"Patrick Rothfuss\\\",\\\"rating\\\":7}\"}],\"role\":
-        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        62,\"candidatesTokenCount\": 19,\"totalTokenCount\": 195,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 62}],\"thoughtsTokenCount\": 114},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"T-3SaOjsEJfUz7IP2cSgqAU\"}\r\n\r\n"
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\\"title\\\":
+        \\\"THE NAME OF THE WIND\\\", \\\"author\\\": \\\"Patrick Rothfuss\\\", \\\"rating\\\":
+        7}\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 62,\"candidatesTokenCount\": 24,\"totalTokenCount\":
+        160,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 62}],\"thoughtsTokenCount\":
+        74},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"7GDUaJihMP66qtsPwIHz0QY\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -45,11 +45,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 18:56:16 GMT
+      - Wed, 24 Sep 2025 21:21:49 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1356
+      - gfet4t7; dur=935
       Transfer-Encoding:
       - chunked
       Vary:
