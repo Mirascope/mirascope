@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Generic, overload
 from ..content import ToolOutput
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
-from ..messages import Message, UserContent, user
+from ..messages import Message, UserContent
 from ..tools import (
     AsyncContextTool,
     AsyncContextToolkit,
@@ -147,9 +147,9 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
         Returns:
             A new `StreamResponse` instance generated from the extended message history.
         """
-        messages = self.messages + [user(content)]
-        return self.model.stream(
-            messages=messages, tools=self.toolkit.tools, format=self.format
+        return self.model.resume_stream(
+            response=self,
+            content=content,
         )
 
 
@@ -274,11 +274,9 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
         Returns:
             A new `AsyncStreamResponse` instance generated from the extended message history.
         """
-        messages = self.messages + [user(content)]
-        return await self.model.stream_async(
-            messages=messages,
-            tools=self.toolkit.tools,
-            format=self.format,
+        return await self.model.resume_stream_async(
+            response=self,
+            content=content,
         )
 
 
@@ -411,12 +409,10 @@ class ContextStreamResponse(
         Returns:
             A new `ContextStreamResponse` instance generated from the extended message history.
         """
-        messages = self.messages + [user(content)]
-        return self.model.context_stream(
+        return self.model.context_resume_stream(
             ctx=ctx,
-            messages=messages,
-            tools=self.toolkit.tools,
-            format=self.format,
+            response=self,
+            content=content,
         )
 
 
@@ -553,10 +549,8 @@ class AsyncContextStreamResponse(
         Returns:
             A new `AsyncContextStreamResponse` instance generated from the extended message history.
         """
-        messages = self.messages + [user(content)]
-        return await self.model.context_stream_async(
+        return await self.model.context_resume_stream_async(
             ctx=ctx,
-            messages=messages,
-            tools=self.toolkit.tools,
-            format=self.format,
+            response=self,
+            content=content,
         )

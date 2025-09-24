@@ -11,7 +11,7 @@ from typing_extensions import Unpack
 from ..clients import ParamsT, get_client
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
-from ..messages import Message
+from ..messages import Message, UserContent
 from ..responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
@@ -487,6 +487,372 @@ class Model(Generic[ParamsT]):
             messages=messages,
             tools=tools,
             format=format,
+            params=self.params,
+        )
+
+    @overload
+    def resume(
+        self,
+        *,
+        response: Response,
+        content: UserContent,
+    ) -> Response: ...
+
+    @overload
+    def resume(
+        self,
+        *,
+        response: Response[FormattableT],
+        content: UserContent,
+    ) -> Response[FormattableT]: ...
+
+    @overload
+    def resume(
+        self,
+        *,
+        response: Response | Response[FormattableT],
+        content: UserContent,
+    ) -> Response | Response[FormattableT]: ...
+
+    def resume(
+        self,
+        *,
+        response: Response | Response[FormattableT],
+        content: UserContent,
+    ) -> Response | Response[FormattableT]:
+        """Generate a new `Response` by extending another `Response`'s messages with additional user content.
+
+        Uses the other response's tools and output format.
+        """
+        return get_client(self.provider).resume(
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            params=self.params,
+        )
+
+    @overload
+    async def resume_async(
+        self,
+        *,
+        response: AsyncResponse,
+        content: UserContent,
+    ) -> AsyncResponse: ...
+
+    @overload
+    async def resume_async(
+        self,
+        *,
+        response: AsyncResponse[FormattableT],
+        content: UserContent,
+    ) -> AsyncResponse[FormattableT]: ...
+
+    @overload
+    async def resume_async(
+        self,
+        *,
+        response: AsyncResponse | AsyncResponse[FormattableT],
+        content: UserContent,
+    ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
+
+    async def resume_async(
+        self,
+        *,
+        response: AsyncResponse | AsyncResponse[FormattableT],
+        content: UserContent,
+    ) -> AsyncResponse | AsyncResponse[FormattableT]:
+        """Generate a new `AsyncResponse` by extending another `AsyncResponse`'s messages with additional user content.
+
+        Uses the other response's tools and output format.
+        """
+        return await get_client(self.provider).resume_async(
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            params=self.params,
+        )
+
+    @overload
+    def context_resume(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextResponse[DepsT, None],
+        content: UserContent,
+    ) -> ContextResponse[DepsT, None]: ...
+
+    @overload
+    def context_resume(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> ContextResponse[DepsT, FormattableT]: ...
+
+    @overload
+    def context_resume(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
+
+    def context_resume(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
+        """Generate a new `ContextResponse` by extending another `ContextResponse`'s messages with additional user content.
+
+        Uses the other response's tools and output format.
+        """
+        return get_client(self.provider).context_resume(
+            ctx=ctx,
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            params=self.params,
+        )
+
+    @overload
+    async def context_resume_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextResponse[DepsT, None],
+        content: UserContent,
+    ) -> AsyncContextResponse[DepsT, None]: ...
+
+    @overload
+    async def context_resume_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> AsyncContextResponse[DepsT, FormattableT]: ...
+
+    @overload
+    async def context_resume_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextResponse[DepsT, None]
+        | AsyncContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> (
+        AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]
+    ): ...
+
+    async def context_resume_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextResponse[DepsT, None]
+        | AsyncContextResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
+        """Generate a new `AsyncContextResponse` by extending another `AsyncContextResponse`'s messages with additional user content.
+
+        Uses the other response's tools and output format.
+        """
+        return await get_client(self.provider).context_resume_async(
+            ctx=ctx,
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            params=self.params,
+        )
+
+    @overload
+    def resume_stream(
+        self,
+        *,
+        response: StreamResponse,
+        content: UserContent,
+    ) -> StreamResponse: ...
+
+    @overload
+    def resume_stream(
+        self,
+        *,
+        response: StreamResponse[FormattableT],
+        content: UserContent,
+    ) -> StreamResponse[FormattableT]: ...
+
+    @overload
+    def resume_stream(
+        self,
+        *,
+        response: StreamResponse | StreamResponse[FormattableT],
+        content: UserContent,
+    ) -> StreamResponse | StreamResponse[FormattableT]: ...
+
+    def resume_stream(
+        self,
+        *,
+        response: StreamResponse | StreamResponse[FormattableT],
+        content: UserContent,
+    ) -> StreamResponse | StreamResponse[FormattableT]:
+        """Generate a new `StreamResponse` by extending another `StreamResponse`'s messages with additional user content.
+
+        Uses the other response's tools and output format.
+        """
+        return get_client(self.provider).resume_stream(
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            params=self.params,
+        )
+
+    @overload
+    async def resume_stream_async(
+        self,
+        *,
+        response: AsyncStreamResponse,
+        content: UserContent,
+    ) -> AsyncStreamResponse: ...
+
+    @overload
+    async def resume_stream_async(
+        self,
+        *,
+        response: AsyncStreamResponse[FormattableT],
+        content: UserContent,
+    ) -> AsyncStreamResponse[FormattableT]: ...
+
+    @overload
+    async def resume_stream_async(
+        self,
+        *,
+        response: AsyncStreamResponse | AsyncStreamResponse[FormattableT],
+        content: UserContent,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]: ...
+
+    async def resume_stream_async(
+        self,
+        *,
+        response: AsyncStreamResponse | AsyncStreamResponse[FormattableT],
+        content: UserContent,
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
+        """Generate a new `AsyncStreamResponse` by extending another `AsyncStreamResponse`'s messages with additional user content.
+
+        Uses the other response's tools and output format.
+        """
+        return await get_client(self.provider).resume_stream_async(
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            params=self.params,
+        )
+
+    @overload
+    def context_resume_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextStreamResponse[DepsT, None],
+        content: UserContent,
+    ) -> ContextStreamResponse[DepsT, None]: ...
+
+    @overload
+    def context_resume_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextStreamResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> ContextStreamResponse[DepsT, FormattableT]: ...
+
+    @overload
+    def context_resume_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextStreamResponse[DepsT, None]
+        | ContextStreamResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> (
+        ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
+    ): ...
+
+    def context_resume_stream(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: ContextStreamResponse[DepsT, None]
+        | ContextStreamResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> (
+        ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
+    ):
+        """Generate a new `ContextStreamResponse` by extending another `ContextStreamResponse`'s messages with additional user content.
+
+        Uses the other response's tools and output format.
+        """
+        return get_client(self.provider).context_resume_stream(
+            ctx=ctx,
+            model_id=self.model_id,
+            response=response,
+            content=content,
+            params=self.params,
+        )
+
+    @overload
+    async def context_resume_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextStreamResponse[DepsT, None],
+        content: UserContent,
+    ) -> AsyncContextStreamResponse[DepsT, None]: ...
+
+    @overload
+    async def context_resume_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextStreamResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
+
+    @overload
+    async def context_resume_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> (
+        AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormattableT]
+    ): ...
+
+    async def context_resume_stream_async(
+        self,
+        *,
+        ctx: Context[DepsT],
+        response: AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormattableT],
+        content: UserContent,
+    ) -> (
+        AsyncContextStreamResponse[DepsT, None]
+        | AsyncContextStreamResponse[DepsT, FormattableT]
+    ):
+        """Generate a new `AsyncContextStreamResponse` by extending another `AsyncContextStreamResponse`'s messages with additional user content.
+
+        Uses the other response's tools and output format.
+        """
+        return await get_client(self.provider).context_resume_stream_async(
+            ctx=ctx,
+            model_id=self.model_id,
+            response=response,
+            content=content,
             params=self.params,
         )
 
