@@ -3,7 +3,7 @@
 import json
 from collections.abc import AsyncIterator, Iterator, Sequence
 from functools import lru_cache
-from typing import Literal
+from typing import Any, Literal
 
 from google.genai import types as genai_types
 from google.genai.types import GenerateContentConfig
@@ -21,7 +21,12 @@ from ...content import (
     ToolCallStartChunk,
 )
 from ...exceptions import FeatureNotSupportedError
-from ...formatting import Format, FormattableT, resolve_format
+from ...formatting import (
+    Format,
+    FormattableT,
+    _utils as _formatting_utils,
+    resolve_format,
+)
 from ...messages import AssistantMessage, Message, UserMessage, assistant
 from ...responses import (
     AsyncChunkIterator,
@@ -52,6 +57,26 @@ GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
 }
 
 UNKNOWN_TOOL_ID = "<unknown>"
+
+
+def _resolve_refs(
+    schema: dict[str, Any], defs: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Recursively resolve $ref references in a JSON Schema object."""
+    if isinstance(schema, dict):
+        if "$ref" in schema:
+            ref_path = schema["$ref"]
+            if ref_path.startswith("#/$defs/"):
+                ref_name = ref_path.split("/")[-1]
+                if defs and ref_name in defs:
+                    return _resolve_refs(defs[ref_name], defs)
+            return schema  # pragma: no cover
+        else:
+            return {k: _resolve_refs(v, defs) for k, v in schema.items()}
+    elif isinstance(schema, list):
+        return [_resolve_refs(item, defs) for item in schema]
+    else:
+        return schema
 
 
 def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict]:
@@ -165,6 +190,12 @@ def _convert_tool_to_function_declaration(
     """Convert a single Mirascope tool to Google FunctionDeclaration format with caching."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
+
+    defs = schema_dict.get("$defs")
+    properties = schema_dict.get("properties", {})
+    if defs:
+        properties = _resolve_refs(properties, defs)
+
     return genai_types.FunctionDeclaration(
         name=tool.name,
         description=tool.description,
@@ -172,7 +203,7 @@ def _convert_tool_to_function_declaration(
             type=genai_types.Type.OBJECT,
             properties={
                 name: genai_types.Schema.model_validate(prop)
-                for name, prop in (schema_dict.get("properties", {})).items()
+                for name, prop in properties.items()
             },
             required=schema_dict.get("required", []),
         ),
@@ -213,9 +244,10 @@ def prepare_google_request(
 
         if format.mode == "strict":
             config_params["response_mime_type"] = "application/json"
-            config_params["response_schema"] = format.schema.copy()
+            config_params["response_schema"] = format.schema
         elif format.mode == "tool":
-            format_tool = create_format_tool_declaration(format)
+            format_tool_schema = _formatting_utils.create_tool_schema(format)
+            format_tool = _convert_tool_to_function_declaration(format_tool_schema)
             google_tools.append(genai_types.Tool(function_declarations=[format_tool]))
             function_calling_config: genai_types.FunctionCallingConfigDict = {
                 "mode": genai_types.FunctionCallingConfigMode.ANY
@@ -367,32 +399,3 @@ async def convert_google_stream_to_async_chunk_iterator(
     async for chunk in google_stream:
         for item in processor.process_chunk(chunk):
             yield item
-
-
-def create_format_tool_declaration(
-    format: Format[FormattableT],
-) -> genai_types.FunctionDeclaration:
-    """Create Google FunctionDeclaration for format parsing from a Mirascope Format.
-
-    Args:
-        format: The Format instance containing schema and metadata
-
-    Returns:
-        Google FunctionDeclaration for the format tool
-    """
-    schema_dict = format.schema.copy()
-    schema_dict["type"] = "object"
-    if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
-        schema_dict["required"] = list(schema_dict["properties"].keys())
-
-    description = (
-        f"Use this tool to extract data in {format.name} format for a final response."
-    )
-    if format.description:
-        description += "\n" + format.description
-
-    return genai_types.FunctionDeclaration(
-        name=FORMAT_TOOL_NAME,
-        description=description,
-        parameters_json_schema=schema_dict,
-    )

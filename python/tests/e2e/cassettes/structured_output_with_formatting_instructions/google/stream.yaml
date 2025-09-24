@@ -35,8 +35,8 @@ interactions:
         \\\"THE NAME OF THE WIND\\\", \\\"author\\\": \\\"Patrick Rothfuss\\\", \\\"rating\\\":
         7}\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\":
         {\"promptTokenCount\": 62,\"candidatesTokenCount\": 24,\"totalTokenCount\":
-        213,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 62}],\"thoughtsTokenCount\":
-        127},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"W-3SaPGqG_ODz7IPm-7kuQo\"}\r\n\r\n"
+        165,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 62}],\"thoughtsTokenCount\":
+        79},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"-WDUaPyVCJuJmtkPopr32AY\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -45,11 +45,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 18:56:28 GMT
+      - Wed, 24 Sep 2025 21:22:01 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1841
+      - gfet4t7; dur=1144
       Transfer-Encoding:
       - chunked
       Vary:

@@ -5,15 +5,15 @@ interactions:
       {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
       tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
       [{"description": "Use this tool to extract data in BookSummary format for a
-      final response.", "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema":
-      {"properties": {"title": {"title": "Title", "type": "string"}, "author": {"title":
-      "Author", "type": "string"}, "pages": {"title": "Pages", "type": "integer"},
-      "publication_year": {"title": "Publication Year", "type": "integer"}}, "required":
-      ["title", "author", "pages", "publication_year"], "title": "BookSummary", "type":
-      "object"}}, {"description": "Look up book information by ISBN.", "name": "get_book_info",
-      "parameters": {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}},
-      "required": ["isbn"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
-      {"mode": "ANY"}}, "generationConfig": {}}'
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -22,7 +22,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1147'
+      - '1113'
       content-type:
       - application/json
       host:
@@ -37,11 +37,11 @@ interactions:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
         {\"name\": \"get_book_info\",\"args\": {\"isbn\": \"0-7653-1178-X\"}},\"thoughtSignature\":
-        \"CiIB0e2Kb+Vz1pp0qSDzS8xbLvDTC/oHiSJ5NUVYjYQfTMQRCmEB0e2Kb5Q8sdUxlZn0PTMNutB0fnsEZlmLxEPPIWviTmFIQT6YgpEMH2QHAFd8exeltA9/XqyWCClIEt9vCYLW7V/rAe/BHFz8hlZ9olRbJRSE7usZ0gM9J+IDdawMir9pCsoBAdHtim9TXwc8rKj/lSeQbwYc/0wfkYiF62gfFMYWAMvcfm0j+Oj3PivzP/lImTZE1s/3ZUQzXw+kSBRH/1dZdDPG6F2/hLN9WIBodokmYa0ThjDOguO4zzsh5VJ/oAdQs8I6xeGXhL0/DUBpTRVsNhEvdNn5HPOBOg3NP/MkGzfkfMlgzmbittTLCfeOvFvgImwACp5gpJwI/d3BU1gNDMOAkj+bLVy/PcNJx/TsvcFzZJg8VhnVRrsQzNMg7SIBsE16490udobxtQqSAQHR7YpvTQPxovRHZV6gl0IoX4Q2SKpWJsIZIj/rXwbD5bj8nYl1QrinBk8fb3GR+Llhabo68OE24dda60UXO3zrKV7+NFJIYu3YB2/E29dNn0w+aS3JGrP2cjp6vjSmlgUppw8rG3vygb7Cff7aINBe1nWDzn3pXqufL6fmo5hrOP+oy/znqCTaUAKyj/KlGGVpCuwBAdHtim8iUCz08RfdK11RLsfzgLKLS6iscQWtyWEC3JvwoGppu2oN3p0p9FD6JEN/LGBZegs9vFLY/Xjez0Cwq242c299uB0nEDHy4op2uQaQgIfEvENSfbvuOLPtawKqYmkm5nVps3ugjhCkPTOomutIvXbTqJJKwk0NKCLFNbbQCDSl0AXrqITwEPAszafN/mTDhtHkaBCAaX7wkC0ShcJb/F70UxopV3nFqVQZUqrn740IPAdraI72hn/a1kJsp8RbFO10lTXhbKG1IL4kTF4xr233T4PMrwwT8L/9YMt1rbrKcgJA1WnUFVAK4QEB0e2KbwSh2HZicsOwg8tqdNGQ5Qi63q9oSCiRtFYzw+pXBaQhGiFX/liEDkUmthjsnNqGeXz9AYVSAX3l1aeQWtb/xuiLEUDS1yVvvAneP+72P8NhahLKmAq0fdM8O/E5DE1R+wTIAO8a7w3WAGzfoPisyj2IzIAxRFmgkd9VoFBuiucQub2eH9U0ir22cjW6F0PDd69xW4bPE/BJiC2dDsKsD+iBv587S2KzTimmzf51mN1YelPOzJW4aI/IbAVn4/LuCck3CBio9U6c6HsGCLZFRRr7nIc8t3rZyAg7QWU=\"}],\"role\":
+        \"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\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        189,\"candidatesTokenCount\": 29,\"totalTokenCount\": 430,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 189}],\"thoughtsTokenCount\": 212},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"XPvSaNv2AtXoz7IPyc-w8Ak\"}\r\n\r\n"
+        189,\"candidatesTokenCount\": 29,\"totalTokenCount\": 711,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 189}],\"thoughtsTokenCount\": 493},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"emHUaKGDAabXz7IP-OaNwAQ\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -50,11 +50,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 19:56:13 GMT
+      - Wed, 24 Sep 2025 21:24:12 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2848
+      - gfet4t7; dur=2858
       Transfer-Encoding:
       - chunked
       Vary:
@@ -80,15 +80,15 @@ interactions:
       {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
       tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
       [{"description": "Use this tool to extract data in BookSummary format for a
-      final response.", "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema":
-      {"properties": {"title": {"title": "Title", "type": "string"}, "author": {"title":
-      "Author", "type": "string"}, "pages": {"title": "Pages", "type": "integer"},
-      "publication_year": {"title": "Publication Year", "type": "integer"}}, "required":
-      ["title", "author", "pages", "publication_year"], "title": "BookSummary", "type":
-      "object"}}, {"description": "Look up book information by ISBN.", "name": "get_book_info",
-      "parameters": {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}},
-      "required": ["isbn"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
-      {"mode": "ANY"}}, "generationConfig": {}}'
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -97,7 +97,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1458'
+      - '1424'
       content-type:
       - application/json
       host:
@@ -112,12 +112,12 @@ interactions:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
         {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"Mistborn:
-        The Final Empire\",\"publication_year\": 2006,\"author\": \"Brandon Sanderson\",\"pages\":
-        544}},\"thoughtSignature\": \"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\"}],\"role\":
+        The Final Empire\",\"pages\": 544,\"publication_year\": 2006,\"author\": \"Brandon
+        Sanderson\"}},\"thoughtSignature\": \"CiQB0e2Kb/++3qFmf1QX3NSUYCIpHRuaPjjWYyVxirBFaKllC/UKfQHR7Ypv+Y8kulKAHZm+YDmKE5nOv0tK/Tjdu1XhG8grzaQffYRBl0jY9YkaxAz8nsjjV39o8g2OfPtNc56HQYYt+u3k2Pzr5nlnXbZrZBtpsE4DRX88KdMnWQUWiVhaB0vvRJcTahrozgNoBwdpKsoEEf4+FXV6ybJktacjCsEBAdHtim8cRsp+C6ODB/K5Opf4CRlOWrrQayXxsUJEBCvLg5eNZGAZV9m/Bs/53BlPtxeMQ6nKzxGI0HSXopZd3Pe6VvTieYPqQYO7HA5iGDszUcN7jTA8HXULdwJxip7So0uUUrwJNxKcGcJi7dbZl2pMMGiT0YU/HLWPiGV7vDHDzd/OPAzEFdVgmHPWa94LFNFWDyGpven0c1hLR/D8Li05++3+HdIM+2iXbwhx8WI8fZDaMX1mLo6HI5RyOk639AqYAQHR7YpvC3o3d7jv24DRL85ekbF52Mmzd+1CV1CTqAemr/E3ZKmLRo+FjymHqQg2KHCVNy0WN8mUd58FUpdtZdZ+m4yPru1x39rbi/RwbbhOBp+FgWapKsGLxvBhyKz1R8Lm84aDpR/FEFryHmk9RrMymYhJUNfsBdPfNkLIonoX82V7PZ2JVNHZG6ZVtJqArUBx/xe2xk2gCtoBAdHtim8bj8FCRUZWaEhJOAodKoUa9L405+7sTytWTT3rJtQZWzTxd5t+1mWZMXNdEc0VyqrLA0/OZHtq4APoMlJR5zynDfeMi+YCEjfUCRtGGC8ORytqz6kewImFf0OV/2jBBZs5fU7UI5IZFJ3mNLwZP/B9OkM61/v69zTm0txKQUJ6SMgcBLwAQLBs9EC3TC7ou/z1jfm7LZLtE0xJUxUfjz/lK3U5QGAD5o/LCScxjYT6tEQgPwaSJeRRHjqYJ67v/sD426QU2ryKHMykAtaO9ZR71dnQgoAK6AEB0e2Kby+yLsGxUcjwovgHZX36DhqInYyur1h36I0Eg76KAu/RXeGyTVBwigyAR+VR9EbKomW0pIKTVOijIwtDqkHuWDxEAbOqGZY0E1ggPddVoZDNJ66L7rx48pBBJKqtxVSE7iueVfYtSMqAgjgu62Oo4UWBnsxUGCAHGtSPaHLClsSD0wlPAo3oWTg58ENTX+GUUn8LvqSKB+MSG+inTAAtGQDHyBvP+I87fSa9SzvhxPrLiRah6+sT17uB/H8A+fDrx+Nx3XoFwad5P5yHERg3lQ7xqU1Rwr8h2Iv9kFHfPkmSiZ3fCo0BAdHtim8+MfCt1OCSyHAt/HjmpAwEjGVGPEbLTqwltSrEN1Bp+K9uhX6+RB4SzhoW6/gUQ9dhHg79wQ9M2KKCoQqBq4o0dmhv0KX2UPhfDFDG2LG1y6a24K5Vz9ISPuSB7jBZ72FG5Cl45kDvOBdZwTzcuvshmmbv1P17yV2ySkuOzKJxC4q5BCBnkM8u\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        268,\"candidatesTokenCount\": 49,\"totalTokenCount\": 627,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 268}],\"thoughtsTokenCount\": 310},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"XvvSaJXKH92hz7IPgIPNmQU\"}\r\n\r\n"
+        268,\"candidatesTokenCount\": 49,\"totalTokenCount\": 554,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 268}],\"thoughtsTokenCount\": 237},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"fGHUaIbWOsasz7IP4vHz8Qo\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -126,11 +126,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 19:56:16 GMT
+      - Wed, 24 Sep 2025 21:24:14 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2284
+      - gfet4t7; dur=1831
       Transfer-Encoding:
       - chunked
       Vary:

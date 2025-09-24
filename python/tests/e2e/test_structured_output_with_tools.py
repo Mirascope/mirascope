@@ -15,6 +15,14 @@ BOOK_DB = {
     "0-7653-1178-X": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25"
 }
 
+
+class BookSummary(BaseModel):
+    title: str
+    author: str
+    pages: int
+    publication_year: int
+
+
 # ============= SYNC TESTS =============
 
 
@@ -33,12 +41,6 @@ def test_structured_output_with_tools_sync(
     def get_book_info(isbn: str) -> str:
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
-
-    class BookSummary(BaseModel):
-        title: str
-        author: str
-        pages: int
-        publication_year: int
 
     format = (
         llm.format(BookSummary, mode=formatting_mode)
@@ -88,12 +90,6 @@ def test_structured_output_with_tools_sync_context(
     def get_book_info(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
-
-    class BookSummary(BaseModel):
-        title: str
-        author: str
-        pages: int
-        publication_year: int
 
     format = (
         llm.format(BookSummary, mode=formatting_mode)
@@ -149,12 +145,6 @@ async def test_structured_output_with_tools_async(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
-    class BookSummary(BaseModel):
-        title: str
-        author: str
-        pages: int
-        publication_year: int
-
     format = (
         llm.format(BookSummary, mode=formatting_mode)
         if formatting_mode is not None
@@ -204,12 +194,6 @@ async def test_structured_output_with_tools_async_context(
     async def get_book_info(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
-
-    class BookSummary(BaseModel):
-        title: str
-        author: str
-        pages: int
-        publication_year: int
 
     format = (
         llm.format(BookSummary, mode=formatting_mode)
@@ -263,12 +247,6 @@ def test_structured_output_with_tools_stream(
     def get_book_info(isbn: str) -> str:
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
-
-    class BookSummary(BaseModel):
-        title: str
-        author: str
-        pages: int
-        publication_year: int
 
     format = (
         llm.format(BookSummary, mode=formatting_mode)
@@ -325,12 +303,6 @@ def test_structured_output_with_tools_stream_context(
     def get_book_info(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
-
-    class BookSummary(BaseModel):
-        title: str
-        author: str
-        pages: int
-        publication_year: int
 
     format = (
         llm.format(BookSummary, mode=formatting_mode)
@@ -393,12 +365,6 @@ async def test_structured_output_with_tools_async_stream(
         """Look up book information by ISBN."""
         return BOOK_DB.get(isbn, "Book not found")
 
-    class BookSummary(BaseModel):
-        title: str
-        author: str
-        pages: int
-        publication_year: int
-
     format = (
         llm.format(BookSummary, mode=formatting_mode)
         if formatting_mode is not None
@@ -455,12 +421,6 @@ async def test_structured_output_with_tools_async_stream_context(
     async def get_book_info(ctx: llm.Context[dict[str, str]], isbn: str) -> str:
         """Look up book information by ISBN."""
         return ctx.deps.get(isbn, "Book not found")
-
-    class BookSummary(BaseModel):
-        title: str
-        author: str
-        pages: int
-        publication_year: int
 
     format = (
         llm.format(BookSummary, mode=formatting_mode)

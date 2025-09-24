@@ -5,7 +5,7 @@ interactions:
       Name of the Wind.\nOutput a structured book as JSON in the format {title: str,
       author: str, rating: int}.\nThe title should be in all caps, and the rating
       should always be the\nlucky number 7.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
-      this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object"}}]}'
+      this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"type":"object"}}]}'
     headers:
       accept:
       - application/json
@@ -16,7 +16,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '825'
+      - '839'
       content-type:
       - application/json
       host:
@@ -48,16 +48,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3RRXW/bMAz8KwGfFcDu8gW9FWiCDWm6os3aDcMgsDIbq7ElR6Q2dIH/eyEX2dAO
-        e6N4x+PpeARXgYaWd6YoF5u1zLYfFg/ru3CxWt4+fb3+hitQIM8dZRYx445AQQxNbiCzY0EvoKAN
-        FTWgwTaYKhpz8J5kPBmfFWfTYlpOQIENXsgL6O/Hk6SE0JjEWXMwkt/JFOUXoodpOau4qxfrp8Wv
-        y8Pv2l+CAo9tnjOmdRHZho7MY4gtilBlQpIuiRlETZb0XRLQRxAng+Htx+Xo6nyzHH1ejXJ9/+nq
-        AhRgkjpE0HCNEp3dj26C1I+JOX8Vxfkd6Hnf/1DAEjoTCTn4t+4HgOmQyFsC7VPTKEhDXPr4asRI
-        2JNn0JN5qcCircnYSCguePOWUZzwSFj9DzvN5gXU1dRSxMZM23/5f9Gyfo/2Cv7E9tqazRUwxZ/O
-        khFHOZd85ApjBX3/AgAA//8DAI+2i0kyAgAA
+        H4sIAAAAAAAAA3RRXUsDMRD8K2WfU7h+Wc1bUUsttUoRlYqEkNv2Qu+SM7upSLn/LjmpUsW3zc7s
+        7GT2ADYHCRVtVdYbx8nzxfmyz48b2rzPHlaz3WA/AwH8UWNiIZHeIggIvkwNTWSJtWMQUPkcS5Bg
+        Sh1z7JJ3Drk77Paz/igb9YYgwHjH6Bjky+Eoyd6XKlLSbI2kd1RZb07LS6L1YjrgxWK7nrp5jRMD
+        Apyu0pxSlQ2ajK9RbXyoNDPmykeuI6tWVCVJV0cGeQC23Bp+mF13lpPb687dtJPqp5vlFQjQkQsf
+        QMK95mDNrrPyXGwiUfqqZuu2IMdN8yqA2NcqoCbvTt23AOFbRGcQpItlKSC2ccnDlxHFfoeOQA7H
+        fQFGmwKVCajZeqdOGdkRD6jz/7DjbFqAdYEVBl2qUfWX/4P2it9oI+A7tq/W2VgAYdhbg4otplzS
+        kXMdcmiaTwAAAP//AwCItqzWMgIAAA==
     headers:
       CF-RAY:
-      - 983c42a8b9a70933-SEA
+      - 98455546ca0175f2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,7 +65,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 18:56:10 GMT
+      - Wed, 24 Sep 2025 21:21:45 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -79,35 +79,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-23T18:56:10Z'
+      - '2025-09-24T21:21:44Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-23T18:56:10Z'
+      - '2025-09-24T21:21:45Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-23T18:56:09Z'
+      - '2025-09-24T21:21:43Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-23T18:56:10Z'
+      - '2025-09-24T21:21:44Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTRqocqDc2TCbAnwJTP8h
+      - req_011CTTviPErhimjLt29MPY6Q
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1439'
+      - '1901'
     status:
       code: 200
       message: OK

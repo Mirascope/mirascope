@@ -1,10 +1,15 @@
 interactions:
 - request:
     body: '{"messages":[{"role":"system","content":"Respond only with valid JSON that
-      matches this exact schema:\n{\n  \"description\": \"A book with a rating. The
-      title should be in all caps!\",\n  \"properties\": {\n    \"title\": {\n      \"title\":
-      \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\": {\n      \"title\":
-      \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\": {\n      \"description\":
+      matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\": {\n      \"description\":
+      \"The author of a book.\",\n      \"properties\": {\n        \"first_name\":
+      {\n          \"title\": \"First Name\",\n          \"type\": \"string\"\n        },\n        \"last_name\":
+      {\n          \"title\": \"Last Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
       \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
       \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
       \"Book\",\n  \"type\": \"object\"\n}"},{"role":"user","content":"Please recommend
@@ -17,12 +22,12 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '812'
+      - '1278'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=7rtRaWrLaIhRFsFq24zeyFZPPbQtV5qHP3dTv3SLuvE-1758653687-1.0.1.1-6QejFMB2z6BmqwQ9jfWem7hgs9RUh0FIfzG76aTTsbuKYaZmX20_0oFsdyiYCygvafzfx4wZ9VtS87XcqFYgcJ.CXjBrgIczMF0eBN7wZPI;
-        _cfuvid=S4IEJ6KxPNl0NBgjmE_ekIwmg1kCuCTkEWCEsDMqN5Y-1758653687284-0.0.1.1-604800000
+      - __cf_bm=86sN._mE.r8J1zIv3TCt9l4f3F0TQhWW7ENkcNb.9fo-1758748826-1.0.1.1-lzp8MtMCcsk2O0uqtqEkvyJHkxoR3wvo.dfpk3BQPrMcAXcey69ZI95BdGb9kpnvS6Vj6Ayre6kG677zMVYzNf4m5TK3rWDOivmKB6Ld60A;
+        _cfuvid=Y8hCqDJt47VZayVBUK.0Oax026f6U6TaTKTnAflKvco-1758748826665-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -50,18 +55,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFJNj9MwEL3nV1hzblGafiT0trBFgGBBBYkDWUWuM0m869iWPUFFVf87
-        ctI2LR8Slyia99543ps5RIyBLGHNQDScRGvV9PX75MssXmwX6f3TRu+z/fxu+6rrZqWTyQeYBIXZ
-        PaGgs+qFMK1VSNLoARYOOWHoOkuX2Wo5X2Uve6A1Jaogqy1NF2aaxMliGmfTeHUSNkYK9LBm3yPG
-        GDv03zCiLnEPaxZPzpUWvec1wvpCYgycUaEC3HvpiWuCyQgKowl1P/Uh14zlQJIU5rBmOXx9u2EP
-        dx837NMbFv6/vXu4z2Ey8HhHjXED8TMnJ8Uz2xpqqs77C8lxkroOpDTXx+uHHVad58G37pS6ArjW
-        hnjIrbf8eEKOF5PK1NaZnf9NCpXU0jeFQ+6NDoY8GQs9eowYe+zD7G7yAetMa6kg84z9c7N0PvSD
-        cX0jOj8lDWSIq7GexGfVTb+iROJS+at1gOCiwXKUjrvjXSnNFRBduf5zmr/1HpxLXf9P+xEQAi1h
-        WViHpRS3jkeaw3Dd/6JdUu4HBo/uhxRYkEQXNlFixTs1HB74n56wLSqpa3TWyeH6KluIXTVLs+Vy
-        lUJ0jH4BAAD//wMAXRkLsIYDAAA=
+        H4sIAAAAAAAAAwAAAP//jFNtb9MwEP6eX2Hd5xZ1oV1Dv6FuCNgobJoYEpkiz74k3hzbsi+8Vf3v
+        yEnWtDAkvljRPS+5e87eJoyBkrBiIGpOonF6un5/vf5yU+nsobzafL78deauFuvby+8X4cI7mESF
+        vX9AQU+qF8I2TiMpa3pYeOSE0fVkuciW8yxLX3VAYyXqKKscTed2ms7S+XSWTWeng7C2SmCAFfua
+        MMbYtjtji0biD1ix2eSp0mAIvEJY7UmMgbc6VoCHoAJxQzAZQWENoem63uaGsRxIkcYcViyHm7fn
+        bPP6wzn7+IbF79t3m7McJj2Pt1RbH4mdMJZK5QMVhjeD/hMnr8TjIIkMzY8I15bqsg0hh0jYDc6e
+        kzJVZCxzszvs1mPZBh7DMq3WBwA3xhKPYXc53Q3Ibp+MtpXz9j78IYVSGRXqwiMP1sQUAlkHHbpL
+        GLvrNtAehQrO28ZRQfYRu9+ly6z3g3HnIzo/HUCyxPVYf5nOJ8/4FRKJKx0OdgiCixrlKB0Xzlup
+        7AGQHEz9dzfPefeTK1P9j/0ICIGOUBbOo1TieOKR5jE+iX/R9il3DUNA/00JLEihj5uQWPJW97cV
+        ws9A2BSlMhV651V/ZUtXnGTpUsqZWCwg2SW/AQAA//8DAH7mjI67AwAA
     headers:
       CF-RAY:
-      - 983c40b8bee8b89e-SEA
+      - 984553795bd7a38d-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -69,7 +74,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 18:54:50 GMT
+      - Wed, 24 Sep 2025 21:20:30 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -87,13 +92,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '434'
+      - '1217'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '450'
+      - '1238'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -103,13 +108,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799847'
+      - '799745'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 11ms
+      - 19ms
       x-request-id:
-      - req_03b8be1d86774396a390d51b93376641
+      - req_2a31c0e2c0bb4caa839dbfadc4fcd265
     status:
       code: 200
       message: OK

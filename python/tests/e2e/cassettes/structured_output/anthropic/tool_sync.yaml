@@ -5,9 +5,10 @@ interactions:
       respond to the user''s query using the __mirascope_formatted_output_tool__ tool
       for structured output.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.\nA book with
-      a rating. The title should be in all caps!","input_schema":{"description":"A
-      book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"description":"For
-      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object"}}]}'
+      a rating. The title should be in all caps!","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"}}]}'
     headers:
       accept:
       - application/json
@@ -18,7 +19,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '936'
+      - '1117'
       content-type:
       - application/json
       host:
@@ -50,16 +51,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dFHRSgMxEPyVss8p3JVei3kTrFS0WqUgKhLW3LYXepecycYi5f5dcqVK
-        Fd82O7Ozk9k9mBIkNGGjsnza3iw8rorV2e5zot/idr72JoIA/mwpsSgE3BAI8K5ODQzBBEbLIKBx
-        JdUgQdcYSxoGZy3xcDwcZaMiK/IxCNDOMlkG+bI/SrJztYohafZG0juqLL9eL+ZF/rRbzot4Ub7d
-        V48fG3oGARabNKdUYzwG7VpSa+cbZKZSuchtZNWLqiRp28gg98CGe8Or+Wxwe76YDe4uB6l+vLq9
-        AAEYuXIeJCyRvdHbwYPjah1DSF9FNnYDctp1rwICu1Z5wuDsqfseCPQeyWoCaWNdC4h9XHJ/MKLY
-        bckGkOOziQCNuiKlPSEbZ9UpIzvinrD8DzvOpgXUVtSQx1oVzV/+D5pXv9FOwHdsh9ZkKiCQ/zCa
-        FBtKuaQjl+hL6LovAAAA//8DABUtLgIyAgAA
+        H4sIAAAAAAAAAwAAAP//dFJdi9swEPwrYZ4VsJ3LpfXbQdOmHL1+cDT9oIg9eWOL2JIrrQpt8H8/
+        5Gt6XEvfVjOzs6NlT7ANagyx1UW537XXl5848XWoPq++XNm7Y7XdQEF+jpxVHCO1DIXg+wxQjDYK
+        OYHC4BvuUcP0lBpeRu8cy/JiWRXVuliXF1Aw3gk7Qf31dLYU73udYvacg+R30kV56/371Wa3f0XP
+        q8EEe9f8+phaKDgacp/Wgw0UjR9ZH3wYSIQb7ZOMSfRsqrOlG5OgPkGszIFvd9vFzdWb7eLty0Wu
+        969vXkCBknQ+ZOHBhij695B3JMGaIxR6ekQ/eOkOKUZMCoHEuhb1Zpq+KUTxow5M0bunX5uJyN8T
+        O8OoXep7hTTvsj49pNTij+wi6vXlSsGQ6VibwCTWO/1UUZz5wNT8jzv35gE8djxwoF6vh3/1j2zZ
+        /c1OCn92+gA9KxUihx/WsBbLATXyBTQUGkzTPQAAAP//AwDfGbd5TwIAAA==
     headers:
       CF-RAY:
-      - 983c4058bbac76c1-SEA
+      - 984553218ea9767c-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -67,7 +68,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 18:54:35 GMT
+      - Wed, 24 Sep 2025 21:20:17 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -81,35 +82,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-23T18:54:35Z'
+      - '2025-09-24T21:20:16Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-23T18:54:35Z'
+      - '2025-09-24T21:20:17Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-23T18:54:34Z'
+      - '2025-09-24T21:20:15Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-23T18:54:35Z'
+      - '2025-09-24T21:20:16Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTRqgdrYL1y83WZWYDS1i
+      - req_011CTTvbuWpgqffB6RNmptes
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1502'
+      - '1829'
     status:
       code: 200
       message: OK

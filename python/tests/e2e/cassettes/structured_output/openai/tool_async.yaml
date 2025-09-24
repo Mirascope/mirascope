@@ -4,9 +4,10 @@ interactions:
       query using the __mirascope_formatted_output_tool__ tool for structured output."},{"role":"user","content":"Please
       recommend the most popular book by Patrick Rothfuss"}],"model":"gpt-4o","parallel_tool_calls":false,"tool_choice":{"type":"function","function":{"name":"__mirascope_formatted_output_tool__"}},"tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.\nA book with
-      a rating. The title should be in all caps!","parameters":{"description":"A book
-      with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"description":"For
-      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object","additionalProperties":false},"strict":true}}]}'
+      a rating. The title should be in all caps!","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"type":"object"},"strict":true}}]}'
     headers:
       accept:
       - application/json
@@ -15,12 +16,12 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1010'
+      - '1191'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=7rtRaWrLaIhRFsFq24zeyFZPPbQtV5qHP3dTv3SLuvE-1758653687-1.0.1.1-6QejFMB2z6BmqwQ9jfWem7hgs9RUh0FIfzG76aTTsbuKYaZmX20_0oFsdyiYCygvafzfx4wZ9VtS87XcqFYgcJ.CXjBrgIczMF0eBN7wZPI;
-        _cfuvid=S4IEJ6KxPNl0NBgjmE_ekIwmg1kCuCTkEWCEsDMqN5Y-1758653687284-0.0.1.1-604800000
+      - __cf_bm=86sN._mE.r8J1zIv3TCt9l4f3F0TQhWW7ENkcNb.9fo-1758748826-1.0.1.1-lzp8MtMCcsk2O0uqtqEkvyJHkxoR3wvo.dfpk3BQPrMcAXcey69ZI95BdGb9kpnvS6Vj6Ayre6kG677zMVYzNf4m5TK3rWDOivmKB6Ld60A;
+        _cfuvid=Y8hCqDJt47VZayVBUK.0Oax026f6U6TaTKTnAflKvco-1758748826665-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -48,20 +49,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFPbTtwwEH3fr7DmebcKewlL3iqgQKtu70VqF0XGmSQGx7bsCS1d7b9X
-        dmCTBSo1D5E1Z87MmePxZsQYyAIyBqLmJBqrJsdvp1+WC6U+HfLL81X15/u7s0Vx9Ese39QXDYwD
-        w1zfoKBH1ithGquQpNEdLBxywlD14HCxTBez9CiNQGMKVIFWWZrMzWSaTOeTZDlJ0gdibaRADxn7
-        OWKMsU38B4m6wN+QsWT8GGnQe14hZLskxsAZFSLAvZeeuCYY96AwmlAH1bpVagCQMSoXXKm+cfdt
-        BufeJ65Ufrr4oauTs9p/ODKzk2931yssjqupHPTrSt/bKKhstdj5M8B38exJM8ZA8yZy87yRjnth
-        LOalcQ0nwiI3LdmW8qg9f1KWMeCuahvUFEaCzRpIksI1ZGv4en7KVq/fn7IPb1g4X16sTtYwXgNv
-        qTYu5nzk5KS4ZZ8N1WXrfcQdJ6mrNWSHW9hrtx29dL4aOOywbD1Xz63nWhviwYHo/dUDst1dszKV
-        debaP6FCKbX0de6Q++geeDK2kxUkxObQ7m0IWGcaGyy7xdjuIE27etAvcI9OH3YNyBBXA9bykbVX
-        Ly+QuIwrtNtawUWNRU/tt5e3hTQDYDSY+rmal2p3k0td/U/5HhACbVgf67CQYn/iPs1heN//Stu5
-        HAWDR3cnBeYk0YWbKLDkreqeHvh7T9jkpdQVOutkfH9Q2ryczdJ5wudJAqPt6C8AAAD//wMAo7r8
-        q4gEAAA=
+        H4sIAAAAAAAAAwAAAP//jFTJbtswEL37K4g524W8NHZ1i9O0TYGmTVIgXRQQNDWSmFAkQY7SBIb/
+        vaCUWMpSoDoIxLx5M28WcjtiDFQOKQNZCZK105Ojz+dHm+UPOjurrxd3zeY6vzysL07XxeJCrWEc
+        GXZzjZIeWW+krZ1GUtZ0sPQoCGPU6fLtarlYrebzFqhtjjrSSkeThZ3MktlikqwmycEDsbJKYoCU
+        /R4xxti2/UeJJsc7SFkyfrTUGIIoEdK9E2PgrY4WECGoQMIQjHtQWkNoomrTaD0AyFrNpdC6T9x9
+        28G575PQmufFdP3nZH34sXK62mwaLES5/vVzNsjXhb53raCiMXLfnwG+t6fPkjEGRtQtl/NaeRGk
+        dcgL62tBhDm3DbmGeKudPwvLGAhfNjUaiiXBNgNSpDGDNIPvn47Z6eGXY/b1A4vny5PT9xmMMxAN
+        VdZnkG4zKJQPxKOClvNNkFfypnXTYoicW6qKJoQMduMMvCBlygzS5Q6eKNqNXjtfDYbgsWiC0C+n
+        I4yxJGKT2vFcPSC7/SZoWzpvN+EZFQplVKi4RxHaBkMg6zpZUUKbHJonSwTO29rFrt5gm266nHXx
+        oN/xHp29ewDJktADezIdvxKP50hCtVu2X2wpZIV5T+0XXDS5sgNgNKj6pZrXYneVK1P+T/gekBJd
+        3DDnMVfyacW9m8f4BPzLbd/lVjAE9LdKIieFPk4ix0I0urudEO4DYc0LZUr0zqv2ikLheDGfHywS
+        sUgSGO1GfwEAAP//AwAPnWwVqwQAAA==
     headers:
       CF-RAY:
-      - 983c40e07c73765e-SEA
+      - 984553938967b9be-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -69,7 +70,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 18:54:57 GMT
+      - Wed, 24 Sep 2025 21:20:34 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -87,13 +88,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '868'
+      - '992'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '885'
+      - '1006'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -109,7 +110,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 3ms
       x-request-id:
-      - req_b811868d059147f3af99682b30201715
+      - req_4036dd3a9990434184440f504139a79c
     status:
       code: 200
       message: OK

@@ -31,9 +31,9 @@ interactions:
         \ \\\"title\\\": \\\"THE NAME OF THE WIND\\\",\\n  \\\"author\\\": \\\"Patrick
         Rothfuss\\\",\\n  \\\"rating\\\": 7\\n}\"}],\"role\": \"model\"},\"finishReason\":
         \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 62,\"candidatesTokenCount\":
-        32,\"totalTokenCount\": 228,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        62}],\"thoughtsTokenCount\": 134},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
-        \"bu3SaMeQJ5yCmtkP4_jUuA8\"}\r\n\r\n"
+        32,\"totalTokenCount\": 155,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        62}],\"thoughtsTokenCount\": 61},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"CmHUaJmjA9KhqtsPwbHL8AI\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -42,11 +42,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 18:56:48 GMT
+      - Wed, 24 Sep 2025 21:22:18 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2227
+      - gfet4t7; dur=879
       Transfer-Encoding:
       - chunked
       Vary:

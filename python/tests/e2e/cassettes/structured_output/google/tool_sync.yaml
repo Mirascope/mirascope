@@ -6,13 +6,15 @@ interactions:
       tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
       [{"description": "Use this tool to extract data in Book format for a final response.\nA
       book with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
-      "parametersJsonSchema": {"description": "A book with a rating. The title should
-      be in all caps!", "properties": {"title": {"title": "Title", "type": "string"},
-      "author": {"title": "Author", "type": "string"}, "rating": {"description": "For
-      testing purposes, the rating should be 7", "title": "Rating", "type": "integer"}},
-      "required": ["title", "author", "rating"], "title": "Book", "type": "object"}}]}],
-      "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames":
-      ["__mirascope_formatted_output_tool__"]}}, "generationConfig": {}}'
+      "parameters": {"properties": {"title": {"title": "Title", "type": "STRING"},
+      "author": {"description": "The author of a book.", "properties": {"first_name":
+      {"title": "First Name", "type": "STRING"}, "last_name": {"title": "Last Name",
+      "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
+      "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
+      should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -21,7 +23,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1065'
+      - '1174'
       content-type:
       - application/json
       host:
@@ -35,24 +37,28 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/21U25KiSBB9768weHV2ERHRjdgHQBQQQbm2bmwY1VBCCVQJFF6YmH9f2p6e0Znl
-        gSgyT56TZFSery+9HhMBHKMYUFgzf/X+6SK93tf7+z1HMIWYdonPUBc8gYr+xH48Xx/OHeTQ4Igi
-        ghWQ50/F3/MYFLCLM/t9gSpQR+QE9wdSFYBSGO9JQ08N3VNC8v2e+fJrMaiS+n9Iu0wFKMJJlxN/
-        LXova2hKqnfVNaAVirKeQ2h6aOr6N4kOTRHN7y16mtqzpJXas+e993OoWzPmF/y3p+9vz3RMJ9sk
-        KXVRggFtqjurciYzKdYoKqbWEeaWOzTUvjHL2LFd9i9om1jxEinsdlH6if52QTw7i1NzovHz4GCv
-        YMjtFORcNfaym6CtOXbzTbsMs90mVpN47FyUoA1mGoga01qfUTWr09JvV0rWWGfrqhtjA8twcPKs
-        VbYoRo2TzljPkyHloJHfcKathsnQXu4QeJMpPh7D6LrN9STF5Woc18GpZHNxwdppK8mpT44ja5Wy
-        ueTZtIXzU5zajeCwjfbm7UaVLcPp4UgzRz8ODmqg83EZG4MrmlJaZqRUr7UcXIR+IO8O3itxsu1p
-        0m6xn5kCDSWAIbq5N95WaTg2vZDbbA9NcVnWs8Cv1sVKMt5e+627Pl1ujuJffN2rOYEEcylr1WO/
-        AmIxkUBhsGXt7QwjXQpBM94tLEdvz8drnNsbV1ls/aNIppIQyTPBdM+VwicyPg69qfEqi4m2HBcX
-        3lA8zdUEtNhmangQY3fsBFPOeZtf+DwY1YJp1k7ZBDfTkkaz2gA+PDbNbaAW3CWWHVqJgwTb2W2J
-        50CpWIntV+VqyPmm1WAi2tTHy1Nj9MFSxKzHK6LOD9WUP1ZlMB7ZN280PI9GtRnSTdCGeRbK6oQX
-        tdIwERknRQE4bhNF10XqJr4IFjCs5m4hxkPVPmwyjV6Wc5j7a3mtn31pvEvaNoq4UbiMBIQnWvE6
-        m5sgpec1bYY68sOdrrKJ4OZXp3S4kvz9eNN/3vJ/f95wpiIfe1KQGOaf8B8rwBwQRnXqQFAT/A5z
-        PXv9Y98YhGN47cKDl0+BOzXT1CCBK0hB50vgx64zp4oUJ+qRDGKFNHdf4vjJB9uDjz0B+O9ewFBC
-        Qf6UGk4HX34jrmedLMofDe7B+7q/BDmit7szqK/eg3V0As99fc7i5WFkn2bw3CPHCS/fh/YxxwBW
-        NfoYWAKLboR/DP8U/jjkoE7vikwF6xPBNdTjd4zYtC5Y7V2TLlcFzdZVVKhEUpmXby//AQI4Oy3j
-        BQAA
+        H4sIAAAAAAAC/21V2bKaWBR9v19h+WrSTILaVf2gyCSXSUTBri7rMCOjnAMCqfx7c6fEm4QHCvZa
+        ezyw9renyWTqgcJPfIACOP178u9omUy+vd5fsLJAQYFG4MM0GitQo5/ct+vbw/NICZvCQ0lZsCDL
+        Pjm/4wXIg9E+vVzypAbQK6vgEpZ1DhAK/EvZoKpBF1SW2eUy/fKrM6gj+IegI1IDlBTRiC1+dXpx
+        a1Bc1n90HNEMQHT5KGtfojhsIPwt91tzSf3A1QGqEy+d/sb8/ocaUIKyV6+DyE3UtcJNNH7y8nyS
+        1O2vIb5/ev8l3HRspoliZCZRAVBTv0ZlW4df+yJKcgyvHLpbqVibSJzl53ttzedUinOn7ujKpnDn
+        d5Zhb9syYMjtgiwcXVhQm2AP+/igxjVGH+lDSd701dpnImrLWkZtZGU2OxPkgkhrP+/Fe9w+O1a0
+        mQ+cejQEOQgru2h1yj3PdK7wq9hvtPDZuwpd0Uq+vT/PRaURroObaAcq9w0jrLATjoKGS/ZtA1XY
+        paZNhbmrgKEeXJqfLTEjra/CtdfYHe4k5pVSt4QUahDUPYvCeeOa+X0lcSmXeYN/XLr7G6NpdLhb
+        ns9HF8kcQ0j9SlOKXPfKW+JubVrl6Ph+rOPZ6cA0WHFatNQ2S91Ux2u+CPusZlxVvO4djUdzHrYO
+        4XCzzdVdiQxan3hK99JTF6JUxklrxe7u801lKkwpQJyhWIG9U4fBbqTjM59d3VQxA4J2d4i04p2x
+        oI4+fSfMda/Hp/DOmyg/AEzfZCtrK0J0DpSBmvE3jg50KRhYE+4LZTDppR013LKQNINrlm2nPqfs
+        nU75fo6d/JDbLBY2dm/rtl2f2kLECwjWxZoPr7OkjbXNDKZyKYb0AuBay/O5IZni/BCf8hspOGOz
+        JbZNqjXcKgMeElSke3JfF/qcwFQenekrefNq7XBytE6GjAfEQ2dbQwI7zTMVf74MqHgGrCHfNp2R
+        dxxN5lZwgMaajc47nU/EeDyERDidbqPf+KEiKKX6xqxkRz3fCWvfYWQkVDKr7Eo7PovwWEpQmSuB
+        Glqhtmu9bXoj91dF7PQb3R95t/A5ig1pMUs0qVs9BzsTWG7icNH2mqM1v7nqkXdkwmVtS+2OrO8o
+        H09crxZYv6sDOYfG0R6IgMlaz8l2ve2YWKHEqiwHx6xuVWFuSRustrgdI2DCMVoNh9XVQWW7wI1y
+        n+5p0c7LZ/zGCnXk6j4jhAjkGC/gNhOQXsXJ5tjC2grm5zOt9gnADTUGmoKFzk3BwPkZLlmCu/Fz
+        dVfHS9kTm6WtFGWjg9kNx1qZbaJIkm+dmkWbIb5iQKvICDtbqk+YHnsPRbY/7AkBkndx8BRqF9Fq
+        gkX45iT3Z1H651E5fqrGfz8VY1qXb7qTl36QfdB/SMooaUUC430AYFm80MyDpv8Qv2lS+EE3mvGn
+        jwSvoacNBFGgBAiM2wP8ENZpVZd5hQ5lGhRs2bxuD5J4V+SHbfOJMF+946hEIPsMMeSX3wLD7Zg2
+        yR7X0MOGGrsEWYL6V6Xl7MODjo8JPtf1MYunh5F9iOvnGokV8/Q+tLc5HoMaJm8Di4J8HOFX8i/6
+        aziukvg147QOYFUWMJD8F85XQbeAPv7femgMC0kvLxTXG8b06fvT/wcJelCJBwAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -61,11 +67,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 23 Sep 2025 18:54:38 GMT
+      - Wed, 24 Sep 2025 21:34:48 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2644
+      - gfet4t7; dur=1803
       Transfer-Encoding:
       - chunked
       Vary:

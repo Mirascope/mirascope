@@ -2,12 +2,18 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
       by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
-      "Respond only with valid JSON that matches this exact schema:\n{\n  \"description\":
-      \"A book with a rating. The title should be in all caps!\",\n  \"properties\":
-      {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
-      {\n      \"title\": \"Author\",\n      \"type\": \"string\"\n    },\n    \"rating\":
-      {\n      \"description\": \"For testing purposes, the rating should be 7\",\n      \"title\":
-      \"Rating\",\n      \"type\": \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      "Respond only with valid JSON that matches this exact schema:\n{\n  \"$defs\":
+      {\n    \"Author\": {\n      \"description\": \"The author of a book.\",\n      \"properties\":
+      {\n        \"first_name\": {\n          \"title\": \"First Name\",\n          \"type\":
+      \"string\"\n        },\n        \"last_name\": {\n          \"title\": \"Last
+      Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
       \"Book\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
       {"responseMimeType": "application/json"}}'
     headers:
@@ -18,7 +24,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '863'
+      - '1329'
       content-type:
       - application/json
       host:
@@ -32,12 +38,12 @@ interactions:
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"{\\n
-        \ \\\"title\\\": \\\"THE NAME OF THE WIND\\\",\\n  \\\"author\\\": \\\"Patrick
-        Rothfuss\\\",\\n  \\\"rating\\\": 7\\n}\"}],\"role\": \"model\"},\"finishReason\":
-        \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 188,\"candidatesTokenCount\":
-        32,\"totalTokenCount\": 312,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        188}],\"thoughtsTokenCount\": 92},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
-        \"LO3SaPetCoCsqtsPuJuTgAQ\"}\r\n\r\n"
+        \ \\\"title\\\": \\\"THE NAME OF THE WIND\\\",\\n  \\\"author\\\": {\\n    \\\"first_name\\\":
+        \\\"Patrick\\\",\\n    \\\"last_name\\\": \\\"Rothfuss\\\"\\n  },\\n  \\\"rating\\\":
+        7\\n}\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 317,\"candidatesTokenCount\": 52,\"totalTokenCount\":
+        523,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 317}],\"thoughtsTokenCount\":
+        154},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"jGHUaKzILIXNqtsP2LWQ4AQ\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -46,11 +52,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 18:55:41 GMT
+      - Wed, 24 Sep 2025 21:24:29 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1482
+      - gfet4t7; dur=1518
       Transfer-Encoding:
       - chunked
       Vary:

@@ -6,13 +6,15 @@ interactions:
       tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
       [{"description": "Use this tool to extract data in Book format for a final response.\nA
       book with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
-      "parametersJsonSchema": {"description": "A book with a rating. The title should
-      be in all caps!", "properties": {"title": {"title": "Title", "type": "string"},
-      "author": {"title": "Author", "type": "string"}, "rating": {"description": "For
-      testing purposes, the rating should be 7", "title": "Rating", "type": "integer"}},
-      "required": ["title", "author", "rating"], "title": "Book", "type": "object"}}]}],
-      "toolConfig": {"functionCallingConfig": {"mode": "ANY", "allowedFunctionNames":
-      ["__mirascope_formatted_output_tool__"]}}, "generationConfig": {}}'
+      "parameters": {"properties": {"title": {"title": "Title", "type": "STRING"},
+      "author": {"description": "The author of a book.", "properties": {"first_name":
+      {"title": "First Name", "type": "STRING"}, "last_name": {"title": "Last Name",
+      "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
+      "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
+      should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -21,7 +23,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1065'
+      - '1174'
       content-type:
       - application/json
       host:
@@ -36,12 +38,12 @@ interactions:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
         {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"author\":
-        \"Patrick Rothfuss\",\"title\": \"THE NAME OF THE WIND\",\"rating\": 7}},\"thoughtSignature\":
-        \"CiQB0e2Kb1a1JRzI9pMMwkdxkP/zmlI6cIrwvfK0H+jUPY8OlAEKbAHR7YpvRuoSFxjQHnfW9hLZbXZuQHjRk+7qqgCwDA15kESkJR0ewAIlq289w+kZ0ID8NiE0MQicEDherAar/CvZ6oZEsl/EOZz2Nj1pCTCBf3+TEyPM6WlXpu6mQhPOy1M0ojPeM6qTxoT7dwrqAQHR7Ypvdnec//+sxcteuC9I/4LJ9L+jooXECCxikrix1yyq8qsl0OQdXA6/7/yB/6P8o+ymmz4fujW/l8e3zP+w47J1kFDtuMDfZvjveU1/J8dRoeC9nvL0XboGZ3xDUeuySyN5mikENh+uHVufE+scCV5pYvwrdfwzizGjDAoA3nUbZWxBfSIDqOV0ibLGS3UbZVHyIX+QJO/w3EjpqaEZ/jmj34WqqWm7CPJsI4IQTQ6Eq+4HNbGtR1guxiSDSD4/+vdbCiBHwB4Zmpb9OAu/OdXPFd0qH8pikjxMsvvcJreUJdHEWqfCZwqAAgHR7Ypv4fSdwqIttD3TKVpgS16iitwUbRga1kXnDHQjuyoOGH7EVNeISl2rYaKpiMR8+TGep3hVKy9ZqL7b7iBrigP4LkgKrc7UV72iOZAbx1Lzu7et866buGt385QCZFH4TwqP826k8/7oEXVgUxTOt0QMI319DAtetvzngK+iX+Jpsmct1qbS+z1J582X/DKj4lJBIXHtHOwDipl7mk07XDuEc/1XrN4qQTd4vmlTLx4JxevJBQ5DGBcaxseFS7OhSLKJSNAzJQ/gWAdx4nLgnjCF2hXcxGtyLBRKjuueYteiiEp7sH3aOdDOCViyaAOs3ah24Ayh+AKOJot86CkK3AEB0e2Kb/UDah5oC53VNkSDhBgCxUNGg+cVfHQaNU31ZxBPM33tZe4jqwY7TArunkw/IdwaIzUZ7+hjqXy9xkJotUrrH3m84Byt8uWVBWadr87nhr/h5wnRi2YEKbh0rN6t9QWwAH7mk+w+aCZ86TDLzxXxi+E9G5ZsFXlhmmyoSc8ZZ2FVFIIHL/WGOd0twipEaqim3smR7vV15srR+WDa4lxY7yfvq4dFaWPE25HiXmazfA9ej2MyFL+9K6835t9r0jwBMSC7+p/cESXJ7KqcThS2aY33sF8oDQg/CkMB0e2Kb1MWSZCKVe8B5MJItjrHuTg0/TKpklsmaGOYKlzUsRKsBQGOYNULfWCopFKYD4J7GB9FmRCyj9ja/nbhJetx\"}],\"role\":
+        {\"last_name\": \"Rothfuss\",\"first_name\": \"Patrick\"},\"rating\": 7,\"title\":
+        \"THE NAME OF THE WIND\"}},\"thoughtSignature\": \"CiQB0e2Kb/6nhq89IPYXPJpTjStnREpBcdCwkNx37n0ILs+POy0KeQHR7YpvEHmW7XNAIOwzNpK9t3elL0AzeLl9+IeQvhZI1USDxsRjwYmg8TVmUa8bV7ow3YA5DAflaOQHBklpInkagWT6UEHxQVQpaCHgjW/UMSbycrd5j+hJ3vXzszOeaXYltNN+GnuhTVdTBRCcIqRigJJNkjiRQ7kKyQEB0e2Kb541OF6Ojzrim2yHyzKl+rhFrJzpDjIW3CJz+zwKKOYntdGbDhWwxP3Tstk/9cLrcB7N38xKwiAxdP9Jv1bIfnkFSxwRbMSfvPaxBS2XB8Pkm2Q8OLYxTIBkyu3XtMgYhsli2+HID94mvudyErnXnlRv3T52y9z1NJk675ytoBtXbLW7H3zTjwrd5cQ7tyWIi+06f4ue9KlKqOiRWHfgJkYWnUwKza3RcU+7BesSBtkV8LKei0+3nuwUlKgH6EO5zZx9dNwK5QEB0e2Kb5e8D0tfc98sUXuQpRl48KzbATUHrBGd2pVAxJLHn+kNG54EdYLd9g8IB+tN/i3ZvhVw4RwEwYqXCPT5FSRskLF4k+Xw92hDwTQp8GjLyXuOXCLDbZczBY1FXZLyBxd2PaREFondWUaFvxjbXp2lj+Eiwp0Oou74/pp3PpsNF8LeRsxKjs5mivnHZvm25GRCazR7m8xbtRVm9vucGlm6LdyNNSFISOEPJA8fViT01VR2z/aTKg/JK98tKJn9lBgwVH1NJrYib2BYr2O99NtB80Nwpvo9o2qjETnt/dAKqE53CsMBAdHtim/vbdVZUdMgJ0KJpUHeSzzj0r5UilamFIDhzix1/rcleGOtXhrz//K5sbwx2HcBw+/ZisLC2W7KsA5apZffC7RlmwLa2ni59qDP3NapUmH4oulwNOHh4PbOQvfQJvr33reh2YodLOqePl5cTC/IWE9C5jp5QHli6iqWietXceohmHQ4rtn1CJ/7xLTxr+ItPP/lvBzeKiCnpQwA1leVq8JoIWJANSkw+j6VSDaTIOfPvbkNblGax1nVKQtG5T7lCn4B0e2KbwF4Fn3VfdXEtep/dzrMWiEFgTSA6ppySraRNrd79+H1RwkWLIrbYnZbE8J3/Blzut/or0FJ8y0VVjbz59mZpmhQpsVejvQoba7aOTiPdFSTSpUSO65/A5DtyfaM7hNWgM5Xz9BLg74mmWJFHUGq6P+BKfg/EDJIUXI=\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        138,\"candidatesTokenCount\": 37,\"totalTokenCount\": 355,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 138}],\"thoughtsTokenCount\": 180},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"JO3SaKLIMLyJqtsPs42WkQQ\"}\r\n\r\n"
+        217,\"candidatesTokenCount\": 49,\"totalTokenCount\": 461,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 217}],\"thoughtsTokenCount\": 195},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"_mPUaNmbHOfRz7IPp6Lx-Qw\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -50,11 +52,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 23 Sep 2025 18:55:34 GMT
+      - Wed, 24 Sep 2025 21:34:55 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2134
+      - gfet4t7; dur=2053
       Transfer-Encoding:
       - chunked
       Vary:

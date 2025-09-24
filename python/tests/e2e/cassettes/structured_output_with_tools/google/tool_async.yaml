@@ -5,15 +5,15 @@ interactions:
       {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
       tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
       [{"description": "Use this tool to extract data in BookSummary format for a
-      final response.", "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema":
-      {"properties": {"title": {"title": "Title", "type": "string"}, "author": {"title":
-      "Author", "type": "string"}, "pages": {"title": "Pages", "type": "integer"},
-      "publication_year": {"title": "Publication Year", "type": "integer"}}, "required":
-      ["title", "author", "pages", "publication_year"], "title": "BookSummary", "type":
-      "object"}}, {"description": "Look up book information by ISBN.", "name": "get_book_info",
-      "parameters": {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}},
-      "required": ["isbn"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
-      {"mode": "ANY"}}, "generationConfig": {}}'
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -22,7 +22,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1147'
+      - '1113'
       content-type:
       - application/json
       host:
@@ -36,66 +36,30 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/21Yx9LsVm7e6ylU/5YjMydXecHQzDmzXa4pNkMz56zSu7t1NZLuHZsLFgngAAc4
-        Afjw608///yVJn1WZcmaL1//+fN/fyg///zrt/fvvKFf8379MP4kfYhjMq9/y/7x/Prd90ek2Pp0
-        rYaeS9r2h8H/4vdJl3/oX+98/edrGJp/Vn0xfP3j38WS+b38P8M/nGp59b8rgH4hCRz9BYZJ6pfo
-        69/kfvvh/7cf1X+t5bC9y9Wt3n2ybvO3+XAbFTKZtFYdVUG6L1nLyjXgzRIegDDzkw3nDiFfgdkg
-        ZGg3CkPmI+5nku2JchHEpP0cAS3H1BAUqiEvofSyJwcR7C2/ttttrHWz76VWztctzBI+O7qVrrX0
-        hPWQjejmsgCY1Cs1XgiuDe6MzA+YnZR1hlTJTGRlKhlHhEr1XHPTIB5OE3Vbays79Y5gjFGcKyQF
-        nMXKZfBincugSjrUbT+qAS6eT2DiS58BwOTFQjvp8Jg7s9TzoEjUa+7j2phcNyyRfLryQuqdh9PW
-        syFokjSYCAbN0+D6siZivKAmZwziErzVin6LHI45wQwh9OPIawF5InvvR/3VBPRYPHpSEgO1Npy3
-        6EthL6dtFBjaQlGTlfpgq0aGERraicY+4rAjCK3p5th3vEXxobNgBYUKJ6+8xLilcOLnbdmRfk62
-        9dqSoVUmKYpYRNvHDUpbS5xDVa8S7ebD1jbOWmJSeUY5j48fr42jWwZ1ytLSUDE0GErJ7OOaVtdH
-        VzfGuV1JjvEgDV9GlTDrFuQqZTpxRN284KrO6ppZDGCVB4i0Egp51JWq8JXpQOeu2G6EX5ew6xS7
-        nK8cx5dhkQdbI/CVeaSQDlvp/qIMxN4z6+7utIOYgNOKdqkKerKxWOmwqun2ufOfbRHOatMIxmxW
-        W3K/Lb0Lc6atmEV6upZzoya3bcI8Imj0ksSxBA+fBql6nxTZVI83SC9urKB+uhaMPovRcxYIQWsJ
-        5RV3Z+qRZ/BYzJeESekFekV4Kw0Ulm7zesTUhPDNnG1cfa0hEFeluRmesegPqcLtkccrfSyFIu3X
-        VlLSsB0gJk1t0kSB1nXmkfXmZpqwVqJTA9EePbyjZXW49kyQ/Hl26KoP51h1qLeU4QhR+KYgCAhS
-        WmymsT0qyOENUGjFO8npJviYeQ+SkDbJ6iWGm8/qG90i66dyNmUJ+1CsPgEu1cBoow49LuuilwYb
-        Z/cAhiPcwVCtSiMkGmMVNdHMg+SrX66o7vpnikv3tUNBIsGkzfWNxBQElRUbzxsjaT7WHCHnYn+Q
-        dicZA7UAJBptxrbePBxucnAQz7toRd1YmtVjj8daWakQv3cA0RFWxCX0dCqAWleX7li3Fje/s9xV
-        ezGWLcAdOxKXpjQvo4X7QGeS1HHfKFp0Bm/G2IOQELM0uGvfor3Rhh4WeJem4+wRyF4sWbMfc4K1
-        UaK5gwneN7d0J1nloSOUfO6MZ3js5IsONYcsMH7bOgG3upUBjcdeF4Z7JeyLdooZbLEX0bbSWQIJ
-        7mRGgLW2mpWGozuA5I+PPsPUyXwWEesdKDKsUMjNM2Cm52z0rTliw8crdvbP63k8685wQZwGDup4
-        idDtvjZ6Mk5j7LK3PCbk0SaGxrucxtUuioC1jlPFW5/yCZJbuG0b/4YrH+figZEIOV5Y85lo1iQt
-        2AxW0yQoONc+I1gDu8KkeowjremBgDLoAjEXZO/FKiQW3zageh/TUNA46Zvo5FzqYkce7iC6VNNP
-        HqN50kKy4KZ3/Xy+arSSJJ97XPrdDO4UHM9T9RMLZfq3rL8fFli0T/aWFtC61xXeTJb2gcGTec/L
-        4S23GpkSQ198R/Q21N3dps5piOMKyqGLktqwNs4rlfvTez2kYr1vdUAYcpQtd5m0CZyoTUP1j4Nr
-        oJ943EQYA9UV0LFhtieN1nmUMNozk3pX7Uf5EutzhnGEhSZRxBChM5GlyBcSkBfQ9KjRRWd2Vq9n
-        SwYzmWqDoKxHQADu6iWhye0pcLC8BYCQxnS4KJ818ILJ3/4pfrZBUy5sx5VMgfpFatZS2VJx98kO
-        4x6ZkPqiyMDsQyeZD1ArcZmQdpOK6BFt37q8jn3is9X0tOET6J5ANqWfo9bVWGBMAWA+giJXprs4
-        y1EDpdJ1k4tDMBnsL2hZNcznCS2VOKCs9NxvkxhrktEAeUVTgAboVxfFNJUe6WoNNgnf2VMTjSPT
-        bdm1RkK+L3RpEkKwfG0u+vwqOwoJFYoCZdlRdWg1G5mm8yGcsVGH1JE36LPgCxosdhResmn1O9yj
-        9XkUyjgaRYc6TmIRVI7vEiiUzVstJk7jTUlrWLvhdYZOXaDpPIa6G2abyXPhUVyL1hHzo/cKaKq+
-        w3OJ+rBBwoLJj8Umlo3STN0AHbiC7+H0nuBOS4n+aN20htgpWqaoXa6Wzh7VYNvdzpcv8jVE1BgQ
-        XcxiRacVS8MKjxNoAWVZP1FHF2pso1Hi1bYNr82nnf7WbTj3kaBDR/S2xDeW1LjcHC7kDdXycI7m
-        fpcM0cQE0Z/aMu69BbEsypBCahXRg4gvcnl5LL7Q7tN0EZyW3dcqUe5GIcjdO8atRqdcRP4jVaNw
-        sXYZvFjJXvTrNBbHd0POqmRQ8lJRcfP38JaliqISw5ItykM7aL7c1qfYBF/IiIBFD+pHzw7zmhkD
-        JWTmYi5yOI82iyWGae1C7X0tgt7/bkZ9qIYbd4qbyY7YwBEyQovjEaEfHUqN7ZWgxzIjma2giBjQ
-        +xbrAveTawgLEsOWQA8xc9CIP+bnC3izlc8WC2mcwJoRqoCJEJd4Dwfa9zTEFYarIHK81mgYRP6o
-        3nwz3HjyjAoJT9meO2+2LRKKzVQ9jzD+DpTMS15c9Tl41OVPTUePT6MVYazahQu4h+KVBs/RIckA
-        6l2ef3dLgBXGkzVecTbF2zAZk78n/sm5G8Kg74kOEWCHL5cMiDrkJEtF0otoXPYF3jj+tuqTEYmq
-        UpGZVNNbs8vVCFq5I2UKYfrb31UdgFjt1JuDe705nUqX+bZ0oENZmo+NS94NTEdPkNgF6GbhToEk
-        YQk8VVXdbXdaq17tvQn5jgZTAlsK5GX0227b0cO4GbeVHCXcHKWqQMag6Lo5ppBxcRdjAkqSbltk
-        HohddAW1r55J0kcBJGnKOy36rEQkUD0oaDyTn91XVFb9J7HKGuTKTFARFYht2/KIoAp5ecdxhVwN
-        Re4ncfvu/qp04e3eEIghjZCIxymPoXkq2wEvxHSEwExCiHFcBSDALY3fFkMhVV0e7/WhMEUNVfCQ
-        kXzCMD4pmrwcvOD30lg95qj87R45cDx07a43ib5N55kJWUHLc6119INIRzp6L/Ie7iUXKY9FG0ht
-        HPeDQHLGU81H+uh9aEucHDCJWcNdk5trMcqDRLZtxcM9UPwE4F2FtIXaHA6mFB93BvapUUGqcgGw
-        GyZZz6nPpe775om8Sc9fXcSiaW5raIOJ+doUKZEy9JUEhaelJGYfL2Zy2pLB0/m5Wi6fq8nCpdmQ
-        SvK1OXcqy3fT3agsK1s0T53Jg9o9SBVhNVnQDwvho31tbOdR3WSF1S+TgyS30K1RIjuz8wbUKOBo
-        jlXrJZDU3BdO6jVeFYoRC4BcyqQ5jWizV2LqqdK7x1HYQyisuEirunmPsQc31wcAvWkX12ZYutbi
-        5s9HE67lW50v0tkh52m+0JKDnOGEBJ/IkFI3ZhVWgjdYPpX1mmApX9HhBnFzLh9XY5nG7kbnmznB
-        pJDq/oZLfIAB4INbgiy720HbKdgePkU3R3JPiIxy8pYwYHKRakZswfhgJXF9xnHazyOpPHeUNFeN
-        ESW6DVFSEXbeAc0t/qwhH6YbtYTgAxzeCVNYhuADG+AVmEQxZgTaJNV3N4la5pRz1mMcC2Va6VqN
-        6yRwCC59vdpXAeOCGRNsHONwjmFUW5FaI1qUv8bNUUuzsgdoFohd4yHvE9plfo+kJB87YVn5yT1o
-        UBE1xTjzUud6C+l8/Zh3wrtXc+HbS0LnyFOqUywhohEcJBuINCZQ+TnDQuq9URENMUudJy9E5Fey
-        UuAA9bANCfVDrew7WJ5R8FJfXbFur711cMIyHkpWJRd59wx/U7D+SavZDkxrmX4q4GD7OGwJVt92
-        cWJtvZ9zIyneRDxN5lzB9tyRVq0ez6PAamHgSULrMZSeV5cVmUP1GmVA6tJj9n1KpnMV6CRkliFM
-        89eoJvxzshdW6PiRVc8WufTD/q/vUfjfCPx//kbfX/PQfkPb3ZDl7Z/if8Hzr6Lqq6V08mQZvmF8
-        1zOtv3oDX1Wf5eeHDP30p4Fvqr+2JXnner4mWbImfzUNvsZ56MbVG5q854btWysDpug/tH3X+vhB
-        APmTvw5r0v7AolHkH/9H8cJ/zFbt9z2R79olHy+Ttlqv313xHpH3XZvjY+DHef0Zi5++C9mfjYof
-        50jC2E//CtofcQzyean+CNg77z4h/AX5D/yXok2W8pvFrzlfxqFfcjn7XSYodjcxc1yUr8/uX6w7
-        s5pPkfL1028//S8W9+MoFhIAAA==
+        H4sIAAAAAAAC/21Vx47bSBS8z1cMdJVnmdMCe2CQRIpBFIMoarEwGJo5BzEY/veVxx57xrs8EOxX
+        1e91F4GqL0/Pz5vAq8I09AbQb/58/vtReX7+8vr+htXVAKrhAbyVHsXG64Zf3O/Pl3ffD0o0VsGQ
+        1hXvFcWHzT/wyivBo76JwfDZr+v8c1pF9ebT7zSvi/v/2f5A0t6vvjWAXyiSwF4QhKJfrpvfeF8/
+        rL9+bL8ZknqMk8FM48obxu71PHytimwoDmkJ7VSGtYAzhfx2xqJgnYY9mqkic+dzCDoXhnNjEkso
+        8uFIisvugkPuzW8mK3IpgkNqqFozSpJt1ON2A7rLSWGtOz/CY+eoa4PWdrq0hVRFhClOkqbYHnhP
+        KfDkSntqsuyATVu6dA8heEa2e4f38SU/JgFf3iCcGXNf8yes5YoJdWgs38JC2HIzbMj+KWqGZjkE
+        Q3Cclblda9icqrIzPNZKS0mGaHwYiwC2DDFVl46Ag8XQCloR7GncHnHB9oK4Xakpi7DCtg2IP+5W
+        VsClCggTv4cyjBszOpn7M8nLNXJ1+vFixR4FIglm/AwBMIfpwwQjeIs02Z05C2ZMzj62QEjts6ab
+        YNIq16JzltiSX85HnLJ1y9qHhmaFYkOU7YJe59ZNO6eQnTI62GRiHKEaxNsZLzOnGG5pqiS0qxOo
+        0U73mG0X2XOZe9+QNF9vZeDmKJ3eKSpBNV2nzUOvrwki5VjenpTacz1w32W+1AvqoCF+dIxzqKKT
+        7igzLgaF9MUQ2QBBTrVpmP6JiPAtgpByOVY3Q1wL1UOi2VTcEyKV9xaBE3axj2HjiVFV5HzLyDVx
+        1MwGKRT2aCQQxfBudNxZvnda9+NqqKJGYPvzdNauTnsDS6wIXSRYNLrq64kvUFb191yMMj5ylVoi
+        O7AFN46FeJkmUAXx3hVNH+elaqrQQXcB7I2AyNGAEx7w4zeo03w+zUh4jDRkWRhQcH6DcEJ0MF2f
+        v4p3tRwkkPXpZR/HA6JdYiYSA/d6S2h40fmHjFYsz+7gnfFZVLqtqXM41GZRE58EajGSqZjxE0lK
+        u71Zhi55EhbEVtS1mrwrDrY9nfkskTg52DWBwmXexTGcuyXXlIn1XebruSjK22C8KAok6dtxa8Zs
+        PR6u1BbkBamyZXHY2XhmOyfCbAjIlig43562481XGiqVZ3T2x4MiaCvt60OkJ7wUUSYUdwk3osRB
+        GIREuc855Z5uZKBeBc0yJAgGZchZZdLCoZM6phxm2MCu7ilKfXjkYxYe1ztrpr2LVx3NkXG8Vpil
+        I0uQ1eRU1lngi/dbpTOhGRV2QqXoLtUs4gLle332a1dy3eTO6vZKLBfhtrMj99q40o0lHGddkv39
+        QPahwITRZfK1Wgd4GeeNLJiKtsIYtmfWvsE5DJgBQLuZjsPUuMmlfM5yCa80vKY9dvLuXMhw5HJb
+        PbXie3k3p2hSQrTCnFV3ca6EuhNbcLsI7l/vXe+X4/3zy+02XV28ultZh6B4o/+0w02UVmmfGMDr
+        61dPNa2T/tOLN2kVgvlRhp/eBry23oy9FwMVDN4jOryfJr1purpsBqvOQcXX42t0IDTzvdu7qPlA
+        QN/woR684gOEY/in/zTuhcfYtHifQe/i6XFLr0iH5dtVrN3VehcrjwEfz/WmxdM7yd6C4bczIuTT
+        D9G+63gBXZ9+FywG5UPCF/QP4iUqvD55nbjpQN/UVQ+k8BtHc0TbO6W4LAHQDr1eg/SInt3N09en
+        fwGJwgn4hgcAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -104,11 +68,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 23 Sep 2025 19:56:05 GMT
+      - Wed, 24 Sep 2025 21:23:01 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=5370
+      - gfet4t7; dur=1772
       Transfer-Encoding:
       - chunked
       Vary:
@@ -134,15 +98,15 @@ interactions:
       {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
       tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
       [{"description": "Use this tool to extract data in BookSummary format for a
-      final response.", "name": "__mirascope_formatted_output_tool__", "parametersJsonSchema":
-      {"properties": {"title": {"title": "Title", "type": "string"}, "author": {"title":
-      "Author", "type": "string"}, "pages": {"title": "Pages", "type": "integer"},
-      "publication_year": {"title": "Publication Year", "type": "integer"}}, "required":
-      ["title", "author", "pages", "publication_year"], "title": "BookSummary", "type":
-      "object"}}, {"description": "Look up book information by ISBN.", "name": "get_book_info",
-      "parameters": {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}},
-      "required": ["isbn"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
-      {"mode": "ANY"}}, "generationConfig": {}}'
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
     headers:
       accept:
       - '*/*'
@@ -151,7 +115,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1458'
+      - '1424'
       content-type:
       - application/json
       host:
@@ -165,32 +129,29 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
-        +j+EQUKaWQgAAA==
+        H4sIAAAAAAAC/21V25KiSBB9768wfHV3QQTBeeMmqICIIMjGRgdICaUFhVCIMjH/vmhPz3T3Lg9c
+        Mk9mnjpEnPz+MhgMD1GRwCQioB5+G/zdRwaD78/7I4cLAgrSJ95DfbCMKvIb+3Z9//DeQ45NcSAQ
+        F3KE0Kfin/kiykEfH76+5rCK6gMuwesRV3lECEhecUPKhrwSjNHr6/CPr8VRldb/0/TJLH2egmPZ
+        r1WPbBMjeIgevF7vIKp6IEPT0/9BEkjQk58JaxLjqvg2cDMwmMMiQgM1L2EF/kPrQawhGX60HUpV
+        LyouBtv+AaoaF8Mv6B+fvn98bjbs2zRpRrYwLSLSVE8qcslqYqITmM921ZhlSjQxp1HsXONgfPEV
+        9dSBTtjwXCYLuTqdYHWqIEPtJB/TbJhEHFb2SbhbEZFqKT+Ym9fx6ULt8ejewotHuuR+u1twXWee
+        hGG8OV3PundonCa1S0O5WvdIDYw96qRtJYdht6xga8he3tkA3LWlwndTQpvMfl0zbAq2AAkW7gy0
+        kFjegauN45vN/hAvjxMzTWhz6qym5Q54ksZyq4K/BtLuyk1KbFf23thbuREzLujoa4OsLJkoIj7V
+        +eEa6hmzF497wQV2C5GxAtoymOI7d8f8qquCIDmRbcHt2A0+nTRKXjK8UmmVaVZct2okhVrTS51m
+        ksSVYYyIJa9Lwyiz6ZZ4F6EZ2XfNmh+lcdeK3CjcTs2TODHGeWmyS268jnm5nHj+ODDoYjmptXnh
+        dbqqLMTLOPHHXsOE4/wA1kFsqY7sMlq4SXVkzlKtHckuVY4cip6xIt//tibEyzIXJm5+m88qibIs
+        PGkPM2Zj4SWs6HIx36NjeDhup92uK72WjW8CWCt8qUPpMmMdjp1uxi7mm1ms51yIMqTvaM4PXfeW
+        hJe1hba6zHvTwAkLNmzizUWxV1qOWa/MRnljdflFWFX89oSwqtvgwviUaZd+uVMXR+ZkVizmO6Jd
+        JKqVyLy+SZnsLSkto/gEec3ZqAuIF952o2moHfsbO2j3pn+fBEiyASWt7027OV7rgFf0RJ9HbgsY
+        I7KFm0rdVAVNL+dzyxYW6652p/QkZmfmQnFgJHO5SGXEdsWFb3NXt515Z9YxKn8be5XCbdzMgeq6
+        Clwk6mdDtyitnSfSBhgp7I73EdFNPYjrxZ5KHM2LFmQ0bthAksu90MR6Fd/ahp4p09VOFNb1KF3W
+        aVzuzbC41YYmJfIh3EIWdCHKj4eZPd43XDGfh7POM5fMKLXvJKfulh0umPOBDQpfRyOYzPTcDg7C
+        xsWnG4SK1Ak3XitPTu1PRfdG5lYmnTjcQB64S8nxcdMYqqdydJUh+noVKSYS11VLESCy5TLWLjMn
+        OgYgyJJiVPlMq6nGZr5dC0eyaDxbSNirE3kMKsj43FFYCUDTOQos1uv7CC9pRhfpDSN4J+e8G4Vp
+        Kmof3ea30/zz22WGFX4zuBwnAL3Df9nQ8AgLWGcOiB7W1cO27tr+5XhD2JvarQ/TL+8Dnq2HTd37
+        rwlI1G+T6JdDD8sK5yVx8RkUMm6e24SZCm/dPmyfTwB29jNPMInQlxT/x38a10o/FqKPa+nDxupP
+        GSFI7o+juGrgfjDvfsBnXu9avHyQ7N2QP3McCw8BnqK96bjrrR6+CZaCvJfwT+Yv7s8jiursOXFY
+        gbrERQ0WyQNjMboXWZPZSujmF1LbNNHcWmyHLz9e/gXepYJnmQcAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -199,11 +160,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 23 Sep 2025 19:56:08 GMT
+      - Wed, 24 Sep 2025 21:23:03 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1852
+      - gfet4t7; dur=2049
       Transfer-Encoding:
       - chunked
       Vary:

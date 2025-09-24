@@ -5,7 +5,7 @@ interactions:
       Name of the Wind.\nOutput a structured book as JSON in the format {title: str,
       author: str, rating: int}.\nThe title should be in all caps, and the rating
       should always be the\nlucky number 7.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
-      this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object"}}]}'
+      this tool to extract data in Book format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"type":"object"}}]}'
     headers:
       accept:
       - application/json
@@ -16,7 +16,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '825'
+      - '839'
       content-type:
       - application/json
       host:
@@ -48,16 +48,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dFFdb9swDPwrAZ8VwG6TBtNbsHQfGJJmRYc+DINAyGys1hY9kdpaBP7v
-        g1xkRVfsjeIdj6fjEUIDFno5uKre/5b1Yfv49V7X+/Ntnb6sv+Xb92BAnwYqLBLBA4GBxF1poEgQ
-        xahgoOeGOrDgO8wNzYVjJJ0v5mfV2bJa1gsw4DkqRQX7/XiSVObOZSmak5Hyzq6qF5uLYcWb9DS8
-        uxb2/eYed8uPYCBiX+ac60NC8TyQu+PUoyo1jrMOWd0k6opkHLKCPYIGnQzffLqc7dbby9nVh1mp
-        bz/vNmAAs7acwMIeNQX/MLtmbe+ySPkqaogHsKtx/GFAlAeXCIXja/cTIPQzU/QENuauM5CnuOzx
-        2YhTfqAoYBer2oBH35LziVADR/eaUZ3wRNj8DzvNlgU0tNRTws4t+7f8F7Ru/0VHA39je25drAwI
-        pV/Bk9NAJZdy5AZTA+P4BwAA//8DAFSb5gcyAgAA
+        H4sIAAAAAAAAA3RRXWsbMRD8K2afZTgbfxS9hdZtmuIkJDahLUWspT2f4pN0kVaG1Nx/L7rgliT0
+        bbUzOzuaPYE1IMGlvaomm9oc1o/bh+3xcvH4ZefW9fHq3oEAfu6osCgl3BMIiKEtDUzJJkbPIMAF
+        Qy1I0C1mQ+MUvCcez8bTajqv5pMZCNDBM3kG+fN0luQQWpVT0RyMlHdW1WS7+/HbrBbf5vrDd32V
+        N/XuNuFHEODRlTmlnI2YdOhI1SE6ZCajQuYusxpEVZH0XWaQJ2DLg+HN5Wp0fbFejW4+j0r98PX6
+        EwjAzE2IIOEWOVp9GN0FbuqcUvkqsvV7kMu+/yUgcehUJEzBv3Y/AImeMnlNIH1uWwF5iEueXowo
+        DgfyCeRsORWgUTekdCRkG7x6zajOeCQ0/8POs2UBdQ05itiquXvP/4dOmrdoL+BvbC+txVJAoni0
+        mhRbKrmUIxuMBvr+DwAAAP//AwCrzY89MgIAAA==
     headers:
       CF-RAY:
-      - 983c422438a87b4d-SEA
+      - 984554beb8b5dee2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,7 +65,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 23 Sep 2025 18:55:49 GMT
+      - Wed, 24 Sep 2025 21:21:24 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -79,35 +79,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-23T18:55:49Z'
+      - '2025-09-24T21:21:23Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-23T18:55:49Z'
+      - '2025-09-24T21:21:24Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-23T18:55:47Z'
+      - '2025-09-24T21:21:21Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-23T18:55:49Z'
+      - '2025-09-24T21:21:23Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTRqn47wHHFvHXuKCzEvu
+      - req_011CTTvgnAgzN5LMtt4LHqhA
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1586'
+      - '2366'
     status:
       code: 200
       message: OK
