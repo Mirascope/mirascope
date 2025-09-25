@@ -2,15 +2,7 @@
 
 from unittest.mock import MagicMock
 
-import pytest
-
 from mirascope import llm
-
-
-def test_cant_use_init() -> None:
-    """Test that Models cannot be directly instantiated."""
-    with pytest.raises(TypeError, match="llm.model"):
-        llm.Model()
 
 
 def test_client_pulled_from_context_at_call_time() -> None:

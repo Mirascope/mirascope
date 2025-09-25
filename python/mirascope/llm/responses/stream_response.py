@@ -26,7 +26,7 @@ from .base_stream_response import (
 )
 
 if TYPE_CHECKING:
-    from ..clients import BaseParams, ModelId, Provider
+    from ..clients import ModelId, Params, Provider
 
 
 class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
@@ -95,7 +95,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
         *,
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         tools: Sequence[Tool] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
@@ -219,7 +219,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
         *,
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         tools: Sequence[AsyncTool] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
@@ -349,7 +349,7 @@ class ContextStreamResponse(
         *,
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
@@ -486,7 +486,7 @@ class AsyncContextStreamResponse(
         *,
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],

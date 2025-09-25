@@ -5,10 +5,10 @@ from __future__ import annotations
 from collections.abc import Sequence
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import TYPE_CHECKING, Generic, Literal, overload
+from typing import TYPE_CHECKING, Literal, overload
 from typing_extensions import Unpack
 
-from ..clients import ParamsT, get_client
+from ..clients import PROVIDERS, get_client
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent
@@ -27,13 +27,10 @@ from ..tools import AsyncContextTool, AsyncTool, ContextTool, Tool
 if TYPE_CHECKING:
     from ..clients import (
         AnthropicModelId,
-        AnthropicParams,
-        BaseParams,
         GoogleModelId,
-        GoogleParams,
         ModelId,
         OpenAIModelId,
-        OpenAIParams,
+        Params,
         Provider,
     )
 
@@ -46,7 +43,7 @@ def get_model_from_context() -> Model | None:
     return MODEL_CONTEXT.get()
 
 
-class Model(Generic[ParamsT]):
+class Model:
     """The unified LLM interface that delegates to provider-specific clients.
 
     NOTE: this class cannot be instantiated directly and must be created using the
@@ -91,14 +88,23 @@ class Model(Generic[ParamsT]):
     model_id: ModelId
     """The model being used (e.g. `gpt-4o-mini`)."""
 
-    params: ParamsT | None
+    params: Params | None
     """The default parameters for the model (temperature, max_tokens, etc.)."""
 
-    def __init__(self) -> None:
-        """LLM is not created via `__init__`; use `llm.model(...)` instead."""
-        raise TypeError("Use `llm.model(...)` instead")
+    def __init__(
+        self,
+        provider: Provider,
+        model_id: ModelId,
+        params: Params | None = None,
+    ) -> None:
+        """Initialize the Model with provider, model_id, and optional params."""
+        if provider not in PROVIDERS:
+            raise ValueError(f"Unknown provider: {provider}")
+        self.provider = provider
+        self.model_id = model_id
+        self.params = params
 
-    def __enter__(self) -> Model[ParamsT]:
+    def __enter__(self) -> Model:
         """Sets MODEL_CONTEXT with this LLM and stores the token."""
         self._token = MODEL_CONTEXT.set(self)
         return self
@@ -862,8 +868,8 @@ def model(
     *,
     provider: Literal["anthropic"],
     model_id: AnthropicModelId,
-    **params: Unpack[AnthropicParams],
-) -> Model[AnthropicParams]:
+    **params: Unpack[Params],
+) -> Model:
     """Overload for Anthropic models."""
     ...
 
@@ -873,8 +879,8 @@ def model(
     *,
     provider: Literal["google"],
     model_id: GoogleModelId,
-    **params: Unpack[GoogleParams],
-) -> Model[GoogleParams]:
+    **params: Unpack[Params],
+) -> Model:
     """Overload for Google models."""
     ...
 
@@ -884,9 +890,20 @@ def model(
     *,
     provider: Literal["openai"],
     model_id: OpenAIModelId,
-    **params: Unpack[OpenAIParams],
-) -> Model[OpenAIParams]:
+    **params: Unpack[Params],
+) -> Model:
     """Overload for OpenAI models."""
+    ...
+
+
+@overload
+def model(
+    *,
+    provider: Provider,
+    model_id: ModelId,
+    **params: Unpack[Params],
+) -> Model:
+    """Cross-provider overload."""
     ...
 
 
@@ -894,11 +911,7 @@ def model(
     *,
     provider: Provider,
     model_id: ModelId,
-    **params: Unpack[BaseParams],
-) -> Model[AnthropicParams] | Model[GoogleParams] | Model[OpenAIParams]:
+    **params: Unpack[Params],
+) -> Model:
     """Returns an `LLM` instance with the given settings."""
-    llm = Model.__new__(Model)
-    llm.provider = provider
-    llm.model_id = model_id
-    llm.params = params
-    return llm
+    return Model(provider, model_id, params)

@@ -58,7 +58,7 @@ def async_context_tools() -> list[llm.AsyncContextTool]:
 
 
 @pytest.fixture
-def params() -> llm.clients.BaseParams:
+def params() -> llm.clients.Params:
     return {"temperature": 0.7, "max_tokens": 100}
 
 
@@ -66,7 +66,7 @@ class TestCall:
     """Tests for regular call decorator (no context dependency)."""
 
     def test_call_decorator_creation_openai(
-        self, tools: list[llm.Tool], params: llm.clients.BaseParams
+        self, tools: list[llm.Tool], params: llm.clients.Params
     ) -> None:
         """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
@@ -85,7 +85,7 @@ class TestCall:
         assert decorator.model.params == params
 
     def test_creating_sync_call(
-        self, tools: list[llm.Tool], params: llm.clients.BaseParams
+        self, tools: list[llm.Tool], params: llm.clients.Params
     ) -> None:
         """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
@@ -112,7 +112,7 @@ class TestCall:
 
     @pytest.mark.asyncio
     async def test_creating_async_call(
-        self, async_tools: list[llm.AsyncTool], params: llm.clients.BaseParams
+        self, async_tools: list[llm.AsyncTool], params: llm.clients.Params
     ) -> None:
         """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
@@ -162,7 +162,7 @@ class TestContextCall:
     """Tests for context call decorator (with context dependency)."""
 
     def test_context_call_decorator_creation_openai(
-        self, context_tools: list[llm.ContextTool], params: llm.clients.BaseParams
+        self, context_tools: list[llm.ContextTool], params: llm.clients.Params
     ) -> None:
         """Test that context_call decorator creates ContextCallDecorator with correct parameters for OpenAI."""
 
@@ -181,7 +181,7 @@ class TestContextCall:
         assert decorator.model.params == params
 
     def test_creating_sync_context_call(
-        self, context_tools: list[llm.ContextTool], params: llm.clients.BaseParams
+        self, context_tools: list[llm.ContextTool], params: llm.clients.Params
     ) -> None:
         """Test that context_call decorator creates ContextCall with correct parameters."""
 
@@ -215,7 +215,7 @@ class TestContextCall:
     async def test_creating_async_context_call(
         self,
         async_context_tools: list[llm.AsyncContextTool],
-        params: llm.clients.BaseParams,
+        params: llm.clients.Params,
     ) -> None:
         """Test that context_call decorator creates AsyncContextCall with correct parameters."""
 
@@ -246,7 +246,7 @@ class TestContextCall:
         ]
 
     def test_context_call_decorator_with_mixed_tools(
-        self, tools: list[llm.Tool], params: llm.clients.BaseParams
+        self, tools: list[llm.Tool], params: llm.clients.Params
     ) -> None:
         """Test that context_call decorator works with regular tools too."""
 

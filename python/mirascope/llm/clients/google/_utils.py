@@ -39,9 +39,8 @@ from ...tools import (
     FORMAT_TOOL_NAME,
     ToolSchema,
 )
-from ..base import _utils as _base_utils
+from ..base import Params, _utils as _base_utils
 from .model_ids import GoogleModelId
-from .params import GoogleParams
 
 GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
     "STOP": FinishReason.END_TURN,
@@ -215,7 +214,7 @@ def prepare_google_request(
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
-    params: GoogleParams | None = None,
+    params: Params | None = None,
 ) -> tuple[
     Sequence[Message],
     Format[FormattableT] | None,

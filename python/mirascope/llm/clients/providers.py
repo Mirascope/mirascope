@@ -1,4 +1,4 @@
-from typing import Literal, TypeAlias, overload
+from typing import Literal, TypeAlias, get_args, overload
 
 from .anthropic import (
     AnthropicClient,
@@ -20,6 +20,8 @@ from .openai import (
 )
 
 Provider: TypeAlias = Literal["openai", "anthropic", "google"]
+PROVIDERS = get_args(Provider)
+
 ModelId: TypeAlias = OpenAIModelId | AnthropicModelId | GoogleModelId | str
 
 
