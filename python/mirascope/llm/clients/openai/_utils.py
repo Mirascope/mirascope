@@ -34,7 +34,7 @@ from ...responses import (
     FinishReasonChunk,
     RawChunk,
 )
-from ...tools import FORMAT_TOOL_NAME, ToolSchema
+from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ..base import Params, _utils as _base_utils
 from .model_ids import OpenAIModelId
 
@@ -259,7 +259,7 @@ def prepare_openai_request(
     *,
     model_id: OpenAIModelId,
     messages: Sequence[Message],
-    tools: Sequence[ToolSchema] | None = None,
+    tools: Sequence[ToolSchema] | BaseToolkit | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
     params: Params | None = None,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
@@ -281,13 +281,13 @@ def prepare_openai_request(
     if params:
         raise NotImplementedError("param use not yet supported")
 
+    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
+
     kwargs: ChatCompletionCreateKwargs = {
         "model": model_id,
     }
 
-    openai_tools: list[openai_types.ChatCompletionToolParam] | NotGiven = (
-        [_convert_tool_to_tool_param(tool) for tool in tools] if tools else []
-    )
+    openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
 
     model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     default_mode = "strict" if model_supports_strict else "tool"

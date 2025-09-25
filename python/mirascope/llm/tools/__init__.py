@@ -11,6 +11,7 @@ from .tool_schema import (
 from .toolkit import (
     AsyncContextToolkit,
     AsyncToolkit,
+    BaseToolkit,
     ContextToolkit,
     Toolkit,
     ToolkitT,
@@ -23,6 +24,7 @@ __all__ = [
     "AsyncContextToolkit",
     "AsyncTool",
     "AsyncToolkit",
+    "BaseToolkit",
     "ContextTool",
     "ContextToolkit",
     "Tool",

@@ -24,7 +24,6 @@ def create_sync_stream_response(
         provider="openai",
         model_id="gpt-4o-mini",
         params={},
-        tools=[],
         input_messages=[llm.messages.user("Test")],
         chunk_iterator=iterator,
     )
@@ -46,7 +45,6 @@ def create_async_stream_response(
         provider="openai",
         model_id="gpt-4o-mini",
         params={},
-        tools=[],
         input_messages=[llm.messages.user("Test")],
         chunk_iterator=iterator,
     )
@@ -1028,7 +1026,6 @@ class TestRawChunkTracking:
             provider="openai",
             model_id="gpt-4o-mini",
             params={},
-            tools=[],
             input_messages=[llm.messages.user("Test")],
             chunk_iterator=chunk_iterator(),
         )
@@ -1060,7 +1057,6 @@ class TestRawChunkTracking:
             provider="openai",
             model_id="gpt-4o-mini",
             params={},
-            tools=[],
             input_messages=[llm.messages.user("Test")],
             chunk_iterator=chunk_iterator(),
         )
@@ -1381,3 +1377,45 @@ async def test_async_stream_response_execute_tools() -> None:
     assert len(outputs) == 2
     assert outputs[0].value == 10
     assert outputs[1].value == "HELLO"
+
+
+def test_response_toolkit_initialization() -> None:
+    def chunk_iter() -> llm.ChunkIterator: ...
+
+    def async_chunk_iter() -> llm.AsyncChunkIterator: ...
+
+    response = llm.StreamResponse(
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params={},
+        input_messages=[],
+        chunk_iterator=chunk_iter(),
+    )
+    assert isinstance(response.toolkit, llm.Toolkit)
+
+    response = llm.AsyncStreamResponse(
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params={},
+        input_messages=[],
+        chunk_iterator=async_chunk_iter(),
+    )
+    assert isinstance(response.toolkit, llm.AsyncToolkit)
+
+    response = llm.ContextStreamResponse(
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params={},
+        input_messages=[],
+        chunk_iterator=chunk_iter(),
+    )
+    assert isinstance(response.toolkit, llm.ContextToolkit)
+
+    response = llm.AsyncContextStreamResponse(
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params={},
+        input_messages=[],
+        chunk_iterator=async_chunk_iter(),
+    )
+    assert isinstance(response.toolkit, llm.AsyncContextToolkit)

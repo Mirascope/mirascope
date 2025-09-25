@@ -25,9 +25,13 @@ from ...responses import (
 )
 from ...tools import (
     AsyncContextTool,
+    AsyncContextToolkit,
     AsyncTool,
+    AsyncToolkit,
     ContextTool,
+    ContextToolkit,
     Tool,
+    Toolkit,
 )
 from ..base import BaseClient, Params
 from . import _utils
@@ -98,7 +102,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> Response: ...
@@ -109,7 +113,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> Response[FormattableT]: ...
@@ -120,7 +124,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]: ...
@@ -130,7 +134,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
@@ -166,7 +170,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None]: ...
@@ -178,7 +184,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, FormattableT]: ...
@@ -190,7 +198,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
@@ -201,7 +211,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
@@ -236,7 +248,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse: ...
@@ -247,7 +259,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncResponse[FormattableT]: ...
@@ -258,7 +270,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
@@ -268,7 +280,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
@@ -304,7 +316,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None]: ...
@@ -316,7 +330,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, FormattableT]: ...
@@ -328,7 +344,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> (
@@ -341,7 +359,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
@@ -376,7 +396,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> StreamResponse: ...
@@ -387,7 +407,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> StreamResponse[FormattableT]: ...
@@ -398,7 +418,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]: ...
@@ -408,7 +428,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
@@ -442,7 +462,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT]: ...
@@ -454,7 +476,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT, FormattableT]: ...
@@ -466,7 +490,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]: ...
@@ -477,7 +503,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
@@ -510,7 +538,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse: ...
@@ -521,7 +549,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncStreamResponse[FormattableT]: ...
@@ -532,7 +560,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]: ...
@@ -542,7 +570,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         *,
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
@@ -578,7 +606,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncContextStreamResponse[DepsT]: ...
@@ -590,7 +620,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
@@ -602,7 +634,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> (
@@ -615,7 +649,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         ctx: Context[DepsT],
         model_id: GoogleModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]:

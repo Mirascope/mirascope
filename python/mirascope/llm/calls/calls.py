@@ -65,7 +65,7 @@ class Call(BaseCall[P, Prompt, Toolkit, FormattableT], Generic[P, FormattableT])
         """Generates a response using the LLM."""
         messages = self.fn(*args, **kwargs)
         return self.model.call(
-            messages=messages, tools=self.toolkit.tools, format=self.format
+            messages=messages, tools=self.toolkit, format=self.format
         )
 
     @overload
@@ -84,7 +84,7 @@ class Call(BaseCall[P, Prompt, Toolkit, FormattableT], Generic[P, FormattableT])
         """Generates a streaming response using the LLM."""
         messages = self.fn(*args, **kwargs)
         return self.model.stream(
-            messages=messages, tools=self.toolkit.tools, format=self.format
+            messages=messages, tools=self.toolkit, format=self.format
         )
 
 
@@ -127,7 +127,7 @@ class AsyncCall(
         """Generates a response using the LLM asynchronously."""
         messages = await self.fn(*args, **kwargs)
         return await self.model.call_async(
-            messages=messages, tools=self.toolkit.tools, format=self.format
+            messages=messages, tools=self.toolkit, format=self.format
         )
 
     @overload
@@ -146,7 +146,7 @@ class AsyncCall(
         """Generates a streaming response using the LLM asynchronously."""
         messages = await self.fn(*args, **kwargs)
         return await self.model.stream_async(
-            messages=messages, tools=self.toolkit.tools, format=self.format
+            messages=messages, tools=self.toolkit, format=self.format
         )
 
 
@@ -201,7 +201,7 @@ class ContextCall(
         """Generates a response using the LLM."""
         messages = self.fn(ctx, *args, **kwargs)
         return self.model.context_call(
-            ctx=ctx, messages=messages, tools=self.toolkit.tools, format=self.format
+            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
         )
 
     @overload
@@ -228,7 +228,7 @@ class ContextCall(
         """Generates a streaming response using the LLM."""
         messages = self.fn(ctx, *args, **kwargs)
         return self.model.context_stream(
-            ctx=ctx, messages=messages, tools=self.toolkit.tools, format=self.format
+            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
         )
 
 
@@ -283,7 +283,7 @@ class AsyncContextCall(
         """Generates a response using the LLM asynchronously."""
         messages = await self.fn(ctx, *args, **kwargs)
         return await self.model.context_call_async(
-            ctx=ctx, messages=messages, tools=self.toolkit.tools, format=self.format
+            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
         )
 
     @overload
@@ -311,5 +311,5 @@ class AsyncContextCall(
         """Generates a streaming response using the LLM asynchronously."""
         messages = await self.fn(ctx, *args, **kwargs)
         return await self.model.context_stream_async(
-            ctx=ctx, messages=messages, tools=self.toolkit.tools, format=self.format
+            ctx=ctx, messages=messages, tools=self.toolkit, format=self.format
         )

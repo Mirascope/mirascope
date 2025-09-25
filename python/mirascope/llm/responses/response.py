@@ -35,19 +35,20 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         provider: "Provider",
         model_id: "ModelId",
         params: "Params",
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
     ) -> None:
         """Initialize a `Response`."""
+        toolkit = tools if isinstance(tools, Toolkit) else Toolkit(tools=tools)
         super().__init__(
             raw=raw,
             provider=provider,
             model_id=model_id,
             params=params,
-            toolkit=Toolkit(tools=tools),
+            toolkit=toolkit,
             format=format,
             input_messages=input_messages,
             assistant_message=assistant_message,
@@ -103,19 +104,22 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         provider: "Provider",
         model_id: "ModelId",
         params: "Params",
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
     ) -> None:
         """Initialize an `AsyncResponse`."""
+        toolkit = (
+            tools if isinstance(tools, AsyncToolkit) else AsyncToolkit(tools=tools)
+        )
         super().__init__(
             raw=raw,
             provider=provider,
             model_id=model_id,
             params=params,
-            toolkit=AsyncToolkit(tools=tools),
+            toolkit=toolkit,
             format=format,
             input_messages=input_messages,
             assistant_message=assistant_message,
@@ -178,19 +182,24 @@ class ContextResponse(
         provider: "Provider",
         model_id: "ModelId",
         params: "Params",
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
     ) -> None:
         """Initialize a `ContextResponse`."""
+        toolkit = (
+            tools if isinstance(tools, ContextToolkit) else ContextToolkit(tools=tools)
+        )
         super().__init__(
             raw=raw,
             provider=provider,
             model_id=model_id,
             params=params,
-            toolkit=ContextToolkit(tools=tools),
+            toolkit=toolkit,
             format=format,
             input_messages=input_messages,
             assistant_message=assistant_message,
@@ -259,19 +268,26 @@ class AsyncContextResponse(
         provider: "Provider",
         model_id: "ModelId",
         params: "Params",
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         assistant_message: AssistantMessage,
         finish_reason: FinishReason | None,
     ) -> None:
         """Initialize an `AsyncContextResponse`."""
+        toolkit = (
+            tools
+            if isinstance(tools, AsyncContextToolkit)
+            else AsyncContextToolkit(tools=tools)
+        )
         super().__init__(
             raw=raw,
             provider=provider,
             model_id=model_id,
             params=params,
-            toolkit=AsyncContextToolkit(tools=tools),
+            toolkit=toolkit,
             format=format,
             input_messages=input_messages,
             assistant_message=assistant_message,
