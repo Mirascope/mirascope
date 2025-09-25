@@ -224,5 +224,5 @@ def call(
         print(response)
         ```
     """
-    model = Model(provider=provider, model_id=model_id, params=params)
+    model = Model(provider=provider, model_id=model_id, **params)
     return CallDecorator(model=model, tools=tools, format=format)

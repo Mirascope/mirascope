@@ -34,7 +34,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
-        params: "Params | None",
+        params: "Params",
         tools: Sequence[Tool] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
@@ -102,7 +102,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
-        params: "Params | None",
+        params: "Params",
         tools: Sequence[AsyncTool] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
@@ -177,7 +177,7 @@ class ContextResponse(
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
-        params: "Params | None",
+        params: "Params",
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
@@ -258,7 +258,7 @@ class AsyncContextResponse(
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
-        params: "Params | None",
+        params: "Params",
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],

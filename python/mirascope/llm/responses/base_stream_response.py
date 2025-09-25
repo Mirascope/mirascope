@@ -118,7 +118,7 @@ class BaseStreamResponse(
         *,
         provider: "Provider",
         model_id: "ModelId",
-        params: "Params | None",
+        params: "Params",
         toolkit: ToolkitT,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
