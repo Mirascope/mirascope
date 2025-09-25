@@ -35,10 +35,7 @@ from ...responses import (
     FinishReasonChunk,
     RawChunk,
 )
-from ...tools import (
-    FORMAT_TOOL_NAME,
-    ToolSchema,
-)
+from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ..base import Params, _utils as _base_utils
 from .model_ids import AnthropicModelId
 
@@ -147,21 +144,21 @@ def _convert_tool_to_tool_param(tool: ToolSchema) -> anthropic_types.ToolParam:
 def prepare_anthropic_request(
     model_id: AnthropicModelId,
     messages: Sequence[Message],
-    tools: Sequence[ToolSchema] | None = None,
+    tools: Sequence[ToolSchema] | BaseToolkit | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
     params: Params | None = None,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     if params:
         raise NotImplementedError("param use not yet supported")
 
+    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
+
     kwargs: MessageCreateKwargs = {
         "model": model_id,
         "max_tokens": 1024,
     }
 
-    anthropic_tools: list[anthropic_types.ToolParam] | NotGiven = (
-        [_convert_tool_to_tool_param(tool) for tool in tools] if tools else []
-    )
+    anthropic_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
     format = resolve_format(format, default_mode="tool")
     if format is not None:
         if format.mode == "strict":

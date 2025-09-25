@@ -32,7 +32,7 @@ def test_response_initialization_with_text_content() -> None:
 
     assert response.provider == "openai"
     assert response.model_id == "gpt-4o-mini"
-    assert response.toolkit == llm.Toolkit(tools=[])
+    assert response.toolkit == llm.tools.Toolkit(tools=[])
     assert response.raw == {"test": "response"}
     assert response.finish_reason == llm.FinishReason.END_TURN
 
@@ -640,7 +640,6 @@ def test_response_execute_tools() -> None:
         assistant_message=assistant_message,
         finish_reason=llm.FinishReason.TOOL_USE,
     )
-
     outputs = response.execute_tools()
     assert len(outputs) == 2
     assert outputs[0].value == 10
@@ -680,3 +679,51 @@ async def test_async_response_execute_tools() -> None:
     assert len(outputs) == 2
     assert outputs[0].value == 10
     assert outputs[1].value == "HELLO"
+
+
+def test_response_tools_initialization() -> None:
+    assistant_message = llm.messages.assistant("oh hi")
+
+    response = llm.Response(
+        raw={},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params={},
+        finish_reason=None,
+        input_messages=[],
+        assistant_message=assistant_message,
+    )
+    assert isinstance(response.toolkit, llm.Toolkit)
+
+    response = llm.AsyncResponse(
+        raw={},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params={},
+        finish_reason=None,
+        input_messages=[],
+        assistant_message=assistant_message,
+    )
+    assert isinstance(response.toolkit, llm.AsyncToolkit)
+
+    response = llm.ContextResponse(
+        raw={},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params={},
+        finish_reason=None,
+        input_messages=[],
+        assistant_message=assistant_message,
+    )
+    assert isinstance(response.toolkit, llm.ContextToolkit)
+
+    response = llm.AsyncContextResponse(
+        raw={},
+        provider="openai",
+        model_id="gpt-4o-mini",
+        params={},
+        finish_reason=None,
+        input_messages=[],
+        assistant_message=assistant_message,
+    )
+    assert isinstance(response.toolkit, llm.AsyncContextToolkit)

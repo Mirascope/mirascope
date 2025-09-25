@@ -96,17 +96,18 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
         provider: "Provider",
         model_id: "ModelId",
         params: "Params",
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIterator,
     ) -> None:
         """Initialize a `StreamResponse`."""
+        toolkit = tools if isinstance(tools, Toolkit) else Toolkit(tools=tools)
         super().__init__(
             provider=provider,
             model_id=model_id,
             params=params,
-            toolkit=Toolkit(tools=tools),
+            toolkit=toolkit,
             format=format,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
@@ -220,17 +221,20 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
         provider: "Provider",
         model_id: "ModelId",
         params: "Params",
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: AsyncChunkIterator,
     ) -> None:
         """Initialize an `AsyncStreamResponse`."""
+        toolkit = (
+            tools if isinstance(tools, AsyncToolkit) else AsyncToolkit(tools=tools)
+        )
         super().__init__(
             provider=provider,
             model_id=model_id,
             params=params,
-            toolkit=AsyncToolkit(tools=tools),
+            toolkit=toolkit,
             format=format,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
@@ -350,17 +354,22 @@ class ContextStreamResponse(
         provider: "Provider",
         model_id: "ModelId",
         params: "Params",
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: ChunkIterator,
     ) -> None:
         """Initialize a `ContextStreamResponse`."""
+        toolkit = (
+            tools if isinstance(tools, ContextToolkit) else ContextToolkit(tools=tools)
+        )
         super().__init__(
             provider=provider,
             model_id=model_id,
             params=params,
-            toolkit=ContextToolkit(tools=tools),
+            toolkit=toolkit,
             format=format,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,
@@ -487,17 +496,24 @@ class AsyncContextStreamResponse(
         provider: "Provider",
         model_id: "ModelId",
         params: "Params",
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
         chunk_iterator: AsyncChunkIterator,
     ) -> None:
         """Initialize an `AsyncContextStreamResponse`."""
+        toolkit = (
+            tools
+            if isinstance(tools, AsyncContextToolkit)
+            else AsyncContextToolkit(tools=tools)
+        )
         super().__init__(
             provider=provider,
             model_id=model_id,
             params=params,
-            toolkit=AsyncContextToolkit(tools=tools),
+            toolkit=toolkit,
             format=format,
             input_messages=input_messages,
             chunk_iterator=chunk_iterator,

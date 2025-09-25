@@ -61,7 +61,9 @@ def test_strict_unsupported_legacy_model() -> None:
 
     with pytest.raises(llm.FormattingModeNotSupportedError):
         openai_utils.prepare_openai_request(
-            model_id="gpt-4", messages=messages, format=format
+            model_id="gpt-4",
+            messages=messages,
+            format=format,
         )
 
 

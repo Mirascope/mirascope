@@ -35,10 +35,7 @@ from ...responses import (
     FinishReasonChunk,
     RawChunk,
 )
-from ...tools import (
-    FORMAT_TOOL_NAME,
-    ToolSchema,
-)
+from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ..base import Params, _utils as _base_utils
 from .model_ids import GoogleModelId
 
@@ -212,7 +209,7 @@ def _convert_tool_to_function_declaration(
 def prepare_google_request(
     model_id: GoogleModelId,
     messages: Sequence[Message],
-    tools: Sequence[ToolSchema] | None = None,
+    tools: Sequence[ToolSchema] | BaseToolkit | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
     params: Params | None = None,
 ) -> tuple[
@@ -224,6 +221,7 @@ def prepare_google_request(
     if params:
         raise NotImplementedError("param use not yet supported")
 
+    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     config_params = {}
     google_tools: list[genai_types.Tool] = []
 

@@ -24,9 +24,13 @@ from ...responses import (
 )
 from ...tools import (
     AsyncContextTool,
+    AsyncContextToolkit,
     AsyncTool,
+    AsyncToolkit,
     ContextTool,
+    ContextToolkit,
     Tool,
+    Toolkit,
 )
 from ..base import BaseClient, Params
 from . import _utils
@@ -96,7 +100,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> Response: ...
@@ -107,7 +111,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> Response[FormattableT]: ...
@@ -118,7 +122,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]: ...
@@ -128,7 +132,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
@@ -164,7 +168,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None]: ...
@@ -176,7 +182,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, FormattableT]: ...
@@ -188,7 +196,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
@@ -199,7 +209,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
@@ -234,7 +246,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse: ...
@@ -245,7 +257,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncResponse[FormattableT]: ...
@@ -256,7 +268,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
@@ -266,7 +278,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
@@ -302,7 +314,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None]: ...
@@ -314,7 +328,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, FormattableT]: ...
@@ -326,7 +342,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> (
@@ -339,7 +357,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
@@ -374,7 +394,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> StreamResponse: ...
@@ -385,7 +405,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> StreamResponse[FormattableT]: ...
@@ -396,7 +416,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]: ...
@@ -406,7 +426,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool] | None = None,
+        tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
@@ -442,7 +462,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT]: ...
@@ -454,7 +476,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT, FormattableT]: ...
@@ -466,7 +490,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]: ...
@@ -477,7 +503,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
+        tools: Sequence[Tool | ContextTool[DepsT]]
+        | ContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
@@ -512,7 +540,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse: ...
@@ -523,7 +551,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncStreamResponse[FormattableT]: ...
@@ -534,7 +562,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]: ...
@@ -544,7 +572,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         *,
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool] | None = None,
+        tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
@@ -580,7 +608,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: None = None,
         **params: Unpack[Params],
     ) -> AsyncContextStreamResponse[DepsT]: ...
@@ -592,7 +622,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT],
         **params: Unpack[Params],
     ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
@@ -604,7 +636,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
     ) -> (
@@ -617,7 +651,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         ctx: Context[DepsT],
         model_id: AnthropicModelId,
         messages: Sequence[Message],
-        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
+        tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+        | AsyncContextToolkit[DepsT]
+        | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]:
