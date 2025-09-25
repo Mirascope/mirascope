@@ -10,7 +10,7 @@ from pytest import FixtureRequest
 
 from mirascope import llm
 
-PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.clients.Provider, llm.clients.ModelId]] = [
+PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("anthropic", "claude-sonnet-4-0"),
     ("google", "gemini-2.5-flash"),
     ("openai", "gpt-4o"),
@@ -41,11 +41,11 @@ Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
 class ProviderRequest(pytest.FixtureRequest):
     """Request for the `provider` fixture parameter."""
 
-    param: llm.clients.Provider
+    param: llm.Provider
 
 
 @pytest.fixture
-def provider(request: ProviderRequest) -> llm.clients.Provider:
+def provider(request: ProviderRequest) -> llm.Provider:
     """Get provider from test parameters."""
     return request.param
 
@@ -116,7 +116,7 @@ def _parse_test_name(test_name: str) -> tuple[str, CallType]:
 @pytest.fixture
 def vcr_cassette_name(
     request: FixtureRequest,
-    provider: llm.clients.Provider,
+    provider: llm.Provider,
     formatting_mode: llm.formatting.FormattingMode | None,
 ) -> str:
     """Generate VCR cassette name based on test name and provider."""
@@ -136,7 +136,7 @@ def vcr_cassette_name(
 @pytest.fixture
 def snapshot(
     request: FixtureRequest,
-    provider: llm.clients.Provider,
+    provider: llm.Provider,
     formatting_mode: llm.formatting.FormattingMode | None,
 ) -> Snapshot:
     """Get snapshot for current test configuration."""

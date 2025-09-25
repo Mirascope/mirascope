@@ -14,7 +14,7 @@ PASSWORD_MAP = {"mellon": "Welcome to Moria!", "radiance": "Life before Death"}
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_tools_sync(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test synchronous tool call without context."""
 
@@ -55,7 +55,7 @@ def test_call_with_tools_sync(
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_tools_sync_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test synchronous tool call with context."""
 
@@ -105,7 +105,7 @@ def test_call_with_tools_sync_context(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_tools_async(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test asynchronous tool call without context."""
 
@@ -147,7 +147,7 @@ async def test_call_with_tools_async(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_tools_async_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test asynchronous tool call with context."""
 
@@ -196,7 +196,7 @@ async def test_call_with_tools_async_context(
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_tools_stream(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test streaming tool call without context."""
 
@@ -244,7 +244,7 @@ def test_call_with_tools_stream(
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_tools_stream_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test streaming tool call with context."""
 
@@ -299,7 +299,7 @@ def test_call_with_tools_stream_context(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_tools_async_stream(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test async streaming tool call without context."""
 
@@ -348,7 +348,7 @@ async def test_call_with_tools_async_stream(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_tools_async_stream_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test async streaming tool call with context."""
 

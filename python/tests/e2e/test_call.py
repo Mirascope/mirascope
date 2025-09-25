@@ -12,7 +12,7 @@ from tests.utils import response_snapshot_dict, stream_response_snapshot_dict
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_sync(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test synchronous call without context."""
 
@@ -31,7 +31,7 @@ def test_call_sync(
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_sync_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test synchronous call with context."""
 
@@ -55,7 +55,7 @@ def test_call_sync_context(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test asynchronous call without context."""
 
@@ -75,7 +75,7 @@ async def test_call_async(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test asynchronous call with context."""
 
@@ -98,7 +98,7 @@ async def test_call_async_context(
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_stream(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test streaming call without context."""
 
@@ -120,7 +120,7 @@ def test_call_stream(
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_stream_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test streaming call with context."""
 
@@ -147,7 +147,7 @@ def test_call_stream_context(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async_stream(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test async streaming call without context."""
 
@@ -170,7 +170,7 @@ async def test_call_async_stream(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async_stream_context(
-    provider: llm.clients.Provider, model_id: llm.clients.ModelId, snapshot: Snapshot
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test async streaming call with context."""
 

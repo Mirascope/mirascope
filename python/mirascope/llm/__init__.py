@@ -24,7 +24,7 @@ from . import (
     types,
 )
 from .calls import call
-from .clients import client, get_client
+from .clients import ModelId, Provider, client, get_client
 from .content import (
     AssistantContentChunk,
     AssistantContentPart,

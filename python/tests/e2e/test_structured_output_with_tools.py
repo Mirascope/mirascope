@@ -30,8 +30,8 @@ class BookSummary(BaseModel):
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_sync(
-    provider: llm.clients.Provider,
-    model_id: llm.clients.ModelId,
+    provider: llm.Provider,
+    model_id: llm.ModelId,
     formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
@@ -79,8 +79,8 @@ def test_structured_output_with_tools_sync(
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_sync_context(
-    provider: llm.clients.Provider,
-    model_id: llm.clients.ModelId,
+    provider: llm.Provider,
+    model_id: llm.ModelId,
     formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
@@ -133,8 +133,8 @@ def test_structured_output_with_tools_sync_context(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_with_tools_async(
-    provider: llm.clients.Provider,
-    model_id: llm.clients.ModelId,
+    provider: llm.Provider,
+    model_id: llm.ModelId,
     formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
@@ -183,8 +183,8 @@ async def test_structured_output_with_tools_async(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_with_tools_async_context(
-    provider: llm.clients.Provider,
-    model_id: llm.clients.ModelId,
+    provider: llm.Provider,
+    model_id: llm.ModelId,
     formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
@@ -236,8 +236,8 @@ async def test_structured_output_with_tools_async_context(
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_stream(
-    provider: llm.clients.Provider,
-    model_id: llm.clients.ModelId,
+    provider: llm.Provider,
+    model_id: llm.ModelId,
     formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
@@ -292,8 +292,8 @@ def test_structured_output_with_tools_stream(
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_tools_stream_context(
-    provider: llm.clients.Provider,
-    model_id: llm.clients.ModelId,
+    provider: llm.Provider,
+    model_id: llm.ModelId,
     formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
@@ -353,8 +353,8 @@ def test_structured_output_with_tools_stream_context(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_with_tools_async_stream(
-    provider: llm.clients.Provider,
-    model_id: llm.clients.ModelId,
+    provider: llm.Provider,
+    model_id: llm.ModelId,
     formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
@@ -410,8 +410,8 @@ async def test_structured_output_with_tools_async_stream(
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_with_tools_async_stream_context(
-    provider: llm.clients.Provider,
-    model_id: llm.clients.ModelId,
+    provider: llm.Provider,
+    model_id: llm.ModelId,
     formatting_mode: llm.formatting.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
