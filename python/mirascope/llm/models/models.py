@@ -55,9 +55,6 @@ def get_model_from_context() -> Model | None:
 class Model:
     """The unified LLM interface that delegates to provider-specific clients.
 
-    NOTE: this class cannot be instantiated directly and must be created using the
-    `llm.model` factory method.
-
     This class provides a consistent interface for interacting with language models
     from various providers. It handles the common operations like generating responses,
     streaming, and async variants by delegating to the appropriate client methods.
@@ -136,7 +133,9 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
-    ) -> Response: ...
+    ) -> Response:
+        """Generate an `llm.Response` without a response format."""
+        ...
 
     @overload
     def call(
@@ -145,7 +144,9 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
-    ) -> Response[FormattableT]: ...
+    ) -> Response[FormattableT]:
+        """Generate an `llm.Response` with a response format."""
+        ...
 
     @overload
     def call(
@@ -154,7 +155,9 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-    ) -> Response | Response[FormattableT]: ...
+    ) -> Response | Response[FormattableT]:
+        """Generate an `llm.Response` with an optional response format."""
+        ...
 
     def call(
         self,
@@ -163,7 +166,16 @@ class Model:
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> Response | Response[FormattableT]:
-        """Generate a response using the model."""
+        """Generate an `llm.Response` by synchronously calling this model's LLM provider.
+
+        Args:
+            messages: Messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An `llm.Response` object containing the LLM-generated content.
+        """
         return get_client(self.provider).call(
             model_id=self.model_id,
             messages=messages,
@@ -179,7 +191,9 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
-    ) -> AsyncResponse: ...
+    ) -> AsyncResponse:
+        """Generate an `llm.AsyncResponse` without a response format."""
+        ...
 
     @overload
     async def call_async(
@@ -188,7 +202,9 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
-    ) -> AsyncResponse[FormattableT]: ...
+    ) -> AsyncResponse[FormattableT]:
+        """Generate an `llm.AsyncResponse` with a response format."""
+        ...
 
     @overload
     async def call_async(
@@ -197,7 +213,9 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-    ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
+    ) -> AsyncResponse | AsyncResponse[FormattableT]:
+        """Generate an `llm.AsyncResponse` with an optional response format."""
+        ...
 
     async def call_async(
         self,
@@ -206,7 +224,16 @@ class Model:
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
-        """Generate a response asynchronously using the model."""
+        """Generate an `llm.AsyncResponse` by asynchronously calling this model's LLM provider.
+
+        Args:
+            messages: Messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An `llm.AsyncResponse` object containing the LLM-generated content.
+        """
         return await get_client(self.provider).call_async(
             model_id=self.model_id,
             messages=messages,
@@ -222,7 +249,9 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
-    ) -> StreamResponse: ...
+    ) -> StreamResponse:
+        """Stream an `llm.StreamResponse` without a response format."""
+        ...
 
     @overload
     def stream(
@@ -231,7 +260,9 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
-    ) -> StreamResponse[FormattableT]: ...
+    ) -> StreamResponse[FormattableT]:
+        """Stream an `llm.StreamResponse` with a response format."""
+        ...
 
     @overload
     def stream(
@@ -240,7 +271,9 @@ class Model:
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-    ) -> StreamResponse | StreamResponse[FormattableT]: ...
+    ) -> StreamResponse | StreamResponse[FormattableT]:
+        """Stream an `llm.StreamResponse` with an optional response format."""
+        ...
 
     def stream(
         self,
@@ -249,7 +282,16 @@ class Model:
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> StreamResponse | StreamResponse[FormattableT]:
-        """Stream a response using the model."""
+        """Generate an `llm.StreamResponse` by synchronously streaming from this model's LLM provider.
+
+        Args:
+            messages: Messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An `llm.StreamResponse` object for iterating over the LLM-generated content.
+        """
         return get_client(self.provider).stream(
             model_id=self.model_id,
             messages=messages,
@@ -265,7 +307,9 @@ class Model:
         messages: list[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
-    ) -> AsyncStreamResponse: ...
+    ) -> AsyncStreamResponse:
+        """Stream an `llm.AsyncStreamResponse` without a response format."""
+        ...
 
     @overload
     async def stream_async(
@@ -274,7 +318,9 @@ class Model:
         messages: list[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
-    ) -> AsyncStreamResponse[FormattableT]: ...
+    ) -> AsyncStreamResponse[FormattableT]:
+        """Stream an `llm.AsyncStreamResponse` with a response format."""
+        ...
 
     @overload
     async def stream_async(
@@ -283,7 +329,9 @@ class Model:
         messages: list[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]: ...
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
+        """Stream an `llm.AsyncStreamResponse` with an optional response format."""
+        ...
 
     async def stream_async(
         self,
@@ -292,7 +340,16 @@ class Model:
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
-        """Stream a response asynchronously using the model."""
+        """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from this model's LLM provider.
+
+        Args:
+            messages: Messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
+        """
         return await get_client(self.provider).stream_async(
             model_id=self.model_id,
             messages=messages,
@@ -311,7 +368,9 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: None = None,
-    ) -> ContextResponse[DepsT, None]: ...
+    ) -> ContextResponse[DepsT, None]:
+        """Generate an `llm.ContextResponse` without a response format."""
+        ...
 
     @overload
     def context_call(
@@ -323,7 +382,9 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT],
-    ) -> ContextResponse[DepsT, FormattableT]: ...
+    ) -> ContextResponse[DepsT, FormattableT]:
+        """Generate an `llm.ContextResponse` with a response format."""
+        ...
 
     @overload
     def context_call(
@@ -335,7 +396,9 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
+        """Generate an `llm.ContextResponse` with an optional response format."""
+        ...
 
     def context_call(
         self,
@@ -347,7 +410,17 @@ class Model:
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
-        """Generate a response using the model."""
+        """Generate an `llm.ContextResponse` by synchronously calling this model's LLM provider.
+
+        Args:
+            ctx: Context object with dependencies for tools.
+            messages: Messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An `llm.ContextResponse` object containing the LLM-generated content.
+        """
         return get_client(self.provider).context_call(
             ctx=ctx,
             model_id=self.model_id,
@@ -367,7 +440,9 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: None = None,
-    ) -> AsyncContextResponse[DepsT, None]: ...
+    ) -> AsyncContextResponse[DepsT, None]:
+        """Generate an `llm.AsyncContextResponse` without a response format."""
+        ...
 
     @overload
     async def context_call_async(
@@ -379,7 +454,9 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT],
-    ) -> AsyncContextResponse[DepsT, FormattableT]: ...
+    ) -> AsyncContextResponse[DepsT, FormattableT]:
+        """Generate an `llm.AsyncContextResponse` with a response format."""
+        ...
 
     @overload
     async def context_call_async(
@@ -391,9 +468,9 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
-    ) -> (
-        AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]
-    ): ...
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
+        """Generate an `llm.AsyncContextResponse` with an optional response format."""
+        ...
 
     async def context_call_async(
         self,
@@ -405,7 +482,17 @@ class Model:
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
-        """Generate a response asynchronously using the model."""
+        """Generate an `llm.AsyncContextResponse` by asynchronously calling this model's LLM provider.
+
+        Args:
+            ctx: Context object with dependencies for tools.
+            messages: Messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An `llm.AsyncContextResponse` object containing the LLM-generated content.
+        """
         return await get_client(self.provider).context_call_async(
             ctx=ctx,
             model_id=self.model_id,
@@ -425,7 +512,9 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: None = None,
-    ) -> ContextStreamResponse[DepsT, None]: ...
+    ) -> ContextStreamResponse[DepsT, None]:
+        """Stream an `llm.ContextStreamResponse` without a response format."""
+        ...
 
     @overload
     def context_stream(
@@ -437,7 +526,9 @@ class Model:
         | ContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT],
-    ) -> ContextStreamResponse[DepsT, FormattableT]: ...
+    ) -> ContextStreamResponse[DepsT, FormattableT]:
+        """Stream an `llm.ContextStreamResponse` with a response format."""
+        ...
 
     @overload
     def context_stream(
@@ -451,7 +542,9 @@ class Model:
         format: type[FormattableT] | Format[FormattableT] | None,
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
-    ): ...
+    ):
+        """Stream an `llm.ContextStreamResponse` with an optional response format."""
+        ...
 
     def context_stream(
         self,
@@ -465,7 +558,17 @@ class Model:
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
-        """Stream a response using the model."""
+        """Generate an `llm.ContextStreamResponse` by synchronously streaming from this model's LLM provider.
+
+        Args:
+            ctx: Context object with dependencies for tools.
+            messages: Messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
+        """
         return get_client(self.provider).context_stream(
             ctx=ctx,
             model_id=self.model_id,
@@ -485,7 +588,9 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: None = None,
-    ) -> AsyncContextStreamResponse[DepsT, None]: ...
+    ) -> AsyncContextStreamResponse[DepsT, None]:
+        """Stream an `llm.AsyncContextStreamResponse` without a response format."""
+        ...
 
     @overload
     async def context_stream_async(
@@ -497,7 +602,9 @@ class Model:
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT],
-    ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
+    ) -> AsyncContextStreamResponse[DepsT, FormattableT]:
+        """Stream an `llm.AsyncContextStreamResponse` with a response format."""
+        ...
 
     @overload
     async def context_stream_async(
@@ -512,7 +619,9 @@ class Model:
     ) -> (
         AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT]
-    ): ...
+    ):
+        """Stream an `llm.AsyncContextStreamResponse` with an optional response format."""
+        ...
 
     async def context_stream_async(
         self,
@@ -527,7 +636,17 @@ class Model:
         AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
-        """Stream a response asynchronously using the model."""
+        """Generate an `llm.AsyncContextStreamResponse` by asynchronously streaming from this model's LLM provider.
+
+        Args:
+            ctx: Context object with dependencies for tools.
+            messages: Messages to send to the LLM.
+            tools: Optional tools that the model may invoke.
+            format: Optional response format specifier.
+
+        Returns:
+            An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
+        """
         return await get_client(self.provider).context_stream_async(
             ctx=ctx,
             model_id=self.model_id,
@@ -543,7 +662,9 @@ class Model:
         *,
         response: Response,
         content: UserContent,
-    ) -> Response: ...
+    ) -> Response:
+        """Resume an `llm.Response` without a response format."""
+        ...
 
     @overload
     def resume(
@@ -551,7 +672,9 @@ class Model:
         *,
         response: Response[FormattableT],
         content: UserContent,
-    ) -> Response[FormattableT]: ...
+    ) -> Response[FormattableT]:
+        """Resume an `llm.Response` with a response format."""
+        ...
 
     @overload
     def resume(
@@ -559,7 +682,9 @@ class Model:
         *,
         response: Response | Response[FormattableT],
         content: UserContent,
-    ) -> Response | Response[FormattableT]: ...
+    ) -> Response | Response[FormattableT]:
+        """Resume an `llm.Response` with an optional response format."""
+        ...
 
     def resume(
         self,
@@ -567,9 +692,20 @@ class Model:
         response: Response | Response[FormattableT],
         content: UserContent,
     ) -> Response | Response[FormattableT]:
-        """Generate a new `Response` by extending another `Response`'s messages with additional user content.
+        """Generate a new `llm.Response` by extending another response's messages with additional user content.
 
-        Uses the other response's tools and output format.
+        Uses the previous response's tools and output format, and this model's params.
+
+        Depending on the client, this may be a wrapper around using client call methods
+        with the response's messages and the new content, or it may use a provider-specific
+        API for resuming an existing interaction.
+
+        Args:
+            response: Previous response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new `llm.Response` object containing the extended conversation.
         """
         return get_client(self.provider).resume(
             model_id=self.model_id,
@@ -584,7 +720,9 @@ class Model:
         *,
         response: AsyncResponse,
         content: UserContent,
-    ) -> AsyncResponse: ...
+    ) -> AsyncResponse:
+        """Resume an `llm.AsyncResponse` without a response format."""
+        ...
 
     @overload
     async def resume_async(
@@ -592,7 +730,9 @@ class Model:
         *,
         response: AsyncResponse[FormattableT],
         content: UserContent,
-    ) -> AsyncResponse[FormattableT]: ...
+    ) -> AsyncResponse[FormattableT]:
+        """Resume an `llm.AsyncResponse` with a response format."""
+        ...
 
     @overload
     async def resume_async(
@@ -600,7 +740,9 @@ class Model:
         *,
         response: AsyncResponse | AsyncResponse[FormattableT],
         content: UserContent,
-    ) -> AsyncResponse | AsyncResponse[FormattableT]: ...
+    ) -> AsyncResponse | AsyncResponse[FormattableT]:
+        """Resume an `llm.AsyncResponse` with an optional response format."""
+        ...
 
     async def resume_async(
         self,
@@ -608,9 +750,20 @@ class Model:
         response: AsyncResponse | AsyncResponse[FormattableT],
         content: UserContent,
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
-        """Generate a new `AsyncResponse` by extending another `AsyncResponse`'s messages with additional user content.
+        """Generate a new `llm.AsyncResponse` by extending another response's messages with additional user content.
 
-        Uses the other response's tools and output format.
+        Uses the previous response's tools and output format, and this model's params.
+
+        Depending on the client, this may be a wrapper around using client call methods
+        with the response's messages and the new content, or it may use a provider-specific
+        API for resuming an existing interaction.
+
+        Args:
+            response: Previous async response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new `llm.AsyncResponse` object containing the extended conversation.
         """
         return await get_client(self.provider).resume_async(
             model_id=self.model_id,
@@ -626,7 +779,9 @@ class Model:
         ctx: Context[DepsT],
         response: ContextResponse[DepsT, None],
         content: UserContent,
-    ) -> ContextResponse[DepsT, None]: ...
+    ) -> ContextResponse[DepsT, None]:
+        """Resume an `llm.ContextResponse` without a response format."""
+        ...
 
     @overload
     def context_resume(
@@ -635,7 +790,9 @@ class Model:
         ctx: Context[DepsT],
         response: ContextResponse[DepsT, FormattableT],
         content: UserContent,
-    ) -> ContextResponse[DepsT, FormattableT]: ...
+    ) -> ContextResponse[DepsT, FormattableT]:
+        """Resume an `llm.ContextResponse` with a response format."""
+        ...
 
     @overload
     def context_resume(
@@ -644,7 +801,9 @@ class Model:
         ctx: Context[DepsT],
         response: ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT],
         content: UserContent,
-    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
+    ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
+        """Resume an `llm.ContextResponse` with an optional response format."""
+        ...
 
     def context_resume(
         self,
@@ -653,9 +812,21 @@ class Model:
         response: ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT],
         content: UserContent,
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
-        """Generate a new `ContextResponse` by extending another `ContextResponse`'s messages with additional user content.
+        """Generate a new `llm.ContextResponse` by extending another response's messages with additional user content.
 
-        Uses the other response's tools and output format.
+        Uses the previous response's tools and output format, and this model's params.
+
+        Depending on the client, this may be a wrapper around using client call methods
+        with the response's messages and the new content, or it may use a provider-specific
+        API for resuming an existing interaction.
+
+        Args:
+            ctx: Context object with dependencies for tools.
+            response: Previous context response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new `llm.ContextResponse` object containing the extended conversation.
         """
         return get_client(self.provider).context_resume(
             ctx=ctx,
@@ -672,7 +843,9 @@ class Model:
         ctx: Context[DepsT],
         response: AsyncContextResponse[DepsT, None],
         content: UserContent,
-    ) -> AsyncContextResponse[DepsT, None]: ...
+    ) -> AsyncContextResponse[DepsT, None]:
+        """Resume an `llm.AsyncContextResponse` without a response format."""
+        ...
 
     @overload
     async def context_resume_async(
@@ -681,7 +854,9 @@ class Model:
         ctx: Context[DepsT],
         response: AsyncContextResponse[DepsT, FormattableT],
         content: UserContent,
-    ) -> AsyncContextResponse[DepsT, FormattableT]: ...
+    ) -> AsyncContextResponse[DepsT, FormattableT]:
+        """Resume an `llm.AsyncContextResponse` with a response format."""
+        ...
 
     @overload
     async def context_resume_async(
@@ -691,9 +866,9 @@ class Model:
         response: AsyncContextResponse[DepsT, None]
         | AsyncContextResponse[DepsT, FormattableT],
         content: UserContent,
-    ) -> (
-        AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]
-    ): ...
+    ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
+        """Resume an `llm.AsyncContextResponse` with an optional response format."""
+        ...
 
     async def context_resume_async(
         self,
@@ -703,9 +878,21 @@ class Model:
         | AsyncContextResponse[DepsT, FormattableT],
         content: UserContent,
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
-        """Generate a new `AsyncContextResponse` by extending another `AsyncContextResponse`'s messages with additional user content.
+        """Generate a new `llm.AsyncContextResponse` by extending another response's messages with additional user content.
 
-        Uses the other response's tools and output format.
+        Uses the previous response's tools and output format, and this model's params.
+
+        Depending on the client, this may be a wrapper around using client call methods
+        with the response's messages and the new content, or it may use a provider-specific
+        API for resuming an existing interaction.
+
+        Args:
+            ctx: Context object with dependencies for tools.
+            response: Previous async context response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new `llm.AsyncContextResponse` object containing the extended conversation.
         """
         return await get_client(self.provider).context_resume_async(
             ctx=ctx,
@@ -721,7 +908,9 @@ class Model:
         *,
         response: StreamResponse,
         content: UserContent,
-    ) -> StreamResponse: ...
+    ) -> StreamResponse:
+        """Resume an `llm.StreamResponse` without a response format."""
+        ...
 
     @overload
     def resume_stream(
@@ -729,7 +918,9 @@ class Model:
         *,
         response: StreamResponse[FormattableT],
         content: UserContent,
-    ) -> StreamResponse[FormattableT]: ...
+    ) -> StreamResponse[FormattableT]:
+        """Resume an `llm.StreamResponse` with a response format."""
+        ...
 
     @overload
     def resume_stream(
@@ -737,7 +928,9 @@ class Model:
         *,
         response: StreamResponse | StreamResponse[FormattableT],
         content: UserContent,
-    ) -> StreamResponse | StreamResponse[FormattableT]: ...
+    ) -> StreamResponse | StreamResponse[FormattableT]:
+        """Resume an `llm.StreamResponse` with an optional response format."""
+        ...
 
     def resume_stream(
         self,
@@ -745,9 +938,20 @@ class Model:
         response: StreamResponse | StreamResponse[FormattableT],
         content: UserContent,
     ) -> StreamResponse | StreamResponse[FormattableT]:
-        """Generate a new `StreamResponse` by extending another `StreamResponse`'s messages with additional user content.
+        """Generate a new `llm.StreamResponse` by extending another response's messages with additional user content.
 
-        Uses the other response's tools and output format.
+        Uses the previous response's tools and output format, and this model's params.
+
+        Depending on the client, this may be a wrapper around using client call methods
+        with the response's messages and the new content, or it may use a provider-specific
+        API for resuming an existing interaction.
+
+        Args:
+            response: Previous stream response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new `llm.StreamResponse` object for streaming the extended conversation.
         """
         return get_client(self.provider).resume_stream(
             model_id=self.model_id,
@@ -762,7 +966,9 @@ class Model:
         *,
         response: AsyncStreamResponse,
         content: UserContent,
-    ) -> AsyncStreamResponse: ...
+    ) -> AsyncStreamResponse:
+        """Resume an `llm.AsyncStreamResponse` without a response format."""
+        ...
 
     @overload
     async def resume_stream_async(
@@ -770,7 +976,9 @@ class Model:
         *,
         response: AsyncStreamResponse[FormattableT],
         content: UserContent,
-    ) -> AsyncStreamResponse[FormattableT]: ...
+    ) -> AsyncStreamResponse[FormattableT]:
+        """Resume an `llm.AsyncStreamResponse` with a response format."""
+        ...
 
     @overload
     async def resume_stream_async(
@@ -778,7 +986,9 @@ class Model:
         *,
         response: AsyncStreamResponse | AsyncStreamResponse[FormattableT],
         content: UserContent,
-    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]: ...
+    ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
+        """Resume an `llm.AsyncStreamResponse` with an optional response format."""
+        ...
 
     async def resume_stream_async(
         self,
@@ -786,9 +996,20 @@ class Model:
         response: AsyncStreamResponse | AsyncStreamResponse[FormattableT],
         content: UserContent,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
-        """Generate a new `AsyncStreamResponse` by extending another `AsyncStreamResponse`'s messages with additional user content.
+        """Generate a new `llm.AsyncStreamResponse` by extending another response's messages with additional user content.
 
-        Uses the other response's tools and output format.
+        Uses the previous response's tools and output format, and this model's params.
+
+        Depending on the client, this may be a wrapper around using client call methods
+        with the response's messages and the new content, or it may use a provider-specific
+        API for resuming an existing interaction.
+
+        Args:
+            response: Previous async stream response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new `llm.AsyncStreamResponse` object for asynchronously streaming the extended conversation.
         """
         return await get_client(self.provider).resume_stream_async(
             model_id=self.model_id,
@@ -804,7 +1025,9 @@ class Model:
         ctx: Context[DepsT],
         response: ContextStreamResponse[DepsT, None],
         content: UserContent,
-    ) -> ContextStreamResponse[DepsT, None]: ...
+    ) -> ContextStreamResponse[DepsT, None]:
+        """Resume an `llm.ContextStreamResponse` without a response format."""
+        ...
 
     @overload
     def context_resume_stream(
@@ -813,7 +1036,9 @@ class Model:
         ctx: Context[DepsT],
         response: ContextStreamResponse[DepsT, FormattableT],
         content: UserContent,
-    ) -> ContextStreamResponse[DepsT, FormattableT]: ...
+    ) -> ContextStreamResponse[DepsT, FormattableT]:
+        """Resume an `llm.ContextStreamResponse` with a response format."""
+        ...
 
     @overload
     def context_resume_stream(
@@ -825,7 +1050,9 @@ class Model:
         content: UserContent,
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
-    ): ...
+    ):
+        """Resume an `llm.ContextStreamResponse` with an optional response format."""
+        ...
 
     def context_resume_stream(
         self,
@@ -837,9 +1064,21 @@ class Model:
     ) -> (
         ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
     ):
-        """Generate a new `ContextStreamResponse` by extending another `ContextStreamResponse`'s messages with additional user content.
+        """Generate a new `llm.ContextStreamResponse` by extending another response's messages with additional user content.
 
-        Uses the other response's tools and output format.
+        Uses the previous response's tools and output format, and this model's params.
+
+        Depending on the client, this may be a wrapper around using client call methods
+        with the response's messages and the new content, or it may use a provider-specific
+        API for resuming an existing interaction.
+
+        Args:
+            ctx: Context object with dependencies for tools.
+            response: Previous context stream response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new `llm.ContextStreamResponse` object for streaming the extended conversation.
         """
         return get_client(self.provider).context_resume_stream(
             ctx=ctx,
@@ -856,7 +1095,9 @@ class Model:
         ctx: Context[DepsT],
         response: AsyncContextStreamResponse[DepsT, None],
         content: UserContent,
-    ) -> AsyncContextStreamResponse[DepsT, None]: ...
+    ) -> AsyncContextStreamResponse[DepsT, None]:
+        """Resume an `llm.AsyncContextStreamResponse` without a response format."""
+        ...
 
     @overload
     async def context_resume_stream_async(
@@ -865,7 +1106,9 @@ class Model:
         ctx: Context[DepsT],
         response: AsyncContextStreamResponse[DepsT, FormattableT],
         content: UserContent,
-    ) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
+    ) -> AsyncContextStreamResponse[DepsT, FormattableT]:
+        """Resume an `llm.AsyncContextStreamResponse` with a response format."""
+        ...
 
     @overload
     async def context_resume_stream_async(
@@ -878,7 +1121,9 @@ class Model:
     ) -> (
         AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT]
-    ): ...
+    ):
+        """Resume an `llm.AsyncContextStreamResponse` with an optional response format."""
+        ...
 
     async def context_resume_stream_async(
         self,
@@ -891,9 +1136,21 @@ class Model:
         AsyncContextStreamResponse[DepsT, None]
         | AsyncContextStreamResponse[DepsT, FormattableT]
     ):
-        """Generate a new `AsyncContextStreamResponse` by extending another `AsyncContextStreamResponse`'s messages with additional user content.
+        """Generate a new `llm.AsyncContextStreamResponse` by extending another response's messages with additional user content.
 
-        Uses the other response's tools and output format.
+        Uses the previous response's tools and output format, and this model's params.
+
+        Depending on the client, this may be a wrapper around using client call methods
+        with the response's messages and the new content, or it may use a provider-specific
+        API for resuming an existing interaction.
+
+        Args:
+            ctx: Context object with dependencies for tools.
+            response: Previous async context stream response to extend.
+            content: Additional user content to append.
+
+        Returns:
+            A new `llm.AsyncContextStreamResponse` object for asynchronously streaming the extended conversation.
         """
         return await get_client(self.provider).context_resume_stream_async(
             ctx=ctx,
@@ -911,7 +1168,7 @@ def model(
     model_id: AnthropicModelId,
     **params: Unpack[Params],
 ) -> Model:
-    """Overload for Anthropic models."""
+    """Create an `llm.Model` instance for Anthropic models."""
     ...
 
 
@@ -922,7 +1179,7 @@ def model(
     model_id: GoogleModelId,
     **params: Unpack[Params],
 ) -> Model:
-    """Overload for Google models."""
+    """Create an `llm.Model` instance for Google models."""
     ...
 
 
@@ -933,7 +1190,7 @@ def model(
     model_id: OpenAIModelId,
     **params: Unpack[Params],
 ) -> Model:
-    """Overload for OpenAI models."""
+    """Create an `llm.Model` instance for OpenAI models."""
     ...
 
 
@@ -944,7 +1201,7 @@ def model(
     model_id: ModelId,
     **params: Unpack[Params],
 ) -> Model:
-    """Cross-provider overload."""
+    """Create an `llm.Model` instance for any supported provider."""
     ...
 
 
@@ -954,5 +1211,32 @@ def model(
     model_id: ModelId,
     **params: Unpack[Params],
 ) -> Model:
-    """Returns an `LLM` instance with the given settings."""
+    """Create an `llm.Model` instance with the specified provider and settings.
+
+    Args:
+        provider: The LLM provider to use (e.g., "openai", "anthropic", "google").
+        model_id: The specific model identifier for the chosen provider.
+        **params: Additional parameters to configure the model (e.g. temperature). See `llm.Params`.
+
+    Returns:
+        An `llm.Model` instance configured with the specified provider and model.
+
+    Raises:
+        ValueError: If the specified provider is not supported.
+
+    Example:
+
+        ```python
+        import mirascope.llm as llm
+
+        openai_model = llm.model(provider="openai", model_id="gpt-4o-mini")
+
+        claude_model = llm.model(
+            provider="anthropic",
+            model_id="claude-3-5-sonnet-20241022",
+            temperature=0.7,
+            max_tokens=1000
+        )
+        ```
+    """
     return Model(provider, model_id, **params)
