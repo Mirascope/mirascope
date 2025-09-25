@@ -32,7 +32,7 @@ class BookSummary(BaseModel):
 def test_structured_output_with_tools_sync(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with tool calls."""
@@ -81,7 +81,7 @@ def test_structured_output_with_tools_sync(
 def test_structured_output_with_tools_sync_context(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with tools and context."""
@@ -135,7 +135,7 @@ def test_structured_output_with_tools_sync_context(
 async def test_structured_output_with_tools_async(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with tool calls."""
@@ -185,7 +185,7 @@ async def test_structured_output_with_tools_async(
 async def test_structured_output_with_tools_async_context(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with tools and context."""
@@ -238,7 +238,7 @@ async def test_structured_output_with_tools_async_context(
 def test_structured_output_with_tools_stream(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with tool calls."""
@@ -294,7 +294,7 @@ def test_structured_output_with_tools_stream(
 def test_structured_output_with_tools_stream_context(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with tools and context."""
@@ -355,7 +355,7 @@ def test_structured_output_with_tools_stream_context(
 async def test_structured_output_with_tools_async_stream(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with tool calls."""
@@ -412,7 +412,7 @@ async def test_structured_output_with_tools_async_stream(
 async def test_structured_output_with_tools_async_stream_context(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with tools and context."""

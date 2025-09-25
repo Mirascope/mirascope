@@ -31,9 +31,9 @@ CallType = Literal[
 CALL_TYPES: tuple[CallType] = get_args(CallType)
 
 
-FORMATTING_MODES: tuple[llm.formatting.FormattingMode | None] = get_args(
-    llm.formatting.FormattingMode
-) + (None,)
+FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (
+    None,
+)
 
 Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
 
@@ -56,13 +56,13 @@ class FormattingModeRequest(pytest.FixtureRequest):
     If `formatting_mode` is `None`, then accessing param will raise `AttributeError`.
     """
 
-    param: llm.formatting.FormattingMode
+    param: llm.FormattingMode
 
 
 @pytest.fixture
 def formatting_mode(
     request: FormattingModeRequest,
-) -> llm.formatting.FormattingMode | None:
+) -> llm.FormattingMode | None:
     """Get formatting_mode from test parameters."""
     if hasattr(request, "param"):
         return request.param
@@ -117,7 +117,7 @@ def _parse_test_name(test_name: str) -> tuple[str, CallType]:
 def vcr_cassette_name(
     request: FixtureRequest,
     provider: llm.Provider,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
 ) -> str:
     """Generate VCR cassette name based on test name and provider."""
     test_name = request.node.name
@@ -137,7 +137,7 @@ def vcr_cassette_name(
 def snapshot(
     request: FixtureRequest,
     provider: llm.Provider,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
 ) -> Snapshot:
     """Get snapshot for current test configuration."""
     test_name = request.node.name
