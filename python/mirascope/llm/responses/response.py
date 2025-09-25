@@ -22,7 +22,7 @@ from .base_response import BaseResponse
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
-    from ..clients import BaseParams, ModelId, Provider
+    from ..clients import ModelId, Params, Provider
 
 
 class Response(BaseResponse[Toolkit, FormattableT]):
@@ -34,7 +34,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         tools: Sequence[Tool] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
@@ -102,7 +102,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         tools: Sequence[AsyncTool] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
@@ -177,7 +177,7 @@ class ContextResponse(
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         tools: Sequence[Tool | ContextTool[DepsT]] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],
@@ -258,7 +258,7 @@ class AsyncContextResponse(
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]] | None = None,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],

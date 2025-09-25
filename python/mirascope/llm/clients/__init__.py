@@ -3,33 +3,28 @@
 from .anthropic import (
     AnthropicClient,
     AnthropicModelId,
-    AnthropicParams,
 )
 from .base import (
     BaseClient,
-    BaseParams,
     ClientT,
-    ParamsT,
+    Params,
 )
-from .google import GoogleClient, GoogleModelId, GoogleParams
-from .openai import OpenAIClient, OpenAIModelId, OpenAIParams
-from .providers import ModelId, Provider, client, get_client
+from .google import GoogleClient, GoogleModelId
+from .openai import OpenAIClient, OpenAIModelId
+from .providers import PROVIDERS, ModelId, Provider, client, get_client
 
 __all__ = [
+    "PROVIDERS",
     "AnthropicClient",
     "AnthropicModelId",
-    "AnthropicParams",
     "BaseClient",
-    "BaseParams",
     "ClientT",
     "GoogleClient",
     "GoogleModelId",
-    "GoogleParams",
     "ModelId",
     "OpenAIClient",
     "OpenAIModelId",
-    "OpenAIParams",
-    "ParamsT",
+    "Params",
     "Provider",
     "client",
     "get_client",

@@ -11,7 +11,7 @@ from .finish_reason import FinishReason
 from .root_response import RootResponse
 
 if TYPE_CHECKING:
-    from ..clients import BaseParams, ModelId, Provider
+    from ..clients import ModelId, Params, Provider
 
 
 class BaseResponse(RootResponse[ToolkitT, FormattableT]):
@@ -23,7 +23,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         toolkit: ToolkitT,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],

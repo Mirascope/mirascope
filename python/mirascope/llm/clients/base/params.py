@@ -1,12 +1,9 @@
 """Base parameters for LLM providers."""
 
-from typing import TypedDict, TypeVar
-
-ParamsT = TypeVar("ParamsT", bound="BaseParams")
-"""Type variable for LLM parameters. May be provider specific."""
+from typing import TypedDict
 
 
-class BaseParams(TypedDict, total=False):
+class Params(TypedDict, total=False):
     """Common parameters shared across LLM providers.
 
     Note: Each provider may handle these parameters differently or not support them at all.
@@ -14,22 +11,57 @@ class BaseParams(TypedDict, total=False):
     """
 
     temperature: float | None
-    """Controls randomness in the output (0.0 to 1.0)."""
+    """Controls randomness in the output (0.0 to 1.0).
+
+    Lower temperatures are good for prompts that require a less open-ended or
+    creative response, while higher temperatures can lead to more diverse or
+    creative results.
+    """
 
     max_tokens: int | None
     """Maximum number of tokens to generate."""
 
     top_p: float | None
-    """Nucleus sampling parameter (0.0 to 1.0)."""
+    """Nucleus sampling parameter (0.0 to 1.0).
+    
+    Tokens are selected from the most to least probable until the sum of their 
+    probabilities equals this value. Use a lower value for less random responses and a
+    higher value for more random responses.
+    """
+
+    top_k: int | None
+    """Limits token selection to the k most probable tokens (typically 1 to 100).
+
+    For each token selection step, the ``top_k`` tokens with the
+    highest probabilities are sampled. Then tokens are further filtered based
+    on ``top_p`` with the final token selected using temperature sampling. Use
+    a lower number for less random responses and a higher number for more
+    random responses.
+    """
 
     frequency_penalty: float | None
     """Penalizes frequent tokens (-2.0 to 2.0)."""
 
     presence_penalty: float | None
-    """Penalizes tokens based on presence (-2.0 to 2.0)."""
+    """Penalizes tokens based on presence (-2.0 to 2.0).
+    
+    Positive values penalize tokens that repeatedly appear in the
+    generated text, increasing the probability of generating more diverse
+    content.
+    """
 
     seed: int | None
-    """Random seed for reproducibility."""
+    """Random seed for reproducibility.
+    
+    When ``seed`` is fixed to a specific number, the model makes a best
+    effort to provide the same response for repeated requests.
 
-    stop: str | list[str] | None
-    """Stop sequence(s) to end generation."""
+    Not supported by all providers, and does not guarantee strict reproducibility.
+    """
+
+    stop_sequences: list[str] | None
+    """Stop sequences to end generation.
+    
+    The model will stop generating text if one of these strings is encountered in the
+    response.
+    """

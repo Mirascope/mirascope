@@ -28,7 +28,7 @@ from .finish_reason import FinishReason, FinishReasonChunk
 from .root_response import RootResponse
 
 if TYPE_CHECKING:
-    from ..clients import BaseParams, ModelId, Provider
+    from ..clients import ModelId, Params, Provider
 
 
 @dataclass
@@ -118,7 +118,7 @@ class BaseStreamResponse(
         *,
         provider: "Provider",
         model_id: "ModelId",
-        params: "BaseParams | None",
+        params: "Params | None",
         toolkit: ToolkitT,
         format: Format[FormattableT] | None = None,
         input_messages: Sequence[Message],

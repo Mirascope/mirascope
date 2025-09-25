@@ -12,16 +12,13 @@ if TYPE_CHECKING:
     from ..clients import (
         AnthropicClient,
         AnthropicModelId,
-        AnthropicParams,
         BaseClient,
-        BaseParams,
         GoogleClient,
         GoogleModelId,
-        GoogleParams,
         ModelId,
         OpenAIClient,
         OpenAIModelId,
-        OpenAIParams,
+        Params,
         Provider,
     )
 
@@ -107,7 +104,7 @@ def agent(
     tools: list[AgentToolT] | None = None,
     format: type[FormattableT] | None = None,
     client: AnthropicClient | None = None,
-    **params: Unpack[AnthropicParams],
+    **params: Unpack[Params],
 ) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an Anthropic agent."""
     ...
@@ -121,7 +118,7 @@ def agent(
     tools: list[AgentToolT] | None = None,
     format: type[FormattableT] | None = None,
     client: GoogleClient | None = None,
-    **params: Unpack[GoogleParams],
+    **params: Unpack[Params],
 ) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating a Google agent."""
     ...
@@ -135,7 +132,7 @@ def agent(
     tools: list[AgentToolT] | None = None,
     format: type[FormattableT] | None = None,
     client: OpenAIClient | None = None,
-    **params: Unpack[OpenAIParams],
+    **params: Unpack[Params],
 ) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an OpenAI agent."""
     ...
@@ -149,7 +146,7 @@ def agent(
     tools: list[AgentToolT] | None = None,
     format: type[FormattableT] | None = None,
     client: None = None,
-    **params: Unpack[BaseParams],
+    **params: Unpack[Params],
 ) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an agent using any registered model."""
     ...
@@ -162,7 +159,7 @@ def agent(
     tools: list[AgentToolT] | None = None,
     format: type[FormattableT] | None = None,
     client: BaseClient | None = None,
-    **params: Unpack[BaseParams],
+    **params: Unpack[Params],
 ) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an agent or structured agent.
 

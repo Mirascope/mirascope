@@ -39,9 +39,8 @@ from ...tools import (
     FORMAT_TOOL_NAME,
     ToolSchema,
 )
-from ..base import _utils as _base_utils
+from ..base import Params, _utils as _base_utils
 from .model_ids import AnthropicModelId
-from .params import AnthropicParams
 
 ANTHROPIC_FINISH_REASON_MAP = {
     "end_turn": FinishReason.END_TURN,
@@ -150,7 +149,7 @@ def prepare_anthropic_request(
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
-    params: AnthropicParams | None = None,
+    params: Params | None = None,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     if params:
         raise NotImplementedError("param use not yet supported")

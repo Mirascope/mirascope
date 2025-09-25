@@ -13,7 +13,7 @@ from . import _utils
 from .finish_reason import FinishReason
 
 if TYPE_CHECKING:
-    from ..clients import BaseParams, ModelId, Provider
+    from ..clients import ModelId, Params, Provider
     from ..models import Model
 
 
@@ -29,7 +29,7 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     model_id: "ModelId"
     """The model id that generated this response."""
 
-    params: "BaseParams | None"
+    params: "Params | None"
     """The params that were used to generate this response (or None)."""
 
     toolkit: ToolkitT
@@ -157,12 +157,12 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     @property
     def model(self) -> "Model":
         """A `Model` with parameters matching this response."""
-        from ..models import _utils as _model_utils, get_model_from_context
+        from ..models import Model, get_model_from_context
 
         if context_model := get_model_from_context():
             return context_model
 
-        return _model_utils.assumed_safe_llm_create(
+        return Model(
             provider=self.provider,
             model_id=self.model_id,
             params=self.params,

@@ -35,9 +35,8 @@ from ...responses import (
     RawChunk,
 )
 from ...tools import FORMAT_TOOL_NAME, ToolSchema
-from ..base import _utils as _base_utils
+from ..base import Params, _utils as _base_utils
 from .model_ids import OpenAIModelId
-from .params import OpenAIParams
 
 OPENAI_FINISH_REASON_MAP = {
     "stop": FinishReason.END_TURN,
@@ -262,7 +261,7 @@ def prepare_openai_request(
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
-    params: OpenAIParams | None = None,
+    params: Params | None = None,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepare OpenAI API request parameters.
 

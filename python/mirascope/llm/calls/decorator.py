@@ -9,18 +9,15 @@ from typing_extensions import Unpack
 
 from ..clients import (
     AnthropicModelId,
-    AnthropicParams,
-    BaseParams,
     GoogleModelId,
-    GoogleParams,
     ModelId,
     OpenAIModelId,
-    OpenAIParams,
+    Params,
     Provider,
 )
 from ..context import DepsT
 from ..formatting import Format, FormattableT
-from ..models import Model, _utils as _model_utils
+from ..models import Model
 from ..prompts import (
     AsyncContextPromptable,
     AsyncPromptable,
@@ -141,7 +138,7 @@ def call(
     model_id: AnthropicModelId,
     tools: list[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
-    **params: Unpack[AnthropicParams],
+    **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
     """Decorate a prompt into a Call using Anthropic models."""
     ...
@@ -154,7 +151,7 @@ def call(
     model_id: GoogleModelId,
     tools: list[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
-    **params: Unpack[GoogleParams],
+    **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
     """Decorate a prompt into a Call using Google models."""
     ...
@@ -167,7 +164,7 @@ def call(
     model_id: OpenAIModelId,
     tools: list[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
-    **params: Unpack[OpenAIParams],
+    **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
     """Decorate a prompt into a Call using OpenAI models."""
     ...
@@ -179,7 +176,7 @@ def call(
     model_id: ModelId,
     tools: list[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
-    **params: Unpack[BaseParams],
+    **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
     """Returns a decorator for turning prompt template functions into generations.
 
@@ -227,7 +224,5 @@ def call(
         print(response)
         ```
     """
-    llm = _model_utils.assumed_safe_llm_create(
-        provider=provider, model_id=model_id, params=params
-    )
-    return CallDecorator(model=llm, tools=tools, format=format)
+    model = Model(provider=provider, model_id=model_id, params=params)
+    return CallDecorator(model=model, tools=tools, format=format)
