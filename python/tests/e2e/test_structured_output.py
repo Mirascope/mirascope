@@ -36,7 +36,7 @@ class Book(BaseModel):
 def test_structured_output_sync(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output without context."""
@@ -72,7 +72,7 @@ def test_structured_output_sync(
 def test_structured_output_sync_context(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test synchronous structured output with context."""
@@ -113,7 +113,7 @@ def test_structured_output_sync_context(
 async def test_structured_output_async(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output without context."""
@@ -150,7 +150,7 @@ async def test_structured_output_async(
 async def test_structured_output_async_context(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test asynchronous structured output with context."""
@@ -190,7 +190,7 @@ async def test_structured_output_async_context(
 def test_structured_output_stream(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output without context."""
@@ -229,7 +229,7 @@ def test_structured_output_stream(
 def test_structured_output_stream_context(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test streaming structured output with context."""
@@ -273,7 +273,7 @@ def test_structured_output_stream_context(
 async def test_structured_output_async_stream(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output without context."""
@@ -313,7 +313,7 @@ async def test_structured_output_async_stream(
 async def test_structured_output_async_stream_context(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.formatting.FormattingMode | None,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test async streaming structured output with context."""

@@ -9,7 +9,7 @@ from tests import utils
 
 
 @pytest.mark.parametrize("mode", ["strict", "json", "tool"])
-def test_format_all_modes(mode: llm.formatting.FormattingMode) -> None:
+def test_format_all_modes(mode: llm.FormattingMode) -> None:
     """Test `format` function with all supported modes."""
 
     class ModeTest(BaseModel):
