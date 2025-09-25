@@ -88,14 +88,14 @@ class Model:
     model_id: ModelId
     """The model being used (e.g. `gpt-4o-mini`)."""
 
-    params: Params | None
+    params: Params
     """The default parameters for the model (temperature, max_tokens, etc.)."""
 
     def __init__(
         self,
         provider: Provider,
         model_id: ModelId,
-        params: Params | None = None,
+        **params: Unpack[Params],
     ) -> None:
         """Initialize the Model with provider, model_id, and optional params."""
         if provider not in PROVIDERS:
@@ -160,7 +160,7 @@ class Model:
             messages=messages,
             tools=tools,
             format=format,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -202,7 +202,7 @@ class Model:
             model_id=self.model_id,
             messages=messages,
             tools=tools,
-            params=self.params,
+            **self.params,
             format=format,
         )
 
@@ -246,7 +246,7 @@ class Model:
             messages=messages,
             tools=tools,
             format=format,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -289,7 +289,7 @@ class Model:
             messages=messages,
             tools=tools,
             format=format,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -337,7 +337,7 @@ class Model:
             messages=messages,
             tools=tools,
             format=format,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -387,7 +387,7 @@ class Model:
             messages=messages,
             tools=tools,
             format=format,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -439,7 +439,7 @@ class Model:
             messages=messages,
             tools=tools,
             format=format,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -493,7 +493,7 @@ class Model:
             messages=messages,
             tools=tools,
             format=format,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -534,7 +534,7 @@ class Model:
             model_id=self.model_id,
             response=response,
             content=content,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -575,7 +575,7 @@ class Model:
             model_id=self.model_id,
             response=response,
             content=content,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -621,7 +621,7 @@ class Model:
             model_id=self.model_id,
             response=response,
             content=content,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -671,7 +671,7 @@ class Model:
             model_id=self.model_id,
             response=response,
             content=content,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -712,7 +712,7 @@ class Model:
             model_id=self.model_id,
             response=response,
             content=content,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -753,7 +753,7 @@ class Model:
             model_id=self.model_id,
             response=response,
             content=content,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -805,7 +805,7 @@ class Model:
             model_id=self.model_id,
             response=response,
             content=content,
-            params=self.params,
+            **self.params,
         )
 
     @overload
@@ -859,7 +859,7 @@ class Model:
             model_id=self.model_id,
             response=response,
             content=content,
-            params=self.params,
+            **self.params,
         )
 
 
@@ -914,4 +914,4 @@ def model(
     **params: Unpack[Params],
 ) -> Model:
     """Returns an `LLM` instance with the given settings."""
-    return Model(provider, model_id, params)
+    return Model(provider, model_id, **params)

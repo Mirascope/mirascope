@@ -29,7 +29,7 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     model_id: "ModelId"
     """The model id that generated this response."""
 
-    params: "Params | None"
+    params: "Params"
     """The params that were used to generate this response (or None)."""
 
     toolkit: ToolkitT
@@ -165,5 +165,5 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
         return Model(
             provider=self.provider,
             model_id=self.model_id,
-            params=self.params,
+            **self.params,
         )

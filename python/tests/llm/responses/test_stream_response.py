@@ -23,7 +23,7 @@ def create_sync_stream_response(
     response = llm.StreamResponse(
         provider="openai",
         model_id="gpt-4o-mini",
-        params=None,
+        params={},
         tools=[],
         input_messages=[llm.messages.user("Test")],
         chunk_iterator=iterator,
@@ -45,7 +45,7 @@ def create_async_stream_response(
     response = llm.AsyncStreamResponse(
         provider="openai",
         model_id="gpt-4o-mini",
-        params=None,
+        params={},
         tools=[],
         input_messages=[llm.messages.user("Test")],
         chunk_iterator=iterator,
@@ -1027,7 +1027,7 @@ class TestRawChunkTracking:
         stream_response = llm.StreamResponse(
             provider="openai",
             model_id="gpt-4o-mini",
-            params=None,
+            params={},
             tools=[],
             input_messages=[llm.messages.user("Test")],
             chunk_iterator=chunk_iterator(),
@@ -1059,7 +1059,7 @@ class TestRawChunkTracking:
         stream_response = llm.AsyncStreamResponse(
             provider="openai",
             model_id="gpt-4o-mini",
-            params=None,
+            params={},
             tools=[],
             input_messages=[llm.messages.user("Test")],
             chunk_iterator=chunk_iterator(),
@@ -1326,7 +1326,7 @@ def test_stream_response_execute_tools() -> None:
     stream_response = llm.StreamResponse(
         provider="openai",
         model_id="gpt-4o-mini",
-        params=None,
+        params={},
         tools=[tool_one, tool_two],
         input_messages=[],
         chunk_iterator=iter(tool_call_chunks),
@@ -1369,7 +1369,7 @@ async def test_async_stream_response_execute_tools() -> None:
     stream_response = llm.AsyncStreamResponse(
         provider="openai",
         model_id="gpt-4o-mini",
-        params=None,
+        params={},
         tools=[tool_one, tool_two],
         input_messages=[],
         chunk_iterator=async_chunk_iter(),
