@@ -1,6 +1,7 @@
 """Anthropic message types and conversion utilities."""
 
 import json
+import logging
 from collections.abc import Sequence
 from functools import lru_cache
 from typing import TypedDict
@@ -46,6 +47,7 @@ ANTHROPIC_FINISH_REASON_MAP = {
     "tool_use": FinishReason.TOOL_USE,
     "refusal": FinishReason.REFUSAL,
 }
+logger = logging.getLogger(__name__)
 
 
 class MessageCreateKwargs(TypedDict, total=False):
@@ -57,6 +59,10 @@ class MessageCreateKwargs(TypedDict, total=False):
     system: str | NotGiven
     tools: Sequence[anthropic_types.ToolParam] | NotGiven
     tool_choice: anthropic_types.ToolChoiceParam | NotGiven
+    temperature: float | NotGiven
+    top_p: float | NotGiven
+    top_k: int | NotGiven
+    stop_sequences: list[str] | NotGiven
 
 
 def _encode_content(
@@ -148,16 +154,30 @@ def prepare_anthropic_request(
     format: type[FormattableT] | Format[FormattableT] | None = None,
     params: Params | None = None,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
-    if params:
-        raise NotImplementedError("param use not yet supported")
-
-    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-
     kwargs: MessageCreateKwargs = {
         "model": model_id,
         "max_tokens": 1024,
     }
+    if params:
+        if (temperature := params.get("temperature")) is not None:
+            kwargs["temperature"] = temperature
+        if (max_tokens := params.get("max_tokens")) is not None:
+            kwargs["max_tokens"] = max_tokens
+        if (top_p := params.get("top_p")) is not None:
+            kwargs["top_p"] = top_p
+        if (stop_sequences := params.get("stop_sequences")) is not None:
+            kwargs["stop_sequences"] = stop_sequences
+        if (top_k := params.get("top_k")) is not None:
+            kwargs["top_k"] = top_k
 
+        if params.get("frequency_penalty") is not None:
+            logger.warning(
+                "parameter frequency_penalty is not supported by Anthropic - ignoring"
+            )
+        if params.get("seed") is not None:
+            logger.warning("parameter seed is not supported by Anthropic - ignoring")
+
+    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     anthropic_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
     format = resolve_format(format, default_mode="tool")
     if format is not None:

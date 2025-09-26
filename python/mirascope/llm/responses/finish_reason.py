@@ -11,6 +11,8 @@ class FinishReason(str, Enum):
     TODO: add all of the finish reasons. (MIR-285)
     """
 
+    # TODO: Clarify semantics, including distinction between "stop" and "end_turn". Note
+    # that OpenAI does not distinguish between the two.
     STOP = "stop"
     END_TURN = "end_turn"
     MAX_TOKENS = "max_tokens"

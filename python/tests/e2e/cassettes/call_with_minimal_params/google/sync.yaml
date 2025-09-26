@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "List all U.S. states"}], "role": "user"}],
+      "generationConfig": {"temperature": 0.7, "topP": 0.3, "maxOutputTokens": 120}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '156'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VSUW/aQAx+z6843XMbESil7RtquzWquk2DTUjLNBlikhOHje4uWwfiv89JGhq0
+        PET+7C/+7M85RErpFVBucgjo9Z36IRmlDs27rjEFpCCFLiXJHbjwzm2fQy8WSsDX+iP9hA6V8QqU
+        NT4oXiuwVo0H6ls8i5UPtepdRhklsVJTC0vYQkbDFviNxKM6dmbPJOCqARsgDz6jsaB7sGbNjoxU
+        r2vMlh3knNGkQUS4CmZVhYxuJPGAFv6Aw4xuBX0Qrmwu6oNYfUR2Rd0mkVmehGWMxDJKmkMp/RKZ
+        JLXWEBvRTq5i3Vv5eIp/Xrwb5dhi7cKWc7Qd/dgR9NqQ8eVXBM9U016mi1/zz8+Pn2b6xDGU46sU
+        B1En0wjoykOBLxhADgen8+id4+0uzHmDdM9Vc7ibtlfvzOfl8Vs9cAB7VkqG1xf/tfUPImps//69
+        X0M2lYOEv/U688fFXPfcCGeynRtRzzQdSq6KMpxPOBpFb661Rn5H503rWIFb8fByGI8v1/K/lI2c
+        duh3TB7TvOYMZrSA59EyXU6K/ST9sq9+31ZT1tEx+gfFVgE3/wIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sat, 27 Sep 2025 00:03:29 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1062
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

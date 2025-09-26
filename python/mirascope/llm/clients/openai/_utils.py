@@ -1,5 +1,6 @@
 """OpenAI message types and conversion utilities."""
 
+import logging
 from collections.abc import Sequence
 from functools import lru_cache
 from typing import Literal, TypedDict
@@ -37,6 +38,8 @@ from ...responses import (
 from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ..base import Params, _utils as _base_utils
 from .model_ids import OpenAIModelId
+
+logger = logging.getLogger(__name__)
 
 OPENAI_FINISH_REASON_MAP = {
     "stop": FinishReason.END_TURN,
@@ -102,6 +105,13 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
     )
     tool_choice: openai_types.ChatCompletionToolChoiceOptionParam | NotGiven
     parallel_tool_calls: bool | NotGiven
+    temperature: float | NotGiven
+    max_tokens: int | NotGiven
+    top_p: float | NotGiven
+    frequency_penalty: float | NotGiven
+    presence_penalty: float | NotGiven
+    seed: int | NotGiven
+    stop: str | list[str] | NotGiven
 
 
 def _ensure_additional_properties_false(obj: object) -> None:
@@ -278,14 +288,30 @@ def prepare_openai_request(
               system message (e.g. with instructions for JSON mode formatting).
             - A ChatCompletionCreateKwargs dict with parameters for OpenAI's create method.
     """
-    if params:
-        raise NotImplementedError("param use not yet supported")
-
-    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-
     kwargs: ChatCompletionCreateKwargs = {
         "model": model_id,
     }
+
+    if params:
+        if (temperature := params.get("temperature")) is not None:
+            kwargs["temperature"] = temperature
+        if (max_tokens := params.get("max_tokens")) is not None:
+            kwargs["max_tokens"] = max_tokens
+        if (top_p := params.get("top_p")) is not None:
+            kwargs["top_p"] = top_p
+        if (frequency_penalty := params.get("frequency_penalty")) is not None:
+            kwargs["frequency_penalty"] = frequency_penalty
+        if (presence_penalty := params.get("presence_penalty")) is not None:
+            kwargs["presence_penalty"] = presence_penalty
+        if (seed := params.get("seed")) is not None:
+            kwargs["seed"] = seed
+        if (stop_sequences := params.get("stop_sequences")) is not None:
+            kwargs["stop"] = stop_sequences
+
+        if params.get("top_k") is not None:
+            logger.warning("parameter top_k is not supported by OpenAI - ignoring")
+
+    tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
 
     openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
 
