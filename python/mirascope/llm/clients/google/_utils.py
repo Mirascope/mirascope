@@ -218,11 +218,26 @@ def prepare_google_request(
     genai_types.ContentListUnionDict,
     GenerateContentConfig | None,
 ]:
+    config_params = {}
     if params:
-        raise NotImplementedError("param use not yet supported")
+        if (temperature := params.get("temperature")) is not None:
+            config_params["temperature"] = temperature
+        if (max_tokens := params.get("max_tokens")) is not None:
+            config_params["max_output_tokens"] = max_tokens
+        if (top_p := params.get("top_p")) is not None:
+            config_params["top_p"] = top_p
+        if (frequency_penalty := params.get("frequency_penalty")) is not None:
+            config_params["frequency_penalty"] = frequency_penalty
+        if (presence_penalty := params.get("presence_penalty")) is not None:
+            config_params["presence_penalty"] = presence_penalty
+        if (seed := params.get("seed")) is not None:
+            config_params["seed"] = seed
+        if (top_k := params.get("top_k")) is not None:
+            config_params["top_k"] = top_k
+        if (stop_sequences := params.get("stop_sequences")) is not None:
+            config_params["stop_sequences"] = stop_sequences
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-    config_params = {}
     google_tools: list[genai_types.Tool] = []
 
     format = resolve_format(

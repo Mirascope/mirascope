@@ -24,7 +24,7 @@ from . import (
     types,
 )
 from .calls import call
-from .clients import ModelId, Provider, client, get_client
+from .clients import ModelId, Params, Provider, client, get_client
 from .content import (
     AssistantContentChunk,
     AssistantContentPart,
@@ -130,6 +130,7 @@ __all__ = [
     "MirascopeError",
     "Model",
     "NotFoundError",
+    "Params",
     "Partial",
     "PermissionError",
     "RateLimitError",
