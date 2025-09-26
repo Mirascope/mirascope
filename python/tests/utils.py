@@ -82,7 +82,7 @@ def exception_snapshot_dict(exception: Exception) -> dict:
     return {
         "type": type(exception).__name__,
         **{
-            attr: getattr(exception, attr)
+            attr: str(getattr(exception, attr))
             for attr in dir(exception)
             if not attr.startswith("_") and not callable(getattr(exception, attr))
         },

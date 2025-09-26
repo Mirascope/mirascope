@@ -3,9 +3,7 @@ from inline_snapshot import snapshot
 sync_snapshot = snapshot(
     {
         "type": "FormattingModeNotSupportedError",
-        "args": (
-            "Formatting mode 'strict' is not supported by provider 'anthropic' for model 'claude-sonnet-4-0'",
-        ),
+        "args": "(\"Formatting mode 'strict' is not supported by provider 'anthropic' for model 'claude-sonnet-4-0'\",)",
         "feature": "formatting_mode:strict",
         "formatting_mode": "strict",
         "model_id": "claude-sonnet-4-0",
@@ -15,9 +13,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "type": "FormattingModeNotSupportedError",
-        "args": (
-            "Formatting mode 'strict' is not supported by provider 'anthropic' for model 'claude-sonnet-4-0'",
-        ),
+        "args": "(\"Formatting mode 'strict' is not supported by provider 'anthropic' for model 'claude-sonnet-4-0'\",)",
         "feature": "formatting_mode:strict",
         "formatting_mode": "strict",
         "model_id": "claude-sonnet-4-0",
@@ -27,9 +23,7 @@ async_snapshot = snapshot(
 stream_snapshot = snapshot(
     {
         "type": "FormattingModeNotSupportedError",
-        "args": (
-            "Formatting mode 'strict' is not supported by provider 'anthropic' for model 'claude-sonnet-4-0'",
-        ),
+        "args": "(\"Formatting mode 'strict' is not supported by provider 'anthropic' for model 'claude-sonnet-4-0'\",)",
         "feature": "formatting_mode:strict",
         "formatting_mode": "strict",
         "model_id": "claude-sonnet-4-0",
@@ -39,9 +33,7 @@ stream_snapshot = snapshot(
 async_stream_snapshot = snapshot(
     {
         "type": "FormattingModeNotSupportedError",
-        "args": (
-            "Formatting mode 'strict' is not supported by provider 'anthropic' for model 'claude-sonnet-4-0'",
-        ),
+        "args": "(\"Formatting mode 'strict' is not supported by provider 'anthropic' for model 'claude-sonnet-4-0'\",)",
         "feature": "formatting_mode:strict",
         "formatting_mode": "strict",
         "model_id": "claude-sonnet-4-0",
