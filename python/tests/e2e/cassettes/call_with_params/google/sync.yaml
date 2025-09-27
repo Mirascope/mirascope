@@ -22,13 +22,16 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/6vmUlBQSi0qyi9SslKoBnKA3OT8lFQgz8TAQAcikJtaXJyYDhJTCkjNS8wpqVTI
-        LFbIyy9RAPKSclJTFNLyixRygdpyivXTU3Mz8zJ1jfRMddNyEoszlKCGFJcklpQWg8zw9Atz9PF0
-        iXcMcg/1dfULUQIqqOWq5QIAWNHZOYwAAAA=
+        H4sIAAAAAAAC/61RwU6DQBC98xWbvSrNulAFEw9GPTSpWi1RE+NhKgMlwi5ht0Zt+Hd3obSLZzmQ
+        zbw38+a92XqE0HcQaZGCRkXPyaupELLt/haTQqPQBhhKplhDow/c/ts6b0PR+GWbaMgZI0ck5OSC
+        UIfS7t9vx4fBjSzRdlUyxXKgtwOBZoUo1PoRQUlhacvkfkH3KHzmc5nXjVzZ3Xw2YYxFLI75aTAN
+        gjiMoykPvUG8k6UbBTneogZjH/YmqRlS1TqRHyiu5Kazf8J7ISetMc52uJYayhHEh1ZnrLo2okXp
+        pugEbPxDWehvazK5eUmok5EebzWE5DlZ/t3xv8TYWMzb3aY/1xM2qujvkmNlLuXzCfOzEtS6m0gb
+        VLUUCmep5WRRAjBfru7qKv05my00PF+qB0m91vsFuEOmmpUCAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -37,11 +40,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 26 Sep 2025 00:48:24 GMT
+      - Mon, 29 Sep 2025 17:40:16 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=124
+      - gfet4t7; dur=547
       Transfer-Encoding:
       - chunked
       Vary:
@@ -55,6 +58,6 @@ interactions:
       X-XSS-Protection:
       - '0'
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
 version: 1

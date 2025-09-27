@@ -2,8 +2,7 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}],
       "generationConfig": {"temperature": 0.7, "topP": 0.3, "topK": 50.0, "maxOutputTokens":
-      500, "stopSequences": ["4242"], "presencePenalty": 0.1, "frequencyPenalty":
-      0.1, "seed": 42}}'
+      500, "stopSequences": ["4242"], "seed": 42}}'
     headers:
       accept:
       - '*/*'
@@ -12,7 +11,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '256'
+      - '207'
       content-type:
       - application/json
       host:
@@ -26,9 +25,12 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/6vmUlBQSi0qyi9SslKoBnKA3OT8lFQgz8TAQAcikJtaXJyYDhJTCkjNS8wpqVTI
-        LFbIyy9RAPKSclJTFNLyixRygdpyivXTU3Mz8zJ1jfRMddNyEoszlKCGFJcklpQWg8zw9Atz9PF0
-        iXcMcg/1dfULUQIqqOWq5QIAWNHZOYwAAAA=
+        H4sIAAAAAAAC/2WRy27CMBBF9/kKy9tCRQOoiC10gQRtoFFVqenCIpNHm9hRPKl4iH/v2GnAUb2w
+        RnNv5o5Pzh5jfC9knMcCQfM5+6AOY2d7G01JBIkkdC1qVqLGm7c9Z6cmC8LBfMRDxZJcxgwzYLop
+        mUrYxB+NGEVSMWBH1TARW71kqFKgop5HMpLGFsk7GjbxIzm0J5Lciblc68/BbblaFWCSSxVD0dkv
+        nYHTNrnOdiC0ksb2Gr4E/KrSqnCg9sjrAuxo3miRwgZQECZxhcGrWpUVhuob5EI1FtPDuB3mUO3p
+        Y/9PR4Wi6Emz6eDfWL2k0LxwaTs/gt4oihyPlvTTe8gdDtjfqgPhObw4ZqpJM+xvODGPt8Bahm9Q
+        67yFlUJJ+Ib+/XSYFEJnNo/XoCslNaxi4zl9Lfdis1ivn5Pd6XEV/MyCQG+33Lt4v56L3kJuAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -37,11 +39,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 30 Sep 2025 19:18:03 GMT
+      - Tue, 30 Sep 2025 19:34:38 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=139
+      - gfet4t7; dur=1626
       Transfer-Encoding:
       - chunked
       Vary:
@@ -55,6 +57,6 @@ interactions:
       X-XSS-Protection:
       - '0'
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
 version: 1
