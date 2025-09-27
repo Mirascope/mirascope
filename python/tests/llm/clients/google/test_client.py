@@ -105,7 +105,7 @@ def test_prepare_google_request_frequency_penalty_logging(
 
     assert len(caplog.records) == 0
     assert config is not None
-    assert config.frequency_penalty == 0.5
+    assert config.get("frequency_penalty") == 0.5
 
 
 def test_prepare_google_request_presence_penalty_logging(
@@ -138,4 +138,4 @@ def test_prepare_google_request_presence_penalty_logging(
 
     assert len(caplog.records) == 0
     assert config is not None
-    assert config.presence_penalty == 0.3
+    assert config.get("presence_penalty") == 0.3
