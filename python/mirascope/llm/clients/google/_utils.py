@@ -4,10 +4,9 @@ import json
 import logging
 from collections.abc import AsyncIterator, Iterator, Sequence
 from functools import lru_cache
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from google.genai import types as genai_types
-from google.genai.types import GenerateContentConfig
 
 from ...content import (
     AssistantContentPart,
@@ -191,7 +190,7 @@ def _encode_messages(
 @lru_cache(maxsize=128)
 def _convert_tool_to_function_declaration(
     tool: ToolSchema,
-) -> genai_types.FunctionDeclaration:
+) -> genai_types.FunctionDeclarationDict:
     """Convert a single Mirascope tool to Google FunctionDeclaration format with caching."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
@@ -201,15 +200,12 @@ def _convert_tool_to_function_declaration(
     if defs:
         properties = _resolve_refs(properties, defs)
 
-    return genai_types.FunctionDeclaration(
+    return genai_types.FunctionDeclarationDict(
         name=tool.name,
         description=tool.description,
-        parameters=genai_types.Schema(
+        parameters=genai_types.SchemaDict(
             type=genai_types.Type.OBJECT,
-            properties={
-                name: genai_types.Schema.model_validate(prop)
-                for name, prop in properties.items()
-            },
+            properties=properties,
             required=schema_dict.get("required", []),
         ),
     )
@@ -225,40 +221,40 @@ def prepare_google_request(
     Sequence[Message],
     Format[FormattableT] | None,
     genai_types.ContentListUnionDict,
-    GenerateContentConfig | None,
+    genai_types.GenerateContentConfigDict,
 ]:
-    config_params = {}
+    google_config: genai_types.GenerateContentConfigDict = {}
     if params:
         if (temperature := params.get("temperature")) is not None:
-            config_params["temperature"] = temperature
+            google_config["temperature"] = temperature
         if (max_tokens := params.get("max_tokens")) is not None:
-            config_params["max_output_tokens"] = max_tokens
+            google_config["max_output_tokens"] = max_tokens
         if (top_p := params.get("top_p")) is not None:
-            config_params["top_p"] = top_p
+            google_config["top_p"] = top_p
         if (frequency_penalty := params.get("frequency_penalty")) is not None:
             if model_id in MODELS_WITHOUT_PENALTY_SUPPORT:
                 logger.warning(
                     f"parameter frequency_penalty is not supported for model {model_id} - ignoring"
                 )
             else:
-                config_params["frequency_penalty"] = frequency_penalty
+                google_config["frequency_penalty"] = frequency_penalty
         if (presence_penalty := params.get("presence_penalty")) is not None:
             if model_id in MODELS_WITHOUT_PENALTY_SUPPORT:
                 logger.warning(
                     f"parameter presence_penalty is not supported for model {model_id} - ignoring"
                 )
             else:
-                config_params["presence_penalty"] = presence_penalty
+                google_config["presence_penalty"] = presence_penalty
 
         if (seed := params.get("seed")) is not None:
-            config_params["seed"] = seed
+            google_config["seed"] = seed
         if (top_k := params.get("top_k")) is not None:
-            config_params["top_k"] = top_k
+            google_config["top_k"] = top_k
         if (stop_sequences := params.get("stop_sequences")) is not None:
-            config_params["stop_sequences"] = stop_sequences
+            google_config["stop_sequences"] = stop_sequences
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-    google_tools: list[genai_types.Tool] = []
+    google_tools: list[genai_types.ToolDict] = []
 
     format = resolve_format(
         format,
@@ -275,23 +271,25 @@ def prepare_google_request(
             )
 
         if format.mode == "strict":
-            config_params["response_mime_type"] = "application/json"
-            config_params["response_schema"] = format.schema
+            google_config["response_mime_type"] = "application/json"
+            google_config["response_schema"] = format.schema
         elif format.mode == "tool":
             format_tool_schema = _formatting_utils.create_tool_schema(format)
             format_tool = _convert_tool_to_function_declaration(format_tool_schema)
-            google_tools.append(genai_types.Tool(function_declarations=[format_tool]))
-            function_calling_config: genai_types.FunctionCallingConfigDict = {
-                "mode": genai_types.FunctionCallingConfigMode.ANY
-            }
+            google_tools.append(
+                genai_types.ToolDict(function_declarations=[format_tool])
+            )
+            function_calling_config = genai_types.FunctionCallingConfigDict(
+                mode=genai_types.FunctionCallingConfigMode.ANY
+            )
             if not tools:
                 function_calling_config["allowed_function_names"] = [FORMAT_TOOL_NAME]
 
-            config_params["tool_config"] = {
-                "function_calling_config": function_calling_config
-            }
+            google_config["tool_config"] = genai_types.ToolConfigDict(
+                function_calling_config=function_calling_config
+            )
         elif format.mode == "json":
-            config_params["response_mime_type"] = "application/json"
+            google_config["response_mime_type"] = "application/json"
 
         if format.formatting_instructions:
             messages = _base_utils.add_system_instructions(
@@ -303,22 +301,20 @@ def prepare_google_request(
             _convert_tool_to_function_declaration(tool) for tool in tools
         ]
         google_tools.append(
-            genai_types.Tool(function_declarations=function_declarations)
+            genai_types.ToolDict(function_declarations=function_declarations)
         )
 
     if google_tools:
-        config_params["tools"] = google_tools
+        google_config["tools"] = cast(genai_types.ToolListUnionDict, google_tools)
 
     system_message_content, remaining_messages = _base_utils.extract_system_message(
         messages
     )
 
     if system_message_content:
-        config_params["system_instruction"] = system_message_content
+        google_config["system_instruction"] = system_message_content
 
-    config = GenerateContentConfig(**config_params) if config_params else None
-
-    return messages, format, _encode_messages(remaining_messages), config
+    return messages, format, _encode_messages(remaining_messages), google_config
 
 
 def decode_response(
