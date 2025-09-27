@@ -22,25 +22,34 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Penalty is
-        not enabled for models/gemini-2.5-flash\",\n    \"status\": \"INVALID_ARGUMENT\"\n
-        \ }\n}\n"
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"4200\"}],\"role\":
+        \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 13,\"totalTokenCount\":
+        13,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}]},\"modelVersion\":
+        \"gemini-2.0-flash\",\"responseId\": \"gMTaaKmOIpHmgbUPidTOuQo\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" + 42 = \"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\":
+        12,\"candidatesTokenCount\": 10,\"totalTokenCount\": 22,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 12}],\"candidatesTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 10}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
+        \"gMTaaKmOIpHmgbUPidTOuQo\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Length:
-      - '140'
+      Content-Disposition:
+      - attachment
       Content-Type:
       - text/event-stream
       Date:
-      - Fri, 26 Sep 2025 00:57:06 GMT
+      - Mon, 29 Sep 2025 17:40:16 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=120
+      - gfet4t7; dur=459
+      Transfer-Encoding:
+      - chunked
       Vary:
       - Origin
       - X-Origin
@@ -52,6 +61,6 @@ interactions:
       X-XSS-Protection:
       - '0'
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
 version: 1

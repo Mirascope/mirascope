@@ -24,8 +24,13 @@ ALL_PARAMS: llm.Params = {
     "stop_sequences": ["4242"],
 }
 
+PROVIDER_MODEL_IDS_WITH_LEGACY_GEMINI = [
+    (provider, model_id if model_id != "gemini-2.5-flash" else "gemini-2.0-flash")
+    for (provider, model_id) in PROVIDER_MODEL_ID_PAIRS
+]  # Use gemini-2.0-flash for e2e testing of the `frequency_penalty` and `presence_penalty` params
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_IDS_WITH_LEGACY_GEMINI)
 @pytest.mark.vcr
 def test_call_with_params_sync(
     provider: llm.Provider,
@@ -55,7 +60,7 @@ def test_call_with_params_sync(
         assert snapshot_data == snapshot
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_IDS_WITH_LEGACY_GEMINI)
 @pytest.mark.vcr
 def test_call_with_params_stream(
     provider: llm.Provider,

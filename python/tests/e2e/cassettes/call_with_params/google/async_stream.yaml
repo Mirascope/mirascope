@@ -2,8 +2,7 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}],
       "generationConfig": {"temperature": 0.7, "topP": 0.3, "topK": 50.0, "maxOutputTokens":
-      500, "stopSequences": ["4242"], "presencePenalty": 0.1, "frequencyPenalty":
-      0.1, "seed": 42}}'
+      500, "stopSequences": ["4242"], "seed": 42}}'
     headers:
       accept:
       - '*/*'
@@ -12,7 +11,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '256'
+      - '207'
       content-type:
       - application/json
       host:
@@ -25,22 +24,27 @@ interactions:
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"Penalty is
-        not enabled for models/gemini-2.5-flash\",\n    \"status\": \"INVALID_ARGUMENT\"\n
-        \ }\n}\n"
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"To
+        find the sum of 4200 and 42, you add them together:\\n\\n4200\\n+   42\\n------\\n\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 32,\"totalTokenCount\": 85,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 40},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"1zDcaOv4FYSfz7IPo_HSuQQ\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
-      Content-Length:
-      - '140'
+      Content-Disposition:
+      - attachment
       Content-Type:
       - text/event-stream
       Date:
-      - Tue, 30 Sep 2025 19:18:35 GMT
+      - Tue, 30 Sep 2025 19:34:48 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=118
+      - gfet4t7; dur=1570
+      Transfer-Encoding:
+      - chunked
       Vary:
       - Origin
       - X-Origin
@@ -52,6 +56,6 @@ interactions:
       X-XSS-Protection:
       - '0'
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
 version: 1

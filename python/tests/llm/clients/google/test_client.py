@@ -1,8 +1,12 @@
 """Tests for llm.clients.GoogleClient."""
 
+import logging
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from mirascope import llm
+from mirascope.llm.clients.google._utils import prepare_google_request
 
 
 def test_custom_base_url() -> None:
@@ -69,3 +73,69 @@ def test_client_caching() -> None:
     client5 = llm.client("google", api_key=None, base_url=None)
     client6 = llm.get_client("google")
     assert client5 is client6
+
+
+def test_prepare_google_request_frequency_penalty_logging(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    messages = [llm.messages.user("test message")]
+
+    with caplog.at_level(logging.WARNING):
+        _, _, _, config = prepare_google_request(
+            model_id="gemini-2.5-pro",
+            messages=messages,
+            params={"frequency_penalty": 0.5},
+        )
+
+    assert len(caplog.records) == 1
+    assert (
+        "parameter frequency_penalty is not supported for model gemini-2.5-pro - ignoring"
+        in caplog.records[0].message
+    )
+    assert config is None or not hasattr(config, "frequency_penalty")
+
+    caplog.clear()
+
+    with caplog.at_level(logging.WARNING):
+        _, _, _, config = prepare_google_request(
+            model_id="gemini-2.0-flash",
+            messages=messages,
+            params={"frequency_penalty": 0.5},
+        )
+
+    assert len(caplog.records) == 0
+    assert config is not None
+    assert config.frequency_penalty == 0.5
+
+
+def test_prepare_google_request_presence_penalty_logging(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    messages = [llm.messages.user("test message")]
+
+    with caplog.at_level(logging.WARNING):
+        _, _, _, config = prepare_google_request(
+            model_id="gemini-2.5-flash",
+            messages=messages,
+            params={"presence_penalty": 0.3},
+        )
+
+    assert len(caplog.records) == 1
+    assert (
+        "parameter presence_penalty is not supported for model gemini-2.5-flash - ignoring"
+        in caplog.records[0].message
+    )
+    assert config is not None or not hasattr(config, "presence_penalty")
+
+    caplog.clear()
+
+    with caplog.at_level(logging.WARNING):
+        _, _, _, config = prepare_google_request(
+            model_id="gemini-2.0-flash",
+            messages=messages,
+            params={"presence_penalty": 0.3},
+        )
+
+    assert len(caplog.records) == 0
+    assert config is not None
+    assert config.presence_penalty == 0.3

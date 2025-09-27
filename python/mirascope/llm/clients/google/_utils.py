@@ -1,6 +1,7 @@
 """Google message types and conversion utilities."""
 
 import json
+import logging
 from collections.abc import AsyncIterator, Iterator, Sequence
 from functools import lru_cache
 from typing import Any, Literal
@@ -51,8 +52,16 @@ GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
     "MALFORMED_FUNCTION_CALL": FinishReason.UNKNOWN,
     "FUNCTION_CALL": FinishReason.TOOL_USE,
 }
+logger = logging.getLogger(__name__)
 
 UNKNOWN_TOOL_ID = "<unknown>"
+
+# These models will error if `frequency_penalty` or `presence_penalty` params are used
+MODELS_WITHOUT_PENALTY_SUPPORT = [
+    "gemini-2.5-pro",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+]
 
 
 def _resolve_refs(
@@ -227,9 +236,20 @@ def prepare_google_request(
         if (top_p := params.get("top_p")) is not None:
             config_params["top_p"] = top_p
         if (frequency_penalty := params.get("frequency_penalty")) is not None:
-            config_params["frequency_penalty"] = frequency_penalty
+            if model_id in MODELS_WITHOUT_PENALTY_SUPPORT:
+                logger.warning(
+                    f"parameter frequency_penalty is not supported for model {model_id} - ignoring"
+                )
+            else:
+                config_params["frequency_penalty"] = frequency_penalty
         if (presence_penalty := params.get("presence_penalty")) is not None:
-            config_params["presence_penalty"] = presence_penalty
+            if model_id in MODELS_WITHOUT_PENALTY_SUPPORT:
+                logger.warning(
+                    f"parameter presence_penalty is not supported for model {model_id} - ignoring"
+                )
+            else:
+                config_params["presence_penalty"] = presence_penalty
+
         if (seed := params.get("seed")) is not None:
             config_params["seed"] = seed
         if (top_k := params.get("top_k")) is not None:
