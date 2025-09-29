@@ -12,6 +12,7 @@ from ..clients import (
     GoogleModelId,
     ModelId,
     OpenAIModelId,
+    OpenAIResponsesModelId,
     Params,
     Provider,
 )
@@ -167,6 +168,19 @@ def call(
     **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
     """Decorate a prompt into a Call using OpenAI models."""
+    ...
+
+
+@overload
+def call(
+    *,
+    provider: Literal["openai:responses"],
+    model_id: OpenAIResponsesModelId,
+    tools: list[ToolT] | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+    **params: Unpack[Params],
+) -> CallDecorator[ToolT, FormattableT]:
+    """Decorate a prompt into a Call using OpenAI models (Responses API)."""
     ...
 
 

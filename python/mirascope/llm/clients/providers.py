@@ -18,11 +18,20 @@ from .openai import (
     client as openai_client,
     get_client as get_openai_client,
 )
+from .openai_responses import (
+    OpenAIResponsesClient,
+    OpenAIResponsesModelId,
+    client as openai_responses_client,
+    get_client as get_openai_responses_client,
+)
 
-Provider: TypeAlias = Literal["openai", "anthropic", "google"]
+# TODO: Revisit OpenAI provider naming and whether Responses should be the default option.
+Provider: TypeAlias = Literal["openai", "anthropic", "google", "openai:responses"]
 PROVIDERS = get_args(Provider)
 
-ModelId: TypeAlias = OpenAIModelId | AnthropicModelId | GoogleModelId | str
+ModelId: TypeAlias = (
+    OpenAIModelId | AnthropicModelId | GoogleModelId | OpenAIResponsesModelId | str
+)
 
 
 @overload
@@ -43,7 +52,15 @@ def get_client(provider: Literal["openai"]) -> OpenAIClient:
     ...
 
 
-def get_client(provider: Provider) -> AnthropicClient | GoogleClient | OpenAIClient:
+@overload
+def get_client(provider: Literal["openai:responses"]) -> OpenAIResponsesClient:
+    """Get an OpenAI responsees client instance."""
+    ...
+
+
+def get_client(
+    provider: Provider,
+) -> AnthropicClient | GoogleClient | OpenAIClient | OpenAIResponsesClient:
     """Get a client instance for the specified provider.
 
     Args:
@@ -52,7 +69,8 @@ def get_client(provider: Provider) -> AnthropicClient | GoogleClient | OpenAICli
     Returns:
         A client instance for the specified provider. The specific client type
         depends on the provider:
-        - "openai" returns OpenAIClient
+        - "openai" returns OpenAIClient (ChatCompletion API)
+        - "openai:responses" returns OpenAIResponsesClient (Responses API)
         - "anthropic" returns AnthropicClient
         - "google" returns GoogleClient
 
@@ -69,6 +87,8 @@ def get_client(provider: Provider) -> AnthropicClient | GoogleClient | OpenAICli
             return get_anthropic_client()
         case "google":
             return get_google_client()
+        case "openai:responses":
+            return get_openai_responses_client()
         case _:
             raise ValueError(f"Unknown provider: {provider}")
 
@@ -80,7 +100,18 @@ def client(
     api_key: str | None = None,
     base_url: str | None = None,
 ) -> OpenAIClient:
-    """Create a cached OpenAI client with the given parameters."""
+    """Create a cached OpenAI chat completions client with the given parameters."""
+    ...
+
+
+@overload
+def client(
+    provider: Literal["openai:responses"],
+    *,
+    api_key: str | None = None,
+    base_url: str | None = None,
+) -> OpenAIResponsesClient:
+    """Create a cached OpenAI responses client with the given parameters."""
     ...
 
 
@@ -108,7 +139,7 @@ def client(
 
 def client(
     provider: Provider, *, api_key: str | None = None, base_url: str | None = None
-) -> AnthropicClient | GoogleClient | OpenAIClient:
+) -> AnthropicClient | GoogleClient | OpenAIClient | OpenAIResponsesClient:
     """Create a cached client instance for the specified provider.
 
     Args:
@@ -125,6 +156,8 @@ def client(
     match provider:
         case "openai":
             return openai_client(api_key=api_key, base_url=base_url)
+        case "openai:responses":
+            return openai_responses_client(api_key=api_key, base_url=base_url)
         case "anthropic":
             return anthropic_client(api_key=api_key, base_url=base_url)
         case "google":

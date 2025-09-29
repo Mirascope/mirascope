@@ -1197,6 +1197,17 @@ def model(
 @overload
 def model(
     *,
+    provider: Literal["openai:responses"],
+    model_id: OpenAIModelId,
+    **params: Unpack[Params],
+) -> Model:
+    """Create an `llm.Model` instance for OpenAI models (responses API)."""
+    ...
+
+
+@overload
+def model(
+    *,
     provider: Provider,
     model_id: ModelId,
     **params: Unpack[Params],
