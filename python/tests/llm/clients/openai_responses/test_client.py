@@ -1,6 +1,66 @@
 """Tests for OpenAIClient"""
 
+from inline_snapshot import snapshot
+
 from mirascope import llm
+from mirascope.llm.clients.openai_responses import _utils as openai_utils
+
+
+def test_prepare_message_multiple_assistant_text_parts() -> None:
+    """Test preparing an OpenAI request with multiple text parts in an assistant message.
+
+    Included for code coverage.
+    """
+
+    messages = [
+        llm.messages.user("Hello there"),
+        llm.messages.assistant(["General ", "Kenobi"]),
+    ]
+    assert openai_utils.prepare_openai_request(
+        model_id="gpt-4o", messages=messages
+    ) == snapshot(
+        (
+            None,
+            {
+                "model": "gpt-4o",
+                "input": [
+                    {"role": "user", "content": "Hello there"},
+                    {
+                        "role": "assistant",
+                        "content": [
+                            {"text": "General ", "type": "input_text"},
+                            {"text": "Kenobi", "type": "input_text"},
+                        ],
+                    },
+                ],
+            },
+        )
+    )
+
+
+def test_prepare_message_multiple_system_messages() -> None:
+    """Test preparing an OpenAI request with multiple system messages."""
+
+    messages = [
+        llm.messages.user("Hello there"),
+        llm.messages.system("Be concise."),
+        llm.messages.system("On second thought, be verbose."),
+    ]
+    assert openai_utils.prepare_openai_request(
+        model_id="gpt-4o", messages=messages
+    ) == snapshot(
+        (
+            None,
+            {
+                "model": "gpt-4o",
+                "input": [
+                    {"role": "user", "content": "Hello there"},
+                    {"role": "developer", "content": "Be concise."},
+                    {"role": "developer", "content": "On second thought, be verbose."},
+                ],
+            },
+        )
+    )
 
 
 def test_context_manager() -> None:

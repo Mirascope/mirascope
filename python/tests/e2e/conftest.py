@@ -16,6 +16,15 @@ PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("openai", "gpt-4o"),
 ]
 
+PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES: list[
+    tuple[llm.Provider, llm.ModelId]
+] = [
+    ("anthropic", "claude-sonnet-4-0"),
+    ("google", "gemini-2.5-flash"),
+    ("openai", "gpt-4o"),
+    ("openai:responses", "gpt-4o"),
+]
+
 CallType = Literal[
     "sync",
     "async",
@@ -123,13 +132,15 @@ def vcr_cassette_name(
     test_name = request.node.name
     scenario, call_type = _parse_test_name(test_name)
 
+    provider_dir = provider.replace(":", "_")
+
     # Context and non-context calls share the same cassettes.
     cassette_call_type = call_type.replace("_context", "")
 
     return (
-        f"{scenario}/{provider}/{cassette_call_type}"
+        f"{scenario}/{provider_dir}/{cassette_call_type}"
         if formatting_mode is None
-        else f"{scenario}/{provider}/{formatting_mode}_{cassette_call_type}"
+        else f"{scenario}/{provider_dir}/{formatting_mode}_{cassette_call_type}"
     )
 
 
@@ -142,11 +153,12 @@ def snapshot(
     """Get snapshot for current test configuration."""
     test_name = request.node.name
     scenario, call_type = _parse_test_name(test_name)
+    provider_dir = provider.replace(":", "_")
 
     file_name = (
-        f"{provider}_snapshots"
+        f"{provider_dir}_snapshots"
         if formatting_mode is None
-        else f"{formatting_mode}_{provider}_snapshots"
+        else f"{formatting_mode}_{provider_dir}_snapshots"
     )
     module_path = f"e2e.snapshots.{scenario}.{file_name}"
     snapshot_file = Path(__file__).parent / "snapshots" / scenario / f"{file_name}.py"

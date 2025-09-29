@@ -33,6 +33,7 @@ from ...tools import (
     Toolkit,
 )
 from ..base import BaseClient, Params
+from . import _utils
 from .model_ids import OpenAIResponsesModelId
 
 OPENAI_RESPONSES_CLIENT_CONTEXT: ContextVar["OpenAIResponsesClient | None"] = (
@@ -140,7 +141,29 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        raise NotImplementedError("responses API not yet implemented")
+        format, kwargs = _utils.prepare_openai_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+
+        openai_response = self.client.responses.create(**kwargs)
+
+        assistant_message = _utils.decode_response(openai_response)
+
+        return Response(
+            raw=openai_response,
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            tools=tools,
+            input_messages=messages,
+            assistant_message=assistant_message,
+            finish_reason=None,  # OpenAI Responses API does not provide finish reason
+            format=format,
+        )
 
     @overload
     async def call_async(
@@ -202,8 +225,28 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        raise NotImplementedError(
-            "Async calls not yet implemented for OpenAI Responses API"
+        format, kwargs = _utils.prepare_openai_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+
+        openai_response = await self.async_client.responses.create(**kwargs)
+
+        assistant_message = _utils.decode_response(openai_response)
+
+        return AsyncResponse(
+            raw=openai_response,
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            tools=tools,
+            input_messages=messages,
+            assistant_message=assistant_message,
+            finish_reason=None,  # OpenAI Responses API does not provide finish reason
+            format=format,
         )
 
     @overload
@@ -266,8 +309,31 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.StreamResponse` object containing the LLM-generated content stream.
         """
-        raise NotImplementedError(
-            "Streaming not yet implemented for OpenAI Responses API"
+        format, kwargs = _utils.prepare_openai_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+
+        openai_stream = self.client.responses.create(
+            **kwargs,
+            stream=True,
+        )
+
+        chunk_iterator = _utils.convert_openai_responses_stream_to_chunk_iterator(
+            openai_stream
+        )
+
+        return StreamResponse(
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            tools=tools,
+            input_messages=messages,
+            chunk_iterator=chunk_iterator,
+            format=format,
         )
 
     @overload
@@ -330,8 +396,31 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.AsyncStreamResponse` object containing the LLM-generated content stream.
         """
-        raise NotImplementedError(
-            "Async streaming not yet implemented for OpenAI Responses API"
+        format, kwargs = _utils.prepare_openai_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+
+        openai_stream = await self.async_client.responses.create(
+            **kwargs,
+            stream=True,
+        )
+
+        chunk_iterator = _utils.convert_openai_responses_stream_to_async_chunk_iterator(
+            openai_stream
+        )
+
+        return AsyncStreamResponse(
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            tools=tools,
+            input_messages=messages,
+            chunk_iterator=chunk_iterator,
+            format=format,
         )
 
     @overload
@@ -407,8 +496,28 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.ContextResponse` object containing the LLM-generated content and context.
         """
-        raise NotImplementedError(
-            "Context calls not yet implemented for OpenAI Responses API"
+        format, kwargs = _utils.prepare_openai_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+
+        openai_response = self.client.responses.create(**kwargs)
+
+        assistant_message = _utils.decode_response(openai_response)
+
+        return ContextResponse(
+            raw=openai_response,
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            tools=tools,
+            input_messages=messages,
+            assistant_message=assistant_message,
+            finish_reason=None,  # OpenAI Responses API does not provide finish reason
+            format=format,
         )
 
     @overload
@@ -484,8 +593,28 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.AsyncContextResponse` object containing the LLM-generated content and context.
         """
-        raise NotImplementedError(
-            "Async context calls not yet implemented for OpenAI Responses API"
+        format, kwargs = _utils.prepare_openai_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+
+        openai_response = await self.async_client.responses.create(**kwargs)
+
+        assistant_message = _utils.decode_response(openai_response)
+
+        return AsyncContextResponse(
+            raw=openai_response,
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            tools=tools,
+            input_messages=messages,
+            assistant_message=assistant_message,
+            finish_reason=None,  # OpenAI Responses API does not provide finish reason
+            format=format,
         )
 
     @overload
@@ -561,8 +690,31 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.ContextStreamResponse` object containing the LLM-generated content stream and context.
         """
-        raise NotImplementedError(
-            "Context streaming not yet implemented for OpenAI Responses API"
+        format, kwargs = _utils.prepare_openai_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+
+        openai_stream = self.client.responses.create(
+            **kwargs,
+            stream=True,
+        )
+
+        chunk_iterator = _utils.convert_openai_responses_stream_to_chunk_iterator(
+            openai_stream
+        )
+
+        return ContextStreamResponse(
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            tools=tools,
+            input_messages=messages,
+            chunk_iterator=chunk_iterator,
+            format=format,
         )
 
     @overload
@@ -644,6 +796,29 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.AsyncContextStreamResponse` object containing the LLM-generated content stream and context.
         """
-        raise NotImplementedError(
-            "Async context streaming not yet implemented for OpenAI Responses API"
+        format, kwargs = _utils.prepare_openai_request(
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
+        )
+
+        openai_stream = await self.async_client.responses.create(
+            **kwargs,
+            stream=True,
+        )
+
+        chunk_iterator = _utils.convert_openai_responses_stream_to_async_chunk_iterator(
+            openai_stream
+        )
+
+        return AsyncContextStreamResponse(
+            provider="openai",
+            model_id=model_id,
+            params=params,
+            tools=tools,
+            input_messages=messages,
+            chunk_iterator=chunk_iterator,
+            format=format,
         )
