@@ -29,13 +29,13 @@ interactions:
         \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 8,\"candidatesTokenCount\":
         50,\"totalTokenCount\": 91,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
         8}],\"thoughtsTokenCount\": 33},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
-        \"1SnXaPXtIpjhz7IPrYHZsQo\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
-        {\"parts\": [{\"text\": \"\\n8.  Delaware\\n9.  Florida\\n10. Georgia\\n11.
-        Hawaii\\n12. Idaho\\n13. Illinois\\n14.\"}],\"role\": \"model\"},\"finishReason\":
-        \"MAX_TOKENS\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 8,\"candidatesTokenCount\":
+        \"qQLbaOGaLZzkqtsP1MWmYQ\"}\r\n\r\ndata: {\"candidates\": [{\"content\": {\"parts\":
+        [{\"text\": \"\\n8.  Delaware\\n9.  Florida\\n10. Georgia\\n11. Hawaii\\n12.
+        Idaho\\n13. Illinois\\n14.\"}],\"role\": \"model\"},\"finishReason\": \"MAX_TOKENS\",\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 8,\"candidatesTokenCount\":
         84,\"totalTokenCount\": 125,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
         8}],\"thoughtsTokenCount\": 33},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
-        \"1SnXaPXtIpjhz7IPrYHZsQo\"}\r\n\r\n"
+        \"qQLbaOGaLZzkqtsP1MWmYQ\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -44,11 +44,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Sat, 27 Sep 2025 00:03:34 GMT
+      - Mon, 29 Sep 2025 22:05:30 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=915
+      - gfet4t7; dur=1260
       Transfer-Encoding:
       - chunked
       Vary:

@@ -108,8 +108,6 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
     temperature: float | NotGiven
     max_tokens: int | NotGiven
     top_p: float | NotGiven
-    frequency_penalty: float | NotGiven
-    presence_penalty: float | NotGiven
     seed: int | NotGiven
     stop: str | list[str] | NotGiven
 
@@ -299,10 +297,6 @@ def prepare_openai_request(
             kwargs["max_tokens"] = max_tokens
         if (top_p := params.get("top_p")) is not None:
             kwargs["top_p"] = top_p
-        if (frequency_penalty := params.get("frequency_penalty")) is not None:
-            kwargs["frequency_penalty"] = frequency_penalty
-        if (presence_penalty := params.get("presence_penalty")) is not None:
-            kwargs["presence_penalty"] = presence_penalty
         if (seed := params.get("seed")) is not None:
             kwargs["seed"] = seed
         if (stop_sequences := params.get("stop_sequences")) is not None:

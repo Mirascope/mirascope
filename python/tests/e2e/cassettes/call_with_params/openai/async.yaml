@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"gpt-4o","frequency_penalty":0.1,"max_tokens":500,"presence_penalty":0.1,"seed":42,"stop":["4242"],"temperature":0.7,"top_p":0.3}'
+    body: '{"messages":[{"role":"user","content":"What is 4200 + 42?"}],"model":"gpt-4o","max_tokens":500,"seed":42,"stop":["4242"],"temperature":0.7,"top_p":0.3}'
     headers:
       accept:
       - application/json
@@ -9,7 +9,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '198'
+      - '151'
       content-type:
       - application/json
       cookie:
@@ -41,17 +41,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jJJNT+MwEIbv+RXWXLdBaWj6dVtxQgLECrEXhCLXniQGxzb2ZFWE+t9X
-        TkoTPlbaSw7zzDt+38m8JYyBkrBlIBpOonU6vbjim6v89nr/c3d52T7dNC+/7u/F76za78UdzKLC
-        7p5Q0LvqTNjWaSRlzYCFR04Yp85XxSYvNuv1eQ9aK1FHWe0oXdg0z/JFmq3TbHkUNlYJDLBlDwlj
-        jL3132jRSNzDlmWz90qLIfAaYXtqYgy81bECPAQViBuC2QiFNYSmd73Is4z9YIuc4UvHdWDTPo9V
-        F3i0aTqtJ4AbY4nHmL3DxyM5nDxpWztvd+GTFCplVGhKjzxYE98PZB309JAw9thn7z7EAedt66gk
-        +4z9c/PlMA7GZY9wc2RkieuxnBezb4aVEokrHSarA8FFg3JUjnvmnVR2ApJJ5K9evps9xFam/p/x
-        IxACHaEsnUepxMe8Y5vHeIn/ajutuDcMAf0fJbAkhT7+BokV7/RwJBBeA2FbVsrU6J1Xw6VUrhS7
-        ar5aF8VyBckh+QsAAP//AwCQ3PARMgMAAA==
+        H4sIAAAAAAAAAwAAAP//jJJNb9swDIbv/hUCr4sH1XHTNrdhX5dhh6HABgyFwUi0o02WVIneR4v8
+        90F2GrtrB+ziAx++1PvSvC+EAKNhK0DtkVUfbPn6A36MZn1Nt+/fpYHdG3x17e4+3f38vPvyFlZZ
+        4XffSPGD6qXyfbDExrsJq0jIlKeeXZxfVRt5cbkeQe812SzrApe1LytZ1aW8LOXmKNx7oyjBVnwt
+        hBDifvxmi07TL9gKuXqo9JQSdgTbU5MQEL3NFcCUTGJ0DKsZKu+Y3Oi6rqQUL0RdCbod0Cax7IvU
+        DgmzTTdYuwDonGfMMUeHN0dyOHmyvgvR79JfUmiNM2nfRMLkXX4/sQ8w0kMhxM2YfXgUB0L0feCG
+        /XcanzvbTONgXvYMr46MPaOdy9X56plhjSZGY9NidaBQ7UnPynnPOGjjF6BYRH7q5bnZU2zjuv8Z
+        PwOlKDDpJkTSRj3OO7dFypf4r7bTikfDkCj+MIoaNhTzb9DU4mCnI4H0OzH1TWtcRzFEM11KG5p2
+        vd7UEmspoTgUfwAAAP//AwDrzXouMgMAAA==
     headers:
       CF-RAY:
-      - 9876105d8e8576c2-SEA
+      - 98762656492ac372-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -59,14 +59,14 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 30 Sep 2025 19:18:03 GMT
+      - Tue, 30 Sep 2025 19:33:03 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=ysK3Ne2ZA6uGYSeI3GB7l46DtIP_W8daltRcfYDjCFs-1759259883-1.0.1.1-H7djkQ6YY9EzKVAh6dF0kcCHal9uPLRhb584fof1rz033HmQpyDUe.frQ2lyVSD0kgSGB_Sqe9pu4BH0lE0LJZ3l6SkVtAP9eVykuaWP5kg;
-        path=/; expires=Tue, 30-Sep-25 19:48:03 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=Qgo3t4y.3M8vEXzPhUEMf1TJ3XWHZ3uR3PkJkPHDrYQ-1759260783-1.0.1.1-q3Xw9gLox3hkIqhdRotmdaiQCCdpkEP2cZHLf8E9RLcHLRkOMy9t4IQDknSCiU3M1nVPp2LlGfxWMGBXk7I.zNiQ33qSnfN8rq.qFXOwLjE;
+        path=/; expires=Tue, 30-Sep-25 20:03:03 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=KntsrJ2Rrdy6yfiypkPV7XE9eNU131AlfYz2JoE10_I-1759259883920-0.0.1.1-604800000;
+      - _cfuvid=50dK1WaninuhqKqW2C1BJhsYbiySttJdiQiz06RtoI0-1759260783996-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -83,13 +83,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '573'
+      - '426'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '719'
+      - '541'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -105,7 +105,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 0s
       x-request-id:
-      - req_bc5d239e3d6544ccadf21b3f0f94fc63
+      - req_265eebbd2b0c4d69a0376bbe292beede
     status:
       code: 200
       message: OK

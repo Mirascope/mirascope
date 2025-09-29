@@ -2,8 +2,7 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}],
       "generationConfig": {"temperature": 0.7, "topP": 0.3, "topK": 50.0, "maxOutputTokens":
-      500, "stopSequences": ["4242"], "presencePenalty": 0.1, "frequencyPenalty":
-      0.1, "seed": 42}}'
+      500, "stopSequences": ["4242"], "seed": 42}}'
     headers:
       accept:
       - '*/*'
@@ -12,7 +11,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '256'
+      - '207'
       content-type:
       - application/json
       host:
@@ -22,19 +21,15 @@ interactions:
       x-goog-api-client:
       - google-genai-sdk/1.31.0 gl-python/3.10.16
     method: POST
-    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent?alt=sse
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
-      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"4200\"}],\"role\":
-        \"model\"}}],\"usageMetadata\": {\"promptTokenCount\": 13,\"totalTokenCount\":
-        13,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 13}]},\"modelVersion\":
-        \"gemini-2.0-flash\",\"responseId\": \"gMTaaKmOIpHmgbUPidTOuQo\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" + 42 = \"}],\"role\":
-        \"model\"},\"finishReason\": \"STOP\"}],\"usageMetadata\": {\"promptTokenCount\":
-        12,\"candidatesTokenCount\": 10,\"totalTokenCount\": 22,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 12}],\"candidatesTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 10}]},\"modelVersion\": \"gemini-2.0-flash\",\"responseId\":
-        \"gMTaaKmOIpHmgbUPidTOuQo\"}\r\n\r\n"
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"To
+        find the sum of 4200 and 42, you add them together:\\n\\n4200\\n+   42\\n------\\n\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        13,\"candidatesTokenCount\": 32,\"totalTokenCount\": 85,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 13}],\"thoughtsTokenCount\": 40},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"pQLbaMTMIb63qtsPy5ibKQ\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -43,11 +38,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Mon, 29 Sep 2025 17:40:16 GMT
+      - Mon, 29 Sep 2025 22:05:25 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=459
+      - gfet4t7; dur=757
       Transfer-Encoding:
       - chunked
       Vary:

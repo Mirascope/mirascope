@@ -55,13 +55,6 @@ logger = logging.getLogger(__name__)
 
 UNKNOWN_TOOL_ID = "<unknown>"
 
-# These models will error if `frequency_penalty` or `presence_penalty` params are used
-MODELS_WITHOUT_PENALTY_SUPPORT = [
-    "gemini-2.5-pro",
-    "gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-]
-
 
 def _resolve_refs(
     schema: dict[str, Any], defs: dict[str, Any] | None = None
@@ -231,21 +224,6 @@ def prepare_google_request(
             google_config["max_output_tokens"] = max_tokens
         if (top_p := params.get("top_p")) is not None:
             google_config["top_p"] = top_p
-        if (frequency_penalty := params.get("frequency_penalty")) is not None:
-            if model_id in MODELS_WITHOUT_PENALTY_SUPPORT:
-                logger.warning(
-                    f"parameter frequency_penalty is not supported for model {model_id} - ignoring"
-                )
-            else:
-                google_config["frequency_penalty"] = frequency_penalty
-        if (presence_penalty := params.get("presence_penalty")) is not None:
-            if model_id in MODELS_WITHOUT_PENALTY_SUPPORT:
-                logger.warning(
-                    f"parameter presence_penalty is not supported for model {model_id} - ignoring"
-                )
-            else:
-                google_config["presence_penalty"] = presence_penalty
-
         if (seed := params.get("seed")) is not None:
             google_config["seed"] = seed
         if (top_k := params.get("top_k")) is not None:
