@@ -18,8 +18,6 @@ sync_snapshot = snapshot(
                     "max_tokens": 500,
                     "top_p": 0.3,
                     "top_k": 50,
-                    "frequency_penalty": 0.1,
-                    "presence_penalty": 0.1,
                     "seed": 42,
                     "stop_sequences": ["4242"],
                 },
@@ -32,10 +30,7 @@ sync_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": [
-            "parameter frequency_penalty is not supported by Anthropic - ignoring",
-            "parameter seed is not supported by Anthropic - ignoring",
-        ],
+        "logging": ["parameter seed is not supported by Anthropic - ignoring"],
     }
 )
 async_snapshot = snapshot(
@@ -49,8 +44,6 @@ async_snapshot = snapshot(
                     "max_tokens": 500,
                     "top_p": 0.3,
                     "top_k": 50,
-                    "frequency_penalty": 0.1,
-                    "presence_penalty": 0.1,
                     "seed": 42,
                     "stop_sequences": ["4242"],
                 },
@@ -63,10 +56,7 @@ async_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": [
-            "parameter frequency_penalty is not supported by Anthropic - ignoring",
-            "parameter seed is not supported by Anthropic - ignoring",
-        ],
+        "logging": ["parameter seed is not supported by Anthropic - ignoring"],
     }
 )
 stream_snapshot = snapshot(
@@ -85,10 +75,7 @@ stream_snapshot = snapshot(
                 "n_chunks": 3,
             },
         ),
-        "logging": [
-            "parameter frequency_penalty is not supported by Anthropic - ignoring",
-            "parameter seed is not supported by Anthropic - ignoring",
-        ],
+        "logging": ["parameter seed is not supported by Anthropic - ignoring"],
     }
 )
 async_stream_snapshot = snapshot(
@@ -107,9 +94,6 @@ async_stream_snapshot = snapshot(
                 "n_chunks": 3,
             },
         ),
-        "logging": [
-            "parameter frequency_penalty is not supported by Anthropic - ignoring",
-            "parameter seed is not supported by Anthropic - ignoring",
-        ],
+        "logging": ["parameter seed is not supported by Anthropic - ignoring"],
     }
 )

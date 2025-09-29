@@ -170,10 +170,6 @@ def prepare_anthropic_request(
         if (top_k := params.get("top_k")) is not None:
             kwargs["top_k"] = top_k
 
-        if params.get("frequency_penalty") is not None:
-            logger.warning(
-                "parameter frequency_penalty is not supported by Anthropic - ignoring"
-            )
         if params.get("seed") is not None:
             logger.warning("parameter seed is not supported by Anthropic - ignoring")
 

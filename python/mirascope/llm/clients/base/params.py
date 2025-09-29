@@ -39,17 +39,6 @@ class Params(TypedDict, total=False):
     random responses.
     """
 
-    frequency_penalty: float | None
-    """Penalizes frequent tokens (-2.0 to 2.0)."""
-
-    presence_penalty: float | None
-    """Penalizes tokens based on presence (-2.0 to 2.0).
-    
-    Positive values penalize tokens that repeatedly appear in the
-    generated text, increasing the probability of generating more diverse
-    content.
-    """
-
     seed: int | None
     """Random seed for reproducibility.
     
