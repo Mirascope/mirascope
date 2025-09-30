@@ -16,25 +16,23 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         llm.messages.user("Hello there"),
         llm.messages.assistant(["General ", "Kenobi"]),
     ]
-    assert openai_utils.prepare_openai_request(
+    _, _, kwargs = openai_utils.prepare_openai_request(
         model_id="gpt-4o", messages=messages
-    ) == snapshot(
-        (
-            None,
-            {
-                "model": "gpt-4o",
-                "input": [
-                    {"role": "user", "content": "Hello there"},
-                    {
-                        "role": "assistant",
-                        "content": [
-                            {"text": "General ", "type": "input_text"},
-                            {"text": "Kenobi", "type": "input_text"},
-                        ],
-                    },
-                ],
-            },
-        )
+    )
+    assert kwargs == snapshot(
+        {
+            "model": "gpt-4o",
+            "input": [
+                {"role": "user", "content": "Hello there"},
+                {
+                    "role": "assistant",
+                    "content": [
+                        {"text": "General ", "type": "input_text"},
+                        {"text": "Kenobi", "type": "input_text"},
+                    ],
+                },
+            ],
+        }
     )
 
 
@@ -46,20 +44,18 @@ def test_prepare_message_multiple_system_messages() -> None:
         llm.messages.system("Be concise."),
         llm.messages.system("On second thought, be verbose."),
     ]
-    assert openai_utils.prepare_openai_request(
+    _, _, kwargs = openai_utils.prepare_openai_request(
         model_id="gpt-4o", messages=messages
-    ) == snapshot(
-        (
-            None,
-            {
-                "model": "gpt-4o",
-                "input": [
-                    {"role": "user", "content": "Hello there"},
-                    {"role": "developer", "content": "Be concise."},
-                    {"role": "developer", "content": "On second thought, be verbose."},
-                ],
-            },
-        )
+    )
+    assert kwargs == snapshot(
+        {
+            "model": "gpt-4o",
+            "input": [
+                {"role": "user", "content": "Hello there"},
+                {"role": "developer", "content": "Be concise."},
+                {"role": "developer", "content": "On second thought, be verbose."},
+            ],
+        }
     )
 
 

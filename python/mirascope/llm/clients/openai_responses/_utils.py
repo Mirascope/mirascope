@@ -4,11 +4,21 @@ import logging
 from collections.abc import Sequence
 from typing import Literal, TypedDict
 
-from openai import AsyncStream, Stream
+from openai import AsyncStream, NotGiven, Stream
 from openai.types import responses as openai_types
+from openai.types.responses import response_create_params
 from openai.types.responses.easy_input_message_param import EasyInputMessageParam
 from openai.types.responses.function_tool_param import FunctionToolParam
+from openai.types.responses.response_format_text_json_schema_config_param import (
+    ResponseFormatTextJSONSchemaConfigParam,
+)
 from openai.types.responses.response_stream_event import ResponseStreamEvent
+from openai.types.responses.response_text_config_param import ResponseTextConfigParam
+from openai.types.responses.tool_choice_allowed_param import ToolChoiceAllowedParam
+from openai.types.responses.tool_choice_function_param import ToolChoiceFunctionParam
+from openai.types.shared_params.response_format_json_object import (
+    ResponseFormatJSONObject,
+)
 from openai.types.shared_params.responses_model import ResponsesModel
 
 from ...content import (
@@ -25,6 +35,7 @@ from ...content import (
 from ...formatting import (
     Format,
     FormattableT,
+    _utils as _formatting_utils,
     resolve_format,
 )
 from ...messages import AssistantMessage, Message
@@ -34,10 +45,15 @@ from ...responses import (
     RawChunk,
 )
 from ...tools import (
+    FORMAT_TOOL_NAME,
     BaseToolkit,
     ToolSchema,
 )
-from ..base import Params
+from ..base import Params, _utils as _base_utils
+from ..openai._utils import (
+    MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
+    MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
+)
 from .model_ids import OpenAIResponsesModelId
 
 logger = logging.getLogger(__name__)
@@ -52,7 +68,9 @@ class ResponseCreateKwargs(TypedDict, total=False):
     temperature: float
     max_output_tokens: int
     top_p: float
-    tools: list[FunctionToolParam]
+    tools: list[FunctionToolParam] | NotGiven
+    tool_choice: response_create_params.ToolChoice | NotGiven
+    text: ResponseTextConfigParam
 
 
 def _encode_message(message: Message) -> EasyInputMessageParam:
@@ -86,7 +104,7 @@ def _ensure_additional_properties_false(obj: object) -> None:
     """Recursively adds additionalProperties = False to a schema, required by OpenAI API."""
     if isinstance(obj, dict):
         if obj.get("type") == "object" and "additionalProperties" not in obj:
-            obj["additionalProperties"] = False  # pragma: no cover (REMOVED IN NEXT PR)
+            obj["additionalProperties"] = False
         for value in obj.values():
             _ensure_additional_properties_false(value)
     elif isinstance(obj, list):
@@ -109,6 +127,32 @@ def _convert_tool_to_function_tool_param(tool: ToolSchema) -> FunctionToolParam:
     )
 
 
+def _create_strict_response_format(
+    format: Format[FormattableT],
+) -> ResponseFormatTextJSONSchemaConfigParam:
+    """Create OpenAI Responses strict response format from a Mirascope Format.
+
+    Args:
+        format: The `Format` instance containing schema and metadata
+
+    Returns:
+        ResponseFormatTextJSONSchemaConfigParam for strict structured outputs
+    """
+    schema = format.schema.copy()
+    _ensure_additional_properties_false(schema)
+
+    response_format: ResponseFormatTextJSONSchemaConfigParam = {
+        "type": "json_schema",
+        "name": format.name,
+        "schema": schema,
+    }
+    if format.description:
+        response_format["description"] = format.description
+    response_format["strict"] = True
+
+    return response_format
+
+
 def prepare_openai_request(
     *,
     model_id: OpenAIResponsesModelId,
@@ -116,11 +160,25 @@ def prepare_openai_request(
     tools: Sequence[ToolSchema] | BaseToolkit | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
     params: Params | None = None,
-) -> tuple[Format[FormattableT] | None, ResponseCreateKwargs]:
-    """Prepare OpenAI Responses API request parameters."""
+) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
+    """Prepare OpenAI Responses API request parameters.
+
+    Args:
+        model_id: The OpenAI model string.
+        messages: A sequence of Mirascope `Message`s.
+        tools: A sequence of Mirascope tools (or None).
+        format: A format type (or None).
+        params: Additional parameters.
+
+    Returns:
+        A tuple containing:
+            - A sequence of Mirascope `Message`s, which may include modifications to the
+              system message (e.g. with instructions for JSON mode formatting).
+            - A Format instance (or None).
+            - A ResponseCreateKwargs dict with parameters for OpenAI's Responses create method.
+    """
     kwargs: ResponseCreateKwargs = {
         "model": model_id,
-        "input": [_encode_message(msg) for msg in messages],
     }
 
     if params:
@@ -132,14 +190,50 @@ def prepare_openai_request(
             kwargs["top_p"] = top_p
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-    if tools:
-        openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools]
+    openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools]
+
+    model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+    default_mode = "strict" if model_supports_strict else "tool"
+
+    format = resolve_format(format, default_mode=default_mode)
+    if format is not None:
+        if format.mode == "strict":
+            kwargs["text"] = {"format": _create_strict_response_format(format)}
+        elif format.mode == "tool":
+            format_tool_schema = _formatting_utils.create_tool_schema(format)
+            openai_tools.append(
+                _convert_tool_to_function_tool_param(format_tool_schema)
+            )
+            if tools:
+                kwargs["tool_choice"] = ToolChoiceAllowedParam(
+                    type="allowed_tools",
+                    mode="required",
+                    tools=[
+                        {"type": "function", "name": tool["name"]}
+                        for tool in openai_tools
+                    ],
+                )
+            else:
+                kwargs["tool_choice"] = ToolChoiceFunctionParam(
+                    type="function",
+                    name=FORMAT_TOOL_NAME,
+                )
+        elif (
+            format.mode == "json" and model_id not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+        ):
+            kwargs["text"] = {"format": ResponseFormatJSONObject(type="json_object")}
+
+        if format.formatting_instructions:
+            messages = _base_utils.add_system_instructions(
+                messages, format.formatting_instructions
+            )
+
+    kwargs["input"] = [_encode_message(msg) for msg in messages]
+
+    if openai_tools:
         kwargs["tools"] = openai_tools
 
-    format = resolve_format(format, default_mode="strict")
-    if format is not None:
-        raise NotImplementedError("Structured output not yet supported")
-    return format, kwargs
+    return messages, format, kwargs
 
 
 def decode_response(

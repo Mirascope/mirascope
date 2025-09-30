@@ -5,7 +5,7 @@ import logging
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES, Snapshot
+from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
 from tests.utils import (
     exception_snapshot_dict,
     response_snapshot_dict,
@@ -23,9 +23,7 @@ ALL_PARAMS: llm.Params = {
 }
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_params_sync(
     provider: llm.Provider,
@@ -55,9 +53,7 @@ def test_call_with_params_sync(
         assert snapshot_data == snapshot
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_params_stream(
     provider: llm.Provider,
@@ -89,9 +85,7 @@ def test_call_with_params_stream(
         assert snapshot_data == snapshot
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_params_async(
@@ -122,9 +116,7 @@ async def test_call_with_params_async(
         assert snapshot_data == snapshot
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_params_async_stream(
@@ -166,9 +158,7 @@ MINIMAL_PARAMS: llm.Params = {
 }
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_minimal_params_sync(
     provider: llm.Provider,
@@ -198,9 +188,7 @@ def test_call_with_minimal_params_sync(
         assert snapshot_data == snapshot
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_minimal_params_stream(
     provider: llm.Provider,
@@ -232,9 +220,7 @@ def test_call_with_minimal_params_stream(
         assert snapshot_data == snapshot
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_minimal_params_async(
@@ -265,9 +251,7 @@ async def test_call_with_minimal_params_async(
         assert snapshot_data == snapshot
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_minimal_params_async_stream(

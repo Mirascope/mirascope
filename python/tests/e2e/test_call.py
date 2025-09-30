@@ -4,7 +4,7 @@ import pytest
 
 from mirascope import llm
 from tests.e2e.conftest import (
-    PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES,
+    PROVIDER_MODEL_ID_PAIRS,
     Snapshot,
 )
 from tests.utils import response_snapshot_dict, stream_response_snapshot_dict
@@ -14,7 +14,7 @@ from tests.utils import response_snapshot_dict, stream_response_snapshot_dict
 
 @pytest.mark.parametrize(
     "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES,
+    PROVIDER_MODEL_ID_PAIRS,
 )
 @pytest.mark.vcr
 def test_call_sync(
@@ -34,9 +34,7 @@ def test_call_sync(
     )
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_sync_context(
     provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
@@ -59,9 +57,7 @@ def test_call_sync_context(
 # ============= ASYNC TESTS =============
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async(
@@ -81,9 +77,7 @@ async def test_call_async(
     )
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async_context(
@@ -107,9 +101,7 @@ async def test_call_async_context(
 # ============= STREAM TESTS =============
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_stream(
     provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
@@ -131,9 +123,7 @@ def test_call_stream(
     )
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_stream_context(
     provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
@@ -159,9 +149,7 @@ def test_call_stream_context(
 # ============= ASYNC STREAM TESTS =============
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async_stream(
@@ -184,9 +172,7 @@ async def test_call_async_stream(
     )
 
 
-@pytest.mark.parametrize(
-    "provider,model_id", PROVIDER_MODEL_ID_PAIRS_WITH_OPENAI_RESPONSES
-)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_async_stream_context(
