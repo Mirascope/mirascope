@@ -134,7 +134,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Args:
             model_id: Model identifier to use.
             messages: Messages to send to the LLM.
-            tools: Not supported in Responses API (yet).
+            tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
@@ -218,7 +218,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Args:
             model_id: Model identifier to use.
             messages: Messages to send to the LLM.
-            tools: Not supported in Responses API (yet).
+            tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
@@ -302,7 +302,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Args:
             model_id: Model identifier to use.
             messages: Messages to send to the LLM.
-            tools: Not supported in Responses API (yet).
+            tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
@@ -389,7 +389,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Args:
             model_id: Model identifier to use.
             messages: Messages to send to the LLM.
-            tools: Not supported in Responses API (yet).
+            tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
@@ -489,7 +489,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
             ctx: The context object containing dependencies.
             model_id: Model identifier to use.
             messages: Messages to send to the LLM.
-            tools: Not supported in Responses API (yet).
+            tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
@@ -586,7 +586,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
             ctx: The context object containing dependencies.
             model_id: Model identifier to use.
             messages: Messages to send to the LLM.
-            tools: Not supported in Responses API (yet).
+            tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
@@ -683,7 +683,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
             ctx: The context object containing dependencies.
             model_id: Model identifier to use.
             messages: Messages to send to the LLM.
-            tools: Not supported in Responses API (yet).
+            tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
@@ -789,7 +789,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
             ctx: The context object containing dependencies.
             model_id: Model identifier to use.
             messages: Messages to send to the LLM.
-            tools: Not supported in Responses API (yet).
+            tools: Optional tools that the model may invoke.
             format: Optional response format specifier.
             **params: Additional parameters to configure output (e.g. temperature). See `llm.Params`.
 
