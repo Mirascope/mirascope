@@ -3,7 +3,7 @@
 import logging
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import Literal, TypedDict
+from typing import Literal
 
 from openai import AsyncStream, NotGiven, Stream
 from openai.types import chat as openai_types, shared_params as shared_openai_types
@@ -36,7 +36,7 @@ from ...responses import (
     RawChunk,
 )
 from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
-from ..base import Params, _utils as _base_utils
+from ..base import BaseKwargs, Params, _utils as _base_utils
 from .model_ids import OpenAIModelId
 
 logger = logging.getLogger(__name__)
@@ -92,7 +92,7 @@ MODELS_WITHOUT_JSON_OBJECT_SUPPORT = {
 }
 
 
-class ChatCompletionCreateKwargs(TypedDict, total=False):
+class ChatCompletionCreateKwargs(BaseKwargs, total=False):
     """Kwargs for OpenAI ChatCompletion.create method."""
 
     model: str
@@ -263,6 +263,16 @@ def _create_strict_response_format(
     )
 
 
+PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
+    "temperature": "temperature",
+    "max_tokens": "max_tokens",
+    "top_p": "top_p",
+    "top_k": None,
+    "seed": "seed",
+    "stop_sequences": "stop",
+}
+
+
 def prepare_openai_request(
     *,
     model_id: OpenAIModelId,
@@ -290,20 +300,12 @@ def prepare_openai_request(
         "model": model_id,
     }
 
-    if params:
-        if (temperature := params.get("temperature")) is not None:
-            kwargs["temperature"] = temperature
-        if (max_tokens := params.get("max_tokens")) is not None:
-            kwargs["max_tokens"] = max_tokens
-        if (top_p := params.get("top_p")) is not None:
-            kwargs["top_p"] = top_p
-        if (seed := params.get("seed")) is not None:
-            kwargs["seed"] = seed
-        if (stop_sequences := params.get("stop_sequences")) is not None:
-            kwargs["stop"] = stop_sequences
-
-        if params.get("top_k") is not None:
-            logger.warning("parameter top_k is not supported by OpenAI - ignoring")
+    kwargs = _base_utils.map_params_to_kwargs(
+        params,
+        kwargs,
+        PARAMS_TO_KWARGS,
+        provider="OpenAI",
+    )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
 

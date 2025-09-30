@@ -1,9 +1,13 @@
 import logging
 from collections.abc import Sequence
-from typing import TypeAlias
+from typing import TypeAlias, TypedDict
 
 from ...content import Text
 from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
+from .kwargs import KwargsT
+from .params import Params
+
+logger = logging.getLogger(__name__)
 
 SystemMessageContent: TypeAlias = str | None
 
@@ -70,3 +74,51 @@ def extract_system_message(
             remaining_messages.append(message)
 
     return system_message_content, remaining_messages
+
+
+class ParamsToKwargs(TypedDict, total=True):
+    """A provider-specific map that defines how to process every key in Params"""
+
+    temperature: str | None
+    max_tokens: str | None
+    top_p: str | None
+    top_k: str | None
+    seed: str | None
+    stop_sequences: str | None
+
+
+def map_params_to_kwargs(
+    params: Params | None,
+    kwargs: KwargsT,
+    mapping: ParamsToKwargs,
+    provider: str,
+) -> KwargsT:
+    """Map params into a provider-specific kwarg dict.
+
+    Takes the params to map, the kwargs to update, and a mapping on how to handle params.
+    The mapping must map from every parameter to one of three possible values, either:
+    - a string key to map the parameter to in the kwargs dict, unchanged
+    - None, if the parameter is unsupported
+
+    If any used param is unsupported (not present in the mapping dict), then a runtime error will
+    be raised.
+
+    Logs a warning when a parameter is unsupported.
+    """
+    if not params:
+        return kwargs
+    kwargs = kwargs.copy()
+    for param, value in params.items():
+        if param not in mapping:
+            raise RuntimeError(
+                f"Parameter mapping missing parameter: {param}"
+            )  # pragma: no cover
+        kwarg = mapping[param]
+        if kwarg is None:
+            logger.warning(
+                f"Skipping unsupported parameter: {param}={value} for provider {provider}"
+            )
+        else:
+            kwargs[kwarg] = value
+
+    return kwargs

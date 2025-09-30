@@ -29,7 +29,11 @@ sync_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": [],
+        "logging": [
+            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
+            "Skipping unsupported parameter: seed=42 for provider OpenAI",
+            "Skipping unsupported parameter: stop_sequences=['4242'] for provider OpenAI",
+        ],
     }
 )
 async_snapshot = snapshot(
@@ -55,7 +59,11 @@ async_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": [],
+        "logging": [
+            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
+            "Skipping unsupported parameter: seed=42 for provider OpenAI",
+            "Skipping unsupported parameter: stop_sequences=['4242'] for provider OpenAI",
+        ],
     }
 )
 stream_snapshot = snapshot(
@@ -74,7 +82,11 @@ stream_snapshot = snapshot(
                 "n_chunks": 12,
             },
         ),
-        "logging": [],
+        "logging": [
+            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
+            "Skipping unsupported parameter: seed=42 for provider OpenAI",
+            "Skipping unsupported parameter: stop_sequences=['4242'] for provider OpenAI",
+        ],
     }
 )
 async_stream_snapshot = snapshot(
@@ -93,6 +105,10 @@ async_stream_snapshot = snapshot(
                 "n_chunks": 12,
             },
         ),
-        "logging": [],
+        "logging": [
+            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
+            "Skipping unsupported parameter: seed=42 for provider OpenAI",
+            "Skipping unsupported parameter: stop_sequences=['4242'] for provider OpenAI",
+        ],
     }
 )

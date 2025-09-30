@@ -30,7 +30,7 @@ sync_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": ["parameter top_k is not supported by OpenAI - ignoring"],
+        "logging": ["Skipping unsupported parameter: top_k=50 for provider OpenAI"],
     }
 )
 async_snapshot = snapshot(
@@ -56,7 +56,7 @@ async_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": ["parameter top_k is not supported by OpenAI - ignoring"],
+        "logging": ["Skipping unsupported parameter: top_k=50 for provider OpenAI"],
     }
 )
 stream_snapshot = snapshot(
@@ -75,7 +75,7 @@ stream_snapshot = snapshot(
                 "n_chunks": 10,
             },
         ),
-        "logging": ["parameter top_k is not supported by OpenAI - ignoring"],
+        "logging": ["Skipping unsupported parameter: top_k=50 for provider OpenAI"],
     }
 )
 async_stream_snapshot = snapshot(
@@ -94,6 +94,6 @@ async_stream_snapshot = snapshot(
                 "n_chunks": 10,
             },
         ),
-        "logging": ["parameter top_k is not supported by OpenAI - ignoring"],
+        "logging": ["Skipping unsupported parameter: top_k=50 for provider OpenAI"],
     }
 )

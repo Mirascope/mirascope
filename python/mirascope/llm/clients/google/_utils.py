@@ -1,7 +1,6 @@
 """Google message types and conversion utilities."""
 
 import json
-import logging
 from collections.abc import AsyncIterator, Iterator, Sequence
 from functools import lru_cache
 from typing import Any, Literal, cast
@@ -36,7 +35,7 @@ from ...responses import (
     RawChunk,
 )
 from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
-from ..base import Params, _utils as _base_utils
+from ..base import BaseKwargs, Params, _utils as _base_utils
 from .model_ids import GoogleModelId
 
 GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
@@ -51,9 +50,12 @@ GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
     "MALFORMED_FUNCTION_CALL": FinishReason.UNKNOWN,
     "FUNCTION_CALL": FinishReason.TOOL_USE,
 }
-logger = logging.getLogger(__name__)
 
 UNKNOWN_TOOL_ID = "<unknown>"
+
+
+class GoogleKwargs(BaseKwargs, genai_types.GenerateContentConfigDict):
+    """Google's `GenerateContentConfigDict` typed dict, subclassing BaseKwargs for type safety."""
 
 
 def _resolve_refs(
@@ -204,6 +206,16 @@ def _convert_tool_to_function_declaration(
     )
 
 
+PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
+    "temperature": "temperature",
+    "max_tokens": "max_output_tokens",
+    "top_p": "top_p",
+    "top_k": "top_k",
+    "seed": "seed",
+    "stop_sequences": "stop_sequences",
+}
+
+
 def prepare_google_request(
     model_id: GoogleModelId,
     messages: Sequence[Message],
@@ -214,22 +226,11 @@ def prepare_google_request(
     Sequence[Message],
     Format[FormattableT] | None,
     genai_types.ContentListUnionDict,
-    genai_types.GenerateContentConfigDict,
+    GoogleKwargs,
 ]:
-    google_config: genai_types.GenerateContentConfigDict = {}
-    if params:
-        if (temperature := params.get("temperature")) is not None:
-            google_config["temperature"] = temperature
-        if (max_tokens := params.get("max_tokens")) is not None:
-            google_config["max_output_tokens"] = max_tokens
-        if (top_p := params.get("top_p")) is not None:
-            google_config["top_p"] = top_p
-        if (seed := params.get("seed")) is not None:
-            google_config["seed"] = seed
-        if (top_k := params.get("top_k")) is not None:
-            google_config["top_k"] = top_k
-        if (stop_sequences := params.get("stop_sequences")) is not None:
-            google_config["stop_sequences"] = stop_sequences
+    google_config: GoogleKwargs = _base_utils.map_params_to_kwargs(
+        params, {}, PARAMS_TO_KWARGS, "Google"
+    )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     google_tools: list[genai_types.ToolDict] = []
