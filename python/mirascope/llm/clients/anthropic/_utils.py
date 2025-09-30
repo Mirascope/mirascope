@@ -147,6 +147,16 @@ def _convert_tool_to_tool_param(tool: ToolSchema) -> anthropic_types.ToolParam:
     )
 
 
+PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
+    "temperature": "temperature",
+    "max_tokens": "max_tokens",
+    "top_p": "top_p",
+    "top_k": "top_k",
+    "seed": None,
+    "stop_sequences": "stop_sequences",
+}
+
+
 def prepare_anthropic_request(
     model_id: AnthropicModelId,
     messages: Sequence[Message],
@@ -158,20 +168,10 @@ def prepare_anthropic_request(
         "model": model_id,
         "max_tokens": 1024,
     }
-    if params:
-        if (temperature := params.get("temperature")) is not None:
-            kwargs["temperature"] = temperature
-        if (max_tokens := params.get("max_tokens")) is not None:
-            kwargs["max_tokens"] = max_tokens
-        if (top_p := params.get("top_p")) is not None:
-            kwargs["top_p"] = top_p
-        if (stop_sequences := params.get("stop_sequences")) is not None:
-            kwargs["stop_sequences"] = stop_sequences
-        if (top_k := params.get("top_k")) is not None:
-            kwargs["top_k"] = top_k
 
-        if params.get("seed") is not None:
-            logger.warning("parameter seed is not supported by Anthropic - ignoring")
+    kwargs = _base_utils.map_params_to_kwargs(
+        params, kwargs, PARAMS_TO_KWARGS, "Anthropic"
+    )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     anthropic_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
