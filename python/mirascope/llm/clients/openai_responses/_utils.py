@@ -7,6 +7,7 @@ from typing import Literal, TypedDict
 from openai import AsyncStream, Stream
 from openai.types import responses as openai_types
 from openai.types.responses.easy_input_message_param import EasyInputMessageParam
+from openai.types.responses.function_tool_param import FunctionToolParam
 from openai.types.responses.response_stream_event import ResponseStreamEvent
 from openai.types.shared_params.responses_model import ResponsesModel
 
@@ -16,6 +17,10 @@ from ...content import (
     TextChunk,
     TextEndChunk,
     TextStartChunk,
+    ToolCall,
+    ToolCallChunk,
+    ToolCallEndChunk,
+    ToolCallStartChunk,
 )
 from ...formatting import (
     Format,
@@ -23,7 +28,11 @@ from ...formatting import (
     resolve_format,
 )
 from ...messages import AssistantMessage, Message
-from ...responses import AsyncChunkIterator, ChunkIterator, RawChunk
+from ...responses import (
+    AsyncChunkIterator,
+    ChunkIterator,
+    RawChunk,
+)
 from ...tools import (
     BaseToolkit,
     ToolSchema,
@@ -43,6 +52,7 @@ class ResponseCreateKwargs(TypedDict, total=False):
     temperature: float
     max_output_tokens: int
     top_p: float
+    tools: list[FunctionToolParam]
 
 
 def _encode_message(message: Message) -> EasyInputMessageParam:
@@ -72,6 +82,33 @@ def _encode_message(message: Message) -> EasyInputMessageParam:
     return EasyInputMessageParam(role=message.role, content=content)
 
 
+def _ensure_additional_properties_false(obj: object) -> None:
+    """Recursively adds additionalProperties = False to a schema, required by OpenAI API."""
+    if isinstance(obj, dict):
+        if obj.get("type") == "object" and "additionalProperties" not in obj:
+            obj["additionalProperties"] = False  # pragma: no cover (REMOVED IN NEXT PR)
+        for value in obj.values():
+            _ensure_additional_properties_false(value)
+    elif isinstance(obj, list):
+        for item in obj:
+            _ensure_additional_properties_false(item)
+
+
+def _convert_tool_to_function_tool_param(tool: ToolSchema) -> FunctionToolParam:
+    """Convert a Mirascope ToolSchema to OpenAI Responses FunctionToolParam."""
+    schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
+    schema_dict["type"] = "object"
+    _ensure_additional_properties_false(schema_dict)
+
+    return FunctionToolParam(
+        type="function",
+        name=tool.name,
+        description=tool.description,
+        parameters=schema_dict,
+        strict=tool.strict,
+    )
+
+
 def prepare_openai_request(
     *,
     model_id: OpenAIResponsesModelId,
@@ -96,12 +133,12 @@ def prepare_openai_request(
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     if tools:
-        raise NotImplementedError("Tools not yet supported")
+        openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools]
+        kwargs["tools"] = openai_tools
 
     format = resolve_format(format, default_mode="strict")
     if format is not None:
         raise NotImplementedError("Structured output not yet supported")
-
     return format, kwargs
 
 
@@ -119,8 +156,15 @@ def decode_response(
                 elif content.type == "refusal":  # pragma: no cover
                     # TODO: Decide what to do here
                     raise NotImplementedError("Refusals not yet handled")
+        elif output_item.type == "function_call":
+            parts.append(
+                ToolCall(
+                    id=output_item.call_id,
+                    name=output_item.name,
+                    args=output_item.arguments,
+                )
+            )
         else:
-            # TODO: Handle tool calls, etc
             raise NotImplementedError(f"Unsupported output item: {output_item.type}")
 
     return AssistantMessage(content=parts)
@@ -130,7 +174,7 @@ class _OpenAIResponsesChunkProcessor:
     """Processes OpenAI Responses streaming events and maintains state across chunks."""
 
     def __init__(self) -> None:
-        self.current_content_type: Literal["text"] | None = None
+        self.current_content_type: Literal["text", "tool_call"] | None = None
 
     def process_chunk(self, event: ResponseStreamEvent) -> ChunkIterator:
         """Process a single OpenAI Responses stream event and yield the appropriate content chunks."""
@@ -152,6 +196,29 @@ class _OpenAIResponsesChunkProcessor:
                         "Received text done while not processing text"
                     )  # pragma: no cover
                 yield TextEndChunk()
+                self.current_content_type = None
+            elif event.type == "response.output_item.added":
+                item = event.item
+                if item.type == "function_call":
+                    self.current_tool_call_id = item.call_id
+                    self.current_tool_call_name = item.name
+                    yield ToolCallStartChunk(
+                        id=item.call_id,
+                        name=item.name,
+                    )
+                    self.current_content_type = "tool_call"
+            elif event.type == "response.function_call_arguments.delta":
+                if self.current_content_type != "tool_call":
+                    raise RuntimeError(
+                        "Received tool args delta while not processing tool call"
+                    )  # pragma: no cover
+                yield ToolCallChunk(delta=event.delta)
+            elif event.type == "response.function_call_arguments.done":
+                if self.current_content_type != "tool_call":
+                    raise RuntimeError(
+                        "Received tool args done while not processing tool call"
+                    )  # pragma: no cover
+                yield ToolCallEndChunk()
                 self.current_content_type = None
 
 
