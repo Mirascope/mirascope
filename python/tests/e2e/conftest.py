@@ -1,14 +1,31 @@
-# tests/e2e/conftest.py
+"""Configuration for Mirascope end to end tests.
+
+Includes setting up VCR for HTTP recording/playback.
+"""
+
 from __future__ import annotations
 
 import importlib
+import os
 from pathlib import Path
-from typing import Any, Literal, TypeAlias, get_args
+from typing import Any, Literal, TypeAlias, TypedDict, get_args
 
 import pytest
+from dotenv import load_dotenv
 from pytest import FixtureRequest
 
 from mirascope import llm
+
+
+@pytest.fixture(scope="session", autouse=True)
+def load_api_keys() -> None:
+    """Load environment variables from .env file for e2e tests."""
+    load_dotenv()
+    # Set dummy keys if not present so that tests pass in CI.
+    os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
+    os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")
+    os.environ.setdefault("OPENAI_API_KEY", "dummy-openai-key")
+
 
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("anthropic", "claude-sonnet-4-0"),
@@ -16,6 +33,77 @@ PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("openai", "gpt-4o"),
     ("openai:responses", "gpt-4o"),
 ]
+
+
+class VCRConfig(TypedDict):
+    """Configuration for VCR.py HTTP recording and playback.
+
+    VCR.py is used to record HTTP interactions during tests and replay them
+    in subsequent test runs, making tests faster and more reliable.
+    """
+
+    record_mode: str
+    """How VCR should handle recording. 'once' means record once then replay.
+    
+    Options:
+    - 'once': Record interactions once, then always replay from cassette
+    - 'new_episodes': Record new interactions, replay existing ones
+    - 'all': Always record, overwriting existing cassettes
+    - 'none': Never record, only replay (will fail if cassette missing)
+    """
+
+    match_on: list[str]
+    """HTTP request attributes to match when finding recorded interactions.
+    
+    Common options:
+    - 'method': HTTP method (GET, POST, etc.)
+    - 'uri': Request URI/URL
+    - 'body': Request body content
+    - 'headers': Request headers
+    """
+
+    filter_headers: list[str]
+    """Headers to filter out from recordings for security/privacy.
+    
+    These headers will be removed from both recorded cassettes and
+    when matching requests during playback. Commonly used for:
+    - Authentication tokens
+    - API keys
+    - Organization identifiers
+    """
+
+    filter_post_data_parameters: list[str]
+    """POST data parameters to filter out from recordings.
+    
+    Similar to filter_headers but for form data and request body parameters.
+    Useful for removing sensitive data from request bodies.
+    """
+
+
+@pytest.fixture(scope="session")
+def vcr_config() -> VCRConfig:
+    """VCR configuration for all API tests.
+
+    Uses session scope since VCR configuration is static and can be shared
+    across all test modules in a session. This covers all major LLM providers:
+    - OpenAI (authorization header)
+    - Google/Gemini (x-goog-api-key header)
+    - Anthropic (x-api-key, anthropic-organization-id headers)
+
+    Returns:
+        VCRConfig: Dictionary with VCR.py configuration settings
+    """
+    return {
+        "record_mode": "once",
+        "match_on": ["method", "uri", "body"],
+        "filter_headers": [
+            "authorization",  # OpenAI Bearer tokens
+            "x-api-key",  # Anthropic API keys
+            "x-goog-api-key",  # Google/Gemini API keys
+            "anthropic-organization-id",  # Anthropic org identifiers
+        ],
+        "filter_post_data_parameters": [],
+    }
 
 
 CallType = Literal[
