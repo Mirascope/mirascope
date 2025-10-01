@@ -38,17 +38,13 @@ from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ..base import BaseKwargs, Params, _utils as _base_utils
 from .model_ids import GoogleModelId
 
-GOOGLE_FINISH_REASON_MAP = {  # TODO (mir-285): Audit these
-    "STOP": FinishReason.END_TURN,
+GOOGLE_FINISH_REASON_MAP = {
     "MAX_TOKENS": FinishReason.MAX_TOKENS,
     "SAFETY": FinishReason.REFUSAL,
     "RECITATION": FinishReason.REFUSAL,
-    "OTHER": FinishReason.UNKNOWN,
     "BLOCKLIST": FinishReason.REFUSAL,
     "PROHIBITED_CONTENT": FinishReason.REFUSAL,
     "SPII": FinishReason.REFUSAL,
-    "MALFORMED_FUNCTION_CALL": FinishReason.UNKNOWN,
-    "FUNCTION_CALL": FinishReason.TOOL_USE,
 }
 
 UNKNOWN_TOOL_ID = "<unknown>"
@@ -305,11 +301,11 @@ def decode_response(
         # Unclear under what circumstances this happens (if ever).
         # In testing, when generating no output at all, it creates a part with
         # no fields set.
-        return assistant(content=[]), FinishReason.UNKNOWN  # pragma: no cover
+        return assistant(content=[]), None  # pragma: no cover
     candidate = response.candidates[0]
     assistant_message = assistant(content=_decode_candidate_content(candidate))
     finish_reason = (
-        GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason, FinishReason.UNKNOWN)
+        GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
         if candidate.finish_reason
         else None
     )
@@ -384,10 +380,9 @@ class _GoogleChunkProcessor:
 
             self.current_content_type = None
 
-            finish_reason = GOOGLE_FINISH_REASON_MAP.get(
-                candidate.finish_reason, FinishReason.UNKNOWN
-            )
-            yield FinishReasonChunk(finish_reason=finish_reason)
+            finish_reason = GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
+            if finish_reason is not None:
+                yield FinishReasonChunk(finish_reason=finish_reason)
 
 
 def convert_google_stream_to_chunk_iterator(

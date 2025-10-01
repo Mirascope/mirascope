@@ -45,11 +45,8 @@ from .model_ids import OpenAICompletionsModelId
 logger = logging.getLogger(__name__)
 
 OPENAI_FINISH_REASON_MAP = {
-    "stop": FinishReason.END_TURN,
     "length": FinishReason.MAX_TOKENS,
     "content_filter": FinishReason.REFUSAL,
-    "tool_calls": FinishReason.TOOL_USE,
-    "function_call": FinishReason.TOOL_USE,
 }
 
 
@@ -295,7 +292,7 @@ def prepare_completions_request(
 
 def decode_response(
     response: openai_types.ChatCompletion,
-) -> tuple[AssistantMessage, FinishReason]:
+) -> tuple[AssistantMessage, FinishReason | None]:
     """Convert OpenAI ChatCompletion to mirascope AssistantMessage."""
     choice = response.choices[0]
     message = choice.message
@@ -317,9 +314,7 @@ def decode_response(
                 )
             )
 
-    finish_reason = OPENAI_FINISH_REASON_MAP.get(
-        choice.finish_reason, FinishReason.UNKNOWN
-    )
+    finish_reason = OPENAI_FINISH_REASON_MAP.get(choice.finish_reason)
 
     return AssistantMessage(content=parts), finish_reason
 
@@ -413,10 +408,9 @@ class _OpenAIChunkProcessor:
             else:
                 raise NotImplementedError
 
-            finish_reason = OPENAI_FINISH_REASON_MAP.get(
-                choice.finish_reason, FinishReason.UNKNOWN
-            )
-            yield FinishReasonChunk(finish_reason=finish_reason)
+            finish_reason = OPENAI_FINISH_REASON_MAP.get(choice.finish_reason)
+            if finish_reason is not None:
+                yield FinishReasonChunk(finish_reason=finish_reason)
 
 
 def convert_openai_stream_to_chunk_iterator(

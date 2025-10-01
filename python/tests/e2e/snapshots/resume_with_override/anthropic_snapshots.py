@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    FinishReason,
     Text,
     UserMessage,
 )
@@ -12,7 +11,7 @@ sync_snapshot = snapshot(
         "provider": "anthropic",
         "model_id": "claude-sonnet-4-0",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(
@@ -36,7 +35,7 @@ async_snapshot = snapshot(
         "provider": "anthropic",
         "model_id": "claude-sonnet-4-0",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(
@@ -59,7 +58,7 @@ stream_snapshot = snapshot(
     {
         "provider": "anthropic",
         "model_id": "claude-sonnet-4-0",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(
@@ -83,7 +82,7 @@ async_stream_snapshot = snapshot(
     {
         "provider": "anthropic",
         "model_id": "claude-sonnet-4-0",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(

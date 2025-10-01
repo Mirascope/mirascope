@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    FinishReason,
     Text,
     ToolCall,
     ToolOutput,
@@ -14,7 +13,7 @@ sync_snapshot = snapshot(
         "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(
                 content=[
@@ -98,7 +97,7 @@ async_snapshot = snapshot(
         "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(
                 content=[
@@ -181,7 +180,7 @@ stream_snapshot = snapshot(
     {
         "provider": "openai:completions",
         "model_id": "gpt-4o",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(
                 content=[
@@ -265,7 +264,7 @@ async_stream_snapshot = snapshot(
     {
         "provider": "openai:completions",
         "model_id": "gpt-4o",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(
                 content=[

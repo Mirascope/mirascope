@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    FinishReason,
     Text,
     UserMessage,
 )
@@ -21,7 +20,7 @@ sync_snapshot = snapshot(
                     "seed": 42,
                     "stop_sequences": ["4242"],
                 },
-                "finish_reason": FinishReason.END_TURN,
+                "finish_reason": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(content=[Text(text="4200 + 42 equals ")]),
@@ -47,7 +46,7 @@ async_snapshot = snapshot(
                     "seed": 42,
                     "stop_sequences": ["4242"],
                 },
-                "finish_reason": FinishReason.END_TURN,
+                "finish_reason": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(content=[Text(text="4200 + 42 equals ")]),
@@ -65,7 +64,7 @@ stream_snapshot = snapshot(
             {
                 "provider": "openai:completions",
                 "model_id": "gpt-4o",
-                "finish_reason": FinishReason.END_TURN,
+                "finish_reason": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(content=[Text(text="4200 + 42 equals ")]),
@@ -84,7 +83,7 @@ async_stream_snapshot = snapshot(
             {
                 "provider": "openai:completions",
                 "model_id": "gpt-4o",
-                "finish_reason": FinishReason.END_TURN,
+                "finish_reason": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(content=[Text(text="4200 + 42 equals ")]),

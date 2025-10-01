@@ -27,14 +27,14 @@ def test_response_initialization_with_text_content() -> None:
         tools=[],
         input_messages=input_messages,
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
     )
 
     assert response.provider == "openai:completions"
     assert response.model_id == "gpt-4o-mini"
     assert response.toolkit == llm.tools.Toolkit(tools=[])
     assert response.raw == {"test": "response"}
-    assert response.finish_reason == llm.FinishReason.END_TURN
+    assert response.finish_reason is None
 
     assert len(response.messages) == 3
     assert response.messages[0] == input_messages[0]
@@ -68,7 +68,7 @@ def test_response_initialization_with_mixed_content() -> None:
         tools=[],
         input_messages=input_messages,
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.TOOL_USE,
+        finish_reason=None,
     )
 
     assert len(response.texts) == 2
@@ -96,7 +96,7 @@ def test_response_initialization_with_empty_input_messages() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
     )
 
     assert len(response.messages) == 1
@@ -108,14 +108,7 @@ def test_response_with_different_finish_reasons() -> None:
     text_content = [llm.Text(text="Response")]
     assistant_message = llm.messages.assistant(text_content)
 
-    finish_reasons = [
-        llm.FinishReason.END_TURN,
-        llm.FinishReason.MAX_TOKENS,
-        llm.FinishReason.STOP,
-        llm.FinishReason.TOOL_USE,
-        llm.FinishReason.REFUSAL,
-        llm.FinishReason.UNKNOWN,
-    ]
+    finish_reasons = [llm.FinishReason.MAX_TOKENS, llm.FinishReason.REFUSAL, None]
 
     for finish_reason in finish_reasons:
         response = llm.Response(
@@ -143,7 +136,7 @@ def test_empty_response_pretty() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
     )
 
     assert response.pretty() == snapshot("**[No Content]**")
@@ -163,7 +156,7 @@ def test_text_only_response_pretty() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
     )
 
     assert response.pretty() == snapshot("Hello! How can I help you today?")
@@ -192,7 +185,7 @@ def test_mixed_content_response_pretty() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.TOOL_USE,
+        finish_reason=None,
     )
 
     assert response.pretty() == snapshot(
@@ -225,7 +218,7 @@ def test_multiple_text_response_pretty() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
     )
 
     assert response.pretty() == snapshot(
@@ -259,7 +252,7 @@ def test_response_format_success() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
         format=llm.format(Book, mode="tool"),
     )
 
@@ -291,7 +284,7 @@ def test_response_format_invalid_json() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
         format=llm.format(Book, mode="tool"),
     )
 
@@ -321,7 +314,7 @@ def test_response_format_validation_error() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
         format=llm.format(Book, mode="tool"),
     )
 
@@ -344,7 +337,7 @@ def test_response_format_no_format_type() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
     )
 
     assert response.parse() is None
@@ -371,7 +364,7 @@ def test_response_format_with_text_before_and_after_json() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
         format=llm.format(Book, mode="tool"),
     )
 
@@ -409,7 +402,7 @@ Let me know if you need anything else!"""
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
         format=llm.format(Book, mode="tool"),
     )
 
@@ -449,7 +442,7 @@ This includes the author information as a nested object."""
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
         format=llm.format(Book, mode="tool"),
     )
 
@@ -483,7 +476,7 @@ def test_response_format_with_multiple_json_objects() -> None:
         tools=[],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.END_TURN,
+        finish_reason=None,
         format=llm.format(Book, mode="tool"),
     )
 
@@ -515,7 +508,7 @@ def test_response_format_tool_handling() -> None:
         tools=[],
         input_messages=input_messages,
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.TOOL_USE,
+        finish_reason=None,
     )
 
     assert len(response.texts) == 2
@@ -533,7 +526,7 @@ def test_response_format_tool_handling() -> None:
     )
     assert response.messages[-1].content == response.content
 
-    assert response.finish_reason == llm.FinishReason.END_TURN
+    assert response.finish_reason is None
 
 
 def test_response_mixed_regular_and_format_tool() -> None:
@@ -561,7 +554,7 @@ def test_response_mixed_regular_and_format_tool() -> None:
         tools=[],
         input_messages=input_messages,
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.TOOL_USE,
+        finish_reason=None,
     )
 
     assert len(response.tool_calls) == 1
@@ -579,7 +572,7 @@ def test_response_mixed_regular_and_format_tool() -> None:
 
     assert response.messages[-1].content == response.content
 
-    assert response.finish_reason == llm.FinishReason.END_TURN
+    assert response.finish_reason is None
 
 
 def test_response_format_tool_no_finish_reason_change() -> None:
@@ -638,7 +631,7 @@ def test_response_execute_tools() -> None:
         tools=[tool_one, tool_two],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.TOOL_USE,
+        finish_reason=None,
     )
     outputs = response.execute_tools()
     assert len(outputs) == 2
@@ -672,7 +665,7 @@ async def test_async_response_execute_tools() -> None:
         tools=[tool_one, tool_two],
         input_messages=[],
         assistant_message=assistant_message,
-        finish_reason=llm.FinishReason.TOOL_USE,
+        finish_reason=None,
     )
 
     outputs = await response.execute_tools()

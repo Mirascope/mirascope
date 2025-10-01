@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    FinishReason,
     SystemMessage,
     Text,
     ToolCall,
@@ -15,7 +14,7 @@ sync_snapshot = snapshot(
         "provider": "anthropic",
         "model_id": "claude-sonnet-4-0",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             SystemMessage(
                 content=Text(
@@ -174,7 +173,7 @@ async_snapshot = snapshot(
         "provider": "anthropic",
         "model_id": "claude-sonnet-4-0",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             SystemMessage(
                 content=Text(
@@ -332,7 +331,7 @@ stream_snapshot = snapshot(
     {
         "provider": "anthropic",
         "model_id": "claude-sonnet-4-0",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             SystemMessage(
                 content=Text(
@@ -491,7 +490,7 @@ async_stream_snapshot = snapshot(
     {
         "provider": "anthropic",
         "model_id": "claude-sonnet-4-0",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             SystemMessage(
                 content=Text(

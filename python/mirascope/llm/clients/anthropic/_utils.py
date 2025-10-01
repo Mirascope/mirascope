@@ -41,10 +41,7 @@ from ..base import Params, _utils as _base_utils
 from .model_ids import AnthropicModelId
 
 ANTHROPIC_FINISH_REASON_MAP = {
-    "end_turn": FinishReason.END_TURN,
     "max_tokens": FinishReason.MAX_TOKENS,
-    "stop_sequence": FinishReason.STOP,
-    "tool_use": FinishReason.TOOL_USE,
     "refusal": FinishReason.REFUSAL,
 }
 logger = logging.getLogger(__name__)
@@ -221,7 +218,7 @@ def decode_response(
         content=[_decode_assistant_content(part) for part in response.content]
     )
     finish_reason = (
-        ANTHROPIC_FINISH_REASON_MAP.get(response.stop_reason, FinishReason.UNKNOWN)
+        ANTHROPIC_FINISH_REASON_MAP.get(response.stop_reason)
         if response.stop_reason
         else None
     )
@@ -275,10 +272,9 @@ class _AnthropicChunkProcessor:
 
         elif event.type == "message_delta":
             if event.delta.stop_reason:
-                finish_reason = ANTHROPIC_FINISH_REASON_MAP.get(
-                    event.delta.stop_reason, FinishReason.UNKNOWN
-                )
-                yield FinishReasonChunk(finish_reason=finish_reason)
+                finish_reason = ANTHROPIC_FINISH_REASON_MAP.get(event.delta.stop_reason)
+                if finish_reason is not None:
+                    yield FinishReasonChunk(finish_reason=finish_reason)
 
 
 def convert_anthropic_stream_to_chunk_iterator(

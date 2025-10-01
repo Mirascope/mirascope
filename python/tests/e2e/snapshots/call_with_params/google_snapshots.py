@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    FinishReason,
     Text,
     UserMessage,
 )
@@ -21,7 +20,7 @@ sync_snapshot = snapshot(
                     "seed": 42,
                     "stop_sequences": ["4242"],
                 },
-                "finish_reason": FinishReason.END_TURN,
+                "finish_reason": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(
@@ -59,7 +58,7 @@ async_snapshot = snapshot(
                     "seed": 42,
                     "stop_sequences": ["4242"],
                 },
-                "finish_reason": FinishReason.END_TURN,
+                "finish_reason": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(
@@ -89,7 +88,7 @@ stream_snapshot = snapshot(
             {
                 "provider": "google",
                 "model_id": "gemini-2.5-flash",
-                "finish_reason": FinishReason.END_TURN,
+                "finish_reason": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(
@@ -120,7 +119,7 @@ async_stream_snapshot = snapshot(
             {
                 "provider": "google",
                 "model_id": "gemini-2.5-flash",
-                "finish_reason": FinishReason.END_TURN,
+                "finish_reason": None,
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(

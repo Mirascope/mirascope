@@ -51,7 +51,12 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     """The thinking content in the generated response, if any."""
 
     finish_reason: FinishReason | None
-    """The reason why the LLM finished generating a response, if available."""
+    """The reason why the LLM finished generating a response, if set.
+    
+    `finish_reason` is only set if the response did not finish generating normally,
+    e.g. `FinishReason.MAX_TOKENS` if the model ran out of tokens before completing.
+    When the response generates normally, `response.finish_reason` will be `None`.
+    """
 
     format: Format[FormattableT] | None
     """The `Format` describing the structured response format, if available."""
