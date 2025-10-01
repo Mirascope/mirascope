@@ -184,6 +184,19 @@ def call(
     ...
 
 
+@overload
+def call(
+    *,
+    provider: Provider,
+    model_id: ModelId,
+    tools: list[ToolT] | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+    **params: Unpack[Params],
+) -> CallDecorator[ToolT, FormattableT]:
+    """Decorate a prompt into a Call using a generic provider and model."""
+    ...
+
+
 def call(
     *,
     provider: Provider,
