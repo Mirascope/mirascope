@@ -76,7 +76,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
         )
         def answer_question(question: str) -> str:
@@ -201,7 +201,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
         )
         async def answer_question(question: str) -> str:
@@ -333,7 +333,7 @@ class ContextStreamResponse(
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
         )
         def answer_question(ctx: llm.Context, question: str) -> str:
@@ -475,7 +475,7 @@ class AsyncContextStreamResponse(
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
         )
         async def answer_question(ctx: llm.Context, question: str) -> str:

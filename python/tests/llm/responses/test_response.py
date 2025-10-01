@@ -21,7 +21,7 @@ def test_response_initialization_with_text_content() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -30,7 +30,7 @@ def test_response_initialization_with_text_content() -> None:
         finish_reason=llm.FinishReason.END_TURN,
     )
 
-    assert response.provider == "openai"
+    assert response.provider == "openai:completions"
     assert response.model_id == "gpt-4o-mini"
     assert response.toolkit == llm.tools.Toolkit(tools=[])
     assert response.raw == {"test": "response"}
@@ -62,7 +62,7 @@ def test_response_initialization_with_mixed_content() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -90,7 +90,7 @@ def test_response_initialization_with_empty_input_messages() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -120,7 +120,7 @@ def test_response_with_different_finish_reasons() -> None:
     for finish_reason in finish_reasons:
         response = llm.Response(
             raw={"test": "response"},
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
             params={},
             tools=[],
@@ -137,7 +137,7 @@ def test_empty_response_pretty() -> None:
 
     response = llm.Response(
         raw=None,
-        provider="openai",
+        provider="openai:completions",
         model_id="test-model",
         params={},
         tools=[],
@@ -157,7 +157,7 @@ def test_text_only_response_pretty() -> None:
 
     response = llm.Response(
         raw=None,
-        provider="openai",
+        provider="openai:completions",
         model_id="test-model",
         params={},
         tools=[],
@@ -186,7 +186,7 @@ def test_mixed_content_response_pretty() -> None:
 
     response = llm.Response(
         raw=None,
-        provider="openai",
+        provider="openai:completions",
         model_id="test-model",
         params={},
         tools=[],
@@ -219,7 +219,7 @@ def test_multiple_text_response_pretty() -> None:
 
     response = llm.Response(
         raw=None,
-        provider="openai",
+        provider="openai:completions",
         model_id="test-model",
         params={},
         tools=[],
@@ -253,7 +253,7 @@ def test_response_format_success() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -285,7 +285,7 @@ def test_response_format_invalid_json() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -315,7 +315,7 @@ def test_response_format_validation_error() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -338,7 +338,7 @@ def test_response_format_no_format_type() -> None:
     # Create response without format type (defaults to NoneType)
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -365,7 +365,7 @@ def test_response_format_with_text_before_and_after_json() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -403,7 +403,7 @@ Let me know if you need anything else!"""
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -443,7 +443,7 @@ This includes the author information as a nested object."""
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -477,7 +477,7 @@ def test_response_format_with_multiple_json_objects() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -509,7 +509,7 @@ def test_response_format_tool_handling() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -555,7 +555,7 @@ def test_response_mixed_regular_and_format_tool() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -597,7 +597,7 @@ def test_response_format_tool_no_finish_reason_change() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[],
@@ -632,7 +632,7 @@ def test_response_execute_tools() -> None:
 
     response = llm.Response(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[tool_one, tool_two],
@@ -666,7 +666,7 @@ async def test_async_response_execute_tools() -> None:
 
     response = llm.AsyncResponse(
         raw={"test": "response"},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         tools=[tool_one, tool_two],
@@ -686,7 +686,7 @@ def test_response_tools_initialization() -> None:
 
     response = llm.Response(
         raw={},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         finish_reason=None,
@@ -697,7 +697,7 @@ def test_response_tools_initialization() -> None:
 
     response = llm.AsyncResponse(
         raw={},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         finish_reason=None,
@@ -708,7 +708,7 @@ def test_response_tools_initialization() -> None:
 
     response = llm.ContextResponse(
         raw={},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         finish_reason=None,
@@ -719,7 +719,7 @@ def test_response_tools_initialization() -> None:
 
     response = llm.AsyncContextResponse(
         raw={},
-        provider="openai",
+        provider="openai:completions",
         model_id="gpt-4o-mini",
         params={},
         finish_reason=None,

@@ -11,7 +11,7 @@ sync_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai",
+                "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "params": {"temperature": 0.7, "max_tokens": 120, "top_p": 0.3},
                 "finish_reason": FinishReason.MAX_TOKENS,
@@ -66,7 +66,7 @@ async_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai",
+                "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "params": {"temperature": 0.7, "max_tokens": 120, "top_p": 0.3},
                 "finish_reason": FinishReason.MAX_TOKENS,
@@ -121,7 +121,7 @@ stream_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai",
+                "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "finish_reason": FinishReason.MAX_TOKENS,
                 "messages": [
@@ -176,7 +176,7 @@ async_stream_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai",
+                "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "finish_reason": FinishReason.MAX_TOKENS,
                 "messages": [

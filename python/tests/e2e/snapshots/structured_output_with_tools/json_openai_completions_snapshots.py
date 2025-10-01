@@ -3,6 +3,7 @@ from inline_snapshot import snapshot
 from mirascope.llm import (
     AssistantMessage,
     FinishReason,
+    SystemMessage,
     Text,
     ToolCall,
     ToolOutput,
@@ -11,11 +12,46 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(
+                content=Text(
+                    text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+"""
+                )
+            ),
             UserMessage(
                 content=[
                     Text(
@@ -26,7 +62,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_9lbvRrzBxYc9Z3cdA8ee6fh0",
+                        id="call_Jst9famRKxdcWS5c9GKUfRUd",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -35,7 +71,7 @@ sync_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_9lbvRrzBxYc9Z3cdA8ee6fh0",
+                        id="call_Jst9famRKxdcWS5c9GKUfRUd",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -44,7 +80,14 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
+                        text="""\
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}\
+"""
                     )
                 ]
             ),
@@ -66,8 +109,38 @@ sync_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "strict",
-            "formatting_instructions": None,
+            "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+""",
         },
         "tools": [
             {
@@ -95,11 +168,46 @@ sync_snapshot = snapshot(
 )
 async_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(
+                content=Text(
+                    text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+"""
+                )
+            ),
             UserMessage(
                 content=[
                     Text(
@@ -110,7 +218,7 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_txvgIefObgDKDmvfNYHaffru",
+                        id="call_RWEFEmszCxipS3lj838AJbDe",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -119,7 +227,7 @@ async_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_txvgIefObgDKDmvfNYHaffru",
+                        id="call_RWEFEmszCxipS3lj838AJbDe",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -128,7 +236,14 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
+                        text="""\
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}\
+"""
                     )
                 ]
             ),
@@ -150,8 +265,38 @@ async_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "strict",
-            "formatting_instructions": None,
+            "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+""",
         },
         "tools": [
             {
@@ -179,10 +324,45 @@ async_snapshot = snapshot(
 )
 stream_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(
+                content=Text(
+                    text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+"""
+                )
+            ),
             UserMessage(
                 content=[
                     Text(
@@ -193,7 +373,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_j4gk8mlqvLtdPZuMQqj1DNTM",
+                        id="call_gQS5c1vZckyC70czakz6nT2r",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -202,7 +382,7 @@ stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_j4gk8mlqvLtdPZuMQqj1DNTM",
+                        id="call_gQS5c1vZckyC70czakz6nT2r",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -211,7 +391,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
+                        text='{ "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006 }'
                     )
                 ]
             ),
@@ -233,8 +413,38 @@ stream_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "strict",
-            "formatting_instructions": None,
+            "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+""",
         },
         "tools": [
             {
@@ -258,15 +468,50 @@ stream_snapshot = snapshot(
                 "strict": False,
             }
         ],
-        "n_chunks": 30,
+        "n_chunks": 38,
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
+            SystemMessage(
+                content=Text(
+                    text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+"""
+                )
+            ),
             UserMessage(
                 content=[
                     Text(
@@ -277,7 +522,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_4VjDex3fZhV7tIAmFdYY6u45",
+                        id="call_kt0AyI4y0FRQbfphwsvXvNN3",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -286,7 +531,7 @@ async_stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_4VjDex3fZhV7tIAmFdYY6u45",
+                        id="call_kt0AyI4y0FRQbfphwsvXvNN3",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -295,7 +540,14 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
+                        text="""\
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}\
+"""
                     )
                 ]
             ),
@@ -317,8 +569,38 @@ async_stream_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "strict",
-            "formatting_instructions": None,
+            "mode": "json",
+            "formatting_instructions": """\
+Respond only with valid JSON that matches this exact schema:
+{
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
+""",
         },
         "tools": [
             {
@@ -342,6 +624,6 @@ async_stream_snapshot = snapshot(
                 "strict": False,
             }
         ],
-        "n_chunks": 30,
+        "n_chunks": 43,
     }
 )

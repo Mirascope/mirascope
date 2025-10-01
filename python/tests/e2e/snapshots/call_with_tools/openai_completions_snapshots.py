@@ -12,7 +12,7 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
@@ -93,7 +93,7 @@ The secrets associated with the passwords are as follows:
 )
 async_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
@@ -169,7 +169,7 @@ async_snapshot = snapshot(
 )
 stream_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
@@ -250,7 +250,7 @@ The secrets associated with the passwords are as follows:
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [

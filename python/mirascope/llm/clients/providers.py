@@ -24,7 +24,9 @@ from .openai import (
 )
 
 # TODO: Revisit OpenAI provider naming and whether Responses should be the default option.
-Provider: TypeAlias = Literal["openai", "anthropic", "google", "openai:responses"]
+Provider: TypeAlias = Literal[
+    "openai:completions", "anthropic", "google", "openai:responses"
+]
 PROVIDERS = get_args(Provider)
 
 ModelId: TypeAlias = (
@@ -49,7 +51,7 @@ def get_client(provider: Literal["google"]) -> GoogleClient:
 
 
 @overload
-def get_client(provider: Literal["openai"]) -> OpenAICompletionsClient:
+def get_client(provider: Literal["openai:completions"]) -> OpenAICompletionsClient:
     """Get an OpenAI client instance."""
     ...
 
@@ -66,12 +68,12 @@ def get_client(
     """Get a client instance for the specified provider.
 
     Args:
-        provider: The provider name ("openai", "anthropic", or "google").
+        provider: The provider name ("openai:completions", "anthropic", or "google").
 
     Returns:
         A client instance for the specified provider. The specific client type
         depends on the provider:
-        - "openai" returns `OpenAICompletionsClient` (ChatCompletion API)
+        - "openai:completions" returns `OpenAICompletionsClient` (ChatCompletion API)
         - "openai:responses" returns `OpenAIResponsesClient` (Responses API)
         - "anthropic" returns `AnthropicClient`
         - "google" returns `GoogleClient`
@@ -83,7 +85,7 @@ def get_client(
         ValueError: If the provider is not supported.
     """
     match provider:
-        case "openai":
+        case "openai:completions":
             return get_openai_completions_client()
         case "anthropic":
             return get_anthropic_client()
@@ -97,7 +99,7 @@ def get_client(
 
 @overload
 def client(
-    provider: Literal["openai"],
+    provider: Literal["openai:completions"],
     *,
     api_key: str | None = None,
     base_url: str | None = None,
@@ -145,7 +147,7 @@ def client(
     """Create a cached client instance for the specified provider.
 
     Args:
-        provider: The provider name ("openai", "anthropic", or "google").
+        provider: The provider name ("openai:completions", "anthropic", or "google").
         api_key: API key for authentication. If None, uses provider-specific env var.
         base_url: Base URL for the API. If None, uses provider-specific env var.
 
@@ -156,7 +158,7 @@ def client(
         ValueError: If the provider is not supported.
     """
     match provider:
-        case "openai":
+        case "openai:completions":
             return openai_completions_client(api_key=api_key, base_url=base_url)
         case "openai:responses":
             return openai_responses_client(api_key=api_key, base_url=base_url)

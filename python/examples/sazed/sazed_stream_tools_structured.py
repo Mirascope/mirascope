@@ -16,7 +16,7 @@ def search_coppermind(query: str) -> str:
 
 
 @llm.call(
-    provider="openai",
+    provider="openai:completions",
     model_id="gpt-4o-mini",
     tools=[search_coppermind],
     format=KeeperEntry,

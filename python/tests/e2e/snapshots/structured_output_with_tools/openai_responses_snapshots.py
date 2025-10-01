@@ -11,7 +11,7 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
@@ -95,7 +95,7 @@ sync_snapshot = snapshot(
 )
 async_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
@@ -179,7 +179,7 @@ async_snapshot = snapshot(
 )
 stream_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
@@ -263,7 +263,7 @@ stream_snapshot = snapshot(
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [

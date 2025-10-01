@@ -127,7 +127,7 @@ def agent(
 @overload
 def agent(
     *,
-    provider: Literal["openai"],
+    provider: Literal["openai:completions"],
     model_id: OpenAICompletionsModelId,
     tools: list[AgentToolT] | None = None,
     format: type[FormattableT] | None = None,
