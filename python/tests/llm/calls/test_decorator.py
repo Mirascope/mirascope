@@ -71,7 +71,7 @@ class TestCall:
         """Test that call decorator creates CallDecorator with correct parameters for OpenAI."""
 
         decorator = llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
             tools=tools,
             format=Format,
@@ -80,7 +80,7 @@ class TestCall:
 
         assert decorator.tools is tools
         assert decorator.format is Format
-        assert decorator.model.provider == "openai"
+        assert decorator.model.provider == "openai:completions"
         assert decorator.model.model_id == "gpt-4o-mini"
         assert decorator.model.params == params
 
@@ -93,7 +93,7 @@ class TestCall:
             return "Please recommend a fantasy book."
 
         call = llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
             tools=tools,
             format=Format,
@@ -102,7 +102,7 @@ class TestCall:
 
         assert isinstance(call, llm.calls.Call)
 
-        assert call.model.provider == "openai"
+        assert call.model.provider == "openai:completions"
         assert call.model.model_id == "gpt-4o-mini"
         assert call.model.params == params
 
@@ -120,7 +120,7 @@ class TestCall:
             return "Please recommend a fantasy book."
 
         call = llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
             tools=async_tools,
             format=Format,
@@ -129,7 +129,7 @@ class TestCall:
 
         assert isinstance(call, llm.calls.AsyncCall)
 
-        assert call.model.provider == "openai"
+        assert call.model.provider == "openai:completions"
         assert call.model.model_id == "gpt-4o-mini"
         assert call.model.params == params
 
@@ -143,7 +143,7 @@ class TestCall:
     def test_call_decorator_e2e_model_override(self) -> None:
         # TODO: Remove e2e tests from non-e2e test directory; either add model
         # override test coverage to e2e, or refactor this to use mocking etc.
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         def call() -> str:
             return "What company created you? Answer in just one word."
 
@@ -167,7 +167,7 @@ class TestContextCall:
         """Test that context_call decorator creates ContextCallDecorator with correct parameters for OpenAI."""
 
         decorator = llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
             tools=context_tools,
             format=Format,
@@ -176,7 +176,7 @@ class TestContextCall:
 
         assert decorator.tools is context_tools
         assert decorator.format is Format
-        assert decorator.model.provider == "openai"
+        assert decorator.model.provider == "openai:completions"
         assert decorator.model.model_id == "gpt-4o-mini"
         assert decorator.model.params == params
 
@@ -189,7 +189,7 @@ class TestContextCall:
             return f"Please recommend a fantasy book. My context value is {ctx.deps}."
 
         call = llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
             tools=context_tools,
             format=Format,
@@ -198,7 +198,7 @@ class TestContextCall:
 
         assert isinstance(call, llm.calls.ContextCall)
 
-        assert call.model.provider == "openai"
+        assert call.model.provider == "openai:completions"
         assert call.model.model_id == "gpt-4o-mini"
         assert call.model.params == params
 
@@ -223,7 +223,7 @@ class TestContextCall:
             return f"Please recommend a fantasy book. My context value is {ctx.deps}."
 
         call = llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
             tools=async_context_tools,
             format=Format,
@@ -232,7 +232,7 @@ class TestContextCall:
 
         assert isinstance(call, llm.calls.AsyncContextCall)
 
-        assert call.model.provider == "openai"
+        assert call.model.provider == "openai:completions"
         assert call.model.model_id == "gpt-4o-mini"
         assert call.model.params == params
 
@@ -254,7 +254,7 @@ class TestContextCall:
             return f"Please recommend a fantasy book. My context value is {ctx.deps}."
 
         call = llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
             tools=tools,
             format=Format,
@@ -270,7 +270,7 @@ class TestContextCall:
         # override test coverage to e2e, or refactor this to use mocking etc.
         ctx = llm.Context(deps="Who created you?")
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         def call(ctx: llm.Context[str]) -> str:
             return f"Answer the question in just one word: {ctx.deps}."
 
@@ -283,7 +283,7 @@ class TestContextCall:
     def test_context_parameter_name_independence(self) -> None:
         """Test that context prompts require the first parameter be named ctx."""
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         def context_weird_name(special_context: llm.Context[str]) -> str:
             return f"Value: {special_context.deps}"
 
@@ -292,7 +292,7 @@ class TestContextCall:
     def test_async_context_parameter_name_independence(self) -> None:
         """Test that async context prompts require the first parameter be named ctx."""
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         async def context_weird_name(special_context: llm.Context[str]) -> str:
             return f"Value: {special_context.deps}"
 
@@ -301,7 +301,7 @@ class TestContextCall:
     def test_non_context_typed_parameter(self) -> None:
         """Test that non-Context typed parameters are not treated as context prompts."""
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         def non_context_prompt(ctx: int) -> str:
             return f"Value: {ctx}"
 
@@ -310,7 +310,7 @@ class TestContextCall:
     def test_async_non_context_typed_parameter(self) -> None:
         """Test that non-Context typed async parameters are not treated as context prompts."""
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         async def non_context_prompt(ctx: int) -> str:
             return f"Value: {ctx}"
 
@@ -319,7 +319,7 @@ class TestContextCall:
     def test_missing_type_annotation(self) -> None:
         """Test that missing type annotations are not treated as context prompts."""
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         def missing_annotation_prompt(ctx) -> str:  # noqa: ANN001
             return "hi"
 
@@ -328,7 +328,7 @@ class TestContextCall:
     def test_async_missing_type_annotation(self) -> None:
         """Test that missing type annotations are not treated as async context prompts."""
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         async def missing_annotation_prompt(ctx) -> str:  # noqa: ANN001
             return "hi"
 
@@ -338,7 +338,7 @@ class TestContextCall:
         """Test that methods with self as first arg and Context as second arg are context prompts."""
 
         class TestClass:
-            @llm.call(provider="openai", model_id="gpt-4o-mini")
+            @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
             def method_with_context(self, ctx: llm.Context[str]) -> str:
                 return f"Value: {ctx.deps}"
 
@@ -348,7 +348,7 @@ class TestContextCall:
         """Test that async methods with self as first arg and Context as second arg are context prompts."""
 
         class TestClass:
-            @llm.call(provider="openai", model_id="gpt-4o-mini")
+            @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
             async def method_with_context(self, ctx: llm.Context[str]) -> str:
                 return f"Value: {ctx.deps}"
 
@@ -357,7 +357,7 @@ class TestContextCall:
     def test_context_not_first_parameter(self) -> None:
         """Test that Context as second parameter (after non-self) is not treated as context prompt."""
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         def second_arg_context(regular_param: int, ctx: llm.Context[str]) -> str:
             return f"Value: {regular_param}-{ctx.deps}"
 
@@ -366,7 +366,7 @@ class TestContextCall:
     def test_async_context_not_first_parameter(self) -> None:
         """Test that Context as second parameter (after non-self) is not treated as async context prompt."""
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         async def second_arg_context(regular_param: int, ctx: llm.Context[str]) -> str:
             return f"Value: {regular_param}-{ctx.deps}"
 
@@ -377,7 +377,7 @@ class TestContextCall:
 
         class CustomContext(llm.Context[str]): ...
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         def with_custom_context(ctx: CustomContext) -> str:
             return str(ctx.deps)
 
@@ -388,7 +388,7 @@ class TestContextCall:
 
         class CustomContext(llm.Context[str]): ...
 
-        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
         async def with_custom_context(ctx: CustomContext) -> str:
             return str(ctx.deps)
 

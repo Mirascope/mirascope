@@ -269,7 +269,9 @@ def prepare_openai_request(
         if format.mode == "strict":
             if not model_supports_strict:
                 raise FormattingModeNotSupportedError(
-                    formatting_mode="strict", provider="openai", model_id=model_id
+                    formatting_mode="strict",
+                    provider="openai:completions",
+                    model_id=model_id,
                 )
             kwargs["response_format"] = _create_strict_response_format(format)
         elif format.mode == "tool":

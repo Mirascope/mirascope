@@ -2,7 +2,7 @@ from mirascope import llm
 
 
 @llm.call(
-    provider="openai",
+    provider="openai:completions",
     model_id="gpt-4o-mini",
 )
 def sazed(query: str):

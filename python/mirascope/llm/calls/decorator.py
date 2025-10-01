@@ -161,7 +161,7 @@ def call(
 @overload
 def call(
     *,
-    provider: Literal["openai"],
+    provider: Literal["openai:completions"],
     model_id: OpenAICompletionsModelId,
     tools: list[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -218,7 +218,7 @@ def call(
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
         )
         def answer_question(question: str) -> str:
@@ -240,7 +240,7 @@ def call(
             vibe: str
 
         @llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-4o-mini",
         )
         def answer_question(ctx: llm.Context[Personality], question: str) -> str:

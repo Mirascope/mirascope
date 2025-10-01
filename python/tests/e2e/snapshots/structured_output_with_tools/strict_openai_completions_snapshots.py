@@ -3,7 +3,6 @@ from inline_snapshot import snapshot
 from mirascope.llm import (
     AssistantMessage,
     FinishReason,
-    SystemMessage,
     Text,
     ToolCall,
     ToolOutput,
@@ -12,16 +11,11 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
             UserMessage(
                 content=[
                     Text(
@@ -32,7 +26,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_qDihhqbfVROd4b9jjrVj0cyt",
+                        id="call_SASOQ2rduFQoNjQMtLhXiWCa",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -41,7 +35,7 @@ sync_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_qDihhqbfVROd4b9jjrVj0cyt",
+                        id="call_SASOQ2rduFQoNjQMtLhXiWCa",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -72,8 +66,8 @@ sync_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+            "mode": "strict",
+            "formatting_instructions": None,
         },
         "tools": [
             {
@@ -101,16 +95,11 @@ sync_snapshot = snapshot(
 )
 async_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.END_TURN,
         "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
             UserMessage(
                 content=[
                     Text(
@@ -121,7 +110,7 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_VFkVYO1POOO8UC4QpKt1ulM5",
+                        id="call_DwQWQXztABmfTJPGB3RKZVYd",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -130,7 +119,7 @@ async_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_VFkVYO1POOO8UC4QpKt1ulM5",
+                        id="call_DwQWQXztABmfTJPGB3RKZVYd",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -161,8 +150,8 @@ async_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+            "mode": "strict",
+            "formatting_instructions": None,
         },
         "tools": [
             {
@@ -190,15 +179,10 @@ async_snapshot = snapshot(
 )
 stream_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
             UserMessage(
                 content=[
                     Text(
@@ -209,16 +193,16 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_AVVNrNkchlxyMXVZXREZv97h",
+                        id="call_YJsJE8QRPmdDAHFe5H5QJUAQ",
                         name="get_book_info",
-                        args='{"isbn":"0-7653-1178-X"}',
+                        args='{"isbn": "0-7653-1178-X"}',
                     )
                 ]
             ),
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_AVVNrNkchlxyMXVZXREZv97h",
+                        id="call_YJsJE8QRPmdDAHFe5H5QJUAQ",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -249,8 +233,8 @@ stream_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+            "mode": "strict",
+            "formatting_instructions": None,
         },
         "tools": [
             {
@@ -274,20 +258,15 @@ stream_snapshot = snapshot(
                 "strict": False,
             }
         ],
-        "n_chunks": 29,
+        "n_chunks": 30,
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "openai",
+        "provider": "openai:completions",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.END_TURN,
         "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
             UserMessage(
                 content=[
                     Text(
@@ -298,7 +277,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_dkOmjFqa4hx2vhkuf6vW2Na3",
+                        id="call_cjevQinj1jOPWxHF1dU4zMmo",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
@@ -307,7 +286,7 @@ async_stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_dkOmjFqa4hx2vhkuf6vW2Na3",
+                        id="call_cjevQinj1jOPWxHF1dU4zMmo",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -338,8 +317,8 @@ async_stream_snapshot = snapshot(
                 "title": "BookSummary",
                 "type": "object",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+            "mode": "strict",
+            "formatting_instructions": None,
         },
         "tools": [
             {
@@ -363,6 +342,6 @@ async_stream_snapshot = snapshot(
                 "strict": False,
             }
         ],
-        "n_chunks": 29,
+        "n_chunks": 30,
     }
 )

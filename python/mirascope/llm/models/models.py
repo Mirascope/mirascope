@@ -72,7 +72,7 @@ class Model:
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
+            provider="openai:completions",
             model_id="gpt-5",
         )
         def answer_question(question: str) -> str:
@@ -1186,7 +1186,7 @@ def model(
 @overload
 def model(
     *,
-    provider: Literal["openai"],
+    provider: Literal["openai:completions"],
     model_id: OpenAICompletionsModelId,
     **params: Unpack[Params],
 ) -> Model:
@@ -1225,7 +1225,7 @@ def model(
     """Create an `llm.Model` instance with the specified provider and settings.
 
     Args:
-        provider: The LLM provider to use (e.g., "openai", "anthropic", "google").
+        provider: The LLM provider to use (e.g., "openai:completions", "anthropic", "google").
         model_id: The specific model identifier for the chosen provider.
         **params: Additional parameters to configure the model (e.g. temperature). See `llm.Params`.
 
@@ -1240,7 +1240,7 @@ def model(
         ```python
         import mirascope.llm as llm
 
-        openai_model = llm.model(provider="openai", model_id="gpt-4o-mini")
+        openai_model = llm.model(provider="openai:completions", model_id="gpt-4o-mini")
 
         claude_model = llm.model(
             provider="anthropic",

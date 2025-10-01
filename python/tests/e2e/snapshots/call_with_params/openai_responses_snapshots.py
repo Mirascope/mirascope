@@ -10,7 +10,7 @@ sync_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai",
+                "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "params": {
                     "temperature": 0.7,
@@ -40,7 +40,7 @@ async_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai",
+                "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "params": {
                     "temperature": 0.7,
@@ -70,7 +70,7 @@ stream_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai",
+                "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "finish_reason": None,
                 "messages": [
@@ -93,7 +93,7 @@ async_stream_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai",
+                "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "finish_reason": None,
                 "messages": [
