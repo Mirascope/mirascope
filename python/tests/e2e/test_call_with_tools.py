@@ -220,8 +220,7 @@ def test_call_with_tools_stream(
 
     response = call.stream(["mellon", "radiance"])
 
-    for _ in response.chunk_stream():
-        pass
+    response.finish()
 
     assert len(response.tool_calls) == 2, (
         f"Expected response to have two tool calls: {response.pretty()}"
@@ -230,8 +229,7 @@ def test_call_with_tools_stream(
     tool_outputs = response.execute_tools()
     response = response.resume(tool_outputs)
 
-    for _ in response.chunk_stream():
-        pass
+    response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
     pretty = response.pretty()
@@ -271,8 +269,7 @@ def test_call_with_tools_stream_context(
     ctx = llm.Context(deps=PASSWORD_MAP)
     response = call.stream(ctx, ["mellon", "radiance"])
 
-    for _ in response.chunk_stream():
-        pass
+    response.finish()
 
     assert len(response.tool_calls) == 2, (
         f"Expected response to have two tool calls: {response.pretty()}"
@@ -281,8 +278,7 @@ def test_call_with_tools_stream_context(
     tool_outputs = response.execute_tools(ctx)
     response = response.resume(ctx, tool_outputs)
 
-    for _ in response.chunk_stream():
-        pass
+    response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
     pretty = response.pretty()
@@ -323,8 +319,7 @@ async def test_call_with_tools_async_stream(
 
     response = await call.stream(["mellon", "radiance"])
 
-    async for _ in response.chunk_stream():
-        pass
+    await response.finish()
 
     assert len(response.tool_calls) == 2, (
         f"Expected response to have two tool calls: {response.pretty()}"
@@ -333,8 +328,7 @@ async def test_call_with_tools_async_stream(
     tool_outputs = await response.execute_tools()
     response = await response.resume(tool_outputs)
 
-    async for _ in response.chunk_stream():
-        pass
+    await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
     pretty = response.pretty()
@@ -377,8 +371,7 @@ async def test_call_with_tools_async_stream_context(
     ctx = llm.Context(deps=PASSWORD_MAP)
     response = await call.stream(ctx, ["mellon", "radiance"])
 
-    async for _ in response.chunk_stream():
-        pass
+    await response.finish()
 
     assert len(response.tool_calls) == 2, (
         f"Expected response to have two tool calls: {response.pretty()}"
@@ -387,8 +380,7 @@ async def test_call_with_tools_async_stream_context(
     tool_outputs = await response.execute_tools(ctx)
     response = await response.resume(ctx, tool_outputs)
 
-    async for _ in response.chunk_stream():
-        pass
+    await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
     pretty = response.pretty()

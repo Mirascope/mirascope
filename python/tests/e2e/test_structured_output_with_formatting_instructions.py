@@ -201,8 +201,7 @@ def test_structured_output_with_formatting_instructions_stream(
 
     try:
         response = recommend_book.stream("The Name of the Wind")
-        for _ in response.chunk_stream():
-            pass
+        response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -239,8 +238,7 @@ def test_structured_output_with_formatting_instructions_stream_context(
     ctx = llm.Context(deps="The Name of the Wind")
     try:
         response = recommend_book.stream(ctx)
-        for _ in response.chunk_stream():
-            pass
+        response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -280,8 +278,7 @@ async def test_structured_output_with_formatting_instructions_async_stream(
 
     try:
         response = await recommend_book.stream("The Name of the Wind")
-        async for _ in response.chunk_stream():
-            pass
+        await response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -319,8 +316,7 @@ async def test_structured_output_with_formatting_instructions_async_stream_conte
     ctx = llm.Context(deps="The Name of the Wind")
     try:
         response = await recommend_book.stream(ctx)
-        async for _ in response.chunk_stream():
-            pass
+        await response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
