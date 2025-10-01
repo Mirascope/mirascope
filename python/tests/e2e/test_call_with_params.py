@@ -71,8 +71,7 @@ def test_call_with_params_stream(
     with caplog.at_level(logging.WARNING):
         try:
             response = add_numbers.stream(4200, 42)
-            for _ in response.chunk_stream():
-                pass
+            response.finish()
             snapshot_data["response"] = (stream_response_snapshot_dict(response),)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)
@@ -135,8 +134,7 @@ async def test_call_with_params_async_stream(
     with caplog.at_level(logging.WARNING):
         try:
             response = await add_numbers.stream(4200, 42)
-            async for _ in response.chunk_stream():
-                pass
+            await response.finish()
             snapshot_data["response"] = (stream_response_snapshot_dict(response),)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)
@@ -206,8 +204,7 @@ def test_call_with_minimal_params_stream(
     with caplog.at_level(logging.WARNING):
         try:
             response = list_states.stream()
-            for _ in response.chunk_stream():
-                pass
+            response.finish()
             snapshot_data["response"] = (stream_response_snapshot_dict(response),)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)
@@ -270,8 +267,7 @@ async def test_call_with_minimal_params_async_stream(
     with caplog.at_level(logging.WARNING):
         try:
             response = await list_states.stream()
-            async for _ in response.chunk_stream():
-                pass
+            await response.finish()
             snapshot_data["response"] = (stream_response_snapshot_dict(response),)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)

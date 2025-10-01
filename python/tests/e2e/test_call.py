@@ -114,8 +114,7 @@ def test_call_stream(
 
     response = add_numbers.stream(4200, 42)
 
-    for _ in response.chunk_stream():
-        pass
+    response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
     assert "4242" in response.pretty(), (
@@ -137,8 +136,7 @@ def test_call_stream_context(
     ctx = llm.Context(deps=4200)
     response = add_numbers.stream(ctx, 42)
 
-    for _ in response.chunk_stream():
-        pass
+    response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
     assert "4242" in response.pretty(), (
@@ -163,8 +161,7 @@ async def test_call_async_stream(
 
     response = await add_numbers.stream(4200, 42)
 
-    async for _ in response.chunk_stream():
-        pass
+    await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
     assert "4242" in response.pretty(), (
@@ -187,8 +184,7 @@ async def test_call_async_stream_context(
     ctx = llm.Context(deps=4200)
     response = await add_numbers.stream(ctx, 42)
 
-    async for _ in response.chunk_stream():
-        pass
+    await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
     assert "4242" in response.pretty(), (

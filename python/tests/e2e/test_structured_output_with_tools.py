@@ -59,9 +59,10 @@ def test_structured_output_with_tools_sync(
 
     try:
         response = analyze_book("0-7653-1178-X")
-        assert len(response.tool_calls) == 1
 
+        assert len(response.tool_calls) == 1
         tool_outputs = response.execute_tools()
+
         response = response.resume(tool_outputs)
 
         assert response_snapshot_dict(response) == snapshot
@@ -109,9 +110,10 @@ def test_structured_output_with_tools_sync_context(
     ctx = llm.Context(deps=BOOK_DB)
     try:
         response = analyze_book(ctx, "0-7653-1178-X")
-        assert len(response.tool_calls) == 1
 
+        assert len(response.tool_calls) == 1
         tool_outputs = response.execute_tools(ctx)
+
         response = response.resume(ctx, tool_outputs)
 
         assert response_snapshot_dict(response) == snapshot
@@ -162,9 +164,10 @@ async def test_structured_output_with_tools_async(
 
     try:
         response = await analyze_book("0-7653-1178-X")
-        assert len(response.tool_calls) == 1
 
+        assert len(response.tool_calls) == 1
         tool_outputs = await response.execute_tools()
+
         response = await response.resume(tool_outputs)
 
         assert response_snapshot_dict(response) == snapshot
@@ -213,9 +216,10 @@ async def test_structured_output_with_tools_async_context(
     ctx = llm.Context(deps=BOOK_DB)
     try:
         response = await analyze_book(ctx, "0-7653-1178-X")
-        assert len(response.tool_calls) == 1
 
+        assert len(response.tool_calls) == 1
         tool_outputs = await response.execute_tools(ctx)
+
         response = await response.resume(ctx, tool_outputs)
 
         assert response_snapshot_dict(response) == snapshot
@@ -265,17 +269,13 @@ def test_structured_output_with_tools_stream(
 
     try:
         response = analyze_book.stream("0-7653-1178-X")
-
-        for _ in response.chunk_stream():
-            pass
+        response.finish()
 
         assert len(response.tool_calls) == 1
-
         tool_outputs = response.execute_tools()
-        response = response.resume(tool_outputs)
 
-        for _ in response.chunk_stream():
-            pass
+        response = response.resume(tool_outputs)
+        response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -322,17 +322,13 @@ def test_structured_output_with_tools_stream_context(
     ctx = llm.Context(deps=BOOK_DB)
     try:
         response = analyze_book.stream(ctx, "0-7653-1178-X")
-
-        for _ in response.chunk_stream():
-            pass
+        response.finish()
 
         assert len(response.tool_calls) == 1
-
         tool_outputs = response.execute_tools(ctx)
-        response = response.resume(ctx, tool_outputs)
 
-        for _ in response.chunk_stream():
-            pass
+        response = response.resume(ctx, tool_outputs)
+        response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -382,17 +378,13 @@ async def test_structured_output_with_tools_async_stream(
 
     try:
         response = await analyze_book.stream("0-7653-1178-X")
-
-        async for _ in response.chunk_stream():
-            pass
+        await response.finish()
 
         assert len(response.tool_calls) == 1
-
         tool_outputs = await response.execute_tools()
-        response = await response.resume(tool_outputs)
 
-        async for _ in response.chunk_stream():
-            pass
+        response = await response.resume(tool_outputs)
+        await response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -440,17 +432,13 @@ async def test_structured_output_with_tools_async_stream_context(
     ctx = llm.Context(deps=BOOK_DB)
     try:
         response = await analyze_book.stream(ctx, "0-7653-1178-X")
-
-        async for _ in response.chunk_stream():
-            pass
+        await response.finish()
 
         assert len(response.tool_calls) == 1
-
         tool_outputs = await response.execute_tools(ctx)
-        response = await response.resume(ctx, tool_outputs)
 
-        async for _ in response.chunk_stream():
-            pass
+        response = await response.resume(ctx, tool_outputs)
+        await response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
