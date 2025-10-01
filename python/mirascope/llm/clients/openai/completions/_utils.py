@@ -222,7 +222,7 @@ PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
 }
 
 
-def prepare_openai_request(
+def prepare_completions_request(
     *,
     model_id: OpenAICompletionsModelId,
     messages: Sequence[Message],
@@ -230,21 +230,7 @@ def prepare_openai_request(
     format: type[FormattableT] | Format[FormattableT] | None = None,
     params: Params | None = None,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
-    """Prepare OpenAI API request parameters.
-
-    Args:
-        model: The OpenAI model string. Used for model-specific behavior around whether
-          strict structured outputs are supported.
-        messages: A sequence of Mirascope `Message`s.
-        tools: A sequence of Mirascope tools (or None).
-        format: A format type (or None).
-
-    Returns:
-        A tuple containing:
-            - A sequence of Mirascope `Message`s, which may include modifications to the
-              system message (e.g. with instructions for JSON mode formatting).
-            - A ChatCompletionCreateKwargs dict with parameters for OpenAI's create method.
-    """
+    """Prepares a request for the `OpenAI.chat.completions.create` method."""
     kwargs: ChatCompletionCreateKwargs = {
         "model": model_id,
     }

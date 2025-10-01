@@ -164,6 +164,7 @@ def prepare_anthropic_request(
     format: type[FormattableT] | Format[FormattableT] | None = None,
     params: Params | None = None,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
+    """Prepares a request for the `Anthropic.messages.create` method."""
     kwargs: MessageCreateKwargs = {
         "model": model_id,
         "max_tokens": 1024,

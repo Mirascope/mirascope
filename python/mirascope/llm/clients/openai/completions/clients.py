@@ -154,7 +154,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_completions_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -251,7 +251,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_completions_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -336,7 +336,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
 
-        input_messages, format, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_completions_request(
             model_id=model_id,
             params=params,
             messages=messages,
@@ -433,7 +433,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_completions_request(
             model_id=model_id,
             params=params,
             messages=messages,
@@ -517,7 +517,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_completions_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -615,7 +615,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_completions_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -701,7 +701,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
 
-        input_messages, format, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_completions_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -801,7 +801,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_openai_request(
+        input_messages, format, kwargs = _utils.prepare_completions_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
