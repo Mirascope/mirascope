@@ -37,6 +37,9 @@ from ....responses import (
 )
 from ....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ...base import BaseKwargs, Params, _utils as _base_utils
+from ..shared import (
+    _utils as _shared_utils,
+)
 from .model_ids import OpenAICompletionsModelId
 
 logger = logging.getLogger(__name__)
@@ -47,48 +50,6 @@ OPENAI_FINISH_REASON_MAP = {
     "content_filter": FinishReason.REFUSAL,
     "tool_calls": FinishReason.TOOL_USE,
     "function_call": FinishReason.TOOL_USE,
-}
-
-
-MODELS_WITHOUT_JSON_SCHEMA_SUPPORT = {
-    "chatgpt-4o-latest",
-    "gpt-3.5-turbo",
-    "gpt-3.5-turbo-0125",
-    "gpt-3.5-turbo-1106",
-    "gpt-3.5-turbo-16k",
-    "gpt-4",
-    "gpt-4-0125-preview",
-    "gpt-4-0613",
-    "gpt-4-1106-preview",
-    "gpt-4-turbo",
-    "gpt-4-turbo-2024-04-09",
-    "gpt-4-turbo-preview",
-    "gpt-4o-2024-05-13",
-    "gpt-4o-audio-preview",
-    "gpt-4o-audio-preview-2024-10-01",
-    "gpt-4o-audio-preview-2024-12-17",
-    "gpt-4o-audio-preview-2025-06-03",
-    "gpt-4o-mini-audio-preview",
-    "gpt-4o-mini-audio-preview-2024-12-17",
-    "gpt-5-chat-latest",
-    "o1-mini",
-    "o1-mini-2024-09-12",
-}
-MODELS_WITHOUT_JSON_OBJECT_SUPPORT = {
-    "gpt-4",
-    "gpt-4-0613",
-    "gpt-4o-audio-preview",
-    "gpt-4o-audio-preview-2024-10-01",
-    "gpt-4o-audio-preview-2024-12-17",
-    "gpt-4o-audio-preview-2025-06-03",
-    "gpt-4o-mini-audio-preview",
-    "gpt-4o-mini-audio-preview-2024-12-17",
-    "gpt-4o-mini-search-preview",
-    "gpt-4o-mini-search-preview-2025-03-11",
-    "gpt-4o-search-preview",
-    "gpt-4o-search-preview-2025-03-11",
-    "o1-mini",
-    "o1-mini-2024-09-12",
 }
 
 
@@ -110,18 +71,6 @@ class ChatCompletionCreateKwargs(BaseKwargs, total=False):
     top_p: float | NotGiven
     seed: int | NotGiven
     stop: str | list[str] | NotGiven
-
-
-def _ensure_additional_properties_false(obj: object) -> None:
-    """Recursively adds additionalProperties = False to a schema, required by OpenAI API."""
-    if isinstance(obj, dict):
-        if obj.get("type") == "object" and "additionalProperties" not in obj:
-            obj["additionalProperties"] = False
-        for value in obj.values():
-            _ensure_additional_properties_false(value)
-    elif isinstance(obj, list):
-        for item in obj:
-            _ensure_additional_properties_false(item)
 
 
 def _encode_user_message(
@@ -223,7 +172,7 @@ def _convert_tool_to_tool_param(
     """Convert a single Mirascope `Tool` to OpenAI ChatCompletionToolParam with caching."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
-    _ensure_additional_properties_false(schema_dict)
+    _shared_utils._ensure_additional_properties_false(schema_dict)
     return openai_types.ChatCompletionToolParam(
         type="function",
         function={
@@ -248,7 +197,7 @@ def _create_strict_response_format(
     """
     schema = format.schema.copy()
 
-    _ensure_additional_properties_false(schema)
+    _shared_utils._ensure_additional_properties_false(schema)
 
     json_schema = JSONSchema(
         name=format.name,
@@ -311,7 +260,9 @@ def prepare_openai_request(
 
     openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
 
-    model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+    model_supports_strict = (
+        model_id not in _shared_utils.MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+    )
     default_mode = "strict" if model_supports_strict else "tool"
     format = resolve_format(format, default_mode=default_mode)
     if format is not None:
@@ -333,7 +284,8 @@ def prepare_openai_request(
             format_tool_schema = _formatting_utils.create_tool_schema(format)
             openai_tools.append(_convert_tool_to_tool_param(format_tool_schema))
         elif (
-            format.mode == "json" and model_id not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+            format.mode == "json"
+            and model_id not in _shared_utils.MODELS_WITHOUT_JSON_OBJECT_SUPPORT
         ):
             kwargs["response_format"] = {"type": "json_object"}
 

@@ -50,9 +50,8 @@ from ....tools import (
     ToolSchema,
 )
 from ...base import Params, _utils as _base_utils
-from ..completions._utils import (
-    MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
-    MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
+from ..shared import (
+    _utils as _shared_utils,
 )
 from .model_ids import OpenAIResponsesModelId
 
@@ -100,23 +99,11 @@ def _encode_message(message: Message) -> EasyInputMessageParam:
     return EasyInputMessageParam(role=message.role, content=content)
 
 
-def _ensure_additional_properties_false(obj: object) -> None:
-    """Recursively adds additionalProperties = False to a schema, required by OpenAI API."""
-    if isinstance(obj, dict):
-        if obj.get("type") == "object" and "additionalProperties" not in obj:
-            obj["additionalProperties"] = False
-        for value in obj.values():
-            _ensure_additional_properties_false(value)
-    elif isinstance(obj, list):
-        for item in obj:
-            _ensure_additional_properties_false(item)
-
-
 def _convert_tool_to_function_tool_param(tool: ToolSchema) -> FunctionToolParam:
     """Convert a Mirascope ToolSchema to OpenAI Responses FunctionToolParam."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
-    _ensure_additional_properties_false(schema_dict)
+    _shared_utils._ensure_additional_properties_false(schema_dict)
 
     return FunctionToolParam(
         type="function",
@@ -139,7 +126,7 @@ def _create_strict_response_format(
         ResponseFormatTextJSONSchemaConfigParam for strict structured outputs
     """
     schema = format.schema.copy()
-    _ensure_additional_properties_false(schema)
+    _shared_utils._ensure_additional_properties_false(schema)
 
     response_format: ResponseFormatTextJSONSchemaConfigParam = {
         "type": "json_schema",
@@ -200,7 +187,9 @@ def prepare_openai_request(
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools]
 
-    model_supports_strict = model_id not in MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+    model_supports_strict = (
+        model_id not in _shared_utils.MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+    )
     default_mode = "strict" if model_supports_strict else "tool"
 
     format = resolve_format(format, default_mode=default_mode)
@@ -227,7 +216,8 @@ def prepare_openai_request(
                     name=FORMAT_TOOL_NAME,
                 )
         elif (
-            format.mode == "json" and model_id not in MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+            format.mode == "json"
+            and model_id not in _shared_utils.MODELS_WITHOUT_JSON_OBJECT_SUPPORT
         ):
             kwargs["text"] = {"format": ResponseFormatJSONObject(type="json_object")}
 
