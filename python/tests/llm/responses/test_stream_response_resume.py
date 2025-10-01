@@ -8,7 +8,9 @@ from mirascope import llm
 
 
 @pytest.mark.vcr()
-def test_stream_response_resume_basic(openai_client: llm.clients.OpenAIClient) -> None:
+def test_stream_response_resume_basic(
+    openai_client: llm.clients.OpenAICompletionsClient,
+) -> None:
     """Test basic resume functionality with text content."""
     messages = [
         llm.messages.system("You are concise."),
@@ -44,7 +46,7 @@ Because he was outstanding in his field!\
 
 @pytest.mark.vcr()
 def test_stream_response_resume_with_tools(
-    openai_client: llm.clients.OpenAIClient,
+    openai_client: llm.clients.OpenAICompletionsClient,
 ) -> None:
     """Test resume functionality after tool usage."""
 
@@ -78,7 +80,7 @@ def test_stream_response_resume_with_tools(
 
 @pytest.mark.vcr()
 def test_stream_response_resume_with_format(
-    openai_client: llm.clients.OpenAIClient,
+    openai_client: llm.clients.OpenAICompletionsClient,
 ) -> None:
     """Test resume functionality with structured output formats."""
 
@@ -120,7 +122,7 @@ def test_stream_response_resume_with_format(
 
 @pytest.mark.vcr()
 def test_stream_response_resume_model_override(
-    openai_client: llm.clients.OpenAIClient,
+    openai_client: llm.clients.OpenAICompletionsClient,
 ) -> None:
     """Test resume functionality with model override using context manager."""
 
@@ -150,7 +152,7 @@ def test_stream_response_resume_model_override(
 
 @pytest.mark.vcr()
 def test_stream_response_partial_consumption_resume(
-    openai_client: llm.clients.OpenAIClient,
+    openai_client: llm.clients.OpenAICompletionsClient,
 ) -> None:
     """Test resume functionality when stream is only partially consumed."""
 

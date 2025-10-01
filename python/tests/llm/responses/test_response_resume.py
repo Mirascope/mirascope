@@ -8,7 +8,9 @@ from mirascope import llm
 
 
 @pytest.mark.vcr()
-def test_response_resume_basic(openai_client: llm.clients.OpenAIClient) -> None:
+def test_response_resume_basic(
+    openai_client: llm.clients.OpenAICompletionsClient,
+) -> None:
     """Test basic resume functionality with text content."""
     messages = [
         llm.messages.system("You are concise."),
@@ -41,7 +43,9 @@ Because he was outstanding in his field!\
 
 
 @pytest.mark.vcr()
-def test_response_resume_with_tools(openai_client: llm.clients.OpenAIClient) -> None:
+def test_response_resume_with_tools(
+    openai_client: llm.clients.OpenAICompletionsClient,
+) -> None:
     """Test resume functionality after tool usage."""
 
     @llm.tool
@@ -68,7 +72,9 @@ def test_response_resume_with_tools(openai_client: llm.clients.OpenAIClient) -> 
 
 
 @pytest.mark.vcr()
-def test_response_resume_with_format(openai_client: llm.clients.OpenAIClient) -> None:
+def test_response_resume_with_format(
+    openai_client: llm.clients.OpenAICompletionsClient,
+) -> None:
     """Test resume functionality with structured output formats."""
 
     class Book(BaseModel):
@@ -106,7 +112,7 @@ def test_response_resume_with_format(openai_client: llm.clients.OpenAIClient) ->
 
 @pytest.mark.vcr()
 def test_response_resume_model_override(
-    openai_client: llm.clients.OpenAIClient,
+    openai_client: llm.clients.OpenAICompletionsClient,
 ) -> None:
     """Test resume functionality with model override using context manager."""
 

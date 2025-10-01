@@ -32,7 +32,7 @@ def test_get_client_openai() -> None:
     client1 = llm.get_client("openai")
     client2 = llm.get_client("openai")
 
-    assert isinstance(client1, llm.clients.OpenAIClient)
+    assert isinstance(client1, llm.clients.OpenAICompletionsClient)
     assert client1 is client2
     assert client1.client.api_key == os.getenv("OPENAI_API_KEY")
 

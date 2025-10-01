@@ -10,7 +10,7 @@ from .base import (
     Params,
 )
 from .google import GoogleClient, GoogleModelId
-from .openai import OpenAIClient, OpenAIModelId
+from .openai import OpenAICompletionsClient, OpenAIModelId
 from .openai_responses import OpenAIResponsesClient, OpenAIResponsesModelId
 from .providers import PROVIDERS, ModelId, Provider, client, get_client
 
@@ -23,7 +23,7 @@ __all__ = [
     "GoogleClient",
     "GoogleModelId",
     "ModelId",
-    "OpenAIClient",
+    "OpenAICompletionsClient",
     "OpenAIModelId",
     "OpenAIResponsesClient",
     "OpenAIResponsesModelId",
