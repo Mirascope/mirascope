@@ -209,8 +209,7 @@ def test_structured_output_stream(
 
     try:
         response = recommend_book.stream("Patrick Rothfuss")
-        for _ in response.chunk_stream():
-            pass
+        response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -249,8 +248,7 @@ def test_structured_output_stream_context(
     ctx = llm.Context(deps="Patrick Rothfuss")
     try:
         response = recommend_book.stream(ctx)
-        for _ in response.chunk_stream():
-            pass
+        response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -292,8 +290,7 @@ async def test_structured_output_async_stream(
 
     try:
         response = await recommend_book.stream("Patrick Rothfuss")
-        async for _ in response.chunk_stream():
-            pass
+        await response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -333,8 +330,7 @@ async def test_structured_output_async_stream_context(
     ctx = llm.Context(deps="Patrick Rothfuss")
     try:
         response = await recommend_book.stream(ctx)
-        async for _ in response.chunk_stream():
-            pass
+        await response.finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
