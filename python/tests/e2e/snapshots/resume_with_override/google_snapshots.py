@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    FinishReason,
     Text,
     UserMessage,
 )
@@ -12,7 +11,7 @@ sync_snapshot = snapshot(
         "provider": "google",
         "model_id": "gemini-2.5-flash",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(content=[Text(text="I was created by Anthropic.")]),
@@ -38,7 +37,7 @@ async_snapshot = snapshot(
         "provider": "google",
         "model_id": "gemini-2.5-flash",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(content=[Text(text="I was created by Anthropic.")]),
@@ -63,7 +62,7 @@ stream_snapshot = snapshot(
     {
         "provider": "google",
         "model_id": "gemini-2.5-flash",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(
@@ -97,7 +96,7 @@ async_stream_snapshot = snapshot(
     {
         "provider": "google",
         "model_id": "gemini-2.5-flash",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(content=[Text(text="I was created by Anthropic.")]),

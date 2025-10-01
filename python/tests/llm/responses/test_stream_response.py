@@ -621,18 +621,16 @@ class TestChunkProcessing:
         example_text: llm.Text,
     ) -> None:
         """Test that FinishReasonChunk sets the finish_reason on the response with sync response."""
-        chunks = [
-            *example_text_chunks,
-            llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
-        ]
-        stream_response = create_sync_stream_response(chunks)
+        stream_response = create_sync_stream_response(example_text_chunks)
 
         assert stream_response.finish_reason is None
 
         streamed_chunks = list(stream_response.chunk_stream())
 
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
-        check_stream_response_consistency(stream_response, chunks, [example_text])
+        assert stream_response.finish_reason is None
+        check_stream_response_consistency(
+            stream_response, example_text_chunks, [example_text]
+        )
         assert len(streamed_chunks) == 5  # All the text chunks
         assert stream_response.consumed is True
 
@@ -645,26 +643,21 @@ class TestChunkProcessing:
         example_text: llm.Text,
     ) -> None:
         """Test that FinishReasonChunk sets the finish_reason on the response with async response."""
-        chunks = [
-            *example_text_chunks,
-            llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
-        ]
+        chunks = example_text_chunks
         stream_response = create_async_stream_response(chunks)
 
         assert stream_response.finish_reason is None
 
         streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
 
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+        assert stream_response.finish_reason is None
         check_stream_response_consistency(stream_response, chunks, [example_text])
         assert len(streamed_chunks) == 5  # all the text chunks
         assert stream_response.consumed is True
 
     def test_sync_response_consumed(self) -> None:
         """Test that response.consumed is set when the iterator is exhausted with sync response."""
-        stream_response = create_sync_stream_response(
-            [llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN)]
-        )
+        stream_response = create_sync_stream_response([])
         chunk_stream = stream_response.chunk_stream()
 
         assert stream_response.finish_reason is None
@@ -672,15 +665,13 @@ class TestChunkProcessing:
 
         with pytest.raises(StopIteration):
             next(chunk_stream)
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+        assert stream_response.finish_reason is None
         assert stream_response.consumed is True
 
     @pytest.mark.asyncio
     async def test_async_response_consumed(self) -> None:
         """Test that response.consumed is set when the iterator is exhausted with async response."""
-        stream_response = create_async_stream_response(
-            [llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN)]
-        )
+        stream_response = create_async_stream_response([])
         chunk_stream = stream_response.chunk_stream()
 
         assert stream_response.finish_reason is None
@@ -688,7 +679,7 @@ class TestChunkProcessing:
 
         with pytest.raises(StopAsyncIteration):
             await anext(chunk_stream)
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+        assert stream_response.finish_reason is None
         assert stream_response.consumed is True
 
 
@@ -842,7 +833,7 @@ class TestErrorHandling:
         """Test that chunks after finish reason raise RuntimeError with sync response."""
         chunks = [
             *example_text_chunks,
-            llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+            llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.REFUSAL),
             *example_thinking_chunks,
         ]
         stream_response = create_sync_stream_response(chunks)
@@ -850,7 +841,7 @@ class TestErrorHandling:
         with pytest.raises(RuntimeError):
             list(stream_response.chunk_stream())
 
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+        assert stream_response.finish_reason is llm.FinishReason.REFUSAL
         check_stream_response_consistency(stream_response, chunks[:6], [example_text])
 
     @pytest.mark.asyncio
@@ -867,7 +858,7 @@ class TestErrorHandling:
         """Test that chunks after finish reason raise RuntimeError with async response."""
         chunks = [
             *example_text_chunks,
-            llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN),
+            llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.REFUSAL),
             *example_thinking_chunks,
         ]
         stream_response = create_async_stream_response(chunks)
@@ -875,7 +866,7 @@ class TestErrorHandling:
         with pytest.raises(RuntimeError):
             [chunk async for chunk in stream_response.chunk_stream()]
 
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+        assert stream_response.finish_reason is llm.FinishReason.REFUSAL
         check_stream_response_consistency(stream_response, chunks[:6], [example_text])
 
 
@@ -981,9 +972,7 @@ Hello world
         assert streamed_output == stream_response.pretty()
 
     def test_sync_pretty_stream_empty_response(self) -> None:
-        stream_response = create_sync_stream_response(
-            [llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN)]
-        )
+        stream_response = create_sync_stream_response([])
 
         streamed_output = "".join(stream_response.pretty_stream())
 
@@ -992,9 +981,7 @@ Hello world
 
     @pytest.mark.asyncio
     async def test_async_pretty_stream_empty_response(self) -> None:
-        stream_response = create_async_stream_response(
-            [llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.END_TURN)]
-        )
+        stream_response = create_async_stream_response([])
 
         streamed_output = "".join(
             [part async for part in stream_response.pretty_stream()]
@@ -1082,7 +1069,6 @@ def example_format_tool_chunks() -> list[
         llm.ToolCallChunk(delta='{"title": "The Hobbit"'),
         llm.ToolCallChunk(delta=', "author": "Tolkien"}'),
         llm.ToolCallEndChunk(),
-        llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
     ]
 
 
@@ -1114,7 +1100,6 @@ def example_format_tool_chunks_mixed() -> list[
         llm.TextStartChunk(),
         llm.TextChunk(delta="A wizard is never late."),
         llm.TextEndChunk(),
-        llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
     ]
 
 
@@ -1178,7 +1163,7 @@ class TestFormatToolHandling:
         )
         assert stream_response.messages[-1].content == stream_response.content
 
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+        assert stream_response.finish_reason is None
 
     def test_sync_mixed_regular_and_format_tools(
         self,
@@ -1204,7 +1189,7 @@ class TestFormatToolHandling:
             ]
         )
         assert stream_response.messages[-1].content == stream_response.content
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+        assert stream_response.finish_reason is None
 
     def test_sync_format_tool_no_finish_reason_change(
         self,
@@ -1244,7 +1229,7 @@ class TestFormatToolHandling:
             [llm.Text(text='{"title": "The Hobbit", "author": "Tolkien"}')]
         )
         assert stream_response.messages[-1].content == stream_response.content
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+        assert stream_response.finish_reason is None
 
     @pytest.mark.asyncio
     async def test_async_mixed_regular_and_format_tools(
@@ -1273,7 +1258,7 @@ class TestFormatToolHandling:
             ]
         )
         assert stream_response.messages[-1].content == stream_response.content
-        assert stream_response.finish_reason == llm.FinishReason.END_TURN
+        assert stream_response.finish_reason is None
 
     @pytest.mark.asyncio
     async def test_async_format_tool_no_finish_reason_change(
@@ -1316,7 +1301,6 @@ def test_stream_response_execute_tools() -> None:
         llm.ToolCallStartChunk(id="call_2", name="tool_two"),
         llm.ToolCallChunk(delta='{"y": "hello"}'),
         llm.ToolCallEndChunk(),
-        llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
     ]
 
     stream_response = llm.StreamResponse(
@@ -1355,7 +1339,6 @@ async def test_async_stream_response_execute_tools() -> None:
         llm.ToolCallStartChunk(id="call_2", name="tool_two"),
         llm.ToolCallChunk(delta='{"y": "hello"}'),
         llm.ToolCallEndChunk(),
-        llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.TOOL_USE),
     ]
 
     async def async_chunk_iter() -> AsyncIterator[llm.AssistantContentChunk]:

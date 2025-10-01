@@ -24,7 +24,7 @@ from ..formatting import Format, FormattableT, Partial
 from ..messages import AssistantMessage, Message
 from ..streams import AsyncStream, Stream
 from ..tools import FORMAT_TOOL_NAME, ToolkitT
-from .finish_reason import FinishReason, FinishReasonChunk
+from .finish_reason import FinishReasonChunk
 from .root_response import RootResponse
 
 if TYPE_CHECKING:
@@ -168,17 +168,7 @@ class BaseStreamResponse(
         self._chunk_iterator = chunk_iterator
         self._current_content: Text | Thinking | ToolCall | None = None
 
-        # Starts as None, is True while processing format tool, False afterwards
-        self._processing_format_tool: bool | None = None
-
-    def _handle_finish_reason_chunk(self, chunk: FinishReasonChunk) -> None:
-        if (
-            self._processing_format_tool is False
-            and chunk.finish_reason == FinishReason.TOOL_USE
-        ):
-            self.finish_reason = FinishReason.END_TURN
-        else:
-            self.finish_reason = chunk.finish_reason
+        self._processing_format_tool: bool = False
 
     def _transform_format_tool_chunks(
         self, chunk: AssistantContentChunk
@@ -382,7 +372,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
             if chunk.type == "raw_chunk":
                 self._raw.append(chunk.raw)
             elif chunk.type == "finish_reason_chunk":
-                self._handle_finish_reason_chunk(chunk)
+                self.finish_reason = chunk.finish_reason
             else:
                 yield self._handle_chunk(chunk)
 
@@ -489,7 +479,7 @@ class BaseAsyncStreamResponse(
             if chunk.type == "raw_chunk":
                 self._raw.append(chunk.raw)
             elif chunk.type == "finish_reason_chunk":
-                self._handle_finish_reason_chunk(chunk)
+                self.finish_reason = chunk.finish_reason
             else:
                 yield self._handle_chunk(chunk)
 

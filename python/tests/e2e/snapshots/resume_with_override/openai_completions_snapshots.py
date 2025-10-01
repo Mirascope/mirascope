@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    FinishReason,
     Text,
     UserMessage,
 )
@@ -12,7 +11,7 @@ sync_snapshot = snapshot(
         "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(content=[Text(text="I was created by Anthropic.")]),
@@ -34,7 +33,7 @@ async_snapshot = snapshot(
         "provider": "openai:completions",
         "model_id": "gpt-4o",
         "params": {},
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(content=[Text(text="I was created by Anthropic.")]),
@@ -55,7 +54,7 @@ stream_snapshot = snapshot(
     {
         "provider": "openai:completions",
         "model_id": "gpt-4o",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(content=[Text(text="I was created by Anthropic.")]),
@@ -75,7 +74,7 @@ async_stream_snapshot = snapshot(
     {
         "provider": "openai:completions",
         "model_id": "gpt-4o",
-        "finish_reason": FinishReason.END_TURN,
+        "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(content=[Text(text="I was created by Anthropic.")]),

@@ -81,6 +81,3 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
                 content=self.content, name=assistant_message.name
             )
         self.messages = list(input_messages) + [assistant_message]
-
-        if found_format_tool and self.finish_reason == FinishReason.TOOL_USE:
-            self.finish_reason = FinishReason.END_TURN
