@@ -13,7 +13,7 @@ from .google import (
     get_client as get_google_client,
 )
 from .openai import (
-    OpenAIClient,
+    OpenAICompletionsClient,
     OpenAIModelId,
     client as openai_client,
     get_client as get_openai_client,
@@ -47,7 +47,7 @@ def get_client(provider: Literal["google"]) -> GoogleClient:
 
 
 @overload
-def get_client(provider: Literal["openai"]) -> OpenAIClient:
+def get_client(provider: Literal["openai"]) -> OpenAICompletionsClient:
     """Get an OpenAI client instance."""
     ...
 
@@ -60,7 +60,7 @@ def get_client(provider: Literal["openai:responses"]) -> OpenAIResponsesClient:
 
 def get_client(
     provider: Provider,
-) -> AnthropicClient | GoogleClient | OpenAIClient | OpenAIResponsesClient:
+) -> AnthropicClient | GoogleClient | OpenAICompletionsClient | OpenAIResponsesClient:
     """Get a client instance for the specified provider.
 
     Args:
@@ -69,10 +69,10 @@ def get_client(
     Returns:
         A client instance for the specified provider. The specific client type
         depends on the provider:
-        - "openai" returns OpenAIClient (ChatCompletion API)
-        - "openai:responses" returns OpenAIResponsesClient (Responses API)
-        - "anthropic" returns AnthropicClient
-        - "google" returns GoogleClient
+        - "openai" returns `OpenAICompletionsClient` (ChatCompletion API)
+        - "openai:responses" returns `OpenAIResponsesClient` (Responses API)
+        - "anthropic" returns `AnthropicClient`
+        - "google" returns `GoogleClient`
 
     Multiple calls to get_client will return the same Client rather than constructing
     new ones.
@@ -99,7 +99,7 @@ def client(
     *,
     api_key: str | None = None,
     base_url: str | None = None,
-) -> OpenAIClient:
+) -> OpenAICompletionsClient:
     """Create a cached OpenAI chat completions client with the given parameters."""
     ...
 
@@ -139,7 +139,7 @@ def client(
 
 def client(
     provider: Provider, *, api_key: str | None = None, base_url: str | None = None
-) -> AnthropicClient | GoogleClient | OpenAIClient | OpenAIResponsesClient:
+) -> AnthropicClient | GoogleClient | OpenAICompletionsClient | OpenAIResponsesClient:
     """Create a cached client instance for the specified provider.
 
     Args:

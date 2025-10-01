@@ -36,20 +36,22 @@ from ..base import BaseClient, Params
 from . import _utils
 from .model_ids import OpenAIModelId
 
-OPENAI_CLIENT_CONTEXT: ContextVar["OpenAIClient | None"] = ContextVar(
-    "OPENAI_CLIENT_CONTEXT", default=None
+OPENAI_COMPLETIONS_CLIENT_CONTEXT: ContextVar["OpenAICompletionsClient | None"] = (
+    ContextVar("OPENAI_COMPLETIONS_CLIENT_CONTEXT", default=None)
 )
 
 
 @lru_cache(maxsize=256)
-def _openai_singleton(api_key: str | None, base_url: str | None) -> "OpenAIClient":
+def _openai_singleton(
+    api_key: str | None, base_url: str | None
+) -> "OpenAICompletionsClient":
     """Return a cached OpenAI client instance for the given parameters."""
-    return OpenAIClient(api_key=api_key, base_url=base_url)
+    return OpenAICompletionsClient(api_key=api_key, base_url=base_url)
 
 
 def client(
     *, api_key: str | None = None, base_url: str | None = None
-) -> "OpenAIClient":
+) -> "OpenAICompletionsClient":
     """Create or retrieve an OpenAI client with the given parameters.
 
     If a client has already been created with these parameters, it will be
@@ -67,23 +69,23 @@ def client(
     return _openai_singleton(api_key, base_url)
 
 
-def get_client() -> "OpenAIClient":
+def get_client() -> "OpenAICompletionsClient":
     """Retrieve the current OpenAI client from context, or a global default.
 
     Returns:
         The current OpenAI client from context if available, otherwise
         a global default client based on environment variables.
     """
-    ctx_client = OPENAI_CLIENT_CONTEXT.get()
+    ctx_client = OPENAI_COMPLETIONS_CLIENT_CONTEXT.get()
     return ctx_client or client()
 
 
-class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
+class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     """The client for the OpenAI LLM model."""
 
     @property
-    def _context_var(self) -> ContextVar["OpenAIClient | None"]:
-        return OPENAI_CLIENT_CONTEXT
+    def _context_var(self) -> ContextVar["OpenAICompletionsClient | None"]:
+        return OPENAI_COMPLETIONS_CLIENT_CONTEXT
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None

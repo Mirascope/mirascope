@@ -118,6 +118,6 @@ def google_client(google_api_key: str) -> llm.clients.GoogleClient:
 
 
 @pytest.fixture(scope="session")
-def openai_client(openai_api_key: str) -> llm.clients.OpenAIClient:
-    """Create an OpenAIClient instance with appropriate API key."""
+def openai_client(openai_api_key: str) -> llm.clients.OpenAICompletionsClient:
+    """Create an OpenAICompletionsClient instance with appropriate API key."""
     return llm.client("openai", api_key=openai_api_key)

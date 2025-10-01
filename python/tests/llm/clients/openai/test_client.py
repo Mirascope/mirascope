@@ -1,4 +1,4 @@
-"""Tests for OpenAIClient"""
+"""Tests for OpenAICompletionsClient"""
 
 import pytest
 from inline_snapshot import snapshot

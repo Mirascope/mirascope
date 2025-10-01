@@ -1,6 +1,6 @@
 """OpenAI client implementation."""
 
-from .clients import OpenAIClient, client, get_client
+from .clients import OpenAICompletionsClient, client, get_client
 from .model_ids import OpenAIModelId
 
-__all__ = ["OpenAIClient", "OpenAIModelId", "client", "get_client"]
+__all__ = ["OpenAICompletionsClient", "OpenAIModelId", "client", "get_client"]

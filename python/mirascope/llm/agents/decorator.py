@@ -16,7 +16,7 @@ if TYPE_CHECKING:
         GoogleClient,
         GoogleModelId,
         ModelId,
-        OpenAIClient,
+        OpenAICompletionsClient,
         OpenAIModelId,
         Params,
         Provider,
@@ -131,7 +131,7 @@ def agent(
     model_id: OpenAIModelId,
     tools: list[AgentToolT] | None = None,
     format: type[FormattableT] | None = None,
-    client: OpenAIClient | None = None,
+    client: OpenAICompletionsClient | None = None,
     **params: Unpack[Params],
 ) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an OpenAI agent."""
