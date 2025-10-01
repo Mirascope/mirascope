@@ -11,7 +11,7 @@ from ..clients import (
     AnthropicModelId,
     GoogleModelId,
     ModelId,
-    OpenAIModelId,
+    OpenAICompletionsModelId,
     OpenAIResponsesModelId,
     Params,
     Provider,
@@ -162,7 +162,7 @@ def call(
 def call(
     *,
     provider: Literal["openai"],
-    model_id: OpenAIModelId,
+    model_id: OpenAICompletionsModelId,
     tools: list[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
     **params: Unpack[Params],

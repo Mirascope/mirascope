@@ -38,7 +38,7 @@ if TYPE_CHECKING:
         AnthropicModelId,
         GoogleModelId,
         ModelId,
-        OpenAIModelId,
+        OpenAICompletionsModelId,
         Params,
         Provider,
     )
@@ -1187,7 +1187,7 @@ def model(
 def model(
     *,
     provider: Literal["openai"],
-    model_id: OpenAIModelId,
+    model_id: OpenAICompletionsModelId,
     **params: Unpack[Params],
 ) -> Model:
     """Create an `llm.Model` instance for OpenAI models."""
@@ -1198,7 +1198,7 @@ def model(
 def model(
     *,
     provider: Literal["openai:responses"],
-    model_id: OpenAIModelId,
+    model_id: OpenAICompletionsModelId,
     **params: Unpack[Params],
 ) -> Model:
     """Create an `llm.Model` instance for OpenAI models (responses API)."""

@@ -3,7 +3,7 @@
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from mirascope.llm.clients.openai_responses import _utils as openai_utils
+from mirascope.llm.clients.openai.responses import _utils as openai_utils
 
 
 def test_prepare_message_multiple_assistant_text_parts() -> None:

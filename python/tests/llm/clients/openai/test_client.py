@@ -5,7 +5,7 @@ from inline_snapshot import snapshot
 from pydantic import BaseModel
 
 from mirascope import llm
-from mirascope.llm.clients.openai import _utils as openai_utils
+from mirascope.llm.clients.openai.completions import _utils as openai_utils
 
 
 def test_prepare_message_multiple_assistant_text_parts() -> None:

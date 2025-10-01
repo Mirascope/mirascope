@@ -17,7 +17,7 @@ if TYPE_CHECKING:
         GoogleModelId,
         ModelId,
         OpenAICompletionsClient,
-        OpenAIModelId,
+        OpenAICompletionsModelId,
         Params,
         Provider,
     )
@@ -128,7 +128,7 @@ def agent(
 def agent(
     *,
     provider: Literal["openai"],
-    model_id: OpenAIModelId,
+    model_id: OpenAICompletionsModelId,
     tools: list[AgentToolT] | None = None,
     format: type[FormattableT] | None = None,
     client: OpenAICompletionsClient | None = None,

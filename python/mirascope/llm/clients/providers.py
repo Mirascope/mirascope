@@ -14,15 +14,13 @@ from .google import (
 )
 from .openai import (
     OpenAICompletionsClient,
-    OpenAIModelId,
-    client as openai_client,
-    get_client as get_openai_client,
-)
-from .openai_responses import (
+    OpenAICompletionsModelId,
     OpenAIResponsesClient,
     OpenAIResponsesModelId,
-    client as openai_responses_client,
-    get_client as get_openai_responses_client,
+    completions_client as openai_completions_client,
+    get_completions_client as get_openai_completions_client,
+    get_responses_client as get_openai_responses_client,
+    responses_client as openai_responses_client,
 )
 
 # TODO: Revisit OpenAI provider naming and whether Responses should be the default option.
@@ -30,7 +28,11 @@ Provider: TypeAlias = Literal["openai", "anthropic", "google", "openai:responses
 PROVIDERS = get_args(Provider)
 
 ModelId: TypeAlias = (
-    OpenAIModelId | AnthropicModelId | GoogleModelId | OpenAIResponsesModelId | str
+    OpenAICompletionsModelId
+    | AnthropicModelId
+    | GoogleModelId
+    | OpenAIResponsesModelId
+    | str
 )
 
 
@@ -82,7 +84,7 @@ def get_client(
     """
     match provider:
         case "openai":
-            return get_openai_client()
+            return get_openai_completions_client()
         case "anthropic":
             return get_anthropic_client()
         case "google":
@@ -155,7 +157,7 @@ def client(
     """
     match provider:
         case "openai":
-            return openai_client(api_key=api_key, base_url=base_url)
+            return openai_completions_client(api_key=api_key, base_url=base_url)
         case "openai:responses":
             return openai_responses_client(api_key=api_key, base_url=base_url)
         case "anthropic":
