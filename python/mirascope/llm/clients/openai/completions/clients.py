@@ -9,10 +9,10 @@ from typing_extensions import Unpack
 
 from openai import AsyncOpenAI, OpenAI
 
-from ...context import Context, DepsT
-from ...formatting import Format, FormattableT
-from ...messages import Message
-from ...responses import (
+from ....context import Context, DepsT
+from ....formatting import Format, FormattableT
+from ....messages import Message
+from ....responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
     AsyncResponse,
@@ -22,7 +22,7 @@ from ...responses import (
     Response,
     StreamResponse,
 )
-from ...tools import (
+from ....tools import (
     AsyncContextTool,
     AsyncContextToolkit,
     AsyncTool,
@@ -32,9 +32,9 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from ..base import BaseClient, Params
+from ...base import BaseClient, Params
 from . import _utils
-from .model_ids import OpenAIModelId
+from .model_ids import OpenAICompletionsModelId
 
 OPENAI_COMPLETIONS_CLIENT_CONTEXT: ContextVar["OpenAICompletionsClient | None"] = (
     ContextVar("OPENAI_COMPLETIONS_CLIENT_CONTEXT", default=None)
@@ -80,7 +80,7 @@ def get_client() -> "OpenAICompletionsClient":
     return ctx_client or client()
 
 
-class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
+class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
     """The client for the OpenAI LLM model."""
 
     @property
@@ -98,7 +98,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     def call(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
@@ -111,7 +111,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     def call(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -124,7 +124,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     def call(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -136,7 +136,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     def call(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -183,7 +183,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -199,7 +199,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -215,7 +215,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -230,7 +230,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -279,7 +279,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     async def call_async(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
@@ -292,7 +292,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     async def call_async(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -305,7 +305,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     async def call_async(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -317,7 +317,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     async def call_async(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -365,7 +365,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -381,7 +381,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -397,7 +397,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -412,7 +412,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -461,7 +461,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     def stream(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
@@ -474,7 +474,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     def stream(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -487,7 +487,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     def stream(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -499,7 +499,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     def stream(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -547,7 +547,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -563,7 +563,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -579,7 +579,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -594,7 +594,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -644,7 +644,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     async def stream_async(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
@@ -657,7 +657,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     async def stream_async(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -670,7 +670,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     async def stream_async(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -682,7 +682,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
     async def stream_async(
         self,
         *,
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -733,7 +733,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -749,7 +749,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -765,7 +765,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -780,7 +780,7 @@ class OpenAICompletionsClient(BaseClient[OpenAIModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]

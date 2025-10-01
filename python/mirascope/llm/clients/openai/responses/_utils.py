@@ -21,7 +21,7 @@ from openai.types.shared_params.response_format_json_object import (
 )
 from openai.types.shared_params.responses_model import ResponsesModel
 
-from ...content import (
+from ....content import (
     AssistantContentPart,
     Text,
     TextChunk,
@@ -32,25 +32,25 @@ from ...content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from ...formatting import (
+from ....formatting import (
     Format,
     FormattableT,
     _utils as _formatting_utils,
     resolve_format,
 )
-from ...messages import AssistantMessage, Message
-from ...responses import (
+from ....messages import AssistantMessage, Message
+from ....responses import (
     AsyncChunkIterator,
     ChunkIterator,
     RawChunk,
 )
-from ...tools import (
+from ....tools import (
     FORMAT_TOOL_NAME,
     BaseToolkit,
     ToolSchema,
 )
-from ..base import Params, _utils as _base_utils
-from ..openai._utils import (
+from ...base import Params, _utils as _base_utils
+from ..completions._utils import (
     MODELS_WITHOUT_JSON_OBJECT_SUPPORT,
     MODELS_WITHOUT_JSON_SCHEMA_SUPPORT,
 )

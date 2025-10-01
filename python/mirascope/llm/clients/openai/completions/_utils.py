@@ -9,7 +9,7 @@ from openai import AsyncStream, NotGiven, Stream
 from openai.types import chat as openai_types, shared_params as shared_openai_types
 from openai.types.shared_params.response_format_json_schema import JSONSchema
 
-from ...content import (
+from ....content import (
     AssistantContentPart,
     Text,
     TextChunk,
@@ -20,24 +20,24 @@ from ...content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
 )
-from ...exceptions import FormattingModeNotSupportedError
-from ...formatting import (
+from ....exceptions import FormattingModeNotSupportedError
+from ....formatting import (
     Format,
     FormattableT,
     _utils as _formatting_utils,
     resolve_format,
 )
-from ...messages import AssistantMessage, Message, UserMessage
-from ...responses import (
+from ....messages import AssistantMessage, Message, UserMessage
+from ....responses import (
     AsyncChunkIterator,
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
     RawChunk,
 )
-from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
-from ..base import BaseKwargs, Params, _utils as _base_utils
-from .model_ids import OpenAIModelId
+from ....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
+from ...base import BaseKwargs, Params, _utils as _base_utils
+from .model_ids import OpenAICompletionsModelId
 
 logger = logging.getLogger(__name__)
 
@@ -275,7 +275,7 @@ PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
 
 def prepare_openai_request(
     *,
-    model_id: OpenAIModelId,
+    model_id: OpenAICompletionsModelId,
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | BaseToolkit | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,

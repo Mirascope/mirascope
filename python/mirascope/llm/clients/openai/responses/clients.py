@@ -9,10 +9,10 @@ from typing_extensions import Unpack
 
 from openai import AsyncOpenAI, OpenAI
 
-from ...context import Context, DepsT
-from ...formatting import Format, FormattableT
-from ...messages import Message
-from ...responses import (
+from ....context import Context, DepsT
+from ....formatting import Format, FormattableT
+from ....messages import Message
+from ....responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
     AsyncResponse,
@@ -22,7 +22,7 @@ from ...responses import (
     Response,
     StreamResponse,
 )
-from ...tools import (
+from ....tools import (
     AsyncContextTool,
     AsyncContextToolkit,
     AsyncTool,
@@ -32,7 +32,7 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from ..base import BaseClient, Params
+from ...base import BaseClient, Params
 from . import _utils
 from .model_ids import OpenAIResponsesModelId
 
