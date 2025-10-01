@@ -16,7 +16,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         llm.messages.user("Hello there"),
         llm.messages.assistant(["General ", "Kenobi"]),
     ]
-    _, _, kwargs = openai_utils.prepare_openai_request(
+    _, _, kwargs = openai_utils.prepare_responses_request(
         model_id="gpt-4o", messages=messages
     )
     assert kwargs == snapshot(
@@ -44,7 +44,7 @@ def test_prepare_message_multiple_system_messages() -> None:
         llm.messages.system("Be concise."),
         llm.messages.system("On second thought, be verbose."),
     ]
-    _, _, kwargs = openai_utils.prepare_openai_request(
+    _, _, kwargs = openai_utils.prepare_responses_request(
         model_id="gpt-4o", messages=messages
     )
     assert kwargs == snapshot(

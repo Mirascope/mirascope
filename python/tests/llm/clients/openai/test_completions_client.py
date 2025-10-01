@@ -18,7 +18,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         llm.messages.user("Hello there"),
         llm.messages.assistant(["General ", "Kenobi"]),
     ]
-    assert openai_utils.prepare_openai_request(
+    assert openai_utils.prepare_completions_request(
         model_id="gpt-4o", messages=messages
     ) == snapshot(
         (
@@ -60,7 +60,7 @@ def test_strict_unsupported_legacy_model() -> None:
     format = llm.format(Book, mode="strict")
 
     with pytest.raises(llm.FormattingModeNotSupportedError):
-        openai_utils.prepare_openai_request(
+        openai_utils.prepare_completions_request(
             model_id="gpt-4",
             messages=messages,
             format=format,

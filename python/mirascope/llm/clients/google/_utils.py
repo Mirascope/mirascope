@@ -228,6 +228,7 @@ def prepare_google_request(
     genai_types.ContentListUnionDict,
     GoogleKwargs,
 ]:
+    """Prepares a request for the genai `Client.models.generate_content` method."""
     google_config: GoogleKwargs = _base_utils.map_params_to_kwargs(
         params, {}, PARAMS_TO_KWARGS, "Google"
     )

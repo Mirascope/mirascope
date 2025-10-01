@@ -141,7 +141,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        messages, format, kwargs = _utils.prepare_openai_request(
+        messages, format, kwargs = _utils.prepare_responses_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -225,7 +225,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        messages, format, kwargs = _utils.prepare_openai_request(
+        messages, format, kwargs = _utils.prepare_responses_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -309,7 +309,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.StreamResponse` object containing the LLM-generated content stream.
         """
-        messages, format, kwargs = _utils.prepare_openai_request(
+        messages, format, kwargs = _utils.prepare_responses_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -396,7 +396,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.AsyncStreamResponse` object containing the LLM-generated content stream.
         """
-        messages, format, kwargs = _utils.prepare_openai_request(
+        messages, format, kwargs = _utils.prepare_responses_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -496,7 +496,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.ContextResponse` object containing the LLM-generated content and context.
         """
-        messages, format, kwargs = _utils.prepare_openai_request(
+        messages, format, kwargs = _utils.prepare_responses_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -593,7 +593,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.AsyncContextResponse` object containing the LLM-generated content and context.
         """
-        messages, format, kwargs = _utils.prepare_openai_request(
+        messages, format, kwargs = _utils.prepare_responses_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -690,7 +690,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.ContextStreamResponse` object containing the LLM-generated content stream and context.
         """
-        messages, format, kwargs = _utils.prepare_openai_request(
+        messages, format, kwargs = _utils.prepare_responses_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -796,7 +796,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         Returns:
             A `llm.AsyncContextStreamResponse` object containing the LLM-generated content stream and context.
         """
-        messages, format, kwargs = _utils.prepare_openai_request(
+        messages, format, kwargs = _utils.prepare_responses_request(
             model_id=model_id,
             messages=messages,
             tools=tools,

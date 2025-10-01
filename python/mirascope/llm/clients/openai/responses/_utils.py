@@ -150,7 +150,7 @@ PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
 }
 
 
-def prepare_openai_request(
+def prepare_responses_request(
     *,
     model_id: OpenAIResponsesModelId,
     messages: Sequence[Message],
@@ -158,22 +158,7 @@ def prepare_openai_request(
     format: type[FormattableT] | Format[FormattableT] | None = None,
     params: Params | None = None,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
-    """Prepare OpenAI Responses API request parameters.
-
-    Args:
-        model_id: The OpenAI model string.
-        messages: A sequence of Mirascope `Message`s.
-        tools: A sequence of Mirascope tools (or None).
-        format: A format type (or None).
-        params: Additional parameters.
-
-    Returns:
-        A tuple containing:
-            - A sequence of Mirascope `Message`s, which may include modifications to the
-              system message (e.g. with instructions for JSON mode formatting).
-            - A Format instance (or None).
-            - A ResponseCreateKwargs dict with parameters for OpenAI's Responses create method.
-    """
+    """Prepares a request for the `OpenAI.responses.create` method."""
     kwargs: ResponseCreateKwargs = {
         "model": model_id,
     }
