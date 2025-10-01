@@ -42,6 +42,8 @@ from ....messages import AssistantMessage, Message
 from ....responses import (
     AsyncChunkIterator,
     ChunkIterator,
+    FinishReason,
+    FinishReasonChunk,
     RawChunk,
 )
 from ....tools import (
@@ -56,6 +58,11 @@ from ..shared import (
 from .model_ids import OpenAIResponsesModelId
 
 logger = logging.getLogger(__name__)
+
+INCOMPLETE_DETAILS_TO_FINISH_REASON = {
+    "max_output_tokens": FinishReason.MAX_TOKENS,
+    "content_filter": FinishReason.REFUSAL,
+}
 
 
 class ResponseCreateKwargs(TypedDict, total=False):
@@ -221,9 +228,10 @@ def prepare_responses_request(
 
 def decode_response(
     response: openai_types.Response,
-) -> AssistantMessage:
+) -> tuple[AssistantMessage, FinishReason | None]:
     """Convert OpenAI Responses Response to mirascope AssistantMessage."""
     parts: list[AssistantContentPart] = []
+    finish_reason: FinishReason | None = None
 
     for output_item in response.output:
         if output_item.type == "message":
@@ -231,8 +239,8 @@ def decode_response(
                 if content.type == "output_text":
                     parts.append(Text(text=content.text))
                 elif content.type == "refusal":  # pragma: no cover
-                    # TODO: Decide what to do here
-                    raise NotImplementedError("Refusals not yet handled")
+                    # Include the refusal explanation as text content
+                    parts.append(Text(text=content.refusal))
         elif output_item.type == "function_call":
             parts.append(
                 ToolCall(
@@ -244,7 +252,10 @@ def decode_response(
         else:
             raise NotImplementedError(f"Unsupported output item: {output_item.type}")
 
-    return AssistantMessage(content=parts)
+    if details := response.incomplete_details:
+        finish_reason = INCOMPLETE_DETAILS_TO_FINISH_REASON.get(details.reason or "")
+
+    return (AssistantMessage(content=parts), finish_reason)
 
 
 class _OpenAIResponsesChunkProcessor:
@@ -274,6 +285,22 @@ class _OpenAIResponsesChunkProcessor:
                     )  # pragma: no cover
                 yield TextEndChunk()
                 self.current_content_type = None
+            if event.type == "response.refusal.delta":  # pragma: no cover
+                if not self.current_content_type:
+                    yield TextStartChunk()
+                    self.current_content_type = "text"
+                if self.current_content_type != "text":
+                    raise RuntimeError(
+                        "Received text delta when not processing text"
+                    )  # pragma: no cover
+                yield TextChunk(delta=event.delta)
+            elif event.type == "response.refusal.done":  # pragma: no cover
+                if self.current_content_type != "text":
+                    raise RuntimeError(
+                        "Received text done while not processing text"
+                    )  # pragma: no cover
+                yield TextEndChunk()
+                self.current_content_type = None
             elif event.type == "response.output_item.added":
                 item = event.item
                 if item.type == "function_call":
@@ -297,6 +324,12 @@ class _OpenAIResponsesChunkProcessor:
                     )  # pragma: no cover
                 yield ToolCallEndChunk()
                 self.current_content_type = None
+            elif event.type == "response.incomplete":
+                details = event.response.incomplete_details
+                reason = (details and details.reason) or ""
+                finish_reason = INCOMPLETE_DETAILS_TO_FINISH_REASON.get(reason)
+                if finish_reason:
+                    yield FinishReasonChunk(finish_reason=finish_reason)
 
 
 def convert_openai_responses_stream_to_chunk_iterator(

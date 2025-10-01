@@ -151,7 +151,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         openai_response = self.client.responses.create(**kwargs)
 
-        assistant_message = _utils.decode_response(openai_response)
+        assistant_message, finish_reason = _utils.decode_response(openai_response)
 
         return Response(
             raw=openai_response,
@@ -161,7 +161,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
             tools=tools,
             input_messages=messages,
             assistant_message=assistant_message,
-            finish_reason=None,  # OpenAI Responses API does not provide finish reason
+            finish_reason=finish_reason,
             format=format,
         )
 
@@ -235,7 +235,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         openai_response = await self.async_client.responses.create(**kwargs)
 
-        assistant_message = _utils.decode_response(openai_response)
+        assistant_message, finish_reason = _utils.decode_response(openai_response)
 
         return AsyncResponse(
             raw=openai_response,
@@ -245,7 +245,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
             tools=tools,
             input_messages=messages,
             assistant_message=assistant_message,
-            finish_reason=None,  # OpenAI Responses API does not provide finish reason
+            finish_reason=finish_reason,
             format=format,
         )
 
@@ -506,7 +506,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         openai_response = self.client.responses.create(**kwargs)
 
-        assistant_message = _utils.decode_response(openai_response)
+        assistant_message, finish_reason = _utils.decode_response(openai_response)
 
         return ContextResponse(
             raw=openai_response,
@@ -516,7 +516,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
             tools=tools,
             input_messages=messages,
             assistant_message=assistant_message,
-            finish_reason=None,  # OpenAI Responses API does not provide finish reason
+            finish_reason=finish_reason,
             format=format,
         )
 
@@ -603,7 +603,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         openai_response = await self.async_client.responses.create(**kwargs)
 
-        assistant_message = _utils.decode_response(openai_response)
+        assistant_message, finish_reason = _utils.decode_response(openai_response)
 
         return AsyncContextResponse(
             raw=openai_response,
@@ -613,7 +613,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
             tools=tools,
             input_messages=messages,
             assistant_message=assistant_message,
-            finish_reason=None,  # OpenAI Responses API does not provide finish reason
+            finish_reason=finish_reason,
             format=format,
         )
 
