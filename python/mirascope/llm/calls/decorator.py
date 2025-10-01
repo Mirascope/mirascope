@@ -174,7 +174,7 @@ def call(
 @overload
 def call(
     *,
-    provider: Literal["openai:responses"],
+    provider: Literal["openai:responses", "openai"],
     model_id: OpenAIResponsesModelId,
     tools: list[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,

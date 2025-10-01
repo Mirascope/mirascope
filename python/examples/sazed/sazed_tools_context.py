@@ -17,7 +17,7 @@ def search_coppermind(ctx: llm.Context[Coppermind], query: str) -> str:
 
 
 @llm.call(
-    provider="openai:completions",
+    provider="openai",
     model_id="gpt-4o-mini",
     tools=[search_coppermind],
 )
