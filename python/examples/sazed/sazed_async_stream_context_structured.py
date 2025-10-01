@@ -18,7 +18,7 @@ class Coppermind:
 
 
 @llm.call(
-    provider="openai:completions",
+    provider="openai",
     model_id="gpt-4o-mini",
     format=KeeperEntry,
 )

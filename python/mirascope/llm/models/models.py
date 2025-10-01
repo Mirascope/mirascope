@@ -1190,18 +1190,18 @@ def model(
     model_id: OpenAICompletionsModelId,
     **params: Unpack[Params],
 ) -> Model:
-    """Create an `llm.Model` instance for OpenAI models."""
+    """Create an `llm.Model` instance for OpenAI models (using ChatCompletions API)."""
     ...
 
 
 @overload
 def model(
     *,
-    provider: Literal["openai:responses"],
+    provider: Literal["openai:responses", "openai"],
     model_id: OpenAICompletionsModelId,
     **params: Unpack[Params],
 ) -> Model:
-    """Create an `llm.Model` instance for OpenAI models (responses API)."""
+    """Create an `llm.Model` instance for OpenAI models (using Responses API)."""
     ...
 
 

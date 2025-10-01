@@ -23,17 +23,20 @@ from .openai import (
     responses_client as openai_responses_client,
 )
 
-# TODO: Revisit OpenAI provider naming and whether Responses should be the default option.
 Provider: TypeAlias = Literal[
-    "openai:completions", "anthropic", "google", "openai:responses"
+    "anthropic",
+    "google",
+    "openai:completions",  # OpenAICompletionsClient
+    "openai:responses",  # OpenAIResponsesClient
+    "openai",  # Alias for "openai:responses"
 ]
 PROVIDERS = get_args(Provider)
 
 ModelId: TypeAlias = (
-    OpenAICompletionsModelId
-    | AnthropicModelId
+    AnthropicModelId
     | GoogleModelId
     | OpenAIResponsesModelId
+    | OpenAICompletionsModelId
     | str
 )
 
@@ -57,8 +60,10 @@ def get_client(provider: Literal["openai:completions"]) -> OpenAICompletionsClie
 
 
 @overload
-def get_client(provider: Literal["openai:responses"]) -> OpenAIResponsesClient:
-    """Get an OpenAI responsees client instance."""
+def get_client(
+    provider: Literal["openai:responses", "openai"],
+) -> OpenAIResponsesClient:
+    """Get an OpenAI responses client instance."""
     ...
 
 
@@ -85,13 +90,13 @@ def get_client(
         ValueError: If the provider is not supported.
     """
     match provider:
-        case "openai:completions":
-            return get_openai_completions_client()
         case "anthropic":
             return get_anthropic_client()
         case "google":
             return get_google_client()
-        case "openai:responses":
+        case "openai:completions":
+            return get_openai_completions_client()
+        case "openai:responses" | "openai":
             return get_openai_responses_client()
         case _:
             raise ValueError(f"Unknown provider: {provider}")
@@ -110,7 +115,7 @@ def client(
 
 @overload
 def client(
-    provider: Literal["openai:responses"],
+    provider: Literal["openai:responses", "openai"],
     *,
     api_key: str | None = None,
     base_url: str | None = None,
@@ -158,13 +163,13 @@ def client(
         ValueError: If the provider is not supported.
     """
     match provider:
-        case "openai:completions":
-            return openai_completions_client(api_key=api_key, base_url=base_url)
-        case "openai:responses":
-            return openai_responses_client(api_key=api_key, base_url=base_url)
         case "anthropic":
             return anthropic_client(api_key=api_key, base_url=base_url)
         case "google":
             return google_client(api_key=api_key, base_url=base_url)
+        case "openai:completions":
+            return openai_completions_client(api_key=api_key, base_url=base_url)
+        case "openai:responses" | "openai":
+            return openai_responses_client(api_key=api_key, base_url=base_url)
         case _:  # pragma: no cover
             raise ValueError(f"Unknown provider: {provider}")
