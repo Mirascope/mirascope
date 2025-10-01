@@ -2,6 +2,7 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
+    FinishReason,
     Text,
     UserMessage,
 )
@@ -13,7 +14,7 @@ sync_snapshot = snapshot(
                 "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "params": {"temperature": 0.7, "max_tokens": 120, "top_p": 0.3},
-                "finish_reason": None,
+                "finish_reason": FinishReason.MAX_TOKENS,
                 "messages": [
                     UserMessage(content=[Text(text="List all U.S. states")]),
                     AssistantMessage(
@@ -68,7 +69,7 @@ async_snapshot = snapshot(
                 "provider": "openai:completions",
                 "model_id": "gpt-4o",
                 "params": {"temperature": 0.7, "max_tokens": 120, "top_p": 0.3},
-                "finish_reason": None,
+                "finish_reason": FinishReason.MAX_TOKENS,
                 "messages": [
                     UserMessage(content=[Text(text="List all U.S. states")]),
                     AssistantMessage(
@@ -122,7 +123,7 @@ stream_snapshot = snapshot(
             {
                 "provider": "openai:completions",
                 "model_id": "gpt-4o",
-                "finish_reason": None,
+                "finish_reason": FinishReason.MAX_TOKENS,
                 "messages": [
                     UserMessage(content=[Text(text="List all U.S. states")]),
                     AssistantMessage(
@@ -177,7 +178,7 @@ async_stream_snapshot = snapshot(
             {
                 "provider": "openai:completions",
                 "model_id": "gpt-4o",
-                "finish_reason": None,
+                "finish_reason": FinishReason.MAX_TOKENS,
                 "messages": [
                     UserMessage(content=[Text(text="List all U.S. states")]),
                     AssistantMessage(
