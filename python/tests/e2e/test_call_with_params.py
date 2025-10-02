@@ -80,8 +80,7 @@ def test_call_with_params_stream(
     snapshot_data = {}
     with caplog.at_level(logging.WARNING):
         try:
-            response = add_numbers.stream(4200, 42)
-            response.finish()
+            response = add_numbers.stream(4200, 42).finish()
             snapshot_data["response"] = (stream_response_snapshot_dict(response),)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)

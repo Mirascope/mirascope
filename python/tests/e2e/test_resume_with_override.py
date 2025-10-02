@@ -134,14 +134,10 @@ def test_resume_with_override_stream(
     def who_made_you() -> str:
         return "Who created you?"
 
-    response = who_made_you.stream()
-
-    response.finish()
+    response = who_made_you.stream().finish()
 
     with llm.model(provider=provider, model_id=model_id):
-        response = response.resume("Can you double-check that?")
-
-    response.finish()
+        response = response.resume("Can you double-check that?").finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
 
@@ -158,14 +154,10 @@ def test_resume_with_override_stream_context(
         return ctx.deps
 
     ctx = llm.Context(deps="Who created you?")
-    response = who_made_you.stream(ctx)
-
-    response.finish()
+    response = who_made_you.stream(ctx).finish()
 
     with llm.model(provider=provider, model_id=model_id):
-        response = response.resume(ctx, "Can you double-check that?")
-
-    response.finish()
+        response = response.resume(ctx, "Can you double-check that?").finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
 
@@ -186,12 +178,10 @@ async def test_resume_with_override_async_stream(
         return "Who created you?"
 
     response = await who_made_you.stream()
-
     await response.finish()
 
     with llm.model(provider=provider, model_id=model_id):
         response = await response.resume("Can you double-check that?")
-
     await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
@@ -211,12 +201,10 @@ async def test_resume_with_override_async_stream_context(
 
     ctx = llm.Context(deps="Who created you?")
     response = await who_made_you.stream(ctx)
-
     await response.finish()
 
     with llm.model(provider=provider, model_id=model_id):
         response = await response.resume(ctx, "Can you double-check that?")
-
     await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot

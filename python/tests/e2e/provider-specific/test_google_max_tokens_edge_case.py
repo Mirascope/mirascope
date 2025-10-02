@@ -87,10 +87,8 @@ def test_google_max_tokens_edge_case_stream(
     def no_output() -> str:
         return "EMIT NO OUTPUT WHATSOEVER."
 
-    max_tokens_response = max_tokens.stream()
-    max_tokens_response.finish()
-    no_output_response = no_output.stream()
-    no_output_response.finish()
+    max_tokens_response = max_tokens.stream().finish()
+    no_output_response = no_output.stream().finish()
 
     assert not max_tokens_response.content
     assert max_tokens_response.finish_reason == llm.FinishReason.MAX_TOKENS

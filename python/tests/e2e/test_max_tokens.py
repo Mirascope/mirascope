@@ -62,8 +62,7 @@ def test_max_tokens_stream(
     def list_states() -> str:
         return "List all U.S. states."
 
-    response = list_states.stream()
-    response.finish()
+    response = list_states.stream().finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
     assert response.finish_reason == llm.FinishReason.MAX_TOKENS

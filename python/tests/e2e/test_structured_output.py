@@ -208,8 +208,7 @@ def test_structured_output_stream(
         return f"Please recommend the most popular book by {author}"
 
     try:
-        response = recommend_book.stream("Patrick Rothfuss")
-        response.finish()
+        response = recommend_book.stream("Patrick Rothfuss").finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -247,8 +246,7 @@ def test_structured_output_stream_context(
 
     ctx = llm.Context(deps="Patrick Rothfuss")
     try:
-        response = recommend_book.stream(ctx)
-        response.finish()
+        response = recommend_book.stream(ctx).finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 

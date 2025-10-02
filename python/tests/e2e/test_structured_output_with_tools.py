@@ -268,14 +268,12 @@ def test_structured_output_with_tools_stream(
         return f"Please look up the book with ISBN {isbn} and provide detailed info and a recommendation score"
 
     try:
-        response = analyze_book.stream("0-7653-1178-X")
-        response.finish()
+        response = analyze_book.stream("0-7653-1178-X").finish()
 
         assert len(response.tool_calls) == 1
         tool_outputs = response.execute_tools()
 
-        response = response.resume(tool_outputs)
-        response.finish()
+        response = response.resume(tool_outputs).finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -321,14 +319,12 @@ def test_structured_output_with_tools_stream_context(
 
     ctx = llm.Context(deps=BOOK_DB)
     try:
-        response = analyze_book.stream(ctx, "0-7653-1178-X")
-        response.finish()
+        response = analyze_book.stream(ctx, "0-7653-1178-X").finish()
 
         assert len(response.tool_calls) == 1
         tool_outputs = response.execute_tools(ctx)
 
-        response = response.resume(ctx, tool_outputs)
-        response.finish()
+        response = response.resume(ctx, tool_outputs).finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 

@@ -200,8 +200,7 @@ def test_structured_output_with_formatting_instructions_stream(
         ]
 
     try:
-        response = recommend_book.stream("The Name of the Wind")
-        response.finish()
+        response = recommend_book.stream("The Name of the Wind").finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
@@ -237,8 +236,7 @@ def test_structured_output_with_formatting_instructions_stream_context(
 
     ctx = llm.Context(deps="The Name of the Wind")
     try:
-        response = recommend_book.stream(ctx)
-        response.finish()
+        response = recommend_book.stream(ctx).finish()
 
         assert stream_response_snapshot_dict(response) == snapshot
 
