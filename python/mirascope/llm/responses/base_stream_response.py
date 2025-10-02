@@ -24,7 +24,7 @@ from ..formatting import Format, FormattableT, Partial
 from ..messages import AssistantMessage, Message
 from ..streams import AsyncStream, Stream
 from ..tools import FORMAT_TOOL_NAME, ToolkitT
-from .finish_reason import FinishReason, FinishReasonChunk
+from .finish_reason import FinishReasonChunk
 from .root_response import RootResponse
 
 if TYPE_CHECKING:
@@ -378,11 +378,10 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
 
         self.consumed = True
 
-    def finish(self) -> FinishReason | None:
-        """Finish streaming all of this response's content, returning the `FinishReason` (if any)."""
+    def finish(self) -> None:
+        """Finish streaming all of this response's content."""
         for _ in self.chunk_stream():
             pass
-        return self.finish_reason
 
     def pretty_stream(self) -> Iterator[str]:
         """Stream a readable representation of the stream_response as text.
@@ -491,11 +490,10 @@ class BaseAsyncStreamResponse(
 
         self.consumed = True
 
-    async def finish(self) -> FinishReason | None:
-        """Finish streaming all of this response's content, returning the `FinishReason` (if any)."""
+    async def finish(self) -> None:
+        """Finish streaming all of this response's content."""
         async for _ in self.chunk_stream():
             pass
-        return self.finish_reason
 
     async def pretty_stream(self) -> AsyncIterator[str]:
         """Stream a readable representation of the stream_response as text.
