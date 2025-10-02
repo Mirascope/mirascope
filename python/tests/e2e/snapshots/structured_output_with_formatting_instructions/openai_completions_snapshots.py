@@ -151,7 +151,7 @@ lucky number 7.\
 """,
         },
         "tools": [],
-        "n_chunks": 23,
+        "n_chunks": 22,
     }
 )
 async_stream_snapshot = snapshot(
@@ -200,6 +200,6 @@ lucky number 7.\
 """,
         },
         "tools": [],
-        "n_chunks": 23,
+        "n_chunks": 22,
     }
 )

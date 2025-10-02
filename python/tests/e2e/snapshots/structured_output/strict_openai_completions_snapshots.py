@@ -180,7 +180,7 @@ stream_snapshot = snapshot(
             "formatting_instructions": None,
         },
         "tools": [],
-        "n_chunks": 32,
+        "n_chunks": 31,
     }
 )
 async_stream_snapshot = snapshot(
@@ -239,6 +239,6 @@ async_stream_snapshot = snapshot(
             "formatting_instructions": None,
         },
         "tools": [],
-        "n_chunks": 32,
+        "n_chunks": 31,
     }
 )

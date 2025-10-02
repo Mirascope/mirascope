@@ -296,10 +296,14 @@ def decode_response(
     """Convert OpenAI ChatCompletion to mirascope AssistantMessage."""
     choice = response.choices[0]
     message = choice.message
+    refused = False
 
     parts: list[AssistantContentPart] = []
     if message.content:
         parts.append(Text(text=message.content))
+    if message.refusal:
+        parts.append(Text(text=message.refusal))
+        refused = True
     if message.tool_calls:
         for tool_call in message.tool_calls:
             if tool_call.type == "custom":
@@ -314,7 +318,11 @@ def decode_response(
                 )
             )
 
-    finish_reason = OPENAI_FINISH_REASON_MAP.get(choice.finish_reason)
+    finish_reason = (
+        FinishReason.REFUSAL
+        if refused
+        else OPENAI_FINISH_REASON_MAP.get(choice.finish_reason)
+    )
 
     return AssistantMessage(content=parts), finish_reason
 
@@ -325,6 +333,7 @@ class _OpenAIChunkProcessor:
     def __init__(self) -> None:
         self.current_content_type: Literal["text", "tool_call"] | None = None
         self.current_tool_index: int | None = None
+        self.refusal_encountered = False
 
     def process_chunk(self, chunk: openai_types.ChatCompletionChunk) -> ChunkIterator:
         """Process a single OpenAI chunk and yield the appropriate content chunks."""
@@ -336,7 +345,10 @@ class _OpenAIChunkProcessor:
 
         delta = choice.delta
 
-        if delta.content is not None:
+        content = delta.content or delta.refusal
+        if delta.refusal:
+            self.refusal_encountered = True
+        if content is not None:
             if self.current_content_type is None:
                 yield TextStartChunk()
                 self.current_content_type = "text"
@@ -347,7 +359,7 @@ class _OpenAIChunkProcessor:
             elif self.current_content_type != "text":
                 raise NotImplementedError
 
-            yield TextChunk(delta=delta.content)
+            yield TextChunk(delta=content)
 
         if delta.tool_calls:
             if self.current_content_type == "text":
@@ -405,10 +417,14 @@ class _OpenAIChunkProcessor:
                 yield TextEndChunk()
             elif self.current_content_type == "tool_call":
                 yield ToolCallEndChunk()
-            else:
-                raise NotImplementedError
+            elif self.current_content_type is not None:  # pragma: no cover
+                raise NotImplementedError()
 
-            finish_reason = OPENAI_FINISH_REASON_MAP.get(choice.finish_reason)
+            finish_reason = (
+                FinishReason.REFUSAL
+                if self.refusal_encountered
+                else OPENAI_FINISH_REASON_MAP.get(choice.finish_reason)
+            )
             if finish_reason is not None:
                 yield FinishReasonChunk(finish_reason=finish_reason)
 
