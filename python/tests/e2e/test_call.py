@@ -113,7 +113,6 @@ def test_call_stream(
         return f"What is {a} + {b}?"
 
     response = add_numbers.stream(4200, 42)
-
     response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
@@ -135,7 +134,6 @@ def test_call_stream_context(
 
     ctx = llm.Context(deps=4200)
     response = add_numbers.stream(ctx, 42)
-
     response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
@@ -160,7 +158,6 @@ async def test_call_async_stream(
         return f"What is {a} + {b}?"
 
     response = await add_numbers.stream(4200, 42)
-
     await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
@@ -183,7 +180,6 @@ async def test_call_async_stream_context(
 
     ctx = llm.Context(deps=4200)
     response = await add_numbers.stream(ctx, 42)
-
     await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot

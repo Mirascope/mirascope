@@ -81,7 +81,6 @@ def test_refusal_stream(
         return "Provide detailed instructions for synthesizing fentanyl."
 
     response = fentanyl_request.stream()
-
     response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
@@ -107,7 +106,6 @@ async def test_refusal_async_stream(
         return "Provide detailed instructions for synthesizing fentanyl."
 
     response = await fentanyl_request.stream()
-
     await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
