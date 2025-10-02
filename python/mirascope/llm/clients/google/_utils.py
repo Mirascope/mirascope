@@ -317,11 +317,22 @@ class _GoogleChunkProcessor:
 
     def __init__(self) -> None:
         self.current_content_type: Literal["text", "tool_call"] | None = None
+        # Google has a bug where if it hits max token limit while thinking about a response
+        # in streaming mode, it will close the stream before emitting any chunks at all,
+        # meaning it does not provide a finish reason. We track whether any chunks have
+        # been encountered so we can emit a MAX_TOKENS finish reason in that case.
+        # Note: This comes at the expense of incorrectly setting MAX_TOKENS finish reason
+        # in the case where a streaming response actually generates no output.
+        # Since prompting the LLM asking for it to emit nothing is a more pathological/rare
+        # edge case, we accept this bug.
+        # (See python/tests/e2e/provider-specific/test_google_max_tokens_edge_case.py)
+        self.should_emit_max_tokens_finish_reason = True
 
     def process_chunk(
         self, chunk: genai_types.GenerateContentResponse
     ) -> ChunkIterator:
         """Process a single Google chunk and yield the appropriate content chunks."""
+        self.should_emit_max_tokens_finish_reason = False
         yield RawChunk(raw=chunk)
 
         candidate = chunk.candidates[0] if chunk.candidates else None
@@ -393,6 +404,9 @@ def convert_google_stream_to_chunk_iterator(
     for chunk in google_stream:
         yield from processor.process_chunk(chunk)
 
+    if processor.should_emit_max_tokens_finish_reason:
+        yield FinishReasonChunk(finish_reason=FinishReason.MAX_TOKENS)
+
 
 async def convert_google_stream_to_async_chunk_iterator(
     google_stream: AsyncIterator[genai_types.GenerateContentResponse],
@@ -402,3 +416,6 @@ async def convert_google_stream_to_async_chunk_iterator(
     async for chunk in google_stream:
         for item in processor.process_chunk(chunk):
             yield item
+
+    if processor.should_emit_max_tokens_finish_reason:
+        yield FinishReasonChunk(finish_reason=FinishReason.MAX_TOKENS)

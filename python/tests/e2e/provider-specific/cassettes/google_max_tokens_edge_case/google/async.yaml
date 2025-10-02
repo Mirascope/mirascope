@@ -1,0 +1,119 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "List all U.S. states, sorted by the
+      number of consonants in their name, ascending."}], "role": "user"}], "generationConfig":
+      {"maxOutputTokens": 50}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '184'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VQXWvCQBB8z6847lmLFYu0b9KKiMSWNhShiBxmvRy53IbcBaqS/969i0kb+rIL
+        M/sxM9eIMX4UJlWpcGD5E/sihLFrqJ5D48A4IjqIwAo1EMILTEHzG96Mup2TMspm7yAsGj8WL3aH
+        5HWz3H7wfkaZFL6JnASgobr3HK+tkBCDE6RH9F95WWFRugRzMM9YBz3T+/YYd+iEHlDzyejfmn2h
+        o0r/WmR/HZEToZU7e7nJcpf0QsP9wdfObuj7TkOGtcycHciYPUa3WNqkPqGyqo1EQkEhjad3D+OT
+        FjYL/3gFtkRjYZ36GXe8gNgeVjGe5WW+fstxFctFzqMm+gG+a6wBtwEAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 02 Oct 2025 19:04:21 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=865
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "EMIT NO OUTPUT WHATSOEVER."}], "role":
+      "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '83'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VQ30vDMBB+718R8ryJDLY5X6eMweamVhFkD4e5tcE0V3qp6Eb/d5N0rRu+XOD7
+        7vL9OCZCyA+wSitwyPJWvHtEiGOcgSPr0DpPdJAHKzLoEVmQQiNPeDPobvbaas6fEJhsWHtON1vZ
+        s9oq/PbwdQQaP3eBkzVDhmt04J1AryfLiorSpfSJdk51dDJr/5KOHJgLZjKbDP6d8Z3/VJu/cOI8
+        i88ARrufYDS9f0t7o1HgXLXLGd9d5yGnOssdX9q4mSanQtqOXrFi3ZaRYeHrGY6uxsO9Ac6jnqyQ
+        S7KMSxV2vviAsF69zDcLd5gut3o1euBHkkmT/AInXgnPsQEAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 02 Oct 2025 19:04:30 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=8300
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
