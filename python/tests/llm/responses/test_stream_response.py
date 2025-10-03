@@ -21,7 +21,7 @@ def create_sync_stream_response(
     iterator = sync_chunk_iter()
 
     response = llm.StreamResponse(
-        provider="openai:completions",
+        provider="openai:responses",
         model_id="gpt-4o-mini",
         params={},
         input_messages=[llm.messages.user("Test")],
@@ -42,7 +42,7 @@ def create_async_stream_response(
     iterator = async_chunk_iter()
 
     response = llm.AsyncStreamResponse(
-        provider="openai:completions",
+        provider="openai:responses",
         model_id="gpt-4o-mini",
         params={},
         input_messages=[llm.messages.user("Test")],
@@ -57,9 +57,17 @@ def example_text() -> llm.Text:
 
 
 @pytest.fixture
-def example_thinking() -> llm.Thinking:
-    return llm.Thinking(
-        thinking="Let me think...\nThis is interesting!", signature="reasoning"
+def example_thought() -> llm.Thought:
+    return llm.Thought(thought="Let me think...\nThis is interesting!")
+
+
+@pytest.fixture
+def example_thinking_signature() -> llm.ThinkingSignature:
+    return llm.ThinkingSignature(
+        signature="abcdefg",
+        encrypted_reasoning="secret123",
+        provider="openai:responses",
+        model_id="gpt-4o-mini",
     )
 
 
@@ -87,15 +95,31 @@ def example_text_chunks() -> list[
 
 
 @pytest.fixture
-def example_thinking_chunks() -> list[
+def example_thought_chunks() -> list[
     llm.AssistantContentChunk | llm.responses.FinishReasonChunk
 ]:
-    """Create a complete thinking chunk sequence for testing."""
+    """Create a complete thought chunk sequence (with signature) for testing."""
     return [
-        llm.ThinkingStartChunk(),
-        llm.ThinkingChunk(delta="Let me think..."),
-        llm.ThinkingChunk(delta="\nThis is interesting!"),
-        llm.ThinkingEndChunk(signature="reasoning"),
+        llm.ThinkingSignatureStartChunk(
+            provider="openai:responses", model_id="gpt-4o-mini"
+        ),
+        llm.ThinkingSignatureChunk(
+            signature_delta="abcd", encrypted_reasoning_delta=None
+        ),
+        llm.ThinkingSignatureChunk(
+            signature_delta="efg", encrypted_reasoning_delta=None
+        ),
+        llm.ThinkingSignatureChunk(
+            signature_delta=None, encrypted_reasoning_delta="secret"
+        ),
+        llm.ThinkingSignatureChunk(
+            signature_delta=None, encrypted_reasoning_delta="123"
+        ),
+        llm.ThinkingSignatureEndChunk(),
+        llm.ThoughtStartChunk(),
+        llm.ThoughtChunk(delta="Let me think..."),
+        llm.ThoughtChunk(delta="\nThis is interesting!"),
+        llm.ThoughtEndChunk(),
     ]
 
 
@@ -126,9 +150,12 @@ def check_stream_response_consistency(
     assert response.texts == [part for part in content if part.type == "text"], (
         "response.texts"
     )
-    assert response.thinkings == [
-        part for part in content if part.type == "thinking"
-    ], "response.thinkings"
+    assert response.thinking_signatures == [
+        part for part in content if part.type == "thinking_signature"
+    ], "response.thinking_signatures"
+    assert response.thoughts == [part for part in content if part.type == "thought"], (
+        "response.thoughts"
+    )
     assert response.tool_calls == [
         part for part in content if part.type == "tool_call"
     ], "response.tool_calls"
@@ -145,7 +172,7 @@ def test_sync_initialization(
     """Test llm.StreamResponse initialization with sync iterator."""
     stream_response = create_sync_stream_response(example_text_chunks)
 
-    assert stream_response.provider == "openai:completions"
+    assert stream_response.provider == "openai:responses"
     assert stream_response.model_id == "gpt-4o-mini"
     assert stream_response.toolkit == llm.Toolkit(tools=[])
     assert stream_response.finish_reason is None
@@ -164,7 +191,7 @@ async def test_async_initialization(
     """Test llm.StreamResponse initialization with async iterator."""
     stream_response = create_async_stream_response(example_text_chunks)
 
-    assert stream_response.provider == "openai:completions"
+    assert stream_response.provider == "openai:responses"
     assert stream_response.model_id == "gpt-4o-mini"
     assert stream_response.toolkit == llm.AsyncToolkit(tools=[])
     assert stream_response.finish_reason is None
@@ -182,30 +209,37 @@ class TestChunkStream:
         example_text_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
-        example_thinking_chunks: list[
+        example_thought_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_tool_call_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_text: llm.Text,
-        example_thinking: llm.Thinking,
+        example_thinking_signature: llm.ThinkingSignature,
+        example_thought: llm.Thought,
         example_tool_call: llm.ToolCall,
     ) -> None:
         """Test streaming mixed chunk types with sync response."""
         chunks = [
             *example_text_chunks,
-            *example_thinking_chunks,
+            *example_thought_chunks,
             *example_tool_call_chunks,
         ]
         stream_response = create_sync_stream_response(chunks)
 
-        streamed_chunks = list(stream_response.chunk_stream())
+        stream_response.finish()
 
         check_stream_response_consistency(
-            stream_response, chunks, [example_text, example_thinking, example_tool_call]
+            stream_response,
+            chunks,
+            [
+                example_text,
+                example_thinking_signature,
+                example_thought,
+                example_tool_call,
+            ],
         )
-        assert len(streamed_chunks) == 13  # 5 text + 4 thinking + 4 tool_call
         assert stream_response.consumed is True
 
     @pytest.mark.asyncio
@@ -214,30 +248,37 @@ class TestChunkStream:
         example_text_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
-        example_thinking_chunks: list[
+        example_thought_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_tool_call_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_text: llm.Text,
-        example_thinking: llm.Thinking,
+        example_thinking_signature: llm.ThinkingSignature,
+        example_thought: llm.Thought,
         example_tool_call: llm.ToolCall,
     ) -> None:
         """Test streaming mixed chunk types with async response."""
         chunks = [
             *example_text_chunks,
-            *example_thinking_chunks,
+            *example_thought_chunks,
             *example_tool_call_chunks,
         ]
         stream_response = create_async_stream_response(chunks)
 
-        streamed_chunks = [chunk async for chunk in stream_response.chunk_stream()]
+        await stream_response.finish()
 
         check_stream_response_consistency(
-            stream_response, chunks, [example_text, example_thinking, example_tool_call]
+            stream_response,
+            chunks,
+            [
+                example_text,
+                example_thinking_signature,
+                example_thought,
+                example_tool_call,
+            ],
         )
-        assert len(streamed_chunks) == 13  # 5 text + 4 thinking + 4 tool_call
         assert stream_response.consumed is True
 
     def test_sync_replay_functionality(
@@ -442,25 +483,25 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
             [llm.Text(text="Hello world")],
         ],
     ),
-    "empty_thinking": ChunkProcessingTestCase(
+    "empty_thought": ChunkProcessingTestCase(
         chunks=[
-            llm.ThinkingStartChunk(),
-            llm.ThinkingEndChunk(signature="thoughts"),
+            llm.ThoughtStartChunk(content_type="thought"),
+            llm.ThoughtEndChunk(content_type="thought"),
         ],
-        expected_contents=[[], [llm.Thinking(thinking="", signature="thoughts")]],
+        expected_contents=[[llm.Thought(thought="")], [llm.Thought(thought="")]],
     ),
-    "thinking_with_deltas": ChunkProcessingTestCase(
+    "thought_with_deltas": ChunkProcessingTestCase(
         chunks=[
-            llm.ThinkingStartChunk(),
-            llm.ThinkingChunk(delta="Let me"),
-            llm.ThinkingChunk(delta=" think..."),
-            llm.ThinkingEndChunk(signature="reasoning"),
+            llm.ThoughtStartChunk(content_type="thought"),
+            llm.ThoughtChunk(content_type="thought", delta="Let me"),
+            llm.ThoughtChunk(content_type="thought", delta=" think..."),
+            llm.ThoughtEndChunk(content_type="thought"),
         ],
         expected_contents=[
-            [],
-            [],
-            [],
-            [llm.Thinking(thinking="Let me think...", signature="reasoning")],
+            [llm.Thought(thought="")],
+            [llm.Thought(thought="Let me")],
+            [llm.Thought(thought="Let me think...")],
+            [llm.Thought(thought="Let me think...")],
         ],
     ),
     "empty_tool_call": ChunkProcessingTestCase(
@@ -698,43 +739,43 @@ INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
         chunks=[llm.TextEndChunk()],
         expected_error="Received text_end_chunk while not processing text",
     ),
-    "thinking_chunk_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.ThinkingChunk(delta="Hello")],
-        expected_error="Received thinking_chunk while not processing thinking",
+    "thought_chunk_without_start": InvalidChunkSequenceTestCase(
+        chunks=[llm.ThoughtChunk(content_type="thought", delta="Hello")],
+        expected_error="Received thought_chunk while not processing thought",
     ),
-    "thinking_end_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.ThinkingEndChunk(signature=None)],
-        expected_error="Received thinking_end_chunk while not processing thinking",
+    "thought_end_without_start": InvalidChunkSequenceTestCase(
+        chunks=[llm.ThoughtEndChunk(content_type="thought")],
+        expected_error="Received thought_end_chunk while not processing thought",
     ),
-    "overlapping_text_then_thinking": InvalidChunkSequenceTestCase(
+    "overlapping_text_then_thought": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.TextStartChunk(),
-            llm.ThinkingStartChunk(),
+            llm.TextStartChunk(content_type="text"),
+            llm.ThoughtStartChunk(content_type="thought"),
         ],
         expected_error="while processing another chunk",
     ),
-    "overlapping_thinking_then_text": InvalidChunkSequenceTestCase(
+    "overlapping_thought_then_text": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.ThinkingStartChunk(),
-            llm.TextStartChunk(),
+            llm.ThoughtStartChunk(content_type="thought"),
+            llm.TextStartChunk(content_type="text"),
         ],
         expected_error="while processing another chunk",
     ),
     "text_end_without_matching_start": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.ThinkingStartChunk(),
-            llm.ThinkingChunk(delta="test"),
-            llm.TextEndChunk(),
+            llm.ThoughtStartChunk(content_type="thought"),
+            llm.ThoughtChunk(content_type="thought", delta="test"),
+            llm.TextEndChunk(content_type="text"),
         ],
         expected_error="Received text_end_chunk while not processing text",
     ),
-    "thinking_end_without_matching_start": InvalidChunkSequenceTestCase(
+    "thought_end_without_matching_start": InvalidChunkSequenceTestCase(
         chunks=[
-            llm.TextStartChunk(),
-            llm.TextChunk(delta="test"),
-            llm.ThinkingEndChunk(signature=None),
+            llm.TextStartChunk(content_type="text"),
+            llm.TextChunk(content_type="text", delta="test"),
+            llm.ThoughtEndChunk(content_type="thought"),
         ],
-        expected_error="Received thinking_end_chunk while not processing thinking",
+        expected_error="Received thought_end_chunk while not processing thought",
     ),
     "tool_call_chunk_without_start": InvalidChunkSequenceTestCase(
         chunks=[llm.ToolCallChunk(delta='{"test": "value"}')],
@@ -771,6 +812,44 @@ INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
             llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
         ],
         expected_error="Received tool_call_end_chunk while not processing tool call",
+    ),
+    "thinking_signature_chunk_without_start": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.ThinkingSignatureChunk(
+                signature_delta="abcd", encrypted_reasoning_delta=None
+            )
+        ],
+        expected_error="Received thinking_signature_chunk while not processing thinking_signature",
+    ),
+    "thinking_signature_end_without_start": InvalidChunkSequenceTestCase(
+        chunks=[llm.ThinkingSignatureEndChunk()],
+        expected_error="Received thinking_signature_end_chunk while not processing thinking_signature",
+    ),
+    "overlapping_text_then_thinking_signature": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.TextStartChunk(),
+            llm.ThinkingSignatureStartChunk(
+                provider="openai:responses", model_id="gpt-4o-mini"
+            ),
+        ],
+        expected_error="while processing another chunk",
+    ),
+    "overlapping_thinking_signature_then_text": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.ThinkingSignatureStartChunk(
+                provider="openai:responses", model_id="gpt-4o-mini"
+            ),
+            llm.TextStartChunk(),
+        ],
+        expected_error="while processing another chunk",
+    ),
+    "thinking_signature_end_without_matching_start": InvalidChunkSequenceTestCase(
+        chunks=[
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="test"),
+            llm.ThinkingSignatureEndChunk(),
+        ],
+        expected_error="Received thinking_signature_end_chunk while not processing thinking_signature",
     ),
 }
 
@@ -825,7 +904,7 @@ class TestErrorHandling:
         example_text_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
-        example_thinking_chunks: list[
+        example_thought_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_text: llm.Text,
@@ -834,7 +913,7 @@ class TestErrorHandling:
         chunks = [
             *example_text_chunks,
             llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.REFUSAL),
-            *example_thinking_chunks,
+            *example_thought_chunks,
         ]
         stream_response = create_sync_stream_response(chunks)
 
@@ -850,7 +929,7 @@ class TestErrorHandling:
         example_text_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
-        example_thinking_chunks: list[
+        example_thought_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_text: llm.Text,
@@ -859,7 +938,7 @@ class TestErrorHandling:
         chunks = [
             *example_text_chunks,
             llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.REFUSAL),
-            *example_thinking_chunks,
+            *example_thought_chunks,
         ]
         stream_response = create_async_stream_response(chunks)
 
@@ -905,7 +984,7 @@ class TestPrettyStream:
         example_text_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
-        example_thinking_chunks: list[
+        example_thought_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_tool_call_chunks: list[
@@ -914,7 +993,7 @@ class TestPrettyStream:
     ) -> None:
         chunks = [
             *example_text_chunks,
-            *example_thinking_chunks,
+            *example_thought_chunks,
             *example_tool_call_chunks,
         ]
         stream_response = create_sync_stream_response(chunks)
@@ -940,7 +1019,7 @@ Hello world
         example_text_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
-        example_thinking_chunks: list[
+        example_thought_chunks: list[
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_tool_call_chunks: list[
@@ -949,7 +1028,7 @@ Hello world
     ) -> None:
         chunks = [
             *example_text_chunks,
-            *example_thinking_chunks,
+            *example_thought_chunks,
             *example_tool_call_chunks,
         ]
         stream_response = create_async_stream_response(chunks)
@@ -1010,7 +1089,7 @@ class TestRawChunkTracking:
             yield chunk3
 
         stream_response = llm.StreamResponse(
-            provider="openai:completions",
+            provider="openai:responses",
             model_id="gpt-4o-mini",
             params={},
             input_messages=[llm.messages.user("Test")],
@@ -1041,7 +1120,7 @@ class TestRawChunkTracking:
             yield chunk3
 
         stream_response = llm.AsyncStreamResponse(
-            provider="openai:completions",
+            provider="openai:responses",
             model_id="gpt-4o-mini",
             params={},
             input_messages=[llm.messages.user("Test")],
@@ -1304,7 +1383,7 @@ def test_stream_response_execute_tools() -> None:
     ]
 
     stream_response = llm.StreamResponse(
-        provider="openai:completions",
+        provider="openai:responses",
         model_id="gpt-4o-mini",
         params={},
         tools=[tool_one, tool_two],
@@ -1346,7 +1425,7 @@ async def test_async_stream_response_execute_tools() -> None:
             yield chunk
 
     stream_response = llm.AsyncStreamResponse(
-        provider="openai:completions",
+        provider="openai:responses",
         model_id="gpt-4o-mini",
         params={},
         tools=[tool_one, tool_two],
@@ -1368,7 +1447,7 @@ def test_response_toolkit_initialization() -> None:
     def async_chunk_iter() -> llm.AsyncChunkIterator: ...
 
     response = llm.StreamResponse(
-        provider="openai:completions",
+        provider="openai:responses",
         model_id="gpt-4o-mini",
         params={},
         input_messages=[],
@@ -1377,7 +1456,7 @@ def test_response_toolkit_initialization() -> None:
     assert isinstance(response.toolkit, llm.Toolkit)
 
     response = llm.AsyncStreamResponse(
-        provider="openai:completions",
+        provider="openai:responses",
         model_id="gpt-4o-mini",
         params={},
         input_messages=[],
@@ -1386,7 +1465,7 @@ def test_response_toolkit_initialization() -> None:
     assert isinstance(response.toolkit, llm.AsyncToolkit)
 
     response = llm.ContextStreamResponse(
-        provider="openai:completions",
+        provider="openai:responses",
         model_id="gpt-4o-mini",
         params={},
         input_messages=[],
@@ -1395,7 +1474,7 @@ def test_response_toolkit_initialization() -> None:
     assert isinstance(response.toolkit, llm.ContextToolkit)
 
     response = llm.AsyncContextStreamResponse(
-        provider="openai:completions",
+        provider="openai:responses",
         model_id="gpt-4o-mini",
         params={},
         input_messages=[],

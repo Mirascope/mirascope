@@ -1,63 +1,63 @@
-"""Thinking streaming classes."""
+"""Thought streaming classes."""
 
 from collections.abc import AsyncIterator, Iterator
 from typing import Literal
 
-from ..content import Thinking, ThinkingChunk
+from ..content import Thought, ThoughtChunk
 from .base_stream import BaseAsyncStream, BaseStream
 
 
-class ThinkingStream(BaseStream[ThinkingChunk, Thinking]):
-    """Synchronous thinking stream implementation."""
+class ThoughtStream(BaseStream[ThoughtChunk, Thought]):
+    """Synchronous thought stream implementation."""
 
-    type: Literal["thinking_stream"] = "thinking_stream"
+    type: Literal["thought_stream"] = "thought_stream"
 
-    content_type: Literal["thinking"] = "thinking"
+    content_type: Literal["thought"] = "thought"
     """The type of content this stream handles."""
 
-    partial_thinking: str
-    """The accumulated thinking content as chunks are received."""
+    partial_thought: str
+    """The accumulated thought content as chunks are received."""
 
-    def __iter__(self) -> Iterator[ThinkingChunk]:
-        """Iterate over thinking chunks as they are received.
+    def __iter__(self) -> Iterator[ThoughtChunk]:
+        """Iterate over thought chunks as they are received.
 
         Yields:
-            ThinkingChunk: Each chunk containing accumulated thoughts and delta.
+            ThoughtChunk: Each chunk containing accumulated thoughts and delta.
         """
         raise NotImplementedError()
 
-    def collect(self) -> Thinking:
-        """Collect all chunks and return the final Thinking content.
+    def collect(self) -> Thought:
+        """Collect all chunks and return the final Thought content.
 
         Returns:
-            Thinking: The complete thinking content after consuming all chunks.
+            Thought: The complete thought content after consuming all chunks.
         """
         raise NotImplementedError()
 
 
-class AsyncThinkingStream(BaseAsyncStream[ThinkingChunk, Thinking]):
-    """Asynchronous thinking stream implementation."""
+class AsyncThoughtStream(BaseAsyncStream[ThoughtChunk, Thought]):
+    """Asynchronous thought stream implementation."""
 
-    type: Literal["async_thinking_stream"] = "async_thinking_stream"
+    type: Literal["async_thought_stream"] = "async_thought_stream"
 
-    content_type: Literal["thinking"] = "thinking"
+    content_type: Literal["thought"] = "thought"
     """The type of content this stream handles."""
 
-    partial_thinking: str
-    """The accumulated thinking content as chunks are received."""
+    partial_thought: str
+    """The accumulated thought content as chunks are received."""
 
-    def __aiter__(self) -> AsyncIterator[ThinkingChunk]:
-        """Asynchronously iterate over thinking chunks as they are received.
+    def __aiter__(self) -> AsyncIterator[ThoughtChunk]:
+        """Asynchronously iterate over thought chunks as they are received.
 
         Yields:
-            ThinkingChunk: Each chunk containing accumulated thoughts and delta.
+            ThoughtChunk: Each chunk containing accumulated thoughts and delta.
         """
         raise NotImplementedError()
 
-    async def collect(self) -> Thinking:
-        """Asynchronously collect all chunks and return the final Thinking content.
+    async def collect(self) -> Thought:
+        """Asynchronously collect all chunks and return the final Thought content.
 
         Returns:
-            Thinking: The complete thinking content after consuming all chunks.
+            Thought: The complete thought content after consuming all chunks.
         """
         raise NotImplementedError()

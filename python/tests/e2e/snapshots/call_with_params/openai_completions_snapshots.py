@@ -21,6 +21,7 @@ sync_snapshot = snapshot(
                     "stop_sequences": ["4242"],
                 },
                 "finish_reason": None,
+                "thinking_signatures": [],
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(content=[Text(text="4200 + 42 equals ")]),
@@ -47,6 +48,7 @@ async_snapshot = snapshot(
                     "stop_sequences": ["4242"],
                 },
                 "finish_reason": None,
+                "thinking_signatures": [],
                 "messages": [
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(content=[Text(text="4200 + 42 equals ")]),

@@ -12,6 +12,7 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": None,
+        "thinking_signatures": [],
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(
@@ -36,6 +37,7 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": None,
+        "thinking_signatures": [],
         "messages": [
             UserMessage(content=[Text(text="Who created you?")]),
             AssistantMessage(

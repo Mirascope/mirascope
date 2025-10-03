@@ -12,6 +12,7 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": None,
+        "thinking_signatures": [],
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(content=[Text(text="4200 + 42 equals 4242.")]),
@@ -26,6 +27,7 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": None,
+        "thinking_signatures": [],
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(content=[Text(text="4200 + 42 equals 4242.")]),

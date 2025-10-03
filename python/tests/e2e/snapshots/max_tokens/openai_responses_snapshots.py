@@ -13,6 +13,7 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {"max_tokens": 50},
         "finish_reason": FinishReason.MAX_TOKENS,
+        "thinking_signatures": [],
         "messages": [
             UserMessage(content=[Text(text="List all U.S. states.")]),
             AssistantMessage(
@@ -46,6 +47,7 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {"max_tokens": 50},
         "finish_reason": FinishReason.MAX_TOKENS,
+        "thinking_signatures": [],
         "messages": [
             UserMessage(content=[Text(text="List all U.S. states.")]),
             AssistantMessage(

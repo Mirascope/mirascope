@@ -4,13 +4,13 @@ from typing import TypeAlias
 from typing_extensions import TypeVar
 
 from .text_stream import AsyncTextStream, TextStream
-from .thinking_stream import AsyncThinkingStream, ThinkingStream
+from .thinking_stream import AsyncThoughtStream, ThoughtStream
 from .tool_call_stream import AsyncToolCallStream, ToolCallStream
 
-Stream: TypeAlias = TextStream | ToolCallStream | ThinkingStream
+Stream: TypeAlias = TextStream | ToolCallStream | ThoughtStream
 """An assistant content part that is delivered incrementally."""
 
-AsyncStream: TypeAlias = AsyncTextStream | AsyncToolCallStream | AsyncThinkingStream
+AsyncStream: TypeAlias = AsyncTextStream | AsyncToolCallStream | AsyncThoughtStream
 """An assistant content part that is delivered asynchronously and incrementally."""
 
 StreamT = TypeVar("StreamT", bound=Stream | AsyncStream, covariant=True, default=Stream)
@@ -18,11 +18,11 @@ StreamT = TypeVar("StreamT", bound=Stream | AsyncStream, covariant=True, default
 __all__ = [
     "AsyncStream",
     "AsyncTextStream",
-    "AsyncThinkingStream",
+    "AsyncThoughtStream",
     "AsyncToolCallStream",
     "Stream",
     "StreamT",
     "TextStream",
-    "ThinkingStream",
+    "ThoughtStream",
     "ToolCallStream",
 ]
