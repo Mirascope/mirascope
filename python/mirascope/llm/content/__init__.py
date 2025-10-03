@@ -3,7 +3,12 @@
 from typing import TypeAlias
 
 from .audio import Audio, Base64AudioSource
-from .document import Document
+from .document import (
+    Base64DocumentSource,
+    Document,
+    TextDocumentSource,
+    URLDocumentSource,
+)
 from .image import Base64ImageSource, Image, URLImageSource
 from .text import Text, TextChunk, TextEndChunk, TextStartChunk
 from .thinking import Thinking, ThinkingChunk, ThinkingEndChunk, ThinkingStartChunk
@@ -39,12 +44,14 @@ __all__ = [
     "AssistantContentPart",
     "Audio",
     "Base64AudioSource",
+    "Base64DocumentSource",
     "Base64ImageSource",
     "ContentPart",
     "Document",
     "Image",
     "Text",
     "TextChunk",
+    "TextDocumentSource",
     "TextEndChunk",
     "TextStartChunk",
     "Thinking",
@@ -56,6 +63,7 @@ __all__ = [
     "ToolCallEndChunk",
     "ToolCallStartChunk",
     "ToolOutput",
+    "URLDocumentSource",
     "URLImageSource",
     "UserContentPart",
 ]
