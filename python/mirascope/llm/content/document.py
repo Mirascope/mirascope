@@ -17,11 +17,44 @@ DocumentTextMimeType = Literal[
 ]
 """Mime type for documents encoded as plain text."""
 
-DocumentBase64MimeType = Literal["application/pdf",]
+DocumentBase64MimeType = Literal["application/pdf"]
 """Mime type for documents encoded as base64 strings."""
 
-DocumentMimeType = DocumentTextMimeType | DocumentBase64MimeType
-"""Mime type for document content."""
+
+@dataclass(kw_only=True)
+class Base64DocumentSource:
+    """Document data represented as a base64 encoded string."""
+
+    type: Literal["base64_document_source"]
+
+    data: str
+    """The document data, as a base64 encoded string."""
+
+    media_type: DocumentBase64MimeType
+    """The media type of the document (e.g. application/pdf)."""
+
+
+@dataclass(kw_only=True)
+class TextDocumentSource:
+    """Plain text document data."""
+
+    type: Literal["text_document_source"]
+
+    data: str
+    """The document data, as plain text."""
+
+    media_type: DocumentTextMimeType
+    """The media type of the document (e.g. text/plain, text/csv)."""
+
+
+@dataclass(kw_only=True)
+class URLDocumentSource:
+    """Document data referenced via external URL."""
+
+    type: Literal["url_document_source"]
+
+    url: str
+    """The url of the document (e.g. https://example.com/paper.pdf)."""
 
 
 @dataclass(kw_only=True)
@@ -36,24 +69,21 @@ class Document:
     content_type: Literal["document"] = "document"
     """The type of content being represented."""
 
-    data: str
-    """The document data, as a str. 
+    source: Base64DocumentSource | TextDocumentSource | URLDocumentSource
 
-    For text-based documents (JSON, HTML, etc.), this is raw text. 
-    For binary documents (PDF), this is base64 encoded.
-    """
-
-    mime_type: DocumentMimeType
-    """The MIME type of the document, e.g., 'application/pdf'."""
+    @classmethod
+    def from_url(cls, url: str, *, download: bool = False) -> "Document":
+        """Create a `Document` from a URL."""
+        raise NotImplementedError
 
     @classmethod
     def from_file(
         cls,
         file_path: str,
         *,
-        mime_type: DocumentMimeType | None,
+        mime_type: DocumentTextMimeType | DocumentBase64MimeType | None,
     ) -> "Document":
-        """Create a Document from a file path."""
+        """Create a `Document` from a file path."""
         raise NotImplementedError
 
     @classmethod
@@ -61,7 +91,7 @@ class Document:
         cls,
         data: bytes,
         *,
-        mime_type: DocumentMimeType | None,
+        mime_type: DocumentTextMimeType | DocumentBase64MimeType | None,
     ) -> "Document":
-        """Create a Document from raw bytes."""
+        """Create a `Document` from raw bytes."""
         raise NotImplementedError
