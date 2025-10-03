@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from types import NoneType
 from typing import TYPE_CHECKING, Any, Generic, Literal, overload
 
-from ..content import AssistantContentPart, Text, Thinking, ToolCall
+from ..content import AssistantContentPart, Text, ThinkingSignature, Thought, ToolCall
 from ..formatting import Format, FormattableT, Partial
 from ..messages import Message
 from ..tools import ToolkitT
@@ -47,9 +47,15 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
     tool_calls: Sequence[ToolCall]
     """The tools the LLM wants called on its behalf, if any."""
 
-    thoughts: Sequence[Thinking]
-    """The thinking content in the generated response, if any."""
+    thinking_signatures: Sequence[ThinkingSignature]
+    """The signatures of LLM thinking content, if any."""
 
+    thoughts: Sequence[Thought]
+    """The readable thoughts from the model's thinking process, if any.
+
+    The thoughts may be direct output from the model thinking process, or may be a
+    generated summary. (This depends on the provider; newer models tend to summarize.)
+    """
     finish_reason: FinishReason | None
     """The reason why the LLM finished generating a response, if set.
     
@@ -147,9 +153,11 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
                 pretty_parts.append(part.text)
             elif isinstance(part, ToolCall):
                 pretty_parts.append(f"**ToolCall ({part.name}):** {part.args}")
-            elif isinstance(part, Thinking):
+            elif isinstance(part, ThinkingSignature):
+                pass
+            elif isinstance(part, Thought):
                 indented_thinking = "\n".join(
-                    f"  {line}" for line in part.thinking.split("\n")
+                    f"  {line}" for line in part.thought.split("\n")
                 )
                 pretty_parts.append(f"**Thinking:**\n{indented_thinking}")
             else:

@@ -3,7 +3,7 @@
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
-from ..content import Text, Thinking, ToolCall
+from ..content import Text, ThinkingSignature, Thought, ToolCall
 from ..formatting import Format, FormattableT
 from ..messages import AssistantMessage, Message
 from ..tools import FORMAT_TOOL_NAME, ToolkitT
@@ -55,8 +55,13 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         # transforming ToolCalls to the special format tool into text (as calls to the
         # formatting tool are not "real" tool calls, and response.parse() expects to
         # operate on text content).
+        self.texts = []
+        self.tool_calls = []
+        self.thinking_signatures = []
+        self.thoughts = []
+        self.content = []
         found_format_tool = False
-        self.texts, self.tool_calls, self.thoughts, self.content = [], [], [], []
+
         for part in assistant_message.content:
             if isinstance(part, ToolCall) and part.name.startswith(FORMAT_TOOL_NAME):
                 part = Text(text=part.args)
@@ -67,8 +72,11 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
                 self.texts.append(part)
             elif isinstance(part, ToolCall):
                 self.tool_calls.append(part)
-            elif isinstance(part, Thinking):
+            elif isinstance(part, Thought):
                 self.thoughts.append(part)
+            elif isinstance(part, ThinkingSignature):
+                self.thinking_signatures.append(part)
+                pass
             else:
                 raise NotImplementedError
 

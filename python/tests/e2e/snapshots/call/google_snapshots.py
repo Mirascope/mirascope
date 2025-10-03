@@ -12,6 +12,7 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": None,
+        "thinking_signatures": [],
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(
@@ -41,6 +42,7 @@ async_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": None,
+        "thinking_signatures": [],
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
             AssistantMessage(

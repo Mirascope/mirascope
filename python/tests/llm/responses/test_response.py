@@ -45,6 +45,7 @@ def test_response_initialization_with_text_content() -> None:
     assert len(response.texts) == 1
     assert response.texts[0].text == "Hello! How can I help you today?"
     assert len(response.tool_calls) == 0
+    assert len(response.thinking_signatures) == 0
     assert len(response.thoughts) == 0
 
 
@@ -55,7 +56,13 @@ def test_response_initialization_with_mixed_content() -> None:
     mixed_content = [
         llm.Text(text="I'll help you with that."),
         llm.ToolCall(id="call_1", name="test_tool", args='{"param": "value"}'),
-        llm.Thinking(thinking="Let me think about this", signature=None),
+        llm.ThinkingSignature(
+            signature="abcdefg",
+            encrypted_reasoning="secret123",
+            provider="openai:completions",
+            model_id="gpt-4o-mini",
+        ),
+        llm.Thought(thought="Let me think about this"),
         llm.Text(text="Here's the result."),
     ]
     assistant_message = llm.messages.assistant(mixed_content)
@@ -71,6 +78,8 @@ def test_response_initialization_with_mixed_content() -> None:
         finish_reason=None,
     )
 
+    assert response.content == mixed_content
+
     assert len(response.texts) == 2
     assert response.texts[0].text == "I'll help you with that."
     assert response.texts[1].text == "Here's the result."
@@ -79,8 +88,10 @@ def test_response_initialization_with_mixed_content() -> None:
     assert response.tool_calls[0].name == "test_tool"
     assert response.tool_calls[0].args == '{"param": "value"}'
 
+    assert len(response.thinking_signatures) == 1
+    assert response.thinking_signatures[0].signature == "abcdefg"
     assert len(response.thoughts) == 1
-    assert response.thoughts[0].thinking == "Let me think about this"
+    assert response.thoughts[0].thought == "Let me think about this"
 
 
 def test_response_initialization_with_empty_input_messages() -> None:
@@ -167,10 +178,7 @@ def test_mixed_content_response_pretty() -> None:
     assistant_message = llm.messages.assistant(
         content=[
             llm.Text(text="I need to calculate something for you."),
-            llm.Thinking(
-                thinking="Let me think about this calculation step by step...",
-                signature="math_helper_v1",
-            ),
+            llm.Thought(thought="Let me think about this calculation step by step..."),
             llm.ToolCall(
                 id="call_abc123", name="multiply_numbers", args='{"a": 1337, "b": 4242}'
             ),
