@@ -10,7 +10,7 @@ class Params(TypedDict, total=False):
     Please check provider-specific documentation for parameter support and behavior.
     """
 
-    temperature: float | None
+    temperature: float
     """Controls randomness in the output (0.0 to 1.0).
 
     Lower temperatures are good for prompts that require a less open-ended or
@@ -18,10 +18,10 @@ class Params(TypedDict, total=False):
     creative results.
     """
 
-    max_tokens: int | None
+    max_tokens: int
     """Maximum number of tokens to generate."""
 
-    top_p: float | None
+    top_p: float
     """Nucleus sampling parameter (0.0 to 1.0).
     
     Tokens are selected from the most to least probable until the sum of their 
@@ -29,7 +29,7 @@ class Params(TypedDict, total=False):
     higher value for more random responses.
     """
 
-    top_k: int | None
+    top_k: int
     """Limits token selection to the k most probable tokens (typically 1 to 100).
 
     For each token selection step, the ``top_k`` tokens with the
@@ -39,7 +39,7 @@ class Params(TypedDict, total=False):
     random responses.
     """
 
-    seed: int | None
+    seed: int
     """Random seed for reproducibility.
     
     When ``seed`` is fixed to a specific number, the model makes a best
@@ -48,9 +48,27 @@ class Params(TypedDict, total=False):
     Not supported by all providers, and does not guarantee strict reproducibility.
     """
 
-    stop_sequences: list[str] | None
+    stop_sequences: list[str]
     """Stop sequences to end generation.
     
     The model will stop generating text if one of these strings is encountered in the
     response.
+    """
+
+    thinking: bool
+    """Configures whether the model should use thinking.
+    
+    Thinking is a process where the model spends additional tokens thinking about the
+    prompt before generating a response. You may configure thinking either by passing
+    a bool to enable or disable it.
+
+    If `params.thinking` is `True`, then thinking and thought summaries will be enabled
+    (if supported by the model/provider), with a default budget for thinking tokens.
+
+    If `params.thinking` is `False`, then thinking will be wholly disabled, assuming
+    the model allows this (some models, e.g. `google:gemini-2.5-pro`, do not allow
+    disabling thinking).
+
+    If `params.thinking` is unset (or `None`), then we will use provider-specific default
+    behavior for the chosen model.
     """

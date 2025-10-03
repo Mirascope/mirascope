@@ -6,7 +6,6 @@ from typing import get_type_hints
 import pytest
 
 from mirascope import llm
-from mirascope.llm.clients.base.params import Params
 from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
 from tests.utils import (
     exception_snapshot_dict,
@@ -22,12 +21,13 @@ ALL_PARAMS: llm.Params = {
     "top_k": 50,
     "seed": 42,
     "stop_sequences": ["4242"],
+    "thinking": False,
 }
 
 
 def test_all_params_includes_every_param() -> None:
     """Verify that ALL_PARAMS includes every parameter defined in Params."""
-    params_keys = set(get_type_hints(Params).keys())
+    params_keys = set(get_type_hints(llm.Params).keys())
     all_params_keys = set(ALL_PARAMS.keys())
     assert params_keys == all_params_keys, (
         f"ALL_PARAMS is missing parameters: {params_keys - all_params_keys}"

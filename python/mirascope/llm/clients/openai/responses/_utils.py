@@ -156,6 +156,7 @@ PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
     "top_k": None,
     "seed": None,
     "stop_sequences": None,
+    "thinking": None,
 }
 
 
