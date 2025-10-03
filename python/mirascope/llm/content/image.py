@@ -14,6 +14,29 @@ ImageMimeType = Literal[
 
 
 @dataclass(kw_only=True)
+class Base64ImageSource:
+    """Image data represented as a base64 encoded string."""
+
+    type: Literal["base64_image_source"]
+
+    data: str
+    """The image data, as a base64 encoded string."""
+
+    mime_type: ImageMimeType
+    """The mime type of the image (e.g. image/png)."""
+
+
+@dataclass(kw_only=True)
+class URLImageSource:
+    """Image data referenced via external URL."""
+
+    type: Literal["url_image_source"]
+
+    url: str
+    """The url of the image (e.g. https://example.com/sazed.png)."""
+
+
+@dataclass(kw_only=True)
 class Image:
     """Image content for a message.
 
@@ -27,14 +50,17 @@ class Image:
     content_type: Literal["image"] = "image"
     """The type of content being represented."""
 
-    id: str | None = None
-    """A unique identifier for this image content. This is useful for tracking and referencing generated images."""
+    source: Base64ImageSource | URLImageSource
 
-    data: str
-    """The image data, as a base64 encoded string."""
-
-    mime_type: ImageMimeType
-    """The MIME type of the image, e.g., 'image/png', 'image/jpeg'."""
+    @classmethod
+    def from_url(
+        cls,
+        url: str,
+        *,
+        download: bool = False,
+    ) -> "Image":
+        """Create an `Image` from a URL."""
+        raise NotImplementedError
 
     @classmethod
     def from_file(
@@ -42,9 +68,8 @@ class Image:
         file_path: str,
         *,
         mime_type: ImageMimeType | None,
-        id: str | None = None,
     ) -> "Image":
-        """Create an Image from a file path."""
+        """Create an `Image` from a file path."""
         raise NotImplementedError
 
     @classmethod
@@ -53,28 +78,6 @@ class Image:
         data: bytes,
         *,
         mime_type: ImageMimeType | None,
-        id: str | None = None,
     ) -> "Image":
-        """Create an Image from raw bytes."""
+        """Create an `Image` from raw bytes."""
         raise NotImplementedError
-
-
-@dataclass(kw_only=True)
-class ImageUrl:
-    """Image content for a message, referenced by url.
-
-    Use ImageUrl when you want to provide image content, but have the LLM load it
-    via http. This can be specified as input, but LLM generated images will use standard
-    Image content.
-    """
-
-    type: Literal["image_url"] = "image_url"
-
-    content_type: Literal["image"] = "image"
-    """The type of content being represented."""
-
-    url: str
-    """The image url."""
-
-    mime_type: ImageMimeType | None
-    """The MIME type of the image, e.g., 'image/png', 'image/jpeg'."""

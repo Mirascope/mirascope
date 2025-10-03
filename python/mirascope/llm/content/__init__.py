@@ -4,28 +4,18 @@ from typing import TypeAlias
 
 from .audio import Audio, AudioUrl
 from .document import Document
-from .image import Image, ImageUrl
+from .image import Base64ImageSource, Image, URLImageSource
 from .text import Text, TextChunk, TextEndChunk, TextStartChunk
 from .thinking import Thinking, ThinkingChunk, ThinkingEndChunk, ThinkingStartChunk
 from .tool_call import ToolCall, ToolCallChunk, ToolCallEndChunk, ToolCallStartChunk
 from .tool_output import ToolOutput
 
 ContentPart: TypeAlias = (
-    Text
-    | Image
-    | ImageUrl
-    | Audio
-    | AudioUrl
-    | Document
-    | ToolOutput
-    | ToolCall
-    | Thinking
+    Text | Image | Audio | AudioUrl | Document | ToolOutput | ToolCall | Thinking
 )
 """Content parts that may be included in a Message."""
 
-UserContentPart: TypeAlias = (
-    Text | Image | ImageUrl | Audio | AudioUrl | Document | ToolOutput
-)
+UserContentPart: TypeAlias = Text | Image | Audio | AudioUrl | Document | ToolOutput
 """Content parts that can be included in a UserMessage."""
 
 AssistantContentPart: TypeAlias = Text | ToolCall | Thinking
@@ -49,10 +39,10 @@ __all__ = [
     "AssistantContentPart",
     "Audio",
     "AudioUrl",
+    "Base64ImageSource",
     "ContentPart",
     "Document",
     "Image",
-    "ImageUrl",
     "Text",
     "TextChunk",
     "TextEndChunk",
@@ -66,5 +56,6 @@ __all__ = [
     "ToolCallEndChunk",
     "ToolCallStartChunk",
     "ToolOutput",
+    "URLImageSource",
     "UserContentPart",
 ]
