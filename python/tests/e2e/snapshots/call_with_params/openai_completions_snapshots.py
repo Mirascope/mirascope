@@ -19,6 +19,7 @@ sync_snapshot = snapshot(
                     "top_k": 50,
                     "seed": 42,
                     "stop_sequences": ["4242"],
+                    "thinking": False,
                 },
                 "finish_reason": None,
                 "messages": [
@@ -29,7 +30,10 @@ sync_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": ["Skipping unsupported parameter: top_k=50 for provider OpenAI"],
+        "logging": [
+            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
+            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+        ],
     }
 )
 async_snapshot = snapshot(
@@ -45,6 +49,7 @@ async_snapshot = snapshot(
                     "top_k": 50,
                     "seed": 42,
                     "stop_sequences": ["4242"],
+                    "thinking": False,
                 },
                 "finish_reason": None,
                 "messages": [
@@ -55,7 +60,10 @@ async_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": ["Skipping unsupported parameter: top_k=50 for provider OpenAI"],
+        "logging": [
+            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
+            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+        ],
     }
 )
 stream_snapshot = snapshot(
@@ -74,7 +82,10 @@ stream_snapshot = snapshot(
                 "n_chunks": 9,
             },
         ),
-        "logging": ["Skipping unsupported parameter: top_k=50 for provider OpenAI"],
+        "logging": [
+            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
+            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+        ],
     }
 )
 async_stream_snapshot = snapshot(
@@ -93,6 +104,9 @@ async_stream_snapshot = snapshot(
                 "n_chunks": 9,
             },
         ),
-        "logging": ["Skipping unsupported parameter: top_k=50 for provider OpenAI"],
+        "logging": [
+            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
+            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+        ],
     }
 )

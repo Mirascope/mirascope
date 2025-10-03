@@ -19,6 +19,7 @@ sync_snapshot = snapshot(
                     "top_k": 50,
                     "seed": 42,
                     "stop_sequences": ["4242"],
+                    "thinking": False,
                 },
                 "finish_reason": None,
                 "messages": [
@@ -41,7 +42,9 @@ To find the sum of 4200 and 42, you add them together:
                 "tools": [],
             },
         ),
-        "logging": [],
+        "logging": [
+            "Skipping unsupported parameter: thinking=False for provider Google"
+        ],
     }
 )
 async_snapshot = snapshot(
@@ -57,6 +60,7 @@ async_snapshot = snapshot(
                     "top_k": 50,
                     "seed": 42,
                     "stop_sequences": ["4242"],
+                    "thinking": False,
                 },
                 "finish_reason": None,
                 "messages": [
@@ -79,7 +83,9 @@ To find the sum of 4200 and 42, you add them together:
                 "tools": [],
             },
         ),
-        "logging": [],
+        "logging": [
+            "Skipping unsupported parameter: thinking=False for provider Google"
+        ],
     }
 )
 stream_snapshot = snapshot(
@@ -110,7 +116,9 @@ To find the sum of 4200 and 42, you add them together:
                 "n_chunks": 3,
             },
         ),
-        "logging": [],
+        "logging": [
+            "Skipping unsupported parameter: thinking=False for provider Google"
+        ],
     }
 )
 async_stream_snapshot = snapshot(
@@ -141,6 +149,8 @@ To find the sum of 4200 and 42, you add them together:
                 "n_chunks": 3,
             },
         ),
-        "logging": [],
+        "logging": [
+            "Skipping unsupported parameter: thinking=False for provider Google"
+        ],
     }
 )

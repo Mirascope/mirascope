@@ -85,6 +85,7 @@ class ParamsToKwargs(TypedDict, total=True):
     top_k: str | None
     seed: str | None
     stop_sequences: str | None
+    thinking: str | None
 
 
 def map_params_to_kwargs(
