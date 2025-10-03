@@ -68,6 +68,7 @@ class ChatCompletionCreateKwargs(BaseKwargs, total=False):
     top_p: float | NotGiven
     seed: int | NotGiven
     stop: str | list[str] | NotGiven
+    reasoning_effort: shared_openai_types.ReasoningEffort | NotGiven
 
 
 def _encode_user_message(

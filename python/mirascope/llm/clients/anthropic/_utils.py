@@ -60,6 +60,7 @@ class MessageCreateKwargs(TypedDict, total=False):
     top_p: float | NotGiven
     top_k: int | NotGiven
     stop_sequences: list[str] | NotGiven
+    thinking: anthropic_types.ThinkingConfigParam | NotGiven
 
 
 def _encode_content(
