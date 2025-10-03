@@ -35,9 +35,6 @@ class Audio:
 
     type: Literal["audio"] = "audio"
 
-    content_type: Literal["audio"] = "audio"
-    """The type of content being represented."""
-
     source: Base64AudioSource
 
     @classmethod

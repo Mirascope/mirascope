@@ -10,9 +10,6 @@ class Text:
 
     type: Literal["text"] = "text"
 
-    content_type: Literal["text"] = "text"
-    """The type of content being represented."""
-
     text: str
     """The text content."""
 

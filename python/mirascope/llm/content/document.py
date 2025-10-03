@@ -66,9 +66,6 @@ class Document:
 
     type: Literal["document"] = "document"
 
-    content_type: Literal["document"] = "document"
-    """The type of content being represented."""
-
     source: Base64DocumentSource | TextDocumentSource | URLDocumentSource
 
     @classmethod

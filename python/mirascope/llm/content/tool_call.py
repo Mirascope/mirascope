@@ -14,9 +14,6 @@ class ToolCall:
 
     type: Literal["tool_call"] = "tool_call"
 
-    content_type: Literal["tool_call"] = "tool_call"
-    """The type of content being represented."""
-
     id: str
     """A unique identifier for this tool call."""
 
