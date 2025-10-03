@@ -16,6 +16,7 @@ from openai.types.responses.response_stream_event import ResponseStreamEvent
 from openai.types.responses.response_text_config_param import ResponseTextConfigParam
 from openai.types.responses.tool_choice_allowed_param import ToolChoiceAllowedParam
 from openai.types.responses.tool_choice_function_param import ToolChoiceFunctionParam
+from openai.types.shared_params import Reasoning
 from openai.types.shared_params.response_format_json_object import (
     ResponseFormatJSONObject,
 )
@@ -77,6 +78,7 @@ class ResponseCreateKwargs(TypedDict, total=False):
     tools: list[FunctionToolParam] | NotGiven
     tool_choice: response_create_params.ToolChoice | NotGiven
     text: ResponseTextConfigParam
+    reasoning: Reasoning | NotGiven
 
 
 def _encode_message(message: Message) -> EasyInputMessageParam:
