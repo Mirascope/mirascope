@@ -13,9 +13,6 @@ class Thinking:
 
     type: Literal["thinking"] = "thinking"
 
-    content_type: Literal["thinking"] = "thinking"
-    """The type of content being represented."""
-
     signature: str | None
     """The signature of the thinking content, if available."""
 

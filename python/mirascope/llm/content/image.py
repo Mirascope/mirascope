@@ -47,9 +47,6 @@ class Image:
 
     type: Literal["image"] = "image"
 
-    content_type: Literal["image"] = "image"
-    """The type of content being represented."""
-
     source: Base64ImageSource | URLImageSource
 
     @classmethod
