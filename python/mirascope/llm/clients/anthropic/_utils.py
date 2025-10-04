@@ -145,23 +145,13 @@ def _convert_tool_to_tool_param(tool: ToolSchema) -> anthropic_types.ToolParam:
     )
 
 
-PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
-    "temperature": "temperature",
-    "max_tokens": "max_tokens",
-    "top_p": "top_p",
-    "top_k": "top_k",
-    "seed": None,
-    "stop_sequences": "stop_sequences",
-    "thinking": None,
-}
-
-
 def prepare_anthropic_request(
+    *,
     model_id: AnthropicModelId,
     messages: Sequence[Message],
-    tools: Sequence[ToolSchema] | BaseToolkit | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
-    params: Params | None = None,
+    tools: Sequence[ToolSchema] | BaseToolkit | None,
+    format: type[FormattableT] | Format[FormattableT] | None,
+    params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Prepares a request for the `Anthropic.messages.create` method."""
     kwargs: MessageCreateKwargs = {
@@ -169,9 +159,23 @@ def prepare_anthropic_request(
         "max_tokens": 1024,
     }
 
-    kwargs = _base_utils.map_params_to_kwargs(
-        params, kwargs, PARAMS_TO_KWARGS, "Anthropic"
-    )
+    with _base_utils.ensure_all_params_accessed(params) as param_accessor:
+        if param_accessor.temperature is not None:
+            kwargs["temperature"] = param_accessor.temperature
+        if param_accessor.max_tokens is not None:
+            kwargs["max_tokens"] = param_accessor.max_tokens
+        if param_accessor.top_p is not None:
+            kwargs["top_p"] = param_accessor.top_p
+        if param_accessor.top_k is not None:
+            kwargs["top_k"] = param_accessor.top_k
+        if param_accessor.seed is not None:
+            _base_utils.warn_unused_param("seed", param_accessor.seed, "anthropic")
+        if param_accessor.stop_sequences is not None:
+            kwargs["stop_sequences"] = param_accessor.stop_sequences
+        if param_accessor.thinking is not None:
+            _base_utils.warn_unused_param(
+                "thinking", param_accessor.thinking, "anthropic"
+            )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     anthropic_tools = [_convert_tool_to_tool_param(tool) for tool in tools]

@@ -1,6 +1,7 @@
 """Google message types and conversion utilities."""
 
 import json
+import logging
 from collections.abc import AsyncIterator, Iterator, Sequence
 from functools import lru_cache
 from typing import Any, Literal, cast
@@ -37,6 +38,8 @@ from ...responses import (
 from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ..base import BaseKwargs, Params, _utils as _base_utils
 from .model_ids import GoogleModelId
+
+logger = logging.getLogger(__name__)
 
 GOOGLE_FINISH_REASON_MAP = {
     "MAX_TOKENS": FinishReason.MAX_TOKENS,
@@ -202,23 +205,13 @@ def _convert_tool_to_function_declaration(
     )
 
 
-PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
-    "temperature": "temperature",
-    "max_tokens": "max_output_tokens",
-    "top_p": "top_p",
-    "top_k": "top_k",
-    "seed": "seed",
-    "stop_sequences": "stop_sequences",
-    "thinking": None,
-}
-
-
 def prepare_google_request(
+    *,
     model_id: GoogleModelId,
     messages: Sequence[Message],
-    tools: Sequence[ToolSchema] | BaseToolkit | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
-    params: Params | None = None,
+    tools: Sequence[ToolSchema] | BaseToolkit | None,
+    format: type[FormattableT] | Format[FormattableT] | None,
+    params: Params,
 ) -> tuple[
     Sequence[Message],
     Format[FormattableT] | None,
@@ -226,9 +219,23 @@ def prepare_google_request(
     GoogleKwargs,
 ]:
     """Prepares a request for the genai `Client.models.generate_content` method."""
-    google_config: GoogleKwargs = _base_utils.map_params_to_kwargs(
-        params, {}, PARAMS_TO_KWARGS, "Google"
-    )
+    google_config: GoogleKwargs = {}
+
+    with _base_utils.ensure_all_params_accessed(params) as param_accessor:
+        if param_accessor.temperature is not None:
+            google_config["temperature"] = param_accessor.temperature
+        if param_accessor.max_tokens is not None:
+            google_config["max_output_tokens"] = param_accessor.max_tokens
+        if param_accessor.top_p is not None:
+            google_config["top_p"] = param_accessor.top_p
+        if param_accessor.top_k is not None:
+            google_config["top_k"] = param_accessor.top_k
+        if param_accessor.seed is not None:
+            google_config["seed"] = param_accessor.seed
+        if param_accessor.stop_sequences is not None:
+            google_config["stop_sequences"] = param_accessor.stop_sequences
+        if param_accessor.thinking is not None:
+            _base_utils.warn_unused_param("thinking", param_accessor.thinking, "google")
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     google_tools: list[genai_types.ToolDict] = []
