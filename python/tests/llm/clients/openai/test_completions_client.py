@@ -19,7 +19,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         llm.messages.assistant(["General ", "Kenobi"]),
     ]
     assert openai_utils.prepare_completions_request(
-        model_id="gpt-4o", messages=messages
+        model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
     ) == snapshot(
         (
             [
@@ -61,9 +61,7 @@ def test_strict_unsupported_legacy_model() -> None:
 
     with pytest.raises(llm.FormattingModeNotSupportedError):
         openai_utils.prepare_completions_request(
-            model_id="gpt-4",
-            messages=messages,
-            format=format,
+            model_id="gpt-4", messages=messages, format=format, tools=None, params={}
         )
 
 

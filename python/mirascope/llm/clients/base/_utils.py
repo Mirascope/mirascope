@@ -1,11 +1,14 @@
 import logging
-from collections.abc import Sequence
-from typing import TypeAlias, TypedDict
+from collections.abc import Generator, Sequence
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, TypeAlias, get_type_hints
 
 from ...content import Text
 from ...messages import AssistantMessage, Message, SystemMessage, UserMessage
-from .kwargs import KwargsT
 from .params import Params
+
+if TYPE_CHECKING:
+    from ..providers import ModelId, Provider
 
 logger = logging.getLogger(__name__)
 
@@ -76,50 +79,98 @@ def extract_system_message(
     return system_message_content, remaining_messages
 
 
-class ParamsToKwargs(TypedDict, total=True):
-    """A provider-specific map that defines how to process every key in Params"""
+class SafeParamsAccessor:
+    """A wrapper around Params that tracks which parameters have been accessed."""
 
-    temperature: str | None
-    max_tokens: str | None
-    top_p: str | None
-    top_k: str | None
-    seed: str | None
-    stop_sequences: str | None
-    thinking: str | None
+    def __init__(self, params: Params) -> None:
+        self._params = params
+        self._unaccessed = set(get_type_hints(Params).keys())
 
+    @property
+    def temperature(self) -> float | None:
+        """Access the temperature parameter."""
+        self._unaccessed.discard("temperature")
+        return self._params.get("temperature")
 
-def map_params_to_kwargs(
-    params: Params | None,
-    kwargs: KwargsT,
-    mapping: ParamsToKwargs,
-    provider: str,
-) -> KwargsT:
-    """Map params into a provider-specific kwarg dict.
+    @property
+    def max_tokens(self) -> int | None:
+        """Access the max_tokens parameter."""
+        self._unaccessed.discard("max_tokens")
+        return self._params.get("max_tokens")
 
-    Takes the params to map, the kwargs to update, and a mapping on how to handle params.
-    The mapping must map from every parameter to one of three possible values, either:
-    - a string key to map the parameter to in the kwargs dict, unchanged
-    - None, if the parameter is unsupported
+    @property
+    def top_p(self) -> float | None:
+        """Access the top_p parameter."""
+        self._unaccessed.discard("top_p")
+        return self._params.get("top_p")
 
-    If any used param is unsupported (not present in the mapping dict), then a runtime error will
-    be raised.
+    @property
+    def top_k(self) -> int | None:
+        """Access the top_k parameter."""
+        self._unaccessed.discard("top_k")
+        return self._params.get("top_k")
 
-    Logs a warning when a parameter is unsupported.
-    """
-    if not params:
-        return kwargs
-    kwargs = kwargs.copy()
-    for param, value in params.items():
-        if param not in mapping:
+    @property
+    def seed(self) -> int | None:
+        """Access the seed parameter."""
+        self._unaccessed.discard("seed")
+        return self._params.get("seed")
+
+    @property
+    def stop_sequences(self) -> list[str] | None:
+        """Access the stop_sequences parameter."""
+        self._unaccessed.discard("stop_sequences")
+        return self._params.get("stop_sequences")
+
+    @property
+    def thinking(self) -> bool | None:
+        """Access the thinking parameter."""
+        self._unaccessed.discard("thinking")
+        return self._params.get("thinking")
+
+    def _check_all_accessed(self) -> None:
+        """Verify that all possible parameters have been accessed."""
+        if self._unaccessed:
             raise RuntimeError(
-                f"Parameter mapping missing parameter: {param}"
-            )  # pragma: no cover
-        kwarg = mapping[param]
-        if kwarg is None:
-            logger.warning(
-                f"Skipping unsupported parameter: {param}={value} for provider {provider}"
+                f"Not all parameters were checked. Unaccessed parameters: {sorted(self._unaccessed)}"
             )
-        else:
-            kwargs[kwarg] = value
 
-    return kwargs
+
+def warn_unused_param(
+    param_name: str,
+    param_value: object,
+    provider: "Provider",
+    model_id: "ModelId | None" = None,
+) -> None:
+    unsupported_by = f"provider: {provider}"
+    if model_id:  # pragma: no cover TODO remove this no cover upstack
+        unsupported_by += f" with model_id: {model_id}"
+    logger.warning(
+        f"Skipping unsupported parameter: {param_name}={param_value} ({unsupported_by})"
+    )
+
+
+@contextmanager
+def ensure_all_params_accessed(
+    params: Params,
+) -> Generator[SafeParamsAccessor, None, None]:
+    """Context manager that ensures all parameters are accessed.
+
+    Yields a wrapper around params that tracks which parameters have been accessed.
+    On context exit, raises a `RuntimeError` if any parameters were not accessed.
+
+    Args:
+        params: The parameters to wrap
+
+    Yields:
+        A SafeParamsAccessor instance if params is not None, else None
+
+    Raises:
+        RuntimeError: If any parameters were not accessed before context exit
+    """
+
+    accessor = SafeParamsAccessor(params)
+    try:
+        yield accessor
+    finally:
+        accessor._check_all_accessed()

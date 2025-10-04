@@ -31,10 +31,10 @@ sync_snapshot = snapshot(
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
-            "Skipping unsupported parameter: seed=42 for provider OpenAI",
-            "Skipping unsupported parameter: stop_sequences=['4242'] for provider OpenAI",
-            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+            "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
+            "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
+            "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:responses)",
         ],
     }
 )
@@ -63,10 +63,10 @@ async_snapshot = snapshot(
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
-            "Skipping unsupported parameter: seed=42 for provider OpenAI",
-            "Skipping unsupported parameter: stop_sequences=['4242'] for provider OpenAI",
-            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+            "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
+            "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
+            "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:responses)",
         ],
     }
 )
@@ -87,10 +87,10 @@ stream_snapshot = snapshot(
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
-            "Skipping unsupported parameter: seed=42 for provider OpenAI",
-            "Skipping unsupported parameter: stop_sequences=['4242'] for provider OpenAI",
-            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+            "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
+            "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
+            "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:responses)",
         ],
     }
 )
@@ -111,10 +111,10 @@ async_stream_snapshot = snapshot(
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
-            "Skipping unsupported parameter: seed=42 for provider OpenAI",
-            "Skipping unsupported parameter: stop_sequences=['4242'] for provider OpenAI",
-            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+            "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
+            "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
+            "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:responses)",
         ],
     }
 )

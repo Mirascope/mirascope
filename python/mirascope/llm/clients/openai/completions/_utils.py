@@ -210,36 +210,38 @@ def _create_strict_response_format(
     )
 
 
-PARAMS_TO_KWARGS: _base_utils.ParamsToKwargs = {
-    "temperature": "temperature",
-    "max_tokens": "max_tokens",
-    "top_p": "top_p",
-    "top_k": None,
-    "seed": "seed",
-    "stop_sequences": "stop",
-    "thinking": None,
-}
-
-
 def prepare_completions_request(
     *,
     model_id: OpenAICompletionsModelId,
     messages: Sequence[Message],
-    tools: Sequence[ToolSchema] | BaseToolkit | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
-    params: Params | None = None,
+    tools: Sequence[ToolSchema] | BaseToolkit | None,
+    format: type[FormattableT] | Format[FormattableT] | None,
+    params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
     kwargs: ChatCompletionCreateKwargs = {
         "model": model_id,
     }
 
-    kwargs = _base_utils.map_params_to_kwargs(
-        params,
-        kwargs,
-        PARAMS_TO_KWARGS,
-        provider="OpenAI",
-    )
+    with _base_utils.ensure_all_params_accessed(params) as param_accessor:
+        if param_accessor.temperature is not None:
+            kwargs["temperature"] = param_accessor.temperature
+        if param_accessor.max_tokens is not None:
+            kwargs["max_tokens"] = param_accessor.max_tokens
+        if param_accessor.top_p is not None:
+            kwargs["top_p"] = param_accessor.top_p
+        if param_accessor.top_k is not None:
+            _base_utils.warn_unused_param(
+                "top_k", param_accessor.top_k, "openai:completions"
+            )
+        if param_accessor.seed is not None:
+            kwargs["seed"] = param_accessor.seed
+        if param_accessor.stop_sequences is not None:
+            kwargs["stop"] = param_accessor.stop_sequences
+        if param_accessor.thinking is not None:
+            _base_utils.warn_unused_param(
+                "thinking", param_accessor.thinking, "openai:completions"
+            )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
 

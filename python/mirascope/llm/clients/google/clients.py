@@ -157,7 +157,11 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             An `llm.Response` object containing the LLM-generated content.
         """
         input_messages, format, contents, config = _utils.prepare_google_request(
-            model_id, messages, tools, format, params=params
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         google_response = self.client.models.generate_content(
@@ -254,7 +258,11 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
         input_messages, format, contents, config = _utils.prepare_google_request(
-            model_id, messages, tools, format, params=params
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         google_response = self.client.models.generate_content(
@@ -338,7 +346,11 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
         input_messages, format, contents, config = _utils.prepare_google_request(
-            model_id, messages, tools, format, params=params
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         google_response = await self.client.aio.models.generate_content(
@@ -435,7 +447,11 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
         input_messages, format, contents, config = _utils.prepare_google_request(
-            model_id, messages, tools, format, params=params
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         google_response = await self.client.aio.models.generate_content(
@@ -519,7 +535,11 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
         input_messages, format, contents, config = _utils.prepare_google_request(
-            model_id, messages, tools, format, params=params
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         google_stream = self.client.models.generate_content_stream(
@@ -614,7 +634,11 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
         input_messages, format, contents, config = _utils.prepare_google_request(
-            model_id, messages, tools, format, params=params
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         google_stream = self.client.models.generate_content_stream(
@@ -696,7 +720,11 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
         input_messages, format, contents, config = _utils.prepare_google_request(
-            model_id, messages, tools, format, params=params
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         google_stream = await self.client.aio.models.generate_content_stream(
@@ -793,7 +821,11 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
         input_messages, format, contents, config = _utils.prepare_google_request(
-            model_id, messages, tools, format, params=params
+            model_id=model_id,
+            messages=messages,
+            tools=tools,
+            format=format,
+            params=params,
         )
 
         google_stream = await self.client.aio.models.generate_content_stream(

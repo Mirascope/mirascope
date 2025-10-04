@@ -31,8 +31,8 @@ sync_snapshot = snapshot(
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
-            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+            "Skipping unsupported parameter: top_k=50 (provider: openai:completions)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:completions)",
         ],
     }
 )
@@ -61,8 +61,8 @@ async_snapshot = snapshot(
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
-            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+            "Skipping unsupported parameter: top_k=50 (provider: openai:completions)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:completions)",
         ],
     }
 )
@@ -83,8 +83,8 @@ stream_snapshot = snapshot(
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
-            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+            "Skipping unsupported parameter: top_k=50 (provider: openai:completions)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:completions)",
         ],
     }
 )
@@ -105,8 +105,8 @@ async_stream_snapshot = snapshot(
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: top_k=50 for provider OpenAI",
-            "Skipping unsupported parameter: thinking=False for provider OpenAI",
+            "Skipping unsupported parameter: top_k=50 (provider: openai:completions)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:completions)",
         ],
     }
 )

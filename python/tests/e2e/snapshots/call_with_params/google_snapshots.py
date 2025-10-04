@@ -43,7 +43,7 @@ To find the sum of 4200 and 42, you add them together:
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: thinking=False for provider Google"
+            "Skipping unsupported parameter: thinking=False (provider: google)"
         ],
     }
 )
@@ -84,7 +84,7 @@ To find the sum of 4200 and 42, you add them together:
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: thinking=False for provider Google"
+            "Skipping unsupported parameter: thinking=False (provider: google)"
         ],
     }
 )
@@ -117,7 +117,7 @@ To find the sum of 4200 and 42, you add them together:
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: thinking=False for provider Google"
+            "Skipping unsupported parameter: thinking=False (provider: google)"
         ],
     }
 )
@@ -150,7 +150,7 @@ To find the sum of 4200 and 42, you add them together:
             },
         ),
         "logging": [
-            "Skipping unsupported parameter: thinking=False for provider Google"
+            "Skipping unsupported parameter: thinking=False (provider: google)"
         ],
     }
 )
