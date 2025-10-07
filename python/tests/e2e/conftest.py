@@ -6,26 +6,13 @@ Includes setting up VCR for HTTP recording/playback.
 from __future__ import annotations
 
 import importlib
-import os
 from pathlib import Path
 from typing import Any, Literal, TypeAlias, TypedDict, get_args
 
 import pytest
-from dotenv import load_dotenv
 from pytest import FixtureRequest
 
 from mirascope import llm
-
-
-@pytest.fixture(scope="session", autouse=True)
-def load_api_keys() -> None:
-    """Load environment variables from .env file for e2e tests."""
-    load_dotenv()
-    # Set dummy keys if not present so that tests pass in CI.
-    os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
-    os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")
-    os.environ.setdefault("OPENAI_API_KEY", "dummy-openai-key")
-
 
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("anthropic", "claude-sonnet-4-0"),
