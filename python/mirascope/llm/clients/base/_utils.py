@@ -137,9 +137,7 @@ class SafeParamsAccessor:
     ) -> None:
         unsupported_by = f"provider: {provider}"
         if model_id:
-            unsupported_by += (
-                f" with model_id: {model_id}"  # pragma: no cover (REMOVED UPSTACK)
-            )
+            unsupported_by += f" with model_id: {model_id}"
         logger.warning(
             f"Skipping unsupported parameter: {param_name}={param_value} ({unsupported_by})"
         )

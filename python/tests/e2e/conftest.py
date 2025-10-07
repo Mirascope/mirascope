@@ -242,7 +242,7 @@ def snapshot(
         "TextChunk",
         "TextEndChunk",
         "TextStartChunk",
-        "Thinking",
+        "Thought",
         "ToolCall",
         "ToolCall",
         "ToolCallChunk",
