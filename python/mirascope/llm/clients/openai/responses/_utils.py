@@ -36,6 +36,10 @@ from ....content import (
     TextChunk,
     TextEndChunk,
     TextStartChunk,
+    Thought,
+    ThoughtChunk,
+    ThoughtEndChunk,
+    ThoughtStartChunk,
     ToolCall,
     ToolCallChunk,
     ToolCallEndChunk,
@@ -64,7 +68,7 @@ from ...base import Params, _utils as _base_utils
 from ..shared import (
     _utils as _shared_utils,
 )
-from .model_ids import OpenAIResponsesModelId
+from .model_ids import REASONING_MODELS, OpenAIResponsesModelId
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +109,7 @@ def _encode_message(
         return [EasyInputMessageParam(role="developer", content=message.content.text)]
 
     result: ResponseInputParam = []
+    logged_thought_conversion = False
 
     for part in message.content:
         if part.type == "text":
@@ -124,6 +129,15 @@ def _encode_message(
                     call_id=part.id,
                     output=str(part.value),
                     type="function_call_output",
+                )
+            )
+        elif part.type == "thought":
+            if not logged_thought_conversion:
+                logger.info("Converting `Thought` content into assistant message text.")
+                logged_thought_conversion = True
+            result.append(
+                EasyInputMessageParam(
+                    role=message.role, content="**Thinking: " + part.thought
                 )
             )
         else:
@@ -173,6 +187,14 @@ def _create_strict_response_format(
     return response_format
 
 
+def _compute_reasoning(thinking: bool) -> Reasoning:
+    """Compute the OpenAI `Reasoning` config based on thinking settings."""
+    if thinking:
+        return {"effort": "medium", "summary": "auto"}
+    else:
+        return {"effort": "minimal"}
+
+
 def prepare_responses_request(
     *,
     model_id: OpenAIResponsesModelId,
@@ -189,7 +211,7 @@ def prepare_responses_request(
     with _base_utils.ensure_all_params_accessed(
         params=params,
         provider="openai:responses",
-        unsupported_params=["top_k", "seed", "stop_sequences", "thinking"],
+        unsupported_params=["top_k", "seed", "stop_sequences"],
     ) as param_accessor:
         if param_accessor.temperature is not None:
             kwargs["temperature"] = param_accessor.temperature
@@ -197,6 +219,17 @@ def prepare_responses_request(
             kwargs["max_output_tokens"] = param_accessor.max_tokens
         if param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
+        if param_accessor.thinking is not None:
+            if model_id in REASONING_MODELS:
+                # Only set reasoning if model supports it, otherwise we will get an API error
+                # Note: If OpenAI adds a new reasoning model, then we need to update REASONING_MODELS
+                # for mirascope users to configure it (not ideal)
+                # TODO: Consider some way to future-proof this
+                kwargs["reasoning"] = _compute_reasoning(param_accessor.thinking)
+            else:
+                param_accessor.emit_warning_for_unused_param(
+                    "thinking", param_accessor.thinking, "openai:responses", model_id
+                )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools]
@@ -275,6 +308,17 @@ def decode_response(
                     args=output_item.arguments,
                 )
             )
+        elif output_item.type == "reasoning":
+            for summary_part in output_item.summary:
+                if summary_part.type == "summary_text":
+                    parts.append(Thought(thought=summary_part.text))
+            if output_item.content:  # pragma: no cover
+                # TODO: Add test case covering this
+                # (Likely their open-source models output reasoning_text rather than summaries)
+                for reasoning_content in output_item.content:
+                    if reasoning_content.type == "reasoning_text":
+                        parts.append(Thought(thought=reasoning_content.text))
+
         else:
             raise NotImplementedError(f"Unsupported output item: {output_item.type}")
 
@@ -290,7 +334,7 @@ class _OpenAIResponsesChunkProcessor:
     """Processes OpenAI Responses streaming events and maintains state across chunks."""
 
     def __init__(self) -> None:
-        self.current_content_type: Literal["text", "tool_call"] | None = None
+        self.current_content_type: Literal["text", "tool_call", "thought"] | None = None
         self.refusal_encountered = False
 
     def process_chunk(self, event: ResponseStreamEvent) -> ChunkIterator:
@@ -329,6 +373,20 @@ class _OpenAIResponsesChunkProcessor:
                 yield ToolCallChunk(delta=event.delta)
             elif event.type == "response.function_call_arguments.done":
                 yield ToolCallEndChunk()
+                self.current_content_type = None
+            elif (
+                event.type == "response.reasoning_text.delta"
+                or event.type == "response.reasoning_summary_text.delta"
+            ):
+                if not self.current_content_type:
+                    yield ThoughtStartChunk()
+                    self.current_content_type = "thought"
+                yield ThoughtChunk(delta=event.delta)
+            elif (
+                event.type == "response.reasoning_summary_text.done"
+                or event.type == "response.reasoning_text.done"
+            ):
+                yield ThoughtEndChunk()
                 self.current_content_type = None
             elif event.type == "response.incomplete":
                 details = event.response.incomplete_details

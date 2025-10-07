@@ -323,7 +323,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         chunk_iterator = _utils.convert_openai_responses_stream_to_chunk_iterator(
-            openai_stream
+            openai_stream,
         )
 
         return StreamResponse(
@@ -410,7 +410,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         chunk_iterator = _utils.convert_openai_responses_stream_to_async_chunk_iterator(
-            openai_stream
+            openai_stream,
         )
 
         return AsyncStreamResponse(
@@ -704,7 +704,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         chunk_iterator = _utils.convert_openai_responses_stream_to_chunk_iterator(
-            openai_stream
+            openai_stream,
         )
 
         return ContextStreamResponse(
@@ -810,7 +810,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         chunk_iterator = _utils.convert_openai_responses_stream_to_async_chunk_iterator(
-            openai_stream
+            openai_stream,
         )
 
         return AsyncContextStreamResponse(

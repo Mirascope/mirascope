@@ -1,0 +1,226 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"user","content":"How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],"model":"gpt-5","reasoning":{"effort":"medium","summary":"auto"}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '221'
+      content-type:
+      - application/json
+      cookie:
+      - _cfuvid=cOfR0MsV1Gv0T2aW7KO7GL5gbo6yv2yDNCqnbCMOecE-1759968671765-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6xWS2/jNhC+51dMdQkQOIZsx5GV6wKL+tLTAj2sFwYljiyuKY5KjuxoF/nvBamH
+        5TjbHtqLIc9wXt83HM7PO4BIyegFIouu3se42Tzlm+d4UcSrIsY4ft5gEidxvIzXT5tF+ixkViSb
+        LE6f18timeTRzLug7DvmPLgh47CT5xYFo9wLr1sk6zRNFnGyDDrHghvnbXKqao2MsjPKRH48WGqM
+        z6sQ2mEnVlorc4he4OcdAEBUixatt5d4Qk012ugO4C0cRmvJ60yjdRAoM0TZS2ShtLvWOrZNzorM
+        lbwSr3tquG54z3TEWyUT6X0u9LW7iiRqn9mh5sf14zJerh/jzWOc9GgFj9ELfA2FdOVciHD/QIPA
+        eONpSNfr5Ak3qZTrYpMuO8fBCbc1dkQIR8YDNqpcU1XCtmPgafAr2/7gnvGVR/PuhJe8QPTw8Ika
+        w8ocoLaqQgdnxSW4JnNsvfQ+Se8fHnZmZ7ZgECUwQe5NgEvsbMA0VYbWQYaazvAUx8ClYMjJsFAm
+        HLw43EVJOt9F8FlZx0BFMYMt5MKAkmhYFW04sYtAsUNdgHAgujhz+FKigYIscGkRH6U6KB6iezcW
+        czoY9QNhkaQzWPofYSSsktT7qYl9CKF9PKmkYHRzX9qf3u8WuFTmCCKjpqtOWCvMASs07ICKIAsx
+        3QzI6Ba4JIcfJQNoZIfkfZLO7sGICnV7m9UctgwOsXKwvT8h5GQt5qxbyOmE1sNdIuTCofstGvl7
+        m/132rc92iPzE0zGzAfmd80yXqQVCCN0+8ObDHVqdM6zbW5pH4j+UmKP1pl6lMZQoBwkaU/1HD7/
+        mtpCGXmL38xT0BxKSNIV4GuOKB1ULWhVKQ7U/oGvHDqsxPwI51LlZU+l8wTj0Fo+CweNkdRkjFK3
+        g8LnFOJugdExSHVSTmVKK25DGjmZQtkKFHsPQjsaTH+nM57QhpS9rjfVCFkLqxk4AsX3DgzxGE0Z
+        oXXro423LWQeiu3SPyutQZkT6ROCJjp6QgR7FK+zY6L5/9s1n7paJ+PCI1D4pLup8K5hQu7+tL+0
+        g0VF5uBJujTcC/jqFtcX4yO4D8JPeDgaOpvBX1N7lBbpkIrs2nDVYa6M9Dj28IaOoPPMW1Ti6OeS
+        9RcYbWgGc88gTAvkJYBaHQJbt/Ot73Ff2e10m+2iMIuE9pNo2zX/ZXYapyTafnagkd5MmXDdgCzg
+        X43Q/uTkXnTjd2i091j50cbDJbuAGvqraqfseEBWc+jp0Rq+N34Gh2cMdtFqvosm/dJ/fbubdM+7
+        N65yh18/cpkssjjsGulis15uZJ7Fa8w/euQqdE4ccPLE/WKpCEqPPhr+9/dvePJvOloYQyyGNeHr
+        tyulpkNtKftAM1yE1QcojdlZ0iG4cE45Foa7w/5gOBTVwgqtUV8vHWybbj+qLZ4UNW4/rGD7gPW4
+        lNSWqpr3uchL3B+xneouy8K4XWFRkOUOZKmaqgdiskRE3SKF8rJ2OVEgt/v+SVZ4tYI5tCeV457V
+        sLYVotEdwpFjsjgth7Gq0Qpugngxj3tpQLLPsSBbicv/CYPh3LQBoxPajJzidlLSmHeHaEkq7yho
+        mKJRcSE0Yqr3E5rjUVhPc7SNyUOThCqVE5kedtsmtOtYgDJXq+VqObuVT/bVscxAorwYxlelvt9Y
+        N6v0I81HjsdGmFovr7wzsdATdbIYYWzcNeMVspCChY/wdvf2NwAAAP//AwA6Ia71bgwAAA==
+    headers:
+      CF-RAY:
+      - 98b9e3603992ba2a-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Oct 2025 00:51:24 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=VFQiTWzcYOmljBfhXR7jxwFAKyVe3Z6G7qwtAdnue1k-1759971084-1.0.1.1-0M75ogDZJ2abWDQp03j9a06v_6ZKMeMZr.KOq9C8lEWJSDSm1wGv4r8F2F_k9IjEm8YGhux3STbpOG6a60uNBrwiACUud2uQd56Gvt3TM1Y;
+        path=/; expires=Thu, 09-Oct-25 01:21:24 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '12135'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '12143'
+      x-request-id:
+      - req_ad84933365d33fd948c8be70067901c9
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"input\":[{\"role\":\"user\",\"content\":\"How many primes below 400
+      contain 79 as a substring? Answer ONLY with the number, not sharing which primes
+      they are.\"},{\"role\":\"assistant\",\"content\":\"**Thinking: **Counting primes
+      with substring '79'**\\n\\nI need to count the prime numbers below 400 that
+      contain the substring \\\"79.\\\" First off, I can identify \\\"79\\\" itself
+      as a prime. Then for three-digit numbers, I recognize 179, 279, and 379 as potential
+      candidates.\\n\\nWhen I think about the arrangements of the digits, only those
+      three-digit numbers end with '79,' namely 179, 279, and 379. It seems I've correctly
+      covered the cases!\"},{\"role\":\"assistant\",\"content\":\"**Thinking: **Identifying
+      prime candidates with '79'**\\n\\nI\u2019m analyzing numbers less than 400 that
+      contain \\\"79.\\\" The only two-digit candidate is 79 itself. For three-digit
+      numbers, I find 179, 279, and 379, though 793 exceeds my limit.\\n\\nNext, I
+      check which of these are prime. 79 is undoubtedly prime. For 179, I test divisibility
+      and confirm it is also prime. However, 279 is divisible by 3, so it's not prime.
+      Finally, I need to check 379, which will involve looking at its divisibility
+      too.\"},{\"role\":\"assistant\",\"content\":\"**Thinking: **Confirming primes
+      and final count**\\n\\nI\u2019m checking for primes among my candidates: 79,
+      179, and 379. I test divisibility against known primes up to 19 and find that
+      379 is indeed prime. \\n\\nNow, to make sure there aren't any other eligible
+      numbers below 400 containing the substring \\\"79,\\\" I realize I only need
+      to consider those ending in '79' or equal to 79 itself. \\n\\nI confirm 79,
+      179, and 379 as the only candidates, so my final count is 3. I\u2019ll just
+      output \\\"3.\\\"\"},{\"role\":\"assistant\",\"content\":\"3\"},{\"role\":\"user\",\"content\":\"If
+      you remember what the primes were, then share them, or say 'I don't remember.'\"}],\"model\":\"gpt-5\",\"reasoning\":{\"effort\":\"minimal\"}}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1880'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=VFQiTWzcYOmljBfhXR7jxwFAKyVe3Z6G7qwtAdnue1k-1759971084-1.0.1.1-0M75ogDZJ2abWDQp03j9a06v_6ZKMeMZr.KOq9C8lEWJSDSm1wGv4r8F2F_k9IjEm8YGhux3STbpOG6a60uNBrwiACUud2uQd56Gvt3TM1Y;
+        _cfuvid=cOfR0MsV1Gv0T2aW7KO7GL5gbo6yv2yDNCqnbCMOecE-1759968671765-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//fFTbjqMwDH3vV6A8t6tQaCn9ldEImWC62clNiVNNNeq/rwiFwk5nXyrq
+        Yx+OfWy+NlnGZMfOGfMYXMNL0R2hwhxb4Hl34vx4wopXXBygF6e8LqAU9SkXIMqqKvN9zrYDhW3/
+        oKCJxpqAY1x4BMKugQHLq0NdVzk/lQkLBBTDUCOsdgoJu7GoBfFx8TaaQVcPKuAYlkpJc2Hn7GuT
+        ZVnGHNzQD/UdXlFZh55tsuyektF7O2AmKpUC0kxvaTokkCqs0UA+CpLWrOIaPhsbyUVqyH7gd5Cs
+        VY0AtabTtkM1KLs42h12e74/7Phpx6vHtBIjO2dvqZGxnacR4Wcburo48mTDnu/3UNaircq+r9tE
+        nEjo5nA0AoI1w8BmKEStwd+GF7+n2H37SoAOl/8oEEWeFqGuy7IV7eFYHuqei+K7Ao0hwAUX7//B
+        8QQKawjNcypLYSvayQ/8pLk6JYAxlmDy8O19BSp7cd62L5BEdM5YVW+zfPgpqprNCffH01zDvFVJ
+        B4QgA4GhMXlITEnMgQelUK2Xg3wc99h5vEobQzOdSpPGPi+P81Y7agSI39h84G2JPU2drwD73vrU
+        gJZGalCPoSzcHsrnywjQI90a2aEh2UtcXUlAf5UCG5LTZfUQ1ThnFsh6XHZCqB16oJjC+S/+iKZ5
+        PuT11mt4/l/4mPKWa8iu6FsbJN3G7elk1M+LHof520oxTj+SZTPwtJWRdc3CbD4H3VKjj0akVUld
+        ygCtmj4/MS3t3IA0q+svi3z7HVh8U+Y+k4Hds5Kvev33q5IXr4BXvPMO/ERNlkAtFJflPMQY1n5r
+        JOiAYOC/b+5/AQAA//8DAJF6iRUPBgAA
+    headers:
+      CF-RAY:
+      - 98b9e3acdde4ba2a-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Oct 2025 00:51:26 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1879'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1884'
+      x-request-id:
+      - req_79b5d93f4aa4544b0f0cdd11752e7a11
+    status:
+      code: 200
+      message: OK
+version: 1

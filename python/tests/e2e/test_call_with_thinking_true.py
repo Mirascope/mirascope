@@ -1,58 +1,50 @@
-"""End-to-end tests for a LLM call with all params set."""
+"""End-to-end tests for LLM call with thinking=True parameter."""
 
 import logging
-from typing import get_type_hints
 
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
+from tests.e2e.conftest import Snapshot
 from tests.utils import (
     exception_snapshot_dict,
     response_snapshot_dict,
     stream_response_snapshot_dict,
 )
 
-# ============= ALL PARAMS TESTS =============
-ALL_PARAMS: llm.Params = {
-    "temperature": 0.7,
-    "max_tokens": 500,
-    "top_p": 0.3,
-    "top_k": 50,
-    "seed": 42,
-    "stop_sequences": ["4242"],
-    "thinking": False,
-}
+PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
+    ("openai:responses", "gpt-5"),
+]
 
-
-def test_all_params_includes_every_param() -> None:
-    """Verify that ALL_PARAMS includes every parameter defined in Params."""
-    params_keys = set(get_type_hints(llm.Params).keys())
-    all_params_keys = set(ALL_PARAMS.keys())
-    assert params_keys == all_params_keys, (
-        f"ALL_PARAMS is missing parameters: {params_keys - all_params_keys}"
-    )
+# This can't be easily answered without thinking
+PROMPT = "How many primes below 400 contain 79 as a substring? Answer ONLY with the number, not sharing which primes they are."
+# Check whether the model thinks it retained access to its reasoning process
+RESUME_PROMPT = (
+    "If you remember what the primes were, then share them, or say 'I don't remember.'"
+)
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
-def test_call_with_params_sync(
+def test_call_with_thinking_true_sync(
     provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test synchronous call with all parameters to verify param handling and logging."""
+    """Test synchronous call with thinking=True to verify reasoning content."""
 
-    @llm.call(provider=provider, model_id=model_id, **ALL_PARAMS)
-    def add_numbers(a: int, b: int) -> str:
-        return f"What is {a} + {b}?"
+    @llm.call(provider=provider, model_id=model_id, thinking=True)
+    def call(query: str) -> str:
+        return query
 
     snapshot_data = {}
     with caplog.at_level(logging.WARNING):
         try:
-            response = add_numbers(4200, 42)
-            snapshot_data["response"] = (response_snapshot_dict(response),)
+            response = call(PROMPT)
+            with llm.model(provider=provider, model_id=model_id, thinking=False):
+                response = response.resume(RESUME_PROMPT)
+            snapshot_data["response"] = response_snapshot_dict(response)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)
 
@@ -66,24 +58,27 @@ def test_call_with_params_sync(
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
-def test_call_with_params_stream(
+def test_call_with_thinking_true_stream(
     provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test synchronous call with all parameters to verify param handling and logging."""
+    """Test streaming call with thinking=True to verify reasoning content."""
 
-    @llm.call(provider=provider, model_id=model_id, **ALL_PARAMS)
-    def add_numbers(a: int, b: int) -> str:
-        return f"What is {a} + {b}?"
+    @llm.call(provider=provider, model_id=model_id, thinking=True)
+    def call(query: str) -> str:
+        return query
 
     snapshot_data = {}
     with caplog.at_level(logging.WARNING):
         try:
-            response = add_numbers.stream(4200, 42)
+            response = call.stream(PROMPT)
             response.finish()
-            snapshot_data["response"] = (stream_response_snapshot_dict(response),)
+            with llm.model(provider=provider, model_id=model_id, thinking=False):
+                response = response.resume(RESUME_PROMPT)
+            response.finish()
+            snapshot_data["response"] = stream_response_snapshot_dict(response)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)
 
@@ -98,23 +93,25 @@ def test_call_with_params_stream(
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
-async def test_call_with_params_async(
+async def test_call_with_thinking_true_async(
     provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test asynchronous call with all parameters to verify param handling and logging."""
+    """Test asynchronous call with thinking=True to verify reasoning content."""
 
-    @llm.call(provider=provider, model_id=model_id, **ALL_PARAMS)
-    async def add_numbers(a: int, b: int) -> str:
-        return f"What is {a} + {b}?"
+    @llm.call(provider=provider, model_id=model_id, thinking=True)
+    async def call(query: str) -> str:
+        return query
 
     snapshot_data = {}
     with caplog.at_level(logging.WARNING):
         try:
-            response = await add_numbers(4200, 42)
-            snapshot_data["response"] = (response_snapshot_dict(response),)
+            response = await call(PROMPT)
+            with llm.model(provider=provider, model_id=model_id, thinking=False):
+                response = await response.resume(RESUME_PROMPT)
+            snapshot_data["response"] = response_snapshot_dict(response)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)
 
@@ -129,24 +126,27 @@ async def test_call_with_params_async(
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
-async def test_call_with_params_async_stream(
+async def test_call_with_thinking_true_async_stream(
     provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test async streaming call with all parameters to verify param handling and logging."""
+    """Test async streaming call with thinking=True to verify reasoning content."""
 
-    @llm.call(provider=provider, model_id=model_id, **ALL_PARAMS)
-    async def add_numbers(a: int, b: int) -> str:
-        return f"What is {a} + {b}?"
+    @llm.call(provider=provider, model_id=model_id, thinking=True)
+    async def call(query: str) -> str:
+        return query
 
     snapshot_data = {}
     with caplog.at_level(logging.WARNING):
         try:
-            response = await add_numbers.stream(4200, 42)
+            response = await call.stream(PROMPT)
             await response.finish()
-            snapshot_data["response"] = (stream_response_snapshot_dict(response),)
+            with llm.model(provider=provider, model_id=model_id, thinking=False):
+                response = await response.resume(RESUME_PROMPT)
+            await response.finish()
+            snapshot_data["response"] = stream_response_snapshot_dict(response)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)
 

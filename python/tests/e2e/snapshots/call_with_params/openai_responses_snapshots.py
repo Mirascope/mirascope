@@ -34,7 +34,7 @@ sync_snapshot = snapshot(
             "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
             "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",
-            "Skipping unsupported parameter: thinking=False (provider: openai:responses)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:responses with model_id: gpt-4o)",
         ],
     }
 )
@@ -66,7 +66,7 @@ async_snapshot = snapshot(
             "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
             "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",
-            "Skipping unsupported parameter: thinking=False (provider: openai:responses)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:responses with model_id: gpt-4o)",
         ],
     }
 )
@@ -90,7 +90,7 @@ stream_snapshot = snapshot(
             "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
             "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",
-            "Skipping unsupported parameter: thinking=False (provider: openai:responses)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:responses with model_id: gpt-4o)",
         ],
     }
 )
@@ -114,7 +114,7 @@ async_stream_snapshot = snapshot(
             "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
             "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",
-            "Skipping unsupported parameter: thinking=False (provider: openai:responses)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:responses with model_id: gpt-4o)",
         ],
     }
 )
