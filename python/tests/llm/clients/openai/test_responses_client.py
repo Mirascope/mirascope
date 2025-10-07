@@ -24,13 +24,8 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
             "model": "gpt-4o",
             "input": [
                 {"role": "user", "content": "Hello there"},
-                {
-                    "role": "assistant",
-                    "content": [
-                        {"text": "General ", "type": "input_text"},
-                        {"text": "Kenobi", "type": "input_text"},
-                    ],
-                },
+                {"role": "assistant", "content": "General "},
+                {"role": "assistant", "content": "Kenobi"},
             ],
         }
     )

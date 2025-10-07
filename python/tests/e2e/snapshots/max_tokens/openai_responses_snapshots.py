@@ -9,7 +9,7 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "openai:completions",
+        "provider": "openai:responses",
         "model_id": "gpt-4o",
         "params": {"max_tokens": 50},
         "finish_reason": FinishReason.MAX_TOKENS,
@@ -42,7 +42,7 @@ Sure! Here are all the U.S. states:
 )
 async_snapshot = snapshot(
     {
-        "provider": "openai:completions",
+        "provider": "openai:responses",
         "model_id": "gpt-4o",
         "params": {"max_tokens": 50},
         "finish_reason": FinishReason.MAX_TOKENS,
@@ -75,7 +75,7 @@ Sure! Here are all the U.S. states:
 )
 stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
+        "provider": "openai:responses",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.MAX_TOKENS,
         "messages": [
@@ -108,7 +108,7 @@ Certainly! Here is a list of all U.S. states:
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
+        "provider": "openai:responses",
         "model_id": "gpt-4o",
         "finish_reason": FinishReason.MAX_TOKENS,
         "messages": [

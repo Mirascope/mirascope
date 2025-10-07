@@ -12,6 +12,14 @@ from openai.types.responses.function_tool_param import FunctionToolParam
 from openai.types.responses.response_format_text_json_schema_config_param import (
     ResponseFormatTextJSONSchemaConfigParam,
 )
+from openai.types.responses.response_function_tool_call_param import (
+    ResponseFunctionToolCallParam,
+)
+from openai.types.responses.response_input_param import (
+    FunctionCallOutput,
+    ResponseInputItemParam,
+    ResponseInputParam,
+)
 from openai.types.responses.response_stream_event import ResponseStreamEvent
 from openai.types.responses.response_text_config_param import ResponseTextConfigParam
 from openai.types.responses.tool_choice_allowed_param import ToolChoiceAllowedParam
@@ -81,31 +89,47 @@ class ResponseCreateKwargs(TypedDict, total=False):
     reasoning: Reasoning | NotGiven
 
 
-def _encode_message(message: Message) -> EasyInputMessageParam:
-    """Convert a Mirascope Message to OpenAI Responses EasyInputMessageParam."""
+def _encode_message(
+    message: Message,
+) -> ResponseInputParam:
+    """Convert a Mirascope Message to OpenAI Responses input items.
+
+    Returns a list because tool calls and tool outputs become separate input items
+    in the Responses API, not part of message content.
+    """
 
     if message.role == "system":
         # Responses API allows multiple "developer" messages, so rather than using the
         # instructions field, we convert system messages as we find them.
         # Unlike other LLM APIs, the system message does not need to be the first message.
-        return EasyInputMessageParam(role="developer", content=message.content.text)
+        return [EasyInputMessageParam(role="developer", content=message.content.text)]
 
-    text_content: list[str] = []
+    result: ResponseInputParam = []
+
     for part in message.content:
-        if part.type != "text":
-            raise NotImplementedError()
-        text_content.append(part.text)
+        if part.type == "text":
+            result.append(EasyInputMessageParam(role=message.role, content=part.text))
+        elif part.type == "tool_call":
+            result.append(
+                ResponseFunctionToolCallParam(
+                    call_id=part.id,
+                    name=part.name,
+                    arguments=part.args,
+                    type="function_call",
+                )
+            )
+        elif part.type == "tool_output":
+            result.append(
+                FunctionCallOutput(
+                    call_id=part.id,
+                    output=str(part.value),
+                    type="function_call_output",
+                )
+            )
+        else:
+            raise NotImplementedError(f"Unsupported content part type: {part.type}")
 
-    content: str | list[openai_types.ResponseInputContentParam]
-    if len(text_content) == 1:
-        content = text_content[0]
-    else:
-        content = [
-            openai_types.ResponseInputTextParam(text=text, type="input_text")
-            for text in text_content
-        ]
-
-    return EasyInputMessageParam(role=message.role, content=content)
+    return result
 
 
 def _convert_tool_to_function_tool_param(tool: ToolSchema) -> FunctionToolParam:
@@ -216,7 +240,10 @@ def prepare_responses_request(
                 messages, format.formatting_instructions
             )
 
-    kwargs["input"] = [_encode_message(msg) for msg in messages]
+    encoded_messages: list[ResponseInputItemParam] = []
+    for message in messages:
+        encoded_messages.extend(_encode_message(message))
+    kwargs["input"] = encoded_messages
 
     if openai_tools:
         kwargs["tools"] = openai_tools

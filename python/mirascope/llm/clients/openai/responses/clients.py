@@ -155,7 +155,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return Response(
             raw=openai_response,
-            provider="openai:completions",
+            provider="openai:responses",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -239,7 +239,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return AsyncResponse(
             raw=openai_response,
-            provider="openai:completions",
+            provider="openai:responses",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -327,7 +327,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         return StreamResponse(
-            provider="openai:completions",
+            provider="openai:responses",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -414,7 +414,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         return AsyncStreamResponse(
-            provider="openai:completions",
+            provider="openai:responses",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -510,7 +510,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return ContextResponse(
             raw=openai_response,
-            provider="openai:completions",
+            provider="openai:responses",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -607,7 +607,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return AsyncContextResponse(
             raw=openai_response,
-            provider="openai:completions",
+            provider="openai:responses",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -708,7 +708,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         return ContextStreamResponse(
-            provider="openai:completions",
+            provider="openai:responses",
             model_id=model_id,
             params=params,
             tools=tools,
@@ -814,7 +814,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         return AsyncContextStreamResponse(
-            provider="openai:completions",
+            provider="openai:responses",
             model_id=model_id,
             params=params,
             tools=tools,

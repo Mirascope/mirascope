@@ -11,7 +11,7 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "openai:completions",
+        "provider": "openai:responses",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": None,
@@ -27,12 +27,12 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_JQqtsz9bkXdMOxgKSTPMzrTJ",
+                        id="call_7cAklJuLUxQkgoFAqmZ2peya",
                         name="secret_retrieval_tool",
                         args='{"password":"mellon"}',
                     ),
                     ToolCall(
-                        id="call_tMJduiy2x9jyYFdvuj9EECKz",
+                        id="call_JgZ8uwtmQeASH4VEEGdXe6B0",
                         name="secret_retrieval_tool",
                         args='{"password":"radiance"}',
                     ),
@@ -41,12 +41,12 @@ sync_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_JQqtsz9bkXdMOxgKSTPMzrTJ",
+                        id="call_7cAklJuLUxQkgoFAqmZ2peya",
                         name="secret_retrieval_tool",
                         value="Welcome to Moria!",
                     ),
                     ToolOutput(
-                        id="call_tMJduiy2x9jyYFdvuj9EECKz",
+                        id="call_JgZ8uwtmQeASH4VEEGdXe6B0",
                         name="secret_retrieval_tool",
                         value="Life before Death",
                     ),
@@ -56,10 +56,10 @@ sync_snapshot = snapshot(
                 content=[
                     Text(
                         text="""\
-Here are the secrets associated with the passwords:
+Here are the secrets associated with each password:
 
-- Password "mellon": Welcome to Moria!
-- Password "radiance": Life before Death\
+- **mellon**: Welcome to Moria!
+- **radiance**: Life before Death\
 """
                     )
                 ]
@@ -92,7 +92,7 @@ Here are the secrets associated with the passwords:
 )
 async_snapshot = snapshot(
     {
-        "provider": "openai:completions",
+        "provider": "openai:responses",
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": None,
@@ -108,12 +108,12 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_eR7uv8TAMgK9QIvsUi1vCN7l",
+                        id="call_ZTFw1ftgYUpehUw5tMZ9KeX3",
                         name="secret_retrieval_tool",
                         args='{"password":"mellon"}',
                     ),
                     ToolCall(
-                        id="call_v2jm1GF65QeGcFRag3maPgd1",
+                        id="call_5JTY0cbL1VaMtYlj4pYmTIzA",
                         name="secret_retrieval_tool",
                         args='{"password":"radiance"}',
                     ),
@@ -122,12 +122,12 @@ async_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_eR7uv8TAMgK9QIvsUi1vCN7l",
+                        id="call_ZTFw1ftgYUpehUw5tMZ9KeX3",
                         name="secret_retrieval_tool",
                         value="Welcome to Moria!",
                     ),
                     ToolOutput(
-                        id="call_v2jm1GF65QeGcFRag3maPgd1",
+                        id="call_5JTY0cbL1VaMtYlj4pYmTIzA",
                         name="secret_retrieval_tool",
                         value="Life before Death",
                     ),
@@ -137,10 +137,10 @@ async_snapshot = snapshot(
                 content=[
                     Text(
                         text="""\
-The secrets associated with the passwords are as follows:
+Here are the secrets associated with the passwords:
 
-- For "mellon": Welcome to Moria!
-- For "radiance": Life before Death\
+- Password `"mellon"`: Welcome to Moria!
+- Password `"radiance"`: Life before Death\
 """
                     )
                 ]
@@ -173,7 +173,7 @@ The secrets associated with the passwords are as follows:
 )
 stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
+        "provider": "openai:responses",
         "model_id": "gpt-4o",
         "finish_reason": None,
         "messages": [
@@ -188,12 +188,12 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_gW1z2A8yHEXnMckKyEy9j3Yw",
+                        id="call_LctPBs1R2tGhln7TBf1ZEX3C",
                         name="secret_retrieval_tool",
                         args='{"password":"mellon"}',
                     ),
                     ToolCall(
-                        id="call_r2JnBaLPnPmwnz9Xg12oi2XO",
+                        id="call_UbMbQSvY6TYya8s058rrMZyv",
                         name="secret_retrieval_tool",
                         args='{"password":"radiance"}',
                     ),
@@ -202,12 +202,12 @@ stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_gW1z2A8yHEXnMckKyEy9j3Yw",
+                        id="call_LctPBs1R2tGhln7TBf1ZEX3C",
                         name="secret_retrieval_tool",
                         value="Welcome to Moria!",
                     ),
                     ToolOutput(
-                        id="call_r2JnBaLPnPmwnz9Xg12oi2XO",
+                        id="call_UbMbQSvY6TYya8s058rrMZyv",
                         name="secret_retrieval_tool",
                         value="Life before Death",
                     ),
@@ -217,9 +217,10 @@ stream_snapshot = snapshot(
                 content=[
                     Text(
                         text="""\
-The secrets associated with the passwords are as follows:
-- For the password "mellon": "Welcome to Moria!"
-- For the password "radiance": "Life before Death"\
+Here are the secrets:
+
+- **mellon**: Welcome to Moria!
+- **radiance**: Life before Death\
 """
                     )
                 ]
@@ -248,12 +249,12 @@ The secrets associated with the passwords are as follows:
                 "strict": False,
             }
         ],
-        "n_chunks": 40,
+        "n_chunks": 28,
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
+        "provider": "openai:responses",
         "model_id": "gpt-4o",
         "finish_reason": None,
         "messages": [
@@ -268,12 +269,12 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_PcjqAXHF0Lqxpbmlz1K2eW1C",
+                        id="call_afDFm1ADaw5j77gb2E1SRjEh",
                         name="secret_retrieval_tool",
                         args='{"password":"mellon"}',
                     ),
                     ToolCall(
-                        id="call_Q1fNFQmcOS7JfHf2fktmc8tz",
+                        id="call_i17I4phd6PznExMGe5BjiVef",
                         name="secret_retrieval_tool",
                         args='{"password":"radiance"}',
                     ),
@@ -282,12 +283,12 @@ async_stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_PcjqAXHF0Lqxpbmlz1K2eW1C",
+                        id="call_afDFm1ADaw5j77gb2E1SRjEh",
                         name="secret_retrieval_tool",
                         value="Welcome to Moria!",
                     ),
                     ToolOutput(
-                        id="call_Q1fNFQmcOS7JfHf2fktmc8tz",
+                        id="call_i17I4phd6PznExMGe5BjiVef",
                         name="secret_retrieval_tool",
                         value="Life before Death",
                     ),
@@ -297,10 +298,10 @@ async_stream_snapshot = snapshot(
                 content=[
                     Text(
                         text="""\
-The secrets associated with the passwords are:
+Here are the secrets for the provided passwords:
 
-- "mellon": "Welcome to Moria!"
-- "radiance": "Life before Death"\
+- **mellon**: Welcome to Moria!
+- **radiance**: Life before Death\
 """
                     )
                 ]
