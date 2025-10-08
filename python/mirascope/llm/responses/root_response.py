@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from types import NoneType
 from typing import TYPE_CHECKING, Any, Generic, Literal, overload
 
-from ..content import AssistantContentPart, Text, ThinkingSignature, Thought, ToolCall
+from ..content import AssistantContentPart, Text, Thought, ToolCall
 from ..formatting import Format, FormattableT, Partial
 from ..messages import Message
 from ..tools import ToolkitT
@@ -46,9 +46,6 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
 
     tool_calls: Sequence[ToolCall]
     """The tools the LLM wants called on its behalf, if any."""
-
-    thinking_signatures: Sequence[ThinkingSignature]
-    """The signatures of LLM thinking content, if any."""
 
     thoughts: Sequence[Thought]
     """The readable thoughts from the model's thinking process, if any.
@@ -153,8 +150,6 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
                 pretty_parts.append(part.text)
             elif isinstance(part, ToolCall):
                 pretty_parts.append(f"**ToolCall ({part.name}):** {part.args}")
-            elif isinstance(part, ThinkingSignature):
-                pass
             elif isinstance(part, Thought):
                 indented_thinking = "\n".join(
                     f"  {line}" for line in part.thought.split("\n")

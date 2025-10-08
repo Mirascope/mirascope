@@ -11,10 +11,6 @@ from ..content import (
     TextChunk,
     TextEndChunk,
     TextStartChunk,
-    ThinkingSignature,
-    ThinkingSignatureChunk,
-    ThinkingSignatureEndChunk,
-    ThinkingSignatureStartChunk,
     Thought,
     ThoughtChunk,
     ThoughtEndChunk,
@@ -103,11 +99,6 @@ class BaseStreamResponse(
     to avoid partial tool calls in the response.
     """
 
-    thinking_signatures: Sequence[ThinkingSignature]
-    """The signatures of LLM thinking content, if any.
-    
-    Thinking signatures are only added once they have been fully streamed."""
-
     thoughts: Sequence[Thought]
     """The readable thoughts from the model's thinking process, if any.
     
@@ -160,7 +151,6 @@ class BaseStreamResponse(
         self._chunks: list[AssistantContentChunk] = []
         self._content: list[AssistantContentPart] = []
         self._texts: list[Text] = []
-        self._thinking_signatures: list[ThinkingSignature] = []
         self._thoughts: list[Thought] = []
         self._tool_calls: list[ToolCall] = []
         self._raw: list[Any] = []
@@ -170,7 +160,6 @@ class BaseStreamResponse(
         self.chunks = self._chunks
         self.content = self._content
         self.texts = self._texts
-        self.thinking_signatures = self._thinking_signatures
         self.thoughts = self._thoughts
         self.tool_calls = self._tool_calls
         self.raw = self._raw
@@ -180,9 +169,7 @@ class BaseStreamResponse(
         self.messages = list(input_messages) + [AssistantMessage(content=self._content)]
 
         self._chunk_iterator = chunk_iterator
-        self._current_content: Text | Thought | ToolCall | ThinkingSignature | None = (
-            None
-        )
+        self._current_content: Text | Thought | ToolCall | None = None
 
         self._processing_format_tool: bool = False
 
@@ -212,8 +199,6 @@ class BaseStreamResponse(
             self._handle_text_chunk(chunk)
         elif chunk.content_type == "tool_call":
             self._handle_tool_call_chunk(chunk)
-        elif chunk.content_type == "thinking_signature":
-            self._handle_thinking_signature_chunk(chunk)
         elif chunk.content_type == "thought":
             self._handle_thought_chunk(chunk)
         else:
@@ -243,55 +228,6 @@ class BaseStreamResponse(
         elif chunk.type == "text_end_chunk":
             if self._current_content is None or self._current_content.type != "text":
                 raise RuntimeError("Received text_end_chunk while not processing text.")
-            self._current_content = None
-
-    def _handle_thinking_signature_chunk(
-        self,
-        chunk: (
-            ThinkingSignatureStartChunk
-            | ThinkingSignatureChunk
-            | ThinkingSignatureEndChunk
-        ),
-    ) -> None:
-        if chunk.type == "thinking_signature_start_chunk":
-            if self._current_content:
-                raise RuntimeError(
-                    "Received thinking_signature_start_chunk while processing another chunk"
-                )
-            self._current_content = ThinkingSignature(
-                signature="",
-                encrypted_reasoning=None,
-                provider=chunk.provider,
-                model_id=chunk.model_id,
-            )
-
-        elif chunk.type == "thinking_signature_chunk":
-            if (
-                self._current_content is None
-                or self._current_content.type != "thinking_signature"
-            ):
-                raise RuntimeError(
-                    "Received thinking_signature_chunk while not processing thinking_signature."
-                )
-            if chunk.signature_delta:
-                self._current_content.signature += chunk.signature_delta
-            if chunk.encrypted_reasoning_delta:
-                if self._current_content.encrypted_reasoning is None:
-                    self._current_content.encrypted_reasoning = ""
-                self._current_content.encrypted_reasoning += (
-                    chunk.encrypted_reasoning_delta
-                )
-
-        elif chunk.type == "thinking_signature_end_chunk":
-            if (
-                self._current_content is None
-                or self._current_content.type != "thinking_signature"
-            ):
-                raise RuntimeError(
-                    "Received thinking_signature_end_chunk while not processing thinking_signature."
-                )
-            self._content.append(self._current_content)
-            self._thinking_signatures.append(self._current_content)
             self._current_content = None
 
     def _handle_thought_chunk(
@@ -409,7 +345,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
             Iterator[AssistantContentChunk]: Synchronous iterator yielding chunks
 
         This provides access to the Mirascope chunk data including start, delta, and end chunks
-        for each content type (text, thinking, tool_call). Unlike the streams() method
+        for each content type (text, thought, tool_call). Unlike the streams() method
         that groups chunks by content part, this yields individual chunks as they arrive.
 
         Fully iterating through this iterator will fully consume the underlying stream,

@@ -62,16 +62,6 @@ def example_thought() -> llm.Thought:
 
 
 @pytest.fixture
-def example_thinking_signature() -> llm.ThinkingSignature:
-    return llm.ThinkingSignature(
-        signature="abcdefg",
-        encrypted_reasoning="secret123",
-        provider="openai:responses",
-        model_id="gpt-4o-mini",
-    )
-
-
-@pytest.fixture
 def example_tool_call() -> llm.ToolCall:
     return llm.ToolCall(
         id="tool_call_123",
@@ -98,24 +88,8 @@ def example_text_chunks() -> list[
 def example_thought_chunks() -> list[
     llm.AssistantContentChunk | llm.responses.FinishReasonChunk
 ]:
-    """Create a complete thought chunk sequence (with signature) for testing."""
+    """Create a complete thought chunk sequence for testing."""
     return [
-        llm.ThinkingSignatureStartChunk(
-            provider="openai:responses", model_id="gpt-4o-mini"
-        ),
-        llm.ThinkingSignatureChunk(
-            signature_delta="abcd", encrypted_reasoning_delta=None
-        ),
-        llm.ThinkingSignatureChunk(
-            signature_delta="efg", encrypted_reasoning_delta=None
-        ),
-        llm.ThinkingSignatureChunk(
-            signature_delta=None, encrypted_reasoning_delta="secret"
-        ),
-        llm.ThinkingSignatureChunk(
-            signature_delta=None, encrypted_reasoning_delta="123"
-        ),
-        llm.ThinkingSignatureEndChunk(),
         llm.ThoughtStartChunk(),
         llm.ThoughtChunk(delta="Let me think..."),
         llm.ThoughtChunk(delta="\nThis is interesting!"),
@@ -150,9 +124,6 @@ def check_stream_response_consistency(
     assert response.texts == [part for part in content if part.type == "text"], (
         "response.texts"
     )
-    assert response.thinking_signatures == [
-        part for part in content if part.type == "thinking_signature"
-    ], "response.thinking_signatures"
     assert response.thoughts == [part for part in content if part.type == "thought"], (
         "response.thoughts"
     )
@@ -216,7 +187,6 @@ class TestChunkStream:
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_text: llm.Text,
-        example_thinking_signature: llm.ThinkingSignature,
         example_thought: llm.Thought,
         example_tool_call: llm.ToolCall,
     ) -> None:
@@ -235,7 +205,6 @@ class TestChunkStream:
             chunks,
             [
                 example_text,
-                example_thinking_signature,
                 example_thought,
                 example_tool_call,
             ],
@@ -255,7 +224,6 @@ class TestChunkStream:
             llm.AssistantContentChunk | llm.responses.FinishReasonChunk
         ],
         example_text: llm.Text,
-        example_thinking_signature: llm.ThinkingSignature,
         example_thought: llm.Thought,
         example_tool_call: llm.ToolCall,
     ) -> None:
@@ -274,7 +242,6 @@ class TestChunkStream:
             chunks,
             [
                 example_text,
-                example_thinking_signature,
                 example_thought,
                 example_tool_call,
             ],
@@ -812,44 +779,6 @@ INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
             llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
         ],
         expected_error="Received tool_call_end_chunk while not processing tool call",
-    ),
-    "thinking_signature_chunk_without_start": InvalidChunkSequenceTestCase(
-        chunks=[
-            llm.ThinkingSignatureChunk(
-                signature_delta="abcd", encrypted_reasoning_delta=None
-            )
-        ],
-        expected_error="Received thinking_signature_chunk while not processing thinking_signature",
-    ),
-    "thinking_signature_end_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.ThinkingSignatureEndChunk()],
-        expected_error="Received thinking_signature_end_chunk while not processing thinking_signature",
-    ),
-    "overlapping_text_then_thinking_signature": InvalidChunkSequenceTestCase(
-        chunks=[
-            llm.TextStartChunk(),
-            llm.ThinkingSignatureStartChunk(
-                provider="openai:responses", model_id="gpt-4o-mini"
-            ),
-        ],
-        expected_error="while processing another chunk",
-    ),
-    "overlapping_thinking_signature_then_text": InvalidChunkSequenceTestCase(
-        chunks=[
-            llm.ThinkingSignatureStartChunk(
-                provider="openai:responses", model_id="gpt-4o-mini"
-            ),
-            llm.TextStartChunk(),
-        ],
-        expected_error="while processing another chunk",
-    ),
-    "thinking_signature_end_without_matching_start": InvalidChunkSequenceTestCase(
-        chunks=[
-            llm.TextStartChunk(),
-            llm.TextChunk(delta="test"),
-            llm.ThinkingSignatureEndChunk(),
-        ],
-        expected_error="Received thinking_signature_end_chunk while not processing thinking_signature",
     ),
 }
 

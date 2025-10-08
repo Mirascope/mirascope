@@ -13,7 +13,6 @@ sync_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.REFUSAL,
-        "thinking_signatures": [],
         "messages": [
             UserMessage(
                 content=[
@@ -51,7 +50,6 @@ async_snapshot = snapshot(
         "model_id": "gpt-4o",
         "params": {},
         "finish_reason": FinishReason.REFUSAL,
-        "thinking_signatures": [],
         "messages": [
             UserMessage(
                 content=[

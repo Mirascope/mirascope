@@ -15,7 +15,6 @@ sync_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": None,
-        "thinking_signatures": [],
         "messages": [
             SystemMessage(
                 content=Text(
@@ -175,7 +174,6 @@ async_snapshot = snapshot(
         "model_id": "claude-sonnet-4-0",
         "params": {},
         "finish_reason": None,
-        "thinking_signatures": [],
         "messages": [
             SystemMessage(
                 content=Text(
