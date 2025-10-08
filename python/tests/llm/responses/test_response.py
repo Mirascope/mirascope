@@ -45,7 +45,6 @@ def test_response_initialization_with_text_content() -> None:
     assert len(response.texts) == 1
     assert response.texts[0].text == "Hello! How can I help you today?"
     assert len(response.tool_calls) == 0
-    assert len(response.thinking_signatures) == 0
     assert len(response.thoughts) == 0
 
 
@@ -56,12 +55,6 @@ def test_response_initialization_with_mixed_content() -> None:
     mixed_content = [
         llm.Text(text="I'll help you with that."),
         llm.ToolCall(id="call_1", name="test_tool", args='{"param": "value"}'),
-        llm.ThinkingSignature(
-            signature="abcdefg",
-            encrypted_reasoning="secret123",
-            provider="openai:completions",
-            model_id="gpt-4o-mini",
-        ),
         llm.Thought(thought="Let me think about this"),
         llm.Text(text="Here's the result."),
     ]
@@ -88,8 +81,6 @@ def test_response_initialization_with_mixed_content() -> None:
     assert response.tool_calls[0].name == "test_tool"
     assert response.tool_calls[0].args == '{"param": "value"}'
 
-    assert len(response.thinking_signatures) == 1
-    assert response.thinking_signatures[0].signature == "abcdefg"
     assert len(response.thoughts) == 1
     assert response.thoughts[0].thought == "Let me think about this"
 

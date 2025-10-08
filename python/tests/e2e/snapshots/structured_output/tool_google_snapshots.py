@@ -13,7 +13,6 @@ sync_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": None,
-        "thinking_signatures": [],
         "messages": [
             SystemMessage(
                 content=Text(
@@ -77,7 +76,6 @@ async_snapshot = snapshot(
         "model_id": "gemini-2.5-flash",
         "params": {},
         "finish_reason": None,
-        "thinking_signatures": [],
         "messages": [
             SystemMessage(
                 content=Text(
