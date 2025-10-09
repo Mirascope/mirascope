@@ -65,7 +65,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -88,7 +91,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -221,7 +227,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -244,7 +253,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -376,7 +388,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -399,7 +414,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -532,7 +550,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -555,7 +576,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {

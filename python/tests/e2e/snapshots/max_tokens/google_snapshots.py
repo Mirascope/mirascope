@@ -16,7 +16,10 @@ sync_snapshot = snapshot(
         "messages": [
             UserMessage(content=[Text(text="List all U.S. states.")]),
             AssistantMessage(
-                content=[Text(text="Here is a list of all 50 U.S. states:")]
+                content=[Text(text="Here is a list of all 50 U.S. states:")],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -40,7 +43,10 @@ Here are all 50 U.S. states:
 1\
 """
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -54,7 +60,12 @@ stream_snapshot = snapshot(
         "finish_reason": FinishReason.MAX_TOKENS,
         "messages": [
             UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(content=[Text(text="Here are all 50 U.S. states in")]),
+            AssistantMessage(
+                content=[Text(text="Here are all 50 U.S. states in")],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
+            ),
         ],
         "format": None,
         "tools": [],
@@ -68,7 +79,12 @@ async_stream_snapshot = snapshot(
         "finish_reason": FinishReason.MAX_TOKENS,
         "messages": [
             UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(content=[Text(text="Here is a list of all 50 U.S")]),
+            AssistantMessage(
+                content=[Text(text="Here is a list of all 50 U.S")],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
+            ),
         ],
         "format": None,
         "tools": [],

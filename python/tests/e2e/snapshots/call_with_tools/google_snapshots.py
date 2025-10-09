@@ -36,7 +36,10 @@ sync_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -60,7 +63,10 @@ Welcome to Moria!
 Life before Death\
 """
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -115,7 +121,10 @@ async_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -141,7 +150,10 @@ For the password "mellon", the secret is "Welcome to Moria!"
 For the password "radiance", the secret is "Life before Death"\
 """
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -195,7 +207,10 @@ stream_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -216,7 +231,10 @@ stream_snapshot = snapshot(
                     Text(
                         text='I have retrieved the following secrets: "Welcome to Moria!" and "Life before Death".\n'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -271,7 +289,10 @@ async_stream_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -292,7 +313,10 @@ async_stream_snapshot = snapshot(
                     Text(
                         text='I have retrieved the following secrets: "Welcome to Moria!" and "Life before Death".\n'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": None,

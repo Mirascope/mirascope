@@ -27,7 +27,7 @@ from ...formatting import (
     _utils as _formatting_utils,
     resolve_format,
 )
-from ...messages import AssistantMessage, Message, UserMessage, assistant
+from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import (
     AsyncChunkIterator,
     ChunkIterator,
@@ -302,16 +302,23 @@ def prepare_google_request(
 
 
 def decode_response(
-    response: genai_types.GenerateContentResponse,
+    response: genai_types.GenerateContentResponse, model_id: GoogleModelId
 ) -> tuple[AssistantMessage, FinishReason | None]:
     """Returns an `AssistantMessage` and `FinishReason` extracted from a `GenerateContentResponse`"""
     if not response.candidates or not response.candidates[0].content:
         # Unclear under what circumstances this happens (if ever).
         # In testing, when generating no output at all, it creates a part with
         # no fields set.
-        return assistant(content=[]), None  # pragma: no cover
+        return AssistantMessage(
+            content=[], provider="google", model_id=model_id, raw_content=[]
+        ), None  # pragma: no cover
     candidate = response.candidates[0]
-    assistant_message = assistant(content=_decode_candidate_content(candidate))
+    assistant_message = AssistantMessage(
+        content=_decode_candidate_content(candidate),
+        provider="google",
+        model_id=model_id,
+        raw_content=[],
+    )
     finish_reason = (
         GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
         if candidate.finish_reason

@@ -36,7 +36,10 @@ lucky number 7.\
 }\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -91,7 +94,10 @@ lucky number 7.\
 }\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -147,7 +153,10 @@ lucky number 7.\
 ```\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -202,7 +211,10 @@ lucky number 7.\
 }\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": {

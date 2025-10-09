@@ -151,7 +151,9 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         openai_response = self.client.responses.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(openai_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            openai_response, model_id
+        )
 
         return Response(
             raw=openai_response,
@@ -235,7 +237,9 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         openai_response = await self.async_client.responses.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(openai_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            openai_response, model_id
+        )
 
         return AsyncResponse(
             raw=openai_response,
@@ -506,7 +510,9 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         openai_response = self.client.responses.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(openai_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            openai_response, model_id
+        )
 
         return ContextResponse(
             raw=openai_response,
@@ -603,7 +609,9 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         openai_response = await self.async_client.responses.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(openai_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            openai_response, model_id
+        )
 
         return AsyncContextResponse(
             raw=openai_response,

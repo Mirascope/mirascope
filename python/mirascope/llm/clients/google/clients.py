@@ -170,7 +170,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             config=config,
         )
 
-        assistant_message, finish_reason = _utils.decode_response(google_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            google_response, model_id
+        )
 
         return Response(
             raw=google_response,
@@ -271,7 +273,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             config=config,
         )
 
-        assistant_message, finish_reason = _utils.decode_response(google_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            google_response, model_id
+        )
 
         return ContextResponse(
             raw=google_response,
@@ -359,7 +363,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             config=config,
         )
 
-        assistant_message, finish_reason = _utils.decode_response(google_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            google_response, model_id
+        )
 
         return AsyncResponse(
             raw=google_response,
@@ -460,7 +466,9 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             config=config,
         )
 
-        assistant_message, finish_reason = _utils.decode_response(google_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            google_response, model_id
+        )
 
         return AsyncContextResponse(
             raw=google_response,

@@ -39,7 +39,10 @@ sync_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -65,7 +68,10 @@ Here are the secrets retrieved for each password:
 - Password "radiance": "Life before Death"\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -123,7 +129,10 @@ async_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -149,7 +158,10 @@ Here are the secrets retrieved for each password:
 2. **Password "radiance"**: "Life before Death"\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -206,7 +218,10 @@ stream_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -232,7 +247,10 @@ Here are the secrets retrieved for each password:
 - Password "radiance": "Life before Death"\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -290,7 +308,10 @@ async_stream_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -316,7 +337,10 @@ Here are the secrets retrieved for each password:
 - Password "radiance": **Life before Death**\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": None,

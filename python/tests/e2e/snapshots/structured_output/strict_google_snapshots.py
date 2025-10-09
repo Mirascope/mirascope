@@ -25,7 +25,10 @@ sync_snapshot = snapshot(
                     Text(
                         text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -94,7 +97,10 @@ async_snapshot = snapshot(
                     Text(
                         text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -162,7 +168,10 @@ stream_snapshot = snapshot(
                     Text(
                         text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -231,7 +240,10 @@ async_stream_snapshot = snapshot(
                     Text(
                         text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": {

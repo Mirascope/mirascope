@@ -14,7 +14,12 @@ sync_snapshot = snapshot(
         "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
-            AssistantMessage(content=[Text(text="4200 + 42 equals 4242.")]),
+            AssistantMessage(
+                content=[Text(text="4200 + 42 equals 4242.")],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
+            ),
         ],
         "format": None,
         "tools": [],
@@ -28,7 +33,12 @@ async_snapshot = snapshot(
         "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
-            AssistantMessage(content=[Text(text="4200 + 42 equals 4242.")]),
+            AssistantMessage(
+                content=[Text(text="4200 + 42 equals 4242.")],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
+            ),
         ],
         "format": None,
         "tools": [],
@@ -41,7 +51,12 @@ stream_snapshot = snapshot(
         "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
-            AssistantMessage(content=[Text(text="The sum of 4200 and 42 is 4242.")]),
+            AssistantMessage(
+                content=[Text(text="The sum of 4200 and 42 is 4242.")],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
+            ),
         ],
         "format": None,
         "tools": [],
@@ -55,7 +70,12 @@ async_stream_snapshot = snapshot(
         "finish_reason": None,
         "messages": [
             UserMessage(content=[Text(text="What is 4200 + 42?")]),
-            AssistantMessage(content=[Text(text="4200 + 42 equals 4242.")]),
+            AssistantMessage(
+                content=[Text(text="4200 + 42 equals 4242.")],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
+            ),
         ],
         "format": None,
         "tools": [],

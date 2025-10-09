@@ -166,7 +166,14 @@ class BaseStreamResponse(
 
         self.finish_reason = None
 
-        self.messages = list(input_messages) + [AssistantMessage(content=self._content)]
+        self.messages = list(input_messages) + [
+            AssistantMessage(
+                content=self._content,
+                provider=provider,
+                model_id=model_id,
+                raw_content=[],
+            )
+        ]
 
         self._chunk_iterator = chunk_iterator
         self._current_content: Text | Thought | ToolCall | None = None

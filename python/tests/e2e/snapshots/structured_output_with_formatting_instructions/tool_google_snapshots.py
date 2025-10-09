@@ -30,7 +30,10 @@ lucky number 7.\
                     Text(
                         text='{"author": "Patrick Rothfuss", "rating": 7, "title": "THE NAME OF THE WIND"}'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -79,7 +82,10 @@ lucky number 7.\
                     Text(
                         text='{"author": "Patrick Rothfuss", "rating": 7, "title": "THE NAME OF THE WIND"}'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -127,7 +133,10 @@ lucky number 7.\
                     Text(
                         text='{"author": "Patrick Rothfuss", "title": "THE NAME OF THE WIND", "rating": 7}'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -176,7 +185,10 @@ lucky number 7.\
                     Text(
                         text='{"rating": 7, "author": "Patrick Rothfuss", "title": "THE NAME OF THE WIND"}'
                     )
-                ]
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
             ),
         ],
         "format": {

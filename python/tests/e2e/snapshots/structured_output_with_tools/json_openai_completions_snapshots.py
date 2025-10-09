@@ -65,7 +65,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -88,7 +91,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -221,7 +227,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -244,7 +253,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -376,7 +388,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -392,7 +407,10 @@ Respond only with valid JSON that matches this exact schema:
                     Text(
                         text='{ "title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006 }'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -525,7 +543,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -548,7 +569,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {

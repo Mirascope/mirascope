@@ -4,9 +4,12 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal, TypeAlias
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
 from ..content import AssistantContentPart, Text, UserContentPart
+
+if TYPE_CHECKING:
+    from ..clients import ModelId, Provider
 
 
 @dataclass(kw_only=True)
@@ -33,6 +36,30 @@ class AssistantMessage:
     role: Literal["assistant"] = "assistant"
     content: Sequence[AssistantContentPart]
     name: str | None = None
+
+    provider: Provider
+    """The LLM provider that generated this assistant message."""
+
+    model_id: ModelId
+    """The model identifier of the LLM that generated this assistant message."""
+
+    raw_content: Sequence[dict[str, Any]]
+    """The provider-specific raw content representation of this assistant message, if available.
+
+    If raw_content is non-empty, then it may be used for provider-specific behavior when
+    resuming an LLM interaction that included this assistant message. For example, we can
+    reuse the provider-specific raw encoding rather than re-encoding the message from it's
+    Mirascope content representation. This may also take advantage of server-side provider
+    context, e.g. identifiers of reasoning context tokens that the provider generated.
+    
+    If present, the content should be encoded as JSON-serializable dicts, and represented
+    in a format that the provider is willing to accept as input. This may involve e.g.
+    converting Pydantic `BaseModel`s into json via `model_dump_json()`.
+
+    Raw content is not required, as the Mirascope content can also be used to generate
+    a valid input to the provider (potentially without taking advantage of provider-specific
+    reasoning caches, etc). In that case raw content should be left as an empty sequence.
+    """
 
 
 Message: TypeAlias = SystemMessage | UserMessage | AssistantMessage
@@ -108,6 +135,9 @@ def user(
 def assistant(
     content: AssistantContent,
     *,
+    provider: Provider,
+    model_id: ModelId,
+    raw_content: Sequence[dict[str, Any]] | None = None,
     name: str | None = None,
 ) -> AssistantMessage:
     """Creates an assistant message.
@@ -125,4 +155,12 @@ def assistant(
     promoted_content = [
         Text(text=part) if isinstance(part, str) else part for part in content
     ]
-    return AssistantMessage(content=promoted_content, name=name)
+    if raw_content is None:
+        raw_content = []
+    return AssistantMessage(
+        content=promoted_content,
+        provider=provider,
+        model_id=model_id,
+        raw_content=raw_content,
+        name=name,
+    )

@@ -68,7 +68,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     ),
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -91,7 +94,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -227,7 +233,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     ),
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -250,7 +259,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -385,7 +397,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     ),
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -408,7 +423,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -544,7 +562,10 @@ Respond only with valid JSON that matches this exact schema:
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     ),
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -569,7 +590,10 @@ Respond only with valid JSON that matches this exact schema:
 ```\
 """
                     )
-                ]
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
             ),
         ],
         "format": {
