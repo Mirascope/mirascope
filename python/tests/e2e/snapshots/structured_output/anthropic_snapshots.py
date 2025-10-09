@@ -34,7 +34,21 @@ sync_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "toolu_01PbD2xoTTQ1WE4RAxDy6JX9",
+                        "input": {
+                            "title": "THE NAME OF THE WIND",
+                            "author": {
+                                "first_name": "Patrick",
+                                "last_name": "Rothfuss",
+                            },
+                            "rating": 7,
+                        },
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "tool_use",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -100,7 +114,21 @@ async_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "toolu_01KS6jDMx5xPKeucauRgCUcX",
+                        "input": {
+                            "title": "THE NAME OF THE WIND",
+                            "author": {
+                                "first_name": "Patrick",
+                                "last_name": "Rothfuss",
+                            },
+                            "rating": 7,
+                        },
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "tool_use",
+                    }
+                ],
             ),
         ],
         "format": {

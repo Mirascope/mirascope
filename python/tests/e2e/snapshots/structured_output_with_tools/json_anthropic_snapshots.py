@@ -64,19 +64,31 @@ Respond only with valid JSON that matches this exact schema:
                         text="I'll look up the book information for ISBN 0-7653-1178-X."
                     ),
                     ToolCall(
-                        id="toolu_01AnwbFWqdcS5WqXxxujVQxN",
+                        id="toolu_01TszGWEv5vPTxM2vCoqqMaW",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     ),
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "citations": None,
+                        "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
+                        "type": "text",
+                    },
+                    {
+                        "id": "toolu_01TszGWEv5vPTxM2vCoqqMaW",
+                        "input": {"isbn": "0-7653-1178-X"},
+                        "name": "get_book_info",
+                        "type": "tool_use",
+                    },
+                ],
             ),
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_01AnwbFWqdcS5WqXxxujVQxN",
+                        id="toolu_01TszGWEv5vPTxM2vCoqqMaW",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -97,7 +109,20 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "citations": None,
+                        "text": """\
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}\
+""",
+                        "type": "text",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -229,19 +254,31 @@ Respond only with valid JSON that matches this exact schema:
                         text="I'll look up the book information for ISBN 0-7653-1178-X."
                     ),
                     ToolCall(
-                        id="toolu_01V1Jo9H1PLixydJ97qdEYRn",
+                        id="toolu_01Gud4d1SJwxkWn5nGGQBDMg",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     ),
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "citations": None,
+                        "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
+                        "type": "text",
+                    },
+                    {
+                        "id": "toolu_01Gud4d1SJwxkWn5nGGQBDMg",
+                        "input": {"isbn": "0-7653-1178-X"},
+                        "name": "get_book_info",
+                        "type": "tool_use",
+                    },
+                ],
             ),
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_01V1Jo9H1PLixydJ97qdEYRn",
+                        id="toolu_01Gud4d1SJwxkWn5nGGQBDMg",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -251,20 +288,31 @@ Respond only with valid JSON that matches this exact schema:
                 content=[
                     Text(
                         text="""\
-```json
 {
   "title": "Mistborn: The Final Empire",
   "author": "Brandon Sanderson",
   "pages": 544,
   "publication_year": 2006
-}
-```\
+}\
 """
                     )
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "citations": None,
+                        "text": """\
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}\
+""",
+                        "type": "text",
+                    }
+                ],
             ),
         ],
         "format": {
