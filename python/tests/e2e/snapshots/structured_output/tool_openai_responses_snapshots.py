@@ -183,7 +183,16 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                        "call_id": "call_JPmIyFzpIkbF3dElXevhiiDd",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "function_call",
+                        "id": "fc_08dd94f1b664d8250068dc21d739988195bc6b1a6ac6b03270",
+                        "status": "completed",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -220,7 +229,7 @@ stream_snapshot = snapshot(
             "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
-        "n_chunks": 31,
+        "n_chunks": 32,
     }
 )
 async_stream_snapshot = snapshot(
@@ -249,7 +258,16 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                        "call_id": "call_foGb7f0gM9wV9qFDi9oLWkDg",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "function_call",
+                        "id": "fc_02ef47e0eee50c380068dc21df4198819684c785265ab7fb4c",
+                        "status": "completed",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -286,6 +304,6 @@ async_stream_snapshot = snapshot(
             "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
-        "n_chunks": 31,
+        "n_chunks": 32,
     }
 )

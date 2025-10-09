@@ -196,7 +196,28 @@ lucky number 7.\
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_020c9233c181a0b80068dc21f6e94c819382b9ac3fc1c77a1e",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
+}\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -220,7 +241,7 @@ lucky number 7.\
 """,
         },
         "tools": [],
-        "n_chunks": 32,
+        "n_chunks": 33,
     }
 )
 async_stream_snapshot = snapshot(
@@ -254,7 +275,28 @@ lucky number 7.\
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_02b94bc1a424a24a0068dc21fced5c81909fb72931f015b8c6",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
+}\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -278,6 +320,6 @@ lucky number 7.\
 """,
         },
         "tools": [],
-        "n_chunks": 32,
+        "n_chunks": 33,
     }
 )

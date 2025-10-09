@@ -269,19 +269,28 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_NlQlu6JliLGZSQ4tUtJDWSmX",
+                        id="call_qQuw4DYict4f0qC4SJZvbxW7",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"isbn":"0-7653-1178-X"}',
+                        "call_id": "call_qQuw4DYict4f0qC4SJZvbxW7",
+                        "name": "get_book_info",
+                        "type": "function_call",
+                        "id": "fc_0b6f4d67e35f13710068e8164588a48196b8d672a9d3a891ea",
+                        "status": "completed",
+                    }
+                ],
             ),
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_NlQlu6JliLGZSQ4tUtJDWSmX",
+                        id="call_qQuw4DYict4f0qC4SJZvbxW7",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -291,11 +300,43 @@ stream_snapshot = snapshot(
                 content=[
                     Text(
                         text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
-                    )
+                    ),
+                    Text(
+                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
+                    ),
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_0b6f4d67e35f13710068e8164693fc8196a1818058517c0c53",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    },
+                    {
+                        "id": "msg_0b6f4d67e35f13710068e816475e3081968466113a8e201788",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    },
+                ],
             ),
         ],
         "format": {
@@ -340,7 +381,7 @@ stream_snapshot = snapshot(
                 "strict": False,
             }
         ],
-        "n_chunks": 29,
+        "n_chunks": 60,
     }
 )
 async_stream_snapshot = snapshot(
@@ -359,19 +400,28 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_r2gnYU1jTAo7KBCYFQhkWUtY",
+                        id="call_3a5qsyGWGTXnZ8TGAHQtxwp7",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"isbn":"0-7653-1178-X"}',
+                        "call_id": "call_3a5qsyGWGTXnZ8TGAHQtxwp7",
+                        "name": "get_book_info",
+                        "type": "function_call",
+                        "id": "fc_04e8582c477966980068e8165546788197b48b31d1d5262640",
+                        "status": "completed",
+                    }
+                ],
             ),
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_r2gnYU1jTAo7KBCYFQhkWUtY",
+                        id="call_3a5qsyGWGTXnZ8TGAHQtxwp7",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -381,11 +431,43 @@ async_stream_snapshot = snapshot(
                 content=[
                     Text(
                         text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
-                    )
+                    ),
+                    Text(
+                        text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
+                    ),
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_04e8582c477966980068e81656b77c8197b23a58b5ecb0a212",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    },
+                    {
+                        "id": "msg_04e8582c477966980068e816579ff08197883a2363743c3f8e",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    },
+                ],
             ),
         ],
         "format": {
@@ -430,6 +512,6 @@ async_stream_snapshot = snapshot(
                 "strict": False,
             }
         ],
-        "n_chunks": 29,
+        "n_chunks": 60,
     }
 )
