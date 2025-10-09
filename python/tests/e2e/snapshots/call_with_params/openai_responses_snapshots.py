@@ -123,12 +123,27 @@ stream_snapshot = snapshot(
                         content=[Text(text="4200 + 42 equals 4242.")],
                         provider="openai:responses",
                         model_id="gpt-4o",
-                        raw_content=[],
+                        raw_content=[
+                            {
+                                "id": "msg_0a272ac95e6c35680068e6fda1887c81958cb45ff13f06ace2",
+                                "content": [
+                                    {
+                                        "annotations": [],
+                                        "text": "4200 + 42 equals 4242.",
+                                        "type": "output_text",
+                                        "logprobs": [],
+                                    }
+                                ],
+                                "role": "assistant",
+                                "status": "completed",
+                                "type": "message",
+                            }
+                        ],
                     ),
                 ],
                 "format": None,
                 "tools": [],
-                "n_chunks": 12,
+                "n_chunks": 13,
             },
         ),
         "logging": [
@@ -152,12 +167,27 @@ async_stream_snapshot = snapshot(
                         content=[Text(text="4200 + 42 equals 4242.")],
                         provider="openai:responses",
                         model_id="gpt-4o",
-                        raw_content=[],
+                        raw_content=[
+                            {
+                                "id": "msg_098276e4691db86a0068e6fda5d0b0819089f6a1c6942a7539",
+                                "content": [
+                                    {
+                                        "annotations": [],
+                                        "text": "4200 + 42 equals 4242.",
+                                        "type": "output_text",
+                                        "logprobs": [],
+                                    }
+                                ],
+                                "role": "assistant",
+                                "status": "completed",
+                                "type": "message",
+                            }
+                        ],
                     ),
                 ],
                 "format": None,
                 "tools": [],
-                "n_chunks": 12,
+                "n_chunks": 13,
             },
         ),
         "logging": [

@@ -85,12 +85,27 @@ stream_snapshot = snapshot(
                 content=[Text(text="4200 + 42 = 4242")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_68daff03617c819393014d1750b636a70db3d44e8379eace",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": "4200 + 42 = 4242",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 11,
+        "n_chunks": 12,
     }
 )
 async_stream_snapshot = snapshot(
@@ -104,11 +119,26 @@ async_stream_snapshot = snapshot(
                 content=[Text(text="4200 + 42 equals 4242.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_68daff05faf08196821592950863f6470f51c699b4637947",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": "4200 + 42 equals 4242.",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 12,
+        "n_chunks": 13,
     }
 )

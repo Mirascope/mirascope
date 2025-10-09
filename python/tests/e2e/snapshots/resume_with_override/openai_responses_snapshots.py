@@ -106,12 +106,27 @@ stream_snapshot = snapshot(
                 content=[Text(text="Yes, I was indeed created by Anthropic.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_0c50d3cc2a8564780068dc817af8288197adf27830639199ef",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": "Yes, I was indeed created by Anthropic.",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 12,
+        "n_chunks": 13,
     }
 )
 async_stream_snapshot = snapshot(
@@ -132,11 +147,26 @@ async_stream_snapshot = snapshot(
                 content=[Text(text="Yep, I was indeed created by Anthropic.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_0c8ab4fbebb11de00068dc818a298081938b634c96de22b5a9",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": "Yep, I was indeed created by Anthropic.",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 12,
+        "n_chunks": 13,
     }
 )

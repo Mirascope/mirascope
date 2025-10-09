@@ -181,7 +181,22 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_07554d21126cb33c0068dc21d87c848197bf5dae3ec6326467",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -219,7 +234,7 @@ stream_snapshot = snapshot(
             "formatting_instructions": None,
         },
         "tools": [],
-        "n_chunks": 31,
+        "n_chunks": 32,
     }
 )
 async_stream_snapshot = snapshot(
@@ -243,7 +258,22 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_059291d543cd6a700068dc21e2f96c8197acb6d4e64d88fd78",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -281,6 +311,6 @@ async_stream_snapshot = snapshot(
             "formatting_instructions": None,
         },
         "tools": [],
-        "n_chunks": 31,
+        "n_chunks": 32,
     }
 )

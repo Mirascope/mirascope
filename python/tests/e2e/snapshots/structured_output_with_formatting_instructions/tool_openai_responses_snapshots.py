@@ -154,7 +154,16 @@ lucky number 7.\
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',
+                        "call_id": "call_PZDxZlC02RvN8HY9ypCqBQhs",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "function_call",
+                        "id": "fc_0401780ce2eb70720068dc21f82ac081909284ddc41c213c92",
+                        "status": "completed",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -178,7 +187,7 @@ lucky number 7.\
 """,
         },
         "tools": [],
-        "n_chunks": 22,
+        "n_chunks": 23,
     }
 )
 async_stream_snapshot = snapshot(
@@ -206,7 +215,16 @@ lucky number 7.\
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',
+                        "call_id": "call_TdSkqpCk7o7xHbOJKbzLFX1e",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "function_call",
+                        "id": "fc_083f1b215a8e78710068dc21ff3cf08193b07ee2faaf4108d4",
+                        "status": "completed",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -230,6 +248,6 @@ lucky number 7.\
 """,
         },
         "tools": [],
-        "n_chunks": 22,
+        "n_chunks": 23,
     }
 )

@@ -475,7 +475,31 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_05094d02c477f14f0068dc21d56f8c81908cf2bd19405d3ff2",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
+  "rating": 7
+}\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -559,7 +583,7 @@ Respond only with valid JSON that matches this exact schema:
 """,
         },
         "tools": [],
-        "n_chunks": 48,
+        "n_chunks": 49,
     }
 )
 async_stream_snapshot = snapshot(
@@ -644,7 +668,31 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_0309ce719dbd2c2a0068dc21dc73d08190ac807d27313902ae",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
+  "rating": 7
+}\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -728,6 +776,6 @@ Respond only with valid JSON that matches this exact schema:
 """,
         },
         "tools": [],
-        "n_chunks": 48,
+        "n_chunks": 49,
     }
 )

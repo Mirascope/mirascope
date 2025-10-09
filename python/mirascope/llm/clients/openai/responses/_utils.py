@@ -32,6 +32,7 @@ from openai.types.shared_params.responses_model import ResponsesModel
 
 from ....content import (
     AssistantContentPart,
+    RawContentChunk,
     Text,
     TextChunk,
     TextEndChunk,
@@ -420,6 +421,8 @@ class _OpenAIResponsesChunkProcessor:
                 if finish_reason:
                     yield FinishReasonChunk(finish_reason=finish_reason)
             elif event.type == "response.completed":
+                for output_item in event.response.output:
+                    yield RawContentChunk(content=_serialize_output_item(output_item))
                 if self.refusal_encountered:
                     yield FinishReasonChunk(finish_reason=FinishReason.REFUSAL)
 

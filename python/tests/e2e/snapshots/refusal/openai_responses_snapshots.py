@@ -126,7 +126,20 @@ stream_snapshot = snapshot(
                 content=[Text(text="I'm sorry, I can't assist with that.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_0968ea696d21eaad0068debe513ea88195a8b00d13e437f707",
+                        "content": [
+                            {
+                                "refusal": "I'm sorry, I can't assist with that.",
+                                "type": "refusal",
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -144,7 +157,7 @@ stream_snapshot = snapshot(
             "formatting_instructions": None,
         },
         "tools": [],
-        "n_chunks": 11,
+        "n_chunks": 12,
     }
 )
 async_stream_snapshot = snapshot(
@@ -164,7 +177,20 @@ async_stream_snapshot = snapshot(
                 content=[Text(text="I'm sorry, I can't assist with that.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_062ae008f4125cd00068debe5486948196901732514186e8f8",
+                        "content": [
+                            {
+                                "refusal": "I'm sorry, I can't assist with that.",
+                                "type": "refusal",
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -182,6 +208,6 @@ async_stream_snapshot = snapshot(
             "formatting_instructions": None,
         },
         "tools": [],
-        "n_chunks": 11,
+        "n_chunks": 12,
     }
 )
