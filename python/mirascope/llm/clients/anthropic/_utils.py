@@ -16,6 +16,10 @@ from ...content import (
     TextChunk,
     TextEndChunk,
     TextStartChunk,
+    Thought,
+    ThoughtChunk,
+    ThoughtEndChunk,
+    ThoughtStartChunk,
     ToolCall,
     ToolCallChunk,
     ToolCallEndChunk,
@@ -71,6 +75,8 @@ def _encode_content(
         return content[0].text
 
     blocks: list[anthropic_types.ContentBlockParam] = []
+    logged_thought_conversion = False
+
     for part in content:
         if part.type == "text":
             blocks.append(anthropic_types.TextBlockParam(type="text", text=part.text))
@@ -91,6 +97,15 @@ def _encode_content(
                     input=json.loads(part.args),
                 )
             )
+        elif part.type == "thought":
+            if not logged_thought_conversion:
+                logger.info("Converting `Thought` content into assistant message text.")
+                logged_thought_conversion = True
+            blocks.append(
+                anthropic_types.TextBlockParam(
+                    type="text", text="**Thinking:** " + part.thought
+                )
+            )
         else:
             raise NotImplementedError(f"Content type {part.type} not supported")
 
@@ -109,6 +124,8 @@ def _decode_assistant_content(
             name=content.name,
             args=json.dumps(content.input),
         )
+    elif content.type == "thinking":
+        return Thought(thought=content.thinking)
     else:
         raise NotImplementedError(
             f"Support for content type `{content.type}` is not yet implemented."
@@ -160,7 +177,7 @@ def prepare_anthropic_request(
     }
 
     with _base_utils.ensure_all_params_accessed(
-        params=params, provider="anthropic", unsupported_params=["seed", "thinking"]
+        params=params, provider="anthropic", unsupported_params=["seed"]
     ) as param_accessor:
         if param_accessor.temperature is not None:
             kwargs["temperature"] = param_accessor.temperature
@@ -172,6 +189,13 @@ def prepare_anthropic_request(
             kwargs["top_k"] = param_accessor.top_k
         if param_accessor.stop_sequences is not None:
             kwargs["stop_sequences"] = param_accessor.stop_sequences
+        if param_accessor.thinking is not None:
+            if param_accessor.thinking:
+                # Set budget to 50% of max_tokens with minimum of 1024
+                budget_tokens = max(1024, kwargs["max_tokens"] // 2)
+                kwargs["thinking"] = {"type": "enabled", "budget_tokens": budget_tokens}
+            else:
+                kwargs["thinking"] = {"type": "disabled"}
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     anthropic_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
@@ -254,6 +278,8 @@ class _AnthropicChunkProcessor:
                     id=content_block.id,
                     name=content_block.name,
                 )
+            elif content_block.type == "thinking":
+                yield ThoughtStartChunk()
             else:
                 raise NotImplementedError
 
@@ -263,6 +289,10 @@ class _AnthropicChunkProcessor:
                 yield TextChunk(delta=delta.text)
             elif delta.type == "input_json_delta":
                 yield ToolCallChunk(delta=delta.partial_json)
+            elif delta.type == "thinking_delta":
+                yield ThoughtChunk(delta=delta.thinking)
+            elif delta.type == "signature_delta":
+                pass
             else:
                 raise NotImplementedError
 
@@ -271,6 +301,8 @@ class _AnthropicChunkProcessor:
                 yield TextEndChunk()
             elif self.current_block_type == "tool_use":
                 yield ToolCallEndChunk()
+            elif self.current_block_type == "thinking":
+                yield ThoughtEndChunk()
             else:
                 raise NotImplementedError
 

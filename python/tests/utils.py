@@ -79,7 +79,7 @@ def exception_snapshot_dict(exception: Exception) -> dict:
     """Convert an exception to a dictionary for snapshot testing.
 
     (inline-snapshot is not able to serialize and reproduce Exceptions.)"""
-    if "Connection error" in exception.args[0]:
+    if exception.args and "Connection error" in exception.args[0]:
         # Connection errors should not make it into regular snapshots,
         # as they are likely issues with VCR overwriting. Re-raise this exception.
         raise exception

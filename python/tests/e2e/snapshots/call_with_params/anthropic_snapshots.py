@@ -35,10 +35,7 @@ sync_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": [
-            "Skipping unsupported parameter: seed=42 (provider: anthropic)",
-            "Skipping unsupported parameter: thinking=False (provider: anthropic)",
-        ],
+        "logging": ["Skipping unsupported parameter: seed=42 (provider: anthropic)"],
     }
 )
 async_snapshot = snapshot(
@@ -70,10 +67,7 @@ async_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": [
-            "Skipping unsupported parameter: seed=42 (provider: anthropic)",
-            "Skipping unsupported parameter: thinking=False (provider: anthropic)",
-        ],
+        "logging": ["Skipping unsupported parameter: seed=42 (provider: anthropic)"],
     }
 )
 stream_snapshot = snapshot(
@@ -97,10 +91,7 @@ stream_snapshot = snapshot(
                 "n_chunks": 4,
             },
         ),
-        "logging": [
-            "Skipping unsupported parameter: seed=42 (provider: anthropic)",
-            "Skipping unsupported parameter: thinking=False (provider: anthropic)",
-        ],
+        "logging": ["Skipping unsupported parameter: seed=42 (provider: anthropic)"],
     }
 )
 async_stream_snapshot = snapshot(
@@ -124,9 +115,6 @@ async_stream_snapshot = snapshot(
                 "n_chunks": 4,
             },
         ),
-        "logging": [
-            "Skipping unsupported parameter: seed=42 (provider: anthropic)",
-            "Skipping unsupported parameter: thinking=False (provider: anthropic)",
-        ],
+        "logging": ["Skipping unsupported parameter: seed=42 (provider: anthropic)"],
     }
 )
