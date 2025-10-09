@@ -352,7 +352,7 @@ def decode_response(
         ],
     )
 
-    return (assistant_message, finish_reason)
+    return assistant_message, finish_reason
 
 
 class _OpenAIResponsesChunkProcessor:

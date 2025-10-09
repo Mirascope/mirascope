@@ -333,7 +333,7 @@ def decode_response(
         raw_content=[],
     )
 
-    return (assistant_message, finish_reason)
+    return assistant_message, finish_reason
 
 
 class _OpenAIChunkProcessor:
