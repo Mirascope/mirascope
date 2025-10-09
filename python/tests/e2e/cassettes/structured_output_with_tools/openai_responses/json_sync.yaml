@@ -23,8 +23,8 @@ interactions:
       content-type:
       - application/json
       cookie:
-      - __cf_bm=p_Y2QJ.ARNR_xgNVnDabyXdtkl.d0VGVl5fqZNfGQao-1759872454-1.0.1.1-yDJVQzpfheEJBUWMNCpB2PlKkaD6tYDz8oWvuKigRHrTWxxNpL9U.EvmzbUjLWQPHOBRotuvbeRolDMnR.51tX8l6JAYVo12aytbmv2PFV4;
-        _cfuvid=WRd9NXQDV21bPhnYaUNx3dxi.llQxOXlmQTrePTcAuU-1759872454479-0.0.1.1-604800000
+      - __cf_bm=4A1uOKvJiiMlMD_xggqO9kQMcjg3f4hCChZ4b8CSU4M-1759970619-1.0.1.1-wEilI_Mpm4HLfBJWVT.1EOy_Q7ojg89M0dFgwT2UGnIHiE0p23yQB7wMyXrtHpfnbfliZb3sHKKC3pMBTirmn6mNJuLTk88CS9w5FYYjie4;
+        _cfuvid=vOE2NIbGtmS9y4kMjxUv_ITa1ydKLJiJvfGiYuUFf_U-1759970619933-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -52,23 +52,23 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA4RUTY/bOAy951cIPk8Kx5k4Tm5dtIcCRbfA9tBipzBoic5oIktaiZptMMh/X0hO
-        /JHpYG8Jn/n0SD7yZcFYJkW2Z5lDb+scoVznVYl803IBbZ6XFW6qDa9wW+XValfu1tt8Xa7FquDQ
-        lCLP7iKFaZ6Q05XGaI99nDsEQlFDxFbbza7aFvebMmGegIKPOdx0ViGh6JMa4MeDM0FHXS0oj31Y
-        KiX1IduzlwVjjGUWTuhivsBnVMaiyxaMndPH6JyJmA5KpYDU11dqgQRS+TnqyQVO0uhZvINftQlk
-        A9VkjvgaJGNUzUHN6TojUEVlB0vLe7Ms8uJ+mVfLvLy0K1Fme/Z3qqSvZ5hEy9+eww52bZoDiG1b
-        wTZv+LbIy7JJxImEThYTTdCpoCRvhN9qewLBHUKHmhL+8pBJ3+iHbP+Q5cttuVkvV6tttfz+kJ3H
-        lMhe98LTT1V8cO+LJ7Kr+z99+/Xp/Tf9/Qd8/HfM0NAlgQekujHmWEvdmiyh5wVjP1OLLDhQCtW8
-        w+RCbwbr8Fma4Our33oJwwSsM52lmgN/xPqIpynmELzRMyth2xpHk49io0LXgbtmDs7y0CKdailQ
-        k2wlzlzm0T1LjjXJqzNbCIqyi+GNw2kRhJ1FBxRSePUuv0R/0aisNa6D8f9kvk/e6PqyeH3zLsKf
-        0TXGS4rSsw6FDN24GH07H43kiQQCmWwA/GtL3rppHKNAz520Kbhn2WdjjixYFifK4kSjbmk0a07s
-        019/fHn3fwYY4Dj6Dgmdn5Tdz9SiI4nzeNwb3+ibWJQuSaV3PkX47ga81OXJRSdMwPPw+zzmZA7/
-        CdKhGDo0fXoI/JxkgBAyNgDU16nw4aDdCJlOcvJ0EphOa0q82RIytlbmYJ1pInc+BO3UUC5oDtc5
-        CemhUddbGzwccHSb1LNTV6zKu9fA5IC+jFeAP6IYM/OZI29PaLH+HfA73mFX36ImQ6CmzLvB6sHP
-        l7NDAgEEkf+8OP8HAAD//wMAHPW3yPwGAAA=
+        H4sIAAAAAAAAA4RUTW/bOBC951cQPMeFJMe25OPeim0XQfdSYFMII3HksKZIlhwGMQL/9wUpWx9O
+        g97seZrHNzNv5u2OMS4F3zPu0Ns6Q6x26wqrFoqirLIs25a4yzZrLHPRlnm1rso8B3gQsNtkmy1u
+        +X2kMM1PbOlKY7THId46BEJRQ8Ty3aaqdtm2KBLmCSj4mNOa3iokFENSA+3x4EzQUVcHyuMQlkpJ
+        feB79nbHGGPcwgldzBf4gspYdPyOsXP6GJ0zEdNBqRSQ+vpKLZBAKr9EPbnQkjR6Ee/htTaBbKCa
+        zBHfg2SMqltQS7reCFRR2cHS6sGsiqx4WGXlKru2K1HyPfsvVTLUM06iaz+eQ5eJMs2h2ZQPjSjE
+        Zp1DjnmXiBMJnSwmmqBTQUneBH/U9gSCO4QeNSX87YlL3+gnvn/i2Wq33axXeb4rV9+f+HlKiez1
+        IDz9BHOo9Ou3TftVlN9ssf7e/Hr8G5vHKUNDnwQekOrGmGMtdWd4Qs93jP1ILbLgQClUyw6TC4MZ
+        rMMXaYKvr34bJIwTsM70luoW2mesj3iaYw7BG72wEnadcTT7KDYq9D24a+boLA8d0qmWAjXJTuLC
+        ZR7di2yxJnl1ZgdBEb8Y3jicF0HYW3RAIYXzT9kl+kqTss64Hqb/s/n+9EbXl8UbmncR/oKuMV5S
+        lM57FDL002IM7Xw2sk0kEMjwEfDvLXnrpmmMAn3rpE3BPeNfjDmyYFmcKIsTjbql0aw5sc///vXP
+        pz8ZYITj6HskdH5W9jBTi44kLuNxb3yjb2JRuiSV3vkc4fsb8FKXJxedMAPP4+/zlMMd/grSoRg7
+        NH96DPyYZYAQMjYA1ONc+HjQboTMJzl7OglMpzUl3mwJGVsrc7DONJE7G4N2bigXdAvXOQnpoVHX
+        Wxs8HHBym9SLU1fk2/v3wOyAvk1XoH1GMWVmC0fentBi/Tvgd7zjrn5ETYZAzZmr0erBL5ezRwIB
+        BJH/fHf+HwAA//8DAF0m3y38BgAA
     headers:
       CF-RAY:
-      - 98b07bc71e077569-SEA
+      - 98b9d8665bad76f2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -76,7 +76,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 07 Oct 2025 21:27:38 GMT
+      - Thu, 09 Oct 2025 00:43:43 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -90,7 +90,7 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1143'
+      - '924'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
@@ -98,7 +98,7 @@ interactions:
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '1150'
+      - '927'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -112,7 +112,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 32ms
       x-request-id:
-      - req_e6bbf5901291dfb4926c219528ebb761
+      - req_8a5d7cf4592ff7e8016302fd5df5b863
     status:
       code: 200
       message: OK
@@ -126,7 +126,7 @@ interactions:
       [\n    \"title\",\n    \"author\",\n    \"pages\",\n    \"publication_year\"\n  ],\n  \"title\":
       \"BookSummary\",\n  \"type\": \"object\"\n}"},{"role":"user","content":"Please
       look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"call_id":"call_l2DrA2jtp14OsfPjATnXYaEw","name":"get_book_info","arguments":"{\"isbn\":\"0-7653-1178-X\"}","type":"function_call"},{"call_id":"call_l2DrA2jtp14OsfPjATnXYaEw","output":"Title:
+      score"},{"arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_aog9nxR5cMd8Rp23XbqPKebP","name":"get_book_info","type":"function_call","id":"fc_0ee9739e9ca228900068e7053f0d8c8193b584bd2d531a1e1f","status":"completed"},{"call_id":"call_aog9nxR5cMd8Rp23XbqPKebP","output":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25","type":"function_call_output"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}},"tools":[{"type":"function","name":"get_book_info","description":"Look
       up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false}]}'
@@ -138,12 +138,12 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1404'
+      - '1486'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=p_Y2QJ.ARNR_xgNVnDabyXdtkl.d0VGVl5fqZNfGQao-1759872454-1.0.1.1-yDJVQzpfheEJBUWMNCpB2PlKkaD6tYDz8oWvuKigRHrTWxxNpL9U.EvmzbUjLWQPHOBRotuvbeRolDMnR.51tX8l6JAYVo12aytbmv2PFV4;
-        _cfuvid=WRd9NXQDV21bPhnYaUNx3dxi.llQxOXlmQTrePTcAuU-1759872454479-0.0.1.1-604800000
+      - __cf_bm=4A1uOKvJiiMlMD_xggqO9kQMcjg3f4hCChZ4b8CSU4M-1759970619-1.0.1.1-wEilI_Mpm4HLfBJWVT.1EOy_Q7ojg89M0dFgwT2UGnIHiE0p23yQB7wMyXrtHpfnbfliZb3sHKKC3pMBTirmn6mNJuLTk88CS9w5FYYjie4;
+        _cfuvid=vOE2NIbGtmS9y4kMjxUv_ITa1ydKLJiJvfGiYuUFf_U-1759970619933-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -171,24 +171,24 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 98b07bcfae297569-SEA
+      - 98b9d86cb92276f2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -196,7 +196,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 07 Oct 2025 21:27:39 GMT
+      - Thu, 09 Oct 2025 00:43:44 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -210,7 +210,7 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1687'
+      - '926'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
@@ -218,7 +218,7 @@ interactions:
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       x-envoy-upstream-service-time:
-      - '1691'
+      - '931'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -226,13 +226,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799509'
+      - '799506'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 36ms
+      - 37ms
       x-request-id:
-      - req_83fddfbd5184f0ac6e0426cda2a360e0
+      - req_79d9daa912a9b4f1e6b8bd877b586612
     status:
       code: 200
       message: OK

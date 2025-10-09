@@ -25,7 +25,20 @@ sync_snapshot = snapshot(
                 content=[Text(text="I'm sorry, I can't assist with that.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_0a2028ae02b411660068deb8e728f8819089525b6f37075e04",
+                        "content": [
+                            {
+                                "refusal": "I'm sorry, I can't assist with that.",
+                                "type": "refusal",
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -63,7 +76,20 @@ async_snapshot = snapshot(
                 content=[Text(text="I'm sorry, I can't assist with that.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_0b201b578ba57afc0068debe4d72e88197a47600f64022fd89",
+                        "content": [
+                            {
+                                "refusal": "I'm sorry, I can't assist with that.",
+                                "type": "refusal",
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {

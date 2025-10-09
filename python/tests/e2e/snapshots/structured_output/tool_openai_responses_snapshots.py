@@ -34,7 +34,16 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                        "call_id": "call_6k4XQb0bQFkH3uvlKTDZV1eS",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "function_call",
+                        "id": "fc_0705a02db4c162530068dc21c6a2d48194990250d94486d5a6",
+                        "status": "completed",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -100,7 +109,16 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                        "call_id": "call_AvTXFaymhPAzmOjhAuLsPc4R",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "function_call",
+                        "id": "fc_034ee170e6d7aea20068dc21d096e081948d9e1db408a2f2a3",
+                        "status": "completed",
+                    }
+                ],
             ),
         ],
         "format": {

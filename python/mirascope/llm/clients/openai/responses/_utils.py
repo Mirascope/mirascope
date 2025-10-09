@@ -2,7 +2,7 @@
 
 import logging
 from collections.abc import Sequence
-from typing import Literal, TypedDict
+from typing import Any, Literal, TypedDict, cast
 
 from openai import AsyncStream, NotGiven, Stream
 from openai.types import responses as openai_types
@@ -94,7 +94,7 @@ class ResponseCreateKwargs(TypedDict, total=False):
 
 
 def _encode_message(
-    message: Message,
+    message: Message, model_id: OpenAIResponsesModelId
 ) -> ResponseInputParam:
     """Convert a Mirascope Message to OpenAI Responses input items.
 
@@ -107,6 +107,14 @@ def _encode_message(
         # instructions field, we convert system messages as we find them.
         # Unlike other LLM APIs, the system message does not need to be the first message.
         return [EasyInputMessageParam(role="developer", content=message.content.text)]
+
+    if (
+        message.role == "assistant"
+        and message.provider == "openai:responses"
+        and message.model_id == model_id
+        and message.raw_content
+    ):
+        return cast(ResponseInputParam, message.raw_content)
 
     result: ResponseInputParam = []
     logged_thought_conversion = False
@@ -275,13 +283,20 @@ def prepare_responses_request(
 
     encoded_messages: list[ResponseInputItemParam] = []
     for message in messages:
-        encoded_messages.extend(_encode_message(message))
+        encoded_messages.extend(_encode_message(message, model_id))
     kwargs["input"] = encoded_messages
 
     if openai_tools:
         kwargs["tools"] = openai_tools
 
     return messages, format, kwargs
+
+
+def _serialize_output_item(
+    item: openai_types.ResponseOutputItem,
+) -> dict[str, Any]:
+    """Returns the item serialized as a dictionary."""
+    return {key: value for key, value in item.model_dump().items() if value is not None}
 
 
 def decode_response(
@@ -332,7 +347,9 @@ def decode_response(
         content=parts,
         provider="openai:responses",
         model_id=model_id,
-        raw_content=[],
+        raw_content=[
+            _serialize_output_item(output_item) for output_item in response.output
+        ],
     )
 
     return (assistant_message, finish_reason)

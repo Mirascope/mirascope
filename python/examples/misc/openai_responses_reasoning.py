@@ -7,16 +7,14 @@ load_dotenv()
 
 @llm.call(provider="openai:responses", model_id="gpt-5", thinking=True)
 def count_primes() -> str:
-    return "How many primes below 400 have 79 as a substring?"
+    return "How many primes below 200 have 79 as a substring? Answer ONLY with the number of primes, not the primes themselves."
 
 
-print("... starting stream ...")
-stream = count_primes.stream()
-for chunk in stream.pretty_stream():
-    print(chunk, flush=True, end="")
+response = count_primes()
+print(response.pretty())
 
-stream = stream.resume(
-    "Does your current context window include how you got that result? Answer YES or NO."
-)
-for chunk in stream.pretty_stream():
-    print(chunk, flush=True, end="")
+with llm.model(provider="openai:responses", model_id="gpt-5", thinking=False):
+    response = response.resume(
+        "If you remember the primes, list them. Or say 'I dont remember'"
+    )
+print(response.pretty())

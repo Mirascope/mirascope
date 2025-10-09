@@ -36,7 +36,35 @@ Sure! Here are all the U.S. states:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_09b8e2ea5ecb9aa60068dec5ced7b88190bc0ad3a26a865be0",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+Sure! Here are all the U.S. states:
+
+1. Alabama
+2. Alaska
+3. Arizona
+4. Arkansas
+5. California
+6. Colorado
+7. Connecticut
+8. Delaware
+9. Florida
+10. Georgia\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "incomplete",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": None,
@@ -72,7 +100,35 @@ Sure! Here are all the U.S. states:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_03fa2f386a4922b40068dec5d4dffc819483dfec07dd7ccc0d",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+Sure! Here are all the U.S. states:
+
+1. Alabama
+2. Alaska
+3. Arizona
+4. Arkansas
+5. California
+6. Colorado
+7. Connecticut
+8. Delaware
+9. Florida
+10. Georgia\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "incomplete",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": None,

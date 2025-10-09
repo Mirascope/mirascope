@@ -25,7 +25,22 @@ sync_snapshot = snapshot(
                 content=[Text(text="I was indeed created by Anthropic!")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_07ad9d163b8e3c060068dc815f06108197b63429a920413dae",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": "I was indeed created by Anthropic!",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": None,
@@ -51,7 +66,22 @@ async_snapshot = snapshot(
                 content=[Text(text="Yes, I was created by Anthropic.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_07b42c8757057c4b0068dc816bb98c81979a37d6acc15436d8",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": "Yes, I was created by Anthropic.",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": None,

@@ -28,7 +28,22 @@ sync_snapshot = snapshot(
                         content=[Text(text="4200 + 42 equals 4242.")],
                         provider="openai:responses",
                         model_id="gpt-4o",
-                        raw_content=[],
+                        raw_content=[
+                            {
+                                "id": "msg_01494efc7f3e9c250068e6fd9f8784819097461e6defecaccd",
+                                "content": [
+                                    {
+                                        "annotations": [],
+                                        "text": "4200 + 42 equals 4242.",
+                                        "type": "output_text",
+                                        "logprobs": [],
+                                    }
+                                ],
+                                "role": "assistant",
+                                "status": "completed",
+                                "type": "message",
+                            }
+                        ],
                     ),
                 ],
                 "format": None,
@@ -65,7 +80,22 @@ async_snapshot = snapshot(
                         content=[Text(text="4200 + 42 equals 4242.")],
                         provider="openai:responses",
                         model_id="gpt-4o",
-                        raw_content=[],
+                        raw_content=[
+                            {
+                                "id": "msg_002a8e2b9b9734d10068e6fda2dc9c819081a4743049f00820",
+                                "content": [
+                                    {
+                                        "annotations": [],
+                                        "text": "4200 + 42 equals 4242.",
+                                        "type": "output_text",
+                                        "logprobs": [],
+                                    }
+                                ],
+                                "role": "assistant",
+                                "status": "completed",
+                                "type": "message",
+                            }
+                        ],
                     ),
                 ],
                 "format": None,

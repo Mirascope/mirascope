@@ -39,7 +39,28 @@ lucky number 7.\
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_02dbaae1627c1c920068dc21e6c6b48190a318949815889ca7",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
+}\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -97,7 +118,28 @@ lucky number 7.\
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_000f0217490673750068dc21ef1cf4819694ea473c368d2843",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
+}\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
