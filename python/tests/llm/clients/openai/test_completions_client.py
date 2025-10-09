@@ -16,7 +16,9 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
 
     messages = [
         llm.messages.user("Hello there"),
-        llm.messages.assistant(["General ", "Kenobi"]),
+        llm.messages.assistant(
+            ["General ", "Kenobi"], provider="openai:completions", model_id="gpt-4o"
+        ),
     ]
     assert openai_utils.prepare_completions_request(
         model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
@@ -25,7 +27,10 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
             [
                 llm.UserMessage(content=[llm.Text(text="Hello there")]),
                 llm.AssistantMessage(
-                    content=[llm.Text(text="General "), llm.Text(text="Kenobi")]
+                    content=[llm.Text(text="General "), llm.Text(text="Kenobi")],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_content=[],
                 ),
             ],
             None,

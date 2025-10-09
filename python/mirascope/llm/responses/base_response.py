@@ -82,6 +82,10 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
             # NOTE: we copy over the assistant message `name` field, although in
             # practice we don't know of any providers that set the name themselves.
             assistant_message = AssistantMessage(
-                content=self.content, name=assistant_message.name
+                content=self.content,
+                name=assistant_message.name,
+                provider=assistant_message.provider,
+                model_id=assistant_message.model_id,
+                raw_content=assistant_message.raw_content,
             )
         self.messages = list(input_messages) + [assistant_message]

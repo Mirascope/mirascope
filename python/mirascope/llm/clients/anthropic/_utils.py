@@ -28,7 +28,7 @@ from ...formatting import (
     _utils as _formatting_utils,
     resolve_format,
 )
-from ...messages import AssistantMessage, Message, UserMessage, assistant
+from ...messages import AssistantMessage, Message, UserMessage
 from ...responses import (
     AsyncChunkIterator,
     ChunkIterator,
@@ -214,10 +214,14 @@ def prepare_anthropic_request(
 
 def decode_response(
     response: anthropic_types.Message,
+    model_id: AnthropicModelId,
 ) -> tuple[AssistantMessage, FinishReason | None]:
     """Convert Anthropic message to mirascope AssistantMessage."""
-    assistant_message = assistant(
-        content=[_decode_assistant_content(part) for part in response.content]
+    assistant_message = AssistantMessage(
+        content=[_decode_assistant_content(part) for part in response.content],
+        provider="anthropic",
+        model_id=model_id,
+        raw_content=[],
     )
     finish_reason = (
         ANTHROPIC_FINISH_REASON_MAP.get(response.stop_reason)

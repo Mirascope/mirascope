@@ -36,7 +36,10 @@ lucky number 7.\
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -91,7 +94,10 @@ lucky number 7.\
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -145,7 +151,10 @@ lucky number 7.\
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -200,7 +209,10 @@ lucky number 7.\
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {

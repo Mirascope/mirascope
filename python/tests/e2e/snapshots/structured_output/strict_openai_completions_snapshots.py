@@ -25,7 +25,10 @@ sync_snapshot = snapshot(
                     Text(
                         text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -84,7 +87,10 @@ async_snapshot = snapshot(
                     Text(
                         text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -142,7 +148,10 @@ stream_snapshot = snapshot(
                     Text(
                         text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -201,7 +210,10 @@ async_stream_snapshot = snapshot(
                     Text(
                         text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {

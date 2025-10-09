@@ -54,7 +54,10 @@ I confirm 79, 179, and 379 as the only candidates, so my final count is 3. I’l
 """
                         ),
                         Text(text="3"),
-                    ]
+                    ],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
                 ),
                 UserMessage(
                     content=[
@@ -63,7 +66,12 @@ I confirm 79, 179, and 379 as the only candidates, so my final count is 3. I’l
                         )
                     ]
                 ),
-                AssistantMessage(content=[Text(text="79, 179, 379")]),
+                AssistantMessage(
+                    content=[Text(text="79, 179, 379")],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
+                ),
             ],
             "format": None,
             "tools": [],
@@ -115,7 +123,10 @@ It turns out 379 is prime. So, the primes under 400 that contain "79" are 79, 17
 """
                         ),
                         Text(text="3"),
-                    ]
+                    ],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
                 ),
                 UserMessage(
                     content=[
@@ -124,7 +135,12 @@ It turns out 379 is prime. So, the primes under 400 that contain "79" are 79, 17
                         )
                     ]
                 ),
-                AssistantMessage(content=[Text(text="79, 179, 379")]),
+                AssistantMessage(
+                    content=[Text(text="79, 179, 379")],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
+                ),
             ],
             "format": None,
             "tools": [],
@@ -195,7 +211,10 @@ So, I'll keep it simple and just return the number: 3.\
 """
                         ),
                         Text(text="3"),
-                    ]
+                    ],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
                 ),
                 UserMessage(
                     content=[
@@ -204,7 +223,12 @@ So, I'll keep it simple and just return the number: 3.\
                         )
                     ]
                 ),
-                AssistantMessage(content=[Text(text="79, 179, 379")]),
+                AssistantMessage(
+                    content=[Text(text="79, 179, 379")],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
+                ),
             ],
             "format": None,
             "tools": [],
@@ -266,7 +290,10 @@ So far, I have 79, 179, and 379 as the only qualifying primes—totaling three. 
 """
                         ),
                         Text(text="3"),
-                    ]
+                    ],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
                 ),
                 UserMessage(
                     content=[
@@ -275,7 +302,12 @@ So far, I have 79, 179, and 379 as the only qualifying primes—totaling three. 
                         )
                     ]
                 ),
-                AssistantMessage(content=[Text(text="79, 179, 379")]),
+                AssistantMessage(
+                    content=[Text(text="79, 179, 379")],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
+                ),
             ],
             "format": None,
             "tools": [],

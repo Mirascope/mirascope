@@ -35,7 +35,10 @@ sync_snapshot = snapshot(
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -51,7 +54,10 @@ sync_snapshot = snapshot(
                     Text(
                         text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -124,7 +130,10 @@ async_snapshot = snapshot(
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -140,7 +149,10 @@ async_snapshot = snapshot(
                     Text(
                         text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -212,7 +224,10 @@ stream_snapshot = snapshot(
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -228,7 +243,10 @@ stream_snapshot = snapshot(
                     Text(
                         text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -301,7 +319,10 @@ async_stream_snapshot = snapshot(
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -317,7 +338,10 @@ async_stream_snapshot = snapshot(
                     Text(
                         text='{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {

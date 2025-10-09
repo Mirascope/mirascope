@@ -36,7 +36,10 @@ sync_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -62,7 +65,10 @@ The secrets associated with the passwords are as follows:
 - Password "radiance": "Life before Death"\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -117,7 +123,10 @@ async_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -138,7 +147,10 @@ async_snapshot = snapshot(
                     Text(
                         text='The secret associated with the password "mellon" is "Welcome to Moria!", and the secret for the password "radiance" is "Life before Death".'
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -192,7 +204,10 @@ stream_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -218,7 +233,10 @@ The secrets associated with the passwords are as follows:
 - For "radiance": "Life before Death"\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -273,7 +291,10 @@ async_stream_snapshot = snapshot(
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
             UserMessage(
                 content=[
@@ -299,7 +320,10 @@ The secrets associated with the passwords are as follows:
 - For "radiance": "Life before Death"\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": None,

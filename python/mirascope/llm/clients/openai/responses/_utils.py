@@ -286,6 +286,7 @@ def prepare_responses_request(
 
 def decode_response(
     response: openai_types.Response,
+    model_id: OpenAIResponsesModelId,
 ) -> tuple[AssistantMessage, FinishReason | None]:
     """Convert OpenAI Responses Response to mirascope AssistantMessage."""
     parts: list[AssistantContentPart] = []
@@ -327,7 +328,14 @@ def decode_response(
     elif details := response.incomplete_details:
         finish_reason = INCOMPLETE_DETAILS_TO_FINISH_REASON.get(details.reason or "")
 
-    return (AssistantMessage(content=parts), finish_reason)
+    assistant_message = AssistantMessage(
+        content=parts,
+        provider="openai:responses",
+        model_id=model_id,
+        raw_content=[],
+    )
+
+    return (assistant_message, finish_reason)
 
 
 class _OpenAIResponsesChunkProcessor:

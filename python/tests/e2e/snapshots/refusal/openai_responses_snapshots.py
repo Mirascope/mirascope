@@ -22,7 +22,10 @@ sync_snapshot = snapshot(
                 ]
             ),
             AssistantMessage(
-                content=[Text(text="I'm sorry, I can't assist with that.")]
+                content=[Text(text="I'm sorry, I can't assist with that.")],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -57,7 +60,10 @@ async_snapshot = snapshot(
                 ]
             ),
             AssistantMessage(
-                content=[Text(text="I'm sorry, I can't assist with that.")]
+                content=[Text(text="I'm sorry, I can't assist with that.")],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -91,7 +97,10 @@ stream_snapshot = snapshot(
                 ]
             ),
             AssistantMessage(
-                content=[Text(text="I'm sorry, I can't assist with that.")]
+                content=[Text(text="I'm sorry, I can't assist with that.")],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -126,7 +135,10 @@ async_stream_snapshot = snapshot(
                 ]
             ),
             AssistantMessage(
-                content=[Text(text="I'm sorry, I can't assist with that.")]
+                content=[Text(text="I'm sorry, I can't assist with that.")],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {

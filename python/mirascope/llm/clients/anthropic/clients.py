@@ -164,7 +164,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         anthropic_response = self.client.messages.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            anthropic_response, model_id
+        )
 
         return Response(
             raw=anthropic_response,
@@ -261,7 +263,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         anthropic_response = self.client.messages.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            anthropic_response, model_id
+        )
 
         return ContextResponse(
             raw=anthropic_response,
@@ -345,7 +349,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         anthropic_response = await self.async_client.messages.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            anthropic_response, model_id
+        )
 
         return AsyncResponse(
             raw=anthropic_response,
@@ -442,7 +448,9 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         anthropic_response = await self.async_client.messages.create(**kwargs)
 
-        assistant_message, finish_reason = _utils.decode_response(anthropic_response)
+        assistant_message, finish_reason = _utils.decode_response(
+            anthropic_response, model_id
+        )
 
         return AsyncContextResponse(
             raw=anthropic_response,

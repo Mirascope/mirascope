@@ -33,7 +33,10 @@ Sure! Here are all the U.S. states:
 10. Georgia\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -66,7 +69,10 @@ Sure! Here are all the U.S. states:
 10. Georgia\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -98,7 +104,10 @@ Certainly! Here is a list of all U.S. states:
 10\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": None,
@@ -131,7 +140,10 @@ Here is a list of all U.S. states:
 10. Georgia\
 """
                     )
-                ]
+                ],
+                provider="openai:responses",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": None,

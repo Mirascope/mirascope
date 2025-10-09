@@ -87,7 +87,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -253,7 +256,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -418,7 +424,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
@@ -584,7 +593,10 @@ Respond only with valid JSON that matches this exact schema:
 }\
 """
                     )
-                ]
+                ],
+                provider="openai:completions",
+                model_id="gpt-4o",
+                raw_content=[],
             ),
         ],
         "format": {
