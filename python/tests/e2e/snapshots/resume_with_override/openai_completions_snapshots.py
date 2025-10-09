@@ -24,7 +24,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text="Yes, I can confirm that I was created by Anthropic, a company focused on developing AI models and systems."
+                        text="Yes, I can confirm that I was created by Anthropic, a company focused on developing advanced AI models."
                     )
                 ],
                 provider="openai:completions",
@@ -82,7 +82,9 @@ stream_snapshot = snapshot(
             UserMessage(content=[Text(text="Can you double-check that?")]),
             AssistantMessage(
                 content=[
-                    Text(text="Yes, I can confirm that I was created by Anthropic.")
+                    Text(
+                        text="Yes, I can confirm that I was created by Anthropic, a company focused on developing advanced AI models and ensuring their alignment with human values and safety."
+                    )
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
@@ -91,7 +93,7 @@ stream_snapshot = snapshot(
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 15,
+        "n_chunks": 33,
     }
 )
 async_stream_snapshot = snapshot(
@@ -111,7 +113,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text="Yes, I can confirm that I was developed by Anthropic, a company focused on creating safe and aligned AI models."
+                        text="Yes, I can confirm that I was created by Anthropic, an AI safety and research company."
                     )
                 ],
                 provider="openai:completions",
@@ -121,6 +123,6 @@ async_stream_snapshot = snapshot(
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 26,
+        "n_chunks": 22,
     }
 )

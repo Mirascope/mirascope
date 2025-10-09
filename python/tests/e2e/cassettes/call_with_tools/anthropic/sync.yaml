@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please retrieve
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
       the secrets associated with each of these passwords: mellon,radiance"}],"model":"claude-sonnet-4-0","system":"Use
       parallel tool calling.","tools":[{"name":"secret_retrieval_tool","description":"A
       tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}]}'
@@ -14,7 +14,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '473'
+      - '474'
       content-type:
       - application/json
       host:
@@ -46,17 +46,17 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//nFFdj9MwEPwr1r7w4qKmanpc3vpwQiCBTkUHRxGyFmfb5HDsxLu+o1T5
-        78g5qvtASIgna3dmdmbXR2hrqKDjvZkXH3efXu0vbxbb1z0t0s0ZXq0PF29Bgxx6yixixj2Bhhhc
-        biBzy4JeQEMXanJQgXWYappx8J5ktpwt5otyXhZL0GCDF/IC1ZfjaaTQjyyengrevHBORZLY0i0p
-        aUgx2UjCahei+hakUT0y34VYs0rc+r3qMaJz5JSE4JRF5/gljPrBIARnEufQ06a5TnnX1fXn9TDU
-        Zz+lv9t6e5W6dfkBNHjssu7e2PwOg85kYR7i+yRQHeEUZLqLc8HD+A+25+d4vdms3r/bDBeMh+2w
-        KXeX4f9sI9Ytekswjl81sITeREIO/qn/BDANiTK38sk5DWn6yOp4P9hI+E6eoVoWKw0WbUPGRkJp
-        gzdPGfMTHgnrv2EnbTagvqGOIjpTdn/yH9CieY6OGkKSx62iKDQwxdvWkpGWYr6YoK8x1jCOvwAA
-        AP//AwBEkeUIzQIAAA==
+        H4sIAAAAAAAAAwAAAP//nJFRa9swFIX/irkve1GG3Tlp6seGFbYy2EMX2MoQin0da5F1Xd2rNFvw
+        fx9K8dpuDEqfhHS+c46udISeGnRQQe1MbHDG5D3KrJyd5WfzfF6UoMA2UEHPW50X6/ZqFRfXa2qX
+        V+fd+2a1udiXAgrk54CJQmazRVAQyKUDw2xZjE9MTV7QC1S3x4kXPJzcaangwxvnsoASLO4xkw4z
+        xjqgcNZSyDYkXTYY5nsKDWeRrd8+gSajcZkQubcwqscaIqcj4zRM2kedF8vLLzd2Pg9f68/tr82n
+        9cXNx3Z3CQq86ZPvIVn/SdbJmEL8EAWqI0zXOY3uHHkYX1BbHhZ2oOXh24+yWN2dt/ft7jouXlcb
+        TGONrxHG8bsCFhp0QMPkn/efBMa7iImtfHROQTz9VXV8CNZCO/QMVVksFNSm7lDXAY1Y8vo5kU96
+        QNP8T5u8qQCHDnsMxul5/y//qBbd3+qogKI8PSqKdwoYw97WqMViSC8mxjcmNDCOvwEAAP//AwC/
+        9EKA0wIAAA==
     headers:
       CF-RAY:
-      - 981dc1f85ca6703b-SEA
+      - 98c09caada2076ee-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -64,7 +64,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Sat, 20 Sep 2025 02:05:27 GMT
+      - Thu, 09 Oct 2025 20:26:18 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -78,43 +78,43 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-20T02:05:26Z'
+      - '2025-10-09T20:26:17Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-20T02:05:27Z'
+      - '2025-10-09T20:26:18Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-20T02:05:25Z'
+      - '2025-10-09T20:26:16Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-20T02:05:26Z'
+      - '2025-10-09T20:26:17Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTJqJYk5ESQsBrGXnyDUr
+      - req_011CTxFcr82Z87PaE7S1UXXj
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2744'
+      - '2594'
     status:
       code: 200
       message: OK
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please retrieve
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
       the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"type":"text","text":"I''ll
-      retrieve the secrets for both passwords using parallel tool calls."},{"type":"tool_use","id":"toolu_01V6XYAqqd7ztpwZncUumA5S","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_0199aXRR6NMRqEsayZqR5fPo","name":"secret_retrieval_tool","input":{"password":"radiance"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01V6XYAqqd7ztpwZncUumA5S","content":"Welcome
-      to Moria!"},{"type":"tool_result","tool_use_id":"toolu_0199aXRR6NMRqEsayZqR5fPo","content":"Life
+      retrieve the secrets for both passwords using the secret retrieval tool."},{"type":"tool_use","id":"toolu_018BUTi55rYcPfzbMV9TJfkB","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_014x6ipo8xZj41Cq7fwfkKu6","name":"secret_retrieval_tool","input":{"password":"radiance"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_018BUTi55rYcPfzbMV9TJfkB","content":"Welcome
+      to Moria!"},{"type":"tool_result","tool_use_id":"toolu_014x6ipo8xZj41Cq7fwfkKu6","content":"Life
       before Death"}]}],"model":"claude-sonnet-4-0","system":"Use parallel tool calling.","tools":[{"name":"secret_retrieval_tool","description":"A
       tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}]}'
     headers:
@@ -127,7 +127,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1071'
+      - '1078'
       content-type:
       - application/json
       host:
@@ -159,16 +159,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJHBbhQxDIZfJfznrDRbdgvKjbYSHBYJ9QISg0Yh+bcTMZNMHU8prPbd
-        0ZSuCkWcLPv7bEv2ASnCYaw3XbPe/fw0X09v5fJid1uu39yHV+f7qx4W+mPiYrFWf0NYSBmWgq81
-        VfVZYTGWyAEOYfBz5KqWnKmrzeqsOds22/UGFqFkZVa4z4fTSOX90vwQHN5RaLzQaE9TGYRajVAl
-        8Y7R7IsY+tCbydf6vUh0bW7zynx4TE2LkcNQcgtnWnzkEMpIo8W8L5L8ixbPbPEx+Rz429+lPc1X
-        7ovQXNFr3wLHLxZVy9QJfS0ZDsyx01kyHkHl7cwcCJfnYbCYH07kDkh5mrXT8o25wp03G4vgQ88u
-        CL2mkru/jebEhT7+j516lwWceo4UP3Tb8V//ia775/RoUWb9s/TytUWl3KXAThMFDstjo5eI4/EX
-        AAAA//8DACD3APkmAgAA
+        H4sIAAAAAAAAAwAAAP//dJFhaxQxEIb/SjpfCksO9tq7KvkmCCKcIoIc4pUlTd7txmaTNTO5Wo77
+        77JtD7Xip2He5xkGZg40Zo9Ihly01WPBOSXIYrW4aC/W7Xq5Ik3Bk6GRb7t2ue3fvPr88S5s9+y+
+        b969/nJfv24uSZM8TJgtMNtbkKaS4xxY5sBik5Aml5MgCZlvh5Mv+DmTx2Lo/fkeiqtzYO5rjA+q
+        QErAHl7JAMVwBcKqz0XdZBnUZJnvc/FsdmmXFurTc692NCLGnHZkVNNsEV0eoSSrD7kEe9Y0L+xi
+        fbDJ4cnfhB7qBn0uUG9hZWgaOl5rYslTV2A5JzKE5DupJdEzYPyoSA5kUo1RU328hDlQSFOVTvId
+        EpO5aq80OesGdK7ASsip+9toT7zA+v+x0+y8ANOAEcXGbj3+6/+my+ElPWrKVf6MVq0mRtkHh04C
+        Chma/+dt8XQ8/gIAAP//AwC+wgQXMAIAAA==
     headers:
       CF-RAY:
-      - 981dc20a68dc703b-SEA
+      - 98c09cbbba3076ee-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -176,7 +176,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Sat, 20 Sep 2025 02:05:29 GMT
+      - Thu, 09 Oct 2025 20:26:21 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -190,35 +190,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-20T02:05:29Z'
+      - '2025-10-09T20:26:20Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-20T02:05:29Z'
+      - '2025-10-09T20:26:21Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-20T02:05:28Z'
+      - '2025-10-09T20:26:18Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-20T02:05:29Z'
+      - '2025-10-09T20:26:20Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTJqJmCRRvNn3h2ZfMQNY
+      - req_011CTxFd3i3Rz6QP2bLp7QA7
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1716'
+      - '2568'
     status:
       code: 200
       message: OK

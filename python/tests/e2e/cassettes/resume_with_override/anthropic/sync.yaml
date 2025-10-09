@@ -23,12 +23,12 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WQT0vDQBDF7/kUy56b0hZq0ZuoaBBp0SgW8TB2p8niZjfsTqB/6Hd3kzTpBnNY
-        hnkvb2Z+x4gxvgEtpABCx2/Yl+8wdmzeWjOaUJMXupZvlmDp4m2/Y1B7C+Gu/oknDAoGTIHN0L86
-        q8AXhRGoRowsSI2C/ezZozGZwjEPUk59/T26zLZGYR3cRHT2U2fgW6mly18RnNG17S1drnivSi1w
-        59uTqBvQRPPK+a1ekMBTgP5WXlpTlJSaX9R3pmoozNusgNlAnk7POhkCNZCuZ6N/qe7ez5QqZBlg
-        9ieCkrSv70gfPlMeYKDBUh2GKKDFKTdVltNwwcVVdMbVEvxA62SLKsPCw4tn43m8VeDyZhy36Eqj
-        HSai9ryvnzawrA7L51gcFslqlmCxv53w6BT9AQ3wZjFLAgAA
+        H4sIAAAAAAAC/2WQQUvDQBCF7/kVy57bYgql4k1akR40rQYRRGQ002R1sxN2J9Ba+t/dJE27wRyW
+        Yd7Lm5nvEAkhv8BkKgNGJ2/Em+8IcWjfRiPDaNgLfcs3K7B88XbfIai9hXHX/CRXAkoBQoPN0b8m
+        r8EXJWWoR4ItKIOZ+NyLe6Jc40QGKcdz/T66zLaksQluI3r7sTfIrTLKFU8Ijkxje06TtTyrymS4
+        8+2rqB/QRsva+a0ekMFTgPOtsrJUVpzSD5oF1S2FWZcVMBvIcXzSmRj0QLqej/6luqWfqXTIMsDs
+        TwSteN/ckd69pjLAwIOlegxRQEtyQXVe8HDBeRydcHUEX9A61aHKsfTwxtPJbLzV4Ip2nLToKjIO
+        V1njMTtLkCTLhKeL3/lq/f34sbndyOgY/QHdm3wOSgIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -37,11 +37,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 01 Oct 2025 01:18:09 GMT
+      - Thu, 09 Oct 2025 20:27:11 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1033
+      - gfet4t7; dur=1075
       Transfer-Encoding:
       - chunked
       Vary:
@@ -58,7 +58,7 @@ interactions:
       code: 200
       message: OK
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
       am a large language model, trained by Google."},{"role":"user","content":"Can
       you double-check that?"}],"model":"claude-sonnet-4-0"}'
     headers:
@@ -71,7 +71,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '241'
+      - '242'
       content-type:
       - application/json
       host:
@@ -103,16 +103,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJFRa1RBDIX/SpoXX+aW3XYX9L6JWCmCD7YoIuWSnYk7052bXGcy2mXZ
-        /y53cZEqPiXkOycckgOmgD2OdTsslh9XT3f6eP/pw834avp8996vSN++QYe2n3hWca20ZXRYNM8D
-        qjVVIzF0OGrgjD36TC1wV1WErVt1V4ur9WK9XKFDr2Ishv3Xw3ml8dNsPpUev2h7URhoUzU347yH
-        krbRwBSo7mDkuQvaNpk7H9nvwCLZJdzCSIGBBLgULdDBLfykCr4wGQfY7OG1WCw6Je9A1OCd6jbz
-        JdxHkh3stcE3LWCRwWsp7C2pXODxwWE1nYbCVFWwR5YwWCuCv0Hl743FM/bScnbYTgfqD5hkajaY
-        7lgq9tdrh5585OEUKakMzwWLMy9M4X/s7J338xR55EJ5WI//6v/QZfybHh1qs2fpXjqsXH4kz4Ml
-        Ltjj/NVAJeDx+AsAAP//AwCdk1/0IwIAAA==
+        H4sIAAAAAAAAA3SQTY/UMAyG/4rlC5fMqLMz5SO31QrEXtAeVkgIoSqbmDZqGhfHWRhG899RK4bl
+        Q5ws+Xny2vEJJw6U0KJPrgbaFM6ZdHPYXDVXbdPuDmgwBrQ4lb5rdi+fj+XN49v7r6/u7m7a/etx
+        /+79iz0a1ONMi0WluJ7QoHBaGq6UWNRlRYOes1JWtB9PF1/p20LWYvED12dC4B4Kp6qUjiCxH9SA
+        ywFuwc2cuI/fCT6zgA4EJMKyXdAEN+sHFheub+HXXPBCTinAwxGusw7Cc/RbuB9cHuHIdc2ahadZ
+        Y+5hIlAGzyLkFXRwCtMSNNIWz58MFuW5E3KFM1qkHDqtkvEnKPSlUvaENteUDNb1GPaEMc9VO+WR
+        ckG7bw165wfq1uUi5+5PoblwIRf+xy5vl3yaB5pIXOra6V//ie6Gv+nZIFf9vXVoDBaSx+ip00iC
+        FpdLBicBz+cfAAAA//8DAAe5HVQyAgAA
     headers:
       CF-RAY:
-      - 98781fe17af7ebdf-SEA
+      - 98c09e08486ade85-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -120,7 +120,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 01 Oct 2025 01:18:11 GMT
+      - Thu, 09 Oct 2025 20:27:15 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -134,35 +134,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-01T01:18:10Z'
+      - '2025-10-09T20:27:14Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-01T01:18:11Z'
+      - '2025-10-09T20:27:15Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-01T01:18:10Z'
+      - '2025-10-09T20:27:12Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-01T01:18:10Z'
+      - '2025-10-09T20:27:14Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTfbbe2Vnh9Bvj8g8oRmR
+      - req_011CTxFgyB3p2tEweM12oFPT
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1477'
+      - '3063'
     status:
       code: 200
       message: OK

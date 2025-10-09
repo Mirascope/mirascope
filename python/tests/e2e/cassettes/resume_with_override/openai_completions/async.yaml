@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Who created you?"}],"model":"claude-sonnet-4-0"}'
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"}],"model":"claude-sonnet-4-0"}'
     headers:
       accept:
       - application/json
@@ -11,7 +11,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '105'
+      - '106'
       content-type:
       - application/json
       host:
@@ -43,14 +43,14 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJBBSwMxEIX/yvLOqezW7sHcFDwoCCL0JBLSZHCDu5NtMmktZf+7bLGI
-        FU8D87335jFHBA+NIb+bumnW7fbATy+rm259fefXm+fH+90eCnIYaVZRzvadoJBiPy9sziGLZYHC
-        ED310HC9LZ4WOTKTLFaLZb1s67ZZQcFFFmKBfj2eI4U+Z/NpaDxUe5srl8gK+WpzqG5ZuhTH4K4w
-        vSlkiaNJZHNkaBB7IyUxvkGmbSF2BM2l7xXKqaw+IvBYxEj8IM7QTaPgrOvInA6FyOa3oD7zRNb/
-        x87eOZ/GjgZKtjft8Ff/Q5vukk4Kschlu0xpFxwZCZSgMX/Y2+QxTV8AAAD//wMA8SSWtK8BAAA=
+        H4sIAAAAAAAAAwAAAP//dJDBSgMxEIZfZfnPWdktrYfcvAhSzyoVCWkydoO7kzWZWEvZd5ctFrHi
+        aWC+b2Z+5ogheuqh4XpbPNU5MpPUy3rRLFbNql1CIXhoDHlnmvbabtzj63bN7e2W1g/3np42e4KC
+        HEaaLcrZ7uZGiv3csDmHLJYFCi6yEAv08/HsC33O5FQ07qq9zZVLZIV8tT1UNyxdimNwV5heFLLE
+        0SSyOTI0iL2RkhjfINN7IXYEzaXvFcopiT4i8FjESHwjztBtq+Cs68icDoXI5rfQnHki6/9j59l5
+        P40dDZRsb1bDX/+Htt0lnRRikct0mdJHcGQkUILG/D5vk8c0fQEAAP//AwC5WA3vrwEAAA==
     headers:
       CF-RAY:
-      - 987820625cb7ea78-SEA
+      - 98c0a59be8f4df2d-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -58,7 +58,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 01 Oct 2025 01:18:31 GMT
+      - Thu, 09 Oct 2025 20:32:24 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -72,35 +72,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-01T01:18:31Z'
+      - '2025-10-09T20:32:23Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-01T01:18:31Z'
+      - '2025-10-09T20:32:24Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-01T01:18:30Z'
+      - '2025-10-09T20:32:22Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-01T01:18:31Z'
+      - '2025-10-09T20:32:23Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTfbdABjon256euoPED2L
+      - req_011CTxG5qxrSFsDyQEZCb7KE
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1015'
+      - '1661'
     status:
       code: 200
       message: OK
@@ -145,18 +145,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA4xSy47bMAy8+ysIneOF4zyazS3YU4AuWqB7KYqFwUi0ra4tCRLdJljk3wvZSez0
-        AfSiA4dDzQz5ngAIrcQWhKyRZeua9Olj2T7Jl09ms1PPz/Xj8fhFqs/HdfZyeFuIWWTYw3eSfGU9
-        SNu6hlhbM8DSEzLFqfMPq8d8M1/N8x5oraIm0irH6dKmeZYv02yTZusLsbZaUhBb+JYAALz3b5Ro
-        FB3FFrLZtdJSCFiR2N6aAIS3TawIDEEHRsNiNoLSGibTq/5KYQZ7kGhAWlNq3wLXyLCHnxjgIh8O
-        J9gZrr11Ws4ADez2ELAkPgEaBZ4CoZc1RPtoTg/TzzyVXcDo1XRNMwHQGMsYs+ptvl6Q881YYyvn
-        7SH8RhWlNjrUhScM1kQTga0TPXpOAF77ALu7TITztnVcsH2j/rtFPowT48ZGML+EK9gyNmN9dSXd
-        TSsUMeomTBYgJMqa1Mgct4Wd0nYCJBPPf4r52+zBtzbV/4wfASnJManCeVJa3hse2zzFe/5X2y3j
-        XrAI5H9oSQVr8nEPikrsmuHURDgFprYotanIO6+HeytdUS4W62WGyywTyTn5BQAA//8DAAbVWY54
-        AwAA
+        H4sIAAAAAAAAAwAAAP//jFLLbtswELzrKxY8W4HsyHbim9G0gIGkOfTUFoGwIlcWU4okyFVbI/C/
+        F5QfsvsAeuFhZ2c5M7tvGYDQSqxAyBZZdt7k755D/d6svzwx64dPH+R98/DxGR+f1Ott+SgmieHq
+        V5J8Yt1I13lDrJ09wDIQMqWp0+WiKMrpfVkOQOcUmUTbes5Ll8+KWZkXd3mxOBJbpyVFsYKvGQDA
+        2/AmiVbRT7GCYnKqdBQjbkmszk0AIjiTKgJj1JHRspiMoHSWyQ6qP1OcwAYkWpDONjp0wC0ybOAH
+        RjjKh3oHa8ttcF7LCaCF9QYiNsQ7QKsgUCQMsoVkH+3u5vKzQE0fMXm1vTEXAFrrGFNWg82XI7I/
+        GzNu64Or429U0WirY1sFwuhsMhHZeTGg+wzgZQiwv8pE+OA6zxW7bzR8dzs7jBPjxkZwdgxXsGM0
+        Y31+Il1NqxQxahMvFiAkypbUyBy3hb3S7gLILjz/KeZvsw++td3+z/gRkJI8k6p8IKXlteGxLVC6
+        53+1nTMeBItI4buWVLGmkPagqMHeHE5NxF1k6qpG2y0FH/Th3hpfybqZLu/m88VSZPvsFwAAAP//
+        AwBfvmq4eAMAAA==
     headers:
       CF-RAY:
-      - 987820696e5376e8-SEA
+      - 98c0a5a72c07ec6c-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -164,14 +164,14 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 01 Oct 2025 01:18:32 GMT
+      - Thu, 09 Oct 2025 20:32:25 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=rqYqaUTz4fUJS9PRdkspttSb48XK53wibGfTG8jkSbs-1759281512-1.0.1.1-C7y7ejmChvUpTY_7u9ru49JbDlaT9UpbsfX44r4vtpdYm3h6xteEHMjWQ8gVqi_UPqo6u9Z96b0j84gseNRGHVX_snPbA7Q48SplGPsSJvA;
-        path=/; expires=Wed, 01-Oct-25 01:48:32 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=L2tLqjH8gvK3XzjZjk1BOhnfgWVZ3zDOsYo4mAHozIM-1760041945-1.0.1.1-WJax6xYZ71lBr_c1urt_RIxuKnmE6FpfHz7dcaMYJXRrfYShqCgGCWhJJ9Wzy4QM9aDtysZp8MvK5BbMTjTU_scBIP29b.KTka.geKT3JEI;
+        path=/; expires=Thu, 09-Oct-25 21:02:25 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=p1iqclNcFQ.Qcg6h_qsRj9gHWqH.0mJyb5p4XWWXHRA-1759281512646-0.0.1.1-604800000;
+      - _cfuvid=A26iS5_9rj9yMxyDNGvlQCNoUZHZHz8g5t84L5v9aBA-1760041945012-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -188,13 +188,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '644'
+      - '547'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '659'
+      - '734'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -210,7 +210,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 1ms
       x-request-id:
-      - req_c50ff97a73584f35952c2c2b405e381d
+      - req_5496147e9bb747c980b5afd706eec2e5
     status:
       code: 200
       message: OK

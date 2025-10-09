@@ -24,7 +24,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text="You're absolutely right to ask me to double-check that. I made an error - I was created by Anthropic, not Google. Thank you for the correction!"
+                        text="You're absolutely right, and I apologize for the error. I am Claude, an AI assistant created by Anthropic. Thank you for prompting me to correct that mistake."
                     )
                 ],
                 provider="anthropic",
@@ -83,7 +83,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text="You're absolutely right to ask me to double-check that. I made an error - I am Claude, and I was created by Anthropic, not Google. Thank you for the correction!"
+                        text="You're absolutely right to ask me to double-check that. I made an error - I was created by Anthropic, not Google. Thank you for the correction!"
                     )
                 ],
                 provider="anthropic",
@@ -93,7 +93,7 @@ stream_snapshot = snapshot(
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 7,
+        "n_chunks": 11,
     }
 )
 async_stream_snapshot = snapshot(
@@ -113,7 +113,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text="You're absolutely right - I apologize for the error. I am Claude, an AI assistant created by Anthropic. Thank you for prompting me to correct that mistake."
+                        text="You're absolutely right to ask me to double-check. I made an error - I was created by Anthropic, not Google. Thank you for the correction!"
                     )
                 ],
                 provider="anthropic",
@@ -123,6 +123,6 @@ async_stream_snapshot = snapshot(
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 6,
+        "n_chunks": 9,
     }
 )

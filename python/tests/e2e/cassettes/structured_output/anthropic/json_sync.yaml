@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please recommend
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
       the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Respond
       only with valid JSON that matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\":
       {\n      \"description\": \"The author of a book.\",\n      \"properties\":
@@ -25,7 +25,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1247'
+      - '1248'
       content-type:
       - application/json
       host:
@@ -57,16 +57,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3SRW0sDMRCF/8pynlNoa6uSN7WKIl4QwQdXQtiddqO7k5pMRC373yW1xRs+JZzv
-        OzOQrOBqaHRxYYajXXd0OFrMDsOke/fP7jzdzvn1EQrytqRsUYx2QVAIvs2BjdFFsSxQ6HxNLTSq
-        1qaaBtEzkwwmg/FwPB1ORxMoVJ6FWKDvV9uRQq+5vD40ViUXRQlx0lIJXZS4PT0uLg8ujourkyLf
-        784uZyXUp2eTND5kcV3M0dyFKIZtt+lfWwmuetpUstHaH8KNl2aeYiyRhX4zOVhxvMjGXsk9+geF
-        KH5pAtnoGRrEtZEUGBsQ6TkRVwTNqW0V0vqh9AqOl0mM+CfiCL0z3leobNWQqQJZcZ7NT2O45YFs
-        /R/bdvMCWjbUUbCtmXZ//S86an7TXsEn+R5N9xUihRdXkRFHARr5e2sbavT9BwAAAP//AwBg21eC
-        LAIAAA==
+        H4sIAAAAAAAAAwAAAP//dJHRahsxEEV/ZbnPMthO3Bi9BeokpXhjSmgI3SKEduIV3h250ig0mP33
+        ItcmTUufNNxzrgSaA4bQUg8N19vc0iQFZpLJ5WQ+nS+mi9klFHwLjSFtzXR2V2+6C7r9Ov/cPdUb
+        9+HRztZcQ0Fe91QsSsluCQox9CWwKfkklgUKLrAQC/S3w9kX+lnI8dA4NFxVDcRLTw101eDhblXV
+        1+tVdX9TlfnxU/2xgfrt2SxdiEU8Fkv07GMSw3Y49TdWone7U6UYvX0nfAnSPeeUGhRhPN0crXje
+        FuOq4RHjd4UkYW8i2RQYGsStkRwZJ5DoRyZ2BM257xXy8Rf0AZ73WYyEHXGCvpgvFZx1HRkXyYoP
+        bN4b0zOPZNv/sXO3PED7jgaKtjeL4V//jc66v+moELL8GS2WConii3dkxFOERtlda2OLcfwFAAD/
+        /wMARr8PzywCAAA=
     headers:
       CF-RAY:
-      - 984552fb2ebb767c-SEA
+      - 98c09f469c2390db-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -74,7 +74,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 24 Sep 2025 21:20:11 GMT
+      - Thu, 09 Oct 2025 20:28:05 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -88,35 +88,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-24T21:20:10Z'
+      - '2025-10-09T20:28:04Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-24T21:20:11Z'
+      - '2025-10-09T20:28:05Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-24T21:20:09Z'
+      - '2025-10-09T20:28:03Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-24T21:20:10Z'
+      - '2025-10-09T20:28:04Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTTvbTH11cMFpAPPjHpV1
+      - req_011CTxFkjC2zXpkSU9mjSLPp
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1973'
+      - '2337'
     status:
       code: 200
       message: OK

@@ -1,7 +1,7 @@
 interactions:
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"What is 4200 +
-      42?"}],"model":"claude-sonnet-4-0","stream":true}'
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is 4200
+      + 42?"}],"model":"claude-sonnet-4-0","stream":true}'
     headers:
       accept:
       - application/json
@@ -12,7 +12,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '121'
+      - '122'
       content-type:
       - application/json
       host:
@@ -47,23 +47,50 @@ interactions:
     body:
       string: 'event: message_start
 
-        data: {"type":"message_start","message":{"id":"msg_01LdHryNuBZwzaKwCJFuiv29","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":17,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}             }
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01XWid3aZomE38VQA6mf6amD","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":17,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":1,"service_tier":"standard"}}}
 
 
         event: content_block_start
 
-        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}        }
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}
+        }
 
 
         event: content_block_delta
 
         data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"4200
-        + 42 = 4242"}         }
+        + 42 ="}               }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        4242"}  }
+
+
+        event: ping
+
+        data: {"type": "ping"}
 
 
         event: content_block_stop
 
-        data: {"type":"content_block_stop","index":0         }
+        data: {"type":"content_block_stop","index":0       }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: ping
+
+        data: {"type": "ping"}
 
 
         event: message_delta
@@ -73,13 +100,13 @@ interactions:
 
         event: message_stop
 
-        data: {"type":"message_stop"   }
+        data: {"type":"message_stop"        }
 
 
         '
     headers:
       CF-RAY:
-      - 97fc352a2cef8383-SEA
+      - 98c09c639eccb9b2-SEA
       Cache-Control:
       - no-cache
       Connection:
@@ -87,7 +114,7 @@ interactions:
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Tue, 16 Sep 2025 00:22:09 GMT
+      - Thu, 09 Oct 2025 20:26:06 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -101,35 +128,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-16T00:22:07Z'
+      - '2025-10-09T20:26:04Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-16T00:22:07Z'
+      - '2025-10-09T20:26:04Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-16T00:22:07Z'
+      - '2025-10-09T20:26:04Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-16T00:22:07Z'
+      - '2025-10-09T20:26:04Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTB8C3WCoK2rm44jdAsBw
+      - req_011CTxFc1KPtyjaB3LhivYUy
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1599'
+      - '1606'
     status:
       code: 200
       message: OK

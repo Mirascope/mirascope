@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Who created you?"}],"model":"claude-sonnet-4-0"}'
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"}],"model":"claude-sonnet-4-0"}'
     headers:
       accept:
       - application/json
@@ -11,7 +11,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '105'
+      - '106'
       content-type:
       - application/json
       host:
@@ -43,14 +43,14 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJBBS8NAEIX/SnjnrSSlEdmbB0HxXA+KLOvu0AaT2XRnVq0l/11SLGLF
-        08B87715zAFdhMUgG1c361VJ94/t5+52s5b9zQOPUq4uYaD7kWYVifgNwSCnfl54kU7Us8JgSJF6
-        WITel0gLScyki9ViWS/bum1WMAiJlVhhnw6nSKWP2XwcFnfVu5cqZPJKsXrZV9es25zGLlxgejYQ
-        TaPL5CUxLIij05IZ30BoV4gDwXLpe4NyLGsP6Hgs6jS9Egts0xgEH7bkjoe6xO63oD7xTD7+x07e
-        OZ/GLQ2Ufe/a4a/+hzbbczoZpKLn7YTyWxfIaUcZFvOHo88R0/QFAAD//wMArpbRca8BAAA=
+        H4sIAAAAAAAAAwAAAP//dJBNS8QwEIb/SnnPWWn342BuCsvqXUERCTEZtsF2UpOJWpb+d+niIq54
+        GpjnmZmXOaCPnjpouM4WT4scmUkW68WyXm7qTbOGQvDQ6PPe1M39brxmu20fLx9Wd9vdyvV+fTNA
+        QcaBZotytnuCQord3LA5hyyWBQoushAL9NPh5At9zuRYNG6rD5srl8gK+eplrK5Y2hSH4C4wPStk
+        iYNJZHNkaBB7IyUxvkGmt0LsCJpL1ymUYxJ9QOChiJH4Spyhm0bBWdeSOR4Kkc1voT7xRNb/x06z
+        834aWuop2c5s+r/+D23aczopxCLn6TKl9+DISKAEjfl93iaPafoCAAD//wMAEgXrX68BAAA=
     headers:
       CF-RAY:
-      - 9878220c88cd0937-SEA
+      - 98c0a53f0891b89e-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -58,7 +58,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 01 Oct 2025 01:19:40 GMT
+      - Thu, 09 Oct 2025 20:32:09 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -72,35 +72,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-01T01:19:40Z'
+      - '2025-10-09T20:32:09Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-01T01:19:40Z'
+      - '2025-10-09T20:32:09Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-01T01:19:39Z'
+      - '2025-10-09T20:32:07Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-01T01:19:40Z'
+      - '2025-10-09T20:32:09Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTfbiBhf9rQ7WU4n9XicC
+      - req_011CTxG4kSCJ3xcUicYt2iTn
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1497'
+      - '1923'
     status:
       code: 200
       message: OK
@@ -130,14 +130,14 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WRTU/bQBCG7/4V0z1GSVRCIYhrC20OUQJYfJWqmsSDvc16x+yOIVaU/87awcFR
-        97Aazbzz9cwmAlBLtIlOUMirc/gdPACb5q9jbIWshEDrCs4CnXxqd2/TsYNEaF0nqWkFWLDhVJP/
-        Ag9cAjoCXHg2pZCpwOk0ExAG9CvIqbYSLheGBsuMlqvhk32yE8gxCVmQay+4ItAW8goKR6+aSw9o
-        /Ru5IUwA86Ay6FIKv01LDEbOCZk+iENtKYFFBb3eT+bUUK83VJ2xt3v7T/9zWceG6k2aMq182wrU
-        s7baZ9eEnm0tu4lnc7WPapvQOri/Rm2DprQqfZhsSoIBO+7hqsJxXkjMK7LfuWywj452xTpXOogf
-        jz/iwoLmMPXbcf+/uv5H6KpN93ydy4Yl0Wip6k3ii/tYdUDI4VgtiagDTEnGZbjn4YhHZyfRB7Id
-        xVtyXu9wpZQHgIPR8GTwbNBnTUPlyBdsPU2SWuP41xJn8enl4+jfi/j5Xxnf6aupirbRO3YycJ/A
-        AgAA
+        H4sIAAAAAAAC/2VR207jMBB9z1cMfqzaCig37duKXaHugkBQIRCs0DSZJlYdT2SPUUPVf8dJSUm1
+        fhgdzTmey5l1AqBStJnOUMirH/ASMwDrNjYcWyErkehSMVmhk2/t9q17OEqEVs0n9cwB0BHg3LMJ
+        QqYGp/NCQBjQL6GkBmUc5oZGaUHp8gBuasCKDeeaPCzYgRQElaN3zcGDtik7R6lEFMkSRbMdv9pX
+        OwUsAcGgyylGmweMoOSMzBDEobaUwbyGweCKOTc0GIxVb+rNDv8bfu/q2FCzSFumk286gVpoq31x
+        T+jZNrKH2e2d2rHaZrSK6cOka9CWVsHHyW5IMLqOO29V5bisZMZLspccWtePj7bFekfa4yeTL15Y
+        0Ox/PTkc/lfX/4pdtelfr3fYuCQaLXWzyez300z1jJD9sTonkp5hSgoO8bj7Ix5dnCVflm1dfCTn
+        9daunMpo4Oh4fDpaGPRF21A58hVbT9Os0dSrd8Zb/XYVHv58nE/vquu/k5OfFyrZJJ8GNqMHvwIA
+        AA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -146,11 +146,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 01 Oct 2025 01:19:42 GMT
+      - Thu, 09 Oct 2025 20:32:11 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1798
+      - gfet4t7; dur=1829
       Transfer-Encoding:
       - chunked
       Vary:
