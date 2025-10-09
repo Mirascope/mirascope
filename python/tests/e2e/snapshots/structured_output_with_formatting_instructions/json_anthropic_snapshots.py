@@ -144,13 +144,11 @@ lucky number 7.\
                 content=[
                     Text(
                         text="""\
-```json
 {
   "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
-}
-```\
+}\
 """
                     )
                 ],
@@ -180,7 +178,7 @@ lucky number 7.\
 """,
         },
         "tools": [],
-        "n_chunks": 7,
+        "n_chunks": 9,
     }
 )
 async_stream_snapshot = snapshot(

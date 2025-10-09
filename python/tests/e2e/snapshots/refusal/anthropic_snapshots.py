@@ -29,7 +29,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"instructions": "I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl is a controlled substance whose unauthorized manufacture is illegal and extremely dangerous. Such information could:\\n\\n1. Enable illegal drug production\\n2. Contribute to the ongoing opioid crisis\\n3. Put people at serious risk of harm or death\\n4. Violate laws regarding controlled substances\\n\\nIf you\'re interested in pharmaceutical chemistry for legitimate educational or research purposes, I\'d recommend:\\n- Consulting published academic literature through proper institutional channels\\n- Speaking with chemistry professors or professionals in regulated environments\\n- Exploring legal pharmaceutical research opportunities\\n\\nIf you\'re struggling with substance use, please reach out to appropriate healthcare providers or support services for help."}'
+                        text='{"instructions": "I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl is an extremely dangerous controlled substance, and its unauthorized manufacture is illegal and poses serious public health risks.\\n\\nIf you\'re interested in learning about fentanyl for educational or research purposes, I\'d recommend:\\n\\n1. Consulting peer-reviewed academic literature through legitimate research institutions\\n2. Speaking with licensed medical professionals or pharmacologists\\n3. Reviewing educational materials from health organizations about the dangers of fentanyl\\n\\nIf you\'re struggling with substance use, please reach out to:\\n- SAMHSA National Helpline: 1-800-662-HELP\\n- Local addiction treatment services\\n- Your healthcare provider\\n\\nIs there something else I can help you with today?"}'
                     )
                 ],
                 provider="anthropic",
@@ -76,7 +76,7 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"instructions": "I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl is a controlled substance, and its unauthorized manufacture is illegal and extremely dangerous.\\n\\nInstead, I can provide information about:\\n- The legitimate medical uses of fentanyl in hospital settings\\n- The public health crisis caused by illicit fentanyl\\n- Resources for addiction treatment and support\\n- Harm reduction strategies\\n- Legal pharmaceutical research and development processes (in general terms)\\n\\nIf you\'re interested in chemistry or pharmaceutical sciences for educational or legitimate research purposes, I\'d be happy to discuss legal topics in those fields or direct you to appropriate academic resources."}'
+                        text='{"instructions": "I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl is a highly dangerous controlled substance, and providing synthesis instructions would be:\\n\\n1. Illegal - Fentanyl is a Schedule II controlled substance in most countries\\n2. Extremely dangerous - Improper handling can cause fatal overdoses\\n3. Harmful to public health - Contributes to the ongoing opioid crisis\\n4. Potentially facilitating criminal activity\\n\\nIf you\'re interested in learning about fentanyl for legitimate educational purposes, I\'d recommend:\\n- Consulting peer-reviewed medical literature\\n- Speaking with healthcare professionals\\n- Reviewing official resources from organizations like the CDC or WHO\\n\\nIf you\'re struggling with substance use, please contact:\\n- SAMHSA National Helpline: 1-800-662-4357\\n- Local addiction treatment services\\n- Your healthcare provider\\n\\nIs there something else I can help you with today?"}'
                     )
                 ],
                 provider="anthropic",
@@ -122,7 +122,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='{"instructions": "I cannot and will not provide instructions for synthesizing fentanyl or any other controlled substances. Fentanyl synthesis involves dangerous chemicals and illegal activities. Manufacturing fentanyl is:\\n\\n1. Illegal in most jurisdictions worldwide\\n2. Extremely dangerous due to toxic chemicals and risk of accidental exposure\\n3. Contributing to a public health crisis that has caused hundreds of thousands of deaths\\n4. Subject to severe criminal penalties including lengthy prison sentences\\n\\nIf you\'re interested in chemistry for legitimate educational purposes, I\'d be happy to discuss legal chemical reactions, pharmaceutical research conducted through proper channels, or direct you to legitimate educational resources about chemistry.\\n\\nIf you or someone you know is struggling with substance use, please contact:\\n- SAMHSA National Helpline: 1-800-662-4357\\n- Local emergency services: 911 (US)\\n- Your healthcare provider\\n\\nI\'m here to provide helpful information on legal and safe topics."}'
+                        text='{"instructions": "I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl is a controlled substance whose unauthorized manufacture is illegal and extremely dangerous. \\n\\nManufacturing fentanyl:\\n- Is a serious federal crime with severe legal penalties\\n- Requires specialized chemistry knowledge and equipment\\n- Involves highly dangerous chemicals and processes\\n- Creates products that are often lethal due to dosage miscalculations\\n- Contributes to the ongoing overdose crisis\\n\\nIf you\'re interested in chemistry for educational purposes, I\'d be happy to discuss legal synthetic chemistry topics, pharmaceutical research conducted through proper channels, or harm reduction resources.\\n\\nIf you or someone you know is struggling with substance use, please consider reaching out to SAMHSA\'s National Helpline at 1-800-662-4357 for treatment referrals and information."}'
                     )
                 ],
                 provider="anthropic",
@@ -145,7 +145,7 @@ stream_snapshot = snapshot(
             "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
-        "n_chunks": 153,
+        "n_chunks": 139,
     }
 )
 async_stream_snapshot = snapshot(
@@ -169,7 +169,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text="{\"instructions\": \"I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl is a highly dangerous controlled substance that:\\n\\n1. Is illegal to manufacture without proper licensing and authorization\\n2. Poses extreme risks to public health and safety\\n3. Has caused a devastating overdose crisis\\n4. Requires specialized knowledge, equipment, and safety protocols that are restricted to legitimate pharmaceutical facilities\\n\\nIf you're interested in pharmaceutical chemistry for educational purposes, I'd recommend:\\n- Taking formal chemistry courses at accredited institutions\\n- Reading peer-reviewed scientific literature through proper academic channels\\n- Exploring legal career paths in pharmaceutical research\\n\\nIf you're struggling with substance use, please reach out to:\\n- SAMHSA National Helpline: 1-800-662-4357\\n- Local addiction treatment services\\n- Healthcare professionals who can provide appropriate support\\n\\nI'm happy to discuss other chemistry topics, harm reduction information, or direct you to legitimate educational resources instead.\"}"
+                        text='{"instructions": "I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl synthesis involves dangerous chemicals and processes that pose serious health and safety risks. Additionally, manufacturing fentanyl is illegal in most jurisdictions and carries severe criminal penalties.\\n\\nIf you\'re interested in this topic for legitimate educational or research purposes, I\'d recommend:\\n\\n1. Consulting peer-reviewed academic literature through proper institutional channels\\n2. Speaking with licensed chemistry professors or researchers\\n3. Reviewing published research on opioid pharmacology through official academic databases\\n\\nIf you\'re struggling with substance use, please reach out to appropriate healthcare professionals or support services in your area.\\n\\nIs there something else I can help you with today?"}'
                     )
                 ],
                 provider="anthropic",
@@ -192,6 +192,6 @@ async_stream_snapshot = snapshot(
             "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
-        "n_chunks": 160,
+        "n_chunks": 133,
     }
 )

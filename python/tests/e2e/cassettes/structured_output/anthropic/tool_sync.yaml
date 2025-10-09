@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please recommend
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
       the most popular book by Patrick Rothfuss"}],"model":"claude-sonnet-4-0","system":"Always
       respond to the user''s query using the __mirascope_formatted_output_tool__ tool
       for structured output.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
@@ -19,7 +19,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1117'
+      - '1118'
       content-type:
       - application/json
       host:
@@ -51,16 +51,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dFJdi9swEPwrYZ4VsJ3LpfXbQdOmHL1+cDT9oIg9eWOL2JIrrQpt8H8/
-        5Gt6XEvfVjOzs6NlT7ANagyx1UW537XXl5848XWoPq++XNm7Y7XdQEF+jpxVHCO1DIXg+wxQjDYK
-        OYHC4BvuUcP0lBpeRu8cy/JiWRXVuliXF1Aw3gk7Qf31dLYU73udYvacg+R30kV56/371Wa3f0XP
-        q8EEe9f8+phaKDgacp/Wgw0UjR9ZH3wYSIQb7ZOMSfRsqrOlG5OgPkGszIFvd9vFzdWb7eLty0Wu
-        969vXkCBknQ+ZOHBhij695B3JMGaIxR6ekQ/eOkOKUZMCoHEuhb1Zpq+KUTxow5M0bunX5uJyN8T
-        O8OoXep7hTTvsj49pNTij+wi6vXlSsGQ6VibwCTWO/1UUZz5wNT8jzv35gE8djxwoF6vh3/1j2zZ
-        /c1OCn92+gA9KxUihx/WsBbLATXyBTQUGkzTPQAAAP//AwDfGbd5TwIAAA==
+        H4sIAAAAAAAAAwAAAP//dJHRThsxEEV/JZpnR9qFLE39FiUQQIJWLVKKUGWNvJOsya69eMZRabT/
+        Xjk0IFrxZt9zZ+54vIcu1NSCBttiqmnMwXuS8WR8UpxURVVOQIGrQUPHG1OUy6cpLyfP08Wkuv8s
+        frna/p7tzkCBPPeUXcSMGwIFMbRZQGbHgl5AgQ1eyAvoh/3RLyG0JjEdU/I9maL8cbf6dW1vFrb6
+        /jibz3eunMcpggKPXa4zpnMR2YaezDrEDkWoNiFJn8Qcmprc0vdJQO9BnBymubs8H93Obs5HXy5G
+        +by6ul2AAkzShJiNaxdZzN+QryjR2S0oaPFN/RakWSdmGBREFOc3oD8Nw08FLKE3kZCDf/+0A2B6
+        SuQtgfapbRWkw6L0/mVKI2FLnkFXZ6cKLNqGjI2E4oI37x3FkUfC+iN2rM0B1DfUUcTWVN3//jda
+        Nv/SQcHrTl+kaamAKe6cJSOOImjI31tjrGEY/gAAAP//AwDgAb4iTwIAAA==
     headers:
       CF-RAY:
-      - 984553218ea9767c-SEA
+      - 98c09f5739a690db-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -68,7 +68,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 24 Sep 2025 21:20:17 GMT
+      - Thu, 09 Oct 2025 20:28:07 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -82,35 +82,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-24T21:20:16Z'
+      - '2025-10-09T20:28:07Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-24T21:20:17Z'
+      - '2025-10-09T20:28:07Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-24T21:20:15Z'
+      - '2025-10-09T20:28:05Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-24T21:20:16Z'
+      - '2025-10-09T20:28:07Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTTvbuWpgqffB6RNmptes
+      - req_011CTxFkvCpAwCxkUcXNK4Eo
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1829'
+      - '2271'
     status:
       code: 200
       message: OK

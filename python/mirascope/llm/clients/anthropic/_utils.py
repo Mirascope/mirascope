@@ -156,7 +156,7 @@ def prepare_anthropic_request(
     """Prepares a request for the `Anthropic.messages.create` method."""
     kwargs: MessageCreateKwargs = {
         "model": model_id,
-        "max_tokens": 1024,
+        "max_tokens": 16000,
     }
 
     with _base_utils.ensure_all_params_accessed(

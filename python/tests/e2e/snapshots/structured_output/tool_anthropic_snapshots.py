@@ -202,7 +202,7 @@ stream_snapshot = snapshot(
             "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
         },
         "tools": [],
-        "n_chunks": 18,
+        "n_chunks": 22,
     }
 )
 async_stream_snapshot = snapshot(

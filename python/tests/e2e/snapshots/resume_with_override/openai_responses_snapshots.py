@@ -22,16 +22,16 @@ sync_snapshot = snapshot(
             ),
             UserMessage(content=[Text(text="Can you double-check that?")]),
             AssistantMessage(
-                content=[Text(text="I was indeed created by Anthropic!")],
+                content=[Text(text="I was indeed created by Anthropic.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
                 raw_content=[
                     {
-                        "id": "msg_07ad9d163b8e3c060068dc815f06108197b63429a920413dae",
+                        "id": "msg_0a79f0b8618fd3640068e81bd15b0081939f3eebbf58f60a9a",
                         "content": [
                             {
                                 "annotations": [],
-                                "text": "I was indeed created by Anthropic!",
+                                "text": "I was indeed created by Anthropic.",
                                 "type": "output_text",
                                 "logprobs": [],
                             }
@@ -63,16 +63,16 @@ async_snapshot = snapshot(
             ),
             UserMessage(content=[Text(text="Can you double-check that?")]),
             AssistantMessage(
-                content=[Text(text="Yes, I was created by Anthropic.")],
+                content=[Text(text="Certainly! I was created by Anthropic.")],
                 provider="openai:responses",
                 model_id="gpt-4o",
                 raw_content=[
                     {
-                        "id": "msg_07b42c8757057c4b0068dc816bb98c81979a37d6acc15436d8",
+                        "id": "msg_037bfe49fad7f3020068e81bdc53e881979808beac7140fa31",
                         "content": [
                             {
                                 "annotations": [],
-                                "text": "Yes, I was created by Anthropic.",
+                                "text": "Certainly! I was created by Anthropic.",
                                 "type": "output_text",
                                 "logprobs": [],
                             }
@@ -103,16 +103,16 @@ stream_snapshot = snapshot(
             ),
             UserMessage(content=[Text(text="Can you double-check that?")]),
             AssistantMessage(
-                content=[Text(text="Yes, I was indeed created by Anthropic.")],
+                content=[Text(text="Yes, I'm definitely created by Anthropic!")],
                 provider="openai:responses",
                 model_id="gpt-4o",
                 raw_content=[
                     {
-                        "id": "msg_0c50d3cc2a8564780068dc817af8288197adf27830639199ef",
+                        "id": "msg_085a34355e7cd43c0068e81be8c0dc819695b3095782c73155",
                         "content": [
                             {
                                 "annotations": [],
-                                "text": "Yes, I was indeed created by Anthropic.",
+                                "text": "Yes, I'm definitely created by Anthropic!",
                                 "type": "output_text",
                                 "logprobs": [],
                             }
@@ -126,7 +126,7 @@ stream_snapshot = snapshot(
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 13,
+        "n_chunks": 12,
     }
 )
 async_stream_snapshot = snapshot(
@@ -144,16 +144,18 @@ async_stream_snapshot = snapshot(
             ),
             UserMessage(content=[Text(text="Can you double-check that?")]),
             AssistantMessage(
-                content=[Text(text="Yep, I was indeed created by Anthropic.")],
+                content=[
+                    Text(text="Yes, I can confirm that I was created by Anthropic.")
+                ],
                 provider="openai:responses",
                 model_id="gpt-4o",
                 raw_content=[
                     {
-                        "id": "msg_0c8ab4fbebb11de00068dc818a298081938b634c96de22b5a9",
+                        "id": "msg_0ae62be960f936480068e81bf355d88197b9526725c0be2bfd",
                         "content": [
                             {
                                 "annotations": [],
-                                "text": "Yep, I was indeed created by Anthropic.",
+                                "text": "Yes, I can confirm that I was created by Anthropic.",
                                 "type": "output_text",
                                 "logprobs": [],
                             }
@@ -167,6 +169,6 @@ async_stream_snapshot = snapshot(
         ],
         "format": None,
         "tools": [],
-        "n_chunks": 13,
+        "n_chunks": 16,
     }
 )

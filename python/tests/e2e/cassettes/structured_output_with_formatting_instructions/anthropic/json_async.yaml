@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please recommend
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
       a book to me!"}],"model":"claude-sonnet-4-0","system":"Always recommend The
       Name of the Wind.\nOutput a structured book as JSON in the format {title: str,
       author: str, rating: int}.\nThe title should be in all caps, and the rating
@@ -15,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '344'
+      - '345'
       content-type:
       - application/json
       host:
@@ -47,15 +47,15 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJFdS8NAEEX/SrjPW+in1X0TWqugVURUMBKWZEyWJrN1d1YqJf9dYq2f
-        +DTDnHMHhtnCFtBoQpn1B4tytbDnM7+a3pejCQ9vm2ITjqAgr2vqLArBlAQF7+puYEKwQQwLFBpX
-        UA2NvDaxoF5wzCS9cW/YH076k8EYCrljIRboh+1+pdCmC78XjW3KSZJCrNSUQicpbk7nyfL4Yp5c
-        niRdf3e2nKVQO89EqZzfiVdGvM1XybWT6imG8Cl5I5bLTpqm3KJ9VAji1pknExxDg7jIJHrGBwj0
-        HIlzguZY1wrx/Wa9heV1lEzcijhAH0wVcpNXlOWejFjH2U+hv+eeTPEf22e7/bSuqCFv6mzS/PW/
-        6KD6TVsFF+X7aHSoEMi/2JwyseSh0T2qML5A274BAAD//wMAPuzQt/YBAAA=
+        H4sIAAAAAAAAAwAAAP//dJHdSsNAEEZfJXzXW2hqamXvhFbqRauIImIkrJuxWZrupruzYg15d0m1
+        /uLVDN85MzBMi40rqYaErlUsaRCctcSDbDAajsbDcZpBwJSQ2IRVMUyz+Wuq3eN4sdjdUJNNt2rF
+        dwYCvGuotygEtSIIeFf3gQrBBFaWIaCdZbIMed8efKaXnuyLRJvbJMnBhmvKIZMc1/NZsjxdzJKL
+        s6Tvb8+X0xzi3VORK+ffxUvF3uh1cuW4eoohfEpesbGrXprktkP3IBDYNYUnFZyFBNmy4OgtPkCg
+        bSSrCdLGuhaI+4NkC2ObyAW7NdkAeTwR0EpXVGhPio2zxU9heOCeVPkfO8z2+6mpaENe1cV489f/
+        omn1m3YCLvL36OhEIJB/NpoKNuQh0X+hVL5E170BAAD//wMA8w0NJfYBAAA=
     headers:
       CF-RAY:
-      - 98455509bfcf76b0-SEA
+      - 98c0a0528cf4dee9-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -63,7 +63,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 24 Sep 2025 21:21:35 GMT
+      - Thu, 09 Oct 2025 20:28:48 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -77,35 +77,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-24T21:21:34Z'
+      - '2025-10-09T20:28:47Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-24T21:21:35Z'
+      - '2025-10-09T20:28:48Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-24T21:21:33Z'
+      - '2025-10-09T20:28:45Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-24T21:21:34Z'
+      - '2025-10-09T20:28:47Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTTvhfV8ea71oQsgQGRWw
+      - req_011CTxFotELH1uH2V2AECjf2
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '1446'
+      - '2143'
     status:
       code: 200
       message: OK

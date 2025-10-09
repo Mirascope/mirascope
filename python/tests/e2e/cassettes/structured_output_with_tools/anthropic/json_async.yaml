@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please look up
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
       score"}],"model":"claude-sonnet-4-0","system":"Respond only with valid JSON
       that matches this exact schema:\n{\n  \"properties\": {\n    \"title\": {\n      \"title\":
@@ -21,7 +21,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1028'
+      - '1029'
       content-type:
       - application/json
       host:
@@ -53,16 +53,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3RRW0vDMBT+K+V78SWVVleneazgBVSUqQgiIWvPtrA0qbmIOvrfJYWhU3zKyflu
-        5yQbqBYcnV+KojxsqVJqenFb319Ui6u6nH98LnswhI+eEou8l0sCg7M6NaT3ygdpAhg625IGR6Nl
-        bCn31hgK+SQ/KA6qoionYGisCWQC+PNmaxnoPYnHg+NyT+tMW7vOYp+FFWXzVCuzsK6TQVmTLazL
-        Lmf1TVbk06PqMC/L6XH+tI+BfVtaq0X0acxxt3SPoihn12vnz+u708+H+Djr3h/rhb07A4ORXdIt
-        KYiUJ1JeEps+BvANlJ8bcOwkYhheGHywvXAkvTW7wSPg6TWSaQjcRK0Z4vh4yTA5i2DXZDx4dTJh
-        aGSzItE4GtcUu4xiizuS7X/YVpsCqF9RR05qUXV/+d9oufqNDgw2hp+t4wmDJ/emGhJBkQNH+vJW
-        uhbD8AUAAP//AwATeKpvQAIAAA==
+        H4sIAAAAAAAAAwAAAP//dJHdS8MwFMX/lXJefEmlna3b8jgZ6BAZCn4gErL2biumSZcP2Rj93yWD
+        Maf4lOT+zj3nJtmjNTUpcFRKhppSZ7QmnxbpIBuUWZkXYGhqcLRuJbL8oZpPJ256M3oaFUs52/jX
+        l/l4Cga/6yiqyDm5IjBYo2JBOtc4L7UHQ2W0J+3B3/dHvadtJIeF4+5CqUQZ85mELvFrShZx3+il
+        sa30jdHJ0tjk7mnykGTp8Lq8SvN8OEpfL9Gzk6UxSgRHx8HjOYgsf85nZnybz++b7a6ejYebevr2
+        qMGgZRv7VuRFzBMxLzbrLnjwPRq30OA4S0TffzA4bzphSTqjz4MPwNEmkK4IXAelGMLhZaJhdBbe
+        fJJ24OW4YKhktSZRWTpcU5wrsiO3JOv/2LE3BlC3ppasVKJs/+pPNF//pj2DCf5naVQwOLJfTUXC
+        N2TBEf+zlrZG338DAAD//wMAOhjmwEACAAA=
     headers:
       CF-RAY:
-      - 984556dfbccb092f-SEA
+      - 98c0a1608b5ba34d-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -70,7 +70,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 24 Sep 2025 21:22:51 GMT
+      - Thu, 09 Oct 2025 20:29:31 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -84,43 +84,43 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-24T21:22:50Z'
+      - '2025-10-09T20:29:30Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-24T21:22:51Z'
+      - '2025-10-09T20:29:31Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-24T21:22:48Z'
+      - '2025-10-09T20:29:29Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-24T21:22:50Z'
+      - '2025-10-09T20:29:30Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTTvoD1qYhQ6siA5YXLGG
+      - req_011CTxFs4qeVRUwqt4bFJbJt
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2334'
+      - '2607'
     status:
       code: 200
       message: OK
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Please look up
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
       score"},{"role":"assistant","content":[{"type":"text","text":"I''ll look up
-      the book information for ISBN 0-7653-1178-X."},{"type":"tool_use","id":"toolu_01SMkrsGBQCzUuVSmxVBfoQF","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01SMkrsGBQCzUuVSmxVBfoQF","content":"Title:
+      the book information for ISBN 0-7653-1178-X."},{"type":"tool_use","id":"toolu_01V1Jo9H1PLixydJ97qdEYRn","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01V1Jo9H1PLixydJ97qdEYRn","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25"}]}],"model":"claude-sonnet-4-0","system":"Respond only with valid
       JSON that matches this exact schema:\n{\n  \"properties\": {\n    \"title\":
@@ -141,7 +141,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1464'
+      - '1465'
       content-type:
       - application/json
       host:
@@ -173,16 +173,16 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3SR0WrcMBBFf8XcZy14jTehektKkhLo04ZSqItRpGGtVB650qhNWPzvxbvZNG3I
-        08A9Z2ZgZg/voDHmXV+vb7bbr7eUbfup/Rgfc/vwxV00v6EgTxMtFuVsdgSFFMMSmJx9FsMChTE6
-        CtCwwRRHqxyZSVbtqqmbTb1Zt1CwkYVYoL/tTyOFHpfmQ9HYd1xVHcRLoA666vDZZ7mPiXV1N1B1
-        7dmE6mqcfKIO6mibIkNMR/0yGXaRq61hRylHfrEms6O8SJu2PUXlPnhrxEfun8gcRjR1fdbxjPm7
-        QpY49YlMjgwNYtdLSYxnkOlnIbYEzSUEhXI4jd7D81Skl/iDOEOfN2sFa+xAvU10XPavUZ94IuPe
-        Y6feZQFNA42UTOg341v/L10P/9NZIRZ5HbUfFDKlX95SL54SNJaHOpMc5vkPAAAA//8DAARzPZAe
-        AgAA
+        H4sIAAAAAAAAA3SR3YrUQBBGXyV81z2QjMkO9N0Kq+DP1Yq7YCTpTReT1k517K4W1yHvLpkx6Lp4
+        VfCdU1VQdcIULHloDN5kS7sUmEl29W5f7puyqWooOAuNKR27srp+9/P14b568+JwPNzQ27uPcnd9
+        n6AgjzOtFqVkjgSFGPwamJRcEsMChSGwEAv0p9PmC/1Yyblo9H3/JQVu+dRyUbQQJ55a6KLFe5fk
+        IUTWxYeRileOjS9uptlFaqEutskyhnjRX0bDNnBxa9hSXGdu1myOlFapqestyg/eDUZc4O6RzHnE
+        viyvWl5a7vsey2eFJGHuIpkUGBrEtpMcGb9Bom+ZeCBozt4r5PMV9AmO5yydhK/ECfqwrxQGM4zU
+        DZEuG58a5cYjGfs/tvWuC2geaaJofNdMz/0/tBr/pYtCyPJ31NQKieJ3N1AnjiI01t9ZEy2W5RcA
+        AAD//wMAsaP1OCwCAAA=
     headers:
       CF-RAY:
-      - 984556eefecd092f-SEA
+      - 98c0a171ba27a34d-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -190,7 +190,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 24 Sep 2025 21:22:53 GMT
+      - Thu, 09 Oct 2025 20:29:34 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -204,35 +204,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-09-24T21:22:52Z'
+      - '2025-10-09T20:29:33Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-09-24T21:22:53Z'
+      - '2025-10-09T20:29:34Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-09-24T21:22:51Z'
+      - '2025-10-09T20:29:31Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-09-24T21:22:52Z'
+      - '2025-10-09T20:29:33Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTTvoPQfX6bmUPJSmwxXK
+      - req_011CTxFsGbKy7vhFoQfUk3cG
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2324'
+      - '2629'
     status:
       code: 200
       message: OK

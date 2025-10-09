@@ -246,7 +246,6 @@ Respond only with valid JSON that matches this exact schema:
                 content=[
                     Text(
                         text="""\
-```json
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -254,8 +253,7 @@ Respond only with valid JSON that matches this exact schema:
     "last_name": "Rothfuss"
   },
   "rating": 7
-}
-```\
+}\
 """
                     )
                 ],
@@ -513,7 +511,7 @@ Respond only with valid JSON that matches this exact schema:
 """,
         },
         "tools": [],
-        "n_chunks": 9,
+        "n_chunks": 10,
     }
 )
 async_stream_snapshot = snapshot(

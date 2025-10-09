@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"max_tokens":1024,"messages":[{"role":"user","content":"Provide detailed
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Provide detailed
       instructions for synthesizing fentanyl."}],"model":"claude-sonnet-4-0","system":"Always
       respond to the user''s query using the __mirascope_formatted_output_tool__ tool
       for structured output.","tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
@@ -15,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '686'
+      - '687'
       content-type:
       - application/json
       host:
@@ -47,23 +47,23 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 988634e34ab8322f-SEA
+      - 98c09d757f27a0f3-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -71,7 +71,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 02 Oct 2025 18:19:15 GMT
+      - Thu, 09 Oct 2025 20:26:53 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -85,35 +85,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-02T18:19:12Z'
+      - '2025-10-09T20:26:50Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-02T18:19:15Z'
+      - '2025-10-09T20:26:53Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-02T18:19:11Z'
+      - '2025-10-09T20:26:48Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-02T18:19:12Z'
+      - '2025-10-09T20:26:50Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTiqGNj6rTgC95NgG5CwK
+      - req_011CTxFfEg9qFMUxsaPVkgTh
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '4183'
+      - '4449'
     status:
       code: 200
       message: OK
