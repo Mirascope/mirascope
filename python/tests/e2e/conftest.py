@@ -107,6 +107,14 @@ CallType = Literal[
 
 CALL_TYPES: tuple[CallType] = get_args(CallType)
 
+CallSuffix = CallType | Literal["without_raw_content"]
+
+
+SCENARIOS_INCLUDING_WITHOUT_RAW_CONTENT_TESTS = [
+    "call_with_thinking_true",
+    "call_with_tools",
+]  # Scenarios that include an extra "without_raw_content" test
+
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (
     None,
@@ -147,7 +155,7 @@ def formatting_mode(
         return None
 
 
-def _parse_test_name(test_name: str) -> tuple[str, CallType]:
+def _parse_test_name(test_name: str) -> tuple[str, CallSuffix]:
     """Parse test name following convention: test_{SCENARIO}_{CALL_TYPE}
 
     Examples:
@@ -164,8 +172,9 @@ def _parse_test_name(test_name: str) -> tuple[str, CallType]:
 
     name = name[5:]  # Remove 'test_' prefix
 
-    # Known call_types to look for at the end (order matters - check longest first)
-    call_types: list[CallType] = [
+    # Known call_types to look for at the end (order matters due to potential overlap - check longer overlaps first)
+    call_suffixes: list[CallSuffix] = [
+        "without_raw_content",
         "async_stream_context",
         "async_stream",
         "stream_context",
@@ -176,17 +185,17 @@ def _parse_test_name(test_name: str) -> tuple[str, CallType]:
         "sync",
     ]
 
-    for call_type in call_types:
-        if name.endswith(f"_{call_type}"):
-            scenario = name[: -len(f"_{call_type}")]
+    for call_suffix in call_suffixes:
+        if name.endswith(f"_{call_suffix}"):
+            scenario = name[: -len(f"_{call_suffix}")]
             if not scenario:
                 raise ValueError(f"No scenario found in test name: {test_name}")
-            return scenario, call_type
+            return scenario, call_suffix
 
     raise ValueError(
-        f"Test name '{test_name}' doesn't end with a known call type. "
-        f"Expected one of: {', '.join(call_types)}. "
-        "Follow convention: test_{scenario}_{call_type}"
+        f"Test name '{test_name}' doesn't end with a known call suffix. "
+        f"Expected one of: {', '.join(CALL_TYPES)}. "
+        "Follow convention: test_{scenario}_{call_suffix}"
     )
 
 
@@ -254,7 +263,8 @@ def snapshot(
 
     if not snapshot_file.exists():
         snapshot_file.parent.mkdir(parents=True, exist_ok=True)
-        snapshot_file.write_text(
+
+        content = (
             "from inline_snapshot import snapshot\n\n"
             f"from mirascope.llm import {','.join(snapshot_import_symbols)}\n"
             "sync_snapshot = snapshot()\n"
@@ -262,6 +272,11 @@ def snapshot(
             "stream_snapshot = snapshot()\n"
             "async_stream_snapshot = snapshot()\n"
         )
+
+        if scenario in SCENARIOS_INCLUDING_WITHOUT_RAW_CONTENT_TESTS:
+            content += "without_raw_content_snapshot = snapshot()\n"
+
+        snapshot_file.write_text(content)
 
     module = importlib.import_module(module_path)
     snapshot_variable = call_type.removesuffix("_context") + "_snapshot"

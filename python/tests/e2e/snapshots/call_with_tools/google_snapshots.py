@@ -345,3 +345,85 @@ async_stream_snapshot = snapshot(
         "n_chunks": 3,
     }
 )
+without_raw_content_snapshot = snapshot(
+    {
+        "provider": "google",
+        "model_id": "gemini-2.5-flash",
+        "params": {},
+        "finish_reason": None,
+        "messages": [
+            SystemMessage(content=Text(text="Use parallel tool calling.")),
+            UserMessage(
+                content=[
+                    Text(
+                        text="Please retrieve the secrets associated with each of these passwords: mellon,radiance"
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    ToolCall(
+                        id="<unknown>",
+                        name="secret_retrieval_tool",
+                        args='{"password": "mellon"}',
+                    ),
+                    ToolCall(
+                        id="<unknown>",
+                        name="secret_retrieval_tool",
+                        args='{"password": "radiance"}',
+                    ),
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
+            ),
+            UserMessage(
+                content=[
+                    ToolOutput(
+                        id="<unknown>",
+                        name="secret_retrieval_tool",
+                        value="Welcome to Moria!",
+                    ),
+                    ToolOutput(
+                        id="<unknown>",
+                        name="secret_retrieval_tool",
+                        value="Life before Death",
+                    ),
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text='I have retrieved the following secrets: "Welcome to Moria!" and "Life before Death".\n'
+                    )
+                ],
+                provider="google",
+                model_id="gemini-2.5-flash",
+                raw_content=[],
+            ),
+        ],
+        "format": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
+    }
+)

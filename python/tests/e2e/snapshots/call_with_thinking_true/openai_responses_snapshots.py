@@ -475,3 +475,89 @@ So far, I have 79, 179, and 379 as the only qualifying primes—totaling three. 
         "logging": [],
     }
 )
+without_raw_content_snapshot = snapshot(
+    {
+        "response": {
+            "provider": "openai:responses",
+            "model_id": "gpt-5",
+            "params": {"thinking": False},
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="How many primes below 400 contain 79 as a substring? Answer ONLY with the number, not sharing which primes they are."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Thought(
+                            thought="""\
+**Counting specific primes**
+
+I need to find the primes less than 400 that include the substring "79." The obvious one is 79 itself, and I thought of 179 and 197. Wait, 197 has "97," not "79." So, only the contiguous sequence "79" counts. The candidates are: \n\
+
+- Two-digit: 79.
+- Three-digit: 179, 279, and 379. \n\
+
+However, any numbers starting with 79 and going up to 799 aren't under 400, so they don't count. I'm focusing on just the viable primes.\
+"""
+                        ),
+                        Thought(
+                            thought="""\
+**Identifying prime candidates**
+
+I’m only looking at numbers less than 400. For three-digit numbers, I need to find those that end in "79," which gives me 179, 279, and 379. The two-digit number 79 also counts. However, I realize "97" doesn't have "79" in order, so it doesn’t work here.
+
+Now, checking for primality: 79 and 179 are both primes. 279 isn’t prime because it's divisible by 3. For 379, I’ll check primes up to about 19 and find that it’s prime as well.\
+"""
+                        ),
+                        Thought(
+                            thought="""\
+**Confirming prime numbers**
+
+I’ve confirmed that the primes among my candidates are 79, 179, and 379, totaling three primes. I checked if there were any other candidates with "79" as digits, but it seems it needs to be contiguous—not just separated. \n\
+
+Also, while considering other numbers like 97 and 197, they don't contain "79" in the correct order. So, 7 and 9 being on the edges doesn’t matter either. \n\
+
+To double-check, I verified the primality of 179 using primes up to its square root, confirming it is prime. Thus, my final answer remains three primes containing "79."\
+"""
+                        ),
+                        Thought(
+                            thought="""\
+**Finalizing the answer**
+
+I've confirmed that 197 and 297 don’t have "79," and 397 contains "97" instead. We've included 179, identified 279 as composite, and verified 379 as prime. It seems only 79 itself counts. \n\
+
+When double-checking, I see no other instances of 7 and 9 appearing across digit boundaries in two-digit numbers besides 79. \n\
+
+So, the answer is 3. However, since the user requested to answer with the number alone, I’ll just say: 3.\
+"""
+                        ),
+                        Text(text="3"),
+                    ],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="If you remember what the primes were, then share them, or say 'I don't remember.'"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[Text(text="79, 179, 379")],
+                    provider="openai:responses",
+                    model_id="gpt-5",
+                    raw_content=[],
+                ),
+            ],
+            "format": None,
+            "tools": [],
+        },
+        "logging": [],
+    }
+)

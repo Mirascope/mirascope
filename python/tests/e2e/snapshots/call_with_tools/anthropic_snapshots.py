@@ -369,3 +369,93 @@ Here are the secrets retrieved for each password:
         "n_chunks": 8,
     }
 )
+without_raw_content_snapshot = snapshot(
+    {
+        "provider": "anthropic",
+        "model_id": "claude-sonnet-4-0",
+        "params": {},
+        "finish_reason": None,
+        "messages": [
+            SystemMessage(content=Text(text="Use parallel tool calling.")),
+            UserMessage(
+                content=[
+                    Text(
+                        text="Please retrieve the secrets associated with each of these passwords: mellon,radiance"
+                    )
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text="I'll retrieve the secrets for both passwords using parallel tool calls."
+                    ),
+                    ToolCall(
+                        id="toolu_01NdBAcr3MmjRn4H8a5u65H1",
+                        name="secret_retrieval_tool",
+                        args='{"password": "mellon"}',
+                    ),
+                    ToolCall(
+                        id="toolu_012mitiktCN7WdWx8Ygvu49W",
+                        name="secret_retrieval_tool",
+                        args='{"password": "radiance"}',
+                    ),
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
+            ),
+            UserMessage(
+                content=[
+                    ToolOutput(
+                        id="toolu_01NdBAcr3MmjRn4H8a5u65H1",
+                        name="secret_retrieval_tool",
+                        value="Welcome to Moria!",
+                    ),
+                    ToolOutput(
+                        id="toolu_012mitiktCN7WdWx8Ygvu49W",
+                        name="secret_retrieval_tool",
+                        value="Life before Death",
+                    ),
+                ]
+            ),
+            AssistantMessage(
+                content=[
+                    Text(
+                        text="""\
+Here are the secrets retrieved for each password:
+
+- Password "mellon": **Welcome to Moria!**
+- Password "radiance": **Life before Death**\
+"""
+                    )
+                ],
+                provider="anthropic",
+                model_id="claude-sonnet-4-0",
+                raw_content=[],
+            ),
+        ],
+        "format": None,
+        "tools": [
+            {
+                "name": "secret_retrieval_tool",
+                "description": "A tool that requires a password to retrieve a secret.",
+                "parameters": """\
+{
+  "properties": {
+    "password": {
+      "title": "Password",
+      "type": "string"
+    }
+  },
+  "required": [
+    "password"
+  ],
+  "additionalProperties": false,
+  "defs": null
+}\
+""",
+                "strict": False,
+            }
+        ],
+    }
+)

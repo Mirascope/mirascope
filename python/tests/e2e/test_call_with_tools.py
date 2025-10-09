@@ -4,7 +4,11 @@ import pytest
 
 from mirascope import llm
 from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
-from tests.utils import response_snapshot_dict, stream_response_snapshot_dict
+from tests.utils import (
+    remove_response_raw_content,
+    response_snapshot_dict,
+    stream_response_snapshot_dict,
+)
 
 PASSWORD_MAP = {"mellon": "Welcome to Moria!", "radiance": "Life before Death"}
 
@@ -375,6 +379,49 @@ async def test_call_with_tools_async_stream_context(
     await response.finish()
 
     assert stream_response_snapshot_dict(response) == snapshot
+    pretty = response.pretty()
+    assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
+    assert "Life before Death" in pretty, (
+        f"Expected 'Life before Death' to be in response: {pretty}"
+    )
+
+
+@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.vcr
+def test_call_with_tools_without_raw_content(
+    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
+) -> None:
+    """Test synchronous tool call where there is no raw_content to resume with."""
+
+    @llm.tool
+    def secret_retrieval_tool(password: str) -> str:
+        """A tool that requires a password to retrieve a secret."""
+        return PASSWORD_MAP.get(password, "Invalid password!")
+
+    @llm.call(
+        provider=provider,
+        model_id=model_id,
+        tools=[secret_retrieval_tool],
+    )
+    def call(passwords: list[str]) -> list[llm.Message]:
+        return [
+            llm.messages.system("Use parallel tool calling."),
+            llm.messages.user(
+                f"Please retrieve the secrets associated with each of these passwords: {','.join(passwords)}"
+            ),
+        ]
+
+    response = call(["mellon", "radiance"])
+    remove_response_raw_content(response)
+    assert len(response.tool_calls) == 2, (
+        f"Expected response to have two tool calls: {response.pretty()}"
+    )
+
+    tool_outputs = response.execute_tools()
+    response = response.resume(tool_outputs)
+    remove_response_raw_content(response)
+
+    assert response_snapshot_dict(response) == snapshot
     pretty = response.pretty()
     assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
     assert "Life before Death" in pretty, (
