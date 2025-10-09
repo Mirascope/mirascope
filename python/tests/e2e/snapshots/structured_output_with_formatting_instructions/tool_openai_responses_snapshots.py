@@ -33,7 +33,16 @@ lucky number 7.\
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',
+                        "call_id": "call_hM3bMZUpMupliYkGcFvsvs3c",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "function_call",
+                        "id": "fc_024e33dc9597433f0068dc21e888f081949244a3df73f33c71",
+                        "status": "completed",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -85,7 +94,16 @@ lucky number 7.\
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "arguments": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',
+                        "call_id": "call_0vnNtPoG4KGTNHDUn8cmD3wo",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "function_call",
+                        "id": "fc_07becd0b396cfeb30068dc21f0eb7481979105ae7bf525b6ca",
+                        "status": "completed",
+                    }
+                ],
             ),
         ],
         "format": {

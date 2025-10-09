@@ -90,7 +90,31 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_065336dd34e1d82d0068dc21c3a3588195a97273547e6062b2",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+{
+    "title": "THE NAME OF THE WIND",
+    "author": {
+        "first_name": "Patrick",
+        "last_name": "Rothfuss"
+    },
+    "rating": 7
+}\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -259,7 +283,31 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "msg_0d88ea3a291949b50068dc21ce9f7c8195bec4e8f74aa0e13a",
+                        "content": [
+                            {
+                                "annotations": [],
+                                "text": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
+  "rating": 7
+}\
+""",
+                                "type": "output_text",
+                                "logprobs": [],
+                            }
+                        ],
+                        "role": "assistant",
+                        "status": "completed",
+                        "type": "message",
+                    }
+                ],
             ),
         ],
         "format": {
