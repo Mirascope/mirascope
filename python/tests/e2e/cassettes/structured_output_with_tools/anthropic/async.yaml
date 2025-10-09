@@ -49,15 +49,15 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3SQwWrDMBBE/2XPMtip3cS6peSUQw+FQNpShCJvbCWy5Gil0BD870UB06alx503
-        s8PuFXrXoAEOysjYYEbOWgxZmc3yWZVXRQkMdAMcempFXpS02rRvT5tP/XwpDnGjXtennQMG4TJg
-        ciGRbBEYeGeSIIk0BWkDMFDOBrQB+Pt18gfnjIiEU0uao8iLl/Wgl9uwHFZUV/t6dZaH+qEDBlb2
-        KddiEDvnjkLbfarXdogB+BU07SxwyLP5Y/WQFcV8kW1hHD8YUHCD8CjJ2fviGyA8RbQKgdtoDIN4
-        OyMtTJtFcEe0BLxa1AyUVB0K5VEG7ay4d+QT9yib/9iUTQU4dNijl0ZU/V//Ny2633Rk4GL4KZUL
-        BoT+rBWKoNEDh/T8RvoGxvELAAD//wMAhjteue0BAAA=
+        H4sIAAAAAAAAAwAAAP//dJBbS8NAEIX/y3neQFKbXvJoQPtQxUoRi8iy3YzN0mQ33Uuhlvx32ULQ
+        Kj7O+c6Zw8wZramoQQHZiFBR4ozW5JNxMkpHeZpnYzCoCgVat+NplunF8vg0u/18mS/Vqjw802P5
+        cA8Gf+oousg5sSMwWNNEQTinnBfag0Ea7Ul7FG/nwe+NaXhwNLTEOfA0m9zJTV5vZLnarKeH9WIi
+        5KkrwaBFG3M78nxrzJ4r/WFiWHfBozhDua1GgTSZTvKbJMums+QVff/O4LzpuCXhjL4uvgBHh0Ba
+        EgodmoYhXM6IC+Nm7s2etEORz+YMUsiauLQkvDKaXzvSgVsS1X9syMYC6mpqyYqG5+1f/zfN6t+0
+        ZzDB/5TGMwZH9qgkca/IokB8fiVshb7/AgAA//8DAPUOybztAQAA
     headers:
       CF-RAY:
-      - 98c0a1a77b58c3a3-SEA
+      - 98c116d59fc2deea-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,7 +65,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 09 Oct 2025 20:29:42 GMT
+      - Thu, 09 Oct 2025 21:49:42 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -79,42 +79,42 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-09T20:29:42Z'
+      - '2025-10-09T21:49:41Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-09T20:29:42Z'
+      - '2025-10-09T21:49:42Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-09T20:29:40Z'
+      - '2025-10-09T21:49:40Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-09T20:29:42Z'
+      - '2025-10-09T21:49:41Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTxFsuVbjiZdcy8PivoYC
+      - req_011CTxMyiB5WWaE1Cx3TMwpD
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2157'
+      - '1944'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01RJpiAXtApDs95f9Dvaj93h","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01RJpiAXtApDs95f9Dvaj93h","content":"Title:
+      score"},{"role":"assistant","content":[{"id":"toolu_016FcY5hYcCQYT7qTH6acypC","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_016FcY5hYcCQYT7qTH6acypC","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25"}]}],"model":"claude-sonnet-4-0","system":"Always respond to the
       user''s query using the __mirascope_formatted_output_tool__ tool for structured
@@ -163,17 +163,93 @@ interactions:
     uri: https://api.anthropic.com/v1/messages
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dFFdaxsxEPwrZp9luDO+pNZbAm4eiku+ICkliLW09QnrJEVaBVxz/z3I
-        xglJyKN2ZnZmR3sYgiEHErTDYmiag/fE0/l01sy6pmvnIMAakDDkjWrai4vVn75c6f8/lnr5ONum
-        u9sHew0CeBepsihn3BAISMHVAeZsM6NnEKCDZ/IM8u/+xOcQnCqZTi71XVTTXp3zQ7i5j+tuZX7/
-        2q1fFtvryxYEeByqTqnBJsw6RFL/QhqQmYwKhWNhdViq6kofC4PcA1s+pFnZzOuQvJzc9zT5aT26
-        yXKINtUAWLgPCSRcJvQm+MkdekMpBw8CIm4og+zmcwGxrJ3VyDZ4tSNMIGdNczaOTwIyh6gSYRV9
-        uO4AZHou5DWB9MU5AeXQldwfgyoOW/IZ5NmiE6BR96R0oqPPR0ZzwhOh+Q47aasBxZ4GSuhUN3zl
-        v6Nt/xkdBbzVehy1zUJApvRiNSm2VCurX2wwGRjHVwAAAP//AwDmyTLPUwIAAA==
+      string: 'upstream connect error or disconnect/reset before headers. reset reason:
+        connection termination'
     headers:
       CF-RAY:
-      - 98c0a1b63902c3a3-SEA
+      - 98c116e26cf6deea-SEA
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '95'
+      Content-Type:
+      - text/plain
+      Date:
+      - Thu, 09 Oct 2025 21:49:43 GMT
+      Server:
+      - cloudflare
+      X-Robots-Tag:
+      - none
+      cf-cache-status:
+      - DYNAMIC
+      via:
+      - 1.1 google
+    status:
+      code: 503
+      message: Service Unavailable
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
+      the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"},{"role":"assistant","content":[{"id":"toolu_016FcY5hYcCQYT7qTH6acypC","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_016FcY5hYcCQYT7qTH6acypC","content":"Title:
+      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
+      2006-07-25"}]}],"model":"claude-sonnet-4-0","system":"Always respond to the
+      user''s query using the __mirascope_formatted_output_tool__ tool for structured
+      output.","tool_choice":{"type":"any"},"tools":[{"name":"get_book_info","description":"Look
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}},{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in BookSummary format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '1379'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RR0U4bMRD8lWifHekuukPFj5QAUtWXBoEAVdbGXnKmPtux14goun9HTpQiqPro
+        nZmd2fEexmDIgQTtsBia5+A98bybL5pF3/RtBwKsAQlj3qimvd5d8/2Wnh9WW4MXr3f2/u3HtxsQ
+        wLtIlUU544ZAQAquDjBnmxk9gwAdPJNnkE/7E59DcKpkOrnUd6k+3Quuf5WHfPVow2rZmtXy8rsG
+        AR7HqlNqtAmzDpHUc0gjMpNRoXAsrA5LVV3pY2GQe2DLhzQ/beZ1SF7ObgeaXVmPbrYco001ABYe
+        QgIJFwm9CX62Qm8o5eBBQMQNZZB91wmIZe2sRrbBqx1hArlomrNp+i0gc4gqEVbRp+sOQKZtIa8J
+        pC/OCSiHruT+GFRx+EM+gzw77wVo1AMpnejo85nRnPBEaP6HnbTVgOJAIyV0qh//5X+g7fAVnQT8
+        rfU4aptzAZnSq9Wk2FKtrH6xwWRgmt4BAAD//wMAy9MsQ1MCAAA=
+    headers:
+      CF-RAY:
+      - 98c116ef3aa3deea-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -181,7 +257,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 09 Oct 2025 20:29:45 GMT
+      - Thu, 09 Oct 2025 21:49:46 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -195,35 +271,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-09T20:29:44Z'
+      - '2025-10-09T21:49:46Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-09T20:29:45Z'
+      - '2025-10-09T21:49:46Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-09T20:29:42Z'
+      - '2025-10-09T21:49:44Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-09T20:29:44Z'
+      - '2025-10-09T21:49:46Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CTxFt5TsqxFmREys4sdSm
+      - req_011CTxMz1mzF6tPBdJoLgmYQ
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2396'
+      - '2631'
     status:
       code: 200
       message: OK

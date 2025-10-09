@@ -33,7 +33,18 @@ lucky number 7.\
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "toolu_01EQ3XpE3ZsTVVCMBUvzsrJ6",
+                        "input": {
+                            "title": "THE NAME OF THE WIND",
+                            "author": "Patrick Rothfuss",
+                            "rating": 7,
+                        },
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "tool_use",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -85,7 +96,18 @@ lucky number 7.\
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "toolu_01Vdp2wM8itvZ59cxULuVW3S",
+                        "input": {
+                            "title": "THE NAME OF THE WIND",
+                            "author": "Patrick Rothfuss",
+                            "rating": 7,
+                        },
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "tool_use",
+                    }
+                ],
             ),
         ],
         "format": {

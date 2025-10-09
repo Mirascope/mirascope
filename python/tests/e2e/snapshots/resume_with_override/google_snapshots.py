@@ -18,7 +18,13 @@ sync_snapshot = snapshot(
                 content=[Text(text="I was created by Anthropic.")],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "citations": None,
+                        "text": "I was created by Anthropic.",
+                        "type": "text",
+                    }
+                ],
             ),
             UserMessage(content=[Text(text="Can you double-check that?")]),
             AssistantMessage(
@@ -52,7 +58,13 @@ async_snapshot = snapshot(
                 content=[Text(text="I was created by Anthropic.")],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "citations": None,
+                        "text": "I was created by Anthropic.",
+                        "type": "text",
+                    }
+                ],
             ),
             UserMessage(content=[Text(text="Can you double-check that?")]),
             AssistantMessage(

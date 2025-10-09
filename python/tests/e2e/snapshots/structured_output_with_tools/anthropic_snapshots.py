@@ -31,19 +31,26 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="toolu_01AzoQh6XEmb48SLSu1ZdJU4",
+                        id="toolu_01QUBtKQhcU5U5zAWFqA93Lz",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "toolu_01QUBtKQhcU5U5zAWFqA93Lz",
+                        "input": {"isbn": "0-7653-1178-X"},
+                        "name": "get_book_info",
+                        "type": "tool_use",
+                    }
+                ],
             ),
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_01AzoQh6XEmb48SLSu1ZdJU4",
+                        id="toolu_01QUBtKQhcU5U5zAWFqA93Lz",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -57,7 +64,19 @@ sync_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "toolu_01Nk47Ju7e3GVSAQn3Lu27yh",
+                        "input": {
+                            "title": "Mistborn: The Final Empire",
+                            "author": "Brandon Sanderson",
+                            "pages": 544,
+                            "publication_year": 2006,
+                        },
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "tool_use",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -126,19 +145,26 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="toolu_01RJpiAXtApDs95f9Dvaj93h",
+                        id="toolu_016FcY5hYcCQYT7qTH6acypC",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "toolu_016FcY5hYcCQYT7qTH6acypC",
+                        "input": {"isbn": "0-7653-1178-X"},
+                        "name": "get_book_info",
+                        "type": "tool_use",
+                    }
+                ],
             ),
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="toolu_01RJpiAXtApDs95f9Dvaj93h",
+                        id="toolu_016FcY5hYcCQYT7qTH6acypC",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -152,7 +178,19 @@ async_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "id": "toolu_01G4jabRuYsFZioSE1dSEDCc",
+                        "input": {
+                            "title": "Mistborn: The Final Empire",
+                            "author": "Brandon Sanderson",
+                            "pages": 544,
+                            "publication_year": 2006,
+                        },
+                        "name": "__mirascope_formatted_output_tool__",
+                        "type": "tool_use",
+                    }
+                ],
             ),
         ],
         "format": {

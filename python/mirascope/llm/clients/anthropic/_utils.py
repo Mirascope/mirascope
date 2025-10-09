@@ -4,7 +4,7 @@ import json
 import logging
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import TypedDict
+from typing import TypedDict, cast
 
 from anthropic import NotGiven, types as anthropic_types
 from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
@@ -134,20 +134,40 @@ def _decode_assistant_content(
 
 def _encode_messages(
     messages: Sequence[UserMessage | AssistantMessage],
+    model_id: AnthropicModelId,
 ) -> Sequence[anthropic_types.MessageParam]:
     """Convert user or assistant `Message`s to Anthropic `MessageParam` format.
 
     Args:
         messages: A Sequence containing `UserMessage`s or `AssistantMessage`s
+        model_id: The Anthropic model ID being used
 
     Returns:
         A Sequence of converted Anthropic `MessageParam`
     """
+    result: list[anthropic_types.MessageParam] = []
 
-    return [
-        {"role": message.role, "content": _encode_content(message.content)}
-        for message in messages
-    ]
+    for message in messages:
+        if (
+            message.role == "assistant"
+            and message.provider == "anthropic"
+            and message.model_id == model_id
+            and message.raw_content
+        ):
+            result.append(
+                {
+                    "role": message.role,
+                    "content": cast(
+                        Sequence[anthropic_types.ContentBlockParam], message.raw_content
+                    ),
+                }
+            )
+        else:
+            result.append(
+                {"role": message.role, "content": _encode_content(message.content)}
+            )
+
+    return result
 
 
 @lru_cache(maxsize=128)
@@ -229,7 +249,7 @@ def prepare_anthropic_request(
         messages
     )
 
-    kwargs["messages"] = _encode_messages(remaining_messages)
+    kwargs["messages"] = _encode_messages(remaining_messages, model_id)
     if system_message_content:
         kwargs["system"] = system_message_content
 
@@ -245,7 +265,7 @@ def decode_response(
         content=[_decode_assistant_content(part) for part in response.content],
         provider="anthropic",
         model_id=model_id,
-        raw_content=[],
+        raw_content=[part.model_dump() for part in response.content],
     )
     finish_reason = (
         ANTHROPIC_FINISH_REASON_MAP.get(response.stop_reason)

@@ -18,7 +18,9 @@ sync_snapshot = snapshot(
                 content=[Text(text="4200 + 42 = 4242")],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {"citations": None, "text": "4200 + 42 = 4242", "type": "text"}
+                ],
             ),
         ],
         "format": None,
@@ -37,7 +39,9 @@ async_snapshot = snapshot(
                 content=[Text(text="4200 + 42 = 4242")],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {"citations": None, "text": "4200 + 42 = 4242", "type": "text"}
+                ],
             ),
         ],
         "format": None,
