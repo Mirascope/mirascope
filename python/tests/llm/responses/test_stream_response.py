@@ -1025,13 +1025,12 @@ class TestRawChunkTracking:
             chunk_iterator=chunk_iterator(),
         )
 
-        for _ in stream_response.chunk_stream():
-            ...
+        stream_response.finish()
 
         check_stream_response_consistency(
             stream_response, [chunk1, chunk2, chunk3], [llm.Text(text="hi")]
         )
-        assert stream_response.raw == [raw1, raw2]
+        assert stream_response.raw_stream_events == [raw1, raw2]
 
     @pytest.mark.asyncio
     async def test_async_chunk_deduplication_with_same_raw(self) -> None:
@@ -1056,13 +1055,257 @@ class TestRawChunkTracking:
             chunk_iterator=chunk_iterator(),
         )
 
-        async for _ in stream_response.chunk_stream():
-            ...
+        await stream_response.finish()
 
         check_stream_response_consistency(
             stream_response, [chunk1, chunk2, chunk3], [llm.Text(text="hi")]
         )
-        assert stream_response.raw == [raw1, raw2]
+        assert stream_response.raw_stream_events == [raw1, raw2]
+
+
+class TestRawContentChunkTracking:
+    """Test raw content chunk handling for provider-specific content reconstruction."""
+
+    def test_sync_raw_content_chunks_update_assistant_message(self) -> None:
+        """Test that raw content chunks update assistant message raw_content field.
+
+        RawContentChunk is used to reconstruct provider-specific output format
+        that can be passed directly back to the provider API without losing details.
+        """
+        # Simulate OpenAI responses output items structure
+        raw_output_item = {
+            "type": "message",
+            "role": "assistant",
+            "content": [{"type": "output_text", "text": "hello world"}],
+        }
+
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="hello world"),
+            llm.TextEndChunk(),
+            # Raw content chunks are emitted at end to reconstruct full output
+            llm.RawContentChunk(content=raw_output_item),
+        ]
+
+        stream_response = create_sync_stream_response(chunks)
+        stream_response.finish()
+
+        check_stream_response_consistency(
+            stream_response, chunks, [llm.Text(text="hello world")]
+        )
+        assistant_message = stream_response.messages[-1]
+        assert assistant_message.role == "assistant"
+        assert assistant_message.raw_content == [raw_output_item]
+
+    @pytest.mark.asyncio
+    async def test_async_raw_content_chunks_update_assistant_message(self) -> None:
+        """Test that raw content chunks update assistant message in async context."""
+        raw_output_item = {
+            "type": "message",
+            "role": "assistant",
+            "content": [{"type": "output_text", "text": "hello world"}],
+        }
+
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="hello world"),
+            llm.TextEndChunk(),
+            llm.RawContentChunk(content=raw_output_item),
+        ]
+
+        stream_response = create_async_stream_response(chunks)
+        await stream_response.finish()
+
+        check_stream_response_consistency(
+            stream_response, chunks, [llm.Text(text="hello world")]
+        )
+        assistant_message = stream_response.messages[-1]
+        assert assistant_message.role == "assistant"
+        assert assistant_message.raw_content == [raw_output_item]
+
+    def test_sync_multiple_raw_content_chunks(self) -> None:
+        """Test multiple raw content chunks for complex outputs with multiple items."""
+        # Multiple output items like message + function_call
+        message_item = {
+            "type": "message",
+            "role": "assistant",
+            "content": [{"type": "output_text", "text": "Let me help"}],
+        }
+        tool_item = {
+            "type": "function_call",
+            "call_id": "call_123",
+            "name": "search",
+            "arguments": '{"query": "test"}',
+        }
+
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Let me help"),
+            llm.TextEndChunk(),
+            llm.ToolCallStartChunk(id="call_123", name="search"),
+            llm.ToolCallChunk(delta='{"query": "test"}'),
+            llm.ToolCallEndChunk(),
+            llm.RawContentChunk(content=message_item),
+            llm.RawContentChunk(content=tool_item),
+        ]
+
+        stream_response = create_sync_stream_response(chunks)
+        stream_response.finish()
+
+        expected_content = [
+            llm.Text(text="Let me help"),
+            llm.ToolCall(id="call_123", name="search", args='{"query": "test"}'),
+        ]
+        check_stream_response_consistency(stream_response, chunks, expected_content)
+        assistant_message = stream_response.messages[-1]
+        assert assistant_message.role == "assistant"
+        assert assistant_message.raw_content == [message_item, tool_item]
+
+    @pytest.mark.asyncio
+    async def test_async_multiple_raw_content_chunks(self) -> None:
+        """Test multiple raw content chunks in async context."""
+        message_item = {
+            "type": "message",
+            "role": "assistant",
+            "content": [{"type": "output_text", "text": "Let me help"}],
+        }
+        tool_item = {
+            "type": "function_call",
+            "call_id": "call_123",
+            "name": "search",
+            "arguments": '{"query": "test"}',
+        }
+
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Let me help"),
+            llm.TextEndChunk(),
+            llm.ToolCallStartChunk(id="call_123", name="search"),
+            llm.ToolCallChunk(delta='{"query": "test"}'),
+            llm.ToolCallEndChunk(),
+            llm.RawContentChunk(content=message_item),
+            llm.RawContentChunk(content=tool_item),
+        ]
+
+        stream_response = create_async_stream_response(chunks)
+        await stream_response.finish()
+
+        expected_content = [
+            llm.Text(text="Let me help"),
+            llm.ToolCall(id="call_123", name="search", args='{"query": "test"}'),
+        ]
+        check_stream_response_consistency(stream_response, chunks, expected_content)
+        assistant_message = stream_response.messages[-1]
+        assert assistant_message.role == "assistant"
+        assert assistant_message.raw_content == [message_item, tool_item]
+
+    def test_sync_no_raw_content_chunks_means_empty(self) -> None:
+        """Test that raw_content remains empty when no raw content chunks are emitted."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="hello"),
+            llm.TextEndChunk(),
+        ]
+
+        stream_response = create_sync_stream_response(chunks)
+        stream_response.finish()
+
+        check_stream_response_consistency(
+            stream_response, chunks, [llm.Text(text="hello")]
+        )
+        assistant_message = stream_response.messages[-1]
+        assert assistant_message.role == "assistant"
+        assert assistant_message.raw_content == []
+
+    @pytest.mark.asyncio
+    async def test_async_no_raw_content_chunks_means_empty(self) -> None:
+        """Test that raw_content remains empty in async when no raw content chunks."""
+        chunks = [
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="hello"),
+            llm.TextEndChunk(),
+        ]
+
+        stream_response = create_async_stream_response(chunks)
+        await stream_response.finish()
+
+        check_stream_response_consistency(
+            stream_response, chunks, [llm.Text(text="hello")]
+        )
+        assistant_message = stream_response.messages[-1]
+        assert assistant_message.role == "assistant"
+        assert assistant_message.raw_content == []
+
+    def test_sync_raw_content_with_reasoning(self) -> None:
+        """Test raw content chunks with reasoning output items."""
+        reasoning_item = {
+            "type": "reasoning",
+            "summary": [{"type": "summary_text", "text": "I should analyze this"}],
+        }
+        message_item = {
+            "type": "message",
+            "role": "assistant",
+            "content": [{"type": "output_text", "text": "Analysis complete"}],
+        }
+
+        chunks = [
+            llm.ThoughtStartChunk(),
+            llm.ThoughtChunk(delta="I should analyze this"),
+            llm.ThoughtEndChunk(),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Analysis complete"),
+            llm.TextEndChunk(),
+            llm.RawContentChunk(content=reasoning_item),
+            llm.RawContentChunk(content=message_item),
+        ]
+
+        stream_response = create_sync_stream_response(chunks)
+        stream_response.finish()
+
+        expected_content = [
+            llm.Thought(thought="I should analyze this"),
+            llm.Text(text="Analysis complete"),
+        ]
+        check_stream_response_consistency(stream_response, chunks, expected_content)
+        assistant_message = stream_response.messages[-1]
+        assert assistant_message.role == "assistant"
+        assert assistant_message.raw_content == [reasoning_item, message_item]
+
+    @pytest.mark.asyncio
+    async def test_async_raw_content_with_reasoning(self) -> None:
+        """Test raw content chunks with reasoning in async context."""
+        reasoning_item = {
+            "type": "reasoning",
+            "summary": [{"type": "summary_text", "text": "I should analyze this"}],
+        }
+        message_item = {
+            "type": "message",
+            "role": "assistant",
+            "content": [{"type": "output_text", "text": "Analysis complete"}],
+        }
+
+        chunks = [
+            llm.ThoughtStartChunk(),
+            llm.ThoughtChunk(delta="I should analyze this"),
+            llm.ThoughtEndChunk(),
+            llm.TextStartChunk(),
+            llm.TextChunk(delta="Analysis complete"),
+            llm.TextEndChunk(),
+            llm.RawContentChunk(content=reasoning_item),
+            llm.RawContentChunk(content=message_item),
+        ]
+
+        stream_response = create_async_stream_response(chunks)
+        await stream_response.finish()
+
+        expected_content = [
+            llm.Thought(thought="I should analyze this"),
+            llm.Text(text="Analysis complete"),
+        ]
+        check_stream_response_consistency(stream_response, chunks, expected_content)
+        assistant_message = stream_response.messages[-1]
+        assert assistant_message.role == "assistant"
+        assert assistant_message.raw_content == [reasoning_item, message_item]
 
 
 @pytest.fixture

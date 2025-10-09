@@ -17,7 +17,10 @@ class SystemMessage:
     """A system message that sets context and instructions for the conversation."""
 
     role: Literal["system"] = "system"
+    """The role of this message. Always "system"."""
+
     content: Text
+    """The content of this `SystemMesssage`."""
 
 
 @dataclass(kw_only=True)
@@ -25,8 +28,13 @@ class UserMessage:
     """A user message containing input from the user."""
 
     role: Literal["user"] = "user"
+    """The role of this message. Always "user"."""
+
     content: Sequence[UserContentPart]
+    """The content of the user message."""
+
     name: str | None = None
+    """A name identifying the creator of this message."""
 
 
 @dataclass(kw_only=True)
@@ -34,14 +42,19 @@ class AssistantMessage:
     """An assistant message containing the model's response."""
 
     role: Literal["assistant"] = "assistant"
+    """The role of this message. Always "assistant"."""
+
     content: Sequence[AssistantContentPart]
+    """The content of the assistant message."""
+
     name: str | None = None
+    """A name identifying the creator of this message."""
 
-    provider: Provider
-    """The LLM provider that generated this assistant message."""
+    provider: Provider | None
+    """The LLM provider that generated this assistant message, if available."""
 
-    model_id: ModelId
-    """The model identifier of the LLM that generated this assistant message."""
+    model_id: ModelId | None
+    """The model identifier of the LLM that generated this assistant message, if available."""
 
     raw_content: Sequence[dict[str, Any]]
     """The provider-specific raw content representation of this assistant message, if available.
@@ -135,8 +148,8 @@ def user(
 def assistant(
     content: AssistantContent,
     *,
-    provider: Provider,
-    model_id: ModelId,
+    provider: Provider | None,
+    model_id: ModelId | None,
     raw_content: Sequence[dict[str, Any]] | None = None,
     name: str | None = None,
 ) -> AssistantMessage:
@@ -145,6 +158,10 @@ def assistant(
     Args:
         content: The content of the message, which can be `str` or any `AssistantContent`,
             or a sequence of assistant content pieces.
+        provider: Optional identifier of the provider that produced this message.
+        model_id: Optional id of the model that produced this message.
+        raw_content: Optional sequence of Python dicts that contain the provider-specific
+            "raw" data representation of the content for this assistant message.
         name: Optional name to identify a specific assistant in multi-party conversations.
 
     Returns:
@@ -155,12 +172,10 @@ def assistant(
     promoted_content = [
         Text(text=part) if isinstance(part, str) else part for part in content
     ]
-    if raw_content is None:
-        raw_content = []
     return AssistantMessage(
         content=promoted_content,
         provider=provider,
         model_id=model_id,
-        raw_content=raw_content,
+        raw_content=raw_content or [],
         name=name,
     )
