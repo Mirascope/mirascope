@@ -4,7 +4,7 @@ from typing import TypeAlias
 from typing_extensions import TypeVar
 
 from .text_stream import AsyncTextStream, TextStream
-from .thinking_stream import AsyncThoughtStream, ThoughtStream
+from .thought_stream import AsyncThoughtStream, ThoughtStream
 from .tool_call_stream import AsyncToolCallStream, ToolCallStream
 
 Stream: TypeAlias = TextStream | ToolCallStream | ThoughtStream
