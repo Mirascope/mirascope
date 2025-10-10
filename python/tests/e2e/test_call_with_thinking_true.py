@@ -16,6 +16,7 @@ from tests.utils import (
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("openai:responses", "gpt-5"),
     ("anthropic", "claude-sonnet-4-0"),
+    ("google", "gemini-2.5-flash"),
 ]
 
 # This can't be easily answered without thinking

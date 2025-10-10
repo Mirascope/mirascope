@@ -2,7 +2,8 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}],
       "generationConfig": {"temperature": 0.7, "topP": 0.3, "topK": 50.0, "maxOutputTokens":
-      500, "stopSequences": ["4242"], "seed": 42}}'
+      500, "stopSequences": ["4242"], "seed": 42, "thinkingConfig": {"includeThoughts":
+      false, "thinkingBudget": 0}}}'
     headers:
       accept:
       - '*/*'
@@ -11,7 +12,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '207'
+      - '274'
       content-type:
       - application/json
       host:
@@ -25,12 +26,12 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WRQU/CQBCF7/0Vm70KBgsY5UaUg4lGIo0xsR4WO7TFdqfuTg2E8N+dbi1s4x42
-        k3mv82a/HgIh5KfSSZ4oAitn4p07Qhzc3WioCTSx0LW4WSlDZ297Dl7NFoJd85GMUGxynQjKQNi6
-        FLgRk3A0EhzJxUDssRYqcXopCFPgwsxiHevGFusLHjYJYz10J9bSizme6o/BeTmDBTTJJSZQdPZj
-        Z5C8TW6zF1AWdWNbRc9LeVJ5VdhxexR0AW60rK1K4QlIMSZ1giErg2VFEX6BvsPaYboat8M8qj19
-        HP7phKSKnnQzHfwba+85NC982t6P4DeqIqe9I714i6THgfpbdSACj5ekDOs0o/6Gk+bxDljL8BWM
-        zVtYKZSMbxheToebQtnM5UkDtkJt4SFpPNX8ca2W29uF+dl+k11Or9er/RxlcAx+AU4Vx9ZuAgAA
+        H4sIAAAAAAAC/2WRQU+DQBCF7/yKyV4tBluMSW/GGvVgaBS1UXrYyNASYQfZIWnT9L87LKWlcQ/w
+        Mu/tzPCx8wDUtzZpnmpGq6bwJRWAnXu2HhlGw2L0JSlWuuZTtju7gZYI46a9pGKCLDcp8BrBNiVQ
+        BuE4CEBGihjBlhqQ+aBTlymBaYUi6mliEiOd2nRiLsDJxPjuOEcNJu6Pejk67VlTge0SJaVY9PF9
+        H1CyWG7XL6gtmTb2GkdzdXRla9xIOfD6Aa61aqxe4TOyFmL6yEVVNZUVx/SD5o4aR+xq0jUbAD7z
+        J+HBZ2JdnFnhzehfWzuToXkxBD/4J/KNush566DfL2I14MDnW/Ug3HvpHZB0lN6xtnmHY4WlAPLH
+        l9d+Vmi7dh1VjbYiY/EpdZnPGemoiR75IfhlO9/a7CO8fVPe3vsD7C3x2lsCAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -39,11 +40,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Mon, 29 Sep 2025 22:05:24 GMT
+      - Fri, 10 Oct 2025 04:50:09 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=886
+      - gfet4t7; dur=638
       Transfer-Encoding:
       - chunked
       Vary:

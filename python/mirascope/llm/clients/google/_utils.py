@@ -15,6 +15,10 @@ from ...content import (
     TextChunk,
     TextEndChunk,
     TextStartChunk,
+    Thought,
+    ThoughtChunk,
+    ThoughtEndChunk,
+    ThoughtStartChunk,
     ToolCall,
     ToolCallChunk,
     ToolCallEndChunk,
@@ -80,6 +84,8 @@ def _resolve_refs(
 def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict]:
     """Returns a list of google `PartDicts` converted from a sequence of Mirascope `ContentPart`s"""
     result = []
+    logged_thought_conversion = False
+
     for part in content:
         if part.type == "text":
             result.append(genai_types.PartDict(text=part.text))
@@ -103,6 +109,11 @@ def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict
                     )
                 )
             )
+        elif part.type == "thought":
+            if not logged_thought_conversion:
+                logger.info("Converting `Thought` content into assistant message text.")
+                logged_thought_conversion = True
+            result.append(genai_types.PartDict(text="**Thinking: " + part.thought))
         else:
             raise NotImplementedError(
                 f"Have not implemented conversion for {part.type}"
@@ -112,12 +123,12 @@ def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict
 
 def _decode_content_part(part: genai_types.Part) -> AssistantContentPart | None:
     """Returns an `AssistantContentPart` (or `None`) decoded from a google `Part`"""
-    if part.text:
+    if part.thought and part.text:
+        return Thought(thought=part.text)
+    elif part.text:
         return Text(text=part.text)
     elif part.video_metadata:
         raise NotImplementedError("Support for video metadata not implemented.")
-    elif part.thought:
-        raise NotImplementedError("Support for thought content not implemented.")
     elif part.inline_data:
         raise NotImplementedError("Support for inline data (Blob) not implemented.")
     elif part.file_data:
@@ -222,7 +233,7 @@ def prepare_google_request(
     google_config: GoogleKwargs = {}
 
     with _base_utils.ensure_all_params_accessed(
-        params=params, provider="google", unsupported_params=["thinking"]
+        params=params, provider="google"
     ) as param_accessor:
         if param_accessor.temperature is not None:
             google_config["temperature"] = param_accessor.temperature
@@ -236,6 +247,16 @@ def prepare_google_request(
             google_config["seed"] = param_accessor.seed
         if param_accessor.stop_sequences is not None:
             google_config["stop_sequences"] = param_accessor.stop_sequences
+        if param_accessor.thinking is not None:
+            if param_accessor.thinking:
+                google_config["thinking_config"] = genai_types.ThinkingConfigDict(
+                    thinking_budget=-1,  # automatic budget
+                    include_thoughts=True,
+                )
+            else:
+                google_config["thinking_config"] = genai_types.ThinkingConfigDict(
+                    include_thoughts=False, thinking_budget=0
+                )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     google_tools: list[genai_types.ToolDict] = []
@@ -331,7 +352,7 @@ class _GoogleChunkProcessor:
     """Processes Google stream chunks and maintains state across chunks."""
 
     def __init__(self) -> None:
-        self.current_content_type: Literal["text", "tool_call"] | None = None
+        self.current_content_type: Literal["text", "tool_call", "thought"] | None = None
 
     def process_chunk(
         self, chunk: genai_types.GenerateContentResponse
@@ -344,32 +365,45 @@ class _GoogleChunkProcessor:
             return  # pragma: no cover
 
         for part in candidate.content.parts:
+            if self.current_content_type == "thought" and not part.thought:
+                yield ThoughtEndChunk()
+                self.current_content_type = None
+            elif self.current_content_type == "text" and not part.text:
+                yield TextEndChunk()  # pragma: no cover
+                self.current_content_type = None  # pragma: no cover
+            elif self.current_content_type == "tool_call" and not part.function_call:
+                # In testing, Gemini never emits tool calls and text in the same message
+                # (even when specifically asked in system and user prompt), so
+                # the following code is uncovered but included for completeness
+                yield ToolCallEndChunk()  # pragma: no cover
+                self.current_content_type = None  # pragma: no cover
+
             if part.thought:
-                raise NotImplementedError
+                if self.current_content_type is None:
+                    yield ThoughtStartChunk()
+                    self.current_content_type = "thought"
+                elif self.current_content_type != "thought":
+                    raise RuntimeError(
+                        "Received thought when not processing thought"
+                    )  # pragma: no cover
+                if not part.text:
+                    raise ValueError(
+                        "Inside thought part with no text content"
+                    )  # pragma: no cover
+                yield ThoughtChunk(delta=part.text)
 
             elif part.text:
-                if self.current_content_type == "tool_call":
-                    # In testing, Gemini never emits tool calls and text in the same message
-                    # (even when specifically asked in system and user prompt), so
-                    # the following code is uncovered but included for completeness
-                    yield ToolCallEndChunk()  # pragma: no cover
-                    self.current_content_type = None  # pragma: no cover
-
                 if self.current_content_type is None:
                     yield TextStartChunk()
                     self.current_content_type = "text"
                 elif self.current_content_type != "text":
-                    raise NotImplementedError
+                    raise RuntimeError(
+                        "Received text part when not processing text"
+                    )  # pragma: no cover
 
                 yield TextChunk(delta=part.text)
 
             elif function_call := part.function_call:
-                if self.current_content_type == "text":
-                    # Similar to above, this does not seem to happen in practice but is
-                    # included for safety.
-                    yield TextEndChunk()  # pragma: no cover
-                    self.current_content_type = None  # pragma: no cover
-
                 if not function_call.name:
                     raise RuntimeError(
                         "Required name missing on Google function call"
@@ -390,6 +424,8 @@ class _GoogleChunkProcessor:
         if candidate.finish_reason:
             if self.current_content_type == "text":
                 yield TextEndChunk()
+            elif self.current_content_type == "thought":
+                yield ThoughtEndChunk()  # pragma: no cover
             elif self.current_content_type is not None:
                 raise NotImplementedError
 
