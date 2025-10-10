@@ -28,11 +28,12 @@ sync_snapshot = snapshot(
                         content=[
                             Text(
                                 text="""\
-To find the sum of 4200 and 42, you add them together:
+To find the sum of 4200 and 42, you can add them together:
 
-4200
-+   42
+   4200
++    42
 ------
+   \
 """
                             )
                         ],
@@ -45,9 +46,7 @@ To find the sum of 4200 and 42, you add them together:
                 "tools": [],
             },
         ),
-        "logging": [
-            "Skipping unsupported parameter: thinking=False (provider: google)"
-        ],
+        "logging": [],
     }
 )
 async_snapshot = snapshot(
@@ -72,11 +71,12 @@ async_snapshot = snapshot(
                         content=[
                             Text(
                                 text="""\
-To find the sum of 4200 and 42, you add them together:
+To find the sum of 4200 and 42, we can add them together:
 
-4200
-+  42
------
+   4200
++    42
+-------
+   \
 """
                             )
                         ],
@@ -89,9 +89,7 @@ To find the sum of 4200 and 42, you add them together:
                 "tools": [],
             },
         ),
-        "logging": [
-            "Skipping unsupported parameter: thinking=False (provider: google)"
-        ],
+        "logging": [],
     }
 )
 stream_snapshot = snapshot(
@@ -107,11 +105,12 @@ stream_snapshot = snapshot(
                         content=[
                             Text(
                                 text="""\
-To find the sum of 4200 and 42, you add them together:
+To find the sum of 4200 and 42, you can add them together:
 
-4200
-+   42
+   4200
++    42
 ------
+   \
 """
                             )
                         ],
@@ -122,12 +121,10 @@ To find the sum of 4200 and 42, you add them together:
                 ],
                 "format": None,
                 "tools": [],
-                "n_chunks": 3,
+                "n_chunks": 5,
             },
         ),
-        "logging": [
-            "Skipping unsupported parameter: thinking=False (provider: google)"
-        ],
+        "logging": [],
     }
 )
 async_stream_snapshot = snapshot(
@@ -143,11 +140,12 @@ async_stream_snapshot = snapshot(
                         content=[
                             Text(
                                 text="""\
-To find the sum of 4200 and 42, you add them together:
+To find the sum of 4200 and 42, we can add them together:
 
-4200
-+   42
-------
+   4200
++    42
+-------
+   \
 """
                             )
                         ],
@@ -158,11 +156,9 @@ To find the sum of 4200 and 42, you add them together:
                 ],
                 "format": None,
                 "tools": [],
-                "n_chunks": 3,
+                "n_chunks": 5,
             },
         ),
-        "logging": [
-            "Skipping unsupported parameter: thinking=False (provider: google)"
-        ],
+        "logging": [],
     }
 )

@@ -1,0 +1,151 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],
+      "role": "user"}], "generationConfig": {"thinkingConfig": {"includeThoughts":
+      true, "thinkingBudget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '262'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/4VVTW/bOBC9+1cMdElrKEJitzVqoIeg3QUMpGnQGotdbPZAS2OJEEWqJBVXDfrf
+        O0NKthIfNgeH4Hy9efOGepoBJLnQhSyER5es4V+6AXgKv2wz2qP2ZBiv6LIV1p9849/T5EwuHn9w
+        UDKf31vZINx1zQ4t3GiheifdGh6S1fuHBL51O+et1OV8/qAf9Jda9Ck4AxvQiAV4A3upCxBKQRsS
+        6ZDIgULnwFdCw5urKz54qMQjjnkP0ldS0z1KC4UspXcZfO6BilGjZQ/ShbMsK7839iBssaZS1vkU
+        StTIXiBASefB7E/1HexQmQMXzWBboU5hc0FG6WOIr6zpyor+U4EQTeRCXmFeg9wDirwaGmFmhdTc
+        BIIbaRjwZ/CnJKpUP6SvEVuCk5tOBzwcM+AJrTeIPtbMLUORRmfM5+aCKPneybxWPUU3rVTMKkWP
+        nZ13BRt/4ajjg+gdlMaEKQRuBVhUUuwUATadzRGIulA2BSTCacCtxUuu03mqQ8Zdfyw/0MpNTuDz
+        oCixk/iIGdyZQxqsFC5N54Clto78ceCJv4yIaQheTDeSPvTVoJd5pyiB6gMPc9LkYk3p43F5OmZZ
+        Bq9cLdt2BLYzYRBB5K/ZHh1X79fwD1KncQgf4PqYIB6uzzwWLzyWZx7LMCQPypia9VLjGTeDoIVF
+        gpBylTRoipLRrAJhRJ/Q0veRp2yyPI2oWVwUuwkj1BdEjnSOrEL3kUOuzQ0LH2qPCzbo86TJyU6B
+        FbrEsADQGufkTirpJUEmmOsTzgX/BKB04pUrkNaZBEpy0MYPm/CqkI+ScpCsSC7L1xk9E0V6GnpQ
+        OFc1QWI8YcI/4mRi6Inghgdh3NDChGAHpvMRZSScECyDHujKIokXo9qEdgfKPJiT9MVbVrG6+Dnz
+        tsOJ7Vf6/w/gMpkGHM//nUITaxSya2MKVKP7MXfCjLnqKwpnNLt92365P0JMuPUfdH01GwuE1Enn
+        RImf0Qt62MXx+U5aS8vpt6ZG/ZEpIcvyKiabfAee2ReD2Rsv1DPL9dt3b9KzvO4TVZVq+oGYfDuo
+        SUFa6bmT7R9/bydkU4VnsEYmZhPCxmG4F0CWi9nAWaTxL5KGjHyV2BCDl4vs7eVeCVeFiolF1xrt
+        cFOwz6NZGXErvn96d/v152pzv7q73TU3dTL7NfsNWY3pFSMHAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 10 Oct 2025 04:42:38 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=8912
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],
+      "role": "user"}, {"parts": [{"text": "**Thinking: **Prime Number Analysis: \"79\"
+      Substring**\n\nOkay, so I need to find all prime numbers less than 400 that
+      have \"79\" within their digits. My strategy is straightforward: first, generate
+      a list of all primes below 400. Then, I''ll iterate through this list and check
+      if each prime contains the substring \"79\". Finally, I''ll keep a count of
+      the primes that meet this criterion.\n\nI''ve quickly compiled the list of primes
+      below 400.  It''s always good to have a reliable source for this, either pre-computed
+      or by quickly generating the primes with a sieve. Now, the tedious part: checking
+      each prime. I''m going through the list meticulously.\n\n*   2: No\n*   3: No\n*   ...
+      (skipping the boring parts) ...\n*   79: Yes, count = 1\n*   ...\n*   179: Yes,
+      count = 2\n*   ...\n*   379: Yes, count = 3\n\nIt looks like the primes with
+      \"79\" are 79, 179, and 379.  Now, a sanity check. I need to make sure I haven''t
+      missed any. I''m looking at the numbers containing \"79\" within the range.
+      The possibilities are: 79, 179, 279, 379. 279 is definitely not prime (divisible
+      by 3). And, checking that the other listed numbers are indeed prime. All checks
+      out. The count is 3.\n\nTherefore, the answer is 3.\n"}, {"text": "3"}], "role":
+      "model"}, {"parts": [{"text": "If you remember what the primes were, then share
+      them, or say ''I don''t remember.''"}], "role": "user"}], "generationConfig":
+      {"thinkingConfig": {"includeThoughts": false, "thinkingBudget": 0}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1661'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQTU/DMAyG7/0VUc5dRTemMm4IOBQJmCCamNAOgbprIB9VksFG1f9O0q5bBjkk
+        lv36dfw0EUL4ncqCFdSCwZfo1WUQarrb15S0IK0rDCmXrKm2R21/miB2Egtb34RzpEGAeAOdIFIB
+        qjUTYNA3aEDZLEapv9x8NMlmCQ482kO8io+TteLgbYUqgA/ydhDgkklmqiegRkkveyaPc3yoMlnA
+        1qXPomFAZ403hq7hHix1DOhhU1xrJWpL1CfIa7XpGJynWe8WMDsRjNN93SpL+Wnv5CL+Z2xu3FjG
+        Q5gBZ7cl5czu/Crk9oXggIT986+BRfeuoj2VHtQCtGE9kTUIx2g0TqajklNTdZZYg6mVNJAXXvOl
+        MkXvdsuH6cfiJ8vnuiSEXuGojX4Boja0nC8CAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 10 Oct 2025 04:42:38 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=631
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
