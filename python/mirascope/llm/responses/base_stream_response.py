@@ -22,10 +22,10 @@ from ..content import (
 )
 from ..formatting import Format, FormattableT, Partial
 from ..messages import AssistantMessage, Message
-from ..streams import AsyncStream, Stream
 from ..tools import FORMAT_TOOL_NAME, ToolkitT
 from .finish_reason import FinishReasonChunk
 from .root_response import RootResponse
+from .streams import AsyncStream, Stream
 
 if TYPE_CHECKING:
     from ..clients import ModelId, Params, Provider
