@@ -7,8 +7,11 @@ from typing import Generic, Literal, TypeAlias, TypeVar
 from ..content import (
     AssistantContentPart,
     Text,
+    TextChunk,
     Thought,
+    ThoughtChunk,
     ToolCall,
+    ToolCallChunk,
 )
 
 ContentT = TypeVar("ContentT", bound=AssistantContentPart)
@@ -57,13 +60,28 @@ class TextStream(BaseStream[Text, str]):
     partial_text: str
     """The accumulated text content as chunks are received."""
 
+    def __init__(
+        self,
+        chunk_iterator: Iterator[TextChunk],
+    ) -> None:
+        """Initialize TextStream with a start chunk and chunk iterator.
+
+        Args:
+            chunk_iterator: Iterator providing subsequent chunks.
+        """
+        self.partial_text = ""
+        self._chunk_iterator = chunk_iterator
+
     def __iter__(self) -> Iterator[str]:
         """Iterate over text deltas as they are received.
 
         Yields:
             str: Each delta string containing text.
         """
-        raise NotImplementedError()
+        for chunk in self._chunk_iterator:
+            delta = chunk.delta
+            self.partial_text += delta
+            yield delta
 
     def collect(self) -> Text:
         """Collect all chunks and return the final Text content.
@@ -71,7 +89,9 @@ class TextStream(BaseStream[Text, str]):
         Returns:
             Text: The complete text content after consuming all chunks.
         """
-        raise NotImplementedError()
+        for _ in self:
+            pass
+        return Text(text=self.partial_text)
 
 
 class AsyncTextStream(BaseAsyncStream[Text, str]):
@@ -113,13 +133,28 @@ class ThoughtStream(BaseStream[Thought, str]):
     partial_thought: str
     """The accumulated thought content as chunks are received."""
 
+    def __init__(
+        self,
+        chunk_iterator: Iterator[ThoughtChunk],
+    ) -> None:
+        """Initialize ThoughtStream with a chunk iterator.
+
+        Args:
+            chunk_iterator: Iterator providing subsequent chunks.
+        """
+        self.partial_thought = ""
+        self._chunk_iterator = chunk_iterator
+
     def __iter__(self) -> Iterator[str]:
         """Iterate over thought deltas as they are received.
 
         Yields:
             str: Each delta string containing thought text.
         """
-        raise NotImplementedError()
+        for chunk in self._chunk_iterator:
+            delta = chunk.delta
+            self.partial_thought += delta
+            yield delta
 
     def collect(self) -> Thought:
         """Collect all chunks and return the final Thought content.
@@ -127,7 +162,9 @@ class ThoughtStream(BaseStream[Thought, str]):
         Returns:
             Thought: The complete thought content after consuming all chunks.
         """
-        raise NotImplementedError()
+        for _ in self:
+            pass
+        return Thought(thought=self.partial_thought)
 
 
 class AsyncThoughtStream(BaseAsyncStream[Thought, str]):
@@ -175,13 +212,34 @@ class ToolCallStream(BaseStream[ToolCall, str]):
     partial_args: str
     """The accumulated tool arguments as chunks are received."""
 
+    def __init__(
+        self,
+        tool_id: str,
+        tool_name: str,
+        chunk_iterator: Iterator[ToolCallChunk],
+    ) -> None:
+        """Initialize ToolCallStream with tool metadata and chunk iterator.
+
+        Args:
+            tool_id: A unique identifier for this tool call.
+            tool_name: The name of the tool being called.
+            chunk_iterator: Iterator providing subsequent chunks.
+        """
+        self.tool_id = tool_id
+        self.tool_name = tool_name
+        self.partial_args = ""
+        self._chunk_iterator = chunk_iterator
+
     def __iter__(self) -> Iterator[str]:
         """Iterate over tool call argument deltas as they are received.
 
         Yields:
             str: Each delta string containing JSON argument fragments.
         """
-        raise NotImplementedError()
+        for chunk in self._chunk_iterator:
+            delta = chunk.delta
+            self.partial_args += delta
+            yield delta
 
     def collect(self) -> ToolCall:
         """Collect all chunks and return the final ToolCall content.
@@ -189,7 +247,9 @@ class ToolCallStream(BaseStream[ToolCall, str]):
         Returns:
             ToolCall: The complete tool call after consuming all chunks.
         """
-        raise NotImplementedError()
+        for _ in self:
+            pass
+        return ToolCall(id=self.tool_id, name=self.tool_name, args=self.partial_args)
 
 
 class AsyncToolCallStream(BaseAsyncStream[ToolCall, str]):
