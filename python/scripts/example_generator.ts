@@ -255,16 +255,16 @@ ${indent}        ${stream_print}`;
             match stream.content_type:
                 case "tool_call":
                     print(f"Calling tool {stream.tool_name} with args:")
-                    ${this._async}for chunk in stream:
-                        print(chunk.delta, flush=True, end="")
+                    ${this._async}for delta in stream:
+                        print(delta, flush=True, end="")
                     print()
                 case "text":
                     ${this._async}for ${
-      this.structured ? "_" : "chunk"
+      this.structured ? "_" : "delta"
     } in stream:
                         ${
                           !this.structured
-                            ? `print(chunk.delta, flush=True, end="")`
+                            ? `print(delta, flush=True, end="")`
                             : `print("[Partial]: ", response.parse(partial=True), flush=True)`
                         }
         if not response.tool_calls:

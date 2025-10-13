@@ -36,12 +36,12 @@ async def main():
             match stream.content_type:
                 case "tool_call":
                     print(f"Calling tool {stream.tool_name} with args:")
-                    async for chunk in stream:
-                        print(chunk.delta, flush=True, end="")
+                    async for delta in stream:
+                        print(delta, flush=True, end="")
                     print()
                 case "text":
-                    async for chunk in stream:
-                        print(chunk.delta, flush=True, end="")
+                    async for delta in stream:
+                        print(delta, flush=True, end="")
         if not response.tool_calls:
             break
         tool_outputs = await response.execute_tools()
