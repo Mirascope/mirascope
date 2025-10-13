@@ -1567,3 +1567,194 @@ def test_response_toolkit_initialization() -> None:
         chunk_iterator=async_chunk_iter(),
     )
     assert isinstance(response.toolkit, llm.AsyncContextToolkit)
+
+
+class TestStreams:
+    """Test streams() method that yields content-part streams."""
+
+    def test_sync_streams_single_text(
+        self,
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_text: llm.Text,
+    ) -> None:
+        """Test streams() yields a single TextStream for text content."""
+        stream_response = create_sync_stream_response(example_text_chunks)
+
+        streams_iter = stream_response.streams()
+        stream = next(streams_iter)
+
+        assert isinstance(stream, llm.TextStream)
+        assert stream.content_type == "text"
+        assert stream.partial_text == ""
+
+        deltas_and_partials = []
+        for delta in stream:
+            deltas_and_partials.append((delta, stream.partial_text))
+        assert deltas_and_partials == snapshot(
+            [("Hello", "Hello"), (" ", "Hello "), ("world", "Hello world")]
+        )
+
+        assert stream.collect() == example_text
+
+        try:
+            next(streams_iter)
+            assert False, "Expected StopIteration"
+        except StopIteration:
+            pass
+
+        assert stream_response.consumed is True
+
+    def test_sync_streams_outer_iteration_consumes(
+        self,
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_text: llm.Text,
+    ) -> None:
+        """Test that iterating the outer streams() iterator consumes each stream."""
+        chunks = [*example_text_chunks, *example_text_chunks]
+        stream_response = create_sync_stream_response(chunks)
+
+        streams_iter = stream_response.streams()
+
+        # Get first stream but don't iterate it
+        first_stream = next(streams_iter)
+        assert isinstance(first_stream, llm.TextStream)
+        assert first_stream.partial_text == ""
+
+        # Getting the second stream should have auto-consumed the first
+        second_stream = next(streams_iter)
+        assert isinstance(second_stream, llm.TextStream)
+        assert first_stream.partial_text == example_text.text
+        assert second_stream.partial_text == ""
+
+        try:
+            next(streams_iter)
+            assert False, "Expected StopIteration"
+        except StopIteration:
+            pass
+
+        # Both streams should be consumed
+        assert first_stream.partial_text == example_text.text
+        assert second_stream.partial_text == example_text.text
+        assert stream_response.consumed is True
+
+    def test_sync_streams_replay_semantics(
+        self,
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_text: llm.Text,
+    ) -> None:
+        """Test that calling streams() multiple times replays from cache."""
+        stream_response = create_sync_stream_response(example_text_chunks)
+
+        first_streams = list(stream_response.streams())
+        assert len(first_streams) == 1
+        assert first_streams[0].collect() == example_text
+        assert stream_response.consumed is True
+
+        second_streams = list(stream_response.streams())
+        assert len(second_streams) == 1
+        assert second_streams[0].collect() == example_text
+
+    def test_sync_streams_single_thought(
+        self,
+        example_thought_chunks: list[llm.StreamResponseChunk],
+        example_thought: llm.Thought,
+    ) -> None:
+        """Test streams() yields a ThoughtStream for a single thought content part."""
+        stream_response = create_sync_stream_response(example_thought_chunks)
+
+        streams_iter = stream_response.streams()
+        stream = next(streams_iter)
+
+        assert isinstance(stream, llm.ThoughtStream)
+        assert stream.content_type == "thought"
+        assert stream.partial_thought == ""
+
+        deltas_and_partials = []
+        for delta in stream:
+            deltas_and_partials.append((delta, stream.partial_thought))
+        assert deltas_and_partials == snapshot(
+            [
+                ("Let me think...", "Let me think..."),
+                ("\nThis is interesting!", "Let me think...\nThis is interesting!"),
+            ]
+        )
+
+        assert stream.collect() == example_thought
+
+        try:
+            next(streams_iter)
+            assert False, "Expected StopIteration"
+        except StopIteration:
+            pass
+
+        assert stream_response.consumed is True
+
+    def test_sync_streams_single_tool_call(
+        self,
+        example_tool_call_chunks: list[llm.StreamResponseChunk],
+        example_tool_call: llm.ToolCall,
+    ) -> None:
+        """Test streams() yields a ToolCallStream for a single tool call content part."""
+        stream_response = create_sync_stream_response(example_tool_call_chunks)
+
+        streams_iter = stream_response.streams()
+        stream = next(streams_iter)
+
+        assert isinstance(stream, llm.ToolCallStream)
+        assert stream.content_type == "tool_call"
+        assert stream.tool_id == "tool_call_123"
+        assert stream.tool_name == "test_function"
+        assert stream.partial_args == ""
+
+        deltas_and_partials = []
+        for delta in stream:
+            deltas_and_partials.append((delta, stream.partial_args))
+        assert deltas_and_partials == snapshot(
+            [
+                ('{"param1": "value1", ', '{"param1": "value1", '),
+                ('"param2": 42}', '{"param1": "value1", "param2": 42}'),
+            ]
+        )
+
+        assert stream.collect() == example_tool_call
+
+        try:
+            next(streams_iter)
+            assert False, "Expected StopIteration"
+        except StopIteration:
+            pass
+
+        assert stream_response.consumed is True
+
+    def test_sync_streams_mixed_content(
+        self,
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_thought_chunks: list[llm.StreamResponseChunk],
+        example_tool_call_chunks: list[llm.StreamResponseChunk],
+        example_text: llm.Text,
+        example_thought: llm.Thought,
+        example_tool_call: llm.ToolCall,
+    ) -> None:
+        """Test streams() yields TextStream, ThoughtStream, and ToolCallStream in order."""
+        chunks = [
+            *example_text_chunks,
+            *example_thought_chunks,
+            *example_tool_call_chunks,
+        ]
+        stream_response = create_sync_stream_response(chunks)
+
+        streams = list(stream_response.streams())
+
+        assert len(streams) == 3
+        assert isinstance(streams[0], llm.TextStream)
+        assert isinstance(streams[1], llm.ThoughtStream)
+        assert isinstance(streams[2], llm.ToolCallStream)
+
+        assert streams[0].collect() == example_text
+        assert streams[1].collect() == example_thought
+        assert streams[2].collect() == example_tool_call
+
+        assert stream_response.consumed is True
+        assert stream_response.texts == [example_text]
+        assert stream_response.thoughts == [example_thought]
+        assert stream_response.tool_calls == [example_tool_call]
