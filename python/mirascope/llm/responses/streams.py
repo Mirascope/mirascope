@@ -7,26 +7,23 @@ from typing import Generic, Literal, TypeAlias, TypeVar
 from ..content import (
     AssistantContentPart,
     Text,
-    TextChunk,
     Thought,
-    ThoughtChunk,
     ToolCall,
-    ToolCallChunk,
 )
 
 ContentT = TypeVar("ContentT", bound=AssistantContentPart)
 """Type variable for content types (Text, Thought, ToolCall)."""
 
-ChunkT = TypeVar("ChunkT", bound=TextChunk | ThoughtChunk | ToolCallChunk)
-"""Type variable for chunk types."""
+DeltaT = TypeVar("DeltaT")
+"""Type variable for the deltas that the stream provides on iteration."""
 
 
-class BaseStream(ABC, Generic[ContentT, ChunkT]):
+class BaseStream(ABC, Generic[ContentT, DeltaT]):
     """Base class for synchronous streaming content."""
 
     @abstractmethod
-    def __iter__(self) -> Iterator[ChunkT]:
-        """Iterate over delta chunks as they are received."""
+    def __iter__(self) -> Iterator[DeltaT]:
+        """Iterate over content deltas as they arrive."""
         ...
 
     @abstractmethod
@@ -35,12 +32,12 @@ class BaseStream(ABC, Generic[ContentT, ChunkT]):
         ...
 
 
-class BaseAsyncStream(ABC, Generic[ContentT, ChunkT]):
+class BaseAsyncStream(ABC, Generic[ContentT, DeltaT]):
     """Base class for asynchronous streaming content."""
 
     @abstractmethod
-    def __aiter__(self) -> AsyncIterator[ChunkT]:
-        """Asynchronously iterate over delta chunks as they are received."""
+    def __aiter__(self) -> AsyncIterator[DeltaT]:
+        """Asynchronously iterate over content deltas as they arrive."""
         ...
 
     @abstractmethod
@@ -49,7 +46,7 @@ class BaseAsyncStream(ABC, Generic[ContentT, ChunkT]):
         ...
 
 
-class TextStream(BaseStream[Text, TextChunk]):
+class TextStream(BaseStream[Text, str]):
     """Synchronous text stream implementation."""
 
     type: Literal["text_stream"] = "text_stream"
@@ -60,11 +57,11 @@ class TextStream(BaseStream[Text, TextChunk]):
     partial_text: str
     """The accumulated text content as chunks are received."""
 
-    def __iter__(self) -> Iterator[TextChunk]:
-        """Iterate over text chunks as they are received.
+    def __iter__(self) -> Iterator[str]:
+        """Iterate over text deltas as they are received.
 
         Yields:
-            TextChunk: Each delta chunk containing text.
+            str: Each delta string containing text.
         """
         raise NotImplementedError()
 
@@ -77,7 +74,7 @@ class TextStream(BaseStream[Text, TextChunk]):
         raise NotImplementedError()
 
 
-class AsyncTextStream(BaseAsyncStream[Text, TextChunk]):
+class AsyncTextStream(BaseAsyncStream[Text, str]):
     """Asynchronous text stream implementation."""
 
     type: Literal["async_text_stream"] = "async_text_stream"
@@ -88,11 +85,11 @@ class AsyncTextStream(BaseAsyncStream[Text, TextChunk]):
     partial_text: str
     """The accumulated text content as chunks are received."""
 
-    def __aiter__(self) -> AsyncIterator[TextChunk]:
-        """Asynchronously iterate over text chunks as they are received.
+    def __aiter__(self) -> AsyncIterator[str]:
+        """Asynchronously iterate over text deltas as they are received.
 
         Yields:
-            TextChunk: Each delta chunk containing text.
+            str: Each delta string containing text.
         """
         raise NotImplementedError()
 
@@ -105,7 +102,7 @@ class AsyncTextStream(BaseAsyncStream[Text, TextChunk]):
         raise NotImplementedError()
 
 
-class ThoughtStream(BaseStream[Thought, ThoughtChunk]):
+class ThoughtStream(BaseStream[Thought, str]):
     """Synchronous thought stream implementation."""
 
     type: Literal["thought_stream"] = "thought_stream"
@@ -116,11 +113,11 @@ class ThoughtStream(BaseStream[Thought, ThoughtChunk]):
     partial_thought: str
     """The accumulated thought content as chunks are received."""
 
-    def __iter__(self) -> Iterator[ThoughtChunk]:
-        """Iterate over thought chunks as they are received.
+    def __iter__(self) -> Iterator[str]:
+        """Iterate over thought deltas as they are received.
 
         Yields:
-            ThoughtChunk: Each delta chunk containing thought text.
+            str: Each delta string containing thought text.
         """
         raise NotImplementedError()
 
@@ -133,7 +130,7 @@ class ThoughtStream(BaseStream[Thought, ThoughtChunk]):
         raise NotImplementedError()
 
 
-class AsyncThoughtStream(BaseAsyncStream[Thought, ThoughtChunk]):
+class AsyncThoughtStream(BaseAsyncStream[Thought, str]):
     """Asynchronous thought stream implementation."""
 
     type: Literal["async_thought_stream"] = "async_thought_stream"
@@ -144,11 +141,11 @@ class AsyncThoughtStream(BaseAsyncStream[Thought, ThoughtChunk]):
     partial_thought: str
     """The accumulated thought content as chunks are received."""
 
-    def __aiter__(self) -> AsyncIterator[ThoughtChunk]:
-        """Asynchronously iterate over thought chunks as they are received.
+    def __aiter__(self) -> AsyncIterator[str]:
+        """Asynchronously iterate over thought deltas as they are received.
 
         Yields:
-            ThoughtChunk: Each delta chunk containing thought text.
+            str: Each delta string containing thought text.
         """
         raise NotImplementedError()
 
@@ -161,7 +158,7 @@ class AsyncThoughtStream(BaseAsyncStream[Thought, ThoughtChunk]):
         raise NotImplementedError()
 
 
-class ToolCallStream(BaseStream[ToolCall, ToolCallChunk]):
+class ToolCallStream(BaseStream[ToolCall, str]):
     """Synchronous tool call stream implementation."""
 
     type: Literal["tool_call_stream"] = "tool_call_stream"
@@ -178,11 +175,11 @@ class ToolCallStream(BaseStream[ToolCall, ToolCallChunk]):
     partial_args: str
     """The accumulated tool arguments as chunks are received."""
 
-    def __iter__(self) -> Iterator[ToolCallChunk]:
-        """Iterate over tool call chunks as they are received.
+    def __iter__(self) -> Iterator[str]:
+        """Iterate over tool call argument deltas as they are received.
 
         Yields:
-            ToolCallChunk: Each delta chunk containing tool arguments.
+            str: Each delta string containing JSON argument fragments.
         """
         raise NotImplementedError()
 
@@ -195,7 +192,7 @@ class ToolCallStream(BaseStream[ToolCall, ToolCallChunk]):
         raise NotImplementedError()
 
 
-class AsyncToolCallStream(BaseAsyncStream[ToolCall, ToolCallChunk]):
+class AsyncToolCallStream(BaseAsyncStream[ToolCall, str]):
     """Asynchronous tool call stream implementation."""
 
     type: Literal["async_tool_call_stream"] = "async_tool_call_stream"
@@ -212,11 +209,11 @@ class AsyncToolCallStream(BaseAsyncStream[ToolCall, ToolCallChunk]):
     partial_args: str
     """The accumulated tool arguments as chunks are received."""
 
-    def __aiter__(self) -> AsyncIterator[ToolCallChunk]:
-        """Asynchronously iterate over tool call chunks as they are received.
+    def __aiter__(self) -> AsyncIterator[str]:
+        """Asynchronously iterate over tool call argument deltas as they are received.
 
         Yields:
-            ToolCallChunk: Each delta chunk containing tool arguments.
+            str: Each delta string containing JSON argument fragments.
         """
         raise NotImplementedError()
 
