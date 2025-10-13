@@ -11,7 +11,7 @@ from mirascope.llm.tools import FORMAT_TOOL_NAME
 
 
 def create_sync_stream_response(
-    chunks: list[llm.AssistantContentChunk | llm.responses.FinishReasonChunk],
+    chunks: list[llm.StreamResponseChunk],
 ) -> llm.StreamResponse:
     """Create a llm.StreamResponse with a functioning iterator for testing."""
 
@@ -31,7 +31,7 @@ def create_sync_stream_response(
 
 
 def create_async_stream_response(
-    chunks: list[llm.AssistantContentChunk | llm.responses.FinishReasonChunk],
+    chunks: list[llm.StreamResponseChunk],
 ) -> llm.AsyncStreamResponse:
     """Create a llm.StreamResponse with a functioning iterator for testing."""
 
@@ -71,9 +71,7 @@ def example_tool_call() -> llm.ToolCall:
 
 
 @pytest.fixture
-def example_text_chunks() -> list[
-    llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-]:
+def example_text_chunks() -> list[llm.StreamResponseChunk]:
     """Create a complete text chunk sequence for testing."""
     return [
         llm.TextStartChunk(),
@@ -85,9 +83,7 @@ def example_text_chunks() -> list[
 
 
 @pytest.fixture
-def example_thought_chunks() -> list[
-    llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-]:
+def example_thought_chunks() -> list[llm.StreamResponseChunk]:
     """Create a complete thought chunk sequence for testing."""
     return [
         llm.ThoughtStartChunk(),
@@ -98,9 +94,7 @@ def example_thought_chunks() -> list[
 
 
 @pytest.fixture
-def example_tool_call_chunks() -> list[
-    llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-]:
+def example_tool_call_chunks() -> list[llm.StreamResponseChunk]:
     """Create a complete tool call chunk sequence for testing."""
     return [
         llm.ToolCallStartChunk(
@@ -114,7 +108,7 @@ def example_tool_call_chunks() -> list[
 
 def check_stream_response_consistency(
     response: llm.StreamResponse | llm.AsyncStreamResponse,
-    chunks: Sequence[llm.AssistantContentChunk | llm.responses.FinishReasonChunk],
+    chunks: Sequence[llm.StreamResponseChunk],
     content: Sequence[llm.AssistantContentPart],
 ) -> None:
     assert response.chunks == [c for c in chunks if c.type != "finish_reason_chunk"], (
@@ -136,9 +130,7 @@ def check_stream_response_consistency(
 
 
 def test_sync_initialization(
-    example_text_chunks: list[
-        llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-    ],
+    example_text_chunks: list[llm.StreamResponseChunk],
 ) -> None:
     """Test llm.StreamResponse initialization with sync iterator."""
     stream_response = create_sync_stream_response(example_text_chunks)
@@ -155,9 +147,7 @@ def test_sync_initialization(
 
 @pytest.mark.asyncio
 async def test_async_initialization(
-    example_text_chunks: list[
-        llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-    ],
+    example_text_chunks: list[llm.StreamResponseChunk],
 ) -> None:
     """Test llm.StreamResponse initialization with async iterator."""
     stream_response = create_async_stream_response(example_text_chunks)
@@ -177,15 +167,9 @@ class TestChunkStream:
 
     def test_sync_basic_streaming(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_thought_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_tool_call_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_thought_chunks: list[llm.StreamResponseChunk],
+        example_tool_call_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
         example_thought: llm.Thought,
         example_tool_call: llm.ToolCall,
@@ -214,15 +198,9 @@ class TestChunkStream:
     @pytest.mark.asyncio
     async def test_async_basic_streaming(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_thought_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_tool_call_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_thought_chunks: list[llm.StreamResponseChunk],
+        example_tool_call_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
         example_thought: llm.Thought,
         example_tool_call: llm.ToolCall,
@@ -250,9 +228,7 @@ class TestChunkStream:
 
     def test_sync_replay_functionality(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test that streaming can be replayed from cache with sync response."""
@@ -271,9 +247,7 @@ class TestChunkStream:
     @pytest.mark.asyncio
     async def test_async_replay_functionality(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test that streaming can be replayed from cache with async response."""
@@ -291,9 +265,7 @@ class TestChunkStream:
 
     def test_sync_partial_iteration_and_resume(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test breaking iteration and resuming from cached state with sync response."""
@@ -324,9 +296,7 @@ class TestChunkStream:
     @pytest.mark.asyncio
     async def test_async_partial_iteration_and_resume(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test breaking iteration and resuming from cached state with async response."""
@@ -356,9 +326,7 @@ class TestChunkStream:
 
     def test_sync_partial_iteration_and_restart(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test breaking iteration and restarting with sync response."""
@@ -389,9 +357,7 @@ class TestChunkStream:
     @pytest.mark.asyncio
     async def test_async_partial_iteration_and_restart(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test breaking iteration and restarting with async response."""
@@ -424,7 +390,7 @@ class TestChunkStream:
 
 @dataclass
 class ChunkProcessingTestCase:
-    chunks: list[llm.AssistantContentChunk | llm.responses.FinishReasonChunk]
+    chunks: list[llm.StreamResponseChunk]
     expected_contents: list[list[llm.AssistantContentPart]]
 
 
@@ -513,9 +479,7 @@ class TestToolCallSupport:
 
     def test_sync_tool_call_streaming(
         self,
-        example_tool_call_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_tool_call_chunks: list[llm.StreamResponseChunk],
         example_tool_call: llm.ToolCall,
     ) -> None:
         """Test tool call streaming functionality with sync response."""
@@ -532,9 +496,7 @@ class TestToolCallSupport:
     @pytest.mark.asyncio
     async def test_async_tool_call_streaming(
         self,
-        example_tool_call_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_tool_call_chunks: list[llm.StreamResponseChunk],
         example_tool_call: llm.ToolCall,
     ) -> None:
         """Test tool call streaming functionality with async response."""
@@ -623,9 +585,7 @@ class TestChunkProcessing:
 
     def test_sync_finish_reason_chunk_processing(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test that FinishReasonChunk sets the finish_reason on the response with sync response."""
@@ -645,9 +605,7 @@ class TestChunkProcessing:
     @pytest.mark.asyncio
     async def test_async_finish_reason_chunk_processing(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test that FinishReasonChunk sets the finish_reason on the response with async response."""
@@ -693,7 +651,7 @@ class TestChunkProcessing:
 
 @dataclass
 class InvalidChunkSequenceTestCase:
-    chunks: list[llm.AssistantContentChunk | llm.responses.FinishReasonChunk]
+    chunks: list[llm.StreamResponseChunk]
     expected_error: str
 
 
@@ -830,12 +788,8 @@ class TestErrorHandling:
 
     def test_sync_chunks_after_finish_reason(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_thought_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_thought_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test that chunks after finish reason raise RuntimeError with sync response."""
@@ -855,12 +809,8 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_async_chunks_after_finish_reason(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_thought_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_thought_chunks: list[llm.StreamResponseChunk],
         example_text: llm.Text,
     ) -> None:
         """Test that chunks after finish reason raise RuntimeError with async response."""
@@ -881,9 +831,7 @@ class TestErrorHandling:
 class TestPrettyStream:
     def test_sync_pretty_stream_text_only(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
     ) -> None:
         stream_response = create_sync_stream_response(example_text_chunks)
 
@@ -895,9 +843,7 @@ class TestPrettyStream:
     @pytest.mark.asyncio
     async def test_async_pretty_stream_text_only(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
     ) -> None:
         stream_response = create_async_stream_response(example_text_chunks)
 
@@ -910,15 +856,9 @@ class TestPrettyStream:
 
     def test_sync_pretty_stream_mixed_content(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_thought_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_tool_call_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_thought_chunks: list[llm.StreamResponseChunk],
+        example_tool_call_chunks: list[llm.StreamResponseChunk],
     ) -> None:
         chunks = [
             *example_text_chunks,
@@ -945,15 +885,9 @@ Hello world
     @pytest.mark.asyncio
     async def test_async_pretty_stream_mixed_content(
         self,
-        example_text_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_thought_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_tool_call_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_text_chunks: list[llm.StreamResponseChunk],
+        example_thought_chunks: list[llm.StreamResponseChunk],
+        example_tool_call_chunks: list[llm.StreamResponseChunk],
     ) -> None:
         chunks = [
             *example_text_chunks,
@@ -1309,9 +1243,7 @@ class TestRawContentChunkTracking:
 
 
 @pytest.fixture
-def example_format_tool_chunks() -> list[
-    llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-]:
+def example_format_tool_chunks() -> list[llm.StreamResponseChunk]:
     return [
         llm.ToolCallStartChunk(
             id="call_format_123",
@@ -1334,9 +1266,7 @@ def example_format_tool_chunks_processed() -> list[llm.AssistantContentChunk]:
 
 
 @pytest.fixture
-def example_format_tool_chunks_mixed() -> list[
-    llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-]:
+def example_format_tool_chunks_mixed() -> list[llm.StreamResponseChunk]:
     return [
         llm.ToolCallStartChunk(id="call_007", name="ring_tool"),
         llm.ToolCallChunk(delta='{"ring_purpose": "to_rule_them_all"}'),
@@ -1371,9 +1301,7 @@ def example_format_tool_chunks_mixed_processed() -> list[llm.AssistantContentChu
 
 
 @pytest.fixture
-def example_format_tool_chunks_max_tokens() -> list[
-    llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-]:
+def example_format_tool_chunks_max_tokens() -> list[llm.StreamResponseChunk]:
     return [
         llm.ToolCallStartChunk(
             id="call_format_123",
@@ -1399,9 +1327,7 @@ class TestFormatToolHandling:
 
     def test_sync_format_tool_conversion(
         self,
-        example_format_tool_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_format_tool_chunks: list[llm.StreamResponseChunk],
         example_format_tool_chunks_processed: list[llm.AssistantContentChunk],
     ) -> None:
         """Test that FORMAT_TOOL_NAME tool calls are converted to text."""
@@ -1418,9 +1344,7 @@ class TestFormatToolHandling:
 
     def test_sync_mixed_regular_and_format_tools(
         self,
-        example_format_tool_chunks_mixed: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_format_tool_chunks_mixed: list[llm.StreamResponseChunk],
         example_format_tool_chunks_mixed_processed: list[llm.AssistantContentChunk],
     ) -> None:
         """Test streaming with both regular and format tools."""
@@ -1444,9 +1368,7 @@ class TestFormatToolHandling:
 
     def test_sync_format_tool_no_finish_reason_change(
         self,
-        example_format_tool_chunks_max_tokens: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_format_tool_chunks_max_tokens: list[llm.StreamResponseChunk],
         example_format_tool_chunks_max_tokens_processed: list[
             llm.AssistantContentChunk
         ],
@@ -1466,9 +1388,7 @@ class TestFormatToolHandling:
     @pytest.mark.asyncio
     async def test_async_format_tool_conversion(
         self,
-        example_format_tool_chunks: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_format_tool_chunks: list[llm.StreamResponseChunk],
         example_format_tool_chunks_processed: list[llm.AssistantContentChunk],
     ) -> None:
         """Test that FORMAT_TOOL_NAME tool calls are converted to text in async."""
@@ -1485,12 +1405,8 @@ class TestFormatToolHandling:
     @pytest.mark.asyncio
     async def test_async_mixed_regular_and_format_tools(
         self,
-        example_format_tool_chunks_mixed: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
-        example_format_tool_chunks_mixed_processed: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_format_tool_chunks_mixed: list[llm.StreamResponseChunk],
+        example_format_tool_chunks_mixed_processed: list[llm.StreamResponseChunk],
     ) -> None:
         """Test streaming with both regular and format tools in async."""
         stream_response = create_async_stream_response(example_format_tool_chunks_mixed)
@@ -1514,9 +1430,7 @@ class TestFormatToolHandling:
     @pytest.mark.asyncio
     async def test_async_format_tool_no_finish_reason_change(
         self,
-        example_format_tool_chunks_max_tokens: list[
-            llm.AssistantContentChunk | llm.responses.FinishReasonChunk
-        ],
+        example_format_tool_chunks_max_tokens: list[llm.StreamResponseChunk],
         example_format_tool_chunks_max_tokens_processed: list[
             llm.AssistantContentChunk
         ],

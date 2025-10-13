@@ -79,6 +79,7 @@ from .responses import (
     FinishReason,
     Response,
     StreamResponse,
+    StreamResponseChunk,
 )
 from .streams import AsyncStream, Stream
 from .tools import (
@@ -139,6 +140,7 @@ __all__ = [
     "Stream",
     "StreamResponse",
     "StreamResponse",
+    "StreamResponseChunk",
     "SystemMessage",
     "Text",
     "TextChunk",

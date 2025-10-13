@@ -37,14 +37,12 @@ class RawChunk:
     type: Literal["raw_chunk"] = "raw_chunk"
 
 
-ChunkIterator: TypeAlias = Iterator[
-    AssistantContentChunk | FinishReasonChunk | RawChunk
-]
+StreamResponseChunk: TypeAlias = AssistantContentChunk | FinishReasonChunk | RawChunk
+
+ChunkIterator: TypeAlias = Iterator[StreamResponseChunk]
 """Synchronous iterator yielding chunks with raw data."""
 
-AsyncChunkIterator: TypeAlias = AsyncIterator[
-    AssistantContentChunk | FinishReasonChunk | RawChunk
-]
+AsyncChunkIterator: TypeAlias = AsyncIterator[StreamResponseChunk]
 """Asynchronous iterator yielding chunks with raw data."""
 
 ChunkIteratorT = TypeVar("ChunkIteratorT", bound=ChunkIterator | AsyncChunkIterator)
