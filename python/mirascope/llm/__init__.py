@@ -139,7 +139,6 @@ __all__ = [
     "ServerError",
     "Stream",
     "StreamResponse",
-    "StreamResponse",
     "StreamResponseChunk",
     "SystemMessage",
     "Text",
