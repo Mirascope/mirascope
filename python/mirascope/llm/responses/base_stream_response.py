@@ -25,7 +25,7 @@ from ..messages import AssistantMessage, Message
 from ..tools import FORMAT_TOOL_NAME, ToolkitT
 from .finish_reason import FinishReasonChunk
 from .root_response import RootResponse
-from .streams import AsyncStream, Stream
+from .streams import AsyncStream, Stream, TextStream, ThoughtStream, ToolCallStream
 
 if TYPE_CHECKING:
     from ..clients import ModelId, Params, Provider
@@ -342,7 +342,56 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         the LLM), it will proceed to consume it once it has iterated through all the
         cached chunks.
         """
-        raise NotImplementedError()
+        chunk_iter = self.chunk_stream()
+
+        for chunk in chunk_iter:
+            if chunk.type == "text_start_chunk":
+
+                def text_stream_iterator() -> Iterator[TextChunk]:
+                    for chunk in chunk_iter:
+                        if chunk.type == "text_chunk":
+                            yield chunk
+                        else:
+                            return  # Stream finished
+
+                stream = TextStream(chunk_iterator=text_stream_iterator())
+                yield stream
+
+            elif chunk.type == "thought_start_chunk":
+
+                def thought_stream_iterator() -> Iterator[ThoughtChunk]:
+                    for chunk in chunk_iter:
+                        if chunk.type == "thought_chunk":
+                            yield chunk
+                        else:
+                            return  # Stream finished
+
+                stream = ThoughtStream(chunk_iterator=thought_stream_iterator())
+                yield stream
+
+            elif chunk.type == "tool_call_start_chunk":
+                tool_id = chunk.id
+                tool_name = chunk.name
+
+                def tool_call_stream_iterator() -> Iterator[ToolCallChunk]:
+                    for chunk in chunk_iter:
+                        if chunk.type == "tool_call_chunk":
+                            yield chunk
+                        else:
+                            return  # Stream finished
+
+                stream = ToolCallStream(
+                    tool_id=tool_id,
+                    tool_name=tool_name,
+                    chunk_iterator=tool_call_stream_iterator(),
+                )
+                yield stream
+            else:  # pragma: no cover
+                raise RuntimeError(f"Unsupported chunk type: {chunk.type}")
+
+            # Before continuing to the next stream, make sure the last stream is consumed
+            # (If the user did not do so when we yielded it)
+            stream.collect()
 
     def chunk_stream(
         self,
