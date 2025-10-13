@@ -20,15 +20,15 @@ def stream_type_safety():
     for stream in streams:
         match stream.content_type:
             case "text":
-                assert_type(stream, llm.streams.TextStream)
+                assert_type(stream, llm.TextStream)
                 for chunk in stream:
                     assert_type(chunk, llm.content.TextChunk)
             case "tool_call":
-                assert_type(stream, llm.streams.ToolCallStream)
+                assert_type(stream, llm.ToolCallStream)
                 for chunk in stream:
                     assert_type(chunk, llm.content.ToolCallChunk)
             case "thought":
-                assert_type(stream, llm.streams.ThoughtStream)
+                assert_type(stream, llm.ThoughtStream)
                 for chunk in stream:
                     assert_type(chunk, llm.content.ThoughtChunk)
             case _:
@@ -43,15 +43,15 @@ async def async_stream_type_safety():
     async for stream in streams:
         match stream.content_type:
             case "text":
-                assert_type(stream, llm.streams.AsyncTextStream)
+                assert_type(stream, llm.AsyncTextStream)
                 async for chunk in stream:
                     assert_type(chunk, llm.content.TextChunk)
             case "tool_call":
-                assert_type(stream, llm.streams.AsyncToolCallStream)
+                assert_type(stream, llm.AsyncToolCallStream)
                 async for chunk in stream:
                     assert_type(chunk, llm.content.ToolCallChunk)
             case "thought":
-                assert_type(stream, llm.streams.AsyncThoughtStream)
+                assert_type(stream, llm.AsyncThoughtStream)
                 async for chunk in stream:
                     assert_type(chunk, llm.content.ThoughtChunk)
             case _:
