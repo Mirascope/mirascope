@@ -45,12 +45,12 @@ def main():
             match stream.content_type:
                 case "tool_call":
                     print(f"Calling tool {stream.tool_name} with args:")
-                    for chunk in stream:
-                        print(chunk.delta, flush=True, end="")
+                    for delta in stream:
+                        print(delta, flush=True, end="")
                     print()
                 case "text":
-                    for chunk in stream:
-                        print(chunk.delta, flush=True, end="")
+                    for delta in stream:
+                        print(delta, flush=True, end="")
         if not response.tool_calls:
             break
         tool_outputs = response.execute_tools(ctx)
