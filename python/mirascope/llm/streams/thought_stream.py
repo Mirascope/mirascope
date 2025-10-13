@@ -15,7 +15,7 @@ class ThoughtStream(BaseStream[ThoughtChunk, Thought]):
     content_type: Literal["thought"] = "thought"
     """The type of content this stream handles."""
 
-    partial_thought: str
+    partial: Thought
     """The accumulated thought content as chunks are received."""
 
     def __iter__(self) -> Iterator[ThoughtChunk]:
@@ -43,7 +43,7 @@ class AsyncThoughtStream(BaseAsyncStream[ThoughtChunk, Thought]):
     content_type: Literal["thought"] = "thought"
     """The type of content this stream handles."""
 
-    partial_thought: str
+    partial: Thought
     """The accumulated thought content as chunks are received."""
 
     def __aiter__(self) -> AsyncIterator[ThoughtChunk]:

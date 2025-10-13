@@ -55,7 +55,7 @@ def main():
         for stream in streams:
             match stream.content_type:
                 case "tool_call":
-                    print(f"Calling tool {stream.tool_name} with args:")
+                    print(f"Calling tool {stream.partial.name} with args:")
                     for chunk in stream:
                         print(chunk.delta, flush=True, end="")
                     print()

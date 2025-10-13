@@ -16,6 +16,9 @@ ContentT = TypeVar("ContentT", bound=AssistantContentPart)
 class BaseStream(ABC, Generic[ChunkT, ContentT]):
     """Base class for synchronous streaming content."""
 
+    partial: ContentT
+    """The accumulated content as chunks are received."""
+
     @abstractmethod
     def __iter__(self) -> Iterator[ChunkT]:
         """Iterate over chunks as they are received."""
@@ -29,6 +32,9 @@ class BaseStream(ABC, Generic[ChunkT, ContentT]):
 
 class BaseAsyncStream(ABC, Generic[ChunkT, ContentT]):
     """Base class for asynchronous streaming content."""
+
+    partial: ContentT
+    """The accumulated content as chunks are received."""
 
     @abstractmethod
     def __aiter__(self) -> AsyncIterator[ChunkT]:

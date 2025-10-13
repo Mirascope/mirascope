@@ -15,7 +15,7 @@ class TextStream(BaseStream[TextChunk, Text]):
     content_type: Literal["text"] = "text"
     """The type of content this stream handles."""
 
-    partial_text: str
+    partial: Text
     """The accumulated text content as chunks are received."""
 
     def __iter__(self) -> Iterator[TextChunk]:
@@ -43,7 +43,7 @@ class AsyncTextStream(BaseAsyncStream[TextChunk, Text]):
     content_type: Literal["text"] = "text"
     """The type of content this stream handles."""
 
-    partial_text: str
+    partial: Text
     """The accumulated text content as chunks are received."""
 
     def __aiter__(self) -> AsyncIterator[TextChunk]:

@@ -15,14 +15,8 @@ class ToolCallStream(BaseStream[ToolCallChunk, ToolCall]):
     content_type: Literal["tool_call"] = "tool_call"
     """The type of content this stream handles."""
 
-    tool_id: str
-    """A unique identifier for this tool call."""
-
-    tool_name: str
-    """The name of the tool being called."""
-
-    partial_args: str
-    """The accumulated tool arguments as chunks are received."""
+    partial: ToolCall
+    """The accumulated tool call content as chunks are received."""
 
     def __iter__(self) -> Iterator[ToolCallChunk]:
         """Iterate over tool call chunks as they are received.
@@ -49,14 +43,8 @@ class AsyncToolCallStream(BaseAsyncStream[ToolCallChunk, ToolCall]):
     content_type: Literal["tool_call"] = "tool_call"
     """The type of content this stream handles."""
 
-    tool_id: str
-    """A unique identifier for this tool call."""
-
-    tool_name: str
-    """The name of the tool being called."""
-
-    partial_args: str
-    """The accumulated tool arguments as chunks are received."""
+    partial: ToolCall
+    """The accumulated tool call content as chunks are received."""
 
     def __aiter__(self) -> AsyncIterator[ToolCallChunk]:
         """Asynchronously iterate over tool call chunks as they are received.
