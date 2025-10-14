@@ -159,7 +159,9 @@ def prepare_anthropic_request(
         "max_tokens": 1024,
     }
 
-    with _base_utils.ensure_all_params_accessed(params) as param_accessor:
+    with _base_utils.ensure_all_params_accessed(
+        params=params, provider="anthropic", unsupported_params=["seed", "thinking"]
+    ) as param_accessor:
         if param_accessor.temperature is not None:
             kwargs["temperature"] = param_accessor.temperature
         if param_accessor.max_tokens is not None:
@@ -168,14 +170,8 @@ def prepare_anthropic_request(
             kwargs["top_p"] = param_accessor.top_p
         if param_accessor.top_k is not None:
             kwargs["top_k"] = param_accessor.top_k
-        if param_accessor.seed is not None:
-            _base_utils.warn_unused_param("seed", param_accessor.seed, "anthropic")
         if param_accessor.stop_sequences is not None:
             kwargs["stop_sequences"] = param_accessor.stop_sequences
-        if param_accessor.thinking is not None:
-            _base_utils.warn_unused_param(
-                "thinking", param_accessor.thinking, "anthropic"
-            )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     anthropic_tools = [_convert_tool_to_tool_param(tool) for tool in tools]

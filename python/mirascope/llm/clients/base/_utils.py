@@ -128,31 +128,35 @@ class SafeParamsAccessor:
         self._unaccessed.discard("thinking")
         return self._params.get("thinking")
 
-    def _check_all_accessed(self) -> None:
-        """Verify that all possible parameters have been accessed."""
-        if self._unaccessed:
-            raise RuntimeError(
-                f"Not all parameters were checked. Unaccessed parameters: {sorted(self._unaccessed)}"
+    def emit_warning_for_unused_param(
+        self,
+        param_name: str,
+        param_value: object,
+        provider: "Provider",
+        model_id: "ModelId | None" = None,
+    ) -> None:
+        unsupported_by = f"provider: {provider}"
+        if model_id:
+            unsupported_by += (
+                f" with model_id: {model_id}"  # pragma: no cover (REMOVED UPSTACK)
             )
+        logger.warning(
+            f"Skipping unsupported parameter: {param_name}={param_value} ({unsupported_by})"
+        )
 
-
-def warn_unused_param(
-    param_name: str,
-    param_value: object,
-    provider: "Provider",
-    model_id: "ModelId | None" = None,
-) -> None:
-    unsupported_by = f"provider: {provider}"
-    if model_id:  # pragma: no cover TODO remove this no cover upstack
-        unsupported_by += f" with model_id: {model_id}"
-    logger.warning(
-        f"Skipping unsupported parameter: {param_name}={param_value} ({unsupported_by})"
-    )
+    def check_access_integrity(self, unsupported_params: list[str]) -> None:
+        """Verify that all used parameters have been accessed, and none of the unsupported have been."""
+        assert self._unaccessed == set(unsupported_params), (
+            "Mismatch between unsupported and unaccessed params"
+        )
 
 
 @contextmanager
 def ensure_all_params_accessed(
+    *,
     params: Params,
+    provider: "Provider",
+    unsupported_params: list[str] | None = None,
 ) -> Generator[SafeParamsAccessor, None, None]:
     """Context manager that ensures all parameters are accessed.
 
@@ -161,6 +165,10 @@ def ensure_all_params_accessed(
 
     Args:
         params: The parameters to wrap
+        provider: The provider that is accessing these params (required for logging)
+        unsupported_params: A list of params keys it does not support, for auto-warning
+            of unsupported params as boilerplate reduction. Or None, to disable this
+            optional feature.
 
     Yields:
         A SafeParamsAccessor instance if params is not None, else None
@@ -170,7 +178,11 @@ def ensure_all_params_accessed(
     """
 
     accessor = SafeParamsAccessor(params)
+    unsupported_params = unsupported_params or []
+    for unsupported in unsupported_params:
+        if (val := params.get(unsupported)) is not None:
+            accessor.emit_warning_for_unused_param(unsupported, val, provider=provider)
     try:
         yield accessor
     finally:
-        accessor._check_all_accessed()
+        accessor.check_access_integrity(unsupported_params=unsupported_params)

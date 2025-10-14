@@ -223,25 +223,22 @@ def prepare_completions_request(
         "model": model_id,
     }
 
-    with _base_utils.ensure_all_params_accessed(params) as param_accessor:
+    with _base_utils.ensure_all_params_accessed(
+        params=params,
+        provider="openai:completions",
+        unsupported_params=["top_k", "thinking"],
+    ) as param_accessor:
         if param_accessor.temperature is not None:
             kwargs["temperature"] = param_accessor.temperature
         if param_accessor.max_tokens is not None:
             kwargs["max_tokens"] = param_accessor.max_tokens
         if param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
-        if param_accessor.top_k is not None:
-            _base_utils.warn_unused_param(
-                "top_k", param_accessor.top_k, "openai:completions"
-            )
+
         if param_accessor.seed is not None:
             kwargs["seed"] = param_accessor.seed
         if param_accessor.stop_sequences is not None:
             kwargs["stop"] = param_accessor.stop_sequences
-        if param_accessor.thinking is not None:
-            _base_utils.warn_unused_param(
-                "thinking", param_accessor.thinking, "openai:completions"
-            )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
 

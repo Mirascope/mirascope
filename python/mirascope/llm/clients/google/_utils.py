@@ -221,7 +221,9 @@ def prepare_google_request(
     """Prepares a request for the genai `Client.models.generate_content` method."""
     google_config: GoogleKwargs = {}
 
-    with _base_utils.ensure_all_params_accessed(params) as param_accessor:
+    with _base_utils.ensure_all_params_accessed(
+        params=params, provider="google", unsupported_params=["thinking"]
+    ) as param_accessor:
         if param_accessor.temperature is not None:
             google_config["temperature"] = param_accessor.temperature
         if param_accessor.max_tokens is not None:
@@ -234,8 +236,6 @@ def prepare_google_request(
             google_config["seed"] = param_accessor.seed
         if param_accessor.stop_sequences is not None:
             google_config["stop_sequences"] = param_accessor.stop_sequences
-        if param_accessor.thinking is not None:
-            _base_utils.warn_unused_param("thinking", param_accessor.thinking, "google")
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     google_tools: list[genai_types.ToolDict] = []
