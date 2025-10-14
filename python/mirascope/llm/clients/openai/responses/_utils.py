@@ -162,31 +162,17 @@ def prepare_responses_request(
         "model": model_id,
     }
 
-    with _base_utils.ensure_all_params_accessed(params) as param_accessor:
+    with _base_utils.ensure_all_params_accessed(
+        params=params,
+        provider="openai:responses",
+        unsupported_params=["top_k", "seed", "stop_sequences", "thinking"],
+    ) as param_accessor:
         if param_accessor.temperature is not None:
             kwargs["temperature"] = param_accessor.temperature
         if param_accessor.max_tokens is not None:
             kwargs["max_output_tokens"] = param_accessor.max_tokens
         if param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
-        if param_accessor.top_k is not None:
-            _base_utils.warn_unused_param(
-                "top_k", param_accessor.top_k, "openai:responses"
-            )
-        if param_accessor.seed is not None:
-            _base_utils.warn_unused_param(
-                "seed", param_accessor.seed, "openai:responses"
-            )
-        if param_accessor.stop_sequences is not None:
-            _base_utils.warn_unused_param(
-                "stop_sequences",
-                param_accessor.stop_sequences,
-                "openai:responses",
-            )
-        if param_accessor.thinking is not None:
-            _base_utils.warn_unused_param(
-                "thinking", param_accessor.thinking, "openai:responses"
-            )
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools]
