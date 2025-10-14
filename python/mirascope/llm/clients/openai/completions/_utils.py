@@ -100,7 +100,7 @@ def _encode_user_message(
 
 
 def _encode_assistant_message(
-    message: AssistantMessage,
+    message: AssistantMessage, encode_thoughts: bool
 ) -> openai_types.ChatCompletionAssistantMessageParam:
     """Convert Mirascope `AssistantMessage` to OpenAI `ChatCompletionAssistantMessageParam`."""
 
@@ -119,6 +119,12 @@ def _encode_assistant_message(
                     id=part.id,
                     type="function",
                     function={"name": part.name, "arguments": part.args},
+                )
+            )
+        elif part.type == "thought" and encode_thoughts:
+            text_params.append(
+                openai_types.ChatCompletionContentPartTextParam(
+                    text="**Thinking:** " + part.thought, type="text"
                 )
             )
         else:
@@ -140,7 +146,9 @@ def _encode_assistant_message(
     return openai_types.ChatCompletionAssistantMessageParam(**message_params)
 
 
-def _encode_message(message: Message) -> list[openai_types.ChatCompletionMessageParam]:
+def _encode_message(
+    message: Message, encode_thoughts: bool
+) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert a Mirascope `Message` to OpenAI `ChatCompletionMessageParam` format.
 
     Args:
@@ -158,7 +166,7 @@ def _encode_message(message: Message) -> list[openai_types.ChatCompletionMessage
     elif message.role == "user":
         return _encode_user_message(message)
     elif message.role == "assistant":
-        return [_encode_assistant_message(message)]
+        return [_encode_assistant_message(message, encode_thoughts)]
     else:
         raise ValueError(f"Unsupported role: {message.role}")  # pragma: no cover
 
@@ -222,6 +230,7 @@ def prepare_completions_request(
     kwargs: ChatCompletionCreateKwargs = {
         "model": model_id,
     }
+    encode_thoughts = False
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
@@ -239,6 +248,8 @@ def prepare_completions_request(
             kwargs["seed"] = param_accessor.seed
         if param_accessor.stop_sequences is not None:
             kwargs["stop"] = param_accessor.stop_sequences
+        if param_accessor.encode_thoughts_as_text is not None:
+            encode_thoughts = True
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
 
@@ -285,7 +296,7 @@ def prepare_completions_request(
 
     encoded_messages: list[openai_types.ChatCompletionMessageParam] = []
     for message in messages:
-        encoded_messages.extend(_encode_message(message))
+        encoded_messages.extend(_encode_message(message, encode_thoughts))
     kwargs["messages"] = encoded_messages
 
     return messages, format, kwargs

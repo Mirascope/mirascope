@@ -22,6 +22,7 @@ ALL_PARAMS: llm.Params = {
     "seed": 42,
     "stop_sequences": ["4242"],
     "thinking": False,
+    "encode_thoughts_as_text": False,
 }
 
 

@@ -68,14 +68,14 @@ class MessageCreateKwargs(TypedDict, total=False):
 
 
 def _encode_content(
-    content: Sequence[ContentPart],
+    content: Sequence[ContentPart], encode_thoughts: bool
 ) -> str | Sequence[anthropic_types.ContentBlockParam]:
     """Convert mirascope content to Anthropic content format."""
+
     if len(content) == 1 and content[0].type == "text":
         return content[0].text
 
     blocks: list[anthropic_types.ContentBlockParam] = []
-    logged_thought_conversion = False
 
     for part in content:
         if part.type == "text":
@@ -97,10 +97,7 @@ def _encode_content(
                     input=json.loads(part.args),
                 )
             )
-        elif part.type == "thought":
-            if not logged_thought_conversion:
-                logger.info("Converting `Thought` content into assistant message text.")
-                logged_thought_conversion = True
+        elif part.type == "thought" and encode_thoughts:
             blocks.append(
                 anthropic_types.TextBlockParam(
                     type="text", text="**Thinking:** " + part.thought
@@ -132,10 +129,11 @@ def _decode_assistant_content(
         )
 
 
-def _encode_messages(
-    messages: Sequence[UserMessage | AssistantMessage],
+def _encode_message(
+    message: UserMessage | AssistantMessage,
     model_id: AnthropicModelId,
-) -> Sequence[anthropic_types.MessageParam]:
+    encode_thoughts: bool,
+) -> anthropic_types.MessageParam:
     """Convert user or assistant `Message`s to Anthropic `MessageParam` format.
 
     Args:
@@ -145,29 +143,27 @@ def _encode_messages(
     Returns:
         A Sequence of converted Anthropic `MessageParam`
     """
-    result: list[anthropic_types.MessageParam] = []
 
-    for message in messages:
-        if (
-            message.role == "assistant"
-            and message.provider == "anthropic"
-            and message.model_id == model_id
-            and message.raw_content
-        ):
-            result.append(
-                {
-                    "role": message.role,
-                    "content": cast(
-                        Sequence[anthropic_types.ContentBlockParam], message.raw_content
-                    ),
-                }
-            )
-        else:
-            result.append(
-                {"role": message.role, "content": _encode_content(message.content)}
-            )
-
-    return result
+    if (
+        message.role == "assistant"
+        and message.provider == "anthropic"
+        and message.model_id == model_id
+        and message.raw_content
+    ):
+        message_has_thoughts = any(
+            content.type == "thought" for content in message.content
+        )
+        if not (encode_thoughts and message_has_thoughts):
+            return {
+                "role": message.role,
+                "content": cast(
+                    Sequence[anthropic_types.ContentBlockParam], message.raw_content
+                ),
+            }
+    return {
+        "role": message.role,
+        "content": _encode_content(message.content, encode_thoughts),
+    }
 
 
 @lru_cache(maxsize=128)
@@ -195,6 +191,7 @@ def prepare_anthropic_request(
         "model": model_id,
         "max_tokens": 16000,
     }
+    encode_thoughts = False
 
     with _base_utils.ensure_all_params_accessed(
         params=params, provider="anthropic", unsupported_params=["seed"]
@@ -216,6 +213,8 @@ def prepare_anthropic_request(
                 kwargs["thinking"] = {"type": "enabled", "budget_tokens": budget_tokens}
             else:
                 kwargs["thinking"] = {"type": "disabled"}
+        if param_accessor.encode_thoughts_as_text:
+            encode_thoughts = True
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     anthropic_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
@@ -249,7 +248,11 @@ def prepare_anthropic_request(
         messages
     )
 
-    kwargs["messages"] = _encode_messages(remaining_messages, model_id)
+    kwargs["messages"] = [
+        _encode_message(remaining_message, model_id, encode_thoughts)
+        for remaining_message in remaining_messages
+    ]
+
     if system_message_content:
         kwargs["system"] = system_message_content
 

@@ -81,10 +81,11 @@ def _resolve_refs(
         return schema
 
 
-def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict]:
+def _encode_content(
+    content: Sequence[ContentPart], encode_thoughts: bool
+) -> list[genai_types.PartDict]:
     """Returns a list of google `PartDicts` converted from a sequence of Mirascope `ContentPart`s"""
     result = []
-    logged_thought_conversion = False
 
     for part in content:
         if part.type == "text":
@@ -109,11 +110,8 @@ def _encode_content(content: Sequence[ContentPart]) -> list[genai_types.PartDict
                     )
                 )
             )
-        elif part.type == "thought":
-            if not logged_thought_conversion:
-                logger.info("Converting `Thought` content into assistant message text.")
-                logged_thought_conversion = True
-            result.append(genai_types.PartDict(text="**Thinking: " + part.thought))
+        elif part.type == "thought" and encode_thoughts:
+            result.append(genai_types.PartDict(text="**Thinking:** " + part.thought))
         else:
             raise NotImplementedError(
                 f"Have not implemented conversion for {part.type}"
@@ -176,20 +174,20 @@ def _decode_candidate_content(
 
 
 def _encode_message(
-    message: UserMessage | AssistantMessage,
+    message: UserMessage | AssistantMessage, encode_thoughts: bool
 ) -> genai_types.ContentDict:
     """Returns a Google `ContentDict` converted from a Mirascope `Message`"""
     return genai_types.ContentDict(
         role="model" if message.role == "assistant" else message.role,
-        parts=_encode_content(message.content),
+        parts=_encode_content(message.content, encode_thoughts),
     )
 
 
 def _encode_messages(
-    messages: Sequence[UserMessage | AssistantMessage],
+    messages: Sequence[UserMessage | AssistantMessage], encode_thoughts: bool
 ) -> genai_types.ContentListUnionDict:
     """Returns a `ContentListUnionDict` converted from a sequence of user or assistant `Messages`s"""
-    return [_encode_message(message) for message in messages]
+    return [_encode_message(message, encode_thoughts) for message in messages]
 
 
 @lru_cache(maxsize=128)
@@ -231,6 +229,7 @@ def prepare_google_request(
 ]:
     """Prepares a request for the genai `Client.models.generate_content` method."""
     google_config: GoogleKwargs = {}
+    encode_thoughts = False
 
     with _base_utils.ensure_all_params_accessed(
         params=params, provider="google"
@@ -257,6 +256,8 @@ def prepare_google_request(
                 google_config["thinking_config"] = genai_types.ThinkingConfigDict(
                     include_thoughts=False, thinking_budget=0
                 )
+        if param_accessor.encode_thoughts_as_text:
+            encode_thoughts = True
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     google_tools: list[genai_types.ToolDict] = []
@@ -319,7 +320,12 @@ def prepare_google_request(
     if system_message_content:
         google_config["system_instruction"] = system_message_content
 
-    return messages, format, _encode_messages(remaining_messages), google_config
+    return (
+        messages,
+        format,
+        _encode_messages(remaining_messages, encode_thoughts),
+        google_config,
+    )
 
 
 def decode_response(

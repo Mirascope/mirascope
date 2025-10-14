@@ -128,6 +128,12 @@ class SafeParamsAccessor:
         self._unaccessed.discard("thinking")
         return self._params.get("thinking")
 
+    @property
+    def encode_thoughts_as_text(self) -> bool | None:
+        """Access the encode_thoughts_as_text parameter."""
+        self._unaccessed.discard("encode_thoughts_as_text")
+        return self._params.get("encode_thoughts_as_text")
+
     def emit_warning_for_unused_param(
         self,
         param_name: str,

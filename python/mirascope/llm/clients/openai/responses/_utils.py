@@ -95,7 +95,7 @@ class ResponseCreateKwargs(TypedDict, total=False):
 
 
 def _encode_message(
-    message: Message, model_id: OpenAIResponsesModelId
+    message: Message, model_id: OpenAIResponsesModelId, encode_thoughts: bool
 ) -> ResponseInputParam:
     """Convert a Mirascope Message to OpenAI Responses input items.
 
@@ -115,10 +115,13 @@ def _encode_message(
         and message.model_id == model_id
         and message.raw_content
     ):
-        return cast(ResponseInputParam, message.raw_content)
+        message_has_thoughts = any(
+            content.type == "thought" for content in message.content
+        )
+        if not (encode_thoughts and message_has_thoughts):
+            return cast(ResponseInputParam, message.raw_content)
 
     result: ResponseInputParam = []
-    logged_thought_conversion = False
 
     for part in message.content:
         if part.type == "text":
@@ -140,13 +143,10 @@ def _encode_message(
                     type="function_call_output",
                 )
             )
-        elif part.type == "thought":
-            if not logged_thought_conversion:
-                logger.info("Converting `Thought` content into assistant message text.")
-                logged_thought_conversion = True
+        elif part.type == "thought" and encode_thoughts:
             result.append(
                 EasyInputMessageParam(
-                    role=message.role, content="**Thinking: " + part.thought
+                    role=message.role, content="**Thinking:** " + part.thought
                 )
             )
         else:
@@ -216,6 +216,7 @@ def prepare_responses_request(
     kwargs: ResponseCreateKwargs = {
         "model": model_id,
     }
+    encode_thoughts = False
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
@@ -229,16 +230,19 @@ def prepare_responses_request(
         if param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
         if param_accessor.thinking is not None:
+            thinking = param_accessor.thinking
             if model_id in REASONING_MODELS:
                 # Only set reasoning if model supports it, otherwise we will get an API error
                 # Note: If OpenAI adds a new reasoning model, then we need to update REASONING_MODELS
                 # for mirascope users to configure it (not ideal)
                 # TODO: Consider some way to future-proof this
-                kwargs["reasoning"] = _compute_reasoning(param_accessor.thinking)
+                kwargs["reasoning"] = _compute_reasoning(thinking)
             else:
                 param_accessor.emit_warning_for_unused_param(
                     "thinking", param_accessor.thinking, "openai:responses", model_id
                 )
+        if param_accessor.encode_thoughts_as_text:
+            encode_thoughts = True
 
     tools = tools.tools if isinstance(tools, BaseToolkit) else tools or []
     openai_tools = [_convert_tool_to_function_tool_param(tool) for tool in tools]
@@ -284,7 +288,7 @@ def prepare_responses_request(
 
     encoded_messages: list[ResponseInputItemParam] = []
     for message in messages:
-        encoded_messages.extend(_encode_message(message, model_id))
+        encoded_messages.extend(_encode_message(message, model_id, encode_thoughts))
     kwargs["input"] = encoded_messages
 
     if openai_tools:
