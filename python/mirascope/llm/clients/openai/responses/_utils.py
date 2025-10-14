@@ -302,32 +302,16 @@ class _OpenAIResponsesChunkProcessor:
                 if not self.current_content_type:
                     yield TextStartChunk()
                     self.current_content_type = "text"
-                if self.current_content_type != "text":
-                    raise RuntimeError(
-                        "Received text delta when not processing text"
-                    )  # pragma: no cover
                 yield TextChunk(delta=event.delta)
             elif event.type == "response.output_text.done":
-                if self.current_content_type != "text":
-                    raise RuntimeError(
-                        "Received text done while not processing text"
-                    )  # pragma: no cover
                 yield TextEndChunk()
                 self.current_content_type = None
             if event.type == "response.refusal.delta":
                 if not self.current_content_type:
                     yield TextStartChunk()
                     self.current_content_type = "text"
-                if self.current_content_type != "text":
-                    raise RuntimeError(
-                        "Received text delta when not processing text"
-                    )  # pragma: no cover
                 yield TextChunk(delta=event.delta)
             elif event.type == "response.refusal.done":
-                if self.current_content_type != "text":
-                    raise RuntimeError(
-                        "Received text done while not processing text"
-                    )  # pragma: no cover
                 yield TextEndChunk()
                 self.refusal_encountered = True
                 self.current_content_type = None
@@ -342,16 +326,8 @@ class _OpenAIResponsesChunkProcessor:
                     )
                     self.current_content_type = "tool_call"
             elif event.type == "response.function_call_arguments.delta":
-                if self.current_content_type != "tool_call":
-                    raise RuntimeError(
-                        "Received tool args delta while not processing tool call"
-                    )  # pragma: no cover
                 yield ToolCallChunk(delta=event.delta)
             elif event.type == "response.function_call_arguments.done":
-                if self.current_content_type != "tool_call":
-                    raise RuntimeError(
-                        "Received tool args done while not processing tool call"
-                    )  # pragma: no cover
                 yield ToolCallEndChunk()
                 self.current_content_type = None
             elif event.type == "response.incomplete":

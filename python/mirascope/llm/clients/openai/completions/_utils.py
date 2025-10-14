@@ -353,13 +353,6 @@ class _OpenAIChunkProcessor:
             if self.current_content_type is None:
                 yield TextStartChunk()
                 self.current_content_type = "text"
-            elif self.current_content_type == "tool_call":
-                raise RuntimeError(
-                    "received text delta inside tool call"
-                )  # pragma: no cover
-            elif self.current_content_type != "text":
-                raise NotImplementedError
-
             yield TextChunk(delta=content)
 
         if delta.tool_calls:
@@ -367,10 +360,6 @@ class _OpenAIChunkProcessor:
                 # In testing, I can't get OpenAI to emit text and tool calls in the same chunk
                 # But we handle this defensively.
                 yield TextEndChunk()  # pragma: no cover
-            elif self.current_content_type and self.current_content_type != "tool_call":
-                raise RuntimeError(
-                    f"Unexpected current_content_type: {self.current_content_type}"
-                )  # pragma: no cover
             self.current_content_type = "tool_call"
 
             for tool_call_delta in delta.tool_calls:
