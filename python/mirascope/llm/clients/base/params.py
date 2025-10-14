@@ -72,3 +72,22 @@ class Params(TypedDict, total=False):
     If `params.thinking` is unset (or `None`), then we will use provider-specific default
     behavior for the chosen model.
     """
+
+    encode_thoughts_as_text: bool
+    """Configures whether `Thought` content should be re-encoded as text for model consumption.
+    
+    If `True`, then when an `AssistantMessage` contains `Thoughts` and is being passed back
+    to an LLM, those `Thoughts` will be encoded as `Text`, so that the assistant can read
+    those thoughts. That ensures the assistant has access to (at least the summarized output of)
+    its reasoning process, and contrasts with provider default behaviors which may ignore
+    prior thoughts, particularly if tool calls are not involved.
+
+    If `True` and the message includes thoughts, this supersedes the provider default
+    behavior, which could result in worse behavior if the provider would have used raw
+    reasoning tokens instead of a summary.
+
+    If `False`, then `Thoughts` will not be encoded as text, and whether reasoning context
+    is available to the model depends entirely on the provider's behavior. 
+
+    Defaults to `False` if unset.
+    """

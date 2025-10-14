@@ -20,6 +20,7 @@ sync_snapshot = snapshot(
                     "seed": 42,
                     "stop_sequences": ["4242"],
                     "thinking": False,
+                    "encode_thoughts_as_text": False,
                 },
                 "finish_reason": None,
                 "messages": [
@@ -54,6 +55,7 @@ async_snapshot = snapshot(
                     "seed": 42,
                     "stop_sequences": ["4242"],
                     "thinking": False,
+                    "encode_thoughts_as_text": False,
                 },
                 "finish_reason": None,
                 "messages": [
