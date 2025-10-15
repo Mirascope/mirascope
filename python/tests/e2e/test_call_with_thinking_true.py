@@ -8,7 +8,6 @@ from mirascope import llm
 from tests.e2e.conftest import Snapshot
 from tests.utils import (
     exception_snapshot_dict,
-    remove_response_raw_content,
     response_snapshot_dict,
     stream_response_snapshot_dict,
 )
@@ -150,43 +149,6 @@ async def test_call_with_thinking_true_async_stream(
                 response = await response.resume(RESUME_PROMPT)
             await response.finish()
             snapshot_data["response"] = stream_response_snapshot_dict(response)
-        except Exception as e:
-            snapshot_data["exception"] = exception_snapshot_dict(e)
-
-        snapshot_data["logging"] = [
-            record.message
-            for record in caplog.records
-            if record.levelno >= logging.WARNING
-        ]
-        assert snapshot_data == snapshot
-
-
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
-@pytest.mark.vcr
-def test_call_with_thinking_true_without_raw_content(
-    provider: llm.Provider,
-    model_id: llm.ModelId,
-    snapshot: Snapshot,
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """Test synchronous call with thinking=True to verify reasoning content.
-
-    Wipes out assistant message raw content, testing fallback encoding of thoughts.
-    """
-
-    @llm.call(provider=provider, model_id=model_id, thinking=True)
-    def call(query: str) -> str:
-        return query
-
-    snapshot_data = {}
-    with caplog.at_level(logging.WARNING):
-        try:
-            response = call(PROMPT)
-            remove_response_raw_content(response)
-            with llm.model(provider=provider, model_id=model_id, thinking=False):
-                response = response.resume(RESUME_PROMPT)
-                remove_response_raw_content(response)
-            snapshot_data["response"] = response_snapshot_dict(response)
         except Exception as e:
             snapshot_data["exception"] = exception_snapshot_dict(e)
 

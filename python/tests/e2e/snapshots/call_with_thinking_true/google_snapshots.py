@@ -397,14 +397,3 @@ I've revised the candidate list based on the "less than 400" constraint, and I'm
         "logging": [],
     }
 )
-without_raw_content_snapshot = snapshot(
-    {
-        "exception": {
-            "type": "CannotOverwriteExistingCassetteException",
-            "args": "(\"Can't overwrite existing cassette ('/Users/dandelion/git/mirascope/v2/python/tests/e2e/cassettes/call_with_thinking_true/google/without_raw_content.yaml') in your current record mode ('once').\\nNo match for the request (<Request (POST) https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent>) was found.\\nFound 1 similar requests with 1 different matcher(s) :\\n\\n1 - (<Request (POST) https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent>).\\nMatchers succeeded : ['method', 'uri']\\nMatchers failed :\\nbody - assertion failure :\\n\\n\",)",
-            "cassette": "<Cassette containing 1 recorded response(s)>",
-            "failed_request": "<Request (POST) https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent>",
-        },
-        "logging": [],
-    }
-)

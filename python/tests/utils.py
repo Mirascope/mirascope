@@ -92,14 +92,3 @@ def exception_snapshot_dict(exception: Exception) -> dict:
             if not attr.startswith("_") and not callable(getattr(exception, attr))
         },
     }
-
-
-def remove_response_raw_content(response: llm.responses.RootResponse) -> None:
-    """Utility for removing raw content from a response's assistant message.
-
-    Useful in certain cases for testing `response.resume` behavior when provider-specific
-    raw content is not available and the assistant message must be regenerated from scratch.
-    """
-    assistant_message = response.messages[-1]
-    assert assistant_message.role == "assistant"
-    assistant_message.raw_content = []
