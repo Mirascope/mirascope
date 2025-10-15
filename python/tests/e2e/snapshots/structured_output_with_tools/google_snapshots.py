@@ -31,7 +31,7 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -60,7 +60,7 @@ sync_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -165,7 +165,7 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -194,7 +194,7 @@ async_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -298,7 +298,7 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -310,7 +310,7 @@ stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -393,7 +393,7 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="get_book_info",
                         args='{"isbn": "0-7653-1178-X"}',
                     )
@@ -405,7 +405,7 @@ async_stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )

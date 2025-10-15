@@ -27,12 +27,12 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "mellon"}',
                     ),
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
@@ -77,12 +77,12 @@ sync_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Welcome to Moria!",
                     ),
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Life before Death",
                     ),
@@ -163,12 +163,12 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "mellon"}',
                     ),
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
@@ -213,12 +213,12 @@ async_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Welcome to Moria!",
                     ),
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Life before Death",
                     ),
@@ -290,12 +290,12 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "mellon"}',
                     ),
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
@@ -307,12 +307,12 @@ stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Welcome to Moria!",
                     ),
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Life before Death",
                     ),
@@ -372,12 +372,12 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "mellon"}',
                     ),
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
@@ -389,12 +389,12 @@ async_stream_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Welcome to Moria!",
                     ),
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Life before Death",
                     ),
@@ -455,12 +455,12 @@ without_raw_content_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "mellon"}',
                     ),
                     ToolCall(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         args='{"password": "radiance"}',
                     ),
@@ -472,12 +472,12 @@ without_raw_content_snapshot = snapshot(
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Welcome to Moria!",
                     ),
                     ToolOutput(
-                        id="<unknown>",
+                        id="google_unknown_tool_id",
                         name="secret_retrieval_tool",
                         value="Life before Death",
                     ),
