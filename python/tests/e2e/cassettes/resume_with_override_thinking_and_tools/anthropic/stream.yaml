@@ -1,0 +1,224 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"includeThoughts":
+      true, "thinkingBudget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '418'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Calculate
+        the Fibonacci Number**\\n\\nI've determined that the 100th Fibonacci number
+        can be obtained by calling `_api.compute_fib` with `n=100`. This seems straightforward,
+        and I'm ready to proceed with the calculation using this approach.\\n\\n\\n\",\"thought\":
+        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        55,\"totalTokenCount\": 107,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        55}],\"thoughtsTokenCount\": 52},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"nwjwaILuGrXzqtsPkZK7yAw\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"functionCall\": {\"name\": \"compute_fib\",\"args\": {\"n\":
+        100}},\"thoughtSignature\": \"CiQB0e2Kb48Xjcd2cC1kaqww8/inFWggtpn/7QJVhaIw7U5KYJ8KXQHR7YpvVa6Devf4Y0YGbk4ZlFon5Kumutm+/Tk9wJ3LiWN6WpH5Hb6e3A0IPtc9pJMINN03EIdMEj+cwYRHtKOS4gsLEBjLEdjnGScsa5jbdBzWfbkOANtij4afiwqjAQHR7YpvM9DAU4qqvkgON6ZdQnoc8X0dKcuG7CyhgxqiyBbLfGTTAyOejey1bhE/Ftt+iLvOZzVx6MLLx6fLOxuEPcnul12PW4TbZVhrVdr3ez7M6nmSslJKnvtc5VX9HOh35HgZ2swVqmjdtaWV7Ba42T+L7M3GQv0fEs1dO8015uDjdWsC/U2aJ9xRlJxkcrHv2ZHlDVSVI78jfzpNd0/Bt2o=\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        55,\"candidatesTokenCount\": 16,\"totalTokenCount\": 123,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 55}],\"thoughtsTokenCount\": 52},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"nwjwaILuGrXzqtsPkZK7yAw\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Wed, 15 Oct 2025 20:48:32 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1660
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
+      fibonacci number?"},{"role":"assistant","content":[{"type":"tool_use","id":"google_unknown_tool_id","name":"compute_fib","input":{"n":100}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"google_unknown_tool_id","content":"218922995834555169026"}]}],"model":"claude-sonnet-4-0","tools":[{"name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"}}],"thinking":{"type":"disabled"},"stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '640'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: 'event: message_start
+
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01VaAsoLHxHgEozZzeu2U7Lf","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":477,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":8,"service_tier":"standard"}}          }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"text","text":""}        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"The
+        100th Fibonacci number is"}         }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"
+        218,922,995,834,"}          }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"555,169,026."}       }
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":0    }
+
+
+        event: message_delta
+
+        data: {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"input_tokens":477,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":26}  }
+
+
+        event: message_stop
+
+        data: {"type":"message_stop"    }
+
+
+        '
+    headers:
+      CF-RAY:
+      - 98f22d8cc8bbe574-SEA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Wed, 15 Oct 2025 20:48:34 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-10-15T20:48:32Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-10-15T20:48:32Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-10-15T20:48:32Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-10-15T20:48:32Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CU9eAsQR2ufunzcLm69Sy
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '1323'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -76,8 +76,11 @@ def _encode_content(
                     )
                 )
             )
-        elif part.type == "thought" and encode_thoughts:
-            result.append(genai_types.PartDict(text="**Thinking:** " + part.thought))
+        elif part.type == "thought":
+            if encode_thoughts:
+                result.append(
+                    genai_types.PartDict(text="**Thinking:** " + part.thought)
+                )
         else:
             raise NotImplementedError(
                 f"Have not implemented conversion for {part.type}"

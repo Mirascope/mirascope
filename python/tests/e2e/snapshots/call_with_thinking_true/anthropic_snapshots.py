@@ -353,27 +353,325 @@ Checking primality:
 )
 stream_snapshot = snapshot(
     {
-        "exception": {
-            "type": "NotImplementedError",
-            "args": "('Content type thought not supported',)",
+        "response": {
+            "provider": "anthropic",
+            "model_id": "claude-sonnet-4-0",
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="How many primes below 400 contain 79 as a substring? Answer ONLY with the number, not sharing which primes they are."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Thought(
+                            thought="""\
+I need to find all prime numbers below 400 that contain "79" as a substring.
+
+First, let me think about what numbers below 400 could contain "79" as a substring:
+- Numbers of the form 79X (where X is a digit): 790, 791, 792, 793, 794, 795, 796, 797, 798, 799
+- Numbers of the form X79 (where X is a digit): 179, 279, 379
+- Numbers of the form X79Y (where X and Y are digits): This would give us numbers with at least 4 digits, and the smallest would be 1790, which is above 400.
+
+Wait, let me be more systematic. Numbers below 400 that contain "79":
+- 79 itself
+- 179
+- 279
+- 379
+- 790, 791, 792, 793, 794, 795, 796, 797, 798, 799 (but these are all ≥ 790 > 400, so none of these count)
+
+So the candidates are: 79, 179, 279, 379
+
+Now I need to check which of these are prime:
+
+79: Let me check if 79 is prime.
+- Is it divisible by 2? No (it's odd)
+- Is it divisible by 3? 7+9=16, 16 is not divisible by 3, so no
+- Is it divisible by 5? No (doesn't end in 0 or 5)
+- Is it divisible by 7? 79 ÷ 7 = 11.28..., so no
+- Is it divisible by 11? 79 ÷ 11 = 7.18..., so no
+Since √79 < 9, I only need to check up to 7. So 79 is prime.
+ \n\
+I'll continue checking 179's primality by testing divisibility by 13. I'll systematically work through potential divisors, checking if 179 can be evenly divided by 13.
+
+Since 179 ÷ 13 results in a non-whole number and √179 is less than 14, I can confirm 179 is indeed prime after exhausting all potential divisors up to its square root.
+
+For 279, I quickly determine it's not prime. The digit sum test reveals divisibility by 3, and dividing confirms 279 can be factored into 3 × 93.
+
+Examining 379, I start by checking divisibility. It's an odd number not divisible by 2, and its digit sum doesn't indicate divisibility by 3. I'll continue investigating its potential divisibility by 5.
+
+After methodically testing divisors up to its square root (primes 7, 11, 13, 17, 19), I confirm 379 is prime.
+
+The final result: 3 primes containing "79" exist below 400 - specifically 79, 179, and 379.\
+"""
+                        ),
+                        Text(
+                            text="""\
+Looking at numbers below 400 that contain "79" as a substring:
+- 79
+- 179  \n\
+- 279
+- 379
+
+Checking which are prime:
+- 79: prime
+- 179: prime
+- 279: divisible by 3 (2+7+9=18), not prime
+- 379: prime
+
+3\
+"""
+                        ),
+                    ],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_content=[],
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="If you remember what the primes were, then share them, or say 'I don't remember.'"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(text="I remember. The primes were: 79, 179, and 379.")
+                    ],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_content=[],
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "n_chunks": 8,
         },
         "logging": [],
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "exception": {
-            "type": "NotImplementedError",
-            "args": "('Content type thought not supported',)",
+        "response": {
+            "provider": "anthropic",
+            "model_id": "claude-sonnet-4-0",
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="How many primes below 400 contain 79 as a substring? Answer ONLY with the number, not sharing which primes they are."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Thought(
+                            thought="""\
+I need to find all prime numbers below 400 that contain "79" as a substring.
+
+First, let me think about what numbers below 400 could contain "79" as a substring:
+- Numbers of the form 79X (where X is a digit): 790, 791, 792, 793, 794, 795, 796, 797, 798, 799
+- Numbers of the form X79 (where X is a digit): 179, 279, 379
+- The number 79 itself
+
+Wait, I need to be more systematic. Numbers below 400 that contain "79":
+- 79
+- 179
+- 279
+- 379
+- 790, 791, 792, 793, 794, 795, 796, 797, 798, 799 (but these are all ≥ 790, so they're above 400)
+
+Actually wait, 790 is above 400, so I don't need to consider any numbers starting with 79 except for 79 itself.
+
+So the candidates are:
+- 79
+- 179
+- 279
+- 379
+
+Now I need to check which of these are prime.
+
+79: Let me check if 79 is prime.
+Is 79 divisible by 2? No (it's odd)
+Is 79 divisible by 3? 7+9 = 16, 16 is not divisible by 3, so no.
+Is 79 divisible by 5? No (doesn't end in 0 or 5)
+Is 79 divisible by 7? 79 ÷ 7 = 11.28..., so no.
+Since √79 ≈ 8.9, I only need to check divisibility up to 8.
+Is 79 divisible by 8? No.
+So 79 is prime.
+
+179: Let me check if 179 is prime.
+
+
+I'll systematically test divisibility by small prime numbers. Starting with 2, I see it's an odd number, so not divisible. Moving to 3, the digit sum doesn't divide evenly. 5 is also not a factor since it doesn't end in 0 or 5. Checking 7 and 11 shows no divisibility. I'll continue investigating potential divisors.
+
+Calculating the square root helps limit my search. Since √179 is around 13.4, I only need to check primes up to 13. After thorough testing, 179 is indeed prime.
+
+For 279, I quickly discover it's divisible by 3. The digit sum of 18 confirms this, and dividing shows 93 as the result. Therefore, 279 is not a prime number.
+
+Examining 379, I methodically test divisibility. It's odd, not divisible by 3, 5, 7, 11, or 13. I'm now checking divisibility by 17.
+
+Continuing my systematic check, 19 doesn't divide 379 evenly. With √379 around 19.5, I've exhaustively tested potential divisors. 379 is confirmed prime.
+
+My investigation reveals three primes containing "79": 79, 179, and 379 - totaling 3 unique numbers.\
+"""
+                        ),
+                        Text(text="3"),
+                    ],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_content=[],
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="If you remember what the primes were, then share them, or say 'I don't remember.'"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[Text(text="I don't remember.")],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_content=[],
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "n_chunks": 3,
         },
         "logging": [],
     }
 )
 without_raw_content_snapshot = snapshot(
     {
-        "exception": {
-            "type": "NotImplementedError",
-            "args": "('Content type thought not supported',)",
+        "response": {
+            "provider": "anthropic",
+            "model_id": "claude-sonnet-4-0",
+            "params": {"thinking": False},
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="How many primes below 400 contain 79 as a substring? Answer ONLY with the number, not sharing which primes they are."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Thought(
+                            thought="""\
+I need to find all primes below 400 that contain "79" as a substring.
+
+First, let me think about what numbers below 400 could contain "79" as a substring:
+- Numbers starting with 79: 79, 790, 791, 792, ..., 799 (but we only care about those below 400, so just 79, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799 - but wait, these are all above 400 except 79)
+- Wait, I made an error. Numbers starting with 79 would be 79, then 790, 791, etc. But 790 > 400, so only 79 is relevant here.
+- Numbers with 79 in the middle: like 179, 279, 379
+- Numbers ending with 79: like 179, 279, 379 (same as above)
+
+So the candidates are:
+- 79
+- 179  \n\
+- 279
+- 379
+
+Let me check if each is prime:
+
+79: Let me check if 79 is prime.
+Need to check divisibility by primes up to √79 ≈ 8.9
+So check 2, 3, 5, 7
+79 is odd, so not divisible by 2
+7+9 = 16, not divisible by 3
+Doesn't end in 0 or 5, so not divisible by 5
+79 ÷ 7 = 11.28..., so not divisible by 7
+So 79 is prime.
+
+179: Let me check if 179 is prime.
+Need to check divisibility by primes up to √179 ≈ 13.4
+So check 2, 3, 5, 7, 11, 13
+179 is odd, so not divisible by 2
+
+
+1+7+9 = 17, not divisible by 3
+Doesn't end in 0 or 5, so not divisible by 5
+179 ÷ 7 = 25.57..., so not divisible by 7
+179 ÷ 11 = 16.27..., so not divisible by 11
+179 ÷ 13 = 13.76..., so not divisible by 13
+So 179 is prime.
+
+279: I'll systematically test 279's primality. It's an odd number, ruling out divisibility by 2. The digit sum suggests potential complexity in determining its prime status.
+2+7+9 = 18, divisible by 3, which means 279 breaks down into factors. Specifically, 279 = 3 × 93, confirming it's a composite number.
+
+379: I'll rigorously verify 379's primality by checking divisors up to its square root.
+Methodically testing primes 2, 3, 5, 7, 11, 13, 17, and 19, I find no divisors. The number passes each divisibility test, with no remainders matching integer division. After comprehensive checking, 379 emerges as a prime number.
+
+Expanding my search for numbers containing "79", I systematically explore three substring patterns. Starting with 79 itself, I identify numbers like 79, 179, 279, and 379 as candidates. Exploring further, I notice potential patterns in three-digit numbers, particularly those with 79 as a substring.
+
+Investigating four-digit possibilities reveals limitations: these would exceed 400, rendering them irrelevant to the current constraint. I carefully examine variations like 7abc, considering how digits might combine to form "79".
+
+Critically analyzing each potential pattern helps me methodically eliminate numbers outside the desired range, focusing on precise substring matching below 400.
+
+Two-digit and three-digit numbers emerge as key candidates: 79, 179, 279, and 379 represent the primary configurations meeting the criteria. I'm systematically ruling out configurations that exceed the threshold.
+
+Exploring substring appearances becomes crucial - ensuring "79" appears consecutively without generating values surpassing 400 requires meticulous checking across different digit positions.
+
+After rigorous verification, three prime numbers surface: 79, 179, and 379. The number 279 gets eliminated due to being composite, divisible by 3 and 93.
+
+The final count stands at 3 prime numbers satisfying the intricate pattern constraints.\
+"""
+                        ),
+                        Text(
+                            text="""\
+Looking at numbers below 400 that contain "79" as a substring:
+
+- 79
+- 179  \n\
+- 279
+- 379
+
+Checking which are prime:
+- 79: prime
+- 179: prime
+- 279: composite (divisible by 3)
+- 379: prime
+
+3\
+"""
+                        ),
+                    ],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_content=[],
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="If you remember what the primes were, then share them, or say 'I don't remember.'"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+I remember. The primes below 400 that contain 79 as a substring are:
+
+79, 179, 379\
+"""
+                        )
+                    ],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_content=[],
+                ),
+            ],
+            "format": None,
+            "tools": [],
         },
         "logging": [],
     }

@@ -70,12 +70,13 @@ def _encode_content(
                     input=json.loads(part.args),
                 )
             )
-        elif part.type == "thought" and encode_thoughts:
-            blocks.append(
-                anthropic_types.TextBlockParam(
-                    type="text", text="**Thinking:** " + part.thought
+        elif part.type == "thought":
+            if encode_thoughts:
+                blocks.append(
+                    anthropic_types.TextBlockParam(
+                        type="text", text="**Thinking:** " + part.thought
+                    )
                 )
-            )
         else:
             raise NotImplementedError(f"Content type {part.type} not supported")
 

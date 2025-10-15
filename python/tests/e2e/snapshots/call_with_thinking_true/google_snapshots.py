@@ -251,18 +251,148 @@ To be extra certain, I decide to create a quick Python script.  I write a simple
 )
 stream_snapshot = snapshot(
     {
-        "exception": {
-            "type": "NotImplementedError",
-            "args": "('Have not implemented conversion for thought',)",
+        "response": {
+            "provider": "google",
+            "model_id": "gemini-2.5-flash",
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="How many primes below 400 contain 79 as a substring? Answer ONLY with the number, not sharing which primes they are."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Thought(
+                            thought="""\
+**Examining Prime Substrings**
+
+Okay, I've got a handle on the prime number generation up to 400. Currently, I'm focusing on efficiently checking each prime number against the substring "79". The plan is to filter for any primes that do include that string.
+
+
+**Identifying Candidate Primes**
+
+I've got the prime list below 400 ready. I'm systematically checking each one to see if "79" appears as a substring. So far, 79, 179 and 379 have been found as primes. My focus has shifted to efficiently searching this sorted list and I'm looking for any pattern or formula to quickly select probable primes with the target substring. I also considered excluding numbers ending in '9' as potential candidates.
+
+
+**Analyzing Substring Presence**
+
+Okay, the prime numbers are already listed, and now, I'm meticulously checking each one. I've streamlined the process to identify any primes containing "79". I'm specifically focused on numbers less than 400. Currently, the primes containing "79" are 79, 179 and 379. It appears I have all the primes.
+
+
+**Calculating the Count**
+
+I've carefully listed the primes below 400 and double-checked my work.  After systematic analysis, I'm confident that only 79, 179, and 379 contain "79" as a substring. This makes the total count 3 primes that fit the criteria.
+
+**Finalizing the Prime Count**
+
+I've carefully verified that only 79, 179 and 379 contain "79". I'm certain that the count of primes less than 400 with "79" as a substring is exactly 3. My analysis has been rigorous.
+
+
+"""
+                        ),
+                        Text(text="3"),
+                    ],
+                    provider="google",
+                    model_id="gemini-2.5-flash",
+                    raw_content=[],
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="If you remember what the primes were, then share them, or say 'I don't remember.'"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[Text(text="I don't remember.")],
+                    provider="google",
+                    model_id="gemini-2.5-flash",
+                    raw_content=[],
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "n_chunks": 4,
         },
         "logging": [],
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "exception": {
-            "type": "NotImplementedError",
-            "args": "('Have not implemented conversion for thought',)",
+        "response": {
+            "provider": "google",
+            "model_id": "gemini-2.5-flash",
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="How many primes below 400 contain 79 as a substring? Answer ONLY with the number, not sharing which primes they are."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Thought(
+                            thought="""\
+**Pinpointing Prime Candidates**
+
+I'm now zeroing in on the "79" substring constraint. I've switched gears and am using it to refine my prime number search. The goal is the *count*, not the list itself. I'm focusing on efficiency, aiming to avoid unnecessary calculations. The numbers generated must be prime!
+
+
+**Revising Approach to Primes**
+
+My focus has shifted again. I initially built candidates around the "79" substring, but now I'm starting with prime candidates below 400 and testing for the substring. I'm building a list of prime numbers, then looking for "79". I was incorrect when listing the candidates as 790-799 is out of range.
+
+
+**Evaluating Candidate Primality**
+
+I'm now methodically evaluating the primality of 79 and 179. I've eliminated some three-digit combinations, recognizing they exceeded the 400 boundary. Currently, I'm verifying the 79 and 179 are prime. With these two numbers, the answer might be quite simple.
+
+
+**Calculating Candidate Counts**
+
+Okay, I've narrowed it down to 79, 179 and 379.  I'm now methodically evaluating each candidate for primality within the given constraints. So far, 79 and 179 are confirmed prime, and I need to check 379. I'm building a concise count and will finish soon.
+
+
+**Calculating the Prime Total**
+
+I'm wrapping up the count of prime numbers, meticulously verifying the primality of each candidate. The process has been thorough, and I've double-checked my work. I've now checked primality for 79, 179 and 379 and I am confident in the list of candidates.  I am finalizing the answer and ensuring there are no errors.
+
+
+**Refining the Candidate List**
+
+I've revised the candidate list based on the "less than 400" constraint, and I'm methodically checking each for primality. I'm taking care not to miss any numbers that fit the criteria. I've narrowed down the list. I've begun prime testing.
+
+
+"""
+                        ),
+                        Text(text="3"),
+                    ],
+                    provider="google",
+                    model_id="gemini-2.5-flash",
+                    raw_content=[],
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="If you remember what the primes were, then share them, or say 'I don't remember.'"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[Text(text="I don't remember.")],
+                    provider="google",
+                    model_id="gemini-2.5-flash",
+                    raw_content=[],
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "n_chunks": 4,
         },
         "logging": [],
     }
@@ -270,8 +400,10 @@ async_stream_snapshot = snapshot(
 without_raw_content_snapshot = snapshot(
     {
         "exception": {
-            "type": "NotImplementedError",
-            "args": "('Have not implemented conversion for thought',)",
+            "type": "CannotOverwriteExistingCassetteException",
+            "args": "(\"Can't overwrite existing cassette ('/Users/dandelion/git/mirascope/v2/python/tests/e2e/cassettes/call_with_thinking_true/google/without_raw_content.yaml') in your current record mode ('once').\\nNo match for the request (<Request (POST) https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent>) was found.\\nFound 1 similar requests with 1 different matcher(s) :\\n\\n1 - (<Request (POST) https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent>).\\nMatchers succeeded : ['method', 'uri']\\nMatchers failed :\\nbody - assertion failure :\\n\\n\",)",
+            "cassette": "<Cassette containing 1 recorded response(s)>",
+            "failed_request": "<Request (POST) https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent>",
         },
         "logging": [],
     }

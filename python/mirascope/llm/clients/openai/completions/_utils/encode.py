@@ -93,14 +93,15 @@ def _encode_assistant_message(
                     function={"name": part.name, "arguments": part.args},
                 )
             )
-        elif part.type == "thought" and encode_thoughts:
-            text_params.append(
-                openai_types.ChatCompletionContentPartTextParam(
-                    text="**Thinking:** " + part.thought, type="text"
+        elif part.type == "thought":
+            if encode_thoughts:
+                text_params.append(
+                    openai_types.ChatCompletionContentPartTextParam(
+                        text="**Thinking:** " + part.thought, type="text"
+                    )
                 )
-            )
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"Unsupported content type: {part.type}")
 
     content: str | list[openai_types.ChatCompletionContentPartTextParam] | None = None
     if len(text_params) == 1:
