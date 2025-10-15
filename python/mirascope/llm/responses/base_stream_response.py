@@ -382,6 +382,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         cached chunks.
         """
         chunk_iter = self.chunk_stream()
+        stream: Stream | None = None
 
         for chunk in chunk_iter:
             if chunk.type == "text_start_chunk":
@@ -425,6 +426,7 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
                     chunk_iterator=tool_call_stream_iterator(),
                 )
                 yield stream
+
             else:  # pragma: no cover
                 raise RuntimeError(f"Unsupported chunk type: {chunk.type}")
 
@@ -544,6 +546,7 @@ class BaseAsyncStreamResponse(
         cached chunks.
         """
         chunk_iter = self.chunk_stream()
+        stream: AsyncStream | None = None
 
         async for chunk in chunk_iter:
             if chunk.type == "text_start_chunk":
@@ -587,6 +590,7 @@ class BaseAsyncStreamResponse(
                     chunk_iterator=tool_call_stream_iterator(),
                 )
                 yield stream
+
             else:  # pragma: no cover
                 raise RuntimeError(f"Unsupported chunk type: {chunk.type}")
 

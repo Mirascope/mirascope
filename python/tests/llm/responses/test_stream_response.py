@@ -1748,6 +1748,7 @@ class TestStreams:
             *example_text_chunks,
             *example_thought_chunks,
             *example_tool_call_chunks,
+            llm.RawContentChunk(content={"is_dummy_content": True}),
         ]
         stream_response = create_sync_stream_response(chunks)
 
@@ -1940,6 +1941,7 @@ class TestAsyncStreams:
             *example_text_chunks,
             *example_thought_chunks,
             *example_tool_call_chunks,
+            llm.RawContentChunk(content={"is_dummy_content": True}),
         ]
         stream_response = create_async_stream_response(chunks)
 
