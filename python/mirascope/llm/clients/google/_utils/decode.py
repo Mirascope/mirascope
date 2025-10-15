@@ -100,25 +100,24 @@ def decode_response(
     response: genai_types.GenerateContentResponse, model_id: GoogleModelId
 ) -> tuple[AssistantMessage, FinishReason | None]:
     """Returns an `AssistantMessage` and `FinishReason` extracted from a `GenerateContentResponse`"""
-    if not response.candidates or not response.candidates[0].content:
-        # Unclear under what circumstances this happens (if ever).
-        # In testing, when generating no output at all, it creates a part with
-        # no fields set.
-        return AssistantMessage(
-            content=[], provider="google", model_id=model_id, raw_content=[]
-        ), None  # pragma: no cover
-    candidate = response.candidates[0]
+    content: Sequence[AssistantContentPart] = []
+    raw_content = []
+    finish_reason: FinishReason | None = None
+
+    if response.candidates and (candidate := response.candidates[0]):
+        content = _decode_candidate_content(candidate)
+        if candidate_content := candidate.content:
+            raw_content = [part.model_dump() for part in candidate_content.parts or []]
+        if candidate.finish_reason:
+            finish_reason = GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
+
     assistant_message = AssistantMessage(
-        content=_decode_candidate_content(candidate),
+        content=content,
         provider="google",
         model_id=model_id,
-        raw_content=[],
+        raw_content=raw_content,
     )
-    finish_reason = (
-        GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
-        if candidate.finish_reason
-        else None
-    )
+
     return assistant_message, finish_reason
 
 

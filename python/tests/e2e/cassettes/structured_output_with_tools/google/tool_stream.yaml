@@ -37,11 +37,12 @@ interactions:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
         {\"name\": \"get_book_info\",\"args\": {\"isbn\": \"0-7653-1178-X\"}},\"thoughtSignature\":
-        \"CiQB0e2Kb2MWu/bjn1FXQXrkz2iK2i9R4BLCOwRGe0dBAe6V+EMKeQHR7YpvIHi3Fz6ICHzvBudWFAtQ9wnR+83tN5G2ZPuu4O2I3lA5UEbftgKPusie7I/yJLIAPA6VolI+qGyBWwUe4jCiq487Xsb+3U7/6sFYL6sxpCpSS0rNVZOogQ64per0Li+0YutJYpHvdjJdwi8Qzxv7H/OiFSYK5gEB0e2Kb5oE5Qs6qWB0gvP+ybiDpoLNrkm7UYKmzHktMAqTJQx2jAiJsHoZAvgpVLA41QGAmZchFrjXg4ZEzmddIWEYDN9KSZcEjvW0lkFKvpwLQIGY7ct4t45Pp8ghepnCsaWrjpHlj4LDKVvN6glyp29SWtLXjNp79MOh6Trwfe8smBLrmEmvVSv4WszNSgYWRO9/HMQ1P6RbMZc9+/k7yR3uwcpD8o/qHR5mkOdj1W9KZgYY85/bNU/BwA1aoo+a+qeu7M3VZJfGTC/LhosZWn2pDQp6EAR0gNreo6/VKmH5m6nu0wrWAQHR7YpvAX6Eyo+/sZlzPf/kGbHkg0kGAGKrxCdmixLsbLboWuDbdqFySxxRPddeZHftDZAj7A6yMxfLijlZiluDHdCEHcGLB5xS193tQMkCxgb5YEnDs13JVM0weGsCcw/2bPr37FSXYrr+OcWN5ZZGr1k7Z2ifPg8Wr/IsDDdUi06/huZfLqYuCK5Wp+nXmfDczeBlB1C630SVZyLI3Eo7lkpaj8cin/jbK/XUMOIYtQhRHb6FHZM/0URDuvb47lHQ0Xp2SevHmRF657/okRoYIXRR3qA=\"}],\"role\":
-        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        189,\"candidatesTokenCount\": 29,\"totalTokenCount\": 326,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 189}],\"thoughtsTokenCount\": 108},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"UWHUaJX6Cf66qtsPwIHz0QY\"}\r\n\r\n"
+        \"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\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        189,\"candidatesTokenCount\": 29,\"totalTokenCount\": 634,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 189}],\"thoughtsTokenCount\": 416},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"kP_vaN-TDP-0qtsPstOHuQo\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -50,11 +51,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Wed, 24 Sep 2025 21:23:29 GMT
+      - Wed, 15 Oct 2025 20:09:54 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=957
+      - gfet4t7; dur=3120
       Transfer-Encoding:
       - chunked
       Vary:
@@ -111,13 +112,14 @@ interactions:
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"pages\": 544,\"title\":
-        \"Mistborn: The Final Empire\",\"publication_year\": 2006,\"author\": \"Brandon
-        Sanderson\"}},\"thoughtSignature\": \"CiQB0e2Kb3fA8Usdh3Dmnj5ltydFMciM2i0khKuScX2Aqi6YTccKdAHR7YpvOc39VGGmTj5tt7zi5pbvwG1SyRsQyybvy3HzvEObteeIIDRbL95icIJdpZ0/XrBmORBuljK2bMfeUl9TnOgR35vQIC3PHFk/MBe4hVRRBwVLoRPOqmS+ui5VjwqXP8Nui3A2H191QjLuYediYrNrCt4BAdHtim8DbR46udqLc7qkMMA9RXpecKYUHKVNC1SRlP3fFtznr/aEThN7cSG1KkBaEmveCdMG0U4cQAnY/msoK+NI6e7x+thP/2y5by+lLffbT8vJG22s56R9Vv4wSu0Pvp4TsIclFA05GG+J9z7fxNpEadre2qfUWObZQt9q7PcDEARIrzIoDC2nAg8ezCUAAF9yMJv6p3ZQAMmgz16KjMnNRZwJ+AQIxKdGeKxiPxkzjMD9RIhcKQeOOamRUn4CcLcoTcQtDAIoCkJZ5dAwx/EGPBGA1cmZljsRzTe6CrsBAdHtim/XcsuFB5lnSPptjJJ1q8Rz0rKPbd0yVRZdA+EjvEFWZSTzfIPLSs1wKZmEcRQ/Dt13SYIcdUZxL6WrzfbrJvJ19Fh/nm/8FazPVYj4aOnoSTFDFF912d46dMayIwm5xVeTYgnuqRnisQhWwmrmmu10U8038IUkp/YdHmdtU3TPvya0ivckCXOwvy0e1qfK/a7bXJtinvoiNeUSE8atZ3RoDCy3JaYZSmIwTBIr3AvXxynwuTIa3wq4AQHR7YpvX6d4TYkGPG0csrOh2RqUDrYeWq3fLWVt02os2Iw14WwCw4lsIa66ld6B/pABp6126x4oYEuRt/OqXxj81nDbUcMBkGJyur0Gg7o7gkSvxfVzb7ZVV3oWogvN4jBOJWwDJYltxZeRVmWax1D7oPQTak/TMrsStqv9QQaMtwOHG6VJHk2yN7MlRsliutNXfkfgEzpyInYyj4a9Uwmjb/KZ1CcBXmEbtGsmjsQOg40QFZsFxdMKqQIB0e2KbzSYsG6wUhdDUQQrZXwrree/wZZvGtUN3au6zuZHLRMnRou0aFSAzXpWNyooSVjItQig1nZqdaYsZvZU0ZnBFE1CA249aQ1x9NXv/8NRbeStno6ERFy96ENnwzyG1PR9wm1oybpebk40YKQeg/ZYPi1QX5mJMt/F2AuKxTvWXyklw82PdwwtkiEqLBVhZumrfLCJGcXu3m4SEwhT7ti1RTbRrdY/Y3pH6LpKY5wHbO/411MFrag3lPcVD1xOzSfqNHygQhiqnBz60/qYsevBaegPC04XpQeOCVm3It/A8+KY56q4B4EQ+YW1YQPGkDbCa3/aKuUlwrgVF7kXUin2kvNz/PgtBOvgo0+QL8/T1pGP05ymQszTG5xZvdJxOxYE2ZlXAa4KvAEB0e2Kb4BaEzLrqyohRDip43hCmg068eisiqQ00hpFHoTM0tnxIzL19rSo3heyoGaz17GZExuokPow1irHYi+4hY6X5/vwUu2o0iVBGI+rP3KJV9vCrtNOXaYtx1WEgS5iRCMeS7xo9r7brvLWUjPW3/uk/biEhgDscNjJxuv3hosfAZhFZeD8MXtoZG+CFhsmROQnwTiVPlqNnDwd9iYKXOohfXnz2yEedlL2inHOktrqSfIEHCTWZ9xlowqkAQHR7Ypv71akF5tvSiG17anQqaHr1UfkynAJS77IuwgIUqlM5eZNzAqqk/nO1emBq5H7NBBbeNq5+113+F/mwHdCiHzNB9LcekAkXsnCkYMMhvwhtrx05JgNgsWdj53AQcD/p0Ee8V6VM6lyiLqw/Dmj2NcHEXzw+c+OS7LDkgky8m27PaM8nj6+OFrItv6zpyh/Z8qBWd0SYP7vw0EuzQ0L04t8Ck8B0e2Kbw4ut3HEkP3q32lWyj1/om4mf60Nhrv1wZblHbkdb69kKVjor7bO+27UbjrSomKDsbB5Jxj2gv3LVw8D8at6djFFvfDS3CHa3BFn\"}],\"role\":
-        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        268,\"candidatesTokenCount\": 49,\"totalTokenCount\": 640,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 268}],\"thoughtsTokenCount\": 323},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"UmHUaPbzDpGUmtkP_7fN6QI\"}\r\n\r\n"
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"pages\": 544,\"publication_year\":
+        2006,\"title\": \"Mistborn: The Final Empire\",\"author\": \"Brandon Sanderson\"}},\"thoughtSignature\":
+        \"CiQB0e2Kb/O0O8fDcB1gwsMmr5hIfu3lO4hMoCY00pv/GVE5hi0KewHR7YpvQgRwnFevDOH2ranirIn5kb0TSILvf0CeFpuHB8TsehoXCkwATZXC3lkD0xWpxFS+3fRcbLcjagRXKrQoS3NOczmSM4lCJehvd4gxG5D1rRAwI5lO1ufUf5vJRlaIWoHweViBTb0RHNC8duxc8BOpqMiyB2QlVgrVAQHR7YpvBIkN0FkM+p7Awxqex8T9S6U/POsSR+gOjlOXI/v3qPGnge6JzKi6wekftWignsxkdqbJEq5tNOOnW6kc2GDA+e6ZmxLqtEK5x79bQd20RVGn8qCuDxbnt3IXX3qkc42LQdEiPOK9wGWfXopx3XrPCsyJWOGEOYW1cX+/2z1F1i7gV8iu8XCEhYyUkDHSKG/cE4RctMFFntruk4BLwhtJYgisZgJTaOZUn5ahabGRAYI+eH5nnQy6A4RVX56AUcs97C/MX85mUwilq2oHY2ihQQq9AQHR7Ypv62/Ppoh4mpWSSC4/mvuHMV+TFuL5ziUxLvESwihnSfnG3KO+YQx8IZ6wKum4wQ1CMOxc/eL6Dygegda3jYpLnp6uov2rnmHJKbJqEoiih2/EWggVKiM3UD2AwfEuYkGJFxusR+bHtrQw7JzNzAnfIbadQPm+E9QB2Lw3hUqLoa4kh/4d7d2cYUL0zg7FiqZeFgSU9zC5N4oaT9uuAdb4iEmwYSge99XH6cjAQpJD8NG1wt5qhjvc6QrxAQHR7YpvkB0eHj4qij6hw1IcRk7XB1uN7WsQcqH0vCt+X0NoC2jAT6VRS9Hj8r8P+nyTFqYP45c8cFcwPtV8O7cJHasx/gl8HGZDfmfUP1fgTou8En67mWwZyLg79Hw/0gy4kQVf8bn05jYDqn68ZupxENKpYoqbnEXH9wVuqnA/NgZsQ4FffLzGzUFo+Kz9Yaheul4UzZSnbh8LtZ1s8gzgMwiUaoQEVyA3ub3MMN1Hk0J1lOvd+VsUxmWHYBWav9z16S6LrJjsKIy+Jnh3h3UcfCDo/9St/2i/++pv1LbfHTmLAJ7vY29u16XaYGmVfvEK5wEB0e2Kb5qiUu7ehH9pVWR74WbakkM8JTOviixLLnXN6fJgfLO4a5kPv9oypaYtcnAz5p9vUScaiWcxlD8TA/9To/2a3PDb9jSp/w/lSUsivbxvEng4R4ylBI0/T1elRlcNjncScr1W5vqjAVc8kTfcjDD+o92svKWy0Wt4DJFLXZBiIJzo7sj+ugaYupficsI063o3OouJVSJSN47XbxdakarUX1/1BH3y6Fv0aQK+CRPFJHwjVefrPQ0feOmmtqYhK/9KxqclPjrLJvATLEeiZo323WV6gvq4qzEPpAfNgdUm8/rJMFoK5AEB0e2Kb9gBa5c9zaW4WHElCsiLQbGAcStCTVKPj817JunqZQrhiPLFgqcuP7T8EXofWyio1LbFTS5Ia4Iti5L4kXgTSyuT0ko3JBn0YUoJ7bwqUwd63ZUujxTsoNDA96LkgBrom6DSyOMiO16hQ6i72W9AK8OzauTIFh5AbF7ykwD2UAMpdebQfHyU7aOIyeR+AJ2vhR+tLZE38zd53yRtHtDxERy8wuIYdLuEKwvhqehLVm+/TbvNrgjEVCAe0BEe4bCPBVLxtQz4ra2BancUIVGL/DyoaiOepGtxXC81CvzfXGIKRQHR7YpvDNeCHzxTGii42JXh19+mzle5chORPD4sb1AyHK71zDOtzqHO5nEaQ+3NMxV6wWfo4A8bSNnHKA11+wV2Ika5Ww==\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        268,\"candidatesTokenCount\": 49,\"totalTokenCount\": 593,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 268}],\"thoughtsTokenCount\": 276},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"k__vaNviJKDAqtsPvYDDoAw\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -126,11 +128,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Wed, 24 Sep 2025 21:23:32 GMT
+      - Wed, 15 Oct 2025 20:09:57 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2322
+      - gfet4t7; dur=2515
       Transfer-Encoding:
       - chunked
       Vary:

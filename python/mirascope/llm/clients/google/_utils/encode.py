@@ -86,9 +86,25 @@ def _encode_content(
 
 
 def _encode_message(
-    message: UserMessage | AssistantMessage, encode_thoughts: bool
+    message: UserMessage | AssistantMessage,
+    model_id: GoogleModelId,
+    encode_thoughts: bool,
 ) -> genai_types.ContentDict:
     """Returns a Google `ContentDict` converted from a Mirascope `Message`"""
+    if (
+        message.role == "assistant"
+        and message.provider == "google"
+        and message.model_id == model_id
+        and message.raw_content
+    ):
+        message_has_thoughts = any(
+            content.type == "thought" for content in message.content
+        )
+        if not (encode_thoughts and message_has_thoughts):
+            return genai_types.ContentDict(
+                role="model",
+                parts=cast(list[genai_types.PartDict], message.raw_content),
+            )
     return genai_types.ContentDict(
         role="model" if message.role == "assistant" else message.role,
         parts=_encode_content(message.content, encode_thoughts),
@@ -96,10 +112,12 @@ def _encode_message(
 
 
 def _encode_messages(
-    messages: Sequence[UserMessage | AssistantMessage], encode_thoughts: bool
+    messages: Sequence[UserMessage | AssistantMessage],
+    model_id: GoogleModelId,
+    encode_thoughts: bool,
 ) -> genai_types.ContentListUnionDict:
     """Returns a `ContentListUnionDict` converted from a sequence of user or assistant `Messages`s"""
-    return [_encode_message(message, encode_thoughts) for message in messages]
+    return [_encode_message(message, model_id, encode_thoughts) for message in messages]
 
 
 @lru_cache(maxsize=128)
@@ -235,6 +253,6 @@ def encode_request(
     return (
         messages,
         format,
-        _encode_messages(remaining_messages, encode_thoughts),
+        _encode_messages(remaining_messages, model_id, encode_thoughts),
         google_config,
     )
