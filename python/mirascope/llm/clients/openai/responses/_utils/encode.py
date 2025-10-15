@@ -106,12 +106,13 @@ def _encode_message(
                     type="function_call_output",
                 )
             )
-        elif part.type == "thought" and encode_thoughts:
-            result.append(
-                EasyInputMessageParam(
-                    role=message.role, content="**Thinking:** " + part.thought
+        elif part.type == "thought":
+            if encode_thoughts:
+                result.append(
+                    EasyInputMessageParam(
+                        role=message.role, content="**Thinking:** " + part.thought
+                    )
                 )
-            )
         else:
             raise NotImplementedError(f"Unsupported content part type: {part.type}")
 

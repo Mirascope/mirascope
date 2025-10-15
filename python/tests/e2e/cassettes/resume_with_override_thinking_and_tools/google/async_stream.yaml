@@ -1,0 +1,307 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
+      fibonacci number?"}],"model":"claude-sonnet-4-0","tools":[{"name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"}}],"thinking":{"type":"enabled","budget_tokens":8000},"stream":true}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '414'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: 'event: message_start
+
+        data: {"type":"message_start","message":{"model":"claude-sonnet-4-20250514","id":"msg_01YVEUTGGTXcTGF8QVkGzAKy","type":"message","role":"assistant","content":[],"stop_reason":null,"stop_sequence":null,"usage":{"input_tokens":432,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":8,"service_tier":"standard"}}        }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":0,"content_block":{"type":"thinking","thinking":"","signature":""}            }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"The
+        user is asking for the "}          }
+
+
+        event: ping
+
+        data: {"type": "ping"}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"100th
+        Fibonacci number. I have"}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        a function called \"compute_fib"} }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"\"
+        that can compute the nth Fibonacci"}  }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        number (1-indexed). The"}   }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        user wants n="} }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"100,
+        so I should call this function"}          }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"
+        with n=100."}}
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":0,"delta":{"type":"signature_delta","signature":"EvsCCkYICBgCKkCrF3A23iWsI9CbuXWKSIczp22RwhvKHeSWO49SB3ya+f3ETvP4hEbr1nf+e4W80I0slNZ+lH6KzQSXmn2XloLuEgwX3AcDDfH0zJvglHMaDLtUwVKUt2wBjH2gZyIwii+BKEgqVIfpMS1wLotcxzV2MeHkkIP3DrYvGenP0aWeoGO6yUcfTi0PlyMDjLDNKuIBkAIP0l/anV3UpvaV4hl0Swuhah9FliaD9cyQ7LCSp2OVPBvbIxTVCCQgSXSYU9wmHBU3tWl93fLRs3kZRQIO1iqz8Qi+SV95ppY2KZcIS+gO2PzWbFX4V6oRqvleXeyBnuk9DiKJePIVF7zkm27/1OKThFQzkL+2IZXihi0sm4K9DBzuRH9Uyfzh03ksHWTtM2eA0V72sspgDycy5444k1q9dm/ivDyRi4z81453NkiXlMRQQjycsoBg7XIdxuP+P0y85BuZ/cEnLWx6qASAB8lTJXePJXT3EMkR6pq5onzPORgB"}             }
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":0               }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":1,"content_block":{"type":"text","text":""}              }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"I''ll
+        compute the 100th Fibonacci number for"}      }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"
+        you."}          }
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":1           }
+
+
+        event: content_block_start
+
+        data: {"type":"content_block_start","index":2,"content_block":{"type":"tool_use","id":"toolu_01J7hSXkaj2gutTd4eGhfSLs","name":"compute_fib","input":{}}
+        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":""}        }
+
+
+        event: content_block_delta
+
+        data: {"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"{\"n\":
+        100}"}   }
+
+
+        event: content_block_stop
+
+        data: {"type":"content_block_stop","index":2         }
+
+
+        event: message_delta
+
+        data: {"type":"message_delta","delta":{"stop_reason":"tool_use","stop_sequence":null},"usage":{"input_tokens":432,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":132}               }
+
+
+        event: message_stop
+
+        data: {"type":"message_stop"   }
+
+
+        '
+    headers:
+      CF-RAY:
+      - 98f2304f9ab77577-SEA
+      Cache-Control:
+      - no-cache
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Wed, 15 Oct 2025 20:50:27 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-10-15T20:50:26Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-10-15T20:50:26Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-10-15T20:50:26Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-10-15T20:50:26Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CU9eKD26kvXbiLXL9NFyM
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '2036'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}, {"parts": [{"text": "I''ll compute the 100th Fibonacci number
+      for you."}, {"functionCall": {"id": "toolu_01J7hSXkaj2gutTd4eGhfSLs", "args":
+      {"n": 100}, "name": "compute_fib"}}], "role": "model"}, {"parts": [{"functionResponse":
+      {"id": "toolu_01J7hSXkaj2gutTd4eGhfSLs", "name": "compute_fib", "response":
+      {"output": "218922995834555169026"}}}], "role": "user"}], "tools": [{"functionDeclarations":
+      [{"description": "Compute the nth Fibonacci number (1-indexed).", "name": "compute_fib",
+      "parameters": {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required":
+      ["n"], "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"includeThoughts":
+      false, "thinkingBudget": 0}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '778'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"The
+        10\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        122,\"candidatesTokenCount\": 4,\"totalTokenCount\": 126,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 122}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"FgnwaPLAKJCvmtkP6YT_qA0\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"0th Fibonacci number is 2189229958\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 122,\"candidatesTokenCount\":
+        20,\"totalTokenCount\": 142,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        122}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"FgnwaPLAKJCvmtkP6YT_qA0\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"34555169026.\\n\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        122,\"candidatesTokenCount\": 32,\"totalTokenCount\": 154,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 122}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"FgnwaPLAKJCvmtkP6YT_qA0\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Wed, 15 Oct 2025 20:50:30 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1230
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
