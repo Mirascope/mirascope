@@ -250,8 +250,7 @@ ${indent}        ${stream_print}`;
   private get tools_stream(): string {
     return `
     while True:
-        streams = ${this._await}response.streams()
-        ${this._async}for stream in streams:
+        ${this._async}for stream in response.streams():
             match stream.content_type:
                 case "tool_call":
                     print(f"Calling tool {stream.tool_name} with args:")
