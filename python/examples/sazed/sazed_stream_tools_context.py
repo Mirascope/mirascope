@@ -40,8 +40,7 @@ def main():
     query = "What are the Kandra?"
     response: llm.ContextStreamResponse[Coppermind] = sazed.stream(ctx, query)
     while True:
-        streams = response.streams()
-        for stream in streams:
+        for stream in response.streams():
             match stream.content_type:
                 case "tool_call":
                     print(f"Calling tool {stream.tool_name} with args:")

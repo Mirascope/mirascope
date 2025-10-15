@@ -52,8 +52,7 @@ async def main():
         Coppermind, KeeperEntry
     ] = await sazed.stream(ctx, query)
     while True:
-        streams = await response.streams()
-        async for stream in streams:
+        async for stream in response.streams():
             match stream.content_type:
                 case "tool_call":
                     print(f"Calling tool {stream.tool_name} with args:")

@@ -33,7 +33,7 @@ async def async_stream_type_safety():
     async for chunk in async_stream_response().pretty_stream():
         assert_type(chunk, str)
 
-    streams: AsyncIterator[llm.AsyncStream] = await async_stream_response().streams()
+    streams: AsyncIterator[llm.AsyncStream] = async_stream_response().streams()
     async for stream in streams:
         match stream.content_type:
             case "text":
