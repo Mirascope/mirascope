@@ -69,7 +69,8 @@ from ...base import Params, _utils as _base_utils
 from ..shared import (
     _utils as _shared_utils,
 )
-from .model_ids import REASONING_MODELS, OpenAIResponsesModelId
+from .model_ids import OpenAIResponsesModelId
+from .model_info import NON_REASONING_MODELS
 
 logger = logging.getLogger(__name__)
 
@@ -231,16 +232,14 @@ def prepare_responses_request(
             kwargs["top_p"] = param_accessor.top_p
         if param_accessor.thinking is not None:
             thinking = param_accessor.thinking
-            if model_id in REASONING_MODELS:
-                # Only set reasoning if model supports it, otherwise we will get an API error
-                # Note: If OpenAI adds a new reasoning model, then we need to update REASONING_MODELS
-                # for mirascope users to configure it (not ideal)
-                # TODO: Consider some way to future-proof this
-                kwargs["reasoning"] = _compute_reasoning(thinking)
-            else:
+            if model_id in NON_REASONING_MODELS:
                 param_accessor.emit_warning_for_unused_param(
                     "thinking", param_accessor.thinking, "openai:responses", model_id
                 )
+            else:
+                # Assume model supports reasoning unless explicitly listed as non-reasoning
+                # This ensures new reasoning models work immediately without code updates
+                kwargs["reasoning"] = _compute_reasoning(thinking)
         if param_accessor.encode_thoughts_as_text:
             encode_thoughts = True
 
