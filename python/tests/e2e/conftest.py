@@ -107,14 +107,6 @@ CallType = Literal[
 
 CALL_TYPES: tuple[CallType] = get_args(CallType)
 
-CallSuffix = CallType | Literal["without_raw_content"]
-
-
-SCENARIOS_INCLUDING_WITHOUT_RAW_CONTENT_TESTS = [
-    "call_with_thinking_true",
-    "call_with_tools",
-]  # Scenarios that include an extra "without_raw_content" test
-
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (
     None,
@@ -155,7 +147,7 @@ def formatting_mode(
         return None
 
 
-def _parse_test_name(test_name: str) -> tuple[str, CallSuffix]:
+def _parse_test_name(test_name: str) -> tuple[str, CallType]:
     """Parse test name following convention: test_{SCENARIO}_{CALL_TYPE}
 
     Examples:
@@ -173,8 +165,7 @@ def _parse_test_name(test_name: str) -> tuple[str, CallSuffix]:
     name = name[5:]  # Remove 'test_' prefix
 
     # Known call_types to look for at the end (order matters due to potential overlap - check longer overlaps first)
-    call_suffixes: list[CallSuffix] = [
-        "without_raw_content",
+    call_suffixes: list[CallType] = [
         "async_stream_context",
         "async_stream",
         "stream_context",
@@ -272,9 +263,6 @@ def snapshot(
             "stream_snapshot = snapshot()\n"
             "async_stream_snapshot = snapshot()\n"
         )
-
-        if scenario in SCENARIOS_INCLUDING_WITHOUT_RAW_CONTENT_TESTS:
-            content += "without_raw_content_snapshot = snapshot()\n"
 
         snapshot_file.write_text(content)
 
