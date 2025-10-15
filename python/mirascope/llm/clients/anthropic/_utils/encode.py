@@ -1,61 +1,34 @@
-"""Anthropic message types and conversion utilities."""
+"""Anthropic message encoding and request preparation."""
 
 import json
-import logging
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import TypedDict, cast
+from typing import TypedDict
+from typing_extensions import Required
 
 from anthropic import NotGiven, types as anthropic_types
-from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
 
-from ...content import (
-    AssistantContentPart,
-    ContentPart,
-    Text,
-    TextChunk,
-    TextEndChunk,
-    TextStartChunk,
-    Thought,
-    ThoughtChunk,
-    ThoughtEndChunk,
-    ThoughtStartChunk,
-    ToolCall,
-    ToolCallChunk,
-    ToolCallEndChunk,
-    ToolCallStartChunk,
-)
-from ...exceptions import FormattingModeNotSupportedError
-from ...formatting import (
+from ....content import ContentPart
+from ....exceptions import FormattingModeNotSupportedError
+from ....formatting import (
     Format,
     FormattableT,
     _utils as _formatting_utils,
     resolve_format,
 )
-from ...messages import AssistantMessage, Message, UserMessage
-from ...responses import (
-    AsyncChunkIterator,
-    ChunkIterator,
-    FinishReason,
-    FinishReasonChunk,
-    RawStreamEventChunk,
-)
-from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
-from ..base import Params, _utils as _base_utils
-from .model_ids import AnthropicModelId
+from ....messages import AssistantMessage, Message, UserMessage
+from ....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
+from ...base import Params, _utils as _base_utils
+from ..model_ids import AnthropicModelId
 
-ANTHROPIC_FINISH_REASON_MAP = {
-    "max_tokens": FinishReason.MAX_TOKENS,
-    "refusal": FinishReason.REFUSAL,
-}
-logger = logging.getLogger(__name__)
+DEFAULT_MAX_TOKENS = 16000
 
 
 class MessageCreateKwargs(TypedDict, total=False):
     """Kwargs for Anthropic Message.create method."""
 
-    model: str
-    max_tokens: int
+    model: Required[str]
+    max_tokens: Required[int]
     messages: Sequence[anthropic_types.MessageParam]
     system: str | NotGiven
     tools: Sequence[anthropic_types.ToolParam] | NotGiven
@@ -109,26 +82,6 @@ def _encode_content(
     return blocks
 
 
-def _decode_assistant_content(
-    content: anthropic_types.ContentBlock,
-) -> AssistantContentPart:
-    """Convert Anthropic content block to mirascope AssistantContentPart."""
-    if content.type == "text":
-        return Text(text=content.text)
-    elif content.type == "tool_use":
-        return ToolCall(
-            id=content.id,
-            name=content.name,
-            args=json.dumps(content.input),
-        )
-    elif content.type == "thinking":
-        return Thought(thought=content.thinking)
-    else:
-        raise NotImplementedError(
-            f"Support for content type `{content.type}` is not yet implemented."
-        )
-
-
 def _encode_message(
     message: UserMessage | AssistantMessage,
     model_id: AnthropicModelId,
@@ -154,6 +107,8 @@ def _encode_message(
             content.type == "thought" for content in message.content
         )
         if not (encode_thoughts and message_has_thoughts):
+            from typing import cast
+
             return {
                 "role": message.role,
                 "content": cast(
@@ -178,7 +133,7 @@ def _convert_tool_to_tool_param(tool: ToolSchema) -> anthropic_types.ToolParam:
     )
 
 
-def prepare_anthropic_request(
+def encode_request(
     *,
     model_id: AnthropicModelId,
     messages: Sequence[Message],
@@ -187,10 +142,12 @@ def prepare_anthropic_request(
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Prepares a request for the `Anthropic.messages.create` method."""
-    kwargs: MessageCreateKwargs = {
-        "model": model_id,
-        "max_tokens": 16000,
-    }
+    kwargs: MessageCreateKwargs = MessageCreateKwargs(
+        {
+            "model": model_id,
+            "max_tokens": DEFAULT_MAX_TOKENS,
+        }
+    )
     encode_thoughts = False
 
     with _base_utils.ensure_all_params_accessed(
@@ -257,103 +214,3 @@ def prepare_anthropic_request(
         kwargs["system"] = system_message_content
 
     return messages, format, kwargs
-
-
-def decode_response(
-    response: anthropic_types.Message,
-    model_id: AnthropicModelId,
-) -> tuple[AssistantMessage, FinishReason | None]:
-    """Convert Anthropic message to mirascope AssistantMessage."""
-    assistant_message = AssistantMessage(
-        content=[_decode_assistant_content(part) for part in response.content],
-        provider="anthropic",
-        model_id=model_id,
-        raw_content=[part.model_dump() for part in response.content],
-    )
-    finish_reason = (
-        ANTHROPIC_FINISH_REASON_MAP.get(response.stop_reason)
-        if response.stop_reason
-        else None
-    )
-    return assistant_message, finish_reason
-
-
-class _AnthropicChunkProcessor:
-    """Processes Anthropic stream events and maintains state across events."""
-
-    def __init__(self) -> None:
-        self.current_block_type: str | None = None
-
-    def process_event(
-        self, event: anthropic_types.RawMessageStreamEvent
-    ) -> ChunkIterator:
-        """Process a single Anthropic event and yield the appropriate content chunks."""
-        yield RawStreamEventChunk(raw_stream_event=event)
-
-        if event.type == "content_block_start":
-            content_block = event.content_block
-            self.current_block_type = content_block.type
-
-            if content_block.type == "text":
-                yield TextStartChunk()
-            elif content_block.type == "tool_use":
-                yield ToolCallStartChunk(
-                    id=content_block.id,
-                    name=content_block.name,
-                )
-            elif content_block.type == "thinking":
-                yield ThoughtStartChunk()
-            else:
-                raise NotImplementedError
-
-        elif event.type == "content_block_delta":
-            delta = event.delta
-            if delta.type == "text_delta":
-                yield TextChunk(delta=delta.text)
-            elif delta.type == "input_json_delta":
-                yield ToolCallChunk(delta=delta.partial_json)
-            elif delta.type == "thinking_delta":
-                yield ThoughtChunk(delta=delta.thinking)
-            elif delta.type == "signature_delta":
-                pass
-            else:
-                raise NotImplementedError
-
-        elif event.type == "content_block_stop":
-            if self.current_block_type == "text":
-                yield TextEndChunk()
-            elif self.current_block_type == "tool_use":
-                yield ToolCallEndChunk()
-            elif self.current_block_type == "thinking":
-                yield ThoughtEndChunk()
-            else:
-                raise NotImplementedError
-
-            self.current_block_type = None
-
-        elif event.type == "message_delta":
-            if event.delta.stop_reason:
-                finish_reason = ANTHROPIC_FINISH_REASON_MAP.get(event.delta.stop_reason)
-                if finish_reason is not None:
-                    yield FinishReasonChunk(finish_reason=finish_reason)
-
-
-def convert_anthropic_stream_to_chunk_iterator(
-    anthropic_stream_manager: MessageStreamManager,
-) -> ChunkIterator:
-    """Returns a ChunkIterator converted from an Anthropic MessageStreamManager"""
-    processor = _AnthropicChunkProcessor()
-    with anthropic_stream_manager as stream:
-        for event in stream._raw_stream:
-            yield from processor.process_event(event)
-
-
-async def convert_anthropic_stream_to_async_chunk_iterator(
-    anthropic_stream_manager: AsyncMessageStreamManager,
-) -> AsyncChunkIterator:
-    """Returns an AsyncChunkIterator converted from an Anthropic MessageStreamManager"""
-    processor = _AnthropicChunkProcessor()
-    async with anthropic_stream_manager as stream:
-        async for event in stream._raw_stream:
-            for item in processor.process_event(event):
-                yield item

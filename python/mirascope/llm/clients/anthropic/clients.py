@@ -154,7 +154,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -253,7 +253,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -339,7 +339,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -438,7 +438,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -524,7 +524,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -534,9 +534,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         anthropic_stream = self.client.messages.stream(**kwargs)
 
-        chunk_iterator = _utils.convert_anthropic_stream_to_chunk_iterator(
-            anthropic_stream
-        )
+        chunk_iterator = _utils.decode_stream(anthropic_stream)
 
         return StreamResponse(
             provider="anthropic",
@@ -621,7 +619,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -631,9 +629,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         anthropic_stream = self.client.messages.stream(**kwargs)
 
-        chunk_iterator = _utils.convert_anthropic_stream_to_chunk_iterator(
-            anthropic_stream
-        )
+        chunk_iterator = _utils.decode_stream(anthropic_stream)
 
         return ContextStreamResponse(
             provider="anthropic",
@@ -705,7 +701,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -715,9 +711,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         anthropic_stream = self.async_client.messages.stream(**kwargs)
 
-        chunk_iterator = _utils.convert_anthropic_stream_to_async_chunk_iterator(
-            anthropic_stream
-        )
+        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
 
         return AsyncStreamResponse(
             provider="anthropic",
@@ -802,7 +796,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_anthropic_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -812,9 +806,7 @@ class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
 
         anthropic_stream = self.async_client.messages.stream(**kwargs)
 
-        chunk_iterator = _utils.convert_anthropic_stream_to_async_chunk_iterator(
-            anthropic_stream
-        )
+        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
 
         return AsyncContextStreamResponse(
             provider="anthropic",

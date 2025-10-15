@@ -3,7 +3,7 @@
 from inline_snapshot import snapshot
 
 from mirascope import llm
-from mirascope.llm.clients.openai.responses import _utils as openai_utils
+from mirascope.llm.clients.openai.responses._utils import encode_request
 
 
 def test_prepare_message_multiple_assistant_text_parts() -> None:
@@ -18,7 +18,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
             ["General ", "Kenobi"], provider="openai:responses", model_id="gpt-4o"
         ),
     ]
-    _, _, kwargs = openai_utils.prepare_responses_request(
+    _, _, kwargs = encode_request(
         model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
     )
     assert kwargs == snapshot(
@@ -41,7 +41,7 @@ def test_prepare_message_multiple_system_messages() -> None:
         llm.messages.system("Be concise."),
         llm.messages.system("On second thought, be verbose."),
     ]
-    _, _, kwargs = openai_utils.prepare_responses_request(
+    _, _, kwargs = encode_request(
         model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
     )
     assert kwargs == snapshot(
