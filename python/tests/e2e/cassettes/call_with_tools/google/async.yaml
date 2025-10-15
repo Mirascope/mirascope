@@ -29,21 +29,23 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/81U246jOBB9z1e0eM3MQgK5rbQP4ZI7DUkIoXu1GrnBgBOwiW0cklb/+9DpSU8y
-        O9K+LhLI1ClOnTrY9dp4eJBCgCMUAQ6Z9OfD33Xk4eH18nzHCOYQ8xq4hupgASj/mftxvd6s65S4
-        xCFHBBsgy+4+/oFjkMM6LjEYUsi/1TdFUIDsGyckk778mg5own5Dc9HC2JHQ6J0sh1lGsPRL0tvd
-        +9s9t8RTUiYpX6MEA17SiyijCM1hNOEob9ozS+9SVCSHeXEoZbUyp/N0QXWxWHY0FZSt1iCWuY8x
-        MG3XOj8Fnjntxon3bFZEZLpj6G6CD6MDXE97R3UuYm8c5S0TKDxXgb/HQQzHpUwCl+YrU3P8nnya
-        IXedg7g3nQn76PnNpdifNcND2ohz0Dvw8zxY55GTeC+dx7YQfSdLY121S8faG8vgmY2S6bwXVnpY
-        FYETHfkCNFV2tp09C4DcmoCFPexaO/9wnk92Y1mbxAqrtFWV2iPPtw6kX8xO2Lb7Yz5soqQTySQX
-        KqrUTKy2pRYQwypPdOe4mzGWx51cXssjsGiehP/kJIrjoKm+S6IO6IPUGG5wSLqM6MX5yHxvtstM
-        eQuUteAxS8y2kLcTai2dZklFsD1YS9EsiaU10UbGnW2Wawz1+QtO8wEY5OrgGY56enuPO25XUdYt
-        x4xAidKR6qdyb6Ke95PwcdoywwFLc3jS7GDnJOOCwG0yrVanjQj40jXSIwXyS9daWJGaWpNKPimp
-        23KXbSelWyM6zrd2udZGXleARSnjyUw9dtPB0W2K58fkidWelWDMXkrlr9tddren/g8HgYIIARzC
-        /zgKjd+t//lZU6Iku4jLSQSzK9lnt1KMMGLpCgJWn7o6be057qdkCeEIVnVYaVwLXKilkoEE2pCD
-        euSAz16kgpK84B7ZQ2yQ8jJyesoH2c2EusO1K84JB9kd1FZaX/7Fy8y6KspuR9fNVKubBBnip/dO
-        PCvwbsyvC9zJujrRuDHsOknuJQ5ajR+OfZjoQ8rQh1sJzGv/vrb/6HyNM8DSSz2JQlYQzOD08iMH
-        Q+EAN1/p9MRyvneZ5qlkuJEab43vaABOA7sFAAA=
+        H4sIAAAAAAAC/81U246qSBR99ysMTzPxnCMXBZlkHhDEC6KCKOpkYkoosQSKSxXY2ul/H7TbPtpz
+        knkdEkix9669Vq2qWq+1ep3xAPaRDygkzB/1v6pIvf56+15zCaYQ0ypxD1XBFOT0Z+378/owrkr2
+        BfYoSrAKouhp8kcegxhWcYZAL4d0W705giWItjRJIubb13KQB+QXbW5cCDkluX9tFsMoSjDzpejt
+        6f/tuTdDD0kRHOgcBRjQIr+RUouWpvgDiuJm2lXsoNW0jPGQFcJe3txzAItjujgJ85k5L8mq1Hfr
+        pjk7ZxN6YbUkJnYrFVlF3jWW51InKJRHMXXFDHJHAtILOJnk3EXjaag37NOgweVt0c0VUvQv7bzX
+        2Jn7jaj1iY27Rob1oebNsWuExwQqmqWBQxgtnVCYFYq4TnOu4IM+lVL3pbST04w9KJtOLwLDRBRx
+        CDuTC79Sz5l60kaCFSVqw+hyQ+y2I+MkAvVyYNNxa2iPzqJ3dl11rwa9rjKZ+iE1VL0Ap24py92x
+        Nxj0La8htNXUMFp6ykmjdliu92iICsiJ0/58wMIi1HmnAddGcGn6HV0wApGX9YztpmXJQc1w5NUi
+        LgM0byY76pl9KWALE9ijwUBpo3V/FBlzWZKcvFfqY3+qF6uZ1FLYo7yfBJhduMMiAGSD216qTmng
+        KjvJKElZbIC95DIFNVqWrQNg8ULTdC5cb8wt2qaVAteVtI3Jq5YzGgxhuNJXO7gJnECCA2OVLHm+
+        WXgTkfQtrKFB1o3YiYTAwCrGYsdAusP7wVR+0YKLqInClBP5owRoJkhHN4NgYaQLL87Dg90JREFs
+        rRpZZ2/J81O8ny8BiERB49RiJRz68UZAnT1C8kKdLaenYZRNdeLbFea6m4CjtpQsj1eUwzlWzyOr
+        6aTcZrPo9T0ENi1wtkW1afhIKELO+vPxZD+d4//D5cuBjwD24H9cv9qvxn//xGTyJLqRixMfRvdm
+        n6tl9ggjcrAhINVNr8rmznT2SZlB2IcvVZj9Um9CQkBw62te+9YDiGFeWZ5fv4tV9yq1fiO//3jH
+        vJK70WKK60wTUlBZJPjUgUnzJE6pk4QQq0lxs0jpA/bBUZ/yrXueJhRETyme57/9qy/RKlQUPVrt
+        gwtXAoEI0fN1UU5v5TxsXAXwROuuYu1B7LvzPVPkOL72Iff7DixhTtC71AGMKzG/8z/a3/cRIIcb
+        IJNDkiaYwOHtFHjbbQlGaKuPVqeMkpk8ye1YSZjaW+0fQjWkdWwGAAA=
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -52,11 +54,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Sat, 20 Sep 2025 02:05:40 GMT
+      - Wed, 15 Oct 2025 20:09:23 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=808
+      - gfet4t7; dur=1570
       Transfer-Encoding:
       - chunked
       Vary:
@@ -75,7 +77,8 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "Please retrieve the secrets associated
       with each of these passwords: mellon,radiance"}], "role": "user"}, {"parts":
-      [{"functionCall": {"args": {"password": "mellon"}, "name": "secret_retrieval_tool"}},
+      [{"thoughtSignature": "Cu4DAdHtim_pBARg4_QKLI03kEr_f1an6LtUw3SPMSvsXvFbY_MPyqNtz0DomsR4p60A9b-VyvFsik9JmtW6qe1jsapzawMsyBiLOkF-RwH-1r56WrAsuGz5rE-bMfZ6DGsRnBKqnFIDcSnWKkjoeADQDahklVTk3PuA6Ypr1u2gGt7pWxvRowP0hAZ8ElaIo66nke8Nz2XCyqCwDJ3QloC-KB1InW5lKw6aCzh0pL4IRJy6cyWWCfCgEBANOdktKCFuawBv99BLcHHGQc-35CpKK4Fp17J5kvYfiIiue16OGSH0eukF2T-eYKgz_d8F3Kg629Fq0Bpvv1eDKT9XUmvgiS_obtcMG7g0uMaRJHHA5iYGJlKS977TrEvFLdOFuXP74A0j9fNgn0UWIugasZn5cpCOtgWAb7KvsvuZaRV1qAi-4QRFaaQ23_MTz1EL1U5MQpaWW7DZM2CQTJHIekXFXbeZgTg7eHKXoV22_ucN6sGQnDiHqBl0N7iaHQuL68KiFT2dgO9xDgz6D63O162j7atq37jWqeaUKpUcmrkhR8g6364X-q8fQ9SwmfSVaal63D1CuX3hGmZ3i8fii9UCPVOwIlqOFsdRnDiYBoajDV7Qc2AAhymCyJQ_Tp1ZZUEGciaZ4ayR6C_Kdi3uk1Q=",
+      "functionCall": {"args": {"password": "mellon"}, "name": "secret_retrieval_tool"}},
       {"functionCall": {"args": {"password": "radiance"}, "name": "secret_retrieval_tool"}}],
       "role": "model"}, {"parts": [{"functionResponse": {"name": "secret_retrieval_tool",
       "response": {"output": "Welcome to Moria!"}}}, {"functionResponse": {"name":
@@ -93,7 +96,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '965'
+      - '1653'
       content-type:
       - application/json
       host:
@@ -107,13 +110,13 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/21RXU/CMBR936+offEFjBIwgTcimqDyoS5q4nio9I41dL1Le0EI4b/bDQZD2cPW
-        nXN62nvOJmCMT4WRSgoCxzvsyyOMbYp3zqEhMOSJEvJgJiwdtbtnU1l7CcEq38T7l0tgFsgqWIJk
-        lABzMPWAYzHa4j+zuFTSk5lw7getdJ3IROahpPcoi3gKWqOJeK3iw5TzzAfoKabACNkArRIXET/r
-        YIVUwkzhnMezioF9g78WsB4ISiLOK0NtD+tJ7RiFRQ35nClK0KV8Wwp4rIxyySsIhyaXvYWjMT+w
-        ykhYefg6KA8orPnCiRkMgIQvRRyi5z6oNKMQ52DucFGUctNq7NwqJZ4Ims09T0hCn+5t39b+Gbue
-        P1bparuV4v2UQita56OE958hryRBf+5VZlF8J8E+lV1Q72Cd2iUyg9RnVG9cteqxFi4pLLkFl6Fx
-        0Je5pt1djsTjUzrE0SKl+Xg9VO1G94UH2+AXfmZwrsECAAA=
+        H4sIAAAAAAAC/2WRTU/CQBCG7/0V4164AMEKarwZ8aCRQLRREyFm6U7pxu1u3R0QQ/jvblsKBXto
+        t/O+87HPbAIAFnMtpOCEjt3Ah48AbMp3oRlNqMkLdcgHc27p4K2eTePsLYTrIolFKYLD2CI5SPkK
+        YY6owf9aiSsUXTgYIDEWWhkqZXQLpIMpe0MVmwyBDIyMlfxsysAPC3SSZLmQXMe4S3uSSdHISwhD
+        5JROWZc15tvuz7P24VbWKCxGzoxAVdu3tYElUkuXPiN3Rhe2l2g8YXtVaoFrH+4FdYOyNFs6vsAR
+        Evd8+Z4iy63JcorMF+o7syz5ng/CqlpjH0eGi/5OJ0NcHedeX7b/FXZD31aq5qIaO/S35ErSb7mk
+        +/eINUjQyVw1i/I7C3ZUKlCvaJ2siCww84w6YXfQSRR3aVmSWXS50Q4fROERk88Vf4w648n855vc
+        5Kof9sLbPgu2wR8b8sb+jAIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -122,11 +125,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Sat, 20 Sep 2025 02:05:40 GMT
+      - Wed, 15 Oct 2025 20:09:24 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=479
+      - gfet4t7; dur=1542
       Transfer-Encoding:
       - chunked
       Vary:

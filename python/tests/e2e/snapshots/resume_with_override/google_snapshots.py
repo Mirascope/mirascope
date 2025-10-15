@@ -39,7 +39,24 @@ I am a large language model, trained by **Google**.\
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": """\
+You are absolutely right to ask me to double-check! My apologies for the previous incorrect information.
+
+I am a large language model, trained by **Google**.\
+""",
+                    }
+                ],
             ),
         ],
         "format": None,
@@ -73,7 +90,20 @@ async_snapshot = snapshot(
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": "Yes, I can confirm that. I was created by Anthropic.",
+                    }
+                ],
             ),
         ],
         "format": None,

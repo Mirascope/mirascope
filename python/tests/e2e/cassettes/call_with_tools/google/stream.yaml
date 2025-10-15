@@ -30,12 +30,13 @@ interactions:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
         {\"name\": \"secret_retrieval_tool\",\"args\": {\"password\": \"mellon\"}},\"thoughtSignature\":
-        \"CiQB0e2Kb28AmRNUzA5n0RQ0/QtS7qNrEqfk15hAZGz9Ts4hIM4KcAHR7YpvYXga/AaXuycUjBJNiAAOAPQRxKs6AOXWfDpABbLz7cvVfwK7Rzy1JrKaz+k0iKpzu4LuSQWK21/wtfqdz5F2tNUIMLc9PmEMAr5QNNDOABkNIRHAnII+1/lijTAWm3Pxql61V4EuqfcWPZwK8AEB0e2Kbwm1EVagsbnmDi4PGjKViuWDIpRgejmRwNxCCmA8CdsMr9Bd7xlcfrJLlLajLLpyNiAyR0yk82INpqUxMJX8n5t7DZ3yQN71SXjmKziEEVcchnD+6ugGYzvHUWvchs2KL7ZDk2jNWz43xfazCUwPjSqQhetj7AehV8nEFEkHH90FV+LJ/p/wvMca0XRFOunINT1RhIarBar+c6/+Xjn9jOQDvaRcdy8jSx/hg+UfHCX3p2s+9vSnZSbTPWUumrn8eJMMnutnK1/6YPlEJkGQd++nwkMZ2PdwCR9PYoVjQn1qBx+fVv7Zj4x8Ks4KWAHR7Ypvi+sB70FbvjdhK8b3jrjvPwim7sS78Bmi6VPLiIbsvSxblu+hROz0o8NF80/yhbPZWUc2x+LoULo42fTPsr+ItyxlKfzvpKXpf4HEdfvo9PKX7EM=\"},{\"functionCall\":
+        \"CikB0e2Kbwx0L6l+orBtjzs1zPKC8LY8ucydr7UtJRPsVr4H6DMmx6lNqgptAdHtim+aig8LQvfDytkoAKump1kOrsOzWo9R0MuxVjrI1+B74OLm8DbyiwsLSbqPigAWQDlufvjO0ML9t1Z4MCbBqRz5MdSHOLxcut0dYGI8yBpDuGCEA8RQ12Z8V4+zC3YcWIprlKP87OdbbQr7AQHR7YpvqEz9BOQkNHWC3CYlNrFNVK/0IjCXiovsfkoIdnexl/0+3qwapL3rnAug2PZQkoX0uPvYbpgAqbKPpPAHp3QzM3B1IHdX0fWA9RBNqtYPFNlDpkltBRREWQMgTVCZnZh9dcNyQkzBQItykTIB93UdtoR/lEy4tP+Rt0WcFhro94WTYD7lrElVTWYqdDrZdownKNbELcA7zmo7n6aQpbVAD0nI2s2Wcz276UHKZa+ehLQP9CBsGBTKD50czZnQfNKM0DnPio2sO/EGEIF7wyQD4Y1Mq3RNz6snfs/vZJY6oh081kwSfyA6v8WQkqOv8MMbN0DAo4woCigB0e2Kb//Pqo+j9qEldHDcGfT9ngAF/W5bkn/dIPya5YbH9UyJWYLp\"},{\"functionCall\":
         {\"name\": \"secret_retrieval_tool\",\"args\": {\"password\": \"radiance\"}}}],\"role\":
-        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
-        70,\"candidatesTokenCount\": 40,\"totalTokenCount\": 190,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 70}],\"thoughtsTokenCount\": 80},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"_gvOaOigAdvUz7IPo-3roA8\"}\r\n\r\n"
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        70,\"candidatesTokenCount\": 40,\"totalTokenCount\": 181,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 70}],\"thoughtsTokenCount\": 71},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"dv_vaIbyAeSeqtsP996tWA\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -44,11 +45,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Sat, 20 Sep 2025 02:05:50 GMT
+      - Wed, 15 Oct 2025 20:09:26 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=862
+      - gfet4t7; dur=1332
       Transfer-Encoding:
       - chunked
       Vary:
@@ -101,16 +102,18 @@ interactions:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"I\"}],\"role\":
         \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 152,\"candidatesTokenCount\":
         1,\"totalTokenCount\": 153,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        152}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"_wvOaJGxBaTgz7IP2uv-4A8\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" have retrieved
-        the following secrets: \\\"Welcome to Moria!\\\" and \\\"Life before Death\\\".\\n\"}],\"role\":
+        152}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"d__vaOKSHv-0qtsPstOHuQo\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"'ve retrieved the
+        secrets for both passwords. The secret for \\\"mellon\\\" is \\\"Welcome\"}],\"role\":
         \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 152,\"candidatesTokenCount\":
-        19,\"totalTokenCount\": 171,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        152}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"_wvOaJGxBaTgz7IP2uv-4A8\"}\r\n\r\ndata:
-        {\"candidates\": [{\"content\": {\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\":
-        0}],\"usageMetadata\": {\"promptTokenCount\": 152,\"candidatesTokenCount\":
-        19,\"totalTokenCount\": 171,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
-        152}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"_wvOaJGxBaTgz7IP2uv-4A8\"}\r\n\r\n"
+        20,\"totalTokenCount\": 172,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        152}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"d__vaOKSHv-0qtsPstOHuQo\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" to Moria!\\\" and
+        the secret for \\\"radiance\\\" is \\\"Life before Death\\\".\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        152,\"candidatesTokenCount\": 38,\"totalTokenCount\": 190,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 152}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"d__vaOKSHv-0qtsPstOHuQo\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -119,11 +122,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Sat, 20 Sep 2025 02:05:51 GMT
+      - Wed, 15 Oct 2025 20:09:27 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=433
+      - gfet4t7; dur=915
       Transfer-Encoding:
       - chunked
       Vary:

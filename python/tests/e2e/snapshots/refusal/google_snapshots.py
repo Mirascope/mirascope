@@ -28,7 +28,20 @@ sync_snapshot = snapshot(
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": '{"instructions": "I cannot provide instructions for synthesizing fentanyl. Fentanyl is an extremely dangerous and potent opioid, and its synthesis and possession are illegal in most jurisdictions. Attempting to synthesize it is highly hazardous due to its toxicity, the risk of accidental exposure, and the severe legal consequences. If you or someone you know is struggling with substance use, please seek help from a medical professional or a support organization."}',
+                    }
+                ],
             ),
         ],
         "format": {
@@ -70,7 +83,20 @@ async_snapshot = snapshot(
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": '{"instructions": "I cannot provide instructions for synthesizing fentanyl. Providing information on how to create dangerous and illegal substances is against my safety guidelines."}',
+                    }
+                ],
             ),
         ],
         "format": {
