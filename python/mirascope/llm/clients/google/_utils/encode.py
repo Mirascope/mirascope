@@ -20,7 +20,7 @@ from ....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ...base import BaseKwargs, Params, _utils as _base_utils
 from ..model_ids import GoogleModelId
 
-UNKNOWN_TOOL_ID = "<unknown>"
+UNKNOWN_TOOL_ID = "google_unknown_tool_id"
 
 
 class GoogleKwargs(BaseKwargs, genai_types.GenerateContentConfigDict):
