@@ -154,7 +154,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_completions_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -253,7 +253,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_completions_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -340,7 +340,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
 
-        input_messages, format, kwargs = _utils.prepare_completions_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             params=params,
             messages=messages,
@@ -439,7 +439,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_completions_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             params=params,
             messages=messages,
@@ -525,7 +525,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_completions_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -538,7 +538,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
             stream=True,
         )
 
-        chunk_iterator = _utils.convert_openai_stream_to_chunk_iterator(openai_stream)
+        chunk_iterator = _utils.decode_stream(openai_stream)
 
         return StreamResponse(
             provider="openai:completions",
@@ -623,7 +623,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_completions_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -636,7 +636,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
             stream=True,
         )
 
-        chunk_iterator = _utils.convert_openai_stream_to_chunk_iterator(openai_stream)
+        chunk_iterator = _utils.decode_stream(openai_stream)
 
         return ContextStreamResponse(
             provider="openai:completions",
@@ -709,7 +709,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
 
-        input_messages, format, kwargs = _utils.prepare_completions_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -722,9 +722,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
             stream=True,
         )
 
-        chunk_iterator = _utils.convert_openai_stream_to_async_chunk_iterator(
-            openai_stream
-        )
+        chunk_iterator = _utils.decode_async_stream(openai_stream)
 
         return AsyncStreamResponse(
             provider="openai:completions",
@@ -809,7 +807,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        input_messages, format, kwargs = _utils.prepare_completions_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -822,9 +820,7 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
             stream=True,
         )
 
-        chunk_iterator = _utils.convert_openai_stream_to_async_chunk_iterator(
-            openai_stream
-        )
+        chunk_iterator = _utils.decode_async_stream(openai_stream)
 
         return AsyncContextStreamResponse(
             provider="openai:completions",

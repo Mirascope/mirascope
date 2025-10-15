@@ -1,10 +1,9 @@
-"""OpenAI Responses message types and conversion utilities."""
+"""OpenAI Responses message encoding and request preparation."""
 
-import logging
 from collections.abc import Sequence
-from typing import Any, Literal, TypedDict, cast
+from typing import TypedDict, cast
 
-from openai import AsyncStream, NotGiven, Stream
+from openai import NotGiven
 from openai.types import responses as openai_types
 from openai.types.responses import response_create_params
 from openai.types.responses.easy_input_message_param import EasyInputMessageParam
@@ -20,7 +19,6 @@ from openai.types.responses.response_input_param import (
     ResponseInputItemParam,
     ResponseInputParam,
 )
-from openai.types.responses.response_stream_event import ResponseStreamEvent
 from openai.types.responses.response_text_config_param import ResponseTextConfigParam
 from openai.types.responses.tool_choice_allowed_param import ToolChoiceAllowedParam
 from openai.types.responses.tool_choice_function_param import ToolChoiceFunctionParam
@@ -30,54 +28,18 @@ from openai.types.shared_params.response_format_json_object import (
 )
 from openai.types.shared_params.responses_model import ResponsesModel
 
-from ....content import (
-    AssistantContentPart,
-    Text,
-    TextChunk,
-    TextEndChunk,
-    TextStartChunk,
-    Thought,
-    ThoughtChunk,
-    ThoughtEndChunk,
-    ThoughtStartChunk,
-    ToolCall,
-    ToolCallChunk,
-    ToolCallEndChunk,
-    ToolCallStartChunk,
-)
-from ....formatting import (
+from .....formatting import (
     Format,
     FormattableT,
     _utils as _formatting_utils,
     resolve_format,
 )
-from ....messages import AssistantMessage, Message
-from ....responses import (
-    AsyncChunkIterator,
-    ChunkIterator,
-    FinishReason,
-    FinishReasonChunk,
-    RawContentChunk,
-    RawStreamEventChunk,
-)
-from ....tools import (
-    FORMAT_TOOL_NAME,
-    BaseToolkit,
-    ToolSchema,
-)
-from ...base import Params, _utils as _base_utils
-from ..shared import (
-    _utils as _shared_utils,
-)
-from .model_ids import OpenAIResponsesModelId
-from .model_info import NON_REASONING_MODELS
-
-logger = logging.getLogger(__name__)
-
-INCOMPLETE_DETAILS_TO_FINISH_REASON = {
-    "max_output_tokens": FinishReason.MAX_TOKENS,
-    "content_filter": FinishReason.REFUSAL,
-}
+from .....messages import Message
+from .....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
+from ....base import Params, _utils as _base_utils
+from ...shared import _utils as _shared_utils
+from ..model_ids import OpenAIResponsesModelId
+from ..model_info import NON_REASONING_MODELS
 
 
 class ResponseCreateKwargs(TypedDict, total=False):
@@ -205,7 +167,7 @@ def _compute_reasoning(thinking: bool) -> Reasoning:
         return {"effort": "minimal"}
 
 
-def prepare_responses_request(
+def encode_request(
     *,
     model_id: OpenAIResponsesModelId,
     messages: Sequence[Message],
@@ -214,9 +176,11 @@ def prepare_responses_request(
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""
-    kwargs: ResponseCreateKwargs = {
-        "model": model_id,
-    }
+    kwargs: ResponseCreateKwargs = ResponseCreateKwargs(
+        {
+            "model": model_id,
+        }
+    )
     encode_thoughts = False
 
     with _base_utils.ensure_all_params_accessed(
@@ -256,9 +220,9 @@ def prepare_responses_request(
         if format.mode == "strict":
             kwargs["text"] = {"format": _create_strict_response_format(format)}
         elif format.mode == "tool":
-            format_tool_schema = _formatting_utils.create_tool_schema(format)
+            format_tool_shared_utils = _formatting_utils.create_tool_schema(format)
             openai_tools.append(
-                _convert_tool_to_function_tool_param(format_tool_schema)
+                _convert_tool_to_function_tool_param(format_tool_shared_utils)
             )
             if tools:
                 kwargs["tool_choice"] = ToolChoiceAllowedParam(
@@ -294,156 +258,3 @@ def prepare_responses_request(
         kwargs["tools"] = openai_tools
 
     return messages, format, kwargs
-
-
-def _serialize_output_item(
-    item: openai_types.ResponseOutputItem,
-) -> dict[str, Any]:
-    """Returns the item serialized as a dictionary."""
-    return {key: value for key, value in item.model_dump().items() if value is not None}
-
-
-def decode_response(
-    response: openai_types.Response,
-    model_id: OpenAIResponsesModelId,
-) -> tuple[AssistantMessage, FinishReason | None]:
-    """Convert OpenAI Responses Response to mirascope AssistantMessage."""
-    parts: list[AssistantContentPart] = []
-    finish_reason: FinishReason | None = None
-    refused = False
-
-    for output_item in response.output:
-        if output_item.type == "message":
-            for content in output_item.content:
-                if content.type == "output_text":
-                    parts.append(Text(text=content.text))
-                elif content.type == "refusal":
-                    parts.append(Text(text=content.refusal))
-                    refused = True
-        elif output_item.type == "function_call":
-            parts.append(
-                ToolCall(
-                    id=output_item.call_id,
-                    name=output_item.name,
-                    args=output_item.arguments,
-                )
-            )
-        elif output_item.type == "reasoning":
-            for summary_part in output_item.summary:
-                if summary_part.type == "summary_text":
-                    parts.append(Thought(thought=summary_part.text))
-            if output_item.content:  # pragma: no cover
-                # TODO: Add test case covering this
-                # (Likely their open-source models output reasoning_text rather than summaries)
-                for reasoning_content in output_item.content:
-                    if reasoning_content.type == "reasoning_text":
-                        parts.append(Thought(thought=reasoning_content.text))
-
-        else:
-            raise NotImplementedError(f"Unsupported output item: {output_item.type}")
-
-    if refused:
-        finish_reason = FinishReason.REFUSAL
-    elif details := response.incomplete_details:
-        finish_reason = INCOMPLETE_DETAILS_TO_FINISH_REASON.get(details.reason or "")
-
-    assistant_message = AssistantMessage(
-        content=parts,
-        provider="openai:responses",
-        model_id=model_id,
-        raw_content=[
-            _serialize_output_item(output_item) for output_item in response.output
-        ],
-    )
-
-    return assistant_message, finish_reason
-
-
-class _OpenAIResponsesChunkProcessor:
-    """Processes OpenAI Responses streaming events and maintains state across chunks."""
-
-    def __init__(self) -> None:
-        self.current_content_type: Literal["text", "tool_call", "thought"] | None = None
-        self.refusal_encountered = False
-
-    def process_chunk(self, event: ResponseStreamEvent) -> ChunkIterator:
-        """Process a single OpenAI Responses stream event and yield the appropriate content chunks."""
-        yield RawStreamEventChunk(raw_stream_event=event)
-
-        if hasattr(event, "type"):
-            if event.type == "response.output_text.delta":
-                if not self.current_content_type:
-                    yield TextStartChunk()
-                    self.current_content_type = "text"
-                yield TextChunk(delta=event.delta)
-            elif event.type == "response.output_text.done":
-                yield TextEndChunk()
-                self.current_content_type = None
-            if event.type == "response.refusal.delta":
-                if not self.current_content_type:
-                    yield TextStartChunk()
-                    self.current_content_type = "text"
-                yield TextChunk(delta=event.delta)
-            elif event.type == "response.refusal.done":
-                yield TextEndChunk()
-                self.refusal_encountered = True
-                self.current_content_type = None
-            elif event.type == "response.output_item.added":
-                item = event.item
-                if item.type == "function_call":
-                    self.current_tool_call_id = item.call_id
-                    self.current_tool_call_name = item.name
-                    yield ToolCallStartChunk(
-                        id=item.call_id,
-                        name=item.name,
-                    )
-                    self.current_content_type = "tool_call"
-            elif event.type == "response.function_call_arguments.delta":
-                yield ToolCallChunk(delta=event.delta)
-            elif event.type == "response.function_call_arguments.done":
-                yield ToolCallEndChunk()
-                self.current_content_type = None
-            elif (
-                event.type == "response.reasoning_text.delta"
-                or event.type == "response.reasoning_summary_text.delta"
-            ):
-                if not self.current_content_type:
-                    yield ThoughtStartChunk()
-                    self.current_content_type = "thought"
-                yield ThoughtChunk(delta=event.delta)
-            elif (
-                event.type == "response.reasoning_summary_text.done"
-                or event.type == "response.reasoning_text.done"
-            ):
-                yield ThoughtEndChunk()
-                self.current_content_type = None
-            elif event.type == "response.incomplete":
-                details = event.response.incomplete_details
-                reason = (details and details.reason) or ""
-                finish_reason = INCOMPLETE_DETAILS_TO_FINISH_REASON.get(reason)
-                if finish_reason:
-                    yield FinishReasonChunk(finish_reason=finish_reason)
-            elif event.type == "response.completed":
-                for output_item in event.response.output:
-                    yield RawContentChunk(content=_serialize_output_item(output_item))
-                if self.refusal_encountered:
-                    yield FinishReasonChunk(finish_reason=FinishReason.REFUSAL)
-
-
-def convert_openai_responses_stream_to_chunk_iterator(
-    openai_stream: Stream[ResponseStreamEvent],
-) -> ChunkIterator:
-    """Returns a ChunkIterator converted from an OpenAI Stream[ResponseStreamEvent]"""
-    processor = _OpenAIResponsesChunkProcessor()
-    for event in openai_stream:
-        yield from processor.process_chunk(event)
-
-
-async def convert_openai_responses_stream_to_async_chunk_iterator(
-    openai_stream: AsyncStream[ResponseStreamEvent],
-) -> AsyncChunkIterator:
-    """Returns an AsyncChunkIterator converted from an OpenAI AsyncStream[ResponseStreamEvent]"""
-    processor = _OpenAIResponsesChunkProcessor()
-    async for event in openai_stream:
-        for item in processor.process_chunk(event):
-            yield item

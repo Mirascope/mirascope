@@ -156,7 +156,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.prepare_google_request(
+        input_messages, format, contents, config = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -259,7 +259,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.prepare_google_request(
+        input_messages, format, contents, config = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -349,7 +349,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.prepare_google_request(
+        input_messages, format, contents, config = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -452,7 +452,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.prepare_google_request(
+        input_messages, format, contents, config = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -542,7 +542,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.prepare_google_request(
+        input_messages, format, contents, config = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -556,7 +556,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             config=config,
         )
 
-        chunk_iterator = _utils.convert_google_stream_to_chunk_iterator(google_stream)
+        chunk_iterator = _utils.decode_stream(google_stream)
 
         return StreamResponse(
             provider="google",
@@ -641,7 +641,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.prepare_google_request(
+        input_messages, format, contents, config = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -655,7 +655,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             config=config,
         )
 
-        chunk_iterator = _utils.convert_google_stream_to_chunk_iterator(google_stream)
+        chunk_iterator = _utils.decode_stream(google_stream)
 
         return ContextStreamResponse(
             provider="google",
@@ -727,7 +727,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.prepare_google_request(
+        input_messages, format, contents, config = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -741,9 +741,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             config=config,
         )
 
-        chunk_iterator = _utils.convert_google_stream_to_async_chunk_iterator(
-            google_stream
-        )
+        chunk_iterator = _utils.decode_async_stream(google_stream)
 
         return AsyncStreamResponse(
             provider="google",
@@ -828,7 +826,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.prepare_google_request(
+        input_messages, format, contents, config = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -842,9 +840,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             config=config,
         )
 
-        chunk_iterator = _utils.convert_google_stream_to_async_chunk_iterator(
-            google_stream
-        )
+        chunk_iterator = _utils.decode_async_stream(google_stream)
 
         return AsyncContextStreamResponse(
             provider="google",

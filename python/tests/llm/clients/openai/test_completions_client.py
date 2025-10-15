@@ -5,7 +5,7 @@ from inline_snapshot import snapshot
 from pydantic import BaseModel
 
 from mirascope import llm
-from mirascope.llm.clients.openai.completions import _utils as openai_utils
+from mirascope.llm.clients.openai.completions._utils import encode_request
 
 
 def test_prepare_message_multiple_assistant_text_parts() -> None:
@@ -20,7 +20,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
             ["General ", "Kenobi"], provider="openai:completions", model_id="gpt-4o"
         ),
     ]
-    assert openai_utils.prepare_completions_request(
+    assert encode_request(
         model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
     ) == snapshot(
         (
@@ -65,7 +65,7 @@ def test_strict_unsupported_legacy_model() -> None:
     format = llm.format(Book, mode="strict")
 
     with pytest.raises(llm.FormattingModeNotSupportedError):
-        openai_utils.prepare_completions_request(
+        encode_request(
             model_id="gpt-4", messages=messages, format=format, tools=None, params={}
         )
 
