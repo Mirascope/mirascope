@@ -33,7 +33,7 @@ from ....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
-    RawChunk,
+    RawStreamEventChunk,
 )
 from ....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ...base import BaseKwargs, Params, _utils as _base_utils
@@ -357,7 +357,7 @@ class _OpenAIChunkProcessor:
 
     def process_chunk(self, chunk: openai_types.ChatCompletionChunk) -> ChunkIterator:
         """Process a single OpenAI chunk and yield the appropriate content chunks."""
-        yield RawChunk(raw=chunk)
+        yield RawStreamEventChunk(raw_stream_event=chunk)
 
         choice = chunk.choices[0] if chunk.choices else None
         if not choice:

@@ -945,10 +945,10 @@ class TestRawChunkTracking:
         chunk3 = llm.TextEndChunk()
 
         def chunk_iterator() -> llm.ChunkIterator:
-            yield llm.responses.RawChunk(raw=raw1)
+            yield llm.responses.RawStreamEventChunk(raw_stream_event=raw1)
             yield chunk1
             yield chunk2
-            yield llm.responses.RawChunk(raw=raw2)
+            yield llm.responses.RawStreamEventChunk(raw_stream_event=raw2)
             yield chunk3
 
         stream_response = llm.StreamResponse(
@@ -975,10 +975,10 @@ class TestRawChunkTracking:
         chunk3 = llm.TextEndChunk()
 
         async def chunk_iterator() -> llm.AsyncChunkIterator:
-            yield llm.responses.RawChunk(raw=raw1)
+            yield llm.responses.RawStreamEventChunk(raw_stream_event=raw1)
             yield chunk1
             yield chunk2
-            yield llm.responses.RawChunk(raw=raw2)
+            yield llm.responses.RawStreamEventChunk(raw_stream_event=raw2)
             yield chunk3
 
         stream_response = llm.AsyncStreamResponse(
@@ -1025,7 +1025,7 @@ class TestRawContentChunkTracking:
         stream_response.finish()
 
         check_stream_response_consistency(
-            stream_response, chunks, [llm.Text(text="hello world")]
+            stream_response, chunks[:-1], [llm.Text(text="hello world")]
         )
         assistant_message = stream_response.messages[-1]
         assert assistant_message.role == "assistant"
@@ -1051,7 +1051,7 @@ class TestRawContentChunkTracking:
         await stream_response.finish()
 
         check_stream_response_consistency(
-            stream_response, chunks, [llm.Text(text="hello world")]
+            stream_response, chunks[:-1], [llm.Text(text="hello world")]
         )
         assistant_message = stream_response.messages[-1]
         assert assistant_message.role == "assistant"
@@ -1090,7 +1090,9 @@ class TestRawContentChunkTracking:
             llm.Text(text="Let me help"),
             llm.ToolCall(id="call_123", name="search", args='{"query": "test"}'),
         ]
-        check_stream_response_consistency(stream_response, chunks, expected_content)
+        check_stream_response_consistency(
+            stream_response, chunks[:-2], expected_content
+        )
         assistant_message = stream_response.messages[-1]
         assert assistant_message.role == "assistant"
         assert assistant_message.raw_content == [message_item, tool_item]
@@ -1128,7 +1130,9 @@ class TestRawContentChunkTracking:
             llm.Text(text="Let me help"),
             llm.ToolCall(id="call_123", name="search", args='{"query": "test"}'),
         ]
-        check_stream_response_consistency(stream_response, chunks, expected_content)
+        check_stream_response_consistency(
+            stream_response, chunks[:-2], expected_content
+        )
         assistant_message = stream_response.messages[-1]
         assert assistant_message.role == "assistant"
         assert assistant_message.raw_content == [message_item, tool_item]
@@ -1200,7 +1204,9 @@ class TestRawContentChunkTracking:
             llm.Thought(thought="I should analyze this"),
             llm.Text(text="Analysis complete"),
         ]
-        check_stream_response_consistency(stream_response, chunks, expected_content)
+        check_stream_response_consistency(
+            stream_response, chunks[:-2], expected_content
+        )
         assistant_message = stream_response.messages[-1]
         assert assistant_message.role == "assistant"
         assert assistant_message.raw_content == [reasoning_item, message_item]
@@ -1236,7 +1242,9 @@ class TestRawContentChunkTracking:
             llm.Thought(thought="I should analyze this"),
             llm.Text(text="Analysis complete"),
         ]
-        check_stream_response_consistency(stream_response, chunks, expected_content)
+        check_stream_response_consistency(
+            stream_response, chunks[:-2], expected_content
+        )
         assistant_message = stream_response.messages[-1]
         assert assistant_message.role == "assistant"
         assert assistant_message.raw_content == [reasoning_item, message_item]

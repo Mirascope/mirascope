@@ -37,7 +37,7 @@ from ...responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
-    RawChunk,
+    RawStreamEventChunk,
 )
 from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ..base import BaseKwargs, Params, _utils as _base_utils
@@ -364,7 +364,7 @@ class _GoogleChunkProcessor:
         self, chunk: genai_types.GenerateContentResponse
     ) -> ChunkIterator:
         """Process a single Google chunk and yield the appropriate content chunks."""
-        yield RawChunk(raw=chunk)
+        yield RawStreamEventChunk(raw_stream_event=chunk)
 
         candidate = chunk.candidates[0] if chunk.candidates else None
         if not candidate or not candidate.content or not candidate.content.parts:

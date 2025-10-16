@@ -585,7 +585,7 @@ Respond only with valid JSON that matches this exact schema:
                 "strict": False,
             }
         ],
-        "n_chunks": 43,
+        "n_chunks": 42,
     }
 )
 async_stream_snapshot = snapshot(
@@ -778,6 +778,6 @@ Respond only with valid JSON that matches this exact schema:
                 "strict": False,
             }
         ],
-        "n_chunks": 43,
+        "n_chunks": 42,
     }
 )
