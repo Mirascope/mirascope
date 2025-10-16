@@ -140,7 +140,43 @@ So, 4200 + 42 = **4242**.\
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": """\
+To find the sum of 4200 and 42, we can add them:
+
+```
+  4200
++   42
+------
+  4242
+```
+
+So, 4200\
+""",
+                    },
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": " + 42 = **4242**.",
+                    },
+                ],
             ),
         ],
         "format": None,
@@ -172,7 +208,41 @@ So, 4200 + 42 = **4242**.\
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": """\
+To find the sum of 4200 + 42, you can add the numbers:
+
+   4200
++    42
+-------
+   4242
+
+So, 4200 + \
+""",
+                    },
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": "42 = **4242**.",
+                    },
+                ],
             ),
         ],
         "format": None,

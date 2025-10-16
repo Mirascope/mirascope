@@ -302,7 +302,40 @@ stream_snapshot = snapshot(
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": b"\n)\x01\xd1\xed\x8ao\xfe\x0b\xad\xf2\xce\xed\xd3\x01\xa7\xc7\x042\xfd\x938QW\x96\xb1F\rP\xee'!\xd16\xf9\x8aH\xeb\xb70\xc8\xd8\xbe\nm\x01\xd1\xed\x8ao\xcb\xd8\xa2\x01\xf3]e;U\x7f]^z\x8aa\xcf\x86\x03<\xe90{*\xf3\xfbJ/G\xbd\xe3gpZ\xecnR\r\x8bI\xadT,\xef\xbf\xa5\xa9\xeaCcye\x1e\x8f\xfe\xf3?\xa5\xcd\xe2\trB5\xb6n\x83\x0f\x80\xba;^\x0b\x96\xe5&t\x92\xdb\xb7S\xe7\xe2\x8b\x1c`3Ls:?\xc5Y]\xb3\xc9\x86\n${\xc9\x08\xaf\x1a(\n\xfa\x01\x01\xd1\xed\x8aoc3\xa7t\x00\x05\x1e\x1c[\x0e\r\xcb\xd6%\xa6v\x0bD0\x87\x19aE\x1b\xc5\x1f\xf6\xf7\x03kpQ\xea\xd1\x98S\x90S\xb8_\xc1`\xa1\xc0d\xe5\x8a\xe2\xcfS\xfez)\x93\xc7\xe3\xdd\x83\x12\x10q/S\x11\x887e\xf6g\\\xbc\xb0<q\x195\xd0\x90`Rf\x81P\xb4\rGd\xfb\xb6\x8b'\x17f\xc5\rmuS\xbf'?\xbbs\xb7U\xf8\x97|/P\x11\xcf^\x14]\x01Z\xe9\xe6\x1c\xcbm/\x87>\x92\xb1\x9c|\xdc\xdf:\x0f#O&\x9d\xfcO\x9a\xf9\x98KH\x05F?\xbc\xd9\x14\xa7\xf0\x01]\x13\x0c\xb8BU\x02\xf6\n\xd3\x83\xe6\x0f?\x12\x9d\xc10\x17P\xb7\xa0D\x08\x12g\x0e\xc7RV\xc8k<7\xfa\xdb\xd0\x18\xe0\x90\xfbwg\x18W\xb1\x0e\xf0\xfb\x90\x0c\x14\x9a\xce\x8f\xa7\xbf\x0f{5\x86\xb0\xe3+LCs&\xe7\x10\xdf\x8d\xfb\xb1&\x8b\xd2\xbc\x07G\xbb\x8bV\xf0\x02L\xe8\xf4\xdf\x99v\x7f\n<\x01\xd1\xed\x8ao\xc7\xa4 \xdc\xda {E0\xa9\x94\"C\xb6\x99\xccb\x8a=\x1fV\xfb\xf5\xcd\xeb7N\x90r\xber&\xce\xd9c\xac\x16\x8c,o\xabm\xdf\xa5nk\x03\xb6Z\xae\xf1Q\xaa\x1d\xd3",
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": {
+                            "id": None,
+                            "args": {"password": "mellon"},
+                            "name": "secret_retrieval_tool",
+                        },
+                        "function_response": None,
+                        "text": None,
+                    },
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": {
+                            "id": None,
+                            "args": {"password": "radiance"},
+                            "name": "secret_retrieval_tool",
+                        },
+                        "function_response": None,
+                        "text": None,
+                    },
+                ],
             ),
             UserMessage(
                 content=[
@@ -321,12 +354,56 @@ stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='I\'ve retrieved the secrets for both passwords. The secret for "mellon" is "Welcome to Moria!" and the secret for "radiance" is "Life before Death".'
+                        text="""\
+The secrets for the provided passwords are:
+* mellon: Welcome to Moria!
+* radiance: Life before Death\
+"""
                     )
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": "The secrets for",
+                    },
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": """\
+ the provided passwords are:
+* mellon: Welcome to Moria!
+""",
+                    },
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": "* radiance: Life before Death",
+                    },
+                ],
             ),
         ],
         "format": None,
@@ -384,7 +461,40 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": b'\n$\x01\xd1\xed\x8aov\xfd\xcf]#{u\x7f\xc2\xef(\xef\x96\xdc(`\xe3=\x8ct\xc9\xf9\xbe7\xbe\xa1\xd4\x8f\t\x06\xfd\nj\x01\xd1\xed\x8ao\x1a\xf3\xd5\xbfx\x1f\xfb\x08\xae:\xd6\x86\x9dy\x7fn5\xb4\x0e@r\xee\xf1\x85/\xb8\x13B%\xd7Nq\xf0\xaf\xbb\xd4V\x04\xfe\x0eL\x9f"\x88S\xaby\xc4p\xc0\x10\xde\x05\xd4>p\xdd\xb6\x06\xeb&\xbe\x0b}o\xf2i\x83\xf9\xa0\xf9\xabZ\x1c\xb9v\xea\xc0#.\xa0X\x12\x99#i\xd8\xbe\xc7vua\x97\xbbmz\xea\x81\x85R\x80\n\xea\x01\x01\xd1\xed\x8ao7.\xaeD\xf2\xafe\x9cYu2W\x99G0B;u\xb5\x9f\x17*h)\xef\xf6\x13\xea\x95\x10\x10\xc5\x06c\xfe\xa8\xf9M\xd0\xde\xb4\x85=G@\xce\xe6x\xc6\xc2 \xe6\x18\x7f\xe8XO\xa7\x13\xcb\xb9\xb8\x97\xb2~\x18|\xcaJ\xa6\x1e\x90\x87\x87\n\xde\xf0\x8a2\x94\xde$\x17\x9d\xa0\x95\x03\xf8\xe3]\x07+( \xb8\xa2\xbe\x98\xa1\xf8:aL\x1b\x98s\xe67\xcdX!+\x13\xa74B\xa5\x83>L\xf6\xf5\xc2\x9b\x83\xb4\x9eUd\x8e\xc4\xc1Yn\x96@C\xb1\xed\xcb\xfaG\xf2k\x9dVnc]\xb83n\x02t\xd8\x98\x04\xa5;\x9c\xce\x05*\xc5\xe8\x8e\x1a\xe9b\x93Z\xc0[\x8a\x94\xb9F\xb5%^\x94\xc4X,\xbc\xa5\x86\x80$\xdfne\xe1%\xd9n\x96\xbc\xc0\xa2\x80t|\x19\xef\xd94\xe9\x18\x13\xa254\x1f\xcf.\xfa\xc0;T\x991QS\x9f\x89\tfA',
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": {
+                            "id": None,
+                            "args": {"password": "mellon"},
+                            "name": "secret_retrieval_tool",
+                        },
+                        "function_response": None,
+                        "text": None,
+                    },
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": {
+                            "id": None,
+                            "args": {"password": "radiance"},
+                            "name": "secret_retrieval_tool",
+                        },
+                        "function_response": None,
+                        "text": None,
+                    },
+                ],
             ),
             UserMessage(
                 content=[
@@ -403,12 +513,25 @@ async_stream_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     Text(
-                        text='I have retrieved the following secrets: "Welcome to Moria!" and "Life before Death".\n'
+                        text="The secret for 'mellon' is 'Welcome to Moria!' and the secret for 'radiance' is 'Life before Death'."
                     )
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": b"\n)\x01\xd1\xed\x8aoy\xa0&Q?j\xebB$E\xeb\xd1\xfb\xb1c\x106\xebc\xa1\xc2\xc2l\xdd\xcaY\x01;@\xcd\xa9y\xb4E'}\np\x01\xd1\xed\x8ao\xf1\x9e\x14\xf6]t\xe0\x8a\xa0B\x07\x19_\x0f\xae\x891N\xb1\xbflo9\t\xf6CWb\xc3\xc4KQ\xc0\xc6\xb4\x06P7j\x1ce\xbd\x080O\x89~\x9f\x9dd\xd9\xbe2\x96\xa3\x1f\x84\n\x95\x97\x9a\xf0j3/\x0b\xa0Im\xb0\xc8p\xff\x93\xfaO$2\x05\xbe\x14\x8e`\xfc\x80\xdd\xfc\xecs\xa1\xd7f\xdbU\x8f%`\xce\xb1$z\xb5\x12\x9dxn\xbc\n\xc6\x01\x01\xd1\xed\x8ao\x8b\xa5\xf1A{\xfe\xe4\x11$\xe41\xa6Fq\xab\x9f\xff\x89d9\xf0N\xbf\xa7\x1f\x07\x18\xaef\xa8O\xc3\"E\xa3^\x18\xde\xe1\x04\xc8\xdcy\x81\xfe\xad\xb4\x0f\xdaO\x0bag\xbfT\xe5C\x13\xe1\x0e\xcf\xe2\x85f\xf1\x15\xa47\x8b~\xa1dL\x90\x1b\x1f\x81`\xb4\xc8\xae\xff2\xffkJy\x99\xc6\xa9J\xdf\xc4\xaeS_r\xb2\x08\x02\x9d\x1d6v\x82\xcb28-O;U\xa73\xe9\x14\x91\x85\x93\x9b\xb3A$nuI\xc9iD\x8f\xd4D\xb1[T\x12T\xac\xbb\xb57X\x8c\xe2\xdd\x8d*e\xe6\nT\xac\xbf(~\x9d\x11n\x9a2\x94\x8cF\x03\xf9\xf7\x1aD\x13p8\x98t,i/\xe8\x0e\xe6_m\xfe\x99\xe4\xe9B\xfbM\xf1\r\x0c\xe1\xbd\nP\x01\xd1\xed\x8ao\xca\xe8\x1aH<8\x04\xcc\xf1\x1d\x96\xb9\x81\x06\x8f\x15\x1a)\x00\xdft\x9f\xb2}\xccQ*\x0cj=\xa8\n\x04F\x0c\xe6\xdbX\x07\xaa`\xd3U\x92\xa9\x94?\xd2\xf61\xac\xc8\x0fu\xf3uAMW?\xa9)\x05\r:\xcav2\x9f\x07\x97IN^X",
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": "The secret for 'mellon' is 'Welcome to Moria!' and the secret for 'radiance' is 'Life before Death'.",
+                    }
+                ],
             ),
         ],
         "format": None,

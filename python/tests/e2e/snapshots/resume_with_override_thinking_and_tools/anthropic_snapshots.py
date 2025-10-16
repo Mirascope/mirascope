@@ -265,7 +265,42 @@ I've determined that the 100th Fibonacci number can be obtained by calling `_api
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": True,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": """\
+**Calculate the Fibonacci Number**
+
+I've determined that the 100th Fibonacci number can be obtained by calling `_api.compute_fib` with `n=100`. This seems straightforward, and I'm ready to proceed with the calculation using this approach.
+
+
+""",
+                    },
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": b"\n$\x01\xd1\xed\x8ao\x8f\x17\x8d\xc7vp-dj\xac0\xf3\xf8\xa7\x15h \xb6\x99\xff\xed\x02U\x85\xa20\xedNJ`\x9f\n]\x01\xd1\xed\x8aoU\xae\x83z\xf7\xf8cF\x06nN\x19\x94Z'\xe4\xab\xa6\xba\xd9\xbe\xfd9=\xc0\x9d\xcb\x89czZ\x91\xf9\x1d\xbe\x9e\xdc\r\x08>\xd7=\xa4\x93\x084\xdd7\x10\x87L\x12?\x9c\xc1\x84G\xb4\xa3\x92\xe2\x0b\x0b\x10\x18\xcb\x11\xd8\xe7\x19',k\x98\xdbt\x1c\xd6}\xb9\x0e\x00\xdbb\x8f\x86\x9f\x8b\n\xa3\x01\x01\xd1\xed\x8ao3\xd0\xc0S\x8a\xaa\xbeH\x0e7\xa6]Bz\x1c\xf1}\x1d)\xcb\x86\xec,\xa1\x83\x1a\xa2\xc8\x16\xcb|d\xd3\x03#\x9e\x8d\xec\xb5n\x11?\x16\xdb~\x88\xbb\xceg5q\xe8\xc2\xcb\xc7\xa7\xcb;\x1b\x84=\xc9\xee\x97]\x8f[\x84\xdbeXkU\xda\xf7{>\xcc\xeay\x92\xb2RJ\x9e\xfb\\\xe5U\xfd\x1c\xe8w\xe4x\x19\xda\xcc\x15\xaah\xdd\xb5\xa5\x95\xec\x16\xb8\xd9?\x8b\xec\xcd\xc6B\xfd\x1f\x12\xcd];\xcd5\xe6\xe0\xe3uk\x02\xfdM\x9a'\xdcQ\x94\x9cdr\xb1\xef\xd9\x91\xe5\rT\x95#\xbf#\x7f:MwO\xc1\xb7j",
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": {
+                            "id": None,
+                            "args": {"n": 100},
+                            "name": "compute_fib",
+                        },
+                        "function_response": None,
+                        "text": None,
+                    },
+                ],
             ),
             UserMessage(
                 content=[
@@ -339,7 +374,42 @@ I'm now focused on calculating the 100th Fibonacci number.  The initial plan is 
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "video_metadata": None,
+                        "thought": True,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": None,
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": None,
+                        "function_response": None,
+                        "text": """\
+**Computing the 100th Fibonacci**
+
+I'm now focused on calculating the 100th Fibonacci number.  The initial plan is straightforward: I intend to directly use the existing `_api.compute_fib` function, passing in `n=100`. This should give me the desired result efficiently.
+
+
+""",
+                    },
+                    {
+                        "video_metadata": None,
+                        "thought": None,
+                        "inline_data": None,
+                        "file_data": None,
+                        "thought_signature": b'\n$\x01\xd1\xed\x8ao\xebl\xd7\xa6}|6\xbc!A\xc0\x8e\xaa\xf8\xc19BS j~\xd8%\xdcB\xf1\x8d\x18\x1c\xc4\xc4\n]\x01\xd1\xed\x8ao\xf3\xf83\xcd:\xe7%\x8f\xdc\xa8\x97)\xe9b\xb6\xc8\x96\xc9\xe1\xcb\xc7\x0b\x8a\xde\xc9L\x8b\xba$\xa5\xccIX$\x16\x95)?3\x9b=J\xfc\xeaq\x8eDs\x87%D"\xedN\xd1_\xa2\xed\xa2\x85\xf1\xbaF\x90\xadK\xfas*,0X\x1bK\x04\x9b\xe4\xdaP\xecqBH\x87\tLC\xcb\n\xa3\x01\x01\xd1\xed\x8ao66SW\xcf\xa4\x06\xd6\xc6\x1f\x92m6\x0c1\x8b\xec! \x95\x12a\xbbS\x92\x8a/"z*\xbd\x81 9c\x01\xa6\xf1\xd81H\xe6\x88\xb6\xf7\xc8E\xb4w\x0f\x14+\x84V\x00%\xea\'\xb6:\xfad$\x18D\x05\x07;\x7f\xc5\xcd\x03`*{\xaa\xd6\x19a"\xdd\xf3jW\x03\xe4\r\xf6\xba\x8a\x14\x85\xc4a4MT\x92\xf7e\x98\xc1\xaaT\xf2\x1e/\xc0I\t\x94\x96ifXc:\xed3\x81\xf3\x80\\\x0e`o\xdc_\xd2a\xf9@\xa2\xb6\x10x>.\xb6\x9eL\x1b=\xa2_\xd1_\xcc\xc1\x92?$\x8fa\xfe\xc6\xe3\xc8',
+                        "code_execution_result": None,
+                        "executable_code": None,
+                        "function_call": {
+                            "id": None,
+                            "args": {"n": 100},
+                            "name": "compute_fib",
+                        },
+                        "function_response": None,
+                        "text": None,
+                    },
+                ],
             ),
             UserMessage(
                 content=[

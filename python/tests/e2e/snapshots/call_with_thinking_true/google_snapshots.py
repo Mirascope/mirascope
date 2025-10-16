@@ -267,28 +267,29 @@ stream_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Examining Prime Substrings**
+**Refining the Criteria**
 
-Okay, I've got a handle on the prime number generation up to 400. Currently, I'm focusing on efficiently checking each prime number against the substring "79". The plan is to filter for any primes that do include that string.
-
-
-**Identifying Candidate Primes**
-
-I've got the prime list below 400 ready. I'm systematically checking each one to see if "79" appears as a substring. So far, 79, 179 and 379 have been found as primes. My focus has shifted to efficiently searching this sorted list and I'm looking for any pattern or formula to quickly select probable primes with the target substring. I also considered excluding numbers ending in '9' as potential candidates.
+I'm now zeroing in on defining the precise parameters. The critical step is clarifying what constitutes the "79" substring within a prime number under 400. It's a key detail to ensure accurate counting.
 
 
-**Analyzing Substring Presence**
+**Narrowing the Search**
 
-Okay, the prime numbers are already listed, and now, I'm meticulously checking each one. I've streamlined the process to identify any primes containing "79". I'm specifically focused on numbers less than 400. Currently, the primes containing "79" are 79, 179 and 379. It appears I have all the primes.
+I've refined my approach to focus on prime number candidates under 400 containing "79" as a substring. My initial step involves systematically identifying three-digit numbers, in forms like `79X` or `X79`, and checking their primality. The existing lone 2-digit candidate, 79, has been confirmed as prime, so now I'm concentrating on the three digit ones, starting to test the three-digit possibilities methodically.
 
 
-**Calculating the Count**
+**Confirming Primality**
 
-I've carefully listed the primes below 400 and double-checked my work.  After systematic analysis, I'm confident that only 79, 179, and 379 contain "79" as a substring. This makes the total count 3 primes that fit the criteria.
+I've been meticulously sifting through the number set. After confirming 79 as prime, I moved to examining three-digit numbers containing "79". I tested numbers of the `79X` form, such as `790`, `791`, and so forth. I correctly eliminated even numbers. I also identified 797, and am now realizing that it must be discarded since the goal is to only count primes LESS THAN 400. This leaves only 79.
 
-**Finalizing the Prime Count**
 
-I've carefully verified that only 79, 179 and 379 contain "79". I'm certain that the count of primes less than 400 with "79" as a substring is exactly 3. My analysis has been rigorous.
+**Confirming Primality**
+
+I've been meticulous with my search. I confirmed that 79 is prime, so that's a key find. Now, I've narrowed it down to examining three-digit numbers containing "79" within the constraint of being less than 400. Starting with `179`, `279`, and `379`, I'm performing primality tests. I'm focusing my division tests using small primes.
+
+
+**Concluding the Search**
+
+I've methodically checked all possibilities and can now confidently declare the final answer: there are precisely three prime numbers fitting the criteria. The search is complete.
 
 
 """
@@ -297,7 +298,110 @@ I've carefully verified that only 79, 179 and 379 contain "79". I'm certain that
                     ],
                     provider="google",
                     model_id="gemini-2.5-flash",
-                    raw_content=[],
+                    raw_content=[
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Refining the Criteria**
+
+I'm now zeroing in on defining the precise parameters. The critical step is clarifying what constitutes the "79" substring within a prime number under 400. It's a key detail to ensure accurate counting.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Narrowing the Search**
+
+I've refined my approach to focus on prime number candidates under 400 containing "79" as a substring. My initial step involves systematically identifying three-digit numbers, in forms like `79X` or `X79`, and checking their primality. The existing lone 2-digit candidate, 79, has been confirmed as prime, so now I'm concentrating on the three digit ones, starting to test the three-digit possibilities methodically.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Confirming Primality**
+
+I've been meticulously sifting through the number set. After confirming 79 as prime, I moved to examining three-digit numbers containing "79". I tested numbers of the `79X` form, such as `790`, `791`, and so forth. I correctly eliminated even numbers. I also identified 797, and am now realizing that it must be discarded since the goal is to only count primes LESS THAN 400. This leaves only 79.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Confirming Primality**
+
+I've been meticulous with my search. I confirmed that 79 is prime, so that's a key find. Now, I've narrowed it down to examining three-digit numbers containing "79" within the constraint of being less than 400. Starting with `179`, `279`, and `379`, I'm performing primality tests. I'm focusing my division tests using small primes.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Concluding the Search**
+
+I've methodically checked all possibilities and can now confidently declare the final answer: there are precisely three prime numbers fitting the criteria. The search is complete.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": "3",
+                        },
+                    ],
                 ),
                 UserMessage(
                     content=[
@@ -310,7 +414,32 @@ I've carefully verified that only 79, 179 and 379 contain "79". I'm certain that
                     content=[Text(text="I don't remember.")],
                     provider="google",
                     model_id="gemini-2.5-flash",
-                    raw_content=[],
+                    raw_content=[
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": "I don't",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": " remember.",
+                        },
+                    ],
                 ),
             ],
             "format": None,
@@ -338,34 +467,29 @@ async_stream_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**Pinpointing Prime Candidates**
+**Analyzing the Problem**
 
-I'm now zeroing in on the "79" substring constraint. I've switched gears and am using it to refine my prime number search. The goal is the *count*, not the list itself. I'm focusing on efficiency, aiming to avoid unnecessary calculations. The numbers generated must be prime!
-
-
-**Revising Approach to Primes**
-
-My focus has shifted again. I initially built candidates around the "79" substring, but now I'm starting with prime candidates below 400 and testing for the substring. I'm building a list of prime numbers, then looking for "79". I was incorrect when listing the candidates as 790-799 is out of range.
+I'm currently focused on defining the key constraints. Understanding "substring" is essential, specifically that "79" must appear sequentially within the prime number. I'm aiming for clarity around this definition before proceeding with the counting aspect.
 
 
-**Evaluating Candidate Primality**
+**Developing a List**
 
-I'm now methodically evaluating the primality of 79 and 179. I've eliminated some three-digit combinations, recognizing they exceeded the 400 boundary. Currently, I'm verifying the 79 and 179 are prime. With these two numbers, the answer might be quite simple.
-
-
-**Calculating Candidate Counts**
-
-Okay, I've narrowed it down to 79, 179 and 379.  I'm now methodically evaluating each candidate for primality within the given constraints. So far, 79 and 179 are confirmed prime, and I need to check 379. I'm building a concise count and will finish soon.
+I've finalized the list of candidate numbers, systematically ensuring I considered all possibilities less than 400 that contain "79." Now I'm ready to move onto prime number checking for these candidates. The list includes 79, 179, 279, and 379. Next step is determining which of these numbers are primes.
 
 
-**Calculating the Prime Total**
+**Evaluating Candidates**
 
-I'm wrapping up the count of prime numbers, meticulously verifying the primality of each candidate. The process has been thorough, and I've double-checked my work. I've now checked primality for 79, 179 and 379 and I am confident in the list of candidates.  I am finalizing the answer and ensuring there are no errors.
+I'm now verifying the primality of the shortlisted numbers: 79, 179, 279, and 379. 79 is confirmed prime. I'm methodically checking divisibility up to the square root of each number, building on the initial definitions. I've begun prime checks for the remaining candidates.
 
 
-**Refining the Candidate List**
+**Concluding Primality Checks**
 
-I've revised the candidate list based on the "less than 400" constraint, and I'm methodically checking each for primality. I'm taking care not to miss any numbers that fit the criteria. I've narrowed down the list. I've begun prime testing.
+I've completed the primality tests for all candidates.  After careful calculations using divisibility rules and checking up to the square root of each number, 79, 179, and 379 have been confirmed as prime. The number 279, however, proved composite. Now, I have a definitive list of prime numbers.
+
+
+**Calculating the Answer**
+
+I've completed the detailed primality checks. I carefully reviewed all steps, including the initial conditions and constraints. The result of 3 primes, including 79, 179 and 379, seems valid. Now, I'm verifying the final answer to ensure everything aligns with the original problem.
 
 
 """
@@ -374,7 +498,110 @@ I've revised the candidate list based on the "less than 400" constraint, and I'm
                     ],
                     provider="google",
                     model_id="gemini-2.5-flash",
-                    raw_content=[],
+                    raw_content=[
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Analyzing the Problem**
+
+I'm currently focused on defining the key constraints. Understanding "substring" is essential, specifically that "79" must appear sequentially within the prime number. I'm aiming for clarity around this definition before proceeding with the counting aspect.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Developing a List**
+
+I've finalized the list of candidate numbers, systematically ensuring I considered all possibilities less than 400 that contain "79." Now I'm ready to move onto prime number checking for these candidates. The list includes 79, 179, 279, and 379. Next step is determining which of these numbers are primes.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Evaluating Candidates**
+
+I'm now verifying the primality of the shortlisted numbers: 79, 179, 279, and 379. 79 is confirmed prime. I'm methodically checking divisibility up to the square root of each number, building on the initial definitions. I've begun prime checks for the remaining candidates.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Concluding Primality Checks**
+
+I've completed the primality tests for all candidates.  After careful calculations using divisibility rules and checking up to the square root of each number, 79, 179, and 379 have been confirmed as prime. The number 279, however, proved composite. Now, I have a definitive list of prime numbers.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": True,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
+**Calculating the Answer**
+
+I've completed the detailed primality checks. I carefully reviewed all steps, including the initial conditions and constraints. The result of 3 primes, including 79, 179 and 379, seems valid. Now, I'm verifying the final answer to ensure everything aligns with the original problem.
+
+
+""",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": "3",
+                        },
+                    ],
                 ),
                 UserMessage(
                     content=[
@@ -387,7 +614,32 @@ I've revised the candidate list based on the "less than 400" constraint, and I'm
                     content=[Text(text="I don't remember.")],
                     provider="google",
                     model_id="gemini-2.5-flash",
-                    raw_content=[],
+                    raw_content=[
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": "I",
+                        },
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": " don't remember.",
+                        },
+                    ],
                 ),
             ],
             "format": None,
