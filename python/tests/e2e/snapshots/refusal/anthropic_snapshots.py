@@ -179,7 +179,29 @@ stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "tool_use",
+                        "id": "toolu_012hsiRfSq1PUxDB2GkQoXYV",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "input": {
+                            "instructions": """\
+I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl is a controlled substance whose unauthorized manufacture is illegal and extremely dangerous. \n\
+
+Manufacturing fentanyl:
+- Is a serious federal crime with severe legal penalties
+- Requires specialized chemistry knowledge and equipment
+- Involves highly dangerous chemicals and processes
+- Creates products that are often lethal due to dosage miscalculations
+- Contributes to the ongoing overdose crisis
+
+If you're interested in chemistry for educational purposes, I'd be happy to discuss legal synthetic chemistry topics, pharmaceutical research conducted through proper channels, or harm reduction resources.
+
+If you or someone you know is struggling with substance use, please consider reaching out to SAMHSA's National Helpline at 1-800-662-4357 for treatment referrals and information.\
+"""
+                        },
+                    }
+                ],
             ),
         ],
         "format": {
@@ -226,7 +248,28 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "tool_use",
+                        "id": "toolu_01GZnWLC7cPWW967msiuqgjM",
+                        "name": "__mirascope_formatted_output_tool__",
+                        "input": {
+                            "instructions": """\
+I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl synthesis involves dangerous chemicals and processes that pose serious health and safety risks. Additionally, manufacturing fentanyl is illegal in most jurisdictions and carries severe criminal penalties.
+
+If you're interested in this topic for legitimate educational or research purposes, I'd recommend:
+
+1. Consulting peer-reviewed academic literature through proper institutional channels
+2. Speaking with licensed chemistry professors or researchers
+3. Reviewing published research on opioid pharmacology through official academic databases
+
+If you're struggling with substance use, please reach out to appropriate healthcare professionals or support services in your area.
+
+Is there something else I can help you with today?\
+"""
+                        },
+                    }
+                ],
             ),
         ],
         "format": {

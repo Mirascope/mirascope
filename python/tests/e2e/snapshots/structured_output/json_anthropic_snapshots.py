@@ -457,7 +457,21 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "text",
+                        "text": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
+  "rating": 7
+}\
+""",
+                    }
+                ],
             ),
         ],
         "format": {
@@ -626,7 +640,21 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "text",
+                        "text": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
+  "rating": 7
+}\
+""",
+                    }
+                ],
             ),
         ],
         "format": {

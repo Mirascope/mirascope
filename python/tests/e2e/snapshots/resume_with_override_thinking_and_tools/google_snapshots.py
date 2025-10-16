@@ -229,7 +229,23 @@ Let me call the function with n=100.\
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "thinking",
+                        "thinking": """\
+The user is asking for the 100th Fibonacci number. I have access to a function called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided all the required parameters - they want the 100th number, so n=100.
+
+Let me call the function with n=100.\
+""",
+                        "signature": "EsQDCkYICBgCKkBasrLs9AGgNE8DpsyJkUarBc47qsuV2vuK5pWOkUp+5n+VrfOAgYxEe/kY/R7jDdrsn0XlflReLvI5we9jtUTYEgx92RF51igHzURrklMaDCCe8nMcphhphDaGiiIw9pi4jeE2uungo5PGuxcyl8mlS+P5LADAFBSGODvQ+MA7GvQmEz+wbqzkRD1TTkMGKqsCmDe+S81RmBmXWtsfBmnj19Xega+6wnfzlQJnQLH38RY8Y9crWwGvwKnsFtB6RtvN0L41094D0BJXnNeoyhHM+l2lrkemTdv35+qquxmKyp42ycp+4MnNMf1V+H/jpS08f/qQYaz0CJrai41d7l/HtP4gmO9C/rCPAFWccbq+27oMp+gq1Q/wAsgEdOm/dR9s4IBTfa0RQOpICv82/a9+E38ZQS2iiWWrDUy2pgrx6+68x6sPVHb5989qtBM+pKv4uJYzVGfK/FeM+mW2Jpe65zD3caCoRChmPp3P0zIksPqtb5Poq1XBDAvfE/lli3tpLoaxYF2vDLnsTviMRJEmyvlNZM2YeINjF/n/3LwuRoVqZGNbrPtPZfx/R9xINYB1XZbVh/aY3/AwregYAQ==",
+                    },
+                    {
+                        "type": "tool_use",
+                        "id": "toolu_01S12S7ibmewEgYRGTXPycAc",
+                        "name": "compute_fib",
+                        "input": {"n": 100},
+                    },
+                ],
             ),
             UserMessage(
                 content=[
@@ -333,7 +349,23 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "thinking",
+                        "thinking": 'The user is asking for the 100th Fibonacci number. I have a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user wants n=100, so I should call this function with n=100.',
+                        "signature": "EvsCCkYICBgCKkCrF3A23iWsI9CbuXWKSIczp22RwhvKHeSWO49SB3ya+f3ETvP4hEbr1nf+e4W80I0slNZ+lH6KzQSXmn2XloLuEgwX3AcDDfH0zJvglHMaDLtUwVKUt2wBjH2gZyIwii+BKEgqVIfpMS1wLotcxzV2MeHkkIP3DrYvGenP0aWeoGO6yUcfTi0PlyMDjLDNKuIBkAIP0l/anV3UpvaV4hl0Swuhah9FliaD9cyQ7LCSp2OVPBvbIxTVCCQgSXSYU9wmHBU3tWl93fLRs3kZRQIO1iqz8Qi+SV95ppY2KZcIS+gO2PzWbFX4V6oRqvleXeyBnuk9DiKJePIVF7zkm27/1OKThFQzkL+2IZXihi0sm4K9DBzuRH9Uyfzh03ksHWTtM2eA0V72sspgDycy5444k1q9dm/ivDyRi4z81453NkiXlMRQQjycsoBg7XIdxuP+P0y85BuZ/cEnLWx6qASAB8lTJXePJXT3EMkR6pq5onzPORgB",
+                    },
+                    {
+                        "type": "text",
+                        "text": "I'll compute the 100th Fibonacci number for you.",
+                    },
+                    {
+                        "type": "tool_use",
+                        "id": "toolu_01J7hSXkaj2gutTd4eGhfSLs",
+                        "name": "compute_fib",
+                        "input": {"n": 100},
+                    },
+                ],
             ),
             UserMessage(
                 content=[

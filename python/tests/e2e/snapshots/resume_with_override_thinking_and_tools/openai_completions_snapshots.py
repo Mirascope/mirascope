@@ -196,7 +196,23 @@ stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "thinking",
+                        "thinking": 'The user is asking for the 100th Fibonacci number. I have access to a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided a specific value of n = 100, so I have all the required parameters to make the function call.',
+                        "signature": "ErgDCkYICBgCKkCmSmJ0z8YzME0694Uduy3IxFzHjrgZrW2XZtB+cQaGBxJd1DmkESC33gidMCGtM62Kxa4mUZG0HHd4/Xkw2KhKEgxXf4F7QmkLh8Bk/uoaDPnk/kSqR9yIDxVDhyIwlesGH7CtOMrTor8fKpGTHIy3BHB9A6kNmG4E5o2DNDaBzbMRHKjAvqNcuTRTeGN8Kp8CG6BQxeGvR4dSgZ2/CXewkS+ITzNqeZVy+v0zNT9/TsaOqKN2fj3xPWv0rzZIXVTkKWheqw+kAjxVwlUBKTE5TqpxORJ8zhXofyMEM6ytwCCgpvmbz6o6SVZa8bSh02c/r4lWrzmjLbKnRExZGz2/0bZgZJeFKXOmOVy6XJat4vWLy4rMt+8TqL982duBmcUymw+/xyPUsMteykjDlUzXVhmxFJvusRfQ0MCLJigbfxBjIiGXlvY+ajqZiGRcSKnhdMlRdcwJ5M1cU1kvCroOaMT2+h303zFHLN4NhLvNrcUi53HR2dQM4B8SokpzvlBHnylkjgwB2to+5kqPY7IqkBBsPE+wyx8otN/DzklhQiuFkXiV99gb+JRDzV3L+48YAQ==",
+                    },
+                    {
+                        "type": "text",
+                        "text": "I'll compute the 100th Fibonacci number for you.",
+                    },
+                    {
+                        "type": "tool_use",
+                        "id": "toolu_01SR7KDhN2rcEoJLpD5sqTgL",
+                        "name": "compute_fib",
+                        "input": {"n": 100},
+                    },
+                ],
             ),
             UserMessage(
                 content=[
@@ -264,7 +280,19 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "thinking",
+                        "thinking": "The user is asking for the 100th Fibonacci number. I have a function called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the value n=100, so I have all the required parameters to make this function call.",
+                        "signature": "EqMDCkYICBgCKkAXfE8Ma/1W1RMJEJAaONVTPTR5PEkfVgcNZ1GfbHCHXjpakEQyB9FKD6qX5kSpu0kn4D588pTWLlceVUssMvgMEgxA5KWQi/DLlfon4kEaDBTsL7+21aVE9m0p9SIwWkEZXXIfeUJUBtQZhDGRMy7E4rPYBovI1MZD7xuduifYACTgYVOIHzFj3YcAv6wLKooC2E06Iv8I3NTk9YO7tEGsg4IUER85128EPIzKJx+m6lD04SonpPyeuHTQrJecrE6xUqpQMDUAIi/eUaM1RiAHRjiM3kFG9EcI99ANk0DGSZCIMrk59gqIztKhzyA9CtYGPN8/0b05bisSE9ejnv2AmHBKrdBHNxwLBYWVX5TmQMIhHs3IrGmZVK8Rgq+jlbuPy0v9vPjihnV8hG4S7R4meofcx9X18TyKAsADlEUIj0YFBlOVbR2FBxfPauxTOWWXLKCK2mE3Jgzl1Q8TlerbnVTutYCCy77ElmikSGjh7JcMpXtuCNdBbvke6MHabnfmvJgDc1Wv2U6iwEijUU7+OwgmRZGP9jOS71UYAQ==",
+                    },
+                    {
+                        "type": "tool_use",
+                        "id": "toolu_01AWi396Gpcy2Xm2K8HkGnjh",
+                        "name": "compute_fib",
+                        "input": {"n": 100},
+                    },
+                ],
             ),
             UserMessage(
                 content=[
