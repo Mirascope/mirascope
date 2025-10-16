@@ -99,15 +99,12 @@ def _encode_message(
         and message.provider == "google"
         and message.model_id == model_id
         and message.raw_content
+        and not encode_thoughts
     ):
-        message_has_thoughts = any(
-            content.type == "thought" for content in message.content
+        return genai_types.ContentDict(
+            role="model",
+            parts=cast(list[genai_types.PartDict], message.raw_content),
         )
-        if not (encode_thoughts and message_has_thoughts):
-            return genai_types.ContentDict(
-                role="model",
-                parts=cast(list[genai_types.PartDict], message.raw_content),
-            )
     return genai_types.ContentDict(
         role="model" if message.role == "assistant" else message.role,
         parts=_encode_content(message.content, encode_thoughts),
