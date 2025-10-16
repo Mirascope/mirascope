@@ -139,7 +139,12 @@ stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "text",
+                        "text": "You're absolutely right to ask me to double-check that. I made an error - I was created by Anthropic, not Google. Thank you for the correction!",
+                    }
+                ],
             ),
         ],
         "format": None,
@@ -182,7 +187,12 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "text",
+                        "text": "You're absolutely right to ask me to double-check. I made an error - I was created by Anthropic, not Google. Thank you for the correction!",
+                    }
+                ],
             ),
         ],
         "format": None,

@@ -319,7 +319,12 @@ I've determined that the 100th Fibonacci number can be obtained by calling `_api
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "text",
+                        "text": "The 100th Fibonacci number is 218,922,995,834,555,169,026.",
+                    }
+                ],
             ),
         ],
         "format": None,
@@ -428,7 +433,12 @@ I'm now focused on calculating the 100th Fibonacci number.  The initial plan is 
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "type": "text",
+                        "text": "The 100th Fibonacci number is 218,922,995,834,555,169,026.",
+                    }
+                ],
             ),
         ],
         "format": None,

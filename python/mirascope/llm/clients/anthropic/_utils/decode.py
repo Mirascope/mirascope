@@ -1,6 +1,7 @@
 """Anthropic response decoding."""
 
 import json
+from typing import Any, TypeAlias, cast
 
 from anthropic import types as anthropic_types
 from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
@@ -26,6 +27,7 @@ from ....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
+    RawContentChunk,
     RawStreamEventChunk,
 )
 from ..model_ids import AnthropicModelId
@@ -75,11 +77,21 @@ def decode_response(
     return assistant_message, finish_reason
 
 
+ContentBlock: TypeAlias = (
+    anthropic_types.TextBlockParam
+    | anthropic_types.ThinkingBlockParam
+    | anthropic_types.ToolUseBlockParam
+    | anthropic_types.ThinkingBlockParam
+    | anthropic_types.RedactedThinkingBlockParam
+)
+
+
 class _AnthropicChunkProcessor:
     """Processes Anthropic stream events and maintains state across events."""
 
     def __init__(self) -> None:
-        self.current_block_type: str | None = None
+        self.current_block_param: ContentBlock | None = None
+        self.accumulated_tool_json: str = ""
 
     def process_event(
         self, event: anthropic_types.RawMessageStreamEvent
@@ -89,44 +101,105 @@ class _AnthropicChunkProcessor:
 
         if event.type == "content_block_start":
             content_block = event.content_block
-            self.current_block_type = content_block.type
 
             if content_block.type == "text":
+                self.current_block_param = {
+                    "type": "text",
+                    "text": content_block.text,
+                }
                 yield TextStartChunk()
             elif content_block.type == "tool_use":
+                self.current_block_param = {
+                    "type": "tool_use",
+                    "id": content_block.id,
+                    "name": content_block.name,
+                    "input": {},
+                }
+                self.accumulated_tool_json = ""
                 yield ToolCallStartChunk(
                     id=content_block.id,
                     name=content_block.name,
                 )
             elif content_block.type == "thinking":
+                self.current_block_param = {
+                    "type": "thinking",
+                    "thinking": "",
+                    "signature": "",
+                }
                 yield ThoughtStartChunk()
+            elif content_block.type == "redacted_thinking":  # pragma: no cover
+                self.current_block_param = {
+                    "type": "redacted_thinking",
+                    "data": content_block.data,
+                }
             else:
                 raise NotImplementedError
 
         elif event.type == "content_block_delta":
+            if self.current_block_param is None:  # pragma: no cover
+                raise RuntimeError("Received delta without a current block")
+
             delta = event.delta
             if delta.type == "text_delta":
+                if self.current_block_param["type"] != "text":  # pragma: no cover
+                    raise RuntimeError(
+                        f"Received text_delta for {self.current_block_param['type']} block"
+                    )
+                self.current_block_param["text"] += delta.text
                 yield TextChunk(delta=delta.text)
             elif delta.type == "input_json_delta":
+                if self.current_block_param["type"] != "tool_use":  # pragma: no cover
+                    raise RuntimeError(
+                        f"Received input_json_delta for {self.current_block_param['type']} block"
+                    )
+                self.accumulated_tool_json += delta.partial_json
                 yield ToolCallChunk(delta=delta.partial_json)
             elif delta.type == "thinking_delta":
+                if self.current_block_param["type"] != "thinking":  # pragma: no cover
+                    raise RuntimeError(
+                        f"Received thinking_delta for {self.current_block_param['type']} block"
+                    )
+                self.current_block_param["thinking"] += delta.thinking
                 yield ThoughtChunk(delta=delta.thinking)
             elif delta.type == "signature_delta":
-                pass
+                if self.current_block_param["type"] != "thinking":  # pragma: no cover
+                    raise RuntimeError(
+                        f"Received signature_delta for {self.current_block_param['type']} block"
+                    )
+                self.current_block_param["signature"] += delta.signature
             else:
-                raise NotImplementedError
+                raise RuntimeError(
+                    f"Received unsupported delta type: {delta.type}"
+                )  # pragma: no cover
 
         elif event.type == "content_block_stop":
-            if self.current_block_type == "text":
+            if self.current_block_param is None:  # pragma: no cover
+                raise RuntimeError("Received stop without a current block")
+
+            block_type = self.current_block_param["type"]
+
+            if block_type == "text":
                 yield TextEndChunk()
-            elif self.current_block_type == "tool_use":
+            elif block_type == "tool_use":
+                if self.current_block_param["type"] != "tool_use":  # pragma: no cover
+                    raise RuntimeError(
+                        f"Block type mismatch: stored {self.current_block_param['type']}, expected tool_use"
+                    )
+                self.current_block_param["input"] = (
+                    json.loads(self.accumulated_tool_json)
+                    if self.accumulated_tool_json
+                    else {}
+                )
                 yield ToolCallEndChunk()
-            elif self.current_block_type == "thinking":
+            elif block_type == "thinking":
                 yield ThoughtEndChunk()
             else:
                 raise NotImplementedError
 
-            self.current_block_type = None
+            yield RawContentChunk(
+                content=cast(dict[str, Any], self.current_block_param)
+            )
+            self.current_block_param = None
 
         elif event.type == "message_delta":
             if event.delta.stop_reason:

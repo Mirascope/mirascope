@@ -369,66 +369,129 @@ stream_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-I need to find all prime numbers below 400 that contain "79" as a substring.
+I need to find all primes below 400 that contain "79" as a substring.
 
 First, let me think about what numbers below 400 could contain "79" as a substring:
 - Numbers of the form 79X (where X is a digit): 790, 791, 792, 793, 794, 795, 796, 797, 798, 799
 - Numbers of the form X79 (where X is a digit): 179, 279, 379
-- Numbers of the form X79Y (where X and Y are digits): This would give us numbers with at least 4 digits, and the smallest would be 1790, which is above 400.
+- Numbers of the form 79: just 79 itself
 
-Wait, let me be more systematic. Numbers below 400 that contain "79":
-- 79 itself
-- 179
-- 279
-- 379
-- 790, 791, 792, 793, 794, 795, 796, 797, 798, 799 (but these are all ≥ 790 > 400, so none of these count)
+Wait, let me be more systematic. Numbers below 400 that contain "79" as a substring:
+
+Two-digit: 79
+Three-digit: 179, 279, 379, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799
+
+But wait, we're looking for numbers below 400, so 790-799 are too big.
 
 So the candidates are: 79, 179, 279, 379
 
 Now I need to check which of these are prime:
 
 79: Let me check if 79 is prime.
-- Is it divisible by 2? No (it's odd)
-- Is it divisible by 3? 7+9=16, 16 is not divisible by 3, so no
-- Is it divisible by 5? No (doesn't end in 0 or 5)
-- Is it divisible by 7? 79 ÷ 7 = 11.28..., so no
-- Is it divisible by 11? 79 ÷ 11 = 7.18..., so no
-Since √79 < 9, I only need to check up to 7. So 79 is prime.
- \n\
-I'll continue checking 179's primality by testing divisibility by 13. I'll systematically work through potential divisors, checking if 179 can be evenly divided by 13.
+√79 ≈ 8.9
+I need to check divisibility by primes up to 8: 2, 3, 5, 7
+79 is odd, so not divisible by 2
+7 + 9 = 16, not divisible by 3
+79 doesn't end in 0 or 5, so not divisible by 5
+79 ÷ 7 = 11.28..., so not divisible by 7
+So 79 is prime.
 
-Since 179 ÷ 13 results in a non-whole number and √179 is less than 14, I can confirm 179 is indeed prime after exhausting all potential divisors up to its square root.
+179: Let me check if 179 is prime.
+√179 ≈ 13.4
+I need to check divisibility by primes up to 13: 2, 3, 5, 7, 11, 13
+179 is odd, so not divisible by 2
 
-For 279, I quickly determine it's not prime. The digit sum test reveals divisibility by 3, and dividing confirms 279 can be factored into 3 × 93.
 
-Examining 379, I start by checking divisibility. It's an odd number not divisible by 2, and its digit sum doesn't indicate divisibility by 3. I'll continue investigating its potential divisibility by 5.
+1 + 7 + 9 = 17, not divisible by 3
+179 doesn't end in 0 or 5, so not divisible by 5
+179 ÷ 7 = 25.57..., so not divisible by 7
+179 ÷ 11 = 16.27..., so not divisible by 11
+179 ÷ 13 = 13.77..., so not divisible by 13
+So 179 is prime.
 
-After methodically testing divisors up to its square root (primes 7, 11, 13, 17, 19), I confirm 379 is prime.
+279: Let me check if 279 is prime.
+279 is odd, so not divisible by 2
+2 + 7 + 9 = 18, divisible by 3
+Therefore, 279 is not prime.
 
-The final result: 3 primes containing "79" exist below 400 - specifically 79, 179, and 379.\
+379: Checking primality systematically.
+Square root is around 19.5, so I'll test divisibility by primes up to 19
+Odd number, skipping 2
+Digit sum doesn't divide evenly
+Not divisible by 5
+Fails division tests for 7, 11, 13, 17, and 19
+Confirmed as a prime number.
+
+Primes with "79" substring under 400 include 79, 179, and 379 - totaling 3 unique primes.\
 """
                         ),
-                        Text(
-                            text="""\
-Looking at numbers below 400 that contain "79" as a substring:
-- 79
-- 179  \n\
-- 279
-- 379
-
-Checking which are prime:
-- 79: prime
-- 179: prime
-- 279: divisible by 3 (2+7+9=18), not prime
-- 379: prime
-
-3\
-"""
-                        ),
+                        Text(text="3"),
                     ],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[],
+                    raw_content=[
+                        {
+                            "type": "thinking",
+                            "thinking": """\
+I need to find all primes below 400 that contain "79" as a substring.
+
+First, let me think about what numbers below 400 could contain "79" as a substring:
+- Numbers of the form 79X (where X is a digit): 790, 791, 792, 793, 794, 795, 796, 797, 798, 799
+- Numbers of the form X79 (where X is a digit): 179, 279, 379
+- Numbers of the form 79: just 79 itself
+
+Wait, let me be more systematic. Numbers below 400 that contain "79" as a substring:
+
+Two-digit: 79
+Three-digit: 179, 279, 379, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799
+
+But wait, we're looking for numbers below 400, so 790-799 are too big.
+
+So the candidates are: 79, 179, 279, 379
+
+Now I need to check which of these are prime:
+
+79: Let me check if 79 is prime.
+√79 ≈ 8.9
+I need to check divisibility by primes up to 8: 2, 3, 5, 7
+79 is odd, so not divisible by 2
+7 + 9 = 16, not divisible by 3
+79 doesn't end in 0 or 5, so not divisible by 5
+79 ÷ 7 = 11.28..., so not divisible by 7
+So 79 is prime.
+
+179: Let me check if 179 is prime.
+√179 ≈ 13.4
+I need to check divisibility by primes up to 13: 2, 3, 5, 7, 11, 13
+179 is odd, so not divisible by 2
+
+
+1 + 7 + 9 = 17, not divisible by 3
+179 doesn't end in 0 or 5, so not divisible by 5
+179 ÷ 7 = 25.57..., so not divisible by 7
+179 ÷ 11 = 16.27..., so not divisible by 11
+179 ÷ 13 = 13.77..., so not divisible by 13
+So 179 is prime.
+
+279: Let me check if 279 is prime.
+279 is odd, so not divisible by 2
+2 + 7 + 9 = 18, divisible by 3
+Therefore, 279 is not prime.
+
+379: Checking primality systematically.
+Square root is around 19.5, so I'll test divisibility by primes up to 19
+Odd number, skipping 2
+Digit sum doesn't divide evenly
+Not divisible by 5
+Fails division tests for 7, 11, 13, 17, and 19
+Confirmed as a prime number.
+
+Primes with "79" substring under 400 include 79, 179, and 379 - totaling 3 unique primes.\
+""",
+                            "signature": "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",
+                        },
+                        {"type": "text", "text": "3"},
+                    ],
                 ),
                 UserMessage(
                     content=[
@@ -438,17 +501,15 @@ Checking which are prime:
                     ]
                 ),
                 AssistantMessage(
-                    content=[
-                        Text(text="I remember. The primes were: 79, 179, and 379.")
-                    ],
+                    content=[Text(text="I don't remember.")],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[],
+                    raw_content=[{"type": "text", "text": "I don't remember."}],
                 ),
             ],
             "format": None,
             "tools": [],
-            "n_chunks": 8,
+            "n_chunks": 3,
         },
         "logging": [],
     }
@@ -478,53 +539,129 @@ First, let me think about what numbers below 400 could contain "79" as a substri
 - Numbers of the form X79 (where X is a digit): 179, 279, 379
 - The number 79 itself
 
-Wait, I need to be more systematic. Numbers below 400 that contain "79":
+Wait, let me be more systematic. Numbers below 400 that contain "79":
 - 79
 - 179
 - 279
 - 379
-- 790, 791, 792, 793, 794, 795, 796, 797, 798, 799 (but these are all ≥ 790, so they're above 400)
+- 790, 791, 792, 793, 794, 795, 796, 797, 798, 799 (but these are all ≥ 790, so none are below 400)
 
-Actually wait, 790 is above 400, so I don't need to consider any numbers starting with 79 except for 79 itself.
+So the candidates are: 79, 179, 279, 379
 
-So the candidates are:
-- 79
-- 179
-- 279
-- 379
-
-Now I need to check which of these are prime.
+Now I need to check which of these are prime:
 
 79: Let me check if 79 is prime.
-Is 79 divisible by 2? No (it's odd)
-Is 79 divisible by 3? 7+9 = 16, 16 is not divisible by 3, so no.
-Is 79 divisible by 5? No (doesn't end in 0 or 5)
-Is 79 divisible by 7? 79 ÷ 7 = 11.28..., so no.
-Since √79 ≈ 8.9, I only need to check divisibility up to 8.
-Is 79 divisible by 8? No.
+√79 ≈ 8.9, so I need to check divisibility by primes up to 8: 2, 3, 5, 7
+- 79 is odd, so not divisible by 2
+- 79 = 7+9 = 16, and 16 is not divisible by 3, so 79 is not divisible by 3
+- 79 doesn't end in 0 or 5, so not divisible by 5
+- 79 ÷ 7 = 11.28..., so not divisible by 7
 So 79 is prime.
 
 179: Let me check if 179 is prime.
+√179 ≈ 13.4, so I need to check divisibility by primes up to 13: 2, 3, 5, 7, 11, 13
 
 
-I'll systematically test divisibility by small prime numbers. Starting with 2, I see it's an odd number, so not divisible. Moving to 3, the digit sum doesn't divide evenly. 5 is also not a factor since it doesn't end in 0 or 5. Checking 7 and 11 shows no divisibility. I'll continue investigating potential divisors.
+I systematically test divisibility, finding no factors that divide evenly. This suggests 179 is also prime.
 
-Calculating the square root helps limit my search. Since √179 is around 13.4, I only need to check primes up to 13. After thorough testing, 179 is indeed prime.
+Checking 279, I quickly discover it's not prime. The digit sum reveals divisibility by 3, and factoring confirms 279 = 3 × 93.
 
-For 279, I quickly discover it's divisible by 3. The digit sum of 18 confirms this, and dividing shows 93 as the result. Therefore, 279 is not a prime number.
+For 379, I'll methodically check divisibility by primes up to its square root. The initial checks look promising, with no immediate factors emerging.
 
-Examining 379, I methodically test divisibility. It's odd, not divisible by 3, 5, 7, 11, or 13. I'm now checking divisibility by 17.
+After systematically testing divisibility by 2, 3, 5, 7, 11, 13, 17, and 19, I confirm 379 is indeed prime.
 
-Continuing my systematic check, 19 doesn't divide 379 evenly. With √379 around 19.5, I've exhaustively tested potential divisors. 379 is confirmed prime.
+Scanning the results, I find three primes containing "79": 79, 179, and 379.
 
-My investigation reveals three primes containing "79": 79, 179, and 379 - totaling 3 unique numbers.\
+The total count is 3 primes.\
 """
                         ),
-                        Text(text="3"),
+                        Text(
+                            text="""\
+Looking at numbers below 400 that contain "79" as a substring:
+- 79
+- 179  \n\
+- 279
+- 379
+
+Checking which are prime:
+- 79: prime
+- 179: prime
+- 279: divisible by 3 (2+7+9=18), so not prime
+- 379: prime
+
+3\
+"""
+                        ),
                     ],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[],
+                    raw_content=[
+                        {
+                            "type": "thinking",
+                            "thinking": """\
+I need to find all prime numbers below 400 that contain "79" as a substring.
+
+First, let me think about what numbers below 400 could contain "79" as a substring:
+- Numbers of the form 79X (where X is a digit): 790, 791, 792, 793, 794, 795, 796, 797, 798, 799
+- Numbers of the form X79 (where X is a digit): 179, 279, 379
+- The number 79 itself
+
+Wait, let me be more systematic. Numbers below 400 that contain "79":
+- 79
+- 179
+- 279
+- 379
+- 790, 791, 792, 793, 794, 795, 796, 797, 798, 799 (but these are all ≥ 790, so none are below 400)
+
+So the candidates are: 79, 179, 279, 379
+
+Now I need to check which of these are prime:
+
+79: Let me check if 79 is prime.
+√79 ≈ 8.9, so I need to check divisibility by primes up to 8: 2, 3, 5, 7
+- 79 is odd, so not divisible by 2
+- 79 = 7+9 = 16, and 16 is not divisible by 3, so 79 is not divisible by 3
+- 79 doesn't end in 0 or 5, so not divisible by 5
+- 79 ÷ 7 = 11.28..., so not divisible by 7
+So 79 is prime.
+
+179: Let me check if 179 is prime.
+√179 ≈ 13.4, so I need to check divisibility by primes up to 13: 2, 3, 5, 7, 11, 13
+
+
+I systematically test divisibility, finding no factors that divide evenly. This suggests 179 is also prime.
+
+Checking 279, I quickly discover it's not prime. The digit sum reveals divisibility by 3, and factoring confirms 279 = 3 × 93.
+
+For 379, I'll methodically check divisibility by primes up to its square root. The initial checks look promising, with no immediate factors emerging.
+
+After systematically testing divisibility by 2, 3, 5, 7, 11, 13, 17, and 19, I confirm 379 is indeed prime.
+
+Scanning the results, I find three primes containing "79": 79, 179, and 379.
+
+The total count is 3 primes.\
+""",
+                            "signature": "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",
+                        },
+                        {
+                            "type": "text",
+                            "text": """\
+Looking at numbers below 400 that contain "79" as a substring:
+- 79
+- 179  \n\
+- 279
+- 379
+
+Checking which are prime:
+- 79: prime
+- 179: prime
+- 279: divisible by 3 (2+7+9=18), so not prime
+- 379: prime
+
+3\
+""",
+                        },
+                    ],
                 ),
                 UserMessage(
                     content=[
@@ -534,15 +671,22 @@ My investigation reveals three primes containing "79": 79, 179, and 379 - totali
                     ]
                 ),
                 AssistantMessage(
-                    content=[Text(text="I don't remember.")],
+                    content=[
+                        Text(text="I remember. The primes were: 79, 179, and 379.")
+                    ],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[],
+                    raw_content=[
+                        {
+                            "type": "text",
+                            "text": "I remember. The primes were: 79, 179, and 379.",
+                        }
+                    ],
                 ),
             ],
             "format": None,
             "tools": [],
-            "n_chunks": 3,
+            "n_chunks": 5,
         },
         "logging": [],
     }
