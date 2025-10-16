@@ -381,50 +381,56 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         """
         chunk_iter = self.chunk_stream()
 
-        for chunk in chunk_iter:
-            if chunk.type == "text_start_chunk":
+        for start_chunk in chunk_iter:
+            # At the start of this loop, we always expect to find a start chunk. Then,
+            # before proceeding, we will collect from the stream we create (in case the
+            # user did not exhaust it), which ensures we will be expecting a start chunk
+            # again on the next iteration
+            match start_chunk.type:
+                case "text_start_chunk":
 
-                def text_stream_iterator() -> Iterator[TextChunk]:
-                    for chunk in chunk_iter:
-                        if chunk.type == "text_chunk":
-                            yield chunk
-                        else:
-                            return  # Stream finished
+                    def text_stream_iterator() -> Iterator[TextChunk]:
+                        for chunk in chunk_iter:
+                            if chunk.type == "text_chunk":
+                                yield chunk
+                            else:
+                                return  # Stream finished
 
-                stream = TextStream(chunk_iterator=text_stream_iterator())
-                yield stream
+                    stream = TextStream(chunk_iterator=text_stream_iterator())
+                    yield stream
 
-            elif chunk.type == "thought_start_chunk":
+                case "thought_start_chunk":
 
-                def thought_stream_iterator() -> Iterator[ThoughtChunk]:
-                    for chunk in chunk_iter:
-                        if chunk.type == "thought_chunk":
-                            yield chunk
-                        else:
-                            return  # Stream finished
+                    def thought_stream_iterator() -> Iterator[ThoughtChunk]:
+                        for chunk in chunk_iter:
+                            if chunk.type == "thought_chunk":
+                                yield chunk
+                            else:
+                                return  # Stream finished
 
-                stream = ThoughtStream(chunk_iterator=thought_stream_iterator())
-                yield stream
+                    stream = ThoughtStream(chunk_iterator=thought_stream_iterator())
+                    yield stream
 
-            elif chunk.type == "tool_call_start_chunk":
-                tool_id = chunk.id
-                tool_name = chunk.name
+                case "tool_call_start_chunk":
+                    tool_id = start_chunk.id
+                    tool_name = start_chunk.name
 
-                def tool_call_stream_iterator() -> Iterator[ToolCallChunk]:
-                    for chunk in chunk_iter:
-                        if chunk.type == "tool_call_chunk":
-                            yield chunk
-                        else:
-                            return  # Stream finished
+                    def tool_call_stream_iterator() -> Iterator[ToolCallChunk]:
+                        for chunk in chunk_iter:
+                            if chunk.type == "tool_call_chunk":
+                                yield chunk
+                            else:
+                                return  # Stream finished
 
-                stream = ToolCallStream(
-                    tool_id=tool_id,
-                    tool_name=tool_name,
-                    chunk_iterator=tool_call_stream_iterator(),
-                )
-                yield stream
-            else:  # pragma: no cover
-                raise RuntimeError(f"Unsupported chunk type: {chunk.type}")
+                    stream = ToolCallStream(
+                        tool_id=tool_id,
+                        tool_name=tool_name,
+                        chunk_iterator=tool_call_stream_iterator(),
+                    )
+                    yield stream
+
+                case _:  # pragma: no cover
+                    raise RuntimeError(f"Expected start chunk, got: {start_chunk.type}")
 
             # Before continuing to the next stream, make sure the last stream is consumed
             # (If the user did not do so when we yielded it)
@@ -543,50 +549,60 @@ class BaseAsyncStreamResponse(
         """
         chunk_iter = self.chunk_stream()
 
-        async for chunk in chunk_iter:
-            if chunk.type == "text_start_chunk":
+        async for start_chunk in chunk_iter:
+            # At the start of this loop, we always expect to find a start chunk. Then,
+            # before proceeding, we will collect from the stream we create (in case the
+            # user did not exhaust it), which ensures we will be expecting a start chunk
+            # again on the next iteration
+            match start_chunk.type:
+                case "text_start_chunk":
 
-                async def text_stream_iterator() -> AsyncIterator[TextChunk]:
-                    async for chunk in chunk_iter:
-                        if chunk.type == "text_chunk":
-                            yield chunk
-                        else:
-                            return  # Stream finished
+                    async def text_stream_iterator() -> AsyncIterator[TextChunk]:
+                        async for chunk in chunk_iter:
+                            if chunk.type == "text_chunk":
+                                yield chunk
+                            else:
+                                return  # Stream finished
 
-                stream = AsyncTextStream(chunk_iterator=text_stream_iterator())
-                yield stream
+                    stream = AsyncTextStream(chunk_iterator=text_stream_iterator())
+                    yield stream
 
-            elif chunk.type == "thought_start_chunk":
+                case "thought_start_chunk":
 
-                async def thought_stream_iterator() -> AsyncIterator[ThoughtChunk]:
-                    async for chunk in chunk_iter:
-                        if chunk.type == "thought_chunk":
-                            yield chunk
-                        else:
-                            return  # Stream finished
+                    async def thought_stream_iterator() -> AsyncIterator[ThoughtChunk]:
+                        async for chunk in chunk_iter:
+                            if chunk.type == "thought_chunk":
+                                yield chunk
+                            else:
+                                return  # Stream finished
 
-                stream = AsyncThoughtStream(chunk_iterator=thought_stream_iterator())
-                yield stream
+                    stream = AsyncThoughtStream(
+                        chunk_iterator=thought_stream_iterator()
+                    )
+                    yield stream
 
-            elif chunk.type == "tool_call_start_chunk":
-                tool_id = chunk.id
-                tool_name = chunk.name
+                case "tool_call_start_chunk":
+                    tool_id = start_chunk.id
+                    tool_name = start_chunk.name
 
-                async def tool_call_stream_iterator() -> AsyncIterator[ToolCallChunk]:
-                    async for chunk in chunk_iter:
-                        if chunk.type == "tool_call_chunk":
-                            yield chunk
-                        else:
-                            return  # Stream finished
+                    async def tool_call_stream_iterator() -> AsyncIterator[
+                        ToolCallChunk
+                    ]:
+                        async for chunk in chunk_iter:
+                            if chunk.type == "tool_call_chunk":
+                                yield chunk
+                            else:
+                                return  # Stream finished
 
-                stream = AsyncToolCallStream(
-                    tool_id=tool_id,
-                    tool_name=tool_name,
-                    chunk_iterator=tool_call_stream_iterator(),
-                )
-                yield stream
-            else:  # pragma: no cover
-                raise RuntimeError(f"Unsupported chunk type: {chunk.type}")
+                    stream = AsyncToolCallStream(
+                        tool_id=tool_id,
+                        tool_name=tool_name,
+                        chunk_iterator=tool_call_stream_iterator(),
+                    )
+                    yield stream
+
+                case _:  # pragma: no cover
+                    raise RuntimeError(f"Expected start chunk, got: {start_chunk.type}")
 
             # Before continuing to the next stream, make sure the last stream is consumed
             # (If the user did not do so when we yielded it)
