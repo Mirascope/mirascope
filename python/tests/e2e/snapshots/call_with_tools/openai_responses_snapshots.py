@@ -378,7 +378,7 @@ Here are the secrets associated with the passwords:
                 "strict": False,
             }
         ],
-        "n_chunks": 36,
+        "n_chunks": 35,
     }
 )
 async_stream_snapshot = snapshot(
@@ -502,7 +502,7 @@ Here are the secrets associated with the passwords:
                 "strict": False,
             }
         ],
-        "n_chunks": 33,
+        "n_chunks": 32,
     }
 )
 without_raw_content_snapshot = snapshot(

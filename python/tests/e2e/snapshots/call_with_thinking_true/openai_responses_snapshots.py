@@ -489,7 +489,7 @@ In the end, the final answer is simply "3," without any extra information. No wh
             ],
             "format": None,
             "tools": [],
-            "n_chunks": 8,
+            "n_chunks": 6,
         },
         "logging": [],
     }
@@ -633,7 +633,7 @@ I’m outputting the final count: 3 primes, but I want to ensure I've considered
             ],
             "format": None,
             "tools": [],
-            "n_chunks": 8,
+            "n_chunks": 6,
         },
         "logging": [],
     }

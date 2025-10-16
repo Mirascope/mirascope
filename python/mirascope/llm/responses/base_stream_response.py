@@ -40,13 +40,43 @@ if TYPE_CHECKING:
     from ..clients import ModelId, Params, Provider
 
 
-@dataclass
-class RawChunk:
-    raw: Any
-    type: Literal["raw_chunk"] = "raw_chunk"
+@dataclass(kw_only=True)
+class RawStreamEventChunk:
+    """A chunk containing a raw stream event from the underlying provider.
+
+    Will be accumulated on `StreamResponse.raw` for debugging purposes.
+    """
+
+    type: Literal["raw_stream_event_chunk"] = "raw_stream_event_chunk"
+
+    raw_stream_event: Any
+    """The raw stream event from the underlying provider."""
 
 
-StreamResponseChunk: TypeAlias = AssistantContentChunk | FinishReasonChunk | RawChunk
+@dataclass(kw_only=True)
+class RawContentChunk:
+    """A chunk containing provider-specific content that will be added to the `AssistantMessage`.
+
+    This chunk contains a provider-specific representation of a piece of content that
+    will be added to the `AssistantMessage` reconstructed by the containing stream.
+    This content should be a regular python dict for serialization purposes.
+
+    The intention is that this content may be passed as-is back to the provider when the
+    generated `AssistantMessage` is being reused in conversation.
+    """
+
+    type: Literal["raw_content_chunk"] = "raw_content_chunk"
+
+    content: dict[str, Any]
+    """The provider-specific raw content.
+    
+    Should be a Python dict containing only JSON-serializable values.
+    """
+
+
+StreamResponseChunk: TypeAlias = (
+    AssistantContentChunk | FinishReasonChunk | RawStreamEventChunk | RawContentChunk
+)
 
 ChunkIterator: TypeAlias = Iterator[StreamResponseChunk]
 """Synchronous iterator yielding chunks with raw data."""
@@ -161,7 +191,7 @@ class BaseStreamResponse(
         self._thoughts: list[Thought] = []
         self._tool_calls: list[ToolCall] = []
         self._raw_stream_events: list[Any] = []
-        self._last_raw_chunk: Any | None = None
+        self._last_raw_stream_event_chunk: Any | None = None
         self._assistant_message_raw_content: list[dict[str, Any]] = []
 
         # Externally-facing references typed as immutable Sequences
@@ -216,8 +246,6 @@ class BaseStreamResponse(
             self._handle_tool_call_chunk(chunk)
         elif chunk.content_type == "thought":
             self._handle_thought_chunk(chunk)
-        elif chunk.content_type == "raw":
-            self._assistant_message_raw_content.append(chunk.content)
         else:
             raise NotImplementedError
 
@@ -430,8 +458,10 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
             return
 
         for chunk in self._chunk_iterator:
-            if chunk.type == "raw_chunk":
-                self._raw_stream_events.append(chunk.raw)
+            if chunk.type == "raw_stream_event_chunk":
+                self._raw_stream_events.append(chunk.raw_stream_event)
+            elif chunk.type == "raw_content_chunk":
+                self._assistant_message_raw_content.append(chunk.content)
             elif chunk.type == "finish_reason_chunk":
                 self.finish_reason = chunk.finish_reason
             else:
@@ -591,8 +621,10 @@ class BaseAsyncStreamResponse(
             return
 
         async for chunk in self._chunk_iterator:
-            if chunk.type == "raw_chunk":
-                self._raw_stream_events.append(chunk.raw)
+            if chunk.type == "raw_stream_event_chunk":
+                self._raw_stream_events.append(chunk.raw_stream_event)
+            elif chunk.type == "raw_content_chunk":
+                self._assistant_message_raw_content.append(chunk.content)
             elif chunk.type == "finish_reason_chunk":
                 self.finish_reason = chunk.finish_reason
             else:
