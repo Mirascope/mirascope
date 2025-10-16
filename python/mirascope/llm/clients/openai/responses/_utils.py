@@ -32,7 +32,6 @@ from openai.types.shared_params.responses_model import ResponsesModel
 
 from ....content import (
     AssistantContentPart,
-    RawContentChunk,
     Text,
     TextChunk,
     TextEndChunk,
@@ -58,7 +57,8 @@ from ....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
-    RawChunk,
+    RawContentChunk,
+    RawStreamEventChunk,
 )
 from ....tools import (
     FORMAT_TOOL_NAME,
@@ -369,7 +369,7 @@ class _OpenAIResponsesChunkProcessor:
 
     def process_chunk(self, event: ResponseStreamEvent) -> ChunkIterator:
         """Process a single OpenAI Responses stream event and yield the appropriate content chunks."""
-        yield RawChunk(raw=event)
+        yield RawStreamEventChunk(raw_stream_event=event)
 
         if hasattr(event, "type"):
             if event.type == "response.output_text.delta":

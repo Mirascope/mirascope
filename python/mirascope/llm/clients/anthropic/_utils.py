@@ -38,7 +38,7 @@ from ...responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
-    RawChunk,
+    RawStreamEventChunk,
 )
 from ...tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ..base import Params, _utils as _base_utils
@@ -288,7 +288,7 @@ class _AnthropicChunkProcessor:
         self, event: anthropic_types.RawMessageStreamEvent
     ) -> ChunkIterator:
         """Process a single Anthropic event and yield the appropriate content chunks."""
-        yield RawChunk(raw=event)
+        yield RawStreamEventChunk(raw_stream_event=event)
 
         if event.type == "content_block_start":
             content_block = event.content_block
