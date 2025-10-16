@@ -27,6 +27,7 @@ from ....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
+    RawContentChunk,
     RawStreamEventChunk,
 )
 from ..model_ids import GoogleModelId
@@ -138,6 +139,7 @@ class _GoogleChunkProcessor:
             return  # pragma: no cover
 
         for part in candidate.content.parts:
+            yield RawContentChunk(content=part.model_dump())
             if self.current_content_type == "thought" and not part.thought:
                 yield ThoughtEndChunk()
                 self.current_content_type = None
@@ -155,10 +157,6 @@ class _GoogleChunkProcessor:
                 if self.current_content_type is None:
                     yield ThoughtStartChunk()
                     self.current_content_type = "thought"
-                elif self.current_content_type != "thought":
-                    raise RuntimeError(
-                        "Received thought when not processing thought"
-                    )  # pragma: no cover
                 if not part.text:
                     raise ValueError(
                         "Inside thought part with no text content"
@@ -169,10 +167,6 @@ class _GoogleChunkProcessor:
                 if self.current_content_type is None:
                     yield TextStartChunk()
                     self.current_content_type = "text"
-                elif self.current_content_type != "text":
-                    raise RuntimeError(
-                        "Received text part when not processing text"
-                    )  # pragma: no cover
 
                 yield TextChunk(delta=part.text)
 
