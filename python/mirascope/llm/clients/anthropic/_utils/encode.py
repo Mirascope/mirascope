@@ -3,7 +3,7 @@
 import json
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import TypedDict
+from typing import TypedDict, cast
 from typing_extensions import Required
 
 from anthropic import NotGiven, types as anthropic_types
@@ -103,19 +103,14 @@ def _encode_message(
         and message.provider == "anthropic"
         and message.model_id == model_id
         and message.raw_content
+        and not encode_thoughts
     ):
-        message_has_thoughts = any(
-            content.type == "thought" for content in message.content
-        )
-        if not (encode_thoughts and message_has_thoughts):
-            from typing import cast
-
-            return {
-                "role": message.role,
-                "content": cast(
-                    Sequence[anthropic_types.ContentBlockParam], message.raw_content
-                ),
-            }
+        return {
+            "role": message.role,
+            "content": cast(
+                Sequence[anthropic_types.ContentBlockParam], message.raw_content
+            ),
+        }
     return {
         "role": message.role,
         "content": _encode_content(message.content, encode_thoughts),

@@ -77,12 +77,9 @@ def _encode_message(
         and message.provider == "openai:responses"
         and message.model_id == model_id
         and message.raw_content
+        and not encode_thoughts
     ):
-        message_has_thoughts = any(
-            content.type == "thought" for content in message.content
-        )
-        if not (encode_thoughts and message_has_thoughts):
-            return cast(ResponseInputParam, message.raw_content)
+        return cast(ResponseInputParam, message.raw_content)
 
     result: ResponseInputParam = []
 
@@ -196,7 +193,6 @@ def encode_request(
         if param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
         if param_accessor.thinking is not None:
-            thinking = param_accessor.thinking
             if model_id in NON_REASONING_MODELS:
                 param_accessor.emit_warning_for_unused_param(
                     "thinking", param_accessor.thinking, "openai:responses", model_id
@@ -204,7 +200,7 @@ def encode_request(
             else:
                 # Assume model supports reasoning unless explicitly listed as non-reasoning
                 # This ensures new reasoning models work immediately without code updates
-                kwargs["reasoning"] = _compute_reasoning(thinking)
+                kwargs["reasoning"] = _compute_reasoning(param_accessor.thinking)
         if param_accessor.encode_thoughts_as_text:
             encode_thoughts = True
 
