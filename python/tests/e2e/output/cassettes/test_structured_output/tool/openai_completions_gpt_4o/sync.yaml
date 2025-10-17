@@ -1,0 +1,117 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"role":"user","content":"Please
+      recommend the most popular book by Patrick Rothfuss"}],"model":"gpt-4o","parallel_tool_calls":false,"tool_choice":{"type":"function","function":{"name":"__mirascope_formatted_output_tool__"}},"tools":[{"type":"function","function":{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.\nA book with
+      a rating. The title should be in all caps!","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"type":"object"},"strict":true}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1191'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=QspxwEg9Xe2UwL5KxF5k2PEhv7N56CutJ_XhDjg96po-1760731654-1.0.1.1-kVwwDdjEO1tjbqkoCa8OMsNfQJzvTS31qE44icwceyd6L36_iI7hOrngSH.hAg.RSGUdPeNjbXkjF9OmJ5omtXrS4nMHN8c9pPhVyDZUnEw;
+        _cfuvid=utXBhZDlI6O340RyxnsbIupDv3u4bO5_FnF1SpuWTEg-1760731654462-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jFRtb9MwEP7eX2Hd5xalaWm3fENsjKJtoA6YEJki17mkZo5t2RfYVPW/
+        Iztbk70gkQ+Rdc89d8+92LsRYyBLyBiILSfRWDV5v1ZTe6fXmk+XV2d4dPJ22aarsx/arOYXMA4M
+        s/mFgh5Zb4RprEKSRnewcMgJQ9TpcpEsZ9PF4jgCjSlRBVptaTI3kzRJ55PkaJIsHohbIwV6yNjP
+        EWOM7eI/SNQl3kHGkvGjpUHveY2QHZwYA2dUsAD3XnrimmDcg8JoQh1U61apAUDGqEJwpfrE3bcb
+        nPs+caWK+nyW2m+VPL7+norzy83iYvXpavknGeTrQt/bKKhqtTj0Z4Af7NmzZIyB5k3kFkUjHffC
+        WCwq4xpOhGVhWrItFVF78SwsY8Bd3TaoKZQEuxxIksIcshy+fjxll+8uTtnnDyycr1eXJzmMc+At
+        bY3LIdvlUEnnqQgKIucLJyfFbXRTfIisDW2r1vsc9uMcHCep6xyy5R6eKNqPXjvfDIbgsGo9Vy+n
+        w7U2xEOT4nhuHpD9YROUqa0zG/+MCpXU0m8Lh9zHBoMnYztZQUJMDu2TJQLrTGNDV28xppsu0y4e
+        9Dveo+nxA0iGuBrYk+n4lXhFicRl3LLDYgsutlj21H7BeVtKMwBGg6pfqnktdle51PX/hO8BIdCG
+        DbMOSymeVty7OQxPwL/cDl2OgsGj+y0FFiTRhUmUWPFWdbcT/L0nbIpK6hqddTJeUahsgZuZmInN
+        0byE0X70FwAA//8DALE3vfqrBAAA
+    headers:
+      CF-RAY:
+      - 99026ca66f87a374-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 20:07:50 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '740'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '864'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799955'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_fee24631667d4272a215164ff06b549b
+    status:
+      code: 200
+      message: OK
+version: 1

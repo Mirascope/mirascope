@@ -1,0 +1,212 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"}],"model":"claude-sonnet-4-0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '106'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dJDBSsNAEIZfJfznrSSlUdhbEUERxIPSg8iy7k6b1WQ23Z2opeTdJcUi
+        VjwNzPfNzM/s0UVPLTRcawdPsxyZSWaL2byc12VdLaAQPDS6vDFldf26vqrd/fLifH13u72Mj6tu
+        tX6Agux6mizK2W4ICim2U8PmHLJYFii4yEIs0E/7oy/0OZFD0bgpPmwuXCIr5IuXXbFkaVLsgzvD
+        +KyQJfYmkc2RoUHsjQyJ8Q0ybQdiR9A8tK3CcEii9wjcD2IkvhFn6KpScNY1ZA6HQmTzWyiPPJH1
+        /7Hj7LSf+oY6SrY1dffX/6FVc0pHhTjIabpM6T04MhIoQWN6n7fJYxy/AAAA//8DAHQeViSvAQAA
+    headers:
+      CF-RAY:
+      - 990242cacaaac3a1-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 19:39:17 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-10-17T19:39:16Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-10-17T19:39:16Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-10-17T19:39:15Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-10-17T19:39:16Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CUDLWDRdUsTjyWrN4taqF
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '2084'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
+      was created by Anthropic."},{"role":"user","content":"Can you double-check that?"}],"model":"gpt-4o"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '189'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=ArpUX5oiC10wop0z.bfUtexk0DnOGdeA68gigWeU1xk-1760729942-1.0.1.1-HpwZ80mi14vteL_2TOKuSCcazBYrO8DfQkl7ZF9Z7eaRlCR9yhFu0ATyIOSRJPcbbmUauqnbocK5hlWkjgisNSX5T5NGxW9Y4SdewaiEn6g;
+        _cfuvid=Jwpuea6eQDG6bp_P8Cf.nhKpa5JuxqGm5MlxgWVqYy4-1760727602448-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//fFTLbtswELz7Kwie40APv2899hOKoBBW1MphQ3EJcunGCPzvhShLlpq0
+        N3tnd7w7M/THSgipG3kS0mNwVabK7SbDHaLaHcptmWW7Q1sc6912h6065Meyxm1Z1Fulyn2236hM
+        PvUUVP9CxSMN2YBDXXkExqaCHsv3u2xfHI/bfcICA8fQzyjqnEHGZhiqQb2dPUXb79WCCTiUtTHa
+        nuVJfKyEEEI6uKLv5xu8oCGHXq6EuKVm9J56zEZjUkHb8VeqBhm0CUs0sI+KNdlFvYP3iiK7yBXT
+        G34GmchUCsySrqMGTb/Z2fF6Q+siKzbr7LDOdne5EqU8iZd0yXDP5EQXzv8xoi3KQ28E5PsyL/KN
+        qvcNqGKTmBMLXx0mHgwBzvgA/qV4AhVZRvtYar7YgnbUA995mk4NYC0xjBq+/FyAhs7OU/0FkohO
+        Qv7A8CS+i98QxD02or6Kb5ZfPTmtnuU0dLt/mnikJ5N2gxB0YLA8NPeNqUk68GAMmqVh7OOQLefx
+        oimGaoxvlayYDHWeOseVAvWK1Rte55hHCGQXycS2Jc+zpl782HXgx8kpqAFa5GulG7SsW42L0Ab0
+        F62wYj0GvYVoBtllYPI4P4Kxc+iBYyrnz9m9muS9b9aS7+DxfWZr6htUu298QV9T0HwdwtTo2D0e
+        2KDjK2k1CB+Z5AQ8XJZMrpp5n01FN9/RR6tSctKVOkBtxn+DmDI8HaDt4jGWxdPn+uyFT2cm65rH
+        YLY49e83nmdfAV/xTu7/i5qJwTzATTFJGMPS7Q4ZGmDo6W+r2x8AAAD//wMA9X5+LZwFAAA=
+    headers:
+      CF-RAY:
+      - 990242d99a3e6838-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 19:39:18 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '921'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '926'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799949'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_3b9b3c5555c04dfa83cbc0ab9eacb8f7
+    status:
+      code: 200
+      message: OK
+version: 1

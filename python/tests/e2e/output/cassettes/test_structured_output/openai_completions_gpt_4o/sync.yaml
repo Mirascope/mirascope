@@ -1,0 +1,114 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"user","content":"Please recommend the most popular
+      book by Patrick Rothfuss"}],"model":"gpt-4o","response_format":{"type":"json_schema","json_schema":{"name":"Book","schema":{"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"description":"A
+      book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object","additionalProperties":false},"strict":true,"description":"A
+      book with a rating. The title should be in all caps!"}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '929'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=QspxwEg9Xe2UwL5KxF5k2PEhv7N56CutJ_XhDjg96po-1760731654-1.0.1.1-kVwwDdjEO1tjbqkoCa8OMsNfQJzvTS31qE44icwceyd6L36_iI7hOrngSH.hAg.RSGUdPeNjbXkjF9OmJ5omtXrS4nMHN8c9pPhVyDZUnEw;
+        _cfuvid=utXBhZDlI6O340RyxnsbIupDv3u4bO5_FnF1SpuWTEg-1760731654462-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//jJJRa9swEMff/SnEPdvDSUzc+m20HRts3SiDQudiFPlsq5ElTTqXjpDv
+        PuSksbu10Bdj7nf/093/bhcxBrKGgoHoOInequTiRi2estXdbb+9MBn53w/b869yQDSPlxrioDCb
+        BxT0rPogTG8VkjRHLBxywlB1ka/TfLVY5/kIelOjCrLWUpKZZJkusyQ9S9L1UdgZKdBDwX5FjDG2
+        G7+hRV3jExQsjZ8jPXrPW4TilMQYOKNCBLj30hPXBPEEhdGEeux6VwJJUlhCUcLPz1fs+uO3K/b9
+        Ewv/t1+uL0uIS+ADdcaVUOxKaKTzVGneHzQ/ODkptmOa4nNyY6hrBu9L2MclOE5StyUU+X7eisNm
+        8Dw4oQelZoBrbYgHJ0cT7o9kfxpbmdY6s/H/SKGRWvqucsi90WFET8bCSPcRY/ejvcMLx8A601uq
+        yGxxfG6RLw/1YFroRJfnR0iGuJrF00X8Sr2qRuJS+dmCQHDRYT1Jp23yoZZmBqLZ1P9381rtw+RS
+        t+8pPwEh0BLWlXVYS/Fy4inNYbj3t9JOLo8Ng0f3KAVWJNGFTdTY8EEdThH8H0/YV43ULTrr5OEe
+        G1vhZiVWYnOW1RDto78AAAD//wMAu3GC1pgDAAA=
+    headers:
+      CF-RAY:
+      - 99026cd63f29d43b-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 20:07:58 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '873'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '926'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799983'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 1ms
+      x-request-id:
+      - req_bd00dfdecb2e4afb9e375613ed942601
+    status:
+      code: 200
+      message: OK
+version: 1

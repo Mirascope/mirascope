@@ -1,0 +1,387 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"How many primes
+      below 400 contain 79 as a substring? Answer ONLY with the number, not sharing
+      which primes they are."}],"model":"claude-sonnet-4-0","thinking":{"type":"enabled","budget_tokens":8000}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '257'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      CF-RAY:
+      - 99022a51cf87681b-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 19:23:02 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-10-17T19:22:34Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '398000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-10-17T19:23:02Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-10-17T19:22:32Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2398000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-10-17T19:22:34Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CUDKEKjq8mb881UzUDu1m
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '29488'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"max_tokens\":16000,\"messages\":[{\"role\":\"user\",\"content\":\"How
+      many primes below 400 contain 79 as a substring? Answer ONLY with the number,
+      not sharing which primes they are.\"},{\"role\":\"assistant\",\"content\":[{\"signature\":\"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\",\"thinking\":\"I
+      need to find all prime numbers below 400 that contain \\\"79\\\" as a substring.\\n\\nFirst,
+      let me think about what numbers below 400 could contain \\\"79\\\" as a substring:\\n-
+      Numbers starting with 79: 79, 790, 791, 792, ..., 799 (but we only care about
+      those < 400, so just 79, 790, 791, ..., 399 won't work since 790 > 400)\\n-
+      Wait, that's wrong. Numbers starting with 79 and less than 400 would be just
+      79 itself, since 790 > 400.\\n- Numbers with 79 in the middle: like 179, 279,
+      379\\n- Numbers ending with 79: like 179, 279, 379 (these are the same as the
+      middle case for 3-digit numbers)\\n\\nSo let me be more systematic. The numbers
+      below 400 that contain \\\"79\\\" as a substring are:\\n- 79 (two digits)\\n-
+      179 (three digits, 79 at the end)\\n- 279 (three digits, 79 at the end)  \\n-
+      379 (three digits, 79 at the end)\\n\\nWait, let me think more carefully. What
+      about numbers like 790, 791, etc.? These are all \u2265 790 > 400, so they don't
+      qualify.\\n\\nWhat about numbers that have 79 in the middle, like a79b where
+      a and b are digits? For three-digit numbers a79, we get 179, 279, 379 as I listed
+      above. For four-digit numbers, they'd be \u2265 1000 > 400.\\n\\nWhat about
+      numbers like 7a9 where a is some digit? These would be 709, 719, 729, 739, 749,
+      759, 769, 779, 789, 799. But these don't contain \\\"79\\\" as a substring -
+      they contain \\\"7_9\\\" where _ is some other digit.\\n \\nI'll verify the
+      primality of these candidates systematically. I'll start by checking 79 for
+      divisibility. I'll look at its square root and test prime divisors carefully.
+      79 looks promising as a prime number, with no obvious small divisors. I'll need
+      to check divisibility methodically to confirm its prime status.\\n\\nFor 179,
+      I'll apply the same rigorous divisibility testing. I'll check primes up to its
+      square root, finding no factors. This suggests 179 is indeed a prime number.\\n\\nWith
+      279, I quickly discover it's divisible by 3, which immediately disqualifies
+      it from being prime. The digit sum of 18 reveals this non-prime status.\\n\\nNow
+      I'll investigate 379's primality, carefully examining its potential divisors.\\n\\nI
+      systematically test divisibility by primes up to its square root. No prime divides
+      379 evenly, confirming its prime status.\\n\\nScanning the results, I identify
+      three primes containing \\\"79\\\": 79, 179, and 379. The count stands at 3
+      such primes.\\n\\nI carefully examine three-digit numbers, confirming no additional
+      primes with \\\"79\\\" exist below 400. Numbers like 790 and above fall outside
+      the specified range.\\n\\nMy list appears comprehensive: 79, 179, 279, 379.
+      I'm now verifying each number's primality.\\n\\nFor 79, I'll test divisibility
+      by small primes up to its square root. Checking 2, 3, 5, and 7 reveals no factors.
+      The number remains prime.\\n\\nTurning to 179, I'll apply the same methodical
+      divisibility testing, checking primes up to its square root.\\n\\nContinuing
+      the divisibility check, I find no factors at 7, 11, or 13. This confirms 179's
+      primality through systematic elimination.\\n\\nFor 279, the digit sum immediately
+      reveals divisibility by 3. Dividing confirms 3 as a factor, making 279 composite.\\n\\nApproaching
+      379, I'll systematically test divisibility by primes up to its square root,
+      starting with 2, 3, 5, 7, 11.\\n\\nNo prime factors emerge through careful remainder
+      calculations. Each test - 7, 11, 13, 17, 19 - leaves a non-zero remainder. This
+      methodically proves 379's prime status.\\n\\nThe substring search yields three
+      primes: 79, 179, and 379. The count is 3.\",\"type\":\"thinking\"},{\"citations\":null,\"text\":\"Looking
+      at numbers below 400 that contain \\\"79\\\" as a substring:\\n\\n- 79\\n- 179
+      \ \\n- 279\\n- 379\\n\\nNow checking which are prime:\\n- 79: Prime\\n- 179:
+      Prime  \\n- 279: Divisible by 3 (digit sum = 18), so composite\\n- 379: Prime\\n\\n3\",\"type\":\"text\"}]},{\"role\":\"user\",\"content\":\"If
+      you remember what the primes were, then share them, or say 'I don't remember.'\"}],\"model\":\"claude-sonnet-4-0\",\"thinking\":{\"type\":\"disabled\"}}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '11029'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dJDBSsNAEIZfJfznrSS1oXbP6UHE4s2DyLLuDk00Oxt3J1IpeXdJsUgV
+        LzMw3zfMzxwRoqceGq63o6dFjswki9ViWS7rsq5WUOg8NELem7J6DLLbNrlptvXu4e710PjdNt5D
+        QT4Hmi3K2e4JCin288Dm3GWxLFBwkYVYoJ+OZ1/oMJNT07gtEgUKL5QKaSnoYr1RRTUXy764Xm+u
+        MD0rZImDSWRzZGgQeyNjYnyDTO8jsSNoHvteYTwF0kd0PIxiJL4RZ+hqdaPgrGvJuERWusjm0ijP
+        PJH1/7Hz7nyAhpYCJdubOvz1f2jV/qaTQhzlIt5aIVP66BwZ6ShBY36jt8ljmr4AAAD//wMAcsxt
+        C7cBAAA=
+    headers:
+      CF-RAY:
+      - 99022b0b5ddc681b-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 19:23:05 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-10-17T19:23:03Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-10-17T19:23:04Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-10-17T19:23:02Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-10-17T19:23:03Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CUDKGWkAvM3QVLb3HFsCN
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '2827'
+    status:
+      code: 200
+      message: OK
+version: 1

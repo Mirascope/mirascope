@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "List all U.S. states."}], "role": "user"}],
+      "generationConfig": {"maxOutputTokens": 50}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '123'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQUUvDMBSF3/srQp43mcpw+jZ04NBO0ToGIuVq79ZglnS9t7BR9t9N27VLsQ8l
+        3HNyT85XBkLIHzCJSoCR5J34dBMhyvpfadYwGnZCO3LDDHI+e5uv9M7OwrivLslHzFEoEiC0IhZ2
+        LUBrMR6JD+ldOHbnr8E5Jrcaqx1bm6Bu7cfWINfKKErfEMiayhZOV3H08jRbvMvOo0yCeyeOgjam
+        DpAFwQZDZHC1oSsns9xuM47sL5p7W9S1b5tdHqSefDk66WwZdE8a3wz+baUHl6m0D8/j6oqCVnyo
+        2kSzVSQ9GNx7VAsj8JhJTm2xSbn/wOtJcILWcFxiTqoBtsGtQzi8uhgP1xooreNkjpRZQzhPKs8i
+        MwcIY5zHardjej18P0/slGRwDP4AI4gcmzwCAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 17 Oct 2025 19:29:58 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=951
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

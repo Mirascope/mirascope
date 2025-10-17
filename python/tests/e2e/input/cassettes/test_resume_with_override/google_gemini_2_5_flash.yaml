@@ -1,0 +1,168 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"}],"model":"claude-sonnet-4-0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '106'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SQwUoDMRCGX2X5z6nsri1Ibt6qiKfiRSTEZOxGdydrMrGWsu8uWyxixdPAfN/M
+        /MwBQ/TUQ8P1tnha5MhMslgu2rpd1atmCYXgoTHkrambW989xM1L6+9kvb/avO7Wm/tLCwXZjzRb
+        lLPdEhRS7OeGzTlksSxQcJGFWKAfDydf6HMmx6JxU+1srlwiK+Sr5311zdKlOAZ3gelJIUscTSKb
+        I0OD2BspifENMr0XYkfQXPpeoRyT6AMCj0WMxDfiDN00Cs66jszxUIhsfgv1iSey/j92mp3309jR
+        QMn2ZjX89X9o053TSSEWOU+XKX0ER0YCJWjM7/M2eUzTFwAAAP//AwDIbh/erwEAAA==
+    headers:
+      CF-RAY:
+      - 990242971c4fc3a1-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 19:39:08 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-10-17T19:39:08Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-10-17T19:39:08Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-10-17T19:39:06Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-10-17T19:39:08Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CUDLVc4dXCA6pfxsdsbQn
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '2023'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"},
+      {"parts": [{"text": "I was created by Anthropic."}], "role": "model"}, {"parts":
+      [{"text": "Can you double-check that?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '213'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VRwU7jQAy95yvMHKu2WroqEntDsEJIW20FFQJtObiNk8x2Mg4zDjSq+u/MpEpJ
+        YQ6W5ffGfn7eJQBqjTbVKQp59Qv+hQrAro0RYytkJQBdKRQrdPLJPbxdLw8UoW38pJ65BnQEuPJs
+        aiHTgNN5ISAM6DeQsQOElOuVodG6oPXmDGYNYMWGc02+JUhBEIRktddsx0u7tHeAZfhn0OUUos1r
+        DEnJKZkhiENtKYVVA4PBLXNuaDAYq57A/TF/GX6u5dhQ1Ny26ej7jqAybbUv7gk920h7WPydqyOq
+        bUrbUP6RdAPa1qr2QdmMBIPBeLRRVY7LSha8IXvNdWvw5PzQrHePE/xnhwsLmlPoYjL81tffhKna
+        9A/Vu2FYEo2WJm6y+P20UD0j5FRW50TSM0xJwXW441eJcf3WsoOLj+TizeKQnMpg4Ggyno4yg75o
+        BypHvmLr6S6NnKfpW4OzV/oz1/J/tp5PquyyvHpXyT75ANipmmaqAgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 17 Oct 2025 19:39:11 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2912
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,170 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQQU/DMAyF7/0VUc7ttFWMIW5oIFQQYoIKhhAHs3ptRJqUxEUb0/47abtuqegh
+        svxen+1vFzDGV6AykQGh5Zfs3XUY27Vvo2lFqMgJfcs1KzB08nbfzqudhXDT/MQTBiUDJsHk6F6V
+        1+CKUmcoQ0YGhMKMfW7Zrda5xBH3UvbH+iM8zTZaYhPcRvT2fW/ga6GELZ4QrFaN7Tl9XPCjKlSG
+        G9ceB/2ANprX1m31gASOAhxv5ZXRZUWp/kI113VLYdplecwG8mRy0EkTyIEUx2fhv1h77YYK6cP0
+        OLsbQQraNoekN8uUexxosFXPIfBwcSp0nRc03DAeXwQHYB3DFzRWdLByLB2+KB5No7UEW7TzuEFb
+        aWUxyRoP3P1sIXn9nr+d299ZsohWs/voasWDffAHReXY4E0CAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 17 Oct 2025 19:39:20 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1757
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
+      am a large language model, trained by Google."},{"role":"user","content":"Can
+      you double-check that?"}],"model":"claude-sonnet-4-0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '242'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dJFNi9wwDIb/itClF2eY2Z3QktvSw7Klx7KllBI8jiY241iuLLfNDvPf
+        S7KdftKTQM+rV19nnHigiB26aOtATeGUSJt9c7O9abftbo8Gw4AdTmXst7v3ev+WHh+rOz7pG321
+        D/Qy+69oUOdMi4pKsSOhQeG4JGwpoahNigYdJ6Wk2H08X/VK3xayhg4/cH0hBPZQOFalOIOE0Ss0
+        8AA2c+QxPBEcWUC9VSARls3CJni9jm/AJrh7gJ9dwQlZpQEOM9wl9cI5OAOJFe6Zx0gbeOdtOsHM
+        dTXOwlPWkEaYCJRh4HqI1DhP7rS0Kp5rHOBAMLEQOCt0rBHsgauCda6KfR6cslCh9Gw1A0sYQyob
+        vHwyWJRzL2QLJ+yQ0tBrlYQ/QKHPlZIj7FKN0WBdL9qdMaRctVc+USrY3bYGnXWe+nXHwKn/U7C9
+        ciE7/I9daxd/yp4mEhv7dvpX/4vu/N/0YpCr/p5qbw0Wki/BUa+BBDtcHjJYGfBy+Q4AAP//AwA+
+        w6WIdwIAAA==
+    headers:
+      CF-RAY:
+      - 990242ebfe31c3a1-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 19:39:22 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-10-17T19:39:21Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-10-17T19:39:22Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-10-17T19:39:20Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-10-17T19:39:21Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CUDLWc6PtSSxFhUTbMj2u
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '2498'
+    status:
+      code: 200
+      message: OK
+version: 1

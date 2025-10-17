@@ -1,0 +1,76 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
+      by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Respond only with valid JSON that matches this exact schema:\n{\n  \"$defs\":
+      {\n    \"Author\": {\n      \"description\": \"The author of a book.\",\n      \"properties\":
+      {\n        \"first_name\": {\n          \"title\": \"First Name\",\n          \"type\":
+      \"string\"\n        },\n        \"last_name\": {\n          \"title\": \"Last
+      Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}"}], "role": "user"}, "generationConfig":
+      {"responseMimeType": "application/json"}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1329'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WRXU/CMBSG7/crml6D4SOIekcEI0FgwqIm1piGdVvD1i7tWQIu+++2+4BNd7E0
+        73nO13tyByF8oMLnPgWm8QP6NApCefm3MSmACTCBRjJiShVc2erLW2+DADvZJJwTgRDBwCFmxAgE
+        e88LtJmtF2j7hOz7fbmZE9yrOJpBJJUFy0QrBVxp+BY0qfNdCoofjnWKJWLaAXYSoiDTmmALFHVl
+        RYGL0BJTIgrcmra4vL961x2VjJldIJE+ixu8aAAzleA62jGqpbDY3tu6+BLlwmcnIw+cpkFZGmea
+        hmzNgBq36cVTnCqZpODJIxOPMivdHg+nVbXWdTrAZFTHQQKNu6HBXe9fYT03bXncPlvromZLGnM4
+        21W8xYeHW07An7kaL5yWZdicLQsj6M44HN87tWmVj29MaV4ZFrLEWNgf3Uz6gTlgVHbEiulUCs2W
+        vmXmq5cz3exft6tb/2e6dIdB4J5na+wUzi8W0XaFuQIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 17 Oct 2025 20:07:40 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2355
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,152 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in BookSummary format for a
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1113'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"get_book_info\",\"args\": {\"isbn\": \"0-7653-1178-X\"}},\"thoughtSignature\":
+        \"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\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        189,\"candidatesTokenCount\": 29,\"totalTokenCount\": 614,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 189}],\"thoughtsTokenCount\": 396},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"xqPyaOq3E4Tg_uMPhNSdmAY\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 17 Oct 2025 20:15:04 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2822
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please look up the book with ISBN 0-7653-1178-X
+      and provide detailed info and a recommendation score"}], "role": "user"}, {"parts":
+      [{"thoughtSignature": "CiQB0e2Kb4iXOVFaLFYd_PQqBSYXiS8HLgB_R28IqoN0TVOn4PYKeQHR7Ypvs72Wd_T8sQ9X1RJltjcQULqUrEcSA2FC3Fqck0kDdO61JyYmyGIMZndlFQXZV1qCB3Id3Yi3B0YcbCkkhr-FZXuxUa0CnO0tr2g61NeeRyz2G67GaAaYAcxph6DRV2VsZp1v7D5KTtm9H9TkMm97he0BXNwK8wEB0e2Kb-l3I_o3uwS6GytEBE5Is4SKLQM2YL0S7QwSaNSjZLRC5rzLJMimsd-johACRyPWgkpk846rDIacQaIMYro76nJNRMWLmH4hnLZCSygYJQOtYK-KEYzjGvvEt05sp2d6FhymauXdVeABn3_WwJAqjznSL4U9CsDtHw2RDl9Fk5YAqfBeJPNQsJ4PDNIuRSjnW0KkOdBaHWTBDewqWLtholXeo_RFpr-tf2jKhFNKZkznzFqWq36AZbzaPFkoX09d8lKpj4j9pQXJAcQ__BR7tVp6g6G6meFIiLZtWUdJcwlCS7_rOD4Bo3BgyZEaixsKggIB0e2Kb3LiGasGD_X-uxGDhNZgrqsypJG-c4LkXFt3h-7QX7x80v0kyf-gGblEp8qNEb_SOKfP8ba_YqRCbGBDKGDGG-rpX7qoSbdrACKlJVnSfrAFvuFa_rbFz6bBHDjEpteNyuinypmOJHLPIt7VKR-WZjK_c1njYGg-AqvHubXt63mdlVPkHfMhDSW-RwsQFXZgX78qTO92CJa_hdCS4SQdSSFN8tpbEZZQz6CiXQOR96kC7tDML01vhod0KZmT0U6QG8uvPszvZRDgc2DUa6PfUglrD9EugqPofHNVOHW0CVrh-GKDjw_bxKLscy_B9wGHIrwbj2dkiOuIG2eGMSUK1gEB0e2Kb_nQMMU_MsBq78R1TJJC5MocrhGRM6N1WnyqzjP_D22AnRgtFwfzMvdsXCN_HE9H81tl5vjkoEqMCZCoYvby9laLcXFB7txDXjFrpALNzia-Tuwaxy_v6TsOzx-fg-pD-JpVyIplDHKqnXMXyQm9Z85mT0hr0hGa-XlSw0TE0inrPL7W_gwGGAYs-mOGc9K4ozkvY5aqWrWHAfE_RM80HXKi988E3P9NHJIUwBQlxRuyDSwFRF0lY-ZIx9GRVMVzRA4amgU6YSCe4tI1Tb5wFJR4CvIBAdHtim9jwWWwJzOJXKm38jHH_x0Stnwvuws-STh5x3EIImJt7iS3JtqQX2SWzluL_aumW--Qc1YRaP2uZXeADMGzQiMuIfz8fR-DuXRqMFf0nsQwHZdKoLeztXT0ktGctW895lzOb6I6C9-2qC-bCcTnp_ueJ69i4SVxxYkOP41Ea0XGNOR4T4DAj0OMNoowcQPYwmHM5FD4vzWibquRoVluc1ALUNPCZ6RTMkNmoui8sWx_zUhDKKsubfuWU1PVXD1cuSAE9tZfNub1qXNnTXpX2wXOreBIO2uloVTiCihBwOr25mLi3apYmw05_luPJr4K6QEB0e2Kb8jObL6P6EtTDjYTzuz9UK6JPnSegIeoKSjo6VQjtc0wM758gcZ8LJK1ddMFJmOVf1mBVDOoRtzXI8z6DhhUJV9L9i9u7gD08yipvCqyWRRkIr_h7toW0hXEEd5H9anvjZTkl9XmTe7qN1qTiP9p9rkHdzOR5SyKs2hGCmdSVxNZVLJovUHY0ARLM_GxDpgtwV8W8X9LWTbu6KOChPSRBfYQQI1Y8Z1yT_RJLUEgNSR9gLPfyUztZo3PHOzCmLSUaFaMJoM07xUV2IXlnQPcfDxy3i5tnhE-anZ9fi2kamRsMSYH-greAQHR7YpvQZMoroyBpmxORd4MLGlNW7sQbHzjmewIW5KpGSD15WKnbevotj3KYtmDNYX1SwR9grXa217GvIa7vOgELbuckc_JqrqhVmAC_Bsekpoud0cwqWEyNJLGAHsG9V69D9sau_Ff5UlzDLZttWDkLc-wC-zADkpaGOggFWi9uHtpxvsdadnVP84o4rgmYLcMskRa1We2RqBeILikKJmv5Ybs6q1SZXwCDDTGJs0AzqRR1P7znfpLoAqxBpuglx4oD7AiU7RbEdQJmjUrcVeTOLrxb4GSRmiMGzYdeQqmAQHR7YpvY15rpuHbAPKEQZ51RTEkPt5EYsWZ3Qi4pDQJ_vp1qOcq7hg7qaXFGTXlcdah05R49eTN8R27RE54qaWat44WbiSapBBOJyPj-ih-U5wqTAl3DstRG4CVQQFeJeCTz2KKdLFeoKgVgh9W1Z-1VRp_CRZZ84eHRCLxUhHy_e9t6oQAxANOFT9JAO8FIvJsfcjcfkVUVmEAzWeDpsV2wwCPP5cKoQEB0e2Kb-AUfYN7hVYGToLZgHzgsRPvPD5ULruNz7c--LQm79LdgV6jq-NmXWW7XgM2r9lzo7j4irUqM69nOsoGPTDFfXCqCYbeJ0ceTRASp1Gj57MQNnBE51XclR-Nxi3i_BUgFhA2SnBLBnwntcovqHnD-RJIT0OMO1FQWYjxcONwjipwLgs6CY4WbZ2kSjpb_6qu_OZNibHTvl6oKxbGfA==",
+      "functionCall": {"args": {"isbn": "0-7653-1178-X"}, "name": "get_book_info"}}],
+      "role": "model"}, {"parts": [{"functionResponse": {"name": "get_book_info",
+      "response": {"output": "Title: Mistborn: The Final Empire, Author: Brandon Sanderson,
+      Pages: 544, Published: 2006-07-25"}}}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in BookSummary format for a
+      final response.", "name": "__mirascope_formatted_output_tool__", "parameters":
+      {"properties": {"title": {"title": "Title", "type": "STRING"}, "author": {"title":
+      "Author", "type": "STRING"}, "pages": {"title": "Pages", "type": "INTEGER"},
+      "publication_year": {"title": "Publication Year", "type": "INTEGER"}}, "required":
+      ["title", "author", "pages", "publication_year"], "type": "OBJECT"}}, {"description":
+      "Look up book information by ISBN.", "name": "get_book_info", "parameters":
+      {"properties": {"isbn": {"title": "Isbn", "type": "STRING"}}, "required": ["isbn"],
+      "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig": {"mode": "ANY"}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '4016'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"pages\": 544,\"publication_year\":
+        2006,\"author\": \"Brandon Sanderson\",\"title\": \"Mistborn: The Final Empire\"}},\"thoughtSignature\":
+        \"CiQB0e2KbxrA3LHPc39WOLixaDTQPvDPjopcoClXeOJjj7puwSUKewHR7YpvimU5ApERm62GJAQzkEptaqUuh+DfQt6ORUMlEydMu9NzZCI555j2nCzC0e8NkKx0/iwXtUl4h6xN7EfSAebHBE1lf/GRoMbFyAQWSMuuqhRXjBDWuVfXhGrlYPz7HReEAr/spBNCQvPzyDyrwzQKEk4m0207EwrgAQHR7YpvbENLKOqpMjwKwo9Hz+Z8ZRgKxwmy0jX34TtFs1By0jJf9lj6yVdP6MaQcyGfvEfg0HuFr4WnL7KKgTEPUqgMTD/xGaNLx1aIKxnMGob2ZQyt6OOkHIJBKtVXZzLHhDi7Q6qN+JtlwcjldBSa2MkzFCrouognVZH4lITrcI83BNXqqxI8bFEO1NW5vLzZ8Uh0JJrT8H+Eoo2TO1241ugBJtqefBE4S0/974wswJ/J0Vhf0Knno+bFka+yLlLYATpjTPRPMb93Ie90tLownwkOc/qk3sloHJC0kqdWCqsBAdHtim+VLQS2w7CJxwgNWiPHk9b7p3PikOHuFKgIsemwEgt3agttd28opqMGW6ODf3WCnVsUqgz+bu69N9pNWQxNOcoKk64ZaBprBX0ngZJOyd7yqk5lRs4/0h0MYxKYnVtwd4HdbnKAGeLHBEzBZcdXhe9MY+oulnpfnUsf965r0SGenSAJ2nMHkH8FjZ+hBbM9kSHSYOszFd6YRQjvozIL83NcwV3NJ6aNCrEBAdHtim8MOZ+qrHI11Yl86xUvnGonRt03En4gihR94CrWt/mPAy1k9UqYAcngh3GOtKL+oQ5LLMxjBONcQfMxhR+CGdG+ZfXZpb0V4zc13ZNkyiy3v6ocK3FKgKrJJIeUk4ibY4NXcqj6rkjte6HrHyJJUKDkRTZBbRkOqSViV05tcApIspIKFDSahhTQ+my40xh0DJxbfilLaQ27rj3FQEdnUCkUrYGc+qyDuxYQ4mudCusBAdHtim9Xpjl8f+Oh8XFsEtVrrY8dqh8hXJWPBo+0e6wMAbLi471Ogbc7uzDUvooXr4MMmYwOnefB9mo2Lm0GzeYHu8wNf4BAGmVO4keuwvZsFd7gWhpsYn5g+9sTfhDRt/ttC0LvjZ/Iom78yL6C1u5LN67Bz4kyxkE8yZjlOZTQFhdocioWOusIKmgocPWXllXex3GRUEYc5aqLSLa8JVaBSIEJiSPCh6CF70C26Q11AbHZ4ccFZTvh/DSed+CIsPblXlZfR4TI9dygcMDTIOTrMvhVDtlyCD7i0GJA51EUxMcU+V8ymGQzuwqtAQHR7Ypv2JubWYwO9yDWrFPEO5w00s4BmSyZcppbp/NzJ53fXkkedOA6qLclrlHMf5YBbyXo/gai2qs5n7cn2mfWPYafQ5q0QR7iJVB17mFYY476Hnq+SVEFdvqCTgelIf0kkmGnMqGIbUkq+opAm3J07N+piXiyriaw6pgQR66XfvaRUm9KVfrIqKUH/5KkcdcflZLF/U3cJOeFrVpMoR32vCwbJBD3WfKA3hGmCrgBAdHtim8T9jIZkfJShS3dBeCDM/g7Xw39MshhWCzpWbxLO5pbWN8y0boBK/uar5XlXuGwtFuuLqWnqgQCOBh2+m6vOa1aobz6hoJ9lVaGaL7S/rjopi5yZ4pl7g/P30AfQdJllCPOE/GE7bomVWsjZo+RE1LSg7ABT8yHmI8l5VLNR+NFOYt9gWnEhbgILsOivLU1Hrl62tc/xOxVgxR/JYYVciYAzXi525eENeu4LNj+R3TIuyljjAprAdHtim/tLTu9yNx9OX2ja0QPE2G7YEMX8DPw1d7/HX9n9IxRoWGHZts9m3N+fPEd25be2J5nUOHCO0YuvHKfi7vUGRiMomaKbqZBpc5jA+Lla4RR33MSvYlAK7n53u8lY7aXXeFaqFaDiu8=\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        662,\"candidatesTokenCount\": 49,\"totalTokenCount\": 1043,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 662}],\"thoughtsTokenCount\": 332},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"yaPyaI-CEfXj_uMP5pOgWQ\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 17 Oct 2025 20:15:06 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2217
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
