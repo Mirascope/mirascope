@@ -71,7 +71,7 @@ def decode_response(
         content=parts,
         provider="openai:completions",
         model_id=model_id,
-        raw_content=[],
+        raw_content=[message.model_dump(exclude_none=True)],
     )
 
     return assistant_message, finish_reason

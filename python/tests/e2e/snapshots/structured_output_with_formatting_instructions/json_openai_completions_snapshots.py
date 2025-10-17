@@ -39,7 +39,19 @@ lucky number 7.\
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
+}\
+""",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": {
@@ -97,7 +109,19 @@ lucky number 7.\
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": "Patrick Rothfuss",
+  "rating": 7
+}\
+""",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": {

@@ -18,7 +18,13 @@ sync_snapshot = snapshot(
                 content=[Text(text="4200 + 42 equals 4242.")],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": "4200 + 42 equals 4242.",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": None,
@@ -37,7 +43,13 @@ async_snapshot = snapshot(
                 content=[Text(text="4200 + 42 equals 4242.")],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": "4200 + 42 equals 4242.",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": None,
