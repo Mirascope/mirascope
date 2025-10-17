@@ -62,7 +62,15 @@ from .exceptions import (
     ToolNotFoundError,
 )
 from .formatting import Format, FormattingMode, Partial, format
-from .messages import AssistantMessage, Message, SystemMessage, UserMessage
+from .messages import (
+    AssistantContent,
+    AssistantMessage,
+    Message,
+    SystemContent,
+    SystemMessage,
+    UserContent,
+    UserMessage,
+)
 from .models import Model, model
 from .prompts import prompt
 from .responses import (
@@ -102,6 +110,7 @@ from .tools import (
 
 __all__ = [
     "APIError",
+    "AssistantContent",
     "AssistantContentChunk",
     "AssistantContentPart",
     "AssistantMessage",
@@ -149,6 +158,7 @@ __all__ = [
     "Stream",
     "StreamResponse",
     "StreamResponseChunk",
+    "SystemContent",
     "SystemMessage",
     "Text",
     "TextChunk",
@@ -170,6 +180,7 @@ __all__ = [
     "ToolNotFoundError",
     "ToolOutput",
     "Toolkit",
+    "UserContent",
     "UserContentPart",
     "UserMessage",
     "call",
