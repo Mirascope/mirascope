@@ -27,7 +27,7 @@ from ....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
-    RawContentChunk,
+    RawMessageChunk,
     RawStreamEventChunk,
 )
 from ..model_ids import AnthropicModelId
@@ -67,7 +67,10 @@ def decode_response(
         content=[_decode_assistant_content(part) for part in response.content],
         provider="anthropic",
         model_id=model_id,
-        raw_content=[part.model_dump() for part in response.content],
+        raw_message={
+            "role": response.role,
+            "content": [part.model_dump() for part in response.content],
+        },
     )
     finish_reason = (
         ANTHROPIC_FINISH_REASON_MAP.get(response.stop_reason)
@@ -92,6 +95,7 @@ class _AnthropicChunkProcessor:
     def __init__(self) -> None:
         self.current_block_param: ContentBlock | None = None
         self.accumulated_tool_json: str = ""
+        self.accumulated_blocks: list[ContentBlock] = []
 
     def process_event(
         self, event: anthropic_types.RawMessageStreamEvent
@@ -196,9 +200,7 @@ class _AnthropicChunkProcessor:
             else:
                 raise NotImplementedError
 
-            yield RawContentChunk(
-                content=cast(dict[str, Any], self.current_block_param)
-            )
+            self.accumulated_blocks.append(self.current_block_param)
             self.current_block_param = None
 
         elif event.type == "message_delta":
@@ -206,6 +208,17 @@ class _AnthropicChunkProcessor:
                 finish_reason = ANTHROPIC_FINISH_REASON_MAP.get(event.delta.stop_reason)
                 if finish_reason is not None:
                     yield FinishReasonChunk(finish_reason=finish_reason)
+
+    def raw_message_chunk(self) -> RawMessageChunk:
+        return RawMessageChunk(
+            raw_message=cast(
+                dict[str, Any],
+                {
+                    "role": "assistant",
+                    "content": self.accumulated_blocks,
+                },
+            )
+        )
 
 
 def decode_stream(
@@ -216,6 +229,7 @@ def decode_stream(
     with anthropic_stream_manager as stream:
         for event in stream._raw_stream:
             yield from processor.process_event(event)
+    yield processor.raw_message_chunk()
 
 
 async def decode_async_stream(
@@ -227,3 +241,4 @@ async def decode_async_stream(
         async for event in stream._raw_stream:
             for item in processor.process_event(event):
                 yield item
+    yield processor.raw_message_chunk()

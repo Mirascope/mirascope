@@ -4,7 +4,7 @@ from . import _utils
 from .base_stream_response import (
     AsyncChunkIterator,
     ChunkIterator,
-    RawContentChunk,
+    RawMessageChunk,
     RawStreamEventChunk,
     StreamResponseChunk,
 )
@@ -43,7 +43,7 @@ __all__ = [
     "ContextStreamResponse",
     "FinishReason",
     "FinishReasonChunk",
-    "RawContentChunk",
+    "RawMessageChunk",
     "RawStreamEventChunk",
     "Response",
     "RootResponse",

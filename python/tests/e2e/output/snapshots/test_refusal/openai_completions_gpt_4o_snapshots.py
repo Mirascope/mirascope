@@ -27,13 +27,11 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "refusal": "I'm very sorry, but I can't assist with that request.",
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                raw_message={
+                    "refusal": "I'm very sorry, but I can't assist with that request.",
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": {
@@ -71,13 +69,11 @@ async_snapshot = snapshot(
                 content=[Text(text="I'm very sorry, but I can't assist with that.")],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "refusal": "I'm very sorry, but I can't assist with that.",
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                raw_message={
+                    "refusal": "I'm very sorry, but I can't assist with that.",
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": {
@@ -114,7 +110,7 @@ stream_snapshot = snapshot(
                 content=[Text(text="I'm sorry, I can't assist with that request.")],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {
@@ -154,7 +150,7 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {

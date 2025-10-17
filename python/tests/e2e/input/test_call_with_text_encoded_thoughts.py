@@ -63,7 +63,7 @@ def messages(provider: llm.Provider, model_id: llm.ModelId) -> list[llm.Message]
             ],
             provider=provider,
             model_id=model_id,
-            raw_content=[{"is_dummy_for_testing_purposes": True}],
+            raw_message={"is_dummy_for_testing_purposes": True},
         ),
         llm.messages.user("Please tell me what the number is."),
     ]

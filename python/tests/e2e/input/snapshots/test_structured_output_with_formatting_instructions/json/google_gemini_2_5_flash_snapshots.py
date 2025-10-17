@@ -39,26 +39,29 @@ lucky number 7.\
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[
-                    {
-                        "video_metadata": None,
-                        "thought": None,
-                        "inline_data": None,
-                        "file_data": None,
-                        "thought_signature": None,
-                        "code_execution_result": None,
-                        "executable_code": None,
-                        "function_call": None,
-                        "function_response": None,
-                        "text": """\
+                raw_message={
+                    "parts": [
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
 {
   "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
 }\
 """,
-                    }
-                ],
+                        }
+                    ],
+                    "role": "model",
+                },
             ),
         ],
         "format": {

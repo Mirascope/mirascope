@@ -29,7 +29,7 @@ test_snapshot = snapshot(
                         content=[Text(text="4200 + 42 equals 4242.")],
                         provider="openai:responses",
                         model_id="gpt-4o",
-                        raw_content=[
+                        raw_message=[
                             {
                                 "id": "msg_0d6a9ea95ee935160068f292323dc48190a48314e7ab483b97",
                                 "content": [

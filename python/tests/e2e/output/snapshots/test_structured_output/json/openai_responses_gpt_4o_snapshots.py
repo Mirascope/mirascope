@@ -90,7 +90,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_05dc1affd4c2e1a70068f2a20f37a48196a31e941a28eb5801",
                         "content": [
@@ -283,7 +283,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_01d989b385e7efe30068f2a22af958819090d76fe43d042bf6",
                         "content": [
@@ -475,7 +475,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_067340a8a7e35f8c0068f2a250234c8190bd8f3120538c1b1d",
                         "content": [
@@ -668,7 +668,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0d25d69e230eec080068f2a26b0a30819782b7b8ca95defbc3",
                         "content": [

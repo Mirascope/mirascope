@@ -33,22 +33,20 @@ lucky number 7.\
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "role": "assistant",
-                        "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_IVj6CSk0DvGckVkrwwJfYL6T",
-                                "function": {
-                                    "arguments": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',
-                                    "name": "__mirascope_formatted_output_tool__",
-                                },
-                                "type": "function",
-                            }
-                        ],
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "annotations": [],
+                    "tool_calls": [
+                        {
+                            "id": "call_IVj6CSk0DvGckVkrwwJfYL6T",
+                            "function": {
+                                "arguments": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',
+                                "name": "__mirascope_formatted_output_tool__",
+                            },
+                            "type": "function",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {

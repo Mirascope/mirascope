@@ -92,10 +92,12 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": """\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -107,9 +109,10 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """,
-                        "type": "text",
-                    }
-                ],
+                            "type": "text",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -278,10 +281,12 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": """\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -291,9 +296,10 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """,
-                        "type": "text",
-                    }
-                ],
+                            "type": "text",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -463,10 +469,12 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "text",
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -478,8 +486,9 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """,
-                    }
-                ],
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -648,10 +657,12 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "text",
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -661,8 +672,9 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """,
-                    }
-                ],
+                        }
+                    ],
+                },
             ),
         ],
         "format": {

@@ -33,7 +33,7 @@ lucky number 7.\
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_08989a7358f86a130068f29e10b5748194801eeb8bb7890edd",
                         "content": [

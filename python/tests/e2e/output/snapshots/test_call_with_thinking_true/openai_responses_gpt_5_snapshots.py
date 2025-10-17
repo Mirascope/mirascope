@@ -62,7 +62,7 @@ I also re-checked the primality of both 179 and 379, confirming they are indeed 
                     ],
                     provider="openai:responses",
                     model_id="gpt-5",
-                    raw_content=[
+                    raw_message=[
                         {
                             "id": "rs_0082116a5a2628830068f2975e0e08819087ca8472035130bd",
                             "summary": [
@@ -134,7 +134,7 @@ I also re-checked the primality of both 179 and 379, confirming they are indeed 
                     content=[Text(text="I don't remember.")],
                     provider="openai:responses",
                     model_id="gpt-5",
-                    raw_content=[
+                    raw_message=[
                         {
                             "id": "rs_0082116a5a2628830068f29777f1cc8190b6645119f231c826",
                             "summary": [],
@@ -216,7 +216,7 @@ I checked the number 397, which doesn't contain the substring "79." The only can
                     ],
                     provider="openai:responses",
                     model_id="gpt-5",
-                    raw_content=[
+                    raw_message=[
                         {
                             "id": "rs_0cce3b068d5493670068f297e2d0d481969c0a486c14f78ad6",
                             "summary": [
@@ -286,7 +286,7 @@ I checked the number 397, which doesn't contain the substring "79." The only can
                     content=[Text(text="I don't remember.")],
                     provider="openai:responses",
                     model_id="gpt-5",
-                    raw_content=[
+                    raw_message=[
                         {
                             "id": "rs_0cce3b068d5493670068f297f637a08196a1deefce5fbb267b",
                             "summary": [],
@@ -381,7 +381,7 @@ Since I found three prime numbers containing the substring "79" (79, 179, and 37
                     ],
                     provider="openai:responses",
                     model_id="gpt-5",
-                    raw_content=[
+                    raw_message=[
                         {
                             "id": "rs_00c8480f43d079250068f297ab91608195931c432c34fd7b8e",
                             "summary": [
@@ -465,7 +465,7 @@ Since I found three prime numbers containing the substring "79" (79, 179, and 37
                     content=[Text(text="I don't remember.")],
                     provider="openai:responses",
                     model_id="gpt-5",
-                    raw_content=[
+                    raw_message=[
                         {
                             "id": "rs_00c8480f43d079250068f297be563c819585de932de447cba0",
                             "summary": [],
@@ -551,7 +551,7 @@ So, the answer is simply "3."\
                     ],
                     provider="openai:responses",
                     model_id="gpt-5",
-                    raw_content=[
+                    raw_message=[
                         {
                             "id": "rs_02f178f89a7dc2940068f2980af9c081939c98cd23b6fe897e",
                             "summary": [
@@ -625,7 +625,7 @@ So, the answer is simply "3."\
                     content=[Text(text="I don't remember.")],
                     provider="openai:responses",
                     model_id="gpt-5",
-                    raw_content=[
+                    raw_message=[
                         {
                             "id": "rs_02f178f89a7dc2940068f2983c9de08193b5562b3fdec4d315",
                             "summary": [],

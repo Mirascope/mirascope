@@ -102,15 +102,10 @@ def _encode_message(
         message.role == "assistant"
         and message.provider == "anthropic"
         and message.model_id == model_id
-        and message.raw_content
+        and message.raw_message
         and not encode_thoughts
     ):
-        return {
-            "role": message.role,
-            "content": cast(
-                Sequence[anthropic_types.ContentBlockParam], message.raw_content
-            ),
-        }
+        return cast(anthropic_types.MessageParam, message.raw_message)
     return {
         "role": message.role,
         "content": _encode_content(message.content, encode_thoughts),

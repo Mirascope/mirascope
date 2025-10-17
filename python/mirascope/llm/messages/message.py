@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Literal, TypeAlias
+from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from ..content import AssistantContentPart, Text, UserContentPart
+from ..types import Jsonable
 
 if TYPE_CHECKING:
     from ..clients import ModelId, Provider
@@ -56,22 +57,22 @@ class AssistantMessage:
     model_id: ModelId | None
     """The model identifier of the LLM that generated this assistant message, if available."""
 
-    raw_content: Sequence[dict[str, Any]]
-    """The provider-specific raw content representation of this assistant message, if available.
+    raw_message: Jsonable | None
+    """The provider-specific raw representation of this assistant message, if available.
 
-    If raw_content is non-empty, then it may be used for provider-specific behavior when
+    If raw_content is truthy, then it may be used for provider-specific behavior when
     resuming an LLM interaction that included this assistant message. For example, we can
     reuse the provider-specific raw encoding rather than re-encoding the message from it's
     Mirascope content representation. This may also take advantage of server-side provider
     context, e.g. identifiers of reasoning context tokens that the provider generated.
     
-    If present, the content should be encoded as JSON-serializable dicts, and represented
-    in a format that the provider is willing to accept as input. This may involve e.g.
-    converting Pydantic `BaseModel`s into json via `model_dump_json()`.
+    If present, the content should be encoded as JSON-serializable data, and in a format
+    that matches representation the provider expects representing the Mirascope data.
+    This may involve e.g.  converting Pydantic `BaseModel`s into plain dicts via `model_dump`.
 
     Raw content is not required, as the Mirascope content can also be used to generate
     a valid input to the provider (potentially without taking advantage of provider-specific
-    reasoning caches, etc). In that case raw content should be left as an empty sequence.
+    reasoning caches, etc). In that case raw content should be left empty.
     """
 
 
@@ -150,7 +151,7 @@ def assistant(
     *,
     provider: Provider | None,
     model_id: ModelId | None,
-    raw_content: Sequence[dict[str, Any]] | None = None,
+    raw_message: Jsonable | None = None,
     name: str | None = None,
 ) -> AssistantMessage:
     """Creates an assistant message.
@@ -160,7 +161,7 @@ def assistant(
             or a sequence of assistant content pieces.
         provider: Optional identifier of the provider that produced this message.
         model_id: Optional id of the model that produced this message.
-        raw_content: Optional sequence of Python dicts that contain the provider-specific
+        raw_message: Optional Jsonable object that contains the provider-specific
             "raw" data representation of the content for this assistant message.
         name: Optional name to identify a specific assistant in multi-party conversations.
 
@@ -176,6 +177,6 @@ def assistant(
         content=promoted_content,
         provider=provider,
         model_id=model_id,
-        raw_content=raw_content or [],
+        raw_message=raw_message,
         name=name,
     )

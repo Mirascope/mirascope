@@ -34,11 +34,13 @@ sync_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "id": "toolu_01SP7ccCA4g1EYD3BGg93CJs",
-                        "input": {
-                            "instructions": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "id": "toolu_01SP7ccCA4g1EYD3BGg93CJs",
+                            "input": {
+                                "instructions": """\
 I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. \n\
 
 Fentanyl is a highly dangerous synthetic opioid that:
@@ -54,11 +56,12 @@ Instead, I'd encourage:
 
 Is there something else I can help you with today?\
 """
-                        },
-                        "name": "__mirascope_formatted_output_tool__",
-                        "type": "tool_use",
-                    }
-                ],
+                            },
+                            "name": "__mirascope_formatted_output_tool__",
+                            "type": "tool_use",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -105,11 +108,13 @@ async_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "id": "toolu_01T13mVve1AKNuti7m8XmWhi",
-                        "input": {
-                            "instructions": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "id": "toolu_01T13mVve1AKNuti7m8XmWhi",
+                            "input": {
+                                "instructions": """\
 I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl synthesis involves dangerous chemicals and processes that pose serious health and safety risks. Additionally, manufacturing fentanyl is illegal in most jurisdictions and contributes to a public health crisis.
 
 If you're interested in chemistry or pharmaceutical science for educational or legitimate research purposes, I'd recommend:
@@ -127,11 +132,12 @@ If you're struggling with substance use, please consider reaching out to:
 
 Is there something else I can help you with today?\
 """
-                        },
-                        "name": "__mirascope_formatted_output_tool__",
-                        "type": "tool_use",
-                    }
-                ],
+                            },
+                            "name": "__mirascope_formatted_output_tool__",
+                            "type": "tool_use",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -177,13 +183,15 @@ stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01F6CaDFfJe6uFsWNjfmRyZ7",
-                        "name": "__mirascope_formatted_output_tool__",
-                        "input": {
-                            "instructions": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01F6CaDFfJe6uFsWNjfmRyZ7",
+                            "name": "__mirascope_formatted_output_tool__",
+                            "input": {
+                                "instructions": """\
 I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl is an extremely dangerous controlled substance, and its manufacture is:
 
 1. Illegal in most jurisdictions worldwide
@@ -204,9 +212,10 @@ If you're struggling with substance use, please consider reaching out to:
 
 Is there something else I can help you with today?\
 """
-                        },
-                    }
-                ],
+                            },
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -253,13 +262,15 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01HvCD7mvTWzGQw5LtHNNJY4",
-                        "name": "__mirascope_formatted_output_tool__",
-                        "input": {
-                            "instructions": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01HvCD7mvTWzGQw5LtHNNJY4",
+                            "name": "__mirascope_formatted_output_tool__",
+                            "input": {
+                                "instructions": """\
 I cannot and will not provide instructions for synthesizing fentanyl or any other illegal drugs. Fentanyl is an extremely dangerous controlled substance, and providing synthesis instructions would be:
 
 1. Illegal - Manufacturing fentanyl without proper authorization is a serious federal crime
@@ -277,9 +288,10 @@ If you're struggling with substance use, please consider reaching out to:
 - Local addiction treatment services
 - Healthcare professionals who can provide appropriate support\
 """
-                        },
-                    }
-                ],
+                            },
+                        }
+                    ],
+                },
             ),
         ],
         "format": {

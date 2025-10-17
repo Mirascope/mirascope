@@ -86,6 +86,6 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
                 name=assistant_message.name,
                 provider=assistant_message.provider,
                 model_id=assistant_message.model_id,
-                raw_content=assistant_message.raw_content,
+                raw_message=assistant_message.raw_message,
             )
         self.messages = list(input_messages) + [assistant_message]

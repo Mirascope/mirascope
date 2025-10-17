@@ -28,20 +28,23 @@ sync_snapshot = snapshot(
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[
-                    {
-                        "video_metadata": None,
-                        "thought": None,
-                        "inline_data": None,
-                        "file_data": None,
-                        "thought_signature": None,
-                        "code_execution_result": None,
-                        "executable_code": None,
-                        "function_call": None,
-                        "function_response": None,
-                        "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                    }
-                ],
+                raw_message={
+                    "parts": [
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                        }
+                    ],
+                    "role": "model",
+                },
             ),
         ],
         "format": {
@@ -122,18 +125,19 @@ async_snapshot = snapshot(
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[
-                    {
-                        "video_metadata": None,
-                        "thought": None,
-                        "inline_data": None,
-                        "file_data": None,
-                        "thought_signature": None,
-                        "code_execution_result": None,
-                        "executable_code": None,
-                        "function_call": None,
-                        "function_response": None,
-                        "text": """\
+                raw_message={
+                    "parts": [
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
 {
 "title": "THE NAME OF THE WIND",
 "author": {
@@ -143,8 +147,10 @@ async_snapshot = snapshot(
 "rating": 7
 }\
 """,
-                    }
-                ],
+                        }
+                    ],
+                    "role": "model",
+                },
             ),
         ],
         "format": {
@@ -215,20 +221,23 @@ stream_snapshot = snapshot(
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[
-                    {
-                        "video_metadata": None,
-                        "thought": None,
-                        "inline_data": None,
-                        "file_data": None,
-                        "thought_signature": None,
-                        "code_execution_result": None,
-                        "executable_code": None,
-                        "function_call": None,
-                        "function_response": None,
-                        "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                    }
-                ],
+                raw_message={
+                    "parts": [
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                        }
+                    ],
+                    "role": "model",
+                },
             ),
         ],
         "format": {
@@ -300,20 +309,23 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[
-                    {
-                        "video_metadata": None,
-                        "thought": None,
-                        "inline_data": None,
-                        "file_data": None,
-                        "thought_signature": None,
-                        "code_execution_result": None,
-                        "executable_code": None,
-                        "function_call": None,
-                        "function_response": None,
-                        "text": '{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}',
-                    }
-                ],
+                raw_message={
+                    "parts": [
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": '{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}',
+                        }
+                    ],
+                    "role": "model",
+                },
             ),
         ],
         "format": {

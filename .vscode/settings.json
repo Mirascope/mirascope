@@ -28,6 +28,7 @@
     "python"
   ],
   "search.exclude": {
-    "**/cassettes": true
+    "**/cassettes": true,
+    "**/snapshots": true
   }
 }

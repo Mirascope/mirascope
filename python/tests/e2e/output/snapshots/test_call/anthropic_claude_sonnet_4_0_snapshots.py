@@ -18,9 +18,12 @@ sync_snapshot = snapshot(
                 content=[Text(text="4200 + 42 = 4242")],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {"citations": None, "text": "4200 + 42 = 4242", "type": "text"}
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {"citations": None, "text": "4200 + 42 = 4242", "type": "text"}
+                    ],
+                },
             ),
         ],
         "format": None,
@@ -39,9 +42,12 @@ async_snapshot = snapshot(
                 content=[Text(text="4200 + 42 = 4242")],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {"citations": None, "text": "4200 + 42 = 4242", "type": "text"}
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {"citations": None, "text": "4200 + 42 = 4242", "type": "text"}
+                    ],
+                },
             ),
         ],
         "format": None,
@@ -59,7 +65,10 @@ stream_snapshot = snapshot(
                 content=[Text(text="4200 + 42 = 4242")],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[{"type": "text", "text": "4200 + 42 = 4242"}],
+                raw_message={
+                    "role": "assistant",
+                    "content": [{"type": "text", "text": "4200 + 42 = 4242"}],
+                },
             ),
         ],
         "format": None,
@@ -78,7 +87,10 @@ async_stream_snapshot = snapshot(
                 content=[Text(text="4200 + 42 = 4242")],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[{"type": "text", "text": "4200 + 42 = 4242"}],
+                raw_message={
+                    "role": "assistant",
+                    "content": [{"type": "text", "text": "4200 + 42 = 4242"}],
+                },
             ),
         ],
         "format": None,

@@ -68,7 +68,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"isbn":"0-7653-1178-X"}',
                         "call_id": "call_TlRoLVC4aoqQnlz2XIiNWZFr",
@@ -103,7 +103,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0a7c766b8b81e5ec0068f2a2f23254819697215b7e710f55d5",
                         "content": [
@@ -261,7 +261,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"isbn":"0-7653-1178-X"}',
                         "call_id": "call_smEZJKpXhjNduFPjfIbxZoEe",
@@ -296,7 +296,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_00ca1457a4fdd8740068f2a32edc608193b350ab046617ec4a",
                         "content": [
@@ -453,7 +453,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"isbn":"0-7653-1178-X"}',
                         "call_id": "call_D4nyNr9jTi00FFRjW885O8Rm",
@@ -488,7 +488,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0a091f1f54f473470068f2a36399fc81978eab22e8b49d9ee9",
                         "content": [
@@ -646,7 +646,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"isbn":"0-7653-1178-X"}',
                         "call_id": "call_5tpYH2kVrLA3lru58ufOs4ws",
@@ -681,7 +681,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0f36bbfa154ea31e0068f2a39bc2288190b0f5fc43a6c70d1d",
                         "content": [
