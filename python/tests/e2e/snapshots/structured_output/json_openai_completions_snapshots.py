@@ -90,7 +90,22 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
+  "rating": 7
+}\
+""",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": {
@@ -259,7 +274,22 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": """\
+{
+  "title": "THE NAME OF THE WIND",
+  "author": {
+    "first_name": "Patrick",
+    "last_name": "Rothfuss"
+  },
+  "rating": 7
+}\
+""",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": {

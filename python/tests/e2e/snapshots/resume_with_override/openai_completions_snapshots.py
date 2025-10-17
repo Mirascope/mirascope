@@ -35,7 +35,13 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": "Yes, I can confirm that I was created by Anthropic, a company focused on developing advanced AI models.",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": None,
@@ -71,7 +77,13 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": "Yes, I can confirm that I was created by Anthropic, an AI safety and research company.",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": None,

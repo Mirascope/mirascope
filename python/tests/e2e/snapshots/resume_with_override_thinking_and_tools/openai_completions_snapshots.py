@@ -67,7 +67,13 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": "The 100th Fibonacci number is 218,922,995,834,555,169,026.",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": None,
@@ -147,7 +153,13 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": "The 100th Fibonacci number is 218,922,995,834,555,169,026.",
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": None,

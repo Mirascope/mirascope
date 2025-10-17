@@ -25,19 +25,34 @@ sync_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_SASOQ2rduFQoNjQMtLhXiWCa",
+                        id="call_IgCaW7Vmsx94VX3h8O7rHD6V",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "role": "assistant",
+                        "annotations": [],
+                        "tool_calls": [
+                            {
+                                "id": "call_IgCaW7Vmsx94VX3h8O7rHD6V",
+                                "function": {
+                                    "arguments": '{"isbn":"0-7653-1178-X"}',
+                                    "name": "get_book_info",
+                                },
+                                "type": "function",
+                            }
+                        ],
+                    }
+                ],
             ),
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_SASOQ2rduFQoNjQMtLhXiWCa",
+                        id="call_IgCaW7Vmsx94VX3h8O7rHD6V",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -51,7 +66,13 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": {
@@ -115,19 +136,34 @@ async_snapshot = snapshot(
             AssistantMessage(
                 content=[
                     ToolCall(
-                        id="call_DwQWQXztABmfTJPGB3RKZVYd",
+                        id="call_PUdDGoqTLGKmxkDfVlgM5koz",
                         name="get_book_info",
                         args='{"isbn":"0-7653-1178-X"}',
                     )
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "role": "assistant",
+                        "annotations": [],
+                        "tool_calls": [
+                            {
+                                "id": "call_PUdDGoqTLGKmxkDfVlgM5koz",
+                                "function": {
+                                    "arguments": '{"isbn":"0-7653-1178-X"}',
+                                    "name": "get_book_info",
+                                },
+                                "type": "function",
+                            }
+                        ],
+                    }
+                ],
             ),
             UserMessage(
                 content=[
                     ToolOutput(
-                        id="call_DwQWQXztABmfTJPGB3RKZVYd",
+                        id="call_PUdDGoqTLGKmxkDfVlgM5koz",
                         name="get_book_info",
                         value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                     )
@@ -141,7 +177,13 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_content=[
+                    {
+                        "content": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                        "role": "assistant",
+                        "annotations": [],
+                    }
+                ],
             ),
         ],
         "format": {
