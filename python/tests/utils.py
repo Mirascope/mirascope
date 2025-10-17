@@ -79,10 +79,12 @@ def exception_snapshot_dict(exception: Exception) -> dict:
     """Convert an exception to a dictionary for snapshot testing.
 
     (inline-snapshot is not able to serialize and reproduce Exceptions.)"""
-    if exception.args and "Connection error" in exception.args[0]:
-        # Connection errors should not make it into regular snapshots,
-        # as they are likely issues with VCR overwriting. Re-raise this exception.
-        raise exception
+    if exception.args:
+        arg = exception.args[0]
+        # Anthropic/OpenAI will raise an APIConnectionError with "Connection error"
+        # in args; with google CannotOverwriteExistingCassetteException gets raised
+        if "Connection error" in arg or "Can't overwrite existing cassette" in arg:
+            raise exception
 
     return {
         "type": type(exception).__name__,
