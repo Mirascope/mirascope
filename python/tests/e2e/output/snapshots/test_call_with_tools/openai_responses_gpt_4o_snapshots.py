@@ -39,7 +39,7 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"password":"mellon"}',
                         "call_id": "call_df3svYLONNdt3Qb2FXFeXwZ3",
@@ -85,7 +85,7 @@ Here are the secrets:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0678b7a1f79ace020068f299051d0881909f69455ee8292f19",
                         "content": [
@@ -163,7 +163,7 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"password":"mellon"}',
                         "call_id": "call_0zCTbx6FQ8k3esy7neFHKDjp",
@@ -209,7 +209,7 @@ Here are the secrets associated with each password:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0dc7d3cef7c1431c0068f299112d808197b24e445fcb80e82f",
                         "content": [
@@ -286,7 +286,7 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"password":"mellon"}',
                         "call_id": "call_41CfEqEOHhPeIwSwoLhT7x8y",
@@ -332,7 +332,7 @@ Here are the secrets associated with the passwords:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0888af4740f553150068f299207a98819598f085926027eddb",
                         "content": [
@@ -410,7 +410,7 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"password":"mellon"}',
                         "call_id": "call_e9IFshyCDcsOO3BqCLkU1m3R",
@@ -456,7 +456,7 @@ Here are the secrets:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0f52f42decbdc1ed0068f2992d02688196b4453f9dff18fb02",
                         "content": [

@@ -19,20 +19,23 @@ sync_snapshot = snapshot(
                 content=[Text(text="Here is a list of all 50 U")],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[
-                    {
-                        "video_metadata": None,
-                        "thought": None,
-                        "inline_data": None,
-                        "file_data": None,
-                        "thought_signature": None,
-                        "code_execution_result": None,
-                        "executable_code": None,
-                        "function_call": None,
-                        "function_response": None,
-                        "text": "Here is a list of all 50 U",
-                    }
-                ],
+                raw_message={
+                    "parts": [
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": "Here is a list of all 50 U",
+                        }
+                    ],
+                    "role": "model",
+                },
             ),
         ],
         "format": None,
@@ -59,24 +62,27 @@ Here are all U.S. states, listed alphabetically:
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[
-                    {
-                        "video_metadata": None,
-                        "thought": None,
-                        "inline_data": None,
-                        "file_data": None,
-                        "thought_signature": None,
-                        "code_execution_result": None,
-                        "executable_code": None,
-                        "function_call": None,
-                        "function_response": None,
-                        "text": """\
+                raw_message={
+                    "parts": [
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
 Here are all U.S. states, listed alphabetically:
 
 1.  Alabama\
 """,
-                    }
-                ],
+                        }
+                    ],
+                    "role": "model",
+                },
             ),
         ],
         "format": None,
@@ -94,20 +100,23 @@ stream_snapshot = snapshot(
                 content=[Text(text="Here are all 50 U.S.")],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[
-                    {
-                        "video_metadata": None,
-                        "thought": None,
-                        "inline_data": None,
-                        "file_data": None,
-                        "thought_signature": None,
-                        "code_execution_result": None,
-                        "executable_code": None,
-                        "function_call": None,
-                        "function_response": None,
-                        "text": "Here are all 50 U.S.",
-                    }
-                ],
+                raw_message={
+                    "parts": [
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": "Here are all 50 U.S.",
+                        }
+                    ],
+                    "role": "model",
+                },
             ),
         ],
         "format": None,
@@ -133,23 +142,26 @@ Here are all 50 U.S. states, listed alphabetically:
                 ],
                 provider="google",
                 model_id="gemini-2.5-flash",
-                raw_content=[
-                    {
-                        "video_metadata": None,
-                        "thought": None,
-                        "inline_data": None,
-                        "file_data": None,
-                        "thought_signature": None,
-                        "code_execution_result": None,
-                        "executable_code": None,
-                        "function_call": None,
-                        "function_response": None,
-                        "text": """\
+                raw_message={
+                    "parts": [
+                        {
+                            "video_metadata": None,
+                            "thought": None,
+                            "inline_data": None,
+                            "file_data": None,
+                            "thought_signature": None,
+                            "code_execution_result": None,
+                            "executable_code": None,
+                            "function_call": None,
+                            "function_response": None,
+                            "text": """\
 Here are all 50 U.S. states, listed alphabetically:
 
 """,
-                    }
-                ],
+                        }
+                    ],
+                    "role": "model",
+                },
             ),
         ],
         "format": None,

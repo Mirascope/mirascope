@@ -98,10 +98,12 @@ Now checking which are prime:
                     ],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[
-                        {
-                            "signature": "EoUoCkYICBgCKkAwUznOJVrfOkWbSRUEo1nCxM5RmFSIMWLsuV9jfb/2Cr6tWyGUiKGCRniS9PQYkF57GpVs/FsG7rblGAesOzVwEgyOH6EXE4Bqlq/PMPUaDONmDsk5OHCFYBomfSIw5N9PCxgELmfhuquZrIZp1K1tpkBF0EAFdGFaXmB2NXR4pl25pYZ8kQOC9flfEyR5KuwmDKcQmSndisjZF90yltjKhYdK1bVHpMaF0FUvwKfIqTzheBZTlPsWpbwjuv91hgRw7jLgxbWXWJPLJOqw0LfyRNK8y/ghCyVPxRDC6up03XE545gZOdwrGwaYkwY+rytDHr5SBoLnS4h0kghpLO/rfsnna/1i3D6BAvqyFwdaz0NKsuNeTPX9mRhUXdrqHBeVgDt8+i3B04TXzJbfgtbYNuOFVw06FtnEIR6Qwsf9u+5h7swiQTs8lz59RjDeFzpL3Nxt9apTJ4HL5TYkZmTWTDtDRt4e2qlzNII1IhoQDwZmiqvVTqUglTtdr6quwzbpkEGJJM888vlgyAXQhex9piEhDkt1ASpKtTDYp+aK3eDUFRA3zX0BQBEyQWIl9X59iRG2BNp9Seyh6el71TdfrPPeJCggVfHnTMj5aAWmO3rsgpbYeX7tZE+9EeFobh/wWwRvdR07psKrMFXK7v0JPJbXaDz/b+0sp/mEDAjQOgH4uWk6jFko9cgzHdGEBUmDCrl/wJb002qp4d4rI9mtOE9tOIJP1X/V0dhL2rDQJ0H63H2R0yuG4n+WdBs1r1drbrcJnzN9Fgr6AsM1KoEUgCX5oUrL3O5rY/UJaD4KASMKIKbgZeWk2V7ZKB2X8qGEekWqfydSwk96LDgW0PUUpPnsvsL3FJq0oRpqyF+3NFI/OGbg0dn+hkR4h3Flg2vtB3eAXOZko3UryPQujcUs72uTBQySoggsTrFzeQ9oktzDOjo/xK0qzgMrFn8Fyuxd7oSajrl7Zu4sWsVGBy0oDwegB4y8Pk9sqSSkcqrCCjGkBSMw+NEI6FFOtv6hDcGRKDELN3QkpimRwxU1qzR41DUCbk1f7VQ9/UOJIgLKs44uu2Eq+nqueQUVryj9kqSbwc/ULX3xro4gcHttKEXwg2ZoB/IpgAd6hPzdsINSSDhTJwaquXbcgdzYBSgQPTJxbgLdJo2WAWzKhpebJXK+o/FUywIitjAfakCkSZXtMnd5VAhM6rIlGB1G6jYT+VbJtjmGAB8GOd1cYcCb6YVFEWYfB1l87xzvZsfDGiHKGPfnL1L28PvYAV3VBDNkoyW6GsDXDrGzRbYOJjIcSeb28OEZQ1oIQfqcHqTIPLO7r23UgqCTZloUEr6WPGuO+J/PjP3PdJp4gKOMTFNW9EUgb5cYSLSdqffJeyvqNXb4PPM0u05RjOi/Izd/ISRN4JvnTmS6WaANIohR5PP+KmuPT8IieaRXikmHmwb5gOVnlOpAa2dRtsqbXha8Yzzxdoje9qOjAMz06rezQHKHaJnrtmMWmp18K9NoLn0j4ytr5RpyGV2Ya7q+dqUzVyA2ZHnXNiUw5A38GY3J6pVhxTozZKXlHZQgSRjU4zNU/gdll7ChHLwL0AxVWNgRji8Nn3FHNVfX+7GQWOapzz7YdBphmCRCSVcOFcAmD5tUgHtOcF5qbpqYjZKAE5R4wuMfJzuUjWoq19Dg1IkTMaM6djSmh/EAIwdLokcz/fjAJ/ZlptC7r4PQgdgvcJkLuXHF9IkwwCtuF64lafRwhbhwLm5czTzYHD3x8scaDFLd7U9sBWuka3iK2zcTVGVzgu9ZX/4iimSyW46MvOYK8WWLZ91lYFtzcsxCJJmdUBQjeB1TIBa/CaJlWsA+8SNWLrlj1BHTtNxX1orKln4DrsPt++cQ69AT/tCIw35cLc419oYADmbULCsmP0P/gBX6CdHFsZfbp7ohynJ7gWqhQzQkwl5utz6+bgWeJ9ZyE61H0c5fyrtM44GfAelMPqUuEZ3xtDM5exnHRrJLUiwHeU9VoLJ0/gIWyBE4mDwsEzJ3rhYTnTJHmwRqFZAaehJl42g/mzzc/d8wyucgjUUZ48ixuJkT32to0E5pGsv1CMFJKS3aN4k9J1EaUzZTEUlOp8fnpBGZk1keyOmSqHPwEVXuCsj2QdVRHw196Rzx66VhyZxzr/fx7dCzKf4/u0w0xb1/lC6eLyerSAYnoggQTwrTor2yJEku74AeZuAQO1en4npfivd1GpnKvIqOpThlrHJhkgCRNFYP57T4mCK0AcLqiYoh+O0tVu4t4r6dlHS1/jCPw85Mb6dF8Of6BPJ2swAr7CQbXOfVku4RZTvrbc9xzyj8P0cP/4Alg054X1cSSsNwAXdDkDtbLrKqTFyFpAWl+8UOTeX307RH/wl7Bj9Xyono/Vrsv/LxM+IPGxaL2qgszOpXAX/ExiDxPUBZCzsh3pqOIwi5yhu/oNAOxBLRbM7CkUUE7DflfEedu7gS2+r9JxUwZIZKLpQLT4QDUuIsUkagpm/mdagR4r7DmTB9Jq/jvPck2wBydsZF5rkRiEuhqOd+muznlvcGP3XNwaycAgkk09zU3YJjUwqHCu7pJ/3gqYY0dqpl+PNI8fH05X4yTmM9TWoN5Wrkzinzuh58zWbHE7RPQvJJOA0GyaHJrghtEqFUE2Ve3C7fOrwjK7hqwY4OjOuME59E0sDJCdfD/IElFfUS+bUjTFxdYMEw+o+cuI9YfkwxIjKLbUYeuBYy65v/ImJBcJVVlEKQA0WydH/cW2Valz2KKNehj0w7cDMl8Ce8XamWrzolfIB0pVwXQ8De5m6c/e05VCRUhJCnPUAVo2H+K35qtUwoeqTJjpT8nQNMwmDDtaRyj2EqcJtEP3/OWnZBn+BpU3ZnTFXuzr9J9fBj0ZjSw3/ImVAknqlCb3Rkumvx1Cpw2zzJtQibVRbDV3NLmbgBGEaDuC1m7S7a8hdJ/C17LADVx3jPqpw5ud2YzDAHZdVyVpuS7t7dHptkieFla+3SvmwLAal1tqbAqmuWkncGT3F8hgGpNTULMOSvPDNpwcJbMXU0CR+4SGBeSu3OS/7RhzySPy+ZckzH88pv/wOVyjJAygEk0gY1Hal7DU79TJlbG0ZQ7QwggqMio54IftIZZPjPLl7VigwC/mo7sXpdpvYSsnzTOYe3eTaYojetL9GpmROoNaIyxsg1cjIjfJJDDwaFH1d9Semr42j/j4ZtNisconnjEKZgLmN3cdCsb4jwzFrgC7yRMqWklnCOXO0MC+VFkYBHP11SmpIziWPyDRBgcg2BbCIVCmijuKlLMTRQAn3g7FreeyCucytNjFNVX1iqkbGsnR3Mvvoj2Fn0IKVqGVuGlysIBwjHSEprKbA1VVnEniYNsF/INu/hdZCB+78Asjo1HL7QrTW3vFcdPv3WkEaX7VZq6G0aUAugYDls0eeJ9FYA9tVwOpdog7RzsX3wQuAqZ6jh21ABOZQYGb3ECKB+befWh9SlBH1eGtspS7wXzwacIKzoYkCGSMcD2b9Dgv+0fQWpdSweJ8uMoyC5xzOCsRJf36DKyGru9sj10reLqTVEMH/oZ53T8ZoRGQWleuAyGI4xh5jTfcpH0hCfGc6yrKRvPBbk5dhWEaMEfp9j1wXJIRRUUkiRlsdzZxg9qRPHT8Fn0OhzWeAqUP/7XKXb5b6AHhpK5Xp65MYQCgKU9smC2SGrwQQL65e/bI6WPqiqLSLOIlsHOag5OCkonjfApGyDUG6FT2SAgKZ+dbHhRi88h2gHRlK9zhDJNI4Szb912TchCm3UJaNzFHsSl55/e6hFPNwKKoFI3lVzX27qKD1H4zbDS5M1sxFdyWsiX21G2XvpdX3RhQgDIuC1TnN9JICJRH88SPF6GLHYZ/2pwL+h88d0VtmkSHTXWIDztLTcGnDfAcwjRaci7FElKFys6Wnwy7dR4rua6T0zSWEP+KF4ZpSH8rS/4BgLomoaFwrqyNeU8XDFZTOKPkZcJaWXuOyB/dKkKFgtMKP1niG0QClAjhOcHgaRDjYrNYrdCBKdkMrXwTyZEs902tXJMZT7/godX12qyW0uu6Kx0IJRbGJtG6Bm/F3QPWij3gvsAb0aYxRWa/qNVvM+rfQoY1mbaWn2BgEyx3NTad/kyHVyo48iE6KD0MS3U3XLGcvPmGADlgvrqdjVzHRdmsIEOw2O3SIqQujHEoww/J1fyDoMz1OAeYUL1MxNFEIw7Q2BGC9fSBOGJBietU2iD3AOZS5eE4hVyqfghFMeSDkiW9jPDDvUKsqqIuO9iIP5E5GYNg0n+rnbCR4DFGGmM11gIUkLbp5m/E345DGVmLn9FmzisLmaxX/RjKWxvz+zX/2LnI5O8vDLrc77+FySbi8YpyhIKuDIrdJ8vzK0rdpEIG2+lSwiXH0HS2Keo48aWJVHpo50KzteIGYGG6QMjYDAZIwroSeRDiQN0gU9d2ohHqMcnddc++Ze5QvpAJC+GuGfxbVFjkqUo870W2GfcXZCw7AfoKfBqmzNn9btW85KgueEkrcaKSbSBlUGClD4yBS/xfCxE5ncNalzaoAjI6PoHN2ePj/uyoRCEQeYcIz20WNTHtxsFbWGLSmYUqjMxNdN3cKvPY+5c0bN0KzeHhzJwEhdXVBDu1ObM654KdS8OJQ7UQM1UjbtvvCExy28XRYzN6NCsi1Y1j/7mybEfQLbek7Wlq23hfINmXFwQYY38tWgY5yC6X8RVLyLeZ6DzFpAdPpmXXZ4mcSjXfz6KW0DpeIa9Sy8C1ea4Pru8LVodPiknE8a+TpDNaKs3PCEMFiLDhPRsEI111lh4kUrZRlUwVcyo+SeQf9r7CvmeX53mqqqvvGijDyP7f7bPkoo+4hExbAMWvizuDhNI4GOcrX7b5/mpQYKh69SoqXDSPgzQqLxVTySxCF8isj+6wds7K1ip3DvGj14beERap+Ugj6SjHvwcCRIBqcLrfW3OO0R0tRVLxzTn5v3/+HWOfiJQ2fL+MtOVVwNlRpk7/Fgm58d/xqLVDfrsGEGo5U5IoKunAmWcQY2JFqhTmzPvf8CBGG3kmfSdhHmxO17i1iONSes84D9Yf9QIIAUBG/ugWBqkKhVjeC29efeUXzUejM8pMNHzeO+EtKs7KitPZB1BPYryV/o5Ch6fwdAYXRVcxAfvn18jGMr8pPj9/nEYMm6c3pg8dsWaHMBlM+PMFuEhYKef1Y73dZPH62pF0AvsV/wWohhUXgkys+n9MvrZpzflbxkOl8b75jV+F/aln3+Qbut+JZ4I5F0AFbbKofd6SislXxLmei/J7/70SxWFGCqzBDWjchDDTObEfpHnjPX6CEjb3ClEHu0exV//um0aiC8Lc2Mpnj1/r/guvb31NBgx2OrzRWgCs5DnPXRPm9gfZw0qrjSlWnjXgFH9dwEAZWiHcFZYA3dV5DO7t3Ni4qUlPWDA+TKX0YH6ytEx5l19y6l7E+/T9TKd/1lAd7TXSdvYwHyKicsvj8BU+JThqvEyMVrolqq9vxEDmW1W3rA87kivTh2QyYXUQISGM5D2PLPkDPBluj5+M/+bzDSojlPwr4n/iA74sxf1VrknHM4G/h+t8vyeWzuW2BARQ+2Vi50G6mW38Nue60phj2IgSRPjMplgDLHUymJxEk0bvHKtJx/36yP1liiYlykFAyj1aySe5bQJ6jG7plQezKXZ95WQVrgD5C/XEbgmc3fB64hBpxdTPH3yg239t8WsRv17DTStzwC/WW0cMY1S//MQNK+Qg0tOhr41WQFtOcZVb4h6oURh9j4X8VAewJor8iv5Qg2p3VBXHEP58MtbiXV3Uev8kHL0bBckUwHPxX6etA4kvL7EMDw0kwct/nVOjqxdCuK9iBynwf3yU2md+SmcipNUpHyXlfNDP8HsAo8WcG8TSM9Q4hKtirT1+E3cP2FCyDWaNIafHhakPKy7VzrZG9GP8uLqN7D3FEMm66aryxiREG/Yp/EXi6UKCt374oxHjq7DjLy7vcMjohrdi2xphvC/NbvnOFAvUOuRcIRvnoNzOoKuMv80Gz4oiW5ljAcYbcgwNFt92Utbv07Zps95AxdEea+sptiT7szn08YfKLY/ka1/s8NRuz+U533cJupfgUT8UXj5BWxxLueRBiioycB8FFtkNk2gbfxFo/3ZV2zEX8QpuvIQ4Q9SvMpHn3YL9jIFyo9rYyyFGGtPw0sGOXhiHtvdBQ0OwgKfN5qRzK6h1RIoKZZQaInzSnDDsS+zgSEwik+usj/gJgtLCqCAbLF1yjZng2s7fJ5nS/pgzMRBX7iz4dD62fbby2+p9I+GXhWu1I25+43uxENbI+0FYPLBNvCtyBO8Hgrr+3QgLbh3x2GFKqyp8JXx55NsUxSYnd1Z+/c4L8BXlElag/YCfchzgftlPjg9EqcV1Kml6l5uPeLJVmevbQxZhwhsW12oMgZKzpI8QXbt7p0pZ7lloUWW6zlDyCmulgQIIJhC36Eq85tHbxTAJ0kgYwqWw68mnsv+4kyV7m76moNzh4Ob+Whsl7LMO7lz2NZmCNywNYd0fRqlOxXKEl32QJD9bd7uKMpSpsgkMHMyq+XP3QZlp1RmY4Bn72KNCuEcGXz236o3bs9VgqdkO/lcj3MoWU3vJzDDspC/VEk565pH/vvHiMV0oSTKWAqh7cGvfYRF7wCKuQYC5BdSyQuLgPd7XE7VQVr+trCgqQ4Ycajg+T4Pv8eOeV0ARXJTJ8wK4O2shhhDTONTM4S6Mm94yPmQET/BVcoEmdUm//OC71B579nbyn2gmYA1EqGDgU2UUlhB1YT1wJ/uSfCdaBGj9KeNuzGwgD6P+YAQhgB",
-                            "thinking": """\
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "signature": "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",
+                                "thinking": """\
 I need to find all prime numbers below 400 that contain "79" as a substring.
 
 First, let me think about what numbers below 400 could contain "79" as a substring:
@@ -152,11 +154,11 @@ No prime factors emerge through careful remainder calculations. Each test - 7, 1
 
 The substring search yields three primes: 79, 179, and 379. The count is 3.\
 """,
-                            "type": "thinking",
-                        },
-                        {
-                            "citations": None,
-                            "text": """\
+                                "type": "thinking",
+                            },
+                            {
+                                "citations": None,
+                                "text": """\
 Looking at numbers below 400 that contain "79" as a substring:
 
 - 79
@@ -172,9 +174,10 @@ Now checking which are prime:
 
 3\
 """,
-                            "type": "text",
-                        },
-                    ],
+                                "type": "text",
+                            },
+                        ],
+                    },
                 ),
                 UserMessage(
                     content=[
@@ -187,13 +190,16 @@ Now checking which are prime:
                     content=[Text(text="I remember them: 79, 179, and 379.")],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[
-                        {
-                            "citations": None,
-                            "text": "I remember them: 79, 179, and 379.",
-                            "type": "text",
-                        }
-                    ],
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": "I remember them: 79, 179, and 379.",
+                                "type": "text",
+                            }
+                        ],
+                    },
                 ),
             ],
             "format": None,
@@ -273,10 +279,12 @@ Compiling the results, I identify three primes containing "79": 79, 179, and 379
                     ],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[
-                        {
-                            "signature": "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",
-                            "thinking": """\
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "signature": "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",
+                                "thinking": """\
 I need to find all primes below 400 that contain "79" as a substring.
 
 First, let me think about what numbers below 400 could contain "79" as a substring:
@@ -324,10 +332,11 @@ Investigating 379, I methodically test divisibility by small primes. After check
 
 Compiling the results, I identify three primes containing "79": 79, 179, and 379, totaling 3 such primes below 400.\
 """,
-                            "type": "thinking",
-                        },
-                        {"citations": None, "text": "3", "type": "text"},
-                    ],
+                                "type": "thinking",
+                            },
+                            {"citations": None, "text": "3", "type": "text"},
+                        ],
+                    },
                 ),
                 UserMessage(
                     content=[
@@ -340,9 +349,16 @@ Compiling the results, I identify three primes containing "79": 79, 179, and 379
                     content=[Text(text="I don't remember.")],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[
-                        {"citations": None, "text": "I don't remember.", "type": "text"}
-                    ],
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": "I don't remember.",
+                                "type": "text",
+                            }
+                        ],
+                    },
                 ),
             ],
             "format": None,
@@ -424,10 +440,12 @@ The primes below 400 containing "79" are 79, 179, and 379 - totaling 3 such prim
                     ],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[
-                        {
-                            "type": "thinking",
-                            "thinking": """\
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "thinking",
+                                "thinking": """\
 I need to find all prime numbers below 400 that contain "79" as a substring.
 
 First, let me think about what numbers below 400 could contain "79" as a substring:
@@ -478,10 +496,11 @@ Continuing tests with 11, 13, 17, and 19 confirm no factors emerge. With √379 
 
 The primes below 400 containing "79" are 79, 179, and 379 - totaling 3 such primes.\
 """,
-                            "signature": "EtYTCkYICBgCKkANtbBKg8QJLhEP6ClHWSxSrwS/PNmAMXU7/bUgVIrKl7mukf0SvpkXBmPuVcL75r6mNLIKZR5g3DSGBgkXgZYKEgyYC8JWTOZD3151NSgaDBhwPzwROUOMxNV7oyIweXIjmeT1dUBChey7Cbege2x6CMM+B1cLOWeJ95RJ4F7jKQpDxDRW2QbQNOMxJDTWKr0S/QOBdypUwk0udiuR70IvTBXZcOTFkyScOZa14XtTJ2kO92Utqg/OUNDEiRFhrSiDklwYexOh9Kb4V2SurgmurDjiheuLQZHWGlvK/q8IbC+JIBRYy31nLGiq/64o26fW08Tfvn/sWnM8qML2zwCh9u/2D2ihBW+2P7JQPA4RTmqWd+fqO5fJjQ4AtrR7+vRIXj1KLRyz2oTA6BnyX4+rfW8HUmMCpm8PFjZ4g93+92LHdjqNnrR7OcczhwqPguOiwZeQg/Z+V4EkLYPzJFFDCV22CUkQ5RWrQigVNxkFqsNUcViBRgkRGPbgQPVY9xcWAkCWImSWbcsEfz5far8kIA0B0O+CjgI8vBCMZkR4RawbfC7rkmxRsTpMehIskAgqyQC7QiSHRsUo38FkYtNDWFR1Nyjt/E7FgADdQMhoBmeSNqFuZuLjPPETRpQ2KlZlpcaIKiEbHTg7PiK9WdyusUiXPHYViPXflbejFqT1KL/ldEO7buijKy2s4HOQeu99oxUrtTCzcfn+eWbQYDAZmPVioJz8vCwCgYLvXJU92ofN+5JxwPsL9ZyxWI745hdXwB9VPF60YG1xU3aUYCw5J+6EWYuQ4AnPNNIYJN1JmZqMU+jb747oKWiN6wKGZuS+LYi0lK42adTz2jdD8UA38ZQx00966S6ilnQwMgv+hLIr0VAQ/uJY/AsDdHNmPsduwMf04fV+HIgJValY1NEZ6j8r1mfRYdwv9e/dqUIPTVjhFpFMRAHxpx+D3GkZS/zf3PkIuxgoDxOXWcw9NyvBR9iJTKOGv6VksY1/vqPA3YwybDQgp3tfkbc+AWp2YUdTV/Re8jv5cgHhinJEb0GjrlgXY2qI5nbKEjkXDzaCQACyRQ0ec7lqs28AMwiM8cleCwKk/kMBuEroCd8tLejA5xU9+Q8e19PGRWVYbS+gHJGfJjdSFx4LtQacAs9mEyT/OLlAW7667+v32/VF+Dnm0+U0lTd6vBckIRfl0xrB+ts15WlhufFyvAScEtLNFNFpODrLPCDe6UyL+1TvY8WzNfvvcyyw6wODnJ1tc9L9AwIQwH6xOsbwaDqdRJhtwQ6QLHAUkrEV5zQcEZx8NxYcddxNjr/QJN1TXXFkr+mmqBqXySPQsTqk/ZI6qkCtCe8scL8J9H81VYgElkGgVMPO+0+zgw45lNvhMk2hk/AP2MQ7l3c+WS9gqhn9jF4OFUJo70N967WVdFMqOLiA7Ji7bwmxi2Gf0BJJNT2BfRndmokZJOy8mv7hx91VTsktf5y9gLLtXWhujZMc2KtgJGna3BPG/fUvuVnYv8hWWhpqgSRdKgQJPTBkjIafm8Xkgy24B0aEH4cn4caqc23yb3jziq7ii2OTH+gElgdDig0YhYr0Hoi+QqLbnVyox84AIAzm57m8VdNjRzyHqGfhLopQji5iMxOoYNifC4NPXJvpLskhSqsy1Wgb/++vWjeYWCrmjC8cN4vdlhHuaGZzVAYOXgazCXJKU9XMRv2pnBqKpUvI/RXDp3QyugX6QjM1PFbHaLgsnG8TgKFIfW5Jc+MmNpxAbXQxZGrIW2MpO2E22TOSQY3C3qo0FMqIAfk+x1LAFEMUExWdVNIBrPLs747feNeifzKZ0D9HeXc1g4H7ZvV3x9wVFtBUTI4Tr5PneCNAqQR6BudBJ9O/zhfuep0i4/6rKsH1zmE0zUqaTszryPMFPUiQcdlCf58Ig/x73xZbIT946H/h+XB5iaAhaH1gQFVdlGidV5v3Do5RKECFrO0b+6X2qO+cJWciYiDTV0cI1M0ZiqmJKz/4YpWOGxxTF/7Ga4T5ybzo1kUuTP1i3jFr9SrhT3uBTMad2vju+xlIin85yIZTZ526cdlnk5gzgy4waBEOmzxpK+azkAG9iFGlQvGrSvsv3xZRS+K60HFvsM2gfpOBdxRpFRhMygn8TSHxpMrDcVW6vp2/1/J9AOnT+ITrbsW7l94kzIoVABjQ40MwAOs7XSNtFK6QTHBzmeu1uy8SMQq0iUT3SIjARoQz9pTOqvXtvc36pMXnDLwtGUqbuP9t/KWVVV2suRWdWgPu2vP7so6ProlDNxC9e6VTRZCVj+rovLam2EHCc4NYxVaUQYo1wPfRqik1m/PZvF0GsIiL4+MCZE4gFYIZNWFD7DczHiUT9xb+tytkW41nfr5TgMq6b3zec0kIU6wpKTK5l8E++BRmj7I07ENmL+pQ4MS5RizKVidTzf6SVO63Zf0mgNrnw12jdPFzriBFYwHGpWtLT0dC2SlFSTJr8JEDG7zKs6GfH5Y/RgXEFXcpp+nuL2wxdqZXO2CLuYfRSyPtnxDm4DHaFFb5/xTpnmiGgss7DZ1xr14E8a8+XWYYfuee9ZaahNJpIR3suAQ5l/nDyeBa/IecM1VMolTu/E/S8e9fhHprlKx/l7UB0jlNFW8H4NBRkoC86v33gUZcmaGQSIWFxUId6pQXq7uD31L6IXXVJ9oReQRifvWb7RwUGv/X2QTLuCCas4wqSQwZgdI+sH9R8NYo+K6MTiV/MGXC+cst+M2z7KngJBx/p0zDWlk+sWW+xSUIhIwZ3Uv3vYEIfLGPC2Qzh5F9swurijtQmYNnzBAvJ5RvlS7H3S5Bko9t0GZIC4sHPDjw2nW/l3XHBi9dgBkj5hipdYOPD1Edm51II8OCAyxNJfHPN6nrQeqVU6Q00tgS+JsfHwq1OV1vfMjPPknKSr4NeHCUL8JOJxYf41Az5XKF0OTHWYuDGz+fxb6ZFkSwZFR6l0ekhjtV6E3QM8BLMQXx1cQFs8aNmDekOT+A3M1aoQ9znZE3nR7A53qkzBVZtdpEQGqzwfMe3njg1Hgb0d5K733RQm3u3580VSr6BPTQDovJaC35wh7vSwkO4covxP0drQnD9XOdjyuX6iZ0jTJCmTVz0QYuoxWy9CYyFwD6WKL4+xqFaIm1Lv66TePNwLdksDMSHNqEkKQ9xhRw1ONyD6m4vaTasJ57rpRwPgjZNhKx3/RJRwB4Q7yK909j09BZhRhC4NJJpOKRSZlHtyXc9xEwhIixZxdVd2SJoXSS4kD31C16oxLSOr9vT6jlhq9lsuMagvupuNtiDfC/yX1FfGl4SXTPvp+pr8OuvboeXcnBFFfGsvqEvhW348oT0ykvTRgB",
-                        },
-                        {"type": "text", "text": "3"},
-                    ],
+                                "signature": "EtYTCkYICBgCKkANtbBKg8QJLhEP6ClHWSxSrwS/PNmAMXU7/bUgVIrKl7mukf0SvpkXBmPuVcL75r6mNLIKZR5g3DSGBgkXgZYKEgyYC8JWTOZD3151NSgaDBhwPzwROUOMxNV7oyIweXIjmeT1dUBChey7Cbege2x6CMM+B1cLOWeJ95RJ4F7jKQpDxDRW2QbQNOMxJDTWKr0S/QOBdypUwk0udiuR70IvTBXZcOTFkyScOZa14XtTJ2kO92Utqg/OUNDEiRFhrSiDklwYexOh9Kb4V2SurgmurDjiheuLQZHWGlvK/q8IbC+JIBRYy31nLGiq/64o26fW08Tfvn/sWnM8qML2zwCh9u/2D2ihBW+2P7JQPA4RTmqWd+fqO5fJjQ4AtrR7+vRIXj1KLRyz2oTA6BnyX4+rfW8HUmMCpm8PFjZ4g93+92LHdjqNnrR7OcczhwqPguOiwZeQg/Z+V4EkLYPzJFFDCV22CUkQ5RWrQigVNxkFqsNUcViBRgkRGPbgQPVY9xcWAkCWImSWbcsEfz5far8kIA0B0O+CjgI8vBCMZkR4RawbfC7rkmxRsTpMehIskAgqyQC7QiSHRsUo38FkYtNDWFR1Nyjt/E7FgADdQMhoBmeSNqFuZuLjPPETRpQ2KlZlpcaIKiEbHTg7PiK9WdyusUiXPHYViPXflbejFqT1KL/ldEO7buijKy2s4HOQeu99oxUrtTCzcfn+eWbQYDAZmPVioJz8vCwCgYLvXJU92ofN+5JxwPsL9ZyxWI745hdXwB9VPF60YG1xU3aUYCw5J+6EWYuQ4AnPNNIYJN1JmZqMU+jb747oKWiN6wKGZuS+LYi0lK42adTz2jdD8UA38ZQx00966S6ilnQwMgv+hLIr0VAQ/uJY/AsDdHNmPsduwMf04fV+HIgJValY1NEZ6j8r1mfRYdwv9e/dqUIPTVjhFpFMRAHxpx+D3GkZS/zf3PkIuxgoDxOXWcw9NyvBR9iJTKOGv6VksY1/vqPA3YwybDQgp3tfkbc+AWp2YUdTV/Re8jv5cgHhinJEb0GjrlgXY2qI5nbKEjkXDzaCQACyRQ0ec7lqs28AMwiM8cleCwKk/kMBuEroCd8tLejA5xU9+Q8e19PGRWVYbS+gHJGfJjdSFx4LtQacAs9mEyT/OLlAW7667+v32/VF+Dnm0+U0lTd6vBckIRfl0xrB+ts15WlhufFyvAScEtLNFNFpODrLPCDe6UyL+1TvY8WzNfvvcyyw6wODnJ1tc9L9AwIQwH6xOsbwaDqdRJhtwQ6QLHAUkrEV5zQcEZx8NxYcddxNjr/QJN1TXXFkr+mmqBqXySPQsTqk/ZI6qkCtCe8scL8J9H81VYgElkGgVMPO+0+zgw45lNvhMk2hk/AP2MQ7l3c+WS9gqhn9jF4OFUJo70N967WVdFMqOLiA7Ji7bwmxi2Gf0BJJNT2BfRndmokZJOy8mv7hx91VTsktf5y9gLLtXWhujZMc2KtgJGna3BPG/fUvuVnYv8hWWhpqgSRdKgQJPTBkjIafm8Xkgy24B0aEH4cn4caqc23yb3jziq7ii2OTH+gElgdDig0YhYr0Hoi+QqLbnVyox84AIAzm57m8VdNjRzyHqGfhLopQji5iMxOoYNifC4NPXJvpLskhSqsy1Wgb/++vWjeYWCrmjC8cN4vdlhHuaGZzVAYOXgazCXJKU9XMRv2pnBqKpUvI/RXDp3QyugX6QjM1PFbHaLgsnG8TgKFIfW5Jc+MmNpxAbXQxZGrIW2MpO2E22TOSQY3C3qo0FMqIAfk+x1LAFEMUExWdVNIBrPLs747feNeifzKZ0D9HeXc1g4H7ZvV3x9wVFtBUTI4Tr5PneCNAqQR6BudBJ9O/zhfuep0i4/6rKsH1zmE0zUqaTszryPMFPUiQcdlCf58Ig/x73xZbIT946H/h+XB5iaAhaH1gQFVdlGidV5v3Do5RKECFrO0b+6X2qO+cJWciYiDTV0cI1M0ZiqmJKz/4YpWOGxxTF/7Ga4T5ybzo1kUuTP1i3jFr9SrhT3uBTMad2vju+xlIin85yIZTZ526cdlnk5gzgy4waBEOmzxpK+azkAG9iFGlQvGrSvsv3xZRS+K60HFvsM2gfpOBdxRpFRhMygn8TSHxpMrDcVW6vp2/1/J9AOnT+ITrbsW7l94kzIoVABjQ40MwAOs7XSNtFK6QTHBzmeu1uy8SMQq0iUT3SIjARoQz9pTOqvXtvc36pMXnDLwtGUqbuP9t/KWVVV2suRWdWgPu2vP7so6ProlDNxC9e6VTRZCVj+rovLam2EHCc4NYxVaUQYo1wPfRqik1m/PZvF0GsIiL4+MCZE4gFYIZNWFD7DczHiUT9xb+tytkW41nfr5TgMq6b3zec0kIU6wpKTK5l8E++BRmj7I07ENmL+pQ4MS5RizKVidTzf6SVO63Zf0mgNrnw12jdPFzriBFYwHGpWtLT0dC2SlFSTJr8JEDG7zKs6GfH5Y/RgXEFXcpp+nuL2wxdqZXO2CLuYfRSyPtnxDm4DHaFFb5/xTpnmiGgss7DZ1xr14E8a8+XWYYfuee9ZaahNJpIR3suAQ5l/nDyeBa/IecM1VMolTu/E/S8e9fhHprlKx/l7UB0jlNFW8H4NBRkoC86v33gUZcmaGQSIWFxUId6pQXq7uD31L6IXXVJ9oReQRifvWb7RwUGv/X2QTLuCCas4wqSQwZgdI+sH9R8NYo+K6MTiV/MGXC+cst+M2z7KngJBx/p0zDWlk+sWW+xSUIhIwZ3Uv3vYEIfLGPC2Qzh5F9swurijtQmYNnzBAvJ5RvlS7H3S5Bko9t0GZIC4sHPDjw2nW/l3XHBi9dgBkj5hipdYOPD1Edm51II8OCAyxNJfHPN6nrQeqVU6Q00tgS+JsfHwq1OV1vfMjPPknKSr4NeHCUL8JOJxYf41Az5XKF0OTHWYuDGz+fxb6ZFkSwZFR6l0ekhjtV6E3QM8BLMQXx1cQFs8aNmDekOT+A3M1aoQ9znZE3nR7A53qkzBVZtdpEQGqzwfMe3njg1Hgb0d5K733RQm3u3580VSr6BPTQDovJaC35wh7vSwkO4covxP0drQnD9XOdjyuX6iZ0jTJCmTVz0QYuoxWy9CYyFwD6WKL4+xqFaIm1Lv66TePNwLdksDMSHNqEkKQ9xhRw1ONyD6m4vaTasJ57rpRwPgjZNhKx3/RJRwB4Q7yK909j09BZhRhC4NJJpOKRSZlHtyXc9xEwhIixZxdVd2SJoXSS4kD31C16oxLSOr9vT6jlhq9lsuMagvupuNtiDfC/yX1FfGl4SXTPvp+pr8OuvboeXcnBFFfGsvqEvhW348oT0ykvTRgB",
+                            },
+                            {"type": "text", "text": "3"},
+                        ],
+                    },
                 ),
                 UserMessage(
                     content=[
@@ -494,9 +513,15 @@ The primes below 400 containing "79" are 79, 179, and 379 - totaling 3 such prim
                     content=[Text(text="I remember them: 79, 179, and 379.")],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[
-                        {"type": "text", "text": "I remember them: 79, 179, and 379."}
-                    ],
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "I remember them: 79, 179, and 379.",
+                            }
+                        ],
+                    },
                 ),
             ],
             "format": None,
@@ -587,10 +612,12 @@ I've identified 179 and 379 as prime numbers containing "79".\
                     ],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[
-                        {
-                            "type": "thinking",
-                            "thinking": """\
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "thinking",
+                                "thinking": """\
 I need to find all prime numbers below 400 that contain "79" as a substring.
 
 First, let me think about what numbers below 400 could contain "79" as a substring:
@@ -649,10 +676,11 @@ Therefore 379 is prime.
 
 I've identified 179 and 379 as prime numbers containing "79".\
 """,
-                            "signature": "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",
-                        },
-                        {"type": "text", "text": "3"},
-                    ],
+                                "signature": "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",
+                            },
+                            {"type": "text", "text": "3"},
+                        ],
+                    },
                 ),
                 UserMessage(
                     content=[
@@ -665,7 +693,10 @@ I've identified 179 and 379 as prime numbers containing "79".\
                     content=[Text(text="I don't remember.")],
                     provider="anthropic",
                     model_id="claude-sonnet-4-0",
-                    raw_content=[{"type": "text", "text": "I don't remember."}],
+                    raw_message={
+                        "role": "assistant",
+                        "content": [{"type": "text", "text": "I don't remember."}],
+                    },
                 ),
             ],
             "format": None,

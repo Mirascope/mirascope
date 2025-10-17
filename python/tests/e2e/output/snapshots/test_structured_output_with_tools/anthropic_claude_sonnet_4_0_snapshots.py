@@ -38,14 +38,17 @@ sync_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "id": "toolu_01Uxfpoznt55BtPABqyGgiVF",
-                        "input": {"isbn": "0-7653-1178-X"},
-                        "name": "get_book_info",
-                        "type": "tool_use",
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "id": "toolu_01Uxfpoznt55BtPABqyGgiVF",
+                            "input": {"isbn": "0-7653-1178-X"},
+                            "name": "get_book_info",
+                            "type": "tool_use",
+                        }
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -64,19 +67,22 @@ sync_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "id": "toolu_017Ukn2vUrtxDL4o9GXsQbcq",
-                        "input": {
-                            "title": "Mistborn: The Final Empire",
-                            "author": "Brandon Sanderson",
-                            "pages": 544,
-                            "publication_year": 2006,
-                        },
-                        "name": "__mirascope_formatted_output_tool__",
-                        "type": "tool_use",
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "id": "toolu_017Ukn2vUrtxDL4o9GXsQbcq",
+                            "input": {
+                                "title": "Mistborn: The Final Empire",
+                                "author": "Brandon Sanderson",
+                                "pages": 544,
+                                "publication_year": 2006,
+                            },
+                            "name": "__mirascope_formatted_output_tool__",
+                            "type": "tool_use",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -152,14 +158,17 @@ async_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "id": "toolu_0126etS4bAGZScRrGPBqxRsd",
-                        "input": {"isbn": "0-7653-1178-X"},
-                        "name": "get_book_info",
-                        "type": "tool_use",
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "id": "toolu_0126etS4bAGZScRrGPBqxRsd",
+                            "input": {"isbn": "0-7653-1178-X"},
+                            "name": "get_book_info",
+                            "type": "tool_use",
+                        }
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -178,19 +187,22 @@ async_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "id": "toolu_01UMjxjSNf82pQ6vCL2RjwMM",
-                        "input": {
-                            "title": "Mistborn: The Final Empire",
-                            "author": "Brandon Sanderson",
-                            "pages": 544,
-                            "publication_year": 2006,
-                        },
-                        "name": "__mirascope_formatted_output_tool__",
-                        "type": "tool_use",
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "id": "toolu_01UMjxjSNf82pQ6vCL2RjwMM",
+                            "input": {
+                                "title": "Mistborn: The Final Empire",
+                                "author": "Brandon Sanderson",
+                                "pages": 544,
+                                "publication_year": 2006,
+                            },
+                            "name": "__mirascope_formatted_output_tool__",
+                            "type": "tool_use",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -265,14 +277,17 @@ stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01V4c2i832rSEPD8ei36G5wy",
-                        "name": "get_book_info",
-                        "input": {"isbn": "0-7653-1178-X"},
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01V4c2i832rSEPD8ei36G5wy",
+                            "name": "get_book_info",
+                            "input": {"isbn": "0-7653-1178-X"},
+                        }
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -291,19 +306,22 @@ stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01PMq9ZmA3pdt6mE7MWGciJe",
-                        "name": "__mirascope_formatted_output_tool__",
-                        "input": {
-                            "title": "Mistborn: The Final Empire",
-                            "author": "Brandon Sanderson",
-                            "pages": 544,
-                            "publication_year": 2006,
-                        },
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01PMq9ZmA3pdt6mE7MWGciJe",
+                            "name": "__mirascope_formatted_output_tool__",
+                            "input": {
+                                "title": "Mistborn: The Final Empire",
+                                "author": "Brandon Sanderson",
+                                "pages": 544,
+                                "publication_year": 2006,
+                            },
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -379,14 +397,17 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01F4b6WyTRLdgrCL4g2UhcD8",
-                        "name": "get_book_info",
-                        "input": {"isbn": "0-7653-1178-X"},
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01F4b6WyTRLdgrCL4g2UhcD8",
+                            "name": "get_book_info",
+                            "input": {"isbn": "0-7653-1178-X"},
+                        }
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -405,19 +426,22 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01KYW98qPjWzv29T9xqNLdVc",
-                        "name": "__mirascope_formatted_output_tool__",
-                        "input": {
-                            "title": "Mistborn: The Final Empire",
-                            "author": "Brandon Sanderson",
-                            "pages": 544,
-                            "publication_year": 2006,
-                        },
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01KYW98qPjWzv29T9xqNLdVc",
+                            "name": "__mirascope_formatted_output_tool__",
+                            "input": {
+                                "title": "Mistborn: The Final Empire",
+                                "author": "Brandon Sanderson",
+                                "pages": 544,
+                                "publication_year": 2006,
+                            },
+                        }
+                    ],
+                },
             ),
         ],
         "format": {

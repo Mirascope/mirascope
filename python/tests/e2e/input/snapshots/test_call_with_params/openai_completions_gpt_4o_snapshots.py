@@ -29,13 +29,11 @@ test_snapshot = snapshot(
                         content=[Text(text="4200 + 42 equals ")],
                         provider="openai:completions",
                         model_id="gpt-4o",
-                        raw_content=[
-                            {
-                                "content": "4200 + 42 equals ",
-                                "role": "assistant",
-                                "annotations": [],
-                            }
-                        ],
+                        raw_message={
+                            "content": "4200 + 42 equals ",
+                            "role": "assistant",
+                            "annotations": [],
+                        },
                     ),
                 ],
                 "format": None,

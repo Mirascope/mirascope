@@ -90,9 +90,8 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "content": """\
+                raw_message={
+                    "content": """\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -102,10 +101,9 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """,
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": {
@@ -274,9 +272,8 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "content": """\
+                raw_message={
+                    "content": """\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -286,10 +283,9 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """,
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": {
@@ -457,7 +453,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {
@@ -626,7 +622,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {

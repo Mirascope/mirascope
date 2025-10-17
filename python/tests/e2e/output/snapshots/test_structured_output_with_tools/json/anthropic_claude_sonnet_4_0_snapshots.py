@@ -71,19 +71,22 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
-                        "type": "text",
-                    },
-                    {
-                        "id": "toolu_016v5fUb8JC9eQNLE8u8V2Wc",
-                        "input": {"isbn": "0-7653-1178-X"},
-                        "name": "get_book_info",
-                        "type": "tool_use",
-                    },
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
+                            "type": "text",
+                        },
+                        {
+                            "id": "toolu_016v5fUb8JC9eQNLE8u8V2Wc",
+                            "input": {"isbn": "0-7653-1178-X"},
+                            "name": "get_book_info",
+                            "type": "tool_use",
+                        },
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -109,10 +112,12 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": """\
 {
   "title": "Mistborn: The Final Empire",
   "author": "Brandon Sanderson",
@@ -120,9 +125,10 @@ Respond only with valid JSON that matches this exact schema:
   "publication_year": 2006
 }\
 """,
-                        "type": "text",
-                    }
-                ],
+                            "type": "text",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -261,19 +267,22 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
-                        "type": "text",
-                    },
-                    {
-                        "id": "toolu_01LfPidiAJiAENAsQfL44pSF",
-                        "input": {"isbn": "0-7653-1178-X"},
-                        "name": "get_book_info",
-                        "type": "tool_use",
-                    },
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
+                            "type": "text",
+                        },
+                        {
+                            "id": "toolu_01LfPidiAJiAENAsQfL44pSF",
+                            "input": {"isbn": "0-7653-1178-X"},
+                            "name": "get_book_info",
+                            "type": "tool_use",
+                        },
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -301,10 +310,12 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": """\
 ```json
 {
   "title": "Mistborn: The Final Empire",
@@ -314,9 +325,10 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """,
-                        "type": "text",
-                    }
-                ],
+                            "type": "text",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -454,18 +466,21 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "text",
-                        "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
-                    },
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01HWc4KZPCzzGM9t5HgssYdB",
-                        "name": "get_book_info",
-                        "input": {"isbn": "0-7653-1178-X"},
-                    },
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
+                        },
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01HWc4KZPCzzGM9t5HgssYdB",
+                            "name": "get_book_info",
+                            "input": {"isbn": "0-7653-1178-X"},
+                        },
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -491,10 +506,12 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "text",
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """\
 {
   "title": "Mistborn: The Final Empire",
   "author": "Brandon Sanderson",
@@ -502,8 +519,9 @@ Respond only with valid JSON that matches this exact schema:
   "publication_year": 2006
 }\
 """,
-                    }
-                ],
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -642,18 +660,21 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "text",
-                        "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
-                    },
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01JxAu6AEmKwN7YZtp4uDQtC",
-                        "name": "get_book_info",
-                        "input": {"isbn": "0-7653-1178-X"},
-                    },
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "I'll look up the book information for ISBN 0-7653-1178-X.",
+                        },
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01JxAu6AEmKwN7YZtp4uDQtC",
+                            "name": "get_book_info",
+                            "input": {"isbn": "0-7653-1178-X"},
+                        },
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -679,10 +700,12 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "text",
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """\
 {
   "title": "Mistborn: The Final Empire",
   "author": "Brandon Sanderson",
@@ -690,8 +713,9 @@ Respond only with valid JSON that matches this exact schema:
   "publication_year": 2006
 }\
 """,
-                    }
-                ],
+                        }
+                    ],
+                },
             ),
         ],
         "format": {

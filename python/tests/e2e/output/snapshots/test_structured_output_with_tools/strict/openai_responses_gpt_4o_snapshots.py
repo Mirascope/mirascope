@@ -32,7 +32,7 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"isbn":"0-7653-1178-X"}',
                         "call_id": "call_x62FJoHImWtl4XlNg7pnd9ij",
@@ -63,7 +63,7 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0d500ed14dac8aa80068f2a2e6e1548193b7400b1814b04b63",
                         "content": [
@@ -163,7 +163,7 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"isbn":"0-7653-1178-X"}',
                         "call_id": "call_7o69tE63kjgocyseJ6O998CX",
@@ -191,7 +191,7 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0b882f93e8d7f1170068f2a323bf008196ba1d0a1f4d3ba6be",
                         "content": [
@@ -276,7 +276,7 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"isbn":"0-7653-1178-X"}',
                         "call_id": "call_IxugtwYIfPlbKHwZyyt9jQ3A",
@@ -304,7 +304,7 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0b43fb0f4bd678710068f2a359c0608196bf9ee0484f43f7b3",
                         "content": [
@@ -390,7 +390,7 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "arguments": '{"isbn":"0-7653-1178-X"}',
                         "call_id": "call_WQ2jLlhFv3DjImp8sd8BfGHE",
@@ -418,7 +418,7 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_003bcb20887d7f890068f2a390560081938c96429f36f9e3be",
                         "content": [

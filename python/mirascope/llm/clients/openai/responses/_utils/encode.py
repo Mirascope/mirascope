@@ -76,10 +76,10 @@ def _encode_message(
         message.role == "assistant"
         and message.provider == "openai:responses"
         and message.model_id == model_id
-        and message.raw_content
+        and message.raw_message
         and not encode_thoughts
     ):
-        return cast(ResponseInputParam, message.raw_content)
+        return cast(ResponseInputParam, message.raw_message)
 
     result: ResponseInputParam = []
 

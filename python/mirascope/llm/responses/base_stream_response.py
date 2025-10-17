@@ -23,6 +23,7 @@ from ..content import (
 from ..formatting import Format, FormattableT, Partial
 from ..messages import AssistantMessage, Message
 from ..tools import FORMAT_TOOL_NAME, ToolkitT
+from ..types import Jsonable
 from .finish_reason import FinishReasonChunk
 from .root_response import RootResponse
 from .streams import (
@@ -54,28 +55,28 @@ class RawStreamEventChunk:
 
 
 @dataclass(kw_only=True)
-class RawContentChunk:
-    """A chunk containing provider-specific content that will be added to the `AssistantMessage`.
+class RawMessageChunk:
+    """A chunk containing provider-specific raw message content that will be added to the `AssistantMessage`.
 
     This chunk contains a provider-specific representation of a piece of content that
     will be added to the `AssistantMessage` reconstructed by the containing stream.
-    This content should be a regular python dict for serialization purposes.
+    This content should be a Jsonable Python object for serialization purposes.
 
     The intention is that this content may be passed as-is back to the provider when the
     generated `AssistantMessage` is being reused in conversation.
     """
 
-    type: Literal["raw_content_chunk"] = "raw_content_chunk"
+    type: Literal["raw_message_chunk"] = "raw_message_chunk"
 
-    content: dict[str, Any]
+    raw_message: Jsonable
     """The provider-specific raw content.
     
-    Should be a Python dict containing only JSON-serializable values.
+    Should be a Jsonable object.
     """
 
 
 StreamResponseChunk: TypeAlias = (
-    AssistantContentChunk | FinishReasonChunk | RawStreamEventChunk | RawContentChunk
+    AssistantContentChunk | FinishReasonChunk | RawStreamEventChunk | RawMessageChunk
 )
 
 ChunkIterator: TypeAlias = Iterator[StreamResponseChunk]
@@ -192,7 +193,6 @@ class BaseStreamResponse(
         self._tool_calls: list[ToolCall] = []
         self._raw_stream_events: list[Any] = []
         self._last_raw_stream_event_chunk: Any | None = None
-        self._assistant_message_raw_content: list[dict[str, Any]] = []
 
         # Externally-facing references typed as immutable Sequences
         self.chunks = self._chunks
@@ -204,14 +204,14 @@ class BaseStreamResponse(
 
         self.finish_reason = None
 
-        _assistant_message = AssistantMessage(
+        self._assistant_message = AssistantMessage(
             content=self._content,
             provider=provider,
             model_id=model_id,
-            raw_content=self._assistant_message_raw_content,
+            raw_message=None,
         )
 
-        self.messages = list(input_messages) + [_assistant_message]
+        self.messages = list(input_messages) + [self._assistant_message]
 
         self._chunk_iterator = chunk_iterator
         self._current_content: Text | Thought | ToolCall | None = None
@@ -466,8 +466,8 @@ class BaseSyncStreamResponse(BaseStreamResponse[ChunkIterator, ToolkitT, Formatt
         for chunk in self._chunk_iterator:
             if chunk.type == "raw_stream_event_chunk":
                 self._raw_stream_events.append(chunk.raw_stream_event)
-            elif chunk.type == "raw_content_chunk":
-                self._assistant_message_raw_content.append(chunk.content)
+            elif chunk.type == "raw_message_chunk":
+                self._assistant_message.raw_message = chunk.raw_message
             elif chunk.type == "finish_reason_chunk":
                 self.finish_reason = chunk.finish_reason
             else:
@@ -639,8 +639,8 @@ class BaseAsyncStreamResponse(
         async for chunk in self._chunk_iterator:
             if chunk.type == "raw_stream_event_chunk":
                 self._raw_stream_events.append(chunk.raw_stream_event)
-            elif chunk.type == "raw_content_chunk":
-                self._assistant_message_raw_content.append(chunk.content)
+            elif chunk.type == "raw_message_chunk":
+                self._assistant_message.raw_message = chunk.raw_message
             elif chunk.type == "finish_reason_chunk":
                 self.finish_reason = chunk.finish_reason
             else:

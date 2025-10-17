@@ -28,13 +28,11 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                raw_message={
+                    "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": {
@@ -96,13 +94,11 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                raw_message={
+                    "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": {
@@ -163,7 +159,7 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {
@@ -225,7 +221,7 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {

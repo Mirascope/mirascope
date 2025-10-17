@@ -18,13 +18,16 @@ test_snapshot = snapshot(
                 content=[Text(text="I was created by Anthropic.")],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": "I was created by Anthropic.",
-                        "type": "text",
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": "I was created by Anthropic.",
+                            "type": "text",
+                        }
+                    ],
+                },
             ),
             UserMessage(content=[Text(text="Can you double-check that?")]),
             AssistantMessage(
@@ -35,7 +38,7 @@ test_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_011e8192a985a6840068f29b76a7648196bd80dec7a79dee54",
                         "content": [

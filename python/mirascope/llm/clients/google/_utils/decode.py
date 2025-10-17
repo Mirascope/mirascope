@@ -27,7 +27,7 @@ from ....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
-    RawContentChunk,
+    RawMessageChunk,
     RawStreamEventChunk,
 )
 from ..model_ids import GoogleModelId
@@ -102,21 +102,22 @@ def decode_response(
 ) -> tuple[AssistantMessage, FinishReason | None]:
     """Returns an `AssistantMessage` and `FinishReason` extracted from a `GenerateContentResponse`"""
     content: Sequence[AssistantContentPart] = []
-    raw_content = []
+    candidate_content: genai_types.Content | None = None
     finish_reason: FinishReason | None = None
 
     if response.candidates and (candidate := response.candidates[0]):
         content = _decode_candidate_content(candidate)
-        if candidate_content := candidate.content:
-            raw_content = [part.model_dump() for part in candidate_content.parts or []]
+        candidate_content = candidate.content
         if candidate.finish_reason:
             finish_reason = GOOGLE_FINISH_REASON_MAP.get(candidate.finish_reason)
+
+    candidate_content = candidate_content or genai_types.Content()
 
     assistant_message = AssistantMessage(
         content=content,
         provider="google",
         model_id=model_id,
-        raw_content=raw_content,
+        raw_message=candidate_content.model_dump(),
     )
 
     return assistant_message, finish_reason
@@ -127,6 +128,8 @@ class _GoogleChunkProcessor:
 
     def __init__(self) -> None:
         self.current_content_type: Literal["text", "tool_call", "thought"] | None = None
+        self.accumulated_parts: list[genai_types.Part] = []
+        self.reconstructed_content = genai_types.Content(parts=[])
 
     def process_chunk(
         self, chunk: genai_types.GenerateContentResponse
@@ -139,7 +142,7 @@ class _GoogleChunkProcessor:
             return  # pragma: no cover
 
         for part in candidate.content.parts:
-            yield RawContentChunk(content=part.model_dump())
+            self.accumulated_parts.append(part)
             if self.current_content_type == "thought" and not part.thought:
                 yield ThoughtEndChunk()
                 self.current_content_type = None
@@ -202,6 +205,10 @@ class _GoogleChunkProcessor:
             if finish_reason is not None:
                 yield FinishReasonChunk(finish_reason=finish_reason)
 
+    def raw_message_chunk(self) -> RawMessageChunk:
+        content = genai_types.Content(role="model", parts=self.accumulated_parts)
+        return RawMessageChunk(raw_message=content.model_dump())
+
 
 def decode_stream(
     google_stream: Iterator[genai_types.GenerateContentResponse],
@@ -210,6 +217,7 @@ def decode_stream(
     processor = _GoogleChunkProcessor()
     for chunk in google_stream:
         yield from processor.process_chunk(chunk)
+    yield processor.raw_message_chunk()
 
 
 async def decode_async_stream(
@@ -220,3 +228,4 @@ async def decode_async_stream(
     async for chunk in google_stream:
         for item in processor.process_chunk(chunk):
             yield item
+    yield processor.raw_message_chunk()

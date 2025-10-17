@@ -35,10 +35,12 @@ Here are all 50 U.S. states listed alphabetically:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": """\
 Here are all 50 U.S. states listed alphabetically:
 
 1. Alabama
@@ -51,9 +53,10 @@ Here are all 50 U.S. states listed alphabetically:
 8. Delaware
 9.\
 """,
-                        "type": "text",
-                    }
-                ],
+                            "type": "text",
+                        }
+                    ],
+                },
             ),
         ],
         "format": None,
@@ -88,10 +91,12 @@ Here are all 50 U.S. states in alphabetical order:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": """\
 Here are all 50 U.S. states in alphabetical order:
 
 1. Alabama
@@ -104,9 +109,10 @@ Here are all 50 U.S. states in alphabetical order:
 8. Delaware
 9\
 """,
-                        "type": "text",
-                    }
-                ],
+                            "type": "text",
+                        }
+                    ],
+                },
             ),
         ],
         "format": None,
@@ -140,10 +146,12 @@ Here are all 50 U.S. states in alphabetical order:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "text",
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """\
 Here are all 50 U.S. states in alphabetical order:
 
 1. Alabama
@@ -156,8 +164,9 @@ Here are all 50 U.S. states in alphabetical order:
 8. Delaware
 9\
 """,
-                    }
-                ],
+                        }
+                    ],
+                },
             ),
         ],
         "format": None,
@@ -192,10 +201,12 @@ Here are all 50 U.S. states in alphabetical order:
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "text",
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": """\
 Here are all 50 U.S. states in alphabetical order:
 
 1. Alabama
@@ -208,8 +219,9 @@ Here are all 50 U.S. states in alphabetical order:
 8. Delaware
 9\
 """,
-                    }
-                ],
+                        }
+                    ],
+                },
             ),
         ],
         "format": None,

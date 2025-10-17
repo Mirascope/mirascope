@@ -39,30 +39,28 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "role": "assistant",
-                        "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_v6LacIrChvs6ITVpIZqy5tFc",
-                                "function": {
-                                    "arguments": '{"password": "mellon"}',
-                                    "name": "secret_retrieval_tool",
-                                },
-                                "type": "function",
+                raw_message={
+                    "role": "assistant",
+                    "annotations": [],
+                    "tool_calls": [
+                        {
+                            "id": "call_v6LacIrChvs6ITVpIZqy5tFc",
+                            "function": {
+                                "arguments": '{"password": "mellon"}',
+                                "name": "secret_retrieval_tool",
                             },
-                            {
-                                "id": "call_onyWzk4mLTGKzW9cthmf4Llq",
-                                "function": {
-                                    "arguments": '{"password": "radiance"}',
-                                    "name": "secret_retrieval_tool",
-                                },
-                                "type": "function",
+                            "type": "function",
+                        },
+                        {
+                            "id": "call_onyWzk4mLTGKzW9cthmf4Llq",
+                            "function": {
+                                "arguments": '{"password": "radiance"}',
+                                "name": "secret_retrieval_tool",
                             },
-                        ],
-                    }
-                ],
+                            "type": "function",
+                        },
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -90,17 +88,15 @@ The secrets associated with the passwords are as follows:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "content": """\
+                raw_message={
+                    "content": """\
 The secrets associated with the passwords are as follows:
 - For "mellon": Welcome to Moria!
 - For "radiance": Life before Death\
 """,
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": None,
@@ -158,30 +154,28 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "role": "assistant",
-                        "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_kV9vjaAQay11Sz59dcmJnZmJ",
-                                "function": {
-                                    "arguments": '{"password": "mellon"}',
-                                    "name": "secret_retrieval_tool",
-                                },
-                                "type": "function",
+                raw_message={
+                    "role": "assistant",
+                    "annotations": [],
+                    "tool_calls": [
+                        {
+                            "id": "call_kV9vjaAQay11Sz59dcmJnZmJ",
+                            "function": {
+                                "arguments": '{"password": "mellon"}',
+                                "name": "secret_retrieval_tool",
                             },
-                            {
-                                "id": "call_z6b97nQ6yUZ1Wtuwn6RAgHiP",
-                                "function": {
-                                    "arguments": '{"password": "radiance"}',
-                                    "name": "secret_retrieval_tool",
-                                },
-                                "type": "function",
+                            "type": "function",
+                        },
+                        {
+                            "id": "call_z6b97nQ6yUZ1Wtuwn6RAgHiP",
+                            "function": {
+                                "arguments": '{"password": "radiance"}',
+                                "name": "secret_retrieval_tool",
                             },
-                        ],
-                    }
-                ],
+                            "type": "function",
+                        },
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -210,18 +204,16 @@ Here are the secrets associated with the passwords:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "content": """\
+                raw_message={
+                    "content": """\
 Here are the secrets associated with the passwords:
 
 - For "mellon": Welcome to Moria!
 - For "radiance": Life before Death\
 """,
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": None,
@@ -278,7 +270,7 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
             UserMessage(
                 content=[
@@ -305,7 +297,7 @@ The secret for the password "radiance" is: "Life before Death"\
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": None,
@@ -363,7 +355,7 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
             UserMessage(
                 content=[
@@ -392,7 +384,7 @@ Here are the secrets associated with the provided passwords:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": None,

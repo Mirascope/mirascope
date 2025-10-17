@@ -34,21 +34,24 @@ sync_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "id": "toolu_01GrPPvn7oyH4HJVKDi3yV1C",
-                        "input": {
-                            "title": "THE NAME OF THE WIND",
-                            "author": {
-                                "first_name": "Patrick",
-                                "last_name": "Rothfuss",
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "id": "toolu_01GrPPvn7oyH4HJVKDi3yV1C",
+                            "input": {
+                                "title": "THE NAME OF THE WIND",
+                                "author": {
+                                    "first_name": "Patrick",
+                                    "last_name": "Rothfuss",
+                                },
+                                "rating": 7,
                             },
-                            "rating": 7,
-                        },
-                        "name": "__mirascope_formatted_output_tool__",
-                        "type": "tool_use",
-                    }
-                ],
+                            "name": "__mirascope_formatted_output_tool__",
+                            "type": "tool_use",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -114,21 +117,24 @@ async_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "id": "toolu_01XdinqMTgTXhRQEmpoDZQ4z",
-                        "input": {
-                            "title": "THE NAME OF THE WIND",
-                            "author": {
-                                "first_name": "Patrick",
-                                "last_name": "Rothfuss",
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "id": "toolu_01XdinqMTgTXhRQEmpoDZQ4z",
+                            "input": {
+                                "title": "THE NAME OF THE WIND",
+                                "author": {
+                                    "first_name": "Patrick",
+                                    "last_name": "Rothfuss",
+                                },
+                                "rating": 7,
                             },
-                            "rating": 7,
-                        },
-                        "name": "__mirascope_formatted_output_tool__",
-                        "type": "tool_use",
-                    }
-                ],
+                            "name": "__mirascope_formatted_output_tool__",
+                            "type": "tool_use",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -193,21 +199,24 @@ stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01BxiD7dbWGxXE7HQ699rEtm",
-                        "name": "__mirascope_formatted_output_tool__",
-                        "input": {
-                            "title": "THE NAME OF THE WIND",
-                            "author": {
-                                "first_name": "Patrick",
-                                "last_name": "Rothfuss",
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01BxiD7dbWGxXE7HQ699rEtm",
+                            "name": "__mirascope_formatted_output_tool__",
+                            "input": {
+                                "title": "THE NAME OF THE WIND",
+                                "author": {
+                                    "first_name": "Patrick",
+                                    "last_name": "Rothfuss",
+                                },
+                                "rating": 7,
                             },
-                            "rating": 7,
-                        },
-                    }
-                ],
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -273,21 +282,24 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "type": "tool_use",
-                        "id": "toolu_01MoXSiTmWBH8YPi2A7XcnQS",
-                        "name": "__mirascope_formatted_output_tool__",
-                        "input": {
-                            "title": "THE NAME OF THE WIND",
-                            "author": {
-                                "first_name": "Patrick",
-                                "last_name": "Rothfuss",
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "toolu_01MoXSiTmWBH8YPi2A7XcnQS",
+                            "name": "__mirascope_formatted_output_tool__",
+                            "input": {
+                                "title": "THE NAME OF THE WIND",
+                                "author": {
+                                    "first_name": "Patrick",
+                                    "last_name": "Rothfuss",
+                                },
+                                "rating": 7,
                             },
-                            "rating": 7,
-                        },
-                    }
-                ],
+                        }
+                    ],
+                },
             ),
         ],
         "format": {

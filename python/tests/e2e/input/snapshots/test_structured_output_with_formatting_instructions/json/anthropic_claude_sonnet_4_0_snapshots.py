@@ -39,19 +39,22 @@ lucky number 7.\
                 ],
                 provider="anthropic",
                 model_id="claude-sonnet-4-0",
-                raw_content=[
-                    {
-                        "citations": None,
-                        "text": """\
+                raw_message={
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "citations": None,
+                            "text": """\
 {
   "title": "THE NAME OF THE WIND",
   "author": "Patrick Rothfuss",
   "rating": 7
 }\
 """,
-                        "type": "text",
-                    }
-                ],
+                            "type": "text",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {

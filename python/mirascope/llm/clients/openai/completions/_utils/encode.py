@@ -79,11 +79,11 @@ def _encode_assistant_message(
     if (
         message.provider == "openai:completions"
         and message.model_id == model_id
-        and message.raw_content
+        and message.raw_message
         and not encode_thoughts
     ):
         return cast(
-            openai_types.ChatCompletionAssistantMessageParam, message.raw_content[0]
+            openai_types.ChatCompletionAssistantMessageParam, message.raw_message
         )
 
     text_params: list[openai_types.ChatCompletionContentPartTextParam] = []

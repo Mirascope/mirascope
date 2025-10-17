@@ -27,7 +27,7 @@ from .....responses import (
     ChunkIterator,
     FinishReason,
     FinishReasonChunk,
-    RawContentChunk,
+    RawMessageChunk,
     RawStreamEventChunk,
 )
 from ..model_ids import OpenAIResponsesModelId
@@ -93,7 +93,7 @@ def decode_response(
         content=parts,
         provider="openai:responses",
         model_id=model_id,
-        raw_content=[
+        raw_message=[
             _serialize_output_item(output_item) for output_item in response.output
         ],
     )
@@ -166,8 +166,11 @@ class _OpenAIResponsesChunkProcessor:
                 if finish_reason:
                     yield FinishReasonChunk(finish_reason=finish_reason)
             elif event.type == "response.completed":
-                for output_item in event.response.output:
-                    yield RawContentChunk(content=_serialize_output_item(output_item))
+                yield RawMessageChunk(
+                    raw_message=[
+                        _serialize_output_item(item) for item in event.response.output
+                    ]
+                )
                 if self.refusal_encountered:
                     yield FinishReasonChunk(finish_reason=FinishReason.REFUSAL)
 

@@ -35,7 +35,7 @@ Sure! Here is a list of all 50 U.S. states:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0a62663f7e8935920068f29939b5b481978a0b8d08aa8c0516",
                         "content": [
@@ -98,7 +98,7 @@ Certainly! Here is a list of all U.S. states:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0e327036bc0ec30d0068f299404a0881978496022bdae018ca",
                         "content": [
@@ -161,7 +161,7 @@ Sure! Here is a list of all U.S. states:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": None,
@@ -197,7 +197,7 @@ Sure! Here is a list of all U.S. states:
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": None,

@@ -68,22 +68,20 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "role": "assistant",
-                        "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_PXmnw6FDiJhLZrN5DuUgM4L8",
-                                "function": {
-                                    "arguments": '{"isbn":"0-7653-1178-X"}',
-                                    "name": "get_book_info",
-                                },
-                                "type": "function",
-                            }
-                        ],
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "annotations": [],
+                    "tool_calls": [
+                        {
+                            "id": "call_PXmnw6FDiJhLZrN5DuUgM4L8",
+                            "function": {
+                                "arguments": '{"isbn":"0-7653-1178-X"}',
+                                "name": "get_book_info",
+                            },
+                            "type": "function",
+                        }
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -109,9 +107,8 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "content": """\
+                raw_message={
+                    "content": """\
 {
   "title": "Mistborn: The Final Empire",
   "author": "Brandon Sanderson",
@@ -119,10 +116,9 @@ Respond only with valid JSON that matches this exact schema:
   "publication_year": 2006
 }\
 """,
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": {
@@ -258,22 +254,20 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "role": "assistant",
-                        "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_ZcgNpwZJ9bICeQkRzivbGKVh",
-                                "function": {
-                                    "arguments": '{"isbn":"0-7653-1178-X"}',
-                                    "name": "get_book_info",
-                                },
-                                "type": "function",
-                            }
-                        ],
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "annotations": [],
+                    "tool_calls": [
+                        {
+                            "id": "call_ZcgNpwZJ9bICeQkRzivbGKVh",
+                            "function": {
+                                "arguments": '{"isbn":"0-7653-1178-X"}',
+                                "name": "get_book_info",
+                            },
+                            "type": "function",
+                        }
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -292,13 +286,11 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "content": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
-                        "role": "assistant",
-                        "annotations": [],
-                    }
-                ],
+                raw_message={
+                    "content": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                    "role": "assistant",
+                    "annotations": [],
+                },
             ),
         ],
         "format": {
@@ -433,7 +425,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
             UserMessage(
                 content=[
@@ -459,7 +451,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {
@@ -595,7 +587,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
             UserMessage(
                 content=[
@@ -614,7 +606,7 @@ Respond only with valid JSON that matches this exact schema:
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {

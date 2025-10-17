@@ -28,7 +28,7 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_0042a48f4da778790068f2a21f2c348194acefef95a938a8b8",
                         "content": [
@@ -105,7 +105,7 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_01ed6b0e77d5e3240068f2a23ff1ec8195998cc1be001309c9",
                         "content": [
@@ -181,7 +181,7 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_074f4c09fc7a83d90068f2a25f134c8195a63698925c50b356",
                         "content": [
@@ -258,7 +258,7 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:responses",
                 model_id="gpt-4o",
-                raw_content=[
+                raw_message=[
                     {
                         "id": "msg_00206770ae6f24940068f2a27d282881959e876d95d8f06939",
                         "content": [

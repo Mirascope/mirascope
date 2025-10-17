@@ -38,22 +38,20 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "role": "assistant",
-                        "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_kVqPYJQTr8gmEZoMSRZBuD8l",
-                                "function": {
-                                    "arguments": '{"isbn":"0-7653-1178-X"}',
-                                    "name": "get_book_info",
-                                },
-                                "type": "function",
-                            }
-                        ],
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "annotations": [],
+                    "tool_calls": [
+                        {
+                            "id": "call_kVqPYJQTr8gmEZoMSRZBuD8l",
+                            "function": {
+                                "arguments": '{"isbn":"0-7653-1178-X"}',
+                                "name": "get_book_info",
+                            },
+                            "type": "function",
+                        }
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -72,22 +70,20 @@ sync_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "role": "assistant",
-                        "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_7NvVnazxDGJf0ytnioYJ9ENd",
-                                "function": {
-                                    "arguments": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
-                                    "name": "__mirascope_formatted_output_tool__",
-                                },
-                                "type": "function",
-                            }
-                        ],
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "annotations": [],
+                    "tool_calls": [
+                        {
+                            "id": "call_7NvVnazxDGJf0ytnioYJ9ENd",
+                            "function": {
+                                "arguments": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                                "name": "__mirascope_formatted_output_tool__",
+                            },
+                            "type": "function",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -163,22 +159,20 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "role": "assistant",
-                        "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_uU8HU8DriTlSvaptzbcX9UJ9",
-                                "function": {
-                                    "arguments": '{"isbn":"0-7653-1178-X"}',
-                                    "name": "get_book_info",
-                                },
-                                "type": "function",
-                            }
-                        ],
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "annotations": [],
+                    "tool_calls": [
+                        {
+                            "id": "call_uU8HU8DriTlSvaptzbcX9UJ9",
+                            "function": {
+                                "arguments": '{"isbn":"0-7653-1178-X"}',
+                                "name": "get_book_info",
+                            },
+                            "type": "function",
+                        }
+                    ],
+                },
             ),
             UserMessage(
                 content=[
@@ -197,22 +191,20 @@ async_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[
-                    {
-                        "role": "assistant",
-                        "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_fY8RP6wvP0bYqk93j4gMsnLG",
-                                "function": {
-                                    "arguments": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
-                                    "name": "__mirascope_formatted_output_tool__",
-                                },
-                                "type": "function",
-                            }
-                        ],
-                    }
-                ],
+                raw_message={
+                    "role": "assistant",
+                    "annotations": [],
+                    "tool_calls": [
+                        {
+                            "id": "call_fY8RP6wvP0bYqk93j4gMsnLG",
+                            "function": {
+                                "arguments": '{"title":"Mistborn: The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}',
+                                "name": "__mirascope_formatted_output_tool__",
+                            },
+                            "type": "function",
+                        }
+                    ],
+                },
             ),
         ],
         "format": {
@@ -287,7 +279,7 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
             UserMessage(
                 content=[
@@ -306,7 +298,7 @@ stream_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {
@@ -382,7 +374,7 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
             UserMessage(
                 content=[
@@ -401,7 +393,7 @@ async_stream_snapshot = snapshot(
                 ],
                 provider="openai:completions",
                 model_id="gpt-4o",
-                raw_content=[],
+                raw_message=None,
             ),
         ],
         "format": {
