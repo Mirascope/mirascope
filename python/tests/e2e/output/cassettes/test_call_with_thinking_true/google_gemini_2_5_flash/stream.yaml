@@ -1,0 +1,197 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],
+      "role": "user"}], "generationConfig": {"thinkingConfig": {"includeThoughts":
+      true, "thinkingBudget": -1}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '262'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Counting
+        Prime Substrings**\\n\\nOkay, so I'm starting to build a plan to tackle this
+        prime-number problem. My initial thought is to generate all primes under 400
+        first. After that, I'll loop through each prime and look for \\\"79\\\" as
+        a substring. Finally, I'll tally up the matches. Seems pretty straightforward
+        so far!\\n\\n\\n\",\"thought\": true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 30,\"totalTokenCount\": 100,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 30}],\"thoughtsTokenCount\": 70},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"1JfyaMvkKNrwqtsP8bOK6Ao\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Refining the Approach**\\n\\nI've
+        streamlined the strategy. Instead of generating all primes under 400 and then
+        searching, I'll focus on numbers that *could* contain \\\"79\\\". This reduces
+        unnecessary computation, as I only need to check the primality of 79, 179,
+        279, and 379. It's a much more targeted approach.\\n\\n\\n\",\"thought\":
+        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        30,\"totalTokenCount\": 495,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        30}],\"thoughtsTokenCount\": 465},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"1JfyaMvkKNrwqtsP8bOK6Ao\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"**Analyzing Potential Candidates**\\n\\nI've narrowed
+        it down to the numbers 79, 179, 279, and 379. Checking these, I confirmed
+        79 and 179 are prime, but 279 is divisible by 3. Now, I'm verifying the primality
+        of 379 using a simple divisibility test up to the square root of 379, which
+        is just below 20.\\n\\n\\n\",\"thought\": true}],\"role\": \"model\"},\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 30,\"totalTokenCount\": 988,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 30}],\"thoughtsTokenCount\": 958},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"1JfyaMvkKNrwqtsP8bOK6Ao\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Calculating the
+        Final Count**\\n\\nI've determined that only 79, 179, and 379 contain \\\"79\\\"
+        and are prime within the specified range. Thus, the count is three. This process
+        was straightforward: list candidates, check primality, and count!\\n\\n\\n\",\"thought\":
+        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        30,\"totalTokenCount\": 1430,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        30}],\"thoughtsTokenCount\": 1400},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"1JfyaMvkKNrwqtsP8bOK6Ao\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"**Verifying Candidate Primality**\\n\\nI'm now confident
+        in my selection of potential numbers. I've confirmed 79, 179 and 379, and
+        discarded 279, as potential substring candidates. I'm now certain about my
+        solution.\\n\\n\\n\",\"thought\": true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 30,\"totalTokenCount\": 2065,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 30}],\"thoughtsTokenCount\": 2035},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"1JfyaMvkKNrwqtsP8bOK6Ao\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"**Finalizing the
+        Solution**\\n\\nI'm now confident I have a complete and accurate solution.
+        I've methodically identified all numbers below 400 that contain \\\"79\\\"
+        as a substring and verified their primality. The final answer is **three**.\\n\\n\\n\",\"thought\":
+        true}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        30,\"totalTokenCount\": 2194,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        30}],\"thoughtsTokenCount\": 2164},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"1JfyaMvkKNrwqtsP8bOK6Ao\"}\r\n\r\ndata: {\"candidates\": [{\"content\":
+        {\"parts\": [{\"text\": \"3\"}],\"role\": \"model\"},\"finishReason\": \"STOP\",\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 30,\"totalTokenCount\": 2194,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 30}],\"thoughtsTokenCount\": 2164},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"1JfyaMvkKNrwqtsP8bOK6Ao\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 17 Oct 2025 19:24:05 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1367
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "How many primes below 400 contain 79
+      as a substring? Answer ONLY with the number, not sharing which primes they are."}],
+      "role": "user"}, {"parts": [{"thought": true, "text": "**Counting Prime Substrings**\n\nOkay,
+      so I''m starting to build a plan to tackle this prime-number problem. My initial
+      thought is to generate all primes under 400 first. After that, I''ll loop through
+      each prime and look for \"79\" as a substring. Finally, I''ll tally up the matches.
+      Seems pretty straightforward so far!\n\n\n"}, {"thought": true, "text": "**Refining
+      the Approach**\n\nI''ve streamlined the strategy. Instead of generating all
+      primes under 400 and then searching, I''ll focus on numbers that *could* contain
+      \"79\". This reduces unnecessary computation, as I only need to check the primality
+      of 79, 179, 279, and 379. It''s a much more targeted approach.\n\n\n"}, {"thought":
+      true, "text": "**Analyzing Potential Candidates**\n\nI''ve narrowed it down
+      to the numbers 79, 179, 279, and 379. Checking these, I confirmed 79 and 179
+      are prime, but 279 is divisible by 3. Now, I''m verifying the primality of 379
+      using a simple divisibility test up to the square root of 379, which is just
+      below 20.\n\n\n"}, {"thought": true, "text": "**Calculating the Final Count**\n\nI''ve
+      determined that only 79, 179, and 379 contain \"79\" and are prime within the
+      specified range. Thus, the count is three. This process was straightforward:
+      list candidates, check primality, and count!\n\n\n"}, {"thought": true, "text":
+      "**Verifying Candidate Primality**\n\nI''m now confident in my selection of
+      potential numbers. I''ve confirmed 79, 179 and 379, and discarded 279, as potential
+      substring candidates. I''m now certain about my solution.\n\n\n"}, {"thought":
+      true, "text": "**Finalizing the Solution**\n\nI''m now confident I have a complete
+      and accurate solution. I''ve methodically identified all numbers below 400 that
+      contain \"79\" as a substring and verified their primality. The final answer
+      is **three**.\n\n\n"}, {"text": "3"}], "role": "model"}, {"parts": [{"text":
+      "If you remember what the primes were, then share them, or say ''I don''t remember.''"}],
+      "role": "user"}], "generationConfig": {"thinkingConfig": {"includeThoughts":
+      false, "thinkingBudget": 0}}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '2272'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"I don't\"}],\"role\":
+        \"model\"},\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 502,\"candidatesTokenCount\":
+        4,\"totalTokenCount\": 506,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        502}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"4ZfyaOeTKvOVmtkP59m96Ao\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" remember.\"}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\":
+        502,\"candidatesTokenCount\": 6,\"totalTokenCount\": 508,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 502}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\":
+        \"4ZfyaOeTKvOVmtkP59m96Ao\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 17 Oct 2025 19:24:17 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=468
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

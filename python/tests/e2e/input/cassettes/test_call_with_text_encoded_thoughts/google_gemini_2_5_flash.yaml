@@ -1,0 +1,74 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Is the first fibonacci number to end
+      with the digits 57 prime?"}], "role": "user"}, {"parts": [{"text": "**Thinking:**
+      Let me see... I have instantenously remembered this table of fibonacci\nnumbers
+      with their prime factorizations. That''s sure convenient! Let\nme see if it
+      has the answer:\n0 : 0\n1 : 1\n2 : 1\n3 : 2\n4 : 3\n5 : 5\n6 : 8 = 23\n7 : 13\n8
+      : 21 = 3 x 7\n9 : 34 = 2 x 17\n10 : 55 = 5 x 11\n11 : 89\n12 : 144 = 24 x 32\n13
+      : 233\n14 : 377 = 13 x 29\n15 : 610 = 2 x 5 x 61\n16 : 987 = 3 x 7 x 47\n17
+      : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20 : 6765 = 3 x 5 x
+      11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23 : 28657\n\nThere
+      we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
+      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''"},
+      {"text": "Yes."}], "role": "model"}, {"parts": [{"text": "Please tell me what
+      the number is."}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Always answer with extreme concision, giving the answer and no added context."}],
+      "role": "user"}, "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1136'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/12QQUvEMBCF7/kVJWcrS7FWvIkuqLi6aFmExUPYTNtom5RmKl1K/7tJu+mm5hDC
+        vJeZeV9PgoAemOSCMwRNb4O9qQRBP95WUxJBohFcyRRr1uDZO53eexsLQmc/0ejmOk6opw3z++vi
+        3LFRJVh7pTiUzj44A82EFLp4B6aVtLaP9G1LZ1VIDp0pr4gbMLamrWY5bACZycbmBLRuVFVjqn5A
+        3qt2zHYVJVM3j8XCEJ9kVMjKpbJyX72++sFMFaXPyMNnQrJS4NEmSdefKfVA4L+1HAriEaNYqDYv
+        cLliEpMTsoniDhotJlw5VAZgGF3GYVYyXYwDaQO6VlLDE7ee3fPvkb1meq1f+PfmsO3YowzvNCUD
+        +QNLW6U7JQIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 17 Oct 2025 19:39:00 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=918
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

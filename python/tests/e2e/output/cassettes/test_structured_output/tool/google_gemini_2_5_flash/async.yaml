@@ -1,0 +1,95 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
+      by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in Book format for a final response.\nA
+      book with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"title": {"title": "Title", "type": "STRING"},
+      "author": {"description": "The author of a book.", "properties": {"first_name":
+      {"title": "First Name", "type": "STRING"}, "last_name": {"title": "Last Name",
+      "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
+      "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
+      should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1174'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 17 Oct 2025 20:08:18 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2625
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

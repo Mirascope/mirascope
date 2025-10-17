@@ -1,0 +1,89 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please recommend the most popular book
+      by Patrick Rothfuss"}], "role": "user"}], "systemInstruction": {"parts": [{"text":
+      "Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output."}], "role": "user"}, "tools": [{"functionDeclarations":
+      [{"description": "Use this tool to extract data in Book format for a final response.\nA
+      book with a rating. The title should be in all caps!", "name": "__mirascope_formatted_output_tool__",
+      "parameters": {"properties": {"title": {"title": "Title", "type": "STRING"},
+      "author": {"description": "The author of a book.", "properties": {"first_name":
+      {"title": "First Name", "type": "STRING"}, "last_name": {"title": "Last Name",
+      "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
+      "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
+      should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
+      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1174'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/21V25KiSBB9768wfNoNZkZQFNmIeUCBRkQugiBubBgIxUWhCotC1I7590W7e8bu
+        GR6IIs/JSyWRJ1+eOp1uGMAoiwICqu4/nX9bS6fzcn/fMAQJgKQF3k2tsQww+cV9fV4ezi0lrmFI
+        MgSnQZ5/cH7DYVCA1t7dbosMB1WISrCNES4CQkC0RTUpa7IlCOXbbffLZ+cAJ9UfgrYIDkgGkxbj
+        Pjvd3GqSIvxHxxbNg4ps38taIpLGdVX9lvv1chl+4JoBwVl46P7G/PGHGkhG8ruXo0gdXVhIHUPu
+        3M7eTBc/h/jx4ftTuG57mTpJiZ0lMCA1vkedokYWIoVkBS9pkXWICk+pKPfA7MlO7M/8wK7FxEic
+        UkT++kBtYsmO8fUilrWTKrS7cdW5z2VG06jc1FwPwR67J0kZId+jwz2mCkPOe5p1MI09jCfFVOYa
+        /7KuxIksoAtCmink2TDmQ281n8iurVuxEY83E2OipxMjZBxlUzdL0SIjbeRfGdavcTkCE+1anr1Y
+        QpSdo/UBu7ljpF6l8GKGBguKzmTWz4LejtopgTIYH6SeRG0O8XmUc0yFyyOJxUF8GUXOPG1iT0mA
+        e4Jg0BP83cJndKjMZtAulrNpPyQumO/FaGMftfzQv17oc9KAjQLy+Ron1lyVofs8UaQRw/QtWvAs
+        hRNrd5UMrPlVYDJtcOAZLldHjj30F2apD8OBPWPNYVtVEG6u8NQUUWTa2HBLnT9KcR9Kcj7ODJsl
+        PL9eXJIpx1/WZm88scXyGK1AGu7DeuWwfDNOVx47PxxsJxk2szgxsKMow7A/5afN6mwjhq3nO0NI
+        XEtN8hxHZTSI1Wo8ofkK7geKD71ig5z+FJezmt6l48KbMhZbaPM6TP3SCcHisqMHpRkDXaHLZ37o
+        UhcVHpSjd10lq6Mu69zl6s3cNTB75Eh5Z0/wXSs9NcJlWZ5qnSMjZ8UhZq1CkgwSDvuGSBlkIq9V
+        x1Wn3l5zr+wy1uRInNucyh4l5srGY25jZqPVmtUbagjLM3MeaXNB4ZeGKRagbjBtUvEIe5ghUbGS
+        hevEz4tlSPyYbYoy4zVLg660OHljXveKpZQu+01JiEvZcu6uTV71rDzyezk/DuAQLvapg0Og5xOY
+        XPnNUksUW6FOeqZu6v2xL9jLwhrSrFAVSD6is3G6lP3+Ll2OKxUuHblHu/hECE0roxUe2OuCmkuH
+        a2afnHO0SLnntoexFcxPvdUz9uXk+/fHaf01qf/9mtIuRq+zXqAI5O/0n2PcygjMqnQJggrBG812
+        DPOn4HQzGIFza6Y/8RegqoLkHndxi9tJAASt7oGo8y66nbBV3b+qv7+95rwVdy+rW988F4AErdoH
+        P4WwW2JUlMRBBwCnqL6rfZ95U9CH7fCBwPJvOEEkyD9Cg/GX3wJXYps2yx/XxsNGaTsU5Bm53JVR
+        WjsPutsm+FjXex+fHtr9LoYfa2S4/tNbw1//gQtwlb02OwFF286v/W/Dr3Er/ek9YxeDqkSwArPo
+        xpED7RKoniehk3vlZiYCxqYWmu7Tj6f/AYKT7ho5BwAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 17 Oct 2025 20:07:49 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2074
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

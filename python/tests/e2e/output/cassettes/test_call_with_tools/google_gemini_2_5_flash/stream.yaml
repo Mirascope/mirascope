@@ -1,0 +1,146 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please retrieve the secrets associated
+      with each of these passwords: mellon,radiance"}], "role": "user"}], "systemInstruction":
+      {"parts": [{"text": "Use parallel tool calling."}], "role": "user"}, "tools":
+      [{"functionDeclarations": [{"description": "A tool that requires a password
+      to retrieve a secret.", "name": "secret_retrieval_tool", "parameters": {"properties":
+      {"password": {"title": "Password", "type": "STRING"}}, "required": ["password"],
+      "type": "OBJECT"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '530'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
+        {\"name\": \"secret_retrieval_tool\",\"args\": {\"password\": \"mellon\"}},\"thoughtSignature\":
+        \"CikB0e2Kbw5tJ9dwYB9m1I9W28H1Pvbhg7iFnlQJMZT9ndxhy/OJBT3V9QptAdHtim+b6IrcZhtF6O6xQkkPMDhjrvwL3icXkpwLLWkm7JJ3R234Bd2U3pZ5l5u4roaEWO893S7XXaCgzKHLjxhFjN2sHgLLE/Hsi8UryVlawsmJhHEry727TP6p3fXGfoHF4P3+NwX0aRVDaQrOAQHR7YpvcZTnUyY/7cZcudNT4WukK1q1cnMx8pjpKbBWrByVhsOkQ9acocfYVirn1/iCK2QINNmt6lwFfDqQOr4KVY1cj1YwDRUeRN6QawgKKk0+IfpgCintbyvglLQVvA0K+FrW8l7OEqDU/ROKkwMm4g4uEHsoA2BgR0CAHd9Tnx1SsmdXOdPvXOM1FdrZGq1JQpE8r7fSBCEbhN2wHHHjAHR11O2iex12if4qjFmaxk0WD6e32VVE/ocsvy+BTeSxsfFo6v4VRanbbnKg\"},{\"functionCall\":
+        {\"name\": \"secret_retrieval_tool\",\"args\": {\"password\": \"radiance\"}}}],\"role\":
+        \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
+        generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
+        70,\"candidatesTokenCount\": 40,\"totalTokenCount\": 171,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 70}],\"thoughtsTokenCount\": 61},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"G5nyaJuGE-yrqtsPmJHUoAs\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 17 Oct 2025 19:29:31 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1179
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"contents": [{"parts": [{"text": "Please retrieve the secrets associated
+      with each of these passwords: mellon,radiance"}], "role": "user"}, {"parts":
+      [{"thoughtSignature": "CikB0e2Kbw5tJ9dwYB9m1I9W28H1Pvbhg7iFnlQJMZT9ndxhy_OJBT3V9QptAdHtim-b6IrcZhtF6O6xQkkPMDhjrvwL3icXkpwLLWkm7JJ3R234Bd2U3pZ5l5u4roaEWO893S7XXaCgzKHLjxhFjN2sHgLLE_Hsi8UryVlawsmJhHEry727TP6p3fXGfoHF4P3-NwX0aRVDaQrOAQHR7YpvcZTnUyY_7cZcudNT4WukK1q1cnMx8pjpKbBWrByVhsOkQ9acocfYVirn1_iCK2QINNmt6lwFfDqQOr4KVY1cj1YwDRUeRN6QawgKKk0-IfpgCintbyvglLQVvA0K-FrW8l7OEqDU_ROKkwMm4g4uEHsoA2BgR0CAHd9Tnx1SsmdXOdPvXOM1FdrZGq1JQpE8r7fSBCEbhN2wHHHjAHR11O2iex12if4qjFmaxk0WD6e32VVE_ocsvy-BTeSxsfFo6v4VRanbbnKg",
+      "functionCall": {"args": {"password": "mellon"}, "name": "secret_retrieval_tool"}},
+      {"functionCall": {"args": {"password": "radiance"}, "name": "secret_retrieval_tool"}}],
+      "role": "model"}, {"parts": [{"functionResponse": {"name": "secret_retrieval_tool",
+      "response": {"output": "Welcome to Moria!"}}}, {"functionResponse": {"name":
+      "secret_retrieval_tool", "response": {"output": "Life before Death"}}}], "role":
+      "user"}], "systemInstruction": {"parts": [{"text": "Use parallel tool calling."}],
+      "role": "user"}, "tools": [{"functionDeclarations": [{"description": "A tool
+      that requires a password to retrieve a secret.", "name": "secret_retrieval_tool",
+      "parameters": {"properties": {"password": {"title": "Password", "type": "STRING"}},
+      "required": ["password"], "type": "OBJECT"}}]}], "generationConfig": {}}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1473'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
+  response:
+    body:
+      string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"The
+        secrets associated with\"}],\"role\": \"model\"},\"index\": 0}],\"usageMetadata\":
+        {\"promptTokenCount\": 211,\"candidatesTokenCount\": 4,\"totalTokenCount\":
+        215,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\": 211}]},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"HJnyaMGYMrKyqtsPvNjS0AY\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \" the passwords \\\"mellon\\\"
+        and \\\"radiance\\\" are \\\"Welcome to Moria\"}],\"role\": \"model\"},\"index\":
+        0}],\"usageMetadata\": {\"promptTokenCount\": 211,\"candidatesTokenCount\":
+        21,\"totalTokenCount\": 232,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        211}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"HJnyaMGYMrKyqtsPvNjS0AY\"}\r\n\r\ndata:
+        {\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"!\\\" and \\\"Life
+        before Death\\\" respectively.\"}],\"role\": \"model\"},\"finishReason\":
+        \"STOP\",\"index\": 0}],\"usageMetadata\": {\"promptTokenCount\": 211,\"candidatesTokenCount\":
+        30,\"totalTokenCount\": 241,\"promptTokensDetails\": [{\"modality\": \"TEXT\",\"tokenCount\":
+        211}]},\"modelVersion\": \"gemini-2.5-flash\",\"responseId\": \"HJnyaMGYMrKyqtsPvNjS0AY\"}\r\n\r\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Disposition:
+      - attachment
+      Content-Type:
+      - text/event-stream
+      Date:
+      - Fri, 17 Oct 2025 19:29:32 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1027
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

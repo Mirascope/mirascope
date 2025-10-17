@@ -1,0 +1,223 @@
+interactions:
+- request:
+    body: '{"messages":[{"role":"system","content":"Use parallel tool calling."},{"role":"user","content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '507'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=jMyP5LELiGvRgjd76YP5tGCzQGaqPogiNSIXkBwKPdE-1760728477-1.0.1.1-Q.SAe2Ezz4gAwx_OrB5nEXIXxoYLkTCTkVCJeBDfVT4rURbd3IPl1.hQnD3Ft._fs5jhaHAlEnsN3Cn1trSdG5ySe0HUgrHjRXvRgCpUGow;
+        _cfuvid=CRNPoARYTD9yhXrqUl0z6qft5Q1bexicu.__Ox78pp0-1760728477280-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//zFRRb5swEH7nV1j3nEwhLdDwVk3q1mqalnZbpC4VcsxB3Bjbsk06EuW/
+        T0ASSNpNfRwPyNzn7+77jrO3HiHAU4gJsCV1rNBi+PF+NZ3NopsIy83teF3dfP20qKrv+S1bPnyB
+        Qc1Qi2dk7sD6wFShBTquZAszg9RhndWPwlE0nlwEYQMUKkVR03LthpdqOB6NL4ejq+Eo3BOXijO0
+        EJNfHiGEbJt3LVGm+BtiMhocIgVaS3OE+LiJEDBK1BGg1nLrqHQw6ECmpENZq5alED3AKSUSRoXo
+        CrfPtrfu+kSFSFY/J+tnej2lle8/bIJJyoo7+Vjc9eq1qSvdCMpKyY796eHHeHxWjBCQtGi4FplB
+        lxh0huOaiqTWe5aIEKAmLwuUrjYB2zloau2LMukcYjKHAoVQcg47OOHtel+7wbusb8LFJJLTsPrx
+        6M9c+SLD++v8M//231o3NOVUMvy3+eP6qTcZBrPSUvF6ZKiUytFafjMzT95ZC0GoXBu1sGdUyLjk
+        dpkYpLax3h8+7yCkkQDlyXyDNqrQLnFqhU3RKGiTQnf6OjC42INOuaZt+7g/vhq8kS5J0VHezP/x
+        yDHKlph21O7o0TLlqgd4Peuv1byVu7XPZf6e9B3AGGqHaaINppydOu62Gawvp79tOza5EQwWzZoz
+        TBxHU/+OFDNaivbeAFtZh0WScZmj0YY3lwdkOmGLzI+ugiCMwNt5fwAAAP//AwA9M0/DRQUAAA==
+    headers:
+      CF-RAY:
+      - 9902342e7d97c378-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 19:29:17 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '571'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '588'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799969'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 2ms
+      x-request-id:
+      - req_a7380d939bf14e97b3639bc36d5afefd
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"messages":[{"role":"system","content":"Use parallel tool calling."},{"role":"user","content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","annotations":[],"tool_calls":[{"id":"call_kV9vjaAQay11Sz59dcmJnZmJ","function":{"arguments":"{\"password\":
+      \"mellon\"}","name":"secret_retrieval_tool"},"type":"function"},{"id":"call_z6b97nQ6yUZ1Wtuwn6RAgHiP","function":{"arguments":"{\"password\":
+      \"radiance\"}","name":"secret_retrieval_tool"},"type":"function"}]},{"role":"tool","content":"Welcome
+      to Moria!","tool_call_id":"call_kV9vjaAQay11Sz59dcmJnZmJ"},{"role":"tool","content":"Life
+      before Death","tool_call_id":"call_z6b97nQ6yUZ1Wtuwn6RAgHiP"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '1032'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=jMyP5LELiGvRgjd76YP5tGCzQGaqPogiNSIXkBwKPdE-1760728477-1.0.1.1-Q.SAe2Ezz4gAwx_OrB5nEXIXxoYLkTCTkVCJeBDfVT4rURbd3IPl1.hQnD3Ft._fs5jhaHAlEnsN3Cn1trSdG5ySe0HUgrHjRXvRgCpUGow;
+        _cfuvid=CRNPoARYTD9yhXrqUl0z6qft5Q1bexicu.__Ox78pp0-1760728477280-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.16
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4ySy27bMBBF9/qKKddWYTt+RdsWbVH0gbaLpKgDgSZHFhuKQ5AjO0Xgfw8oO5bc
+        B9CNFjxzR3fuzGMGIIwWBQhVS1aNt/mrr/dfbvfvb1ntmpnbvTX25tv08/fpw5ybT2KUFLT5iYqf
+        VS8VNd4iG3JHrAJKxtR1slyMl9Prq/myAw1ptEm29ZzPKJ+Op7N8vMrHi5OwJqMwigJ+ZAAAj903
+        WXQaH0QB49HzS4Mxyi2K4lwEIALZ9CJkjCaydCxGPVTkGF3n+h0GBBkQuEaIqAJyBBkjKZOMw95w
+        3TEvY9xT0LFYu7XL4Q0FWIsGrSW3FgXcoFXUIDDBRwpGvuiLgtRGOoWp7IOpEDZYUUB4jZLroa+A
+        VRtlisW11g6AdI5Ypli7RO5O5HDOwNLWB9rE36SiMs7EugwoI7k0b2TyoqOHDOCuy7q9iE/4QI3n
+        kukeu99NZtfHfqLfbk+vJifIxNIOVKvThi77lRpZGhsH2xJKqhp1L+1XK1ttaACywdR/uvlb7+Pk
+        xm3/p30PlELPqEsfUBt1OXFfFjAd/7/Kzil3hkXEsDMKSzYY0iY0VrK1x7sU8VdkbMrKuC0GH8zx
+        OCtfqk01Wa7m88VSZIfsCQAA//8DAFY7n1GlAwAA
+    headers:
+      CF-RAY:
+      - 990234330921c378-SEA
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 17 Oct 2025 19:29:17 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '588'
+      openai-project:
+      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '610'
+      x-openai-proxy-wasm:
+      - v0.1
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '800000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '799958'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_38bc3e07fdd7457386088a0a88385e7a
+    status:
+      code: 200
+      message: OK
+version: 1

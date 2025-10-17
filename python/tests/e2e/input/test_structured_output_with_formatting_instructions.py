@@ -1,0 +1,61 @@
+"""End-to-end tests for structured output."""
+
+import inspect
+
+import pytest
+from pydantic import BaseModel
+
+from mirascope import llm
+from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS, Snapshot
+from tests.utils import (
+    exception_snapshot_dict,
+    response_snapshot_dict,
+)
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+    rating: int
+
+    @classmethod
+    def formatting_instructions(cls) -> str:
+        return inspect.cleandoc("""
+        Output a structured book as JSON in the format {title: str, author: str, rating: int}.
+        The title should be in all caps, and the rating should always be the
+        lucky number 7.
+        """)
+
+
+@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
+@pytest.mark.vcr
+def test_structured_output_with_formatting_instructions(
+    provider: llm.Provider,
+    model_id: llm.ModelId,
+    formatting_mode: llm.FormattingMode,
+    snapshot: Snapshot,
+) -> None:
+    """Test structured output without context."""
+
+    format = (
+        llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
+    )
+
+    @llm.call(provider=provider, model_id=model_id, format=format)
+    def recommend_book(book: str) -> list[llm.Message]:
+        return [
+            llm.messages.system(f"Always recommend {book}."),
+            llm.messages.user("Please recommend a book to me!"),
+        ]
+
+    try:
+        response = recommend_book("The Name of the Wind")
+        assert response_snapshot_dict(response) == snapshot
+
+        book = response.parse()
+        assert book.author == "Patrick Rothfuss"
+        assert book.title == "THE NAME OF THE WIND"
+        assert book.rating == 7
+    except llm.FormattingModeNotSupportedError as e:
+        assert exception_snapshot_dict(e) == snapshot
