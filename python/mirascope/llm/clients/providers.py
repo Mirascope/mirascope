@@ -6,6 +6,9 @@ from .anthropic import (
 from .google import (
     GoogleModelId,
 )
+from .mlx import (
+    MLXModelId,
+)
 from .openai import (
     OpenAICompletionsModelId,
     OpenAIResponsesModelId,
@@ -16,6 +19,7 @@ Provider: TypeAlias = Literal[
     "google",  # GoogleClient
     "openai:responses",  # OpenAIResponsesClient
     "openai",  # OpenAICompletionsClient
+    "mlx",  # Local inference powered by `mlx-lm`
 ]
 PROVIDERS = get_args(Provider)
 
@@ -24,6 +28,7 @@ ModelId: TypeAlias = (
     | GoogleModelId
     | OpenAIResponsesModelId
     | OpenAICompletionsModelId
+    | MLXModelId
     | str
 )
 
