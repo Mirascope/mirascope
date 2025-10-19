@@ -68,7 +68,8 @@ ops = [
     "libcst>=1.8.6",
     "packaging>=25.0",
 ]
-all = ["mirascope[anthropic,api,google,openai,mcp,ops]"]
+mlx = ["mlx-lm>=0.28.4,<1"]
+all = ["mirascope[anthropic,api,google,openai,mcp,ops,mlx]"]
 
 [dependency-groups]
 dev = [
