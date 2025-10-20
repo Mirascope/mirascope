@@ -1,10 +1,22 @@
-from typing import Literal, TypeAlias, get_args, overload
+from typing import Any, Literal, TypeAlias, get_args, overload
+
+from openai.lib.azure import AzureADTokenProvider
 
 from .anthropic import (
     AnthropicClient,
     AnthropicModelId,
     client as anthropic_client,
     get_client as get_anthropic_client,
+)
+from .azure_openai.completions import (
+    AzureOpenAICompletionsClient,
+    client as azure_openai_completions_client,
+    get_client as get_azure_openai_completions_client,
+)
+from .azure_openai.responses import (
+    AzureOpenAIResponsesClient,
+    client as azure_openai_responses_client,
+    get_client as get_azure_openai_responses_client,
 )
 from .google import (
     GoogleClient,
@@ -25,6 +37,8 @@ from .openai import (
 
 Provider: TypeAlias = Literal[
     "anthropic",
+    "azure-openai:completions",  # AzureOpenAICompletionsClient
+    "azure-openai:responses",  # AzureOpenAIResponsesClient
     "google",
     "openai:completions",  # OpenAICompletionsClient
     "openai:responses",  # OpenAIResponsesClient
@@ -44,6 +58,22 @@ ModelId: TypeAlias = (
 @overload
 def get_client(provider: Literal["anthropic"]) -> AnthropicClient:
     """Get an Anthropic client instance."""
+    ...
+
+
+@overload
+def get_client(
+    provider: Literal["azure-openai:completions"],
+) -> AzureOpenAICompletionsClient:
+    """Get an Azure OpenAI completions client instance."""
+    ...
+
+
+@overload
+def get_client(
+    provider: Literal["azure-openai:responses"],
+) -> AzureOpenAIResponsesClient:
+    """Get an Azure OpenAI responses client instance."""
     ...
 
 
@@ -69,7 +99,14 @@ def get_client(
 
 def get_client(
     provider: Provider,
-) -> AnthropicClient | GoogleClient | OpenAICompletionsClient | OpenAIResponsesClient:
+) -> (
+    AnthropicClient
+    | AzureOpenAICompletionsClient
+    | AzureOpenAIResponsesClient
+    | GoogleClient
+    | OpenAICompletionsClient
+    | OpenAIResponsesClient
+):
     """Get a client instance for the specified provider.
 
     Args:
@@ -92,6 +129,10 @@ def get_client(
     match provider:
         case "anthropic":
             return get_anthropic_client()
+        case "azure-openai:completions":
+            return get_azure_openai_completions_client()
+        case "azure-openai:responses":
+            return get_azure_openai_responses_client()
         case "google":
             return get_google_client()
         case "openai:completions":
@@ -146,25 +187,79 @@ def client(
     ...
 
 
+@overload
 def client(
-    provider: Provider, *, api_key: str | None = None, base_url: str | None = None
-) -> AnthropicClient | GoogleClient | OpenAICompletionsClient | OpenAIResponsesClient:
+    provider: Literal["azure-openai:completions"],
+    *,
+    api_key: str | None = None,
+    base_url: str | None = None,
+    azure_api_version: str | None = None,
+    azure_ad_token_provider: AzureADTokenProvider | None = None,
+) -> AzureOpenAICompletionsClient:
+    """Create a cached Azure OpenAI completions client with the given parameters."""
+    ...
+
+
+@overload
+def client(
+    provider: Literal["azure-openai:responses"],
+    *,
+    api_key: str | None = None,
+    base_url: str | None = None,
+    azure_api_version: str | None = None,
+    azure_ad_token_provider: AzureADTokenProvider | None = None,
+) -> AzureOpenAIResponsesClient:
+    """Create a cached Azure OpenAI responses client with the given parameters."""
+    ...
+
+
+def client(
+    provider: Provider,
+    *,
+    api_key: str | None = None,
+    base_url: str | None = None,
+    **kwargs: Any,
+) -> (
+    AnthropicClient
+    | AzureOpenAICompletionsClient
+    | AzureOpenAIResponsesClient
+    | GoogleClient
+    | OpenAICompletionsClient
+    | OpenAIResponsesClient
+):
     """Create a cached client instance for the specified provider.
 
     Args:
-        provider: The provider name ("openai:completions", "anthropic", or "google").
+        provider: The provider name.
         api_key: API key for authentication. If None, uses provider-specific env var.
-        base_url: Base URL for the API. If None, uses provider-specific env var.
+        base_url: Base URL for the API. For Azure, this is the endpoint URL.
+        **kwargs: Provider-specific parameters. For Azure providers, accepts:
+            - azure_api_version: Azure OpenAI API version
+            - azure_ad_token_provider: Azure AD token provider
 
     Returns:
         A cached client instance for the specified provider with the given parameters.
 
     Raises:
-        ValueError: If the provider is not supported.
+        ValueError: If the provider is not supported or required parameters are missing.
     """
     match provider:
         case "anthropic":
             return anthropic_client(api_key=api_key, base_url=base_url)
+        case "azure-openai:completions":
+            return azure_openai_completions_client(
+                api_key=api_key,
+                base_url=base_url,
+                azure_api_version=kwargs.get("azure_api_version"),
+                azure_ad_token_provider=kwargs.get("azure_ad_token_provider"),
+            )
+        case "azure-openai:responses":
+            return azure_openai_responses_client(
+                api_key=api_key,
+                base_url=base_url,
+                azure_api_version=kwargs.get("azure_api_version"),
+                azure_ad_token_provider=kwargs.get("azure_ad_token_provider"),
+            )
         case "google":
             return google_client(api_key=api_key, base_url=base_url)
         case "openai:completions":

@@ -4,6 +4,8 @@ from .anthropic import (
     AnthropicClient,
     AnthropicModelId,
 )
+from .azure_openai.completions import AzureOpenAICompletionsClient
+from .azure_openai.responses import AzureOpenAIResponsesClient
 from .base import BaseClient, ClientT, Params
 from .google import GoogleClient, GoogleModelId
 from .openai import (
@@ -18,6 +20,8 @@ __all__ = [
     "PROVIDERS",
     "AnthropicClient",
     "AnthropicModelId",
+    "AzureOpenAICompletionsClient",
+    "AzureOpenAIResponsesClient",
     "BaseClient",
     "ClientT",
     "GoogleClient",

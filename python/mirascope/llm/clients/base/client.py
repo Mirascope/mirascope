@@ -39,24 +39,33 @@ if TYPE_CHECKING:
 
 ModelIdT = TypeVar("ModelIdT", bound=str)
 ProviderClientT = TypeVar("ProviderClientT")
-
+AsyncProviderClientT = TypeVar("AsyncProviderClientT")
 ClientT = TypeVar("ClientT", bound="BaseClient")
 """Type variable for an LLM client."""
 
 
-class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
+class BaseClient(
+    Generic[ModelIdT, ProviderClientT, AsyncProviderClientT, ClientT], ABC
+):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
     the need for complex overloads in provider implementations.
+
+    Type parameters:
+        ModelIdT: The model ID type for this client.
+        ProviderClientT: The underlying sync provider client type.
+        AsyncProviderClientT: The underlying async provider client type.
+        ClientT: The concrete client type itself (for ContextVar typing).
     """
 
     client: ProviderClientT
+    async_client: AsyncProviderClientT
     _token: Token | None = None
 
     @property
     @abstractmethod
-    def _context_var(self) -> ContextVar:
+    def _context_var(self) -> ContextVar[ClientT | None]:
         """The ContextVar for this client type."""
         ...
 
@@ -72,7 +81,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
 
     def __enter__(self) -> Self:
         """Sets the client context and stores the token."""
-        self._token = self._context_var.set(self)
+        self._token = self._context_var.set(self)  # type: ignore[arg-type]
         return self
 
     def __exit__(

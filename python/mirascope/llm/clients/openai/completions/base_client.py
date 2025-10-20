@@ -1,18 +1,16 @@
-"""Anthropic client implementation."""
+"""Base OpenAI Completions client implementation."""
 
-import os
+from abc import abstractmethod
 from collections.abc import Sequence
-from contextvars import ContextVar
-from functools import lru_cache
-from typing import TYPE_CHECKING, overload
-from typing_extensions import Unpack
+from typing import Literal, Protocol, overload, runtime_checkable
+from typing_extensions import TypeVar, Unpack
 
-from anthropic import Anthropic, AsyncAnthropic
+from openai.resources.chat.chat import AsyncChat, Chat
 
-from ...context import Context, DepsT
-from ...formatting import Format, FormattableT
-from ...messages import Message
-from ...responses import (
+from ....context import Context, DepsT
+from ....formatting import Format, FormattableT
+from ....messages import Message
+from ....responses import (
     AsyncContextResponse,
     AsyncContextStreamResponse,
     AsyncResponse,
@@ -22,7 +20,7 @@ from ...responses import (
     Response,
     StreamResponse,
 )
-from ...tools import (
+from ....tools import (
     AsyncContextTool,
     AsyncContextToolkit,
     AsyncTool,
@@ -32,83 +30,61 @@ from ...tools import (
     Tool,
     Toolkit,
 )
-from ..base import BaseClient, Params
+from ...base import BaseClient, ClientT, Params
 from . import _utils
-from .model_ids import AnthropicModelId
+from .model_ids import OpenAICompletionsModelId
 
-if TYPE_CHECKING:
-    from ..providers import Provider
 
-ANTHROPIC_CLIENT_CONTEXT: ContextVar["AnthropicClient | None"] = ContextVar(
-    "ANTHROPIC_CLIENT_CONTEXT", default=None
+@runtime_checkable
+class OpenAICompatibleClient(Protocol):
+    """Protocol for OpenAI-compatible sync clients."""
+
+    @property
+    def chat(self) -> Chat: ...
+
+
+@runtime_checkable
+class AsyncOpenAICompatibleClient(Protocol):
+    """Protocol for OpenAI-compatible async clients."""
+
+    @property
+    def chat(self) -> AsyncChat: ...
+
+
+ProviderClientT = TypeVar("ProviderClientT", bound=OpenAICompatibleClient)
+AsyncProviderClientT = TypeVar(
+    "AsyncProviderClientT", bound=AsyncOpenAICompatibleClient
 )
 
 
-@lru_cache(maxsize=256)
-def _anthropic_singleton(
-    api_key: str | None, base_url: str | None
-) -> "AnthropicClient":
-    """Return a cached Anthropic client instance for the given parameters."""
-    return AnthropicClient(api_key=api_key, base_url=base_url)
-
-
-def client(
-    *, api_key: str | None = None, base_url: str | None = None
-) -> "AnthropicClient":
-    """Create or retrieve an Anthropic client with the given parameters.
-
-    If a client has already been created with these parameters, it will be
-    retrieved from cache and returned.
-
-    Args:
-        api_key: API key for authentication. If None, uses ANTHROPIC_API_KEY env var.
-        base_url: Base URL for the API. If None, uses ANTHROPIC_BASE_URL env var.
-
-    Returns:
-        An Anthropic client instance.
-    """
-    api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
-    base_url = base_url or os.getenv("ANTHROPIC_BASE_URL")
-    return _anthropic_singleton(api_key, base_url)
-
-
-def get_client() -> "AnthropicClient":
-    """Retrieve the current Anthropic client from context, or a global default.
-
-    Returns:
-        The current Anthropic client from context if available, otherwise
-        a global default client based on environment variables.
-    """
-    ctx_client = ANTHROPIC_CLIENT_CONTEXT.get()
-    return ctx_client or client()
-
-
-class AnthropicClient(
-    BaseClient[AnthropicModelId, Anthropic, AsyncAnthropic, "AnthropicClient"]
+class BaseOpenAICompletionsClient(
+    BaseClient[
+        OpenAICompletionsModelId, ProviderClientT, AsyncProviderClientT, ClientT
+    ],
 ):
-    """The client for the Anthropic LLM model."""
+    """Base client for OpenAI-compatible Completions APIs.
+
+    This class implements all the API call logic that is shared between
+    OpenAI and Azure OpenAI. Subclasses only need to define `_context_var`,
+    `provider`, and `__init__`.
+
+    Type parameters:
+        ProviderClientT: The sync provider client type (OpenAI or AzureOpenAI).
+        AsyncProviderClientT: The async provider client type (AsyncOpenAI or AsyncAzureOpenAI).
+        ClientT: The concrete client type (for ContextVar typing).
+    """
 
     @property
-    def _context_var(self) -> ContextVar["AnthropicClient | None"]:
-        return ANTHROPIC_CLIENT_CONTEXT
-
-    @property
-    def provider(self) -> "Provider":
-        """Return the provider name for this client."""
-        return "anthropic"
-
-    def __init__(
-        self, *, api_key: str | None = None, base_url: str | None = None
-    ) -> None:
-        """Initialize the Anthropic client."""
-        self.client = Anthropic(api_key=api_key, base_url=base_url)
-        self.async_client = AsyncAnthropic(api_key=api_key, base_url=base_url)
+    @abstractmethod
+    def provider(self) -> Literal["openai:completions", "azure-openai:completions"]:
+        """Return the provider name for OpenAI-compatible Completions clients."""
+        ...
 
     @overload
     def call(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
@@ -121,7 +97,7 @@ class AnthropicClient(
     def call(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -134,7 +110,7 @@ class AnthropicClient(
     def call(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -146,13 +122,13 @@ class AnthropicClient(
     def call(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> Response | Response[FormattableT]:
-        """Generate an `llm.Response` by synchronously calling the Anthropic Messages API.
+        """Generate an `llm.Response` by synchronously calling the OpenAI ChatCompletions API.
 
         Args:
             model_id: Model identifier to use.
@@ -170,16 +146,17 @@ class AnthropicClient(
             tools=tools,
             format=format,
             params=params,
+            provider=self.provider,
         )
 
-        anthropic_response = self.client.messages.create(**kwargs)
+        openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
-            anthropic_response, model_id
+            openai_response, model_id, self.provider
         )
 
         return Response(
-            raw=anthropic_response,
+            raw=openai_response,
             provider=self.provider,
             model_id=model_id,
             params=params,
@@ -195,7 +172,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -211,7 +188,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -227,7 +204,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -242,7 +219,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -250,7 +227,7 @@ class AnthropicClient(
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
-        """Generate an `llm.ContextResponse` by synchronously calling the Anthropic Messages API.
+        """Generate an `llm.ContextResponse` by synchronously calling the OpenAI ChatCompletions API.
 
         Args:
             ctx: Context object with dependencies for tools.
@@ -269,16 +246,17 @@ class AnthropicClient(
             tools=tools,
             format=format,
             params=params,
+            provider=self.provider,
         )
 
-        anthropic_response = self.client.messages.create(**kwargs)
+        openai_response = self.client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
-            anthropic_response, model_id
+            openai_response, model_id, self.provider
         )
 
         return ContextResponse(
-            raw=anthropic_response,
+            raw=openai_response,
             provider=self.provider,
             model_id=model_id,
             params=params,
@@ -293,7 +271,7 @@ class AnthropicClient(
     async def call_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
@@ -306,7 +284,7 @@ class AnthropicClient(
     async def call_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -319,7 +297,7 @@ class AnthropicClient(
     async def call_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -331,13 +309,13 @@ class AnthropicClient(
     async def call_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncResponse | AsyncResponse[FormattableT]:
-        """Generate an `llm.AsyncResponse` by asynchronously calling the Anthropic Messages API.
+        """Generate an `llm.AsyncResponse` by asynchronously calling the OpenAI ChatCompletions API.
 
         Args:
             model_id: Model identifier to use.
@@ -349,22 +327,24 @@ class AnthropicClient(
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
+
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            params=params,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
+            provider=self.provider,
         )
 
-        anthropic_response = await self.async_client.messages.create(**kwargs)
+        openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
-            anthropic_response, model_id
+            openai_response, model_id, self.provider
         )
 
         return AsyncResponse(
-            raw=anthropic_response,
+            raw=openai_response,
             provider=self.provider,
             model_id=model_id,
             params=params,
@@ -380,7 +360,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -396,7 +376,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -412,7 +392,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -427,7 +407,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -435,7 +415,7 @@ class AnthropicClient(
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncContextResponse[DepsT, None] | AsyncContextResponse[DepsT, FormattableT]:
-        """Generate an `llm.AsyncContextResponse` by asynchronously calling the Anthropic Messages API.
+        """Generate an `llm.AsyncContextResponse` by asynchronously calling the OpenAI ChatCompletions API.
 
         Args:
             ctx: Context object with dependencies for tools.
@@ -450,20 +430,21 @@ class AnthropicClient(
         """
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
+            params=params,
             messages=messages,
             tools=tools,
             format=format,
-            params=params,
+            provider=self.provider,
         )
 
-        anthropic_response = await self.async_client.messages.create(**kwargs)
+        openai_response = await self.async_client.chat.completions.create(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
-            anthropic_response, model_id
+            openai_response, model_id, self.provider
         )
 
         return AsyncContextResponse(
-            raw=anthropic_response,
+            raw=openai_response,
             provider=self.provider,
             model_id=model_id,
             params=params,
@@ -478,7 +459,7 @@ class AnthropicClient(
     def stream(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
@@ -491,7 +472,7 @@ class AnthropicClient(
     def stream(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -504,7 +485,7 @@ class AnthropicClient(
     def stream(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -516,13 +497,13 @@ class AnthropicClient(
     def stream(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> StreamResponse | StreamResponse[FormattableT]:
-        """Generate an `llm.StreamResponse` by synchronously streaming from the Anthropic Messages API.
+        """Generate an `llm.StreamResponse` by synchronously streaming from the OpenAI ChatCompletions API.
 
         Args:
             model_id: Model identifier to use.
@@ -540,11 +521,15 @@ class AnthropicClient(
             tools=tools,
             format=format,
             params=params,
+            provider=self.provider,
         )
 
-        anthropic_stream = self.client.messages.stream(**kwargs)
+        openai_stream = self.client.chat.completions.create(
+            **kwargs,
+            stream=True,
+        )
 
-        chunk_iterator = _utils.decode_stream(anthropic_stream)
+        chunk_iterator = _utils.decode_stream(openai_stream)
 
         return StreamResponse(
             provider=self.provider,
@@ -561,7 +546,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -577,7 +562,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -593,7 +578,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -608,7 +593,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -616,7 +601,7 @@ class AnthropicClient(
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> ContextStreamResponse[DepsT] | ContextStreamResponse[DepsT, FormattableT]:
-        """Generate an `llm.ContextStreamResponse` by synchronously streaming from the Anthropic Messages API.
+        """Generate an `llm.ContextStreamResponse` by synchronously streaming from the OpenAI ChatCompletions API.
 
         Args:
             ctx: Context object with dependencies for tools.
@@ -635,11 +620,15 @@ class AnthropicClient(
             tools=tools,
             format=format,
             params=params,
+            provider=self.provider,
         )
 
-        anthropic_stream = self.client.messages.stream(**kwargs)
+        openai_stream = self.client.chat.completions.create(
+            **kwargs,
+            stream=True,
+        )
 
-        chunk_iterator = _utils.decode_stream(anthropic_stream)
+        chunk_iterator = _utils.decode_stream(openai_stream)
 
         return ContextStreamResponse(
             provider=self.provider,
@@ -655,7 +644,7 @@ class AnthropicClient(
     async def stream_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
@@ -668,7 +657,7 @@ class AnthropicClient(
     async def stream_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -681,7 +670,7 @@ class AnthropicClient(
     async def stream_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
@@ -693,13 +682,13 @@ class AnthropicClient(
     async def stream_async(
         self,
         *,
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
-        """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from the Anthropic Messages API.
+        """Generate an `llm.AsyncStreamResponse` by asynchronously streaming from the OpenAI ChatCompletions API.
 
         Args:
             model_id: Model identifier to use.
@@ -711,17 +700,22 @@ class AnthropicClient(
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
+
         input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
             format=format,
             params=params,
+            provider=self.provider,
         )
 
-        anthropic_stream = self.async_client.messages.stream(**kwargs)
+        openai_stream = await self.async_client.chat.completions.create(
+            **kwargs,
+            stream=True,
+        )
 
-        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
+        chunk_iterator = _utils.decode_async_stream(openai_stream)
 
         return AsyncStreamResponse(
             provider=self.provider,
@@ -738,7 +732,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -754,7 +748,7 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -770,14 +764,17 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]:
+    ) -> (
+        AsyncContextStreamResponse[DepsT]
+        | AsyncContextStreamResponse[DepsT, FormattableT]
+    ):
         """Stream an `llm.AsyncContextStreamResponse` with an optional response format."""
         ...
 
@@ -785,15 +782,18 @@ class AnthropicClient(
         self,
         *,
         ctx: Context[DepsT],
-        model_id: AnthropicModelId,
+        model_id: OpenAICompletionsModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]:
-        """Generate an `llm.AsyncContextStreamResponse` by asynchronously streaming from the Anthropic Messages API.
+    ) -> (
+        AsyncContextStreamResponse[DepsT]
+        | AsyncContextStreamResponse[DepsT, FormattableT]
+    ):
+        """Generate an `llm.AsyncContextStreamResponse` by asynchronously streaming from the OpenAI ChatCompletions API.
 
         Args:
             ctx: Context object with dependencies for tools.
@@ -812,11 +812,15 @@ class AnthropicClient(
             tools=tools,
             format=format,
             params=params,
+            provider=self.provider,
         )
 
-        anthropic_stream = self.async_client.messages.stream(**kwargs)
+        openai_stream = await self.async_client.chat.completions.create(
+            **kwargs,
+            stream=True,
+        )
 
-        chunk_iterator = _utils.decode_async_stream(anthropic_stream)
+        chunk_iterator = _utils.decode_async_stream(openai_stream)
 
         return AsyncContextStreamResponse(
             provider=self.provider,

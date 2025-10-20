@@ -1,8 +1,10 @@
 """OpenAI completions message encoding and request preparation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import TypedDict, cast
+from typing import TYPE_CHECKING, TypedDict, cast
 
 from openai import NotGiven
 from openai.types import chat as openai_types, shared_params as shared_openai_types
@@ -20,6 +22,9 @@ from .....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ....base import Params, _utils as _base_utils
 from ...shared import _utils as _shared_utils
 from ..model_ids import OpenAICompletionsModelId
+
+if TYPE_CHECKING:
+    from ....providers import Provider
 
 
 class ChatCompletionCreateKwargs(TypedDict, total=False):
@@ -115,7 +120,8 @@ def _encode_assistant_message(
     """Convert Mirascope `AssistantMessage` to OpenAI `ChatCompletionAssistantMessageParam`."""
 
     if (
-        message.provider == "openai:completions"
+        message.provider is not None
+        and message.provider.endswith(":completions")
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -215,6 +221,8 @@ def _convert_tool_to_tool_param(
 
 def _create_strict_response_format(
     format: Format[FormattableT],
+    *,
+    provider: str,
 ) -> shared_openai_types.ResponseFormatJSONSchema:
     """Create OpenAI strict response format from a Mirascope Format.
 
@@ -227,6 +235,10 @@ def _create_strict_response_format(
     schema = format.schema.copy()
 
     _shared_utils._ensure_additional_properties_false(schema)
+
+    if provider.startswith("azure-openai") and format.formatting_instructions:
+        # TODO: Add test coverage for Azure OpenAI formatting instructions
+        schema["description"] = format.formatting_instructions  # pragma: no cover
 
     json_schema = JSONSchema(
         name=format.name,
@@ -248,6 +260,7 @@ def encode_request(
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
+    provider: Provider,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
     kwargs: ChatCompletionCreateKwargs = ChatCompletionCreateKwargs(
@@ -259,7 +272,7 @@ def encode_request(
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
-        provider="openai:completions",
+        provider=provider,
         unsupported_params=["top_k", "thinking"],
     ) as param_accessor:
         if param_accessor.temperature is not None:
@@ -290,10 +303,12 @@ def encode_request(
             if not model_supports_strict:
                 raise FormattingModeNotSupportedError(
                     formatting_mode="strict",
-                    provider="openai:completions",
+                    provider=provider,
                     model_id=model_id,
                 )
-            kwargs["response_format"] = _create_strict_response_format(format)
+            kwargs["response_format"] = _create_strict_response_format(
+                format, provider=provider
+            )
         elif format.mode == "tool":
             if tools:
                 kwargs["tool_choice"] = "required"
@@ -323,5 +338,25 @@ def encode_request(
     for message in messages:
         encoded_messages.extend(_encode_message(message, model_id, encode_thoughts))
     kwargs["messages"] = encoded_messages
+
+    has_tool_outputs = any(
+        isinstance(msg, dict) and msg.get("role") == "tool" for msg in encoded_messages
+    )
+
+    if (
+        has_tool_outputs and openai_tools and provider.startswith("azure-openai")
+    ):  # pragma: no cover
+        # TODO: Add test coverage for Azure OpenAI formatting instructions
+        format_tool_present = any(
+            tool.get("function", {}).get("name", "").startswith(FORMAT_TOOL_NAME)
+            for tool in openai_tools
+        )
+        if format_tool_present:
+            kwargs["tool_choice"] = {
+                "type": "function",
+                "function": {"name": FORMAT_TOOL_NAME},
+            }
+        else:
+            kwargs["tool_choice"] = "none"
 
     return messages, format, kwargs

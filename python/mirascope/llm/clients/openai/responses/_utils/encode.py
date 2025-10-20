@@ -1,7 +1,9 @@
 """OpenAI Responses message encoding and request preparation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
-from typing import TypedDict, cast
+from typing import TYPE_CHECKING, TypedDict, cast
 
 from openai import NotGiven
 from openai.types.responses import (
@@ -41,6 +43,9 @@ from ....base import Params, _utils as _base_utils
 from ...shared import _utils as _shared_utils
 from ..model_ids import OpenAIResponsesModelId
 from ..model_info import NON_REASONING_MODELS
+
+if TYPE_CHECKING:
+    from ....providers import Provider
 
 
 class ResponseCreateKwargs(TypedDict, total=False):
@@ -202,11 +207,14 @@ def _convert_tool_to_function_tool_param(tool: ToolSchema) -> FunctionToolParam:
 
 def _create_strict_response_format(
     format: Format[FormattableT],
+    *,
+    provider: str,
 ) -> ResponseFormatTextJSONSchemaConfigParam:
     """Create OpenAI Responses strict response format from a Mirascope Format.
 
     Args:
         format: The `Format` instance containing schema and metadata
+        provider: The provider string (e.g., "openai:responses", "azure-openai:responses")
 
     Returns:
         ResponseFormatTextJSONSchemaConfigParam for strict structured outputs
@@ -241,6 +249,7 @@ def encode_request(
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
+    provider: Provider,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""
     kwargs: ResponseCreateKwargs = ResponseCreateKwargs(
@@ -252,7 +261,7 @@ def encode_request(
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
-        provider="openai:responses",
+        provider=provider,
         unsupported_params=["top_k", "seed", "stop_sequences"],
     ) as param_accessor:
         if param_accessor.temperature is not None:
@@ -264,7 +273,7 @@ def encode_request(
         if param_accessor.thinking is not None:
             if model_id in NON_REASONING_MODELS:
                 param_accessor.emit_warning_for_unused_param(
-                    "thinking", param_accessor.thinking, "openai:responses", model_id
+                    "thinking", param_accessor.thinking, provider, model_id
                 )
             else:
                 # Assume model supports reasoning unless explicitly listed as non-reasoning
@@ -284,7 +293,9 @@ def encode_request(
     format = resolve_format(format, default_mode=default_mode)
     if format is not None:
         if format.mode == "strict":
-            kwargs["text"] = {"format": _create_strict_response_format(format)}
+            kwargs["text"] = {
+                "format": _create_strict_response_format(format, provider=provider)
+            }
         elif format.mode == "tool":
             format_tool_shared_utils = _formatting_utils.create_tool_schema(format)
             openai_tools.append(
@@ -320,7 +331,26 @@ def encode_request(
         encoded_messages.extend(_encode_message(message, model_id, encode_thoughts))
     kwargs["input"] = encoded_messages
 
+    # Check if we have tool outputs at the end
+    has_tool_outputs = any(
+        isinstance(item, dict) and item.get("type") == "function_call_output"
+        for item in encoded_messages
+    )
+
     if openai_tools:
+        format_tool_present = any(
+            tool["name"] == FORMAT_TOOL_NAME for tool in openai_tools
+        )
+        # If format tool is present, tool_choice is already set above
+        # Otherwise, if we have tool outputs, Azure OpenAI requires tool_choice="none"
+        if (  # pragma: no cover
+            # TODO: Add test coverage for Azure OpenAI tool outputs handling
+            not format_tool_present
+            and has_tool_outputs
+            and provider.startswith("azure-openai")
+        ):
+            kwargs["tool_choice"] = "none"  # pragma: no cover
+
         kwargs["tools"] = openai_tools
 
     return messages, format, kwargs
