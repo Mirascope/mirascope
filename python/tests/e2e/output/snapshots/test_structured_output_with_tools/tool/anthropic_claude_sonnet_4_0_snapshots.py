@@ -11,105 +11,106 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "anthropic",
-        "model_id": "claude-sonnet-4-0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+        "response": {
+            "provider": "anthropic",
+            "model_id": "claude-sonnet-4-0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    ToolCall(
-                        id="toolu_011EZkuRo6J3ickuq5TyQA5D",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    )
-                ],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "id": "toolu_011EZkuRo6J3ickuq5TyQA5D",
-                            "input": {"isbn": "0-7653-1178-X"},
-                            "name": "get_book_info",
-                            "type": "tool_use",
-                        }
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        ToolCall(
+                            id="toolu_011EZkuRo6J3ickuq5TyQA5D",
+                            name="get_book_info",
+                            args='{"isbn": "0-7653-1178-X"}',
+                        )
                     ],
-                },
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_011EZkuRo6J3ickuq5TyQA5D",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
-                    )
-                ],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "id": "toolu_01JMvCKKywUZiLsaeh81S5V5",
-                            "input": {
-                                "title": "Mistborn: The Final Empire",
-                                "author": "Brandon Sanderson",
-                                "pages": 544,
-                                "publication_year": 2006,
-                            },
-                            "name": "__mirascope_formatted_output_tool__",
-                            "type": "tool_use",
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "id": "toolu_011EZkuRo6J3ickuq5TyQA5D",
+                                "input": {"isbn": "0-7653-1178-X"},
+                                "name": "get_book_info",
+                                "type": "tool_use",
+                            }
+                        ],
                     },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="toolu_011EZkuRo6J3ickuq5TyQA5D",
+                            name="get_book_info",
+                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
+                        )
+                    ],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "id": "toolu_01JMvCKKywUZiLsaeh81S5V5",
+                                "input": {
+                                    "title": "Mistborn: The Final Empire",
+                                    "author": "Brandon Sanderson",
+                                    "pages": 544,
+                                    "publication_year": 2006,
+                                },
+                                "name": "__mirascope_formatted_output_tool__",
+                                "type": "tool_use",
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": {
+                "name": "BookSummary",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "pages": {"title": "Pages", "type": "integer"},
+                        "publication_year": {
+                            "title": "Publication Year",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "pages", "publication_year"],
+                    "title": "BookSummary",
+                    "type": "object",
                 },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
+                "mode": "tool",
+                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
-        },
-        "tools": [
-            {
-                "name": "get_book_info",
-                "description": "Look up book information by ISBN.",
-                "parameters": """\
+            "tools": [
+                {
+                    "name": "get_book_info",
+                    "description": "Look up book information by ISBN.",
+                    "parameters": """\
 {
   "properties": {
     "isbn": {
@@ -124,112 +125,114 @@ sync_snapshot = snapshot(
   "defs": null
 }\
 """,
-                "strict": False,
-            }
-        ],
+                    "strict": False,
+                }
+            ],
+        }
     }
 )
 async_snapshot = snapshot(
     {
-        "provider": "anthropic",
-        "model_id": "claude-sonnet-4-0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+        "response": {
+            "provider": "anthropic",
+            "model_id": "claude-sonnet-4-0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    ToolCall(
-                        id="toolu_01NAY1LAdrcfY9avBvcbmExc",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    )
-                ],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "id": "toolu_01NAY1LAdrcfY9avBvcbmExc",
-                            "input": {"isbn": "0-7653-1178-X"},
-                            "name": "get_book_info",
-                            "type": "tool_use",
-                        }
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        ToolCall(
+                            id="toolu_01NAY1LAdrcfY9avBvcbmExc",
+                            name="get_book_info",
+                            args='{"isbn": "0-7653-1178-X"}',
+                        )
                     ],
-                },
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_01NAY1LAdrcfY9avBvcbmExc",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
-                    )
-                ],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "id": "toolu_01VkqRqsjbZd9chuRq719Fvp",
-                            "input": {
-                                "title": "Mistborn: The Final Empire",
-                                "author": "Brandon Sanderson",
-                                "pages": 544,
-                                "publication_year": 2006,
-                            },
-                            "name": "__mirascope_formatted_output_tool__",
-                            "type": "tool_use",
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "id": "toolu_01NAY1LAdrcfY9avBvcbmExc",
+                                "input": {"isbn": "0-7653-1178-X"},
+                                "name": "get_book_info",
+                                "type": "tool_use",
+                            }
+                        ],
                     },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="toolu_01NAY1LAdrcfY9avBvcbmExc",
+                            name="get_book_info",
+                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
+                        )
+                    ],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "id": "toolu_01VkqRqsjbZd9chuRq719Fvp",
+                                "input": {
+                                    "title": "Mistborn: The Final Empire",
+                                    "author": "Brandon Sanderson",
+                                    "pages": 544,
+                                    "publication_year": 2006,
+                                },
+                                "name": "__mirascope_formatted_output_tool__",
+                                "type": "tool_use",
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": {
+                "name": "BookSummary",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "pages": {"title": "Pages", "type": "integer"},
+                        "publication_year": {
+                            "title": "Publication Year",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "pages", "publication_year"],
+                    "title": "BookSummary",
+                    "type": "object",
                 },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
+                "mode": "tool",
+                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
-        },
-        "tools": [
-            {
-                "name": "get_book_info",
-                "description": "Look up book information by ISBN.",
-                "parameters": """\
+            "tools": [
+                {
+                    "name": "get_book_info",
+                    "description": "Look up book information by ISBN.",
+                    "parameters": """\
 {
   "properties": {
     "isbn": {
@@ -244,111 +247,113 @@ async_snapshot = snapshot(
   "defs": null
 }\
 """,
-                "strict": False,
-            }
-        ],
+                    "strict": False,
+                }
+            ],
+        }
     }
 )
 stream_snapshot = snapshot(
     {
-        "provider": "anthropic",
-        "model_id": "claude-sonnet-4-0",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+        "response": {
+            "provider": "anthropic",
+            "model_id": "claude-sonnet-4-0",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    ToolCall(
-                        id="toolu_01QGaiK6HKFDAbsGshTuv8sB",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    )
-                ],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "tool_use",
-                            "id": "toolu_01QGaiK6HKFDAbsGshTuv8sB",
-                            "name": "get_book_info",
-                            "input": {"isbn": "0-7653-1178-X"},
-                        }
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        ToolCall(
+                            id="toolu_01QGaiK6HKFDAbsGshTuv8sB",
+                            name="get_book_info",
+                            args='{"isbn": "0-7653-1178-X"}',
+                        )
                     ],
-                },
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_01QGaiK6HKFDAbsGshTuv8sB",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
-                    )
-                ],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "tool_use",
-                            "id": "toolu_014ibGBo6gXu1HRpy41czQwN",
-                            "name": "__mirascope_formatted_output_tool__",
-                            "input": {
-                                "title": "Mistborn: The Final Empire",
-                                "author": "Brandon Sanderson",
-                                "pages": 544,
-                                "publication_year": 2006,
-                            },
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_01QGaiK6HKFDAbsGshTuv8sB",
+                                "name": "get_book_info",
+                                "input": {"isbn": "0-7653-1178-X"},
+                            }
+                        ],
                     },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="toolu_01QGaiK6HKFDAbsGshTuv8sB",
+                            name="get_book_info",
+                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
+                        )
+                    ],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_014ibGBo6gXu1HRpy41czQwN",
+                                "name": "__mirascope_formatted_output_tool__",
+                                "input": {
+                                    "title": "Mistborn: The Final Empire",
+                                    "author": "Brandon Sanderson",
+                                    "pages": 544,
+                                    "publication_year": 2006,
+                                },
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": {
+                "name": "BookSummary",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "pages": {"title": "Pages", "type": "integer"},
+                        "publication_year": {
+                            "title": "Publication Year",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "pages", "publication_year"],
+                    "title": "BookSummary",
+                    "type": "object",
                 },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
+                "mode": "tool",
+                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
-        },
-        "tools": [
-            {
-                "name": "get_book_info",
-                "description": "Look up book information by ISBN.",
-                "parameters": """\
+            "tools": [
+                {
+                    "name": "get_book_info",
+                    "description": "Look up book information by ISBN.",
+                    "parameters": """\
 {
   "properties": {
     "isbn": {
@@ -363,112 +368,114 @@ stream_snapshot = snapshot(
   "defs": null
 }\
 """,
-                "strict": False,
-            }
-        ],
-        "n_chunks": 22,
+                    "strict": False,
+                }
+            ],
+            "n_chunks": 22,
+        }
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "anthropic",
-        "model_id": "claude-sonnet-4-0",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+        "response": {
+            "provider": "anthropic",
+            "model_id": "claude-sonnet-4-0",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    ToolCall(
-                        id="toolu_018NBcs3cATE9prASxCtJzih",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    )
-                ],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "tool_use",
-                            "id": "toolu_018NBcs3cATE9prASxCtJzih",
-                            "name": "get_book_info",
-                            "input": {"isbn": "0-7653-1178-X"},
-                        }
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        ToolCall(
+                            id="toolu_018NBcs3cATE9prASxCtJzih",
+                            name="get_book_info",
+                            args='{"isbn": "0-7653-1178-X"}',
+                        )
                     ],
-                },
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_018NBcs3cATE9prASxCtJzih",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
-                    )
-                ],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "tool_use",
-                            "id": "toolu_01DbNRvCgw85G57P7NdqttNi",
-                            "name": "__mirascope_formatted_output_tool__",
-                            "input": {
-                                "title": "Mistborn: The Final Empire",
-                                "author": "Brandon Sanderson",
-                                "pages": 544,
-                                "publication_year": 2006,
-                            },
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_018NBcs3cATE9prASxCtJzih",
+                                "name": "get_book_info",
+                                "input": {"isbn": "0-7653-1178-X"},
+                            }
+                        ],
                     },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="toolu_018NBcs3cATE9prASxCtJzih",
+                            name="get_book_info",
+                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "Mistborn: The Final Empire", "author": "Brandon Sanderson", "pages": 544, "publication_year": 2006}'
+                        )
+                    ],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_01DbNRvCgw85G57P7NdqttNi",
+                                "name": "__mirascope_formatted_output_tool__",
+                                "input": {
+                                    "title": "Mistborn: The Final Empire",
+                                    "author": "Brandon Sanderson",
+                                    "pages": 544,
+                                    "publication_year": 2006,
+                                },
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": {
+                "name": "BookSummary",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "pages": {"title": "Pages", "type": "integer"},
+                        "publication_year": {
+                            "title": "Publication Year",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "pages", "publication_year"],
+                    "title": "BookSummary",
+                    "type": "object",
                 },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
+                "mode": "tool",
+                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
-        },
-        "tools": [
-            {
-                "name": "get_book_info",
-                "description": "Look up book information by ISBN.",
-                "parameters": """\
+            "tools": [
+                {
+                    "name": "get_book_info",
+                    "description": "Look up book information by ISBN.",
+                    "parameters": """\
 {
   "properties": {
     "isbn": {
@@ -483,9 +490,10 @@ async_stream_snapshot = snapshot(
   "defs": null
 }\
 """,
-                "strict": False,
-            }
-        ],
-        "n_chunks": 24,
+                    "strict": False,
+                }
+            ],
+            "n_chunks": 24,
+        }
     }
 )

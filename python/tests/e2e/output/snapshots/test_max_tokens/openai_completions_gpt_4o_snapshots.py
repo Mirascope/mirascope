@@ -9,16 +9,17 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "params": {"max_tokens": 50},
-        "finish_reason": FinishReason.MAX_TOKENS,
-        "messages": [
-            UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "params": {"max_tokens": 50},
+            "finish_reason": FinishReason.MAX_TOKENS,
+            "messages": [
+                UserMessage(content=[Text(text="List all U.S. states.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 Certainly! Here is a list of all 50 U.S. states:
 
 1. Alabama
@@ -31,12 +32,12 @@ Certainly! Here is a list of all 50 U.S. states:
 8. Delaware
 9. Florida\
 """
-                    )
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message={
-                    "content": """\
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message={
+                        "content": """\
 Certainly! Here is a list of all 50 U.S. states:
 
 1. Alabama
@@ -49,27 +50,29 @@ Certainly! Here is a list of all 50 U.S. states:
 8. Delaware
 9. Florida\
 """,
-                    "role": "assistant",
-                    "annotations": [],
-                },
-            ),
-        ],
-        "format": None,
-        "tools": [],
+                        "role": "assistant",
+                        "annotations": [],
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [],
+        }
     }
 )
 async_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "params": {"max_tokens": 50},
-        "finish_reason": FinishReason.MAX_TOKENS,
-        "messages": [
-            UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "params": {"max_tokens": 50},
+            "finish_reason": FinishReason.MAX_TOKENS,
+            "messages": [
+                UserMessage(content=[Text(text="List all U.S. states.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 Sure! Here is a list of all 50 U.S. states:
 
 1. Alabama
@@ -82,12 +85,12 @@ Sure! Here is a list of all 50 U.S. states:
 8. Delaware
 9. Florida\
 """
-                    )
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message={
-                    "content": """\
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message={
+                        "content": """\
 Sure! Here is a list of all 50 U.S. states:
 
 1. Alabama
@@ -100,26 +103,28 @@ Sure! Here is a list of all 50 U.S. states:
 8. Delaware
 9. Florida\
 """,
-                    "role": "assistant",
-                    "annotations": [],
-                },
-            ),
-        ],
-        "format": None,
-        "tools": [],
+                        "role": "assistant",
+                        "annotations": [],
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [],
+        }
     }
 )
 stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "finish_reason": FinishReason.MAX_TOKENS,
-        "messages": [
-            UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "finish_reason": FinishReason.MAX_TOKENS,
+            "messages": [
+                UserMessage(content=[Text(text="List all U.S. states.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 Certainly! Here is a list of all 50 U.S. states:
 
 1. Alabama
@@ -132,29 +137,31 @@ Certainly! Here is a list of all 50 U.S. states:
 8. Delaware
 9. Florida\
 """
-                    )
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message=None,
-            ),
-        ],
-        "format": None,
-        "tools": [],
-        "n_chunks": 52,
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message=None,
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "n_chunks": 52,
+        }
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "finish_reason": FinishReason.MAX_TOKENS,
-        "messages": [
-            UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "finish_reason": FinishReason.MAX_TOKENS,
+            "messages": [
+                UserMessage(content=[Text(text="List all U.S. states.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 Sure! Here is a list of all 50 U.S. states:
 
 1. Alabama
@@ -167,15 +174,16 @@ Sure! Here is a list of all 50 U.S. states:
 8. Delaware
 9. Florida\
 """
-                    )
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message=None,
-            ),
-        ],
-        "format": None,
-        "tools": [],
-        "n_chunks": 52,
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message=None,
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "n_chunks": 52,
+        }
     }
 )
