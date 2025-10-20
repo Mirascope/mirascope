@@ -9,74 +9,75 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "$defs": {
-    "Author": {
-      "description": "The author of a book.",
-      "properties": {
-        "first_name": {
-          "title": "First Name",
-          "type": "string"
-        },
-        "last_name": {
-          "title": "Last Name",
-          "type": "string"
-        }
-      },
-      "required": [
-        "first_name",
-        "last_name"
-      ],
-      "title": "Author",
-      "type": "object"
-    }
-  },
-  "description": "A book with a rating. The title should be in all caps!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "$ref": "#/$defs/Author"
-    },
-    "rating": {
-      "description": "For testing purposes, the rating should be 7",
-      "title": "Rating",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "rating"
-  ],
-  "title": "Book",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "$ref": "#/$defs/Author"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+"""
+                    )
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -86,12 +87,12 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """
-                    )
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message={
-                    "content": """\
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message={
+                        "content": """\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -101,43 +102,43 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """,
-                    "role": "assistant",
-                    "annotations": [],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                        "role": "assistant",
+                        "annotations": [],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -185,80 +186,82 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [],
+            },
+            "tools": [],
+        }
     }
 )
 async_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "$defs": {
-    "Author": {
-      "description": "The author of a book.",
-      "properties": {
-        "first_name": {
-          "title": "First Name",
-          "type": "string"
-        },
-        "last_name": {
-          "title": "Last Name",
-          "type": "string"
-        }
-      },
-      "required": [
-        "first_name",
-        "last_name"
-      ],
-      "title": "Author",
-      "type": "object"
-    }
-  },
-  "description": "A book with a rating. The title should be in all caps!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "$ref": "#/$defs/Author"
-    },
-    "rating": {
-      "description": "For testing purposes, the rating should be 7",
-      "title": "Rating",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "rating"
-  ],
-  "title": "Book",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "$ref": "#/$defs/Author"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+"""
+                    )
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -268,12 +271,12 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """
-                    )
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message={
-                    "content": """\
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message={
+                        "content": """\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -283,43 +286,43 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """,
-                    "role": "assistant",
-                    "annotations": [],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                        "role": "assistant",
+                        "annotations": [],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -367,19 +370,21 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [],
+            },
+            "tools": [],
+        }
     }
 )
 stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="""\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -427,19 +432,19 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -449,45 +454,45 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """
-                    )
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message=None,
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message=None,
+                ),
+            ],
+            "format": {
+                "name": "Book",
                 "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
                     },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -535,20 +540,22 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [],
-        "n_chunks": 48,
+            },
+            "tools": [],
+            "n_chunks": 48,
+        }
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="""\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -596,19 +603,19 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 {
   "title": "THE NAME OF THE WIND",
   "author": {
@@ -618,45 +625,45 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """
-                    )
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message=None,
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message=None,
+                ),
+            ],
+            "format": {
+                "name": "Book",
                 "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
                     },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -704,8 +711,9 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [],
-        "n_chunks": 48,
+            },
+            "tools": [],
+            "n_chunks": 48,
+        }
     }
 )

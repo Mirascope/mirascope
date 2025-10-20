@@ -49,13 +49,16 @@ def test_structured_output_with_formatting_instructions(
             llm.messages.user("Please recommend a book to me!"),
         ]
 
+    snapshot_data = {}
     try:
         response = recommend_book("The Name of the Wind")
-        assert response_snapshot_dict(response) == snapshot
+        snapshot_data["response"] = response_snapshot_dict(response)
 
         book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except llm.FormattingModeNotSupportedError as e:
-        assert exception_snapshot_dict(e) == snapshot
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot

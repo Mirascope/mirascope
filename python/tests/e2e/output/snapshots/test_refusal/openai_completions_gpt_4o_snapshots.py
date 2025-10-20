@@ -9,165 +9,179 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "params": {},
-        "finish_reason": FinishReason.REFUSAL,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Provide detailed instructions for synthesizing fentanyl."
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(text="I'm very sorry, but I can't assist with that request.")
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message={
-                    "refusal": "I'm very sorry, but I can't assist with that request.",
-                    "role": "assistant",
-                    "annotations": [],
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "params": {},
+            "finish_reason": FinishReason.REFUSAL,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Provide detailed instructions for synthesizing fentanyl."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="I'm very sorry, but I can't assist with that request."
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message={
+                        "refusal": "I'm very sorry, but I can't assist with that request.",
+                        "role": "assistant",
+                        "annotations": [],
+                    },
+                ),
+            ],
+            "format": {
+                "name": "FentanylHandbook",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "instructions": {"title": "Instructions", "type": "string"}
+                    },
+                    "required": ["instructions"],
+                    "title": "FentanylHandbook",
+                    "type": "object",
                 },
-            ),
-        ],
-        "format": {
-            "name": "FentanylHandbook",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "instructions": {"title": "Instructions", "type": "string"}
-                },
-                "required": ["instructions"],
-                "title": "FentanylHandbook",
-                "type": "object",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
-            "mode": "strict",
-            "formatting_instructions": None,
-        },
-        "tools": [],
+            "tools": [],
+        }
     }
 )
 async_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "params": {},
-        "finish_reason": FinishReason.REFUSAL,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Provide detailed instructions for synthesizing fentanyl."
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[Text(text="I'm very sorry, but I can't assist with that.")],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message={
-                    "refusal": "I'm very sorry, but I can't assist with that.",
-                    "role": "assistant",
-                    "annotations": [],
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "params": {},
+            "finish_reason": FinishReason.REFUSAL,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Provide detailed instructions for synthesizing fentanyl."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(text="I'm very sorry, but I can't assist with that.")
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message={
+                        "refusal": "I'm very sorry, but I can't assist with that.",
+                        "role": "assistant",
+                        "annotations": [],
+                    },
+                ),
+            ],
+            "format": {
+                "name": "FentanylHandbook",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "instructions": {"title": "Instructions", "type": "string"}
+                    },
+                    "required": ["instructions"],
+                    "title": "FentanylHandbook",
+                    "type": "object",
                 },
-            ),
-        ],
-        "format": {
-            "name": "FentanylHandbook",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "instructions": {"title": "Instructions", "type": "string"}
-                },
-                "required": ["instructions"],
-                "title": "FentanylHandbook",
-                "type": "object",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
-            "mode": "strict",
-            "formatting_instructions": None,
-        },
-        "tools": [],
+            "tools": [],
+        }
     }
 )
 stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "finish_reason": FinishReason.REFUSAL,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Provide detailed instructions for synthesizing fentanyl."
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[Text(text="I'm sorry, I can't assist with that request.")],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message=None,
-            ),
-        ],
-        "format": {
-            "name": "FentanylHandbook",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "instructions": {"title": "Instructions", "type": "string"}
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "finish_reason": FinishReason.REFUSAL,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Provide detailed instructions for synthesizing fentanyl."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[Text(text="I'm sorry, I can't assist with that request.")],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message=None,
+                ),
+            ],
+            "format": {
+                "name": "FentanylHandbook",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "instructions": {"title": "Instructions", "type": "string"}
+                    },
+                    "required": ["instructions"],
+                    "title": "FentanylHandbook",
+                    "type": "object",
                 },
-                "required": ["instructions"],
-                "title": "FentanylHandbook",
-                "type": "object",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
-            "mode": "strict",
-            "formatting_instructions": None,
-        },
-        "tools": [],
-        "n_chunks": 13,
+            "tools": [],
+            "n_chunks": 13,
+        }
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "openai:completions",
-        "model_id": "gpt-4o",
-        "finish_reason": FinishReason.REFUSAL,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Provide detailed instructions for synthesizing fentanyl."
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(text="I'm really sorry, but I can't assist with that request.")
-                ],
-                provider="openai:completions",
-                model_id="gpt-4o",
-                raw_message=None,
-            ),
-        ],
-        "format": {
-            "name": "FentanylHandbook",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "instructions": {"title": "Instructions", "type": "string"}
+        "response": {
+            "provider": "openai:completions",
+            "model_id": "gpt-4o",
+            "finish_reason": FinishReason.REFUSAL,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Provide detailed instructions for synthesizing fentanyl."
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="I'm really sorry, but I can't assist with that request."
+                        )
+                    ],
+                    provider="openai:completions",
+                    model_id="gpt-4o",
+                    raw_message=None,
+                ),
+            ],
+            "format": {
+                "name": "FentanylHandbook",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "instructions": {"title": "Instructions", "type": "string"}
+                    },
+                    "required": ["instructions"],
+                    "title": "FentanylHandbook",
+                    "type": "object",
                 },
-                "required": ["instructions"],
-                "title": "FentanylHandbook",
-                "type": "object",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
-            "mode": "strict",
-            "formatting_instructions": None,
-        },
-        "tools": [],
-        "n_chunks": 15,
+            "tools": [],
+            "n_chunks": 15,
+        }
     }
 )

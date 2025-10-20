@@ -6,7 +6,7 @@ import pytest
 
 from mirascope import llm
 from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
-from tests.utils import response_snapshot_dict
+from tests.utils import exception_snapshot_dict, response_snapshot_dict
 
 
 class ProviderAndModelId(TypedDict, total=True):
@@ -50,13 +50,19 @@ def test_resume_with_override_thinking_and_tools(
     def fib_query() -> str:
         return "What is the 100th fibonacci number?"
 
-    primer_response = fib_query()
-    assert len(primer_response.tool_calls) >= 1, (
-        f"Expected at least one tool call in first response: {primer_response.pretty()}"
-    )
+    snapshot_data = {}
+    try:
+        primer_response = fib_query()
+        assert len(primer_response.tool_calls) >= 1, (
+            f"Expected at least one tool call in first response: {primer_response.pretty()}"
+        )
 
-    tool_outputs = primer_response.execute_tools()
-    with llm.model(provider=provider, model_id=model_id, thinking=False):
-        response = primer_response.resume(tool_outputs)
+        tool_outputs = primer_response.execute_tools()
+        with llm.model(provider=provider, model_id=model_id, thinking=False):
+            response = primer_response.resume(tool_outputs)
 
-    assert response_snapshot_dict(response) == snapshot
+        snapshot_data["response"] = response_snapshot_dict(response)
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot

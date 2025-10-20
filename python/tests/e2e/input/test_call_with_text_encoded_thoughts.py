@@ -10,6 +10,7 @@ from tests.e2e.conftest import (
     PROVIDER_MODEL_ID_PAIRS,
     Snapshot,
 )
+from tests.utils import exception_snapshot_dict
 
 
 def messages(provider: llm.Provider, model_id: llm.ModelId) -> list[llm.Message]:
@@ -88,13 +89,21 @@ def test_call_with_text_encoded_thoughts(
 
     snapshot_data = {}
     with caplog.at_level(logging.WARNING):
-        response = call()
-        pretty = response.pretty()
-        snapshot_data["response"] = pretty
-        snapshot_data["logging"] = [
-            record.message
-            for record in caplog.records
-            if record.levelno >= logging.WARNING
-        ]
-        assert "28657" in pretty
+        try:
+            response = call()
+            pretty = response.pretty()
+            snapshot_data["response"] = pretty
+            snapshot_data["logging"] = [
+                record.message
+                for record in caplog.records
+                if record.levelno >= logging.WARNING
+            ]
+            assert "28657" in pretty
+        except Exception as e:
+            snapshot_data["exception"] = exception_snapshot_dict(e)
+            snapshot_data["logging"] = [
+                record.message
+                for record in caplog.records
+                if record.levelno >= logging.WARNING
+            ]
         assert snapshot_data == snapshot

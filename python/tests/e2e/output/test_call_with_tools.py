@@ -5,6 +5,7 @@ import pytest
 from mirascope import llm
 from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
 from tests.utils import (
+    exception_snapshot_dict,
     response_snapshot_dict,
     stream_response_snapshot_dict,
 )
@@ -39,20 +40,26 @@ def test_call_with_tools_sync(
             ),
         ]
 
-    response = call(["mellon", "radiance"])
-    assert len(response.tool_calls) == 2, (
-        f"Expected response to have two tool calls: {response.pretty()}"
-    )
+    snapshot_data = {}
+    try:
+        response = call(["mellon", "radiance"])
+        assert len(response.tool_calls) == 2, (
+            f"Expected response to have two tool calls: {response.pretty()}"
+        )
 
-    tool_outputs = response.execute_tools()
-    response = response.resume(tool_outputs)
+        tool_outputs = response.execute_tools()
+        response = response.resume(tool_outputs)
 
-    assert response_snapshot_dict(response) == snapshot
-    pretty = response.pretty()
-    assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
-    assert "Life before Death" in pretty, (
-        f"Expected 'Life before Death' to be in response: {pretty}"
-    )
+        snapshot_data["response"] = response_snapshot_dict(response)
+        pretty = response.pretty()
+        assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
+        assert "Life before Death" in pretty, (
+            f"Expected 'Life before Death' to be in response: {pretty}"
+        )
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -82,23 +89,29 @@ def test_call_with_tools_sync_context(
             ),
         ]
 
-    ctx = llm.Context(deps=PASSWORD_MAP)
-    response = call(ctx, ["mellon", "radiance"])
-    assert len(response.tool_calls) == 2, (
-        f"Expected response to have two tool calls: {response.pretty()}"
-    )
+    snapshot_data = {}
+    try:
+        ctx = llm.Context(deps=PASSWORD_MAP)
+        response = call(ctx, ["mellon", "radiance"])
+        assert len(response.tool_calls) == 2, (
+            f"Expected response to have two tool calls: {response.pretty()}"
+        )
 
-    tool_outputs = response.execute_tools(
-        ctx,
-    )
-    response = response.resume(ctx, tool_outputs)
+        tool_outputs = response.execute_tools(
+            ctx,
+        )
+        response = response.resume(ctx, tool_outputs)
 
-    assert response_snapshot_dict(response) == snapshot
-    pretty = response.pretty()
-    assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
-    assert "Life before Death" in pretty, (
-        f"Expected 'Life before Death' to be in response: {pretty}"
-    )
+        snapshot_data["response"] = response_snapshot_dict(response)
+        pretty = response.pretty()
+        assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
+        assert "Life before Death" in pretty, (
+            f"Expected 'Life before Death' to be in response: {pretty}"
+        )
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot
 
 
 # ============= ASYNC TESTS =============
@@ -130,20 +143,26 @@ async def test_call_with_tools_async(
             ),
         ]
 
-    response = await call(["mellon", "radiance"])
-    assert len(response.tool_calls) == 2, (
-        f"Expected response to have two tool calls: {response.pretty()}"
-    )
+    snapshot_data = {}
+    try:
+        response = await call(["mellon", "radiance"])
+        assert len(response.tool_calls) == 2, (
+            f"Expected response to have two tool calls: {response.pretty()}"
+        )
 
-    tool_outputs = await response.execute_tools()
-    response = await response.resume(tool_outputs)
+        tool_outputs = await response.execute_tools()
+        response = await response.resume(tool_outputs)
 
-    assert response_snapshot_dict(response) == snapshot
-    pretty = response.pretty()
-    assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
-    assert "Life before Death" in pretty, (
-        f"Expected 'Life before Death' to be in response: {pretty}"
-    )
+        snapshot_data["response"] = response_snapshot_dict(response)
+        pretty = response.pretty()
+        assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
+        assert "Life before Death" in pretty, (
+            f"Expected 'Life before Death' to be in response: {pretty}"
+        )
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -176,21 +195,27 @@ async def test_call_with_tools_async_context(
             ),
         ]
 
-    ctx = llm.Context(deps=PASSWORD_MAP)
-    response = await call(ctx, ["mellon", "radiance"])
-    assert len(response.tool_calls) == 2, (
-        f"Expected response to have two tool calls: {response.pretty()}"
-    )
+    snapshot_data = {}
+    try:
+        ctx = llm.Context(deps=PASSWORD_MAP)
+        response = await call(ctx, ["mellon", "radiance"])
+        assert len(response.tool_calls) == 2, (
+            f"Expected response to have two tool calls: {response.pretty()}"
+        )
 
-    tool_outputs = await response.execute_tools(ctx)
-    response = await response.resume(ctx, tool_outputs)
+        tool_outputs = await response.execute_tools(ctx)
+        response = await response.resume(ctx, tool_outputs)
 
-    assert response_snapshot_dict(response) == snapshot
-    pretty = response.pretty()
-    assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
-    assert "Life before Death" in pretty, (
-        f"Expected 'Life before Death' to be in response: {pretty}"
-    )
+        snapshot_data["response"] = response_snapshot_dict(response)
+        pretty = response.pretty()
+        assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
+        assert "Life before Death" in pretty, (
+            f"Expected 'Life before Death' to be in response: {pretty}"
+        )
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot
 
 
 # ============= STREAM TESTS =============
@@ -221,23 +246,29 @@ def test_call_with_tools_stream(
             ),
         ]
 
-    response = call.stream(["mellon", "radiance"])
-    response.finish()
+    snapshot_data = {}
+    try:
+        response = call.stream(["mellon", "radiance"])
+        response.finish()
 
-    assert len(response.tool_calls) == 2, (
-        f"Expected response to have two tool calls: {response.pretty()}"
-    )
+        assert len(response.tool_calls) == 2, (
+            f"Expected response to have two tool calls: {response.pretty()}"
+        )
 
-    tool_outputs = response.execute_tools()
-    response = response.resume(tool_outputs)
-    response.finish()
+        tool_outputs = response.execute_tools()
+        response = response.resume(tool_outputs)
+        response.finish()
 
-    assert stream_response_snapshot_dict(response) == snapshot
-    pretty = response.pretty()
-    assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
-    assert "Life before Death" in pretty, (
-        f"Expected 'Life before Death' to be in response: {pretty}"
-    )
+        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        pretty = response.pretty()
+        assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
+        assert "Life before Death" in pretty, (
+            f"Expected 'Life before Death' to be in response: {pretty}"
+        )
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -267,24 +298,30 @@ def test_call_with_tools_stream_context(
             ),
         ]
 
-    ctx = llm.Context(deps=PASSWORD_MAP)
-    response = call.stream(ctx, ["mellon", "radiance"])
-    response.finish()
+    snapshot_data = {}
+    try:
+        ctx = llm.Context(deps=PASSWORD_MAP)
+        response = call.stream(ctx, ["mellon", "radiance"])
+        response.finish()
 
-    assert len(response.tool_calls) == 2, (
-        f"Expected response to have two tool calls: {response.pretty()}"
-    )
+        assert len(response.tool_calls) == 2, (
+            f"Expected response to have two tool calls: {response.pretty()}"
+        )
 
-    tool_outputs = response.execute_tools(ctx)
-    response = response.resume(ctx, tool_outputs)
-    response.finish()
+        tool_outputs = response.execute_tools(ctx)
+        response = response.resume(ctx, tool_outputs)
+        response.finish()
 
-    assert stream_response_snapshot_dict(response) == snapshot
-    pretty = response.pretty()
-    assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
-    assert "Life before Death" in pretty, (
-        f"Expected 'Life before Death' to be in response: {pretty}"
-    )
+        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        pretty = response.pretty()
+        assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
+        assert "Life before Death" in pretty, (
+            f"Expected 'Life before Death' to be in response: {pretty}"
+        )
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot
 
 
 # ============= ASYNC STREAM TESTS =============
@@ -316,23 +353,29 @@ async def test_call_with_tools_async_stream(
             ),
         ]
 
-    response = await call.stream(["mellon", "radiance"])
-    await response.finish()
+    snapshot_data = {}
+    try:
+        response = await call.stream(["mellon", "radiance"])
+        await response.finish()
 
-    assert len(response.tool_calls) == 2, (
-        f"Expected response to have two tool calls: {response.pretty()}"
-    )
+        assert len(response.tool_calls) == 2, (
+            f"Expected response to have two tool calls: {response.pretty()}"
+        )
 
-    tool_outputs = await response.execute_tools()
-    response = await response.resume(tool_outputs)
-    await response.finish()
+        tool_outputs = await response.execute_tools()
+        response = await response.resume(tool_outputs)
+        await response.finish()
 
-    assert stream_response_snapshot_dict(response) == snapshot
-    pretty = response.pretty()
-    assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
-    assert "Life before Death" in pretty, (
-        f"Expected 'Life before Death' to be in response: {pretty}"
-    )
+        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        pretty = response.pretty()
+        assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
+        assert "Life before Death" in pretty, (
+            f"Expected 'Life before Death' to be in response: {pretty}"
+        )
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -365,21 +408,27 @@ async def test_call_with_tools_async_stream_context(
             ),
         ]
 
-    ctx = llm.Context(deps=PASSWORD_MAP)
-    response = await call.stream(ctx, ["mellon", "radiance"])
-    await response.finish()
+    snapshot_data = {}
+    try:
+        ctx = llm.Context(deps=PASSWORD_MAP)
+        response = await call.stream(ctx, ["mellon", "radiance"])
+        await response.finish()
 
-    assert len(response.tool_calls) == 2, (
-        f"Expected response to have two tool calls: {response.pretty()}"
-    )
+        assert len(response.tool_calls) == 2, (
+            f"Expected response to have two tool calls: {response.pretty()}"
+        )
 
-    tool_outputs = await response.execute_tools(ctx)
-    response = await response.resume(ctx, tool_outputs)
-    await response.finish()
+        tool_outputs = await response.execute_tools(ctx)
+        response = await response.resume(ctx, tool_outputs)
+        await response.finish()
 
-    assert stream_response_snapshot_dict(response) == snapshot
-    pretty = response.pretty()
-    assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
-    assert "Life before Death" in pretty, (
-        f"Expected 'Life before Death' to be in response: {pretty}"
-    )
+        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        pretty = response.pretty()
+        assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
+        assert "Life before Death" in pretty, (
+            f"Expected 'Life before Death' to be in response: {pretty}"
+        )
+    except Exception as e:
+        snapshot_data["exception"] = exception_snapshot_dict(e)
+
+    assert snapshot_data == snapshot

@@ -8,110 +8,113 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "google",
-        "model_id": "gemini-2.5-flash",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
-                    )
-                ],
-                provider="google",
-                model_id="gemini-2.5-flash",
-                raw_message={
-                    "parts": [
-                        {
-                            "video_metadata": None,
-                            "thought": None,
-                            "inline_data": None,
-                            "file_data": None,
-                            "thought_signature": None,
-                            "code_execution_result": None,
-                            "executable_code": None,
-                            "function_call": None,
-                            "function_response": None,
-                            "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                        }
+        "response": {
+            "provider": "google",
+            "model_id": "gemini-2.5-flash",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
+                        )
                     ],
-                    "role": "model",
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                        "propertyOrdering": ["first_name", "last_name"],
-                    }
-                },
+                    provider="google",
+                    model_id="gemini-2.5-flash",
+                    raw_message={
+                        "parts": [
+                            {
+                                "video_metadata": None,
+                                "thought": None,
+                                "inline_data": None,
+                                "file_data": None,
+                                "thought_signature": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "function_call": None,
+                                "function_response": None,
+                                "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                            }
+                        ],
+                        "role": "model",
+                    },
+                ),
+            ],
+            "format": {
+                "name": "Book",
                 "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "propertyOrdering": ["first_name", "last_name"],
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "propertyOrdering": ["first_name", "last_name"],
                         },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                        "propertyOrdering": ["first_name", "last_name"],
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
                     },
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
-            "mode": "strict",
-            "formatting_instructions": None,
-        },
-        "tools": [],
+            "tools": [],
+        }
     }
 )
 async_snapshot = snapshot(
     {
-        "provider": "google",
-        "model_id": "gemini-2.5-flash",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
+        "response": {
+            "provider": "google",
+            "model_id": "gemini-2.5-flash",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 {
 "title": "THE NAME OF THE WIND",
 "author": {
@@ -121,23 +124,23 @@ async_snapshot = snapshot(
 "rating": 7
 }\
 """
-                    )
-                ],
-                provider="google",
-                model_id="gemini-2.5-flash",
-                raw_message={
-                    "parts": [
-                        {
-                            "video_metadata": None,
-                            "thought": None,
-                            "inline_data": None,
-                            "file_data": None,
-                            "thought_signature": None,
-                            "code_execution_result": None,
-                            "executable_code": None,
-                            "function_call": None,
-                            "function_response": None,
-                            "text": """\
+                        )
+                    ],
+                    provider="google",
+                    model_id="gemini-2.5-flash",
+                    raw_message={
+                        "parts": [
+                            {
+                                "video_metadata": None,
+                                "thought": None,
+                                "inline_data": None,
+                                "file_data": None,
+                                "thought_signature": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "function_call": None,
+                                "function_response": None,
+                                "text": """\
 {
 "title": "THE NAME OF THE WIND",
 "author": {
@@ -147,232 +150,237 @@ async_snapshot = snapshot(
 "rating": 7
 }\
 """,
-                        }
-                    ],
-                    "role": "model",
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                        "propertyOrdering": ["first_name", "last_name"],
-                    }
-                },
+                            }
+                        ],
+                        "role": "model",
+                    },
+                ),
+            ],
+            "format": {
+                "name": "Book",
                 "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "propertyOrdering": ["first_name", "last_name"],
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "propertyOrdering": ["first_name", "last_name"],
                         },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                        "propertyOrdering": ["first_name", "last_name"],
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
                     },
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
-            "mode": "strict",
-            "formatting_instructions": None,
-        },
-        "tools": [],
+            "tools": [],
+        }
     }
 )
 stream_snapshot = snapshot(
     {
-        "provider": "google",
-        "model_id": "gemini-2.5-flash",
-        "finish_reason": None,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
-                    )
-                ],
-                provider="google",
-                model_id="gemini-2.5-flash",
-                raw_message={
-                    "parts": [
-                        {
-                            "video_metadata": None,
-                            "thought": None,
-                            "inline_data": None,
-                            "file_data": None,
-                            "thought_signature": None,
-                            "code_execution_result": None,
-                            "executable_code": None,
-                            "function_call": None,
-                            "function_response": None,
-                            "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                        }
+        "response": {
+            "provider": "google",
+            "model_id": "gemini-2.5-flash",
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
+                        )
                     ],
-                    "role": "model",
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                        "propertyOrdering": ["first_name", "last_name"],
-                    }
-                },
+                    provider="google",
+                    model_id="gemini-2.5-flash",
+                    raw_message={
+                        "parts": [
+                            {
+                                "video_metadata": None,
+                                "thought": None,
+                                "inline_data": None,
+                                "file_data": None,
+                                "thought_signature": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "function_call": None,
+                                "function_response": None,
+                                "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                            }
+                        ],
+                        "role": "model",
+                    },
+                ),
+            ],
+            "format": {
+                "name": "Book",
                 "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "propertyOrdering": ["first_name", "last_name"],
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "propertyOrdering": ["first_name", "last_name"],
                         },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                        "propertyOrdering": ["first_name", "last_name"],
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
                     },
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
-            "mode": "strict",
-            "formatting_instructions": None,
-        },
-        "tools": [],
-        "n_chunks": 3,
+            "tools": [],
+            "n_chunks": 3,
+        }
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "google",
-        "model_id": "gemini-2.5-flash",
-        "finish_reason": None,
-        "messages": [
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
-                    )
-                ],
-                provider="google",
-                model_id="gemini-2.5-flash",
-                raw_message={
-                    "parts": [
-                        {
-                            "video_metadata": None,
-                            "thought": None,
-                            "inline_data": None,
-                            "file_data": None,
-                            "thought_signature": None,
-                            "code_execution_result": None,
-                            "executable_code": None,
-                            "function_call": None,
-                            "function_response": None,
-                            "text": '{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}',
-                        }
+        "response": {
+            "provider": "google",
+            "model_id": "gemini-2.5-flash",
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
+                        )
                     ],
-                    "role": "model",
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                        "propertyOrdering": ["first_name", "last_name"],
-                    }
-                },
+                    provider="google",
+                    model_id="gemini-2.5-flash",
+                    raw_message={
+                        "parts": [
+                            {
+                                "video_metadata": None,
+                                "thought": None,
+                                "inline_data": None,
+                                "file_data": None,
+                                "thought_signature": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "function_call": None,
+                                "function_response": None,
+                                "text": '{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}',
+                            }
+                        ],
+                        "role": "model",
+                    },
+                ),
+            ],
+            "format": {
+                "name": "Book",
                 "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "propertyOrdering": ["first_name", "last_name"],
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "propertyOrdering": ["first_name", "last_name"],
                         },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                        "propertyOrdering": ["first_name", "last_name"],
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
                     },
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
-                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
-            "mode": "strict",
-            "formatting_instructions": None,
-        },
-        "tools": [],
-        "n_chunks": 3,
+            "tools": [],
+            "n_chunks": 3,
+        }
     }
 )
