@@ -1,8 +1,10 @@
 """OpenAI completions message encoding and request preparation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import TypedDict, cast
+from typing import TYPE_CHECKING, TypedDict, cast
 
 from openai import Omit
 from openai.types import chat as openai_types, shared_params as shared_openai_types
@@ -24,6 +26,9 @@ from ....base import Params, _utils as _base_utils
 from ...shared import _utils as _shared_utils
 from ..model_ids import OpenAICompletionsModelId
 from .model_features import MODEL_FEATURES
+
+if TYPE_CHECKING:
+    from ....providers import Provider
 
 
 class ChatCompletionCreateKwargs(TypedDict, total=False):
@@ -141,12 +146,16 @@ def _encode_user_message(
 
 
 def _encode_assistant_message(
-    message: AssistantMessage, model_id: OpenAICompletionsModelId, encode_thoughts: bool
+    message: AssistantMessage,
+    model_id: OpenAICompletionsModelId,
+    encode_thoughts: bool,
+    provider: Provider,
 ) -> openai_types.ChatCompletionAssistantMessageParam:
     """Convert Mirascope `AssistantMessage` to OpenAI `ChatCompletionAssistantMessageParam`."""
 
     if (
-        message.provider == "openai:completions"
+        message.provider is not None
+        and message.provider == provider
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -199,7 +208,10 @@ def _encode_assistant_message(
 
 
 def _encode_message(
-    message: Message, model_id: OpenAICompletionsModelId, encode_thoughts: bool
+    message: Message,
+    model_id: OpenAICompletionsModelId,
+    encode_thoughts: bool,
+    provider: Provider,
 ) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert a Mirascope `Message` to OpenAI `ChatCompletionMessageParam` format.
 
@@ -220,7 +232,7 @@ def _encode_message(
     elif message.role == "user":
         return _encode_user_message(message, model_id)
     elif message.role == "assistant":
-        return [_encode_assistant_message(message, model_id, encode_thoughts)]
+        return [_encode_assistant_message(message, model_id, encode_thoughts, provider)]
     else:
         raise ValueError(f"Unsupported role: {message.role}")  # pragma: no cover
 
@@ -246,6 +258,8 @@ def _convert_tool_to_tool_param(
 
 def _create_strict_response_format(
     format: Format[FormattableT],
+    *,
+    provider: str,
 ) -> shared_openai_types.ResponseFormatJSONSchema:
     """Create OpenAI strict response format from a Mirascope Format.
 
@@ -279,6 +293,7 @@ def encode_request(
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
+    provider: Provider,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
     kwargs: ChatCompletionCreateKwargs = ChatCompletionCreateKwargs(
@@ -290,7 +305,7 @@ def encode_request(
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
-        provider="openai:completions",
+        provider=provider,
         unsupported_params=["top_k", "thinking"],
     ) as param_accessor:
         if param_accessor.temperature is not None:
@@ -321,10 +336,12 @@ def encode_request(
             if not model_supports_strict:
                 raise FormattingModeNotSupportedError(
                     formatting_mode="strict",
-                    provider="openai:completions",
+                    provider=provider,
                     model_id=model_id,
                 )
-            kwargs["response_format"] = _create_strict_response_format(format)
+            kwargs["response_format"] = _create_strict_response_format(
+                format, provider=provider
+            )
         elif format.mode == "tool":
             if tools:
                 kwargs["tool_choice"] = "required"
@@ -352,7 +369,9 @@ def encode_request(
 
     encoded_messages: list[openai_types.ChatCompletionMessageParam] = []
     for message in messages:
-        encoded_messages.extend(_encode_message(message, model_id, encode_thoughts))
+        encoded_messages.extend(
+            _encode_message(message, model_id, encode_thoughts, provider)
+        )
     kwargs["messages"] = encoded_messages
 
     return messages, format, kwargs

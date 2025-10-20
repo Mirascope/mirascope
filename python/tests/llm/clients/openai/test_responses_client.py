@@ -19,7 +19,12 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         ),
     ]
     _, _, kwargs = encode_request(
-        model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
+        model_id="gpt-4o",
+        messages=messages,
+        format=None,
+        tools=None,
+        params={},
+        provider="openai:responses",
     )
     assert kwargs == snapshot(
         {
@@ -42,7 +47,12 @@ def test_prepare_message_multiple_system_messages() -> None:
         llm.messages.system("On second thought, be verbose."),
     ]
     _, _, kwargs = encode_request(
-        model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
+        model_id="gpt-4o",
+        messages=messages,
+        format=None,
+        tools=None,
+        params={},
+        provider="openai:responses",
     )
     assert kwargs == snapshot(
         {

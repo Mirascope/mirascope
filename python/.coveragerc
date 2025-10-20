@@ -7,6 +7,9 @@ omit =
     mirascope/llm/mcp/client.py
     mirascope/llm/formatting/partial.py
 
+    # TODO: Add tests for Azure OpenAI client and remove from omit list
+    mirascope/llm/clients/azure_openai/*
+
     # Exclude other top-level modules for now
     mirascope/graphs/*
     
