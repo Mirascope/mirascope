@@ -1,15 +1,15 @@
 """End-to-end tests for a LLM call with all params set."""
 
-import logging
 from typing import get_type_hints
 
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
+from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
 from tests.utils import (
-    exception_snapshot_dict,
+    Snapshot,
     response_snapshot_dict,
+    snapshot_test,
 )
 
 # ============= ALL PARAMS TESTS =============
@@ -48,17 +48,6 @@ def test_call_with_params(
     def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
-    snapshot_data = {}
-    with caplog.at_level(logging.WARNING):
-        try:
-            response = add_numbers(4200, 42)
-            snapshot_data["response"] = (response_snapshot_dict(response),)
-        except Exception as e:
-            snapshot_data["exception"] = exception_snapshot_dict(e)
-
-        snapshot_data["logging"] = [
-            record.message
-            for record in caplog.records
-            if record.levelno >= logging.WARNING
-        ]
-        assert snapshot_data == snapshot
+    with snapshot_test(snapshot, caplog) as snap:
+        response = add_numbers(4200, 42)
+        snap["response"] = (response_snapshot_dict(response),)

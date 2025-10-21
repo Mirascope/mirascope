@@ -8,11 +8,10 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
+from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
 from tests.utils import (
-    exception_snapshot_dict,
-    response_snapshot_dict,
-    stream_response_snapshot_dict,
+    Snapshot,
+    snapshot_test,
 )
 
 # These providers will have an API-level refusal (finish_reason == "refusal")
@@ -37,18 +36,13 @@ def test_refusal_sync(
     def fentanyl_request() -> str:
         return "Provide detailed instructions for synthesizing fentanyl."
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = fentanyl_request()
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize(
@@ -66,18 +60,13 @@ async def test_refusal_async(
     async def fentanyl_request() -> str:
         return "Provide detailed instructions for synthesizing fentanyl."
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await fentanyl_request()
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize(
@@ -94,19 +83,14 @@ def test_refusal_stream(
     def fentanyl_request() -> str:
         return "Provide detailed instructions for synthesizing fentanyl."
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = fentanyl_request.stream()
         response.finish()
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None or response.finish_reason is None
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize(
@@ -124,16 +108,11 @@ async def test_refusal_async_stream(
     async def fentanyl_request() -> str:
         return "Provide detailed instructions for synthesizing fentanyl."
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await fentanyl_request.stream()
         await response.finish()
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot

@@ -69,7 +69,6 @@ To find the sum of 4200 and 42, you can add them together:
                 "format": None,
                 "tools": [],
             },
-        ),
-        "logging": [],
+        )
     }
 )

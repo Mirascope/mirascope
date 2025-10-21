@@ -45,6 +45,6 @@ test_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": ["Skipping unsupported parameter: seed=42 (provider: anthropic)"],
+        "logs": ["Skipping unsupported parameter: seed=42 (provider: anthropic)"],
     }
 )

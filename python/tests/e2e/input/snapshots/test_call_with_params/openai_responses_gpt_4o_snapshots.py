@@ -51,7 +51,7 @@ test_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": [
+        "logs": [
             "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
             "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",

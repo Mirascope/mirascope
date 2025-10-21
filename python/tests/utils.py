@@ -1,8 +1,15 @@
 """Test utilities for response testing."""
 
-from typing import Any
+import contextlib
+import logging
+from collections.abc import Generator
+from typing import Any, TypeAlias
+
+import pytest
 
 from mirascope import llm
+
+Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
 
 
 def format_snapshot(
@@ -94,3 +101,81 @@ def exception_snapshot_dict(exception: Exception) -> dict:
             if not attr.startswith("_") and not callable(getattr(exception, attr))
         },
     }
+
+
+class SnapshotDict(dict[str, Any]):
+    """Dictionary with convenience method for snapshotting responses."""
+
+    def set_response(
+        self,
+        response: (
+            llm.Response[Any]
+            | llm.AsyncResponse[Any]
+            | llm.StreamResponse[Any]
+            | llm.AsyncStreamResponse[Any]
+            | llm.ContextResponse[Any, Any]
+            | llm.AsyncContextResponse[Any, Any]
+            | llm.ContextStreamResponse[Any, Any]
+            | llm.AsyncContextStreamResponse[Any, Any]
+        ),
+    ) -> None:
+        """Add a response to the snapshot, auto-detecting the type."""
+        if isinstance(
+            response,
+            llm.StreamResponse
+            | llm.AsyncStreamResponse
+            | llm.ContextStreamResponse
+            | llm.AsyncContextStreamResponse,
+        ):
+            self["response"] = stream_response_snapshot_dict(response)
+        else:
+            self["response"] = response_snapshot_dict(response)
+
+
+@contextlib.contextmanager
+def snapshot_test(
+    snapshot: Snapshot,
+    caplog: pytest.LogCaptureFixture | None = None,
+    log_level: int = logging.WARNING,
+    extra_exceptions: list[type[Exception]] | None = None,
+) -> Generator[SnapshotDict, None, None]:
+    """Context manager for exception-safe snapshot testing with optional logging.
+
+    Usage:
+        with snapshot_test(snapshot) as snap:
+            response = call()
+            snap.set_response(response)
+            assert "4242" in response.pretty()
+
+        with snapshot_test(snapshot, caplog) as snap:
+            response = call()
+            snap.set_response(response)
+
+        with snapshot_test(snapshot, extra_exceptions=[ValueError, KeyError]) as snap:
+            response = call()
+            snap.set_response(response)
+    """
+    snap = SnapshotDict()
+
+    exceptions_to_catch = (NotImplementedError, llm.FeatureNotSupportedError)
+    if extra_exceptions:
+        exceptions_to_catch = (*exceptions_to_catch, *extra_exceptions)
+
+    context = caplog.at_level(log_level) if caplog else contextlib.nullcontext()
+
+    with context:
+        try:
+            yield snap
+        except exceptions_to_catch as e:
+            snap["exception"] = exception_snapshot_dict(e)
+        finally:
+            if caplog:
+                logs = [
+                    record.message
+                    for record in caplog.records
+                    if record.levelno >= log_level
+                ]
+                if logs:
+                    snap["logs"] = logs
+
+            assert dict(snap) == snapshot

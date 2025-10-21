@@ -3,11 +3,10 @@
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
+from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
 from tests.utils import (
-    exception_snapshot_dict,
-    response_snapshot_dict,
-    stream_response_snapshot_dict,
+    Snapshot,
+    snapshot_test,
 )
 
 
@@ -25,15 +24,10 @@ def test_max_tokens_sync(
     def list_states() -> str:
         return "List all U.S. states."
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = list_states()
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize(
@@ -51,15 +45,10 @@ async def test_max_tokens_async(
     async def list_states() -> str:
         return "List all U.S. states."
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await list_states()
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize(
@@ -76,16 +65,11 @@ def test_max_tokens_stream(
     def list_states() -> str:
         return "List all U.S. states."
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = list_states.stream()
         response.finish()
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize(
@@ -103,13 +87,8 @@ async def test_max_tokens_async_stream(
     async def list_states() -> str:
         return "List all U.S. states."
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await list_states.stream()
         await response.finish()
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot

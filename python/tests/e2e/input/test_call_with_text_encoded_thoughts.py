@@ -1,16 +1,14 @@
 """End-to-end tests for a LLM call without tools or structured outputs."""
 
 import inspect
-import logging
 
 import pytest
 
 from mirascope import llm
 from tests.e2e.conftest import (
     PROVIDER_MODEL_ID_PAIRS,
-    Snapshot,
 )
-from tests.utils import exception_snapshot_dict
+from tests.utils import Snapshot, snapshot_test
 
 
 def messages(provider: llm.Provider, model_id: llm.ModelId) -> list[llm.Message]:
@@ -87,23 +85,8 @@ def test_call_with_text_encoded_thoughts(
     def call() -> list[llm.Message]:
         return messages(provider, model_id)
 
-    snapshot_data = {}
-    with caplog.at_level(logging.WARNING):
-        try:
-            response = call()
-            pretty = response.pretty()
-            snapshot_data["response"] = pretty
-            snapshot_data["logging"] = [
-                record.message
-                for record in caplog.records
-                if record.levelno >= logging.WARNING
-            ]
-            assert "28657" in pretty
-        except Exception as e:
-            snapshot_data["exception"] = exception_snapshot_dict(e)
-            snapshot_data["logging"] = [
-                record.message
-                for record in caplog.records
-                if record.levelno >= logging.WARNING
-            ]
-        assert snapshot_data == snapshot
+    with snapshot_test(snapshot, caplog) as snap:
+        response = call()
+        pretty = response.pretty()
+        snap["response"] = pretty
+        assert "28657" in pretty

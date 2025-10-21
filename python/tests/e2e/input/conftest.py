@@ -9,7 +9,8 @@ import pytest
 from pytest import FixtureRequest
 
 from mirascope import llm
-from tests.e2e.conftest import SNAPSHOT_IMPORT_SYMBOLS, Snapshot
+from tests.e2e.conftest import SNAPSHOT_IMPORT_SYMBOLS
+from tests.utils import Snapshot
 
 
 def _extract_scenario_from_test_name(test_name: str) -> str:

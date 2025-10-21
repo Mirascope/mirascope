@@ -7,9 +7,8 @@ import pytest
 from mirascope import llm
 from tests.e2e.conftest import (
     PROVIDER_MODEL_ID_PAIRS,
-    Snapshot,
 )
-from tests.utils import exception_snapshot_dict, response_snapshot_dict
+from tests.utils import Snapshot, snapshot_test
 
 
 class ProviderAndModelId(TypedDict, total=True):
@@ -45,18 +44,13 @@ def test_resume_with_override(
     def who_made_you() -> str:
         return "Who created you?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = who_made_you()
 
         with llm.model(provider=provider, model_id=model_id):
             response = response.resume("Can you double-check that?")
 
-        snapshot_data["response"] = response_snapshot_dict(response)
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
+        snap.set_response(response)
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -70,16 +64,11 @@ def test_resume_with_override_context(
     def who_made_you(ctx: llm.Context[str]) -> str:
         return "Who created you?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         ctx = llm.Context(deps="Who created you?")
         response = who_made_you(ctx)
 
         with llm.model(provider=provider, model_id=model_id):
             response = response.resume(ctx, "Can you double-check that?")
 
-        snapshot_data["response"] = response_snapshot_dict(response)
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
+        snap.set_response(response)

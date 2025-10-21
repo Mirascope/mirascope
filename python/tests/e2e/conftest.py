@@ -5,7 +5,7 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
-from typing import Any, TypeAlias, TypedDict, get_args
+from typing import TypedDict, get_args
 
 import pytest
 
@@ -93,9 +93,6 @@ def vcr_config() -> VCRConfig:
         ],
         "filter_post_data_parameters": [],
     }
-
-
-Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
 
 
 class ProviderRequest(pytest.FixtureRequest):
