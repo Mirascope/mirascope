@@ -1,5 +1,6 @@
 """Google message encoding and request preparation."""
 
+import base64
 import json
 from collections.abc import Sequence
 from functools import lru_cache
@@ -56,6 +57,22 @@ def _encode_content(
     for part in content:
         if part.type == "text":
             result.append(genai_types.PartDict(text=part.text))
+        elif part.type == "image":
+            if part.source.type == "base64_image_source":
+                result.append(
+                    genai_types.PartDict(
+                        inline_data=genai_types.BlobDict(
+                            data=base64.b64decode(part.source.data),
+                            mime_type=part.source.mime_type,
+                        )
+                    )
+                )
+            elif part.source.type == "url_image_source":
+                raise FeatureNotSupportedError(
+                    "url_image_source",
+                    "google",
+                    message="Google does not support URL-referenced images. Try `llm.Image.download(...) or `llm.Image.download_async(...)`",
+                )
         elif part.type == "tool_call":
             result.append(
                 genai_types.PartDict(
