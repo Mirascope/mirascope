@@ -4,9 +4,9 @@ sync_snapshot = snapshot(
     {
         "exception": {
             "type": "FeatureNotSupportedError",
-            "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google' for model 'gemini-2.5-flash'\",)",
+            "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google'\",)",
             "feature": "formatting_mode:json with tools",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "None",
             "provider": "google",
         }
     }
@@ -15,9 +15,9 @@ async_snapshot = snapshot(
     {
         "exception": {
             "type": "FeatureNotSupportedError",
-            "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google' for model 'gemini-2.5-flash'\",)",
+            "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google'\",)",
             "feature": "formatting_mode:json with tools",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "None",
             "provider": "google",
         }
     }
@@ -26,9 +26,9 @@ stream_snapshot = snapshot(
     {
         "exception": {
             "type": "FeatureNotSupportedError",
-            "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google' for model 'gemini-2.5-flash'\",)",
+            "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google'\",)",
             "feature": "formatting_mode:json with tools",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "None",
             "provider": "google",
         }
     }
@@ -37,9 +37,9 @@ async_stream_snapshot = snapshot(
     {
         "exception": {
             "type": "FeatureNotSupportedError",
-            "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google' for model 'gemini-2.5-flash'\",)",
+            "args": "(\"Feature 'formatting_mode:json with tools' is not supported by provider 'google'\",)",
             "feature": "formatting_mode:json with tools",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "None",
             "provider": "google",
         }
     }

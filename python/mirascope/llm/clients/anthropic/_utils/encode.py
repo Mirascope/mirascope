@@ -170,7 +170,7 @@ def encode_request(
     if format is not None:
         if format.mode == "strict":
             raise FormattingModeNotSupportedError(
-                formatting_mode="strict", provider="anthropic", model_id=model_id
+                formatting_mode="strict", provider="anthropic"
             )
         elif format.mode == "tool":
             format_tool_schema = _formatting_utils.create_tool_schema(format)
