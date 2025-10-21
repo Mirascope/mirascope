@@ -9,7 +9,7 @@ from .document import (
     TextDocumentSource,
     URLDocumentSource,
 )
-from .image import Base64ImageSource, Image, URLImageSource
+from .image import Base64ImageSource, Image, ImageMimeType, URLImageSource
 from .text import Text, TextChunk, TextEndChunk, TextStartChunk
 from .thought import Thought, ThoughtChunk, ThoughtEndChunk, ThoughtStartChunk
 from .tool_call import ToolCall, ToolCallChunk, ToolCallEndChunk, ToolCallStartChunk
@@ -49,6 +49,7 @@ __all__ = [
     "ContentPart",
     "Document",
     "Image",
+    "ImageMimeType",
     "Text",
     "TextChunk",
     "TextDocumentSource",

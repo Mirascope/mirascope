@@ -3,13 +3,13 @@
 import json
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import TypedDict, cast
+from typing import Literal, TypedDict, cast
 from typing_extensions import Required
 
 from anthropic import NotGiven, types as anthropic_types
 
-from ....content import ContentPart
-from ....exceptions import FormattingModeNotSupportedError
+from ....content import ContentPart, ImageMimeType
+from ....exceptions import FeatureNotSupportedError, FormattingModeNotSupportedError
 from ....formatting import (
     Format,
     FormattableT,
@@ -22,6 +22,19 @@ from ...base import Params, _utils as _base_utils
 from ..model_ids import AnthropicModelId
 
 DEFAULT_MAX_TOKENS = 16000
+
+AnthropicImageMimeType = Literal["image/jpeg", "image/png", "image/gif", "image/webp"]
+
+
+def encode_image_mime_type(
+    mime_type: ImageMimeType,
+) -> AnthropicImageMimeType:
+    """Convert an ImageMimeType into anthropic supported mime type"""
+    if mime_type in ("image/jpeg", "image/png", "image/gif", "image/webp"):
+        return mime_type
+    raise FeatureNotSupportedError(
+        feature=f"Image with mime_type: {mime_type}", provider="anthropic"
+    )  # pragma: no cover
 
 
 class MessageCreateKwargs(TypedDict, total=False):
@@ -53,6 +66,23 @@ def _encode_content(
     for part in content:
         if part.type == "text":
             blocks.append(anthropic_types.TextBlockParam(type="text", text=part.text))
+        elif part.type == "image":
+            source: (
+                anthropic_types.Base64ImageSourceParam
+                | anthropic_types.URLImageSourceParam
+            )
+            if part.source.type == "base64_image_source":
+                source = anthropic_types.Base64ImageSourceParam(
+                    type="base64",
+                    media_type=encode_image_mime_type(part.source.mime_type),
+                    data=part.source.data,
+                )
+            else:  # url_image_source
+                source = anthropic_types.URLImageSourceParam(
+                    type="url",
+                    url=part.source.url,
+                )
+            blocks.append(anthropic_types.ImageBlockParam(type="image", source=source))
         elif part.type == "tool_output":
             blocks.append(
                 anthropic_types.ToolResultBlockParam(
