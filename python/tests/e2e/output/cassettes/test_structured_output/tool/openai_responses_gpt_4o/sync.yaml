@@ -1,8 +1,8 @@
 interactions:
 - request:
     body: '{"input":[{"role":"developer","content":"Always respond to the user''s
-      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"role":"user","content":"Please
-      recommend the most popular book by Patrick Rothfuss"}],"model":"gpt-4o","tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":[{"text":"Please
+      recommend the most popular book by Patrick Rothfuss","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.\nA book with
       a rating. The title should be in all caps!","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
       testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
@@ -16,12 +16,9 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1137'
+      - '1185'
       content-type:
       - application/json
-      cookie:
-      - __cf_bm=0CHv9hVaZmXfzgKDYL2O6u_2xOpsk5z9LT6kYHZHkEE-1760731656-1.0.1.1-mcgM8zps8TcPSOvvhy4i.uv.gk2.GHnegmpVE0RcZGbk6fHrw4vSw0wncnlhT7SsKtOoiRzQOE54UpKHLNvtNLteNmYgbzPQS3_1dabVfVY;
-        _cfuvid=xsL86Ef4F2w_W6.U_47W1w3Qtfsjrp1bBNnbnKZaUh0-1760731656087-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -49,28 +46,28 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA5xWTW/jNhC9+1ew7B6drKwkduKbi90gLdo0SLPYQxUII2lks6ZElRxmExj+7wUp
-        W5ZkK4vuKcp8PM68efRwM2KMi4zPGddoqjgIZ0E2vblMwjAML/IgCKbXeQjhZHpzlVxfT26mcJXM
-        wvxyFuBNEkwuMz52ECr5B1Paw6jSYG1PNQJhFoPzTWbTYHYxmc4C7zMEZI3LSVVRSSTcgSWQrpda
-        2dLVlYM0WJuFlKJc8jnbjBhjjFfwhtrlZ/iCUlWo+YixrQ9GrZXzlVZKbxDl/pQ4QwIhTddrSNuU
-        hCo79gJeY2WpshSTWuOxk5SScQqyC1eoDKWrbFnR2aU6C4Pw8iy4PgumO7o8JJ+zv30ndT/NJPJ0
-        eA6zaTIN/BwgTPNgkqaQhAHOwAN7EHqr0MPY0jfkyzu4h2j3TtBLW2BJ3r+JOAmSGPF5xJ/uPrP7
-        xR+f2Z+3zH1//fX+U8THEQdLK6UjPt9EPBfaUFxCUec8AGmRrn2YhLbnUdEqt8ZEfDuOuAYS5TLi
-        89n2UIqrOq4J8Z9/rR9/m36hh/Lr3b1V+uJOfbrLl1fmkOHQXXgcF0KDSVWFca50AeQk2IxRyTjm
-        Pmc7YuzZD6QCDVKi7M6TtK2lV2l8EcqaeK/uurBm3pVWRUVxCukK4zW+tX0awaiyI1zMc6WpFeTG
-        YosC9D6z0bGBHOktFhmWJHKBHU0b1C8ixZjE/h7kYCXx3fVSGttNEBYVaiDrzZPzYGd9pUNlNV3N
-        /y01+biatV3FL6gTZQS5mnmBmbDF4f7VPK6USPGA3lfmbnT/d3CHE8zxFRo4gzl2TKpF5Y1zxr8Y
-        ZLQShjkgRorhK2lIiWVAwETJflFqzeoy3B8GLBclSLbXwHlULljigr4JWjFgtYzP2dMKmb84zKyU
-        lRlL0OGBlCyFyvz0Y4ptkpxWCyTUpjWnWoQVahLYtTtOXDE9Y8vMn/zHuOfdEWlIO/G2nNt25O7+
-        H6N/0Ji7/J8/fsgwNx8XddwgTs3eMU5vbLdKM0LjYllldaUMmjGjFe7ob3E+O2pp3/BjfdZAx6Ik
-        XGK31NGJornGf63QmDUq7JxziqVTHTem5xY0ZJlwLYN8aI+12YZ7kh21/XEvBibSY9LJtC6LqZyB
-        l/J5n5NBUdU/F83v/Qlvm/BbF8juXeD4RNig1I5k4uObXfKdU3+HHz909E4JQ4Pvc/JO4R3P85BO
-        F8eqaVW+e3T1vO8p57uK7kGPehGeLP/Oc1ult0NJVbFUy0qrxB0YNMaqvW60LVPYSzATBhK5f/dZ
-        A8vWthBl59k1qZ+NPUfrMbc5vBzSFWaHzKCztvrPuYvglOMUbrPJh6BJEciDMwyCZltZ013dBRK4
-        RePwt6PtfwAAAP//AwDmrS7biAsAAA==
+        H4sIAAAAAAAAA5xW23LbNhB911egaB5lh7pYovXmtnabaeNkEnfaTunhLMmliBokGGDh2uPRv3cA
+        ShRJSc40T6b3crB79kCLlxFjXGR8xbhGU8cBzsMgDSHLQ0wu0mkQLMI8DGaLYLKchOHk8uJygstl
+        mIdzvMyyZB7ysYNQyT+Y0g5GVQYbe6oRCLMYnG+yXEyCcD69WHifISBrXE6qyloiYdYkJZA+rLWy
+        lasrB2mwMQspRbXmK/YyYowxXsMzapef4SNKVaPmI8Y2Phi1Vs5XWSm9QVS7U+IMCYQ0fa8hbVMS
+        qurZS3iKlaXaUkzqAQ+dpJSMU5B9uFJlKF1l65rO5upsGkznZ0F4Fiy2dHlIvmJ/+06aftpJ5Okr
+        c1hml6mbAwSzMJzlAcyz5HI2aYA9CD3X6GFs5Rvy5e3dp2j3TtBrW2JF3v8ScRIkMeKriN/9cs1u
+        r95fsw83zH3/8e72p4iPIw6WCqUjvnqJeC60obiCssn5CKRF+uDDJHQ9nxQVuTUm4ptxxDWQqNYR
+        Xy03+1Jc1XFDiP+8xWttZj//SNPk3a9f3n/+XPyZf5iYv/YZDt2Fx3EpNJhU1RjnSpdAToLtGJWM
+        Y+5zNiPG7v1AatAgJcr+PEnbRnq1xkehrIl36m4Ka+dda1XWFKeQFhg/4HPXpxGMqnrCxTxXmjpB
+        biy2LEHvMlsdG8iRnmORYUUiF9jTtEH9KFKMSezuQQ5WEt9eL6Wx2wRhWaMGst48OQ+21ifaV9bQ
+        1f7fUZOPa1jbVvyIOlFGkKuZl5gJW+7vX8NjoUSKe/ShMrej+7+D259gDq/QiTOYY8ekWtTeuGL8
+        d4OMCmGYA2KkGD6RhpRYBgRMVOwHpR5YU4b7w4DlogLJdho4j6orlrigfwUVDFgj43N2VyDzF4eZ
+        QlmZsQQdHkjJUqjNd9+m2DbJabVEQm06c2pEWKMmgX2748QVMzB2zPzOf4wH3i2RhrQTb8e56UZu
+        7/8h+huNucv//u2bDHPz9qqJO4nTsHeIMxjbjdKM0LhYVltdK4NmzKjALf0dzpcHLe0a/tScdaJj
+        URGusV/q6EjRXOMXKzRmrQp75xxj6VjHrem+Aw1ZJlzLID92x9puwx3JjtrhuK9OTGTApJNpUxZT
+        OQMv5fMhJydF1fxctL/3R7xdwm9cILt1geMjYSeldiATH9/ukq+c+ht8+6GjV0o4NfghJ68U3vPc
+        n9Lp1aFqOpVvH10D72vK+aqiB9CjQYQny7/z3FYZ7FBSdSzVutYqcQcGrbHurhttqxR2EsyEgUTu
+        3n3WwLqzLUTVe3ZNlsH40NF5zL3sXw5pgdk+M+itreFzbhYccxzDbTf5KWhSBHLvnAZBu62s6a/u
+        EgnconH4m9HmPwAAAP//AwAMbGHaiAsAAA==
     headers:
       CF-RAY:
-      - 99026cacb863a3ce-SEA
+      - 99240cb8293d95dd-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -78,7 +75,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 20:07:52 GMT
+      - Tue, 21 Oct 2025 22:04:17 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -94,13 +91,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1421'
+      - '1834'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1426'
+      - '1839'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -114,7 +111,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 29ms
       x-request-id:
-      - req_3ae4a8a4b0ba4b5c93b1e8509a77207b
+      - req_b642b1263dd74bca9bf4a7bfeeb93ae7
     status:
       code: 200
       message: OK

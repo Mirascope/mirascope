@@ -4,7 +4,7 @@ test_snapshot = snapshot(
     {
         "exception": {
             "type": "NotImplementedError",
-            "args": "('Unsupported content part type: image',)",
+            "args": "('Unsupported user content part type: image',)",
         }
     }
 )

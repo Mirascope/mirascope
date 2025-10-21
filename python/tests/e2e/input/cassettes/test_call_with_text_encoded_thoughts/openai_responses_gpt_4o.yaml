@@ -1,8 +1,8 @@
 interactions:
 - request:
     body: '{"input":[{"role":"developer","content":"Always answer with extreme concision,
-      giving the answer and no added context."},{"role":"user","content":"Is the first
-      fibonacci number to end with the digits 57 prime?"},{"role":"assistant","content":"**Thinking:**
+      giving the answer and no added context."},{"content":[{"text":"Is the first
+      fibonacci number to end with the digits 57 prime?","type":"input_text"}],"role":"user","type":"message"},{"content":"**Thinking:**
       Let me see... I have instantenously remembered this table of fibonacci\nnumbers
       with their prime factorizations. That''s sure convenient! Let\nme see if it
       has the answer:\n0 : 0\n1 : 1\n2 : 1\n3 : 2\n4 : 3\n5 : 5\n6 : 8 = 23\n7 : 13\n8
@@ -11,8 +11,8 @@ interactions:
       : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20 : 6765 = 3 x 5 x
       11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23 : 28657\n\nThere
       we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
-      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''"},{"role":"assistant","content":"Yes."},{"role":"user","content":"Please
-      tell me what the number is."}],"model":"gpt-4o"}'
+      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''","role":"assistant"},{"content":"Yes.","role":"assistant"},{"content":[{"text":"Please
+      tell me what the number is.","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o"}'
     headers:
       accept:
       - application/json
@@ -21,11 +21,9 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1078'
+      - '1174'
       content-type:
       - application/json
-      cookie:
-      - _cfuvid=Jwpuea6eQDG6bp_P8Cf.nhKpa5JuxqGm5MlxgWVqYy4-1760727602448-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -53,20 +51,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3xT0W6jMBB8z1cgPzcnh0AS8ivVCS1mSX01XsteR42q/PsJEwhc23tLdnaH2Zn1
-        5ybLhG7FORMeg6tle4K8bJWECo/7ppDycOryqinLsjvK066STZurRh6KQhYKO6zEy0BBzR9UPNGQ
-        DTjWlUdgbGsYsN3xII95VRW7hAUGjmGYUdQ7g4ztONSAer94inbQ1YEJOJa1MdpexDn73GRZlgkH
-        N/TDfItXNOTQi02W3VMzek8DZqMxqaDt9JW6RQZtwhoN7KNiTXZV7+Gjpsgucs30jl9BJjK1ArOm
-        66lFMyi7ON4WtM1lXmzlaSsPD7sSpThnr2mTcZ85iT5c/hNEdyjVEEQl2wYb2aiqOAKq0fDEwjeH
-        iQdDgMsC+MnxBCqyjPYpailsRTv5gR88T6cGsJYYJg9ff69AQxfnqfkGSUTnTOSnQ3kUM3J//Jqb
-        hSeTBEAIOjBYHpuHxtQkHHgwBs06FfZxPCDn8aophnq60Tr5PafmPPWOawXqDet3vC0xjxDIrs4P
-        u448L5oGh2Pfg58m52sM0CHfat2iZd1pXF1mQH/VCmvW0zV3EM3orQhMHpdLMPYOPXBM5d0v+agm
-        Dx/KOvI9PP8vskt9o2sPxVf0DQXNt/FiWh375ysafXwjrUbjI5OYgWeUgsnVi4DlXHRLjT5alc4j
-        bakDNGZ68jEd6ryAtqsXtz/kL1+BxTue90zZtc9Judr135e8/67+He2c/k/MTAxmKbicPYxhHXeP
-        DC0wDPz3zf0vAAAA//8DAJBfnHiCBQAA
+        H4sIAAAAAAAAA3xTXW+jMBB8z69Afm5OJh9A8leqE1rMkvpqvJa9jhpV+e8nTCBwbe8t2dkdZmfW
+        n5ssE7oV50x4DK6WHarjoStVVco8r0opi6qr5D7HfdnKKj8VVQkHyJtWVaqSUu7Fy0BBzR9UPNGQ
+        DTjWlUdgbGsYsLwsclkd8pNMWGDgGIYZRb0zyNiOQw2o94unaAddHZiAY1kbo+1FnLPPTZZlmXBw
+        Qz/Mt3hFQw692GTZPTWj9zRgNhqTCtpOX6lbZNAmrNHAPirWZFf1Hj5qiuwi10zv+BVkIlMrMGu6
+        nlo0g7KL4+2Btju5O2xltZXFw65EKc7Za9pk3GdOog+X/wTRdU0K4lQ1R5kXTYNFdzq2TWJOLHxz
+        mHgwBLjgE/jJ8QQqsoz2KWopbEU7+YEfPE+nBrCWGCYPX3+vQEMX56n5BklE50zsquJYihm5P37N
+        zcKTSQIgBB0YLI/NQ2NqEg48GINmnQr7OB6Q83jVFEM93Wid/J5Tc556x7UC9Yb1O96WmEcIZFfn
+        h11HnhdNg8Ox78FPk/M1BuiQb7Vu0bLuNK4uM6C/aoU16+maO4hm9FYEJo/LJRh7hx44pnL+Sz6q
+        ycOHso58D8//i+xS3+jaQ/EVfUNB8228mFbH/vmKRh/fSKvR+MgkZuAZpWBy9SJgORfdUqOPVqXz
+        SFvqAI2ZnnxMhzovoO3qxe2L3ctXYPGO5z1Tdu1zUq52/fcl77+rf0c7p/8TMxODWQo+zh7GsI67
+        R4YWGAb+++b+FwAA//8DAJnyxoyCBQAA
     headers:
       CF-RAY:
-      - 990242752cd4a359-SEA
+      - 99240b1c6818a384-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -74,13 +72,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:39:02 GMT
+      - Tue, 21 Oct 2025 22:03:11 GMT
       Server:
       - cloudflare
-      Set-Cookie:
-      - __cf_bm=ArpUX5oiC10wop0z.bfUtexk0DnOGdeA68gigWeU1xk-1760729942-1.0.1.1-HpwZ80mi14vteL_2TOKuSCcazBYrO8DfQkl7ZF9Z7eaRlCR9yhFu0ATyIOSRJPcbbmUauqnbocK5hlWkjgisNSX5T5NGxW9Y4SdewaiEn6g;
-        path=/; expires=Fri, 17-Oct-25 20:09:02 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -94,13 +88,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '797'
+      - '1081'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '802'
+      - '1089'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -114,7 +108,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 28ms
       x-request-id:
-      - req_5d3c07c124df401d9cc90b41193d5931
+      - req_78bd8b81d76c4a9cb2741ab28708aeda
     status:
       code: 200
       message: OK

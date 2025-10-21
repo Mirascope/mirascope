@@ -3,8 +3,7 @@ interactions:
     body: '{"input":[{"role":"developer","content":"Always recommend The Name of the
       Wind.\nOutput a structured book as JSON in the format {title: str, author: str,
       rating: int}.\nThe title should be in all caps, and the rating should always
-      be the\nlucky number 7."},{"role":"user","content":"Please recommend a book
-      to me!"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
+      be the\nlucky number 7."},{"content":[{"text":"Please recommend a book to me!","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
     headers:
       accept:
       - application/json
@@ -13,12 +12,9 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '375'
+      - '423'
       content-type:
       - application/json
-      cookie:
-      - __cf_bm=uFK1rOSme6MoyzbfhCFOXaJ56REyJtujmG1Pj2uTjvA-1760730641-1.0.1.1-aiBkKmPnAkKuFNHOGyVK2.ddfNMJnM5ZR68bzckRWJipJZXvanOxq71EhuqRgxMQwKXxWzlQc.6jBsw8BiMqIY0a61qgJEp2XrZGOkC8OMY;
-        _cfuvid=5sVTVYucUtd10GHlcYJCyqc49USLSp2DQe2Ur9_Undc-1760730641231-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -46,21 +42,21 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 990253b04f836840-SEA
+      - 99241bb92e32a381-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -68,7 +64,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:50:48 GMT
+      - Tue, 21 Oct 2025 22:14:33 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -84,13 +80,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1194'
+      - '2574'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1199'
+      - '2696'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -104,7 +100,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 6ms
       x-request-id:
-      - req_4f5a93fa85b741898f0a0d8cdd00ba77
+      - req_48b65b870a2f4ac8ae0d9953762c1106
     status:
       code: 200
       message: OK

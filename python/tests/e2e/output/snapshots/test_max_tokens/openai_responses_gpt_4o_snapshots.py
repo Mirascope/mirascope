@@ -20,7 +20,7 @@ sync_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Sure! Here is a list of all 50 U.S. states:
+Sure! Here is a list of all U.S. states:
 
 1. Alabama
 2. Alaska
@@ -30,7 +30,8 @@ Sure! Here is a list of all 50 U.S. states:
 6. Colorado
 7. Connecticut
 8. Delaware
-9. Florida\
+9. Florida
+10\
 """
                         )
                     ],
@@ -38,12 +39,12 @@ Sure! Here is a list of all 50 U.S. states:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0a62663f7e8935920068f29939b5b481978a0b8d08aa8c0516",
+                            "id": "msg_0d9d0b2116b143860068f8034d1d988196beb058f5a88102c3",
                             "content": [
                                 {
                                     "annotations": [],
                                     "text": """\
-Sure! Here is a list of all 50 U.S. states:
+Sure! Here is a list of all U.S. states:
 
 1. Alabama
 2. Alaska
@@ -53,7 +54,8 @@ Sure! Here is a list of all 50 U.S. states:
 6. Colorado
 7. Connecticut
 8. Delaware
-9. Florida\
+9. Florida
+10\
 """,
                                     "type": "output_text",
                                     "logprobs": [],
@@ -84,7 +86,7 @@ async_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Certainly! Here is a list of all U.S. states:
+Sure! Here are all 50 U.S. states:
 
 1. Alabama
 2. Alaska
@@ -95,7 +97,7 @@ Certainly! Here is a list of all U.S. states:
 7. Connecticut
 8. Delaware
 9. Florida
-10\
+10.\
 """
                         )
                     ],
@@ -103,12 +105,12 @@ Certainly! Here is a list of all U.S. states:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0e327036bc0ec30d0068f299404a0881978496022bdae018ca",
+                            "id": "msg_0b61c3328a7b09430068f8034fd05481948786754d24dba12d",
                             "content": [
                                 {
                                     "annotations": [],
                                     "text": """\
-Certainly! Here is a list of all U.S. states:
+Sure! Here are all 50 U.S. states:
 
 1. Alabama
 2. Alaska
@@ -119,7 +121,7 @@ Certainly! Here is a list of all U.S. states:
 7. Connecticut
 8. Delaware
 9. Florida
-10\
+10.\
 """,
                                     "type": "output_text",
                                     "logprobs": [],
@@ -187,7 +189,7 @@ async_stream_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Sure! Here is a list of all U.S. states:
+Certainly! Here is a list of all U.S. states:
 
 1. Alabama
 2. Alaska

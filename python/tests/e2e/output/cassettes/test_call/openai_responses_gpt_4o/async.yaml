@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"input":[{"role":"user","content":"What is 4200 + 42?"}],"model":"gpt-4o"}'
+    body: '{"input":[{"content":[{"text":"What is 4200 + 42?","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o"}'
     headers:
       accept:
       - application/json
@@ -9,12 +9,9 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '75'
+      - '123'
       content-type:
       - application/json
-      cookie:
-      - __cf_bm=T80Vl1F4cZg58RAO2JRydk6._cpQtYkcLqWOReeHNiA-1760728485-1.0.1.1-i6d8AU5CeS3HiV66AosH6.r1WcZpzR.NYyqeRrU8uGX67rRZ6HQhCBcYX9ChIVpj.IgOiK.tKbckWT6Iz1z.dlVkyoF9g7X_i7t.uOpduxA;
-        _cfuvid=_MSZ0jYa7nVU4c.9lUVGW8Peeb4wP16VtOCZgqmdYkk-1760728485739-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -32,7 +29,7 @@ interactions:
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '1'
+      - '0'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
@@ -42,20 +39,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3xU246jMAx971dEed3pKFAG2v7KaIVMMJ1sQ5JNnGqqUf99RSgU5rJv4GMf7HNs
-        PjaMcdXyI+Meg6uFPDTZripbkOUuFy9ClPsuP1RFtzu8yH12KA8ZCKjK3U5iBWWL/GmgsM0flDTR
-        WBPucekRCNsaBiyrSlHl+0OWJSwQUAxDjbS900jYjkUNyPPJ22iGvjrQAcew0lqZEz+yjw1jjHEH
-        V/RDfYsX1Nah5xvGbikZvbcDZqLWKaDM9JW6RQKlwxoN5KMkZc0q3sN7bSO5SDXZM34FyVpdS9Br
-        ut62qIfOTo62hd3mIi+2Yr8V5V2uRMmP7DVNMs4zO9GH03+M6KpmPxjRYIeH4iXLs7LJm04k5sRC
-        V4eJB0OAEz6AnxRPoLSG0DyaWja2op30wHeaq1MCGGMJJg1ff69AbU/O2+YbJBEdGS9yIdgvVuQM
-        /0bQgRV5kT/zOfV2f5qrubc6dQQhqEBgaEweElMSd+BBa9Rrm8jHcaOcx4uyMdTT0tbJgNlG523v
-        qJYg37A+43WJeYRgzWofseusp0XSIHnse/BT5byeATqka61aNKQ6hatVDegvSmJNalrvDqIexeaB
-        rMflEIS9Qw8UUzh7FvdoEvXeWWd9D4/3hZkpb1Tt3vEFfWODouu4Qq2K/eOsRh3frJKj8JEsn4GH
-        t5ysqxeOiznolj36aGTalzSlCtDo6R8Q0+bOAyizOsGsfPoaX9z1PGayrn0UitWony97/DF9Br7j
-        nd3/iZosgX6AeTVLGMPa7R4JWiAY6G+b2z8AAAD//wMA9xWcJpIFAAA=
+        H4sIAAAAAAAAA3xUy27jMAy85ysEXbcpZMeN3fxKsTBoi061lSVVooIGRf59YTl+bdu9JRxyQs6M
+        8rljjCvJT4x7DK4WVSWkwLLsjmWBjRTiWHWVOBzyojlUVfZcwnNeHNpOVtAJkM8dfxgobPMHW5po
+        rAk41luPQChrGLCsPGaiKvJMJCwQUAzDTGt7p5FQjkMNtG9nb6MZ9upABxzLSmtlzvzEPneMMcYd
+        XNEP8xIvqK1Dz3eM3VIzem8HzEStU0GZ6VdqiQRKhy0ayMeWlDWbeg8ftY3kItVk3/ArSNbqugW9
+        peutRD1sdna0L+w+F3mxF9VeHO9yJUp+Yi/pkvGe2Yk+nP9jhJRYDEZU7RPmlShTDZ6axJxY6Oow
+        8WAIcMYF+EnxBLbWEJplqfViG9pJD/ygeTo1gDGWYNLw5fcG1PbsvG2+QRLRifEiF4L9YkXO8D2C
+        DqzIi/yRz623+6d5mnur00YQggoEhsbmoTE1cQcetEa9tYl8HBPlPF6UjaGeQlsnA2Ybnbe9o7qF
+        9hXrN7yuMY8QrNnkEbvOelo1DZLHvgc/Tc7xDNAhXWsl0ZDqFG6iGtBfVIs1qSneHUQ9is0DWY/r
+        Iwh7hx4opnL2KO7VJOp9s876HpbvKzNT36jafeML+sYGRdcxQlLFfnlWo46vVrWj8JEsn4HFW07W
+        1SvHxVx06x19NG3KS7pSBWj09B8QU3LnA5TZPMHs+PC1vnrX85nJOrkMis2p/77sLPsO+I53dv8n
+        arIEegHzcpYwhq3bPRJIIBjob7vbXwAAAP//AwD26doWkgUAAA==
     headers:
       CF-RAY:
-      - 9902294eab5c769a-SEA
+      - 99240b99eb017699-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -63,9 +60,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:21:52 GMT
+      - Tue, 21 Oct 2025 22:03:31 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=KRc66wcbOGePUXeZnmdVehuGr5jLw..KbkZLJVKYavM-1761084211-1.0.1.1-Z0Ir7MmPjAirjZ43Lz3eE1nfFEiJsT8NbmcW73iJ4wTFwaFmyax2Gqfp8gxKy_hTyKx5PoPHNwNobl7rrz6uxE.5jyFIS3u7V5A5fTCYIIQ;
+        path=/; expires=Tue, 21-Oct-25 22:33:31 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=WvMl70O8y4w8ikmJlhfNNdECchLXhVQRG7.RoOc_5fE-1761084211196-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -79,13 +82,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1106'
+      - '878'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1114'
+      - '882'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -99,7 +102,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 2ms
       x-request-id:
-      - req_64e16daa92a34e6ca81c79d954b0d32e
+      - req_d6e39640caa54ff4a4169f8bf09e4da7
     status:
       code: 200
       message: OK

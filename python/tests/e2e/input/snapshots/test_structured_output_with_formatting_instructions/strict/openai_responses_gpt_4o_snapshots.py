@@ -36,7 +36,7 @@ lucky number 7.\
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_08989a7358f86a130068f29e10b5748194801eeb8bb7890edd",
+                            "id": "msg_05619544e7b04df70068f805c5c728819397957a739420cd29",
                             "content": [
                                 {
                                     "annotations": [],
