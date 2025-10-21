@@ -44,21 +44,25 @@ class ToolNotFoundError(MirascopeError):
 
 
 class FeatureNotSupportedError(MirascopeError):
-    """Raised if a Mirascope feature is unsupported by chosen provider and model."""
+    """Raised if a Mirascope feature is unsupported by chosen provider.
+
+    If compatibility is model-specific, then `model_id` should be specified.
+    If the feature is not supported by the provider at all, then it may be `None`."""
 
     provider: "Provider"
-    model_id: "ModelId"
+    model_id: "ModelId | None"
     feature: str
 
     def __init__(
         self,
         feature: str,
         provider: "Provider",
-        model_id: "ModelId",
+        model_id: "ModelId | None" = None,
         message: str | None = None,
     ) -> None:
         if message is None:
-            message = f"Feature '{feature}' is not supported by provider '{provider}' for model '{model_id}'"
+            model_msg = f" for model '{model_id}'" if model_id is not None else ""
+            message = f"Feature '{feature}' is not supported by provider '{provider}'{model_msg}"
         super().__init__(message)
         self.feature = feature
         self.provider = provider
@@ -74,11 +78,12 @@ class FormattingModeNotSupportedError(FeatureNotSupportedError):
         self,
         formatting_mode: "FormattingMode",
         provider: "Provider",
-        model_id: "ModelId",
+        model_id: "ModelId | None" = None,
         message: str | None = None,
     ) -> None:
         if message is None:
-            message = f"Formatting mode '{formatting_mode}' is not supported by provider '{provider}' for model '{model_id}'"
+            model_msg = f" for model '{model_id}'" if model_id is not None else ""
+            message = f"Formatting mode '{formatting_mode}' is not supported by provider '{provider}'{model_msg}"
         super().__init__(
             feature=f"formatting_mode:{formatting_mode}",
             provider=provider,

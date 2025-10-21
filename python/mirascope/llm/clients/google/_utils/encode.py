@@ -200,7 +200,6 @@ def encode_request(
             raise FeatureNotSupportedError(
                 feature=f"formatting_mode:{format.mode} with tools",
                 provider="google",
-                model_id=model_id,
             )
 
         if format.mode == "strict":
