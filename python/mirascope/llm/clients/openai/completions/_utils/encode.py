@@ -51,22 +51,27 @@ def _encode_user_message(
     Multiple text content parts are combined into a single user message.
     Tool outputs become separate tool messages.
     """
-    current_content: list[openai_types.ChatCompletionContentPartTextParam] = []
+    current_content: list[
+        openai_types.ChatCompletionContentPartTextParam
+        | openai_types.ChatCompletionContentPartImageParam
+    ] = []
     result: list[openai_types.ChatCompletionMessageParam] = []
 
     def flush_message_content() -> None:
         nonlocal current_content
         if current_content:
-            content: str | list[openai_types.ChatCompletionContentPartTextParam]
-            if len(current_content) == 1:
-                content = current_content[0]["text"]
-            else:
-                content = current_content
-            result.append(
-                openai_types.ChatCompletionUserMessageParam(
-                    role="user", content=content
+            if len(current_content) == 1 and current_content[0]["type"] == "text":
+                result.append(
+                    openai_types.ChatCompletionUserMessageParam(
+                        role="user", content=current_content[0]["text"]
+                    )
                 )
-            )
+            else:
+                result.append(
+                    openai_types.ChatCompletionUserMessageParam(
+                        role="user", content=current_content
+                    )
+                )
             current_content = []
 
     for part in message.content:
@@ -76,6 +81,16 @@ def _encode_user_message(
                     text=part.text, type="text"
                 )
             )
+        elif part.type == "image":
+            url = (
+                part.source.url
+                if part.source.type == "url_image_source"
+                else f"data:{part.source.mime_type};base64,{part.source.data}"
+            )
+            content = openai_types.ChatCompletionContentPartImageParam(
+                type="image_url", image_url={"url": url, "detail": "auto"}
+            )
+            current_content.append(content)
         elif part.type == "tool_output":
             flush_message_content()
             result.append(
