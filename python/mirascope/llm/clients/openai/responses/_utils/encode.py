@@ -18,6 +18,7 @@ from openai.types.responses import (
     response_create_params,
 )
 from openai.types.responses.easy_input_message_param import EasyInputMessageParam
+from openai.types.responses.response_input_image_param import ResponseInputImageParam
 from openai.types.responses.response_input_param import (
     FunctionCallOutput,
     Message as ResponseInputMessageParam,
@@ -77,6 +78,18 @@ def _encode_user_message(
         if part.type == "text":
             current_content.append(
                 ResponseInputTextParam(text=part.text, type="input_text")
+            )
+        elif part.type == "image":
+            image_url = (
+                part.source.url
+                if part.source.type == "url_image_source"
+                else f"data:{part.source.mime_type};base64,{part.source.data}"
+            )
+
+            current_content.append(
+                ResponseInputImageParam(
+                    image_url=image_url, detail="auto", type="input_image"
+                )
             )
         elif part.type == "tool_output":
             flush_message_content()
