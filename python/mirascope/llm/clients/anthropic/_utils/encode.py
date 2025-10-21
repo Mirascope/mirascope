@@ -108,7 +108,7 @@ def _encode_content(
                     )
                 )
         else:
-            raise NotImplementedError(f"Content type {part.type} not supported")
+            raise NotImplementedError(f"Unsupported content type: {part.type}")
 
     return blocks
 
