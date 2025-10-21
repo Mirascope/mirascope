@@ -46,19 +46,39 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
 def _encode_user_message(
     message: UserMessage,
 ) -> list[openai_types.ChatCompletionMessageParam]:
-    """Convert Mirascope `UserMessage` to a list of OpenAI `ChatCompletionMessageParam`."""
+    """Convert Mirascope `UserMessage` to a list of OpenAI `ChatCompletionMessageParam`.
 
-    message_params: list[openai_types.ChatCompletionMessageParam] = []
+    Multiple text content parts are combined into a single user message.
+    Tool outputs become separate tool messages.
+    """
+    current_content: list[openai_types.ChatCompletionContentPartTextParam] = []
+    result: list[openai_types.ChatCompletionMessageParam] = []
+
+    def flush_message_content() -> None:
+        nonlocal current_content
+        if current_content:
+            content: str | list[openai_types.ChatCompletionContentPartTextParam]
+            if len(current_content) == 1:
+                content = current_content[0]["text"]
+            else:
+                content = current_content
+            result.append(
+                openai_types.ChatCompletionUserMessageParam(
+                    role="user", content=content
+                )
+            )
+            current_content = []
+
     for part in message.content:
         if part.type == "text":
-            message_params.append(
-                openai_types.ChatCompletionUserMessageParam(
-                    role="user",
-                    content=part.text,
+            current_content.append(
+                openai_types.ChatCompletionContentPartTextParam(
+                    text=part.text, type="text"
                 )
             )
         elif part.type == "tool_output":
-            message_params.append(
+            flush_message_content()
+            result.append(
                 openai_types.ChatCompletionToolMessageParam(
                     role="tool",
                     content=str(part.value),
@@ -66,9 +86,12 @@ def _encode_user_message(
                 )
             )
         else:
-            raise NotImplementedError
+            raise NotImplementedError(
+                f"Unsupported user content part type: {part.type}"
+            )
+    flush_message_content()
 
-    return message_params
+    return result
 
 
 def _encode_assistant_message(

@@ -61,6 +61,9 @@ class ResponseCreateKwargs(TypedDict, total=False):
 def _encode_user_message(
     message: UserMessage,
 ) -> ResponseInputParam:
+    if len(message.content) == 1 and (first := message.content[0]).type == "text":
+        return [EasyInputMessageParam(content=first.text, role="user")]
+
     current_content: list[ResponseInputContentParam] = []
     result: ResponseInputParam = []
 

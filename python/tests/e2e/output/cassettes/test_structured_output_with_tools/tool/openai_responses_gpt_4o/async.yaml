@@ -1,9 +1,9 @@
 interactions:
 - request:
     body: '{"input":[{"role":"developer","content":"Always respond to the user''s
-      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":[{"text":"Please
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
       look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","name":"get_book_info","description":"Look
+      score","role":"user"}],"model":"gpt-4o","tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","name":"get_book_info","description":"Look
       up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in BookSummary format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
       Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}]}'
@@ -15,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1270'
+      - '1222'
       content-type:
       - application/json
       host:
@@ -45,26 +45,27 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
+        CwAA
     headers:
       CF-RAY:
-      - 99240e109bbdba2a-SEA
+      - 992cbbb05c6375e2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -72,7 +73,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:05:12 GMT
+      - Wed, 22 Oct 2025 23:21:50 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -88,13 +89,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1097'
+      - '1897'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1104'
+      - '1914'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -108,15 +109,15 @@ interactions:
       x-ratelimit-reset-tokens:
       - 27ms
       x-request-id:
-      - req_bb72daa67c894e7d83564b005c6dd29c
+      - req_b18aab80716745ea912fc91b21b199dd
     status:
       code: 200
       message: OK
 - request:
     body: '{"input":[{"role":"developer","content":"Always respond to the user''s
-      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":[{"text":"Please
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
       look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score","type":"input_text"}],"role":"user","type":"message"},{"arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_DrlQaUJgKQzjF3S4GteDzVyT","name":"get_book_info","type":"function_call","id":"fc_0a064f26a0e36b0f0068f80397dbe48197b967343858cd34d6","status":"completed"},{"call_id":"call_DrlQaUJgKQzjF3S4GteDzVyT","output":"Title:
+      score","role":"user"},{"arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_C0smUQ1bxK7gmQHnQ28ypd1y","name":"get_book_info","type":"function_call","id":"fc_07b6a8da9d6df7110068f9670e17e4819098b4ec0838d0ba42","status":"completed"},{"call_id":"call_C0smUQ1bxK7gmQHnQ28ypd1y","output":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25","type":"function_call_output"}],"model":"gpt-4o","tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","name":"get_book_info","description":"Look
       up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
@@ -130,7 +131,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1666'
+      - '1618'
       content-type:
       - application/json
       host:
@@ -160,27 +161,27 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 99240e18ca37ba2a-SEA
+      - 992cbbbd2f7f75e2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -188,7 +189,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:05:14 GMT
+      - Wed, 22 Oct 2025 23:21:52 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -204,13 +205,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1807'
+      - '1696'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1816'
+      - '1718'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -218,13 +219,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799570'
+      - '799573'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
       - 32ms
       x-request-id:
-      - req_aa69dbd18fdc4bd9888d1a11901695c4
+      - req_efc711e4ec224a50935619bee0521c62
     status:
       code: 200
       message: OK

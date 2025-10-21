@@ -1,7 +1,7 @@
 interactions:
 - request:
-    body: '{"input":[{"content":[{"text":"Please recommend the most popular book by
-      Patrick Rothfuss","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"Book","schema":{"$defs":{"Author":{"description":"The
+    body: '{"input":[{"content":"Please recommend the most popular book by Patrick
+      Rothfuss","role":"user"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"Book","schema":{"$defs":{"Author":{"description":"The
       author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
       Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"description":"A
       book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
@@ -15,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '958'
+      - '910'
       content-type:
       - application/json
       host:
@@ -45,27 +45,27 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        H4sIAAAAAAAAAwAAAP//rFZLj9s2EL77V7Bsjt6N/JK9vm3RLFqg3QbBAj3EgTAmRzZjSlTJ4TaG
+        4f9ekLJlyY9NUfQmzTcznMdHzux6jHEl+Zxxi67KEpEOU8jlREzkaDAeJUk6yx/SVGIupJgNHkbL
+        4SiXIwBYwnQySYH3gwuz/IqCjm5M6bCWC4tAKDMI2GCaDgbTyTAdRcwRkHfBRpii0kgoa6MliM3K
+        Gl+GuHLQDmux0lqVKz5nux5jjPEKtmiDvcRX1KZCy3uM7aMyWmsCVnqto0CVx1MyiQRKuy7qyHpB
+        ypQdeQHfMuOp8pSR2eAlSMboTIDuuiuMRB0iW1V0NzZ3w2Q4vktmd0l6KFd0yefsc8ykzqfpROFW
+        NxuBSTKrGzEby5EcyfEwT0aIAxE9Ry+0rTD6QedghSfgVsUjKExJWJ6CagfWcXusB36jxjoqQFka
+        gmMNP3/pgNqsKmuWV5DoaM74bsFJkcYFny/4yy8f2PPj7x/YH08sfP/56/PPC95fcPC0NnbB57sF
+        z5V1lJVQ1DYfgawSm6imoY18MrTOvXMLvu8vuAVS5WrB59M9bwLZH76a2Lg1OuYLzilHUFKtHBSj
+        Eq/AgtaouyQg62u+VhZflfEuO16JLLa3IUllTVFRJkCsMdvgto1ZBGfKDtsxz42lllJoqC8KsEfL
+        hvwOcqRtpiSWpHKFnYvg0L4qgRmp4+XJweu6ldyRsdhOgrCo0AL5KB7cJwdpbNkhstzYAk7/Lap8
+        dabMnFhjASeiSXTCqirwJOg8sqUxG/a3ojUDVvfmnr2skUU2MLc2Xku2RKZKBlozAZX74eQuNDn4
+        +cmYTYvq9aHzFoX5O4m564gY44+RT2fSyyhDPDX1mMkZxJjvO/SvO1qhJYXuwl8oU8PWK2goWkg3
+        nPUUFNlzUOxfUTvU1pEN/DhT2J9bnG7Cd079Df77ob03QuAW//LKouy8LJc1eSPwDvLlzH2TwKGT
+        5/Dx1aon1BkKUqrQYtAf272LQ6d3LcFWcv8zkd/iT5Pk7kbuL/HjRuqXTdt33+0bV+CdxTzY//g+
+        3pz3hwLf9FOn/N2r9GQsI3RBl1XeVsah6zNa46FmrUJN+a1mf6rPupGxKglX2A31agtvcPNwzrUq
+        Xcu4d4Wbp1A7D9NbjPw3bNy3hrlVceUKb3WvhfFXtEvjFG3rJUAqX5wWo3pWrY0S9XDzZHgDnKYz
+        J1NlrZmdNMKqPQesLwUcGyuVg6U+bnE+7h7NkFBlZ4kapGn/EmitZs0sifNRniyTTq7ny9kouQZc
+        89uM2FuuyRDoVsQPaVNE77oztUACCRTnzb63/wcAAP//AwDXDO5aVgsAAA==
     headers:
       CF-RAY:
-      - 99240cfe8beeba52-SEA
+      - 992cba90ff78ec78-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -73,7 +73,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:04:28 GMT
+      - Wed, 22 Oct 2025 23:21:04 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -89,13 +89,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1075'
+      - '1903'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1082'
+      - '1910'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -109,7 +109,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 13ms
       x-request-id:
-      - req_be28b49b69ab40ab97d9c5597602b184
+      - req_0f6e58144e1d4bada704084a8e215dfb
     status:
       code: 200
       message: OK

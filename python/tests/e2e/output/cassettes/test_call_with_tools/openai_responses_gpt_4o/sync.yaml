@@ -1,7 +1,7 @@
 interactions:
 - request:
-    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":[{"text":"Please
-      retrieve the secrets associated with each of these passwords: mellon,radiance","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"}],"model":"gpt-4o","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
       tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}]}'
     headers:
       accept:
@@ -11,7 +11,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '542'
+      - '494'
       content-type:
       - application/json
       host:
@@ -41,24 +41,24 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA7xVTW/bOBC9+1cQPCeFvmwrvhWLAIsFCrhF0cNuCmFMjhxuKJElh06ygf/7QpSt
-        D6cp2ktv0ryZp5k3M5qXBWNcSb5h3KG3VbKEVV7K5QoRkjyrk2RV1mWS52JXS1GmN+ubJC8xl2uZ
-        YbmGcs2vOgqz+xcFnWlM67G3C4dAKCvosHS9SpOyyLIkYp6Agu9ihGmsRkLZB+1APOydCW2XVw3a
-        Y29WWqt2zzfsZcEYY9zCM7ouXuIBtbHo+IKxY3RG50yHtUHraFDt+SuVRAKl/Rz15IIgZdqZvYGn
-        ygSygSoyD/gaJGN0JUDP6RojUXeZ7S1dF+Y6S7LiOimvk9VJrkjJN+yfWElfz9CJWrzdB1nU0Pdh
-        t8ryrM7zopBpnueROJLQs8VIE9pYUExvhN+SPYLg9qHBliL+cscteP9onLzjmzveoNamvePH0b+j
-        rvqs4+OXbfqn98sPwpT+8a+n8MfH/fvHffrfGNFCE7PzKBxS5ZCcwgPoqCSPXserX1ZltSuTqMqq
-        KJJiCSJN12vMkt+gigOpoBX4Q122Hyn7VNrPdvuhKNv69oulv7+F29tf02XB2Nc4PxYcaI16Pn7k
-        Qr8p1uFBmeCr8zL2qQzjaZ1pLFUCxD1WD/g8xRyCN+1sz7CujaOJU6dXaBpw58hh7TzUSM+VktiS
-        qhXOVtCjOyiBFanz2tYQNPHT38A4nBZB2Fh0QCGa03fJyfpEY2a1cQ2M75M2R7/pNPEDup3xirqc
-        eYNShWb8XfQ63hslYjQEMnwA/OtFvZymsY8SvXDKRuOG8fesY2B0D8QcfgvKoWfAzhPEyLBTq5EB
-        65v/7menYnDr5qFBQucnWvSNtuhI4dweI/oELuxdaYp0/Ob27HJ14XCq3ZPrxmQCHofn4xjDT2XL
-        QcXLFAbj10kUSKk6EUFvp0UM5+AimdMBWlx8PiYZD1MMvFgjMrbSZm+d2XXcyWC004lzoRVw7qdU
-        Hnb6fKmChz2O46ja2aHIV1ev7ZPr8zL+LcQ9yjEwmQ3u5f1ZFt8Dvsc77PJb1GQoztIJvEmGhQh+
-        vrsNEkgg6OiPi+P/AAAA//8DAP8c4eY4CAAA
+        H4sIAAAAAAAAA7xVTW/bOBC9+1cQPCeF5Miy7Fu7xaJosUGxlxZoCmFEjhxuKJElh27cwP+9EGXr
+        w2kW28vepHkzT/PxRvO0YIwrybeMO/S2TFbJMoFNukkFyDWIJMmLepPngKJYJUW6SaoqT7PlKqtv
+        IBMbmfGrjsJU/6CgM41pPfZ24RAIZQkdlq7zNF2vlmkeMU9AwXcxwjRWI6HsgyoQDztnQtvlVYP2
+        2JuV1qrd8S17WjDGGLdwQNfFS9yjNhYdXzB2jM7onOmwNmgdDao9f6WUSKC0n6OeXBCkTDuzN/BY
+        mkA2UEnmAZ+DZIwuBeg5XWMk6i6znaXrzFwvk2V2nRTXSX5qV6TkW/YlVtLXM0yiFi/OoUqzLBdx
+        DjdZtS5kXq+LAhFFJI4kdLAYaUIbC4rpjfBLbY8guF1osKWIP91xC95/N07e8e0db1Br097x4+jf
+        UZd91vGx+vEZ3qTv3n7ynw7rNq/+co/vf9zewhjRQhOz8ygcUumQnMI96NhJHr2OV7/dlbwuojqL
+        os4lVLlIc5Hlq5v/oSsOpIJW4L/25a3Mvu8PD3+4/Jbo84fHvz8kb/58t8l/ry8Lxr5G/VhwoDXq
+        ufzIhX5TrMO9MsGX52XsUxnkaZ1pLJUCxD2WD3iYYg7Bm3a2Z1jXxtHEqetXaBpw58hh7TzUSIdS
+        SWxJ1QpnK+jR7ZXAktR5bWsImvjpb2AcTosgbCw6oBDN6avkZH2kMbPauAbG98mYo99UTXyPrjJe
+        UZczb1Cq0Iy/i76P90aJGA2BDB8A/3xRL9U0zlGiF07ZaNwy/pp1DIzugZjDb0E59AzYWUGMDDuN
+        Ghmwfviv/qsqBrdODw0SOj/pRT9oi44Uzu0xok/gwt6VpkjHb348u1xdOJxq9+Q6mUzA4/B8HGP4
+        qWw5dPEyhcH4dRIFUqquiaA/TosYzsFFMqcDtLj4fEwyHqYYeLFGZGypzc46U3XcyWC0U8W50Ao4
+        z1MqD5U+X6rgYYejHFU7OxQ3+dVz++T6PI1/C3GPcgxMZsK9vD+r7FfAr3iHXX6JmgxFLZ3ATTIs
+        RPDz3W2QQAJBR39cHH8CAAD//wMA//qR9DgIAAA=
     headers:
       CF-RAY:
-      - 99240bdb4dde95dd-SEA
+      - 992cb963bde9b9b2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -66,7 +66,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:03:41 GMT
+      - Wed, 22 Oct 2025 23:20:17 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -82,13 +82,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '920'
+      - '2873'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '924'
+      - '2895'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -102,14 +102,14 @@ interactions:
       x-ratelimit-reset-tokens:
       - 21ms
       x-request-id:
-      - req_f79267c8b5544d83a636b8c0a0a7a2cc
+      - req_be19fccd385a403aba2477c35162adf8
     status:
       code: 200
       message: OK
 - request:
-    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":[{"text":"Please
-      retrieve the secrets associated with each of these passwords: mellon,radiance","type":"input_text"}],"role":"user","type":"message"},{"arguments":"{\"password\":\"mellon\"}","call_id":"call_VP1Hss5Mco8swJxuCQgAwg1z","name":"secret_retrieval_tool","type":"function_call","id":"fc_05a638d56eea032f0068f8033d4fac81979b6232f3344d1333","status":"completed"},{"arguments":"{\"password\":\"radiance\"}","call_id":"call_PQt2R8pTpPM48nfEVptZquEE","name":"secret_retrieval_tool","type":"function_call","id":"fc_05a638d56eea032f0068f8033d6b8081979644045ac1177e20","status":"completed"},{"call_id":"call_VP1Hss5Mco8swJxuCQgAwg1z","output":"Welcome
-      to Moria!","type":"function_call_output"},{"call_id":"call_PQt2R8pTpPM48nfEVptZquEE","output":"Life
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"},{"arguments":"{\"password\":\"mellon\"}","call_id":"call_bzXaB1HDWsWy7n6bMrxJzNNa","name":"secret_retrieval_tool","type":"function_call","id":"fc_05020a9191cad7ac0068f966b1446c8190b34b78d6f788eeec","status":"completed"},{"arguments":"{\"password\":\"radiance\"}","call_id":"call_Dd4wvykCr6NttXKxRK0BFH96","name":"secret_retrieval_tool","type":"function_call","id":"fc_05020a9191cad7ac0068f966b16f80819088f6dab6c16c4653","status":"completed"},{"call_id":"call_bzXaB1HDWsWy7n6bMrxJzNNa","output":"Welcome
+      to Moria!","type":"function_call_output"},{"call_id":"call_Dd4wvykCr6NttXKxRK0BFH96","output":"Life
       before Death","type":"function_call_output"}],"model":"gpt-4o","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
       tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}]}'
     headers:
@@ -120,7 +120,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1190'
+      - '1142'
       content-type:
       - application/json
       host:
@@ -150,24 +150,24 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
+        oeO/rW7/AwAA//8DAJMNshjBBwAA
     headers:
       CF-RAY:
-      - 99240be26b2295dd-SEA
+      - 992cb976d8a7b9b2-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -175,7 +175,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:03:43 GMT
+      - Wed, 22 Oct 2025 23:20:19 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -191,13 +191,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1114'
+      - '1297'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1121'
+      - '1304'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -211,7 +211,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 26ms
       x-request-id:
-      - req_bbeb1970fefe44669aef6d6d6a388514
+      - req_bdeebaa55f544370beb1b08fba53c21c
     status:
       code: 200
       message: OK

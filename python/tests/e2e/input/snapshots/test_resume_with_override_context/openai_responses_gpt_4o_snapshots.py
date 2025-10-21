@@ -32,16 +32,18 @@ test_snapshot = snapshot(
                 ),
                 UserMessage(content=[Text(text="Can you double-check that?")]),
                 AssistantMessage(
-                    content=[Text(text="Yes, I was created by Anthropic.")],
+                    content=[
+                        Text(text="Yes, I can confirm that I was created by Anthropic.")
+                    ],
                     provider="openai:responses",
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0f0063679d7a6c940068f80325edd081958a913eafd7e65c66",
+                            "id": "msg_064abeb5df0d75350068f966921330819588fc0ff0fce70fab",
                             "content": [
                                 {
                                     "annotations": [],
-                                    "text": "Yes, I was created by Anthropic.",
+                                    "text": "Yes, I can confirm that I was created by Anthropic.",
                                     "type": "output_text",
                                     "logprobs": [],
                                 }

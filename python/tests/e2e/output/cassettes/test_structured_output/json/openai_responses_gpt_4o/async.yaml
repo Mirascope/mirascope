@@ -12,8 +12,8 @@ interactions:
       {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
       \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
       \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
-      \"Book\",\n  \"type\": \"object\"\n}"},{"content":[{"text":"Please recommend
-      the most popular book by Patrick Rothfuss","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
+      \"Book\",\n  \"type\": \"object\"\n}"},{"content":"Please recommend the most
+      popular book by Patrick Rothfuss","role":"user"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
     headers:
       accept:
       - application/json
@@ -22,7 +22,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1326'
+      - '1278'
       content-type:
       - application/json
       host:
@@ -52,22 +52,22 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3RUTY/aMBC98yssn5cqhGwI3Cp1q/bQbVVV6qFU0ZCMwYtjR/YYLVrx3ys7ISTd
-        3VuY9+YxH2/8MmOMy5pvGLfo2jJJIIc6Xe9EXWSiSJMkL0SRLPO8yLKiWKyXIDKR17tFukRRre5r
-        fhckzO4JK7rKGO2wi1cWgbAuIWCLVb5IiizN04g5AvIu5FSmaRUS9mI7qI57a7wOdQlQDruwVErq
-        Pd+wlxljjPEWzmhDfo0nVKZFy2eMXSIZrTUB016pGJD6+i9ljQRSuSnqyPqKpNGTeAPPpfHUeirJ
-        HPE1SMaosgI1lWtMjSpUtm9pnpl5mqTZPCnmSd6PK0ryDfsTO+n6GTbRuP37i1jVq2UVFrFeFot1
-        sSiK9F7gWoioHFXo3GLUQedgjzfgvYlHsDKaUN+KGhc2kb3OA59pyI4E0NoQXGf45+8EVGbfWrN7
-        A4lCG8ZftpqxLSdJCrd8w7b815cH9vjx2wP7/pmF799fHz9t+V3HA08HYwMxJoaQkNZRqaHp838A
-        WVkd+5TAUDAh/DR0EN65LQ+ES69sgaTeB8Zqqy98qPXSfw3lc2tUHAk4Jx2Bpo4ciJHEW7CgFKqp
-        T8j6ztKtxZM03pXXqymjAwYftdY0LZUVVAcsj3geYxbBGT05CBTCWBqRws5904C9Zg734UAgnUtZ
-        oyYpJE5uxaE9yQpLktf7EuBVt23uyFgcN0HYtGiBfAwvPiR9NG61r0wY28Dt98hNT87osn8+uuH1
-        hZ/Q7oyTdO6sXEvf3M67G+fByKqbvyfDB+DmMU6mLUfOS4ZgOy7Vel1F38ZmpYOdur5FPl7Q0IfU
-        k6cgXRV3r4HRAzO0G1dY3zKTSa//PzHZ6i3gLd3BBe9JkyFQN3CZ3g9D9G669gYJaiAI+pfZ5R8A
-        AAD//wMAj57ZVxwGAAA=
+        H4sIAAAAAAAAAwAAAP//dFTLbtswELznKwie40KWX7JvBZqiPTQtigI91IWwJlc2Y4oUyKURI/C/
+        F6RkWWqSm7wzO97HLF/uGONK8g3jDn1TZtVaFGsxz6azVSbXmGXLolovlxJgJotiul7u8nWVL5ZC
+        LnZzMVvn/D5K2N0TCrrKWOOxjQuHQChLiNh0tZxOV4t8USTME1DwMUfYutFIKNukHYjj3tlgYl0V
+        aI9tWGmtzJ5v2MsdY4zxBs7oYr7EE2rboON3jF0SGZ2zETNB6xRQ5vovpUQCpf0Y9eSCIGXNKF7D
+        c2kDNYFKskd8DZK1uhSgx3K1lahjZfuGJnM7ybN8PsmKSbbsxpUk+Yb9SZ20/fSbqP3+/UXssrmc
+        x0XAYl6hXEkshJwVuUjKSYXODSYd9B72eAPem3gChTWE5lbUsLCR7HUe+Ex9diKAMZbgOsM/f0eg
+        tvvG2d0bSBLaMP6yNYxtOSnSuOUbtuW/vjywx4/fHtj3zyx+//76+GnL71seBDpYF4kpMYYq5TyV
+        Buou/weQU+LYpUSGhhHhp6VDFbzf8ki4dMoOSJl9ZKy25sL7Wi/dV18+d1ankYD3yhMYasmRmEi8
+        AQdaox77hFxoLd04PCkbfHm9mjI5oPdR42zdUClAHLA84nmIOQRvzeggsKqsowEp7jzUNbhrZn8f
+        Hiqkc6kkGlKVwtGteHQnJbAkdb2vCoJut809WYfDJgjrBh1QSOHph6yLpq12lVXW1XD7PXDTk7em
+        7J6Pdnhd4Sd0O+sVnVsrSxXq23m34zxYJdr5B7K8B24e42SbcuC8rA82w1JdMCL5NjWrPOz09S0K
+        6YL6PpQZPQX5qrh/DQwemL7dtEJ5y8xGvf7/xMxXbwFv6fYueE+aLIG+gbN80Q8x+PHaaySQQBD1
+        L3eXfwAAAP//AwBNT/UvHAYAAA==
     headers:
       CF-RAY:
-      - 99240ce01b7830a2-SEA
+      - 992cba762dc27208-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -75,7 +75,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:04:24 GMT
+      - Wed, 22 Oct 2025 23:20:59 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -91,13 +91,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1897'
+      - '928'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1903'
+      - '932'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -111,7 +111,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 22ms
       x-request-id:
-      - req_d2ca3bb2536645f780aa35579fdf4326
+      - req_596126870413499aa6bf67247cea9dc4
     status:
       code: 200
       message: OK

@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"input":[{"content":[{"text":"List all U.S. states.","type":"input_text"}],"role":"user","type":"message"}],"max_output_tokens":50,"model":"gpt-4o"}'
+    body: '{"input":[{"content":"List all U.S. states.","role":"user"}],"max_output_tokens":50,"model":"gpt-4o"}'
     headers:
       accept:
       - application/json
@@ -9,7 +9,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '149'
+      - '101'
       content-type:
       - application/json
       host:
@@ -39,22 +39,22 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 99240c4c8d6eebbe-SEA
+      - 992cb9e0588308d7-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -62,7 +62,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:04:01 GMT
+      - Wed, 22 Oct 2025 23:20:36 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -78,13 +78,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '2561'
+      - '1657'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '2582'
+      - '1664'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -92,13 +92,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799967'
+      - '799966'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
       - 2ms
       x-request-id:
-      - req_f508fe0111134a7ea97e1954923047e7
+      - req_8b147f00105b4e4fb105e71dd0d1ba45
     status:
       code: 200
       message: OK

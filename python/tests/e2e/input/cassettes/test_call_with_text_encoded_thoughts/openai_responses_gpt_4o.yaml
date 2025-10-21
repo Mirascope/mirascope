@@ -1,8 +1,8 @@
 interactions:
 - request:
     body: '{"input":[{"role":"developer","content":"Always answer with extreme concision,
-      giving the answer and no added context."},{"content":[{"text":"Is the first
-      fibonacci number to end with the digits 57 prime?","type":"input_text"}],"role":"user","type":"message"},{"content":"**Thinking:**
+      giving the answer and no added context."},{"content":"Is the first fibonacci
+      number to end with the digits 57 prime?","role":"user"},{"content":"**Thinking:**
       Let me see... I have instantenously remembered this table of fibonacci\nnumbers
       with their prime factorizations. That''s sure convenient! Let\nme see if it
       has the answer:\n0 : 0\n1 : 1\n2 : 1\n3 : 2\n4 : 3\n5 : 5\n6 : 8 = 23\n7 : 13\n8
@@ -11,8 +11,8 @@ interactions:
       : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20 : 6765 = 3 x 5 x
       11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23 : 28657\n\nThere
       we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
-      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''","role":"assistant"},{"content":"Yes.","role":"assistant"},{"content":[{"text":"Please
-      tell me what the number is.","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o"}'
+      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''","role":"assistant"},{"content":"Yes.","role":"assistant"},{"content":"Please
+      tell me what the number is.","role":"user"}],"model":"gpt-4o"}'
     headers:
       accept:
       - application/json
@@ -21,7 +21,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1174'
+      - '1078'
       content-type:
       - application/json
       host:
@@ -51,20 +51,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3xTXW+jMBB8z69Afm5OJh9A8leqE1rMkvpqvJa9jhpV+e8nTCBwbe8t2dkdZmfW
-        n5ssE7oV50x4DK6WHarjoStVVco8r0opi6qr5D7HfdnKKj8VVQkHyJtWVaqSUu7Fy0BBzR9UPNGQ
-        DTjWlUdgbGsYsLwsclkd8pNMWGDgGIYZRb0zyNiOQw2o94unaAddHZiAY1kbo+1FnLPPTZZlmXBw
-        Qz/Mt3hFQw692GTZPTWj9zRgNhqTCtpOX6lbZNAmrNHAPirWZFf1Hj5qiuwi10zv+BVkIlMrMGu6
-        nlo0g7KL4+2Btju5O2xltZXFw65EKc7Za9pk3GdOog+X/wTRdU0K4lQ1R5kXTYNFdzq2TWJOLHxz
-        mHgwBLjgE/jJ8QQqsoz2KWopbEU7+YEfPE+nBrCWGCYPX3+vQEMX56n5BklE50zsquJYihm5P37N
-        zcKTSQIgBB0YLI/NQ2NqEg48GINmnQr7OB6Q83jVFEM93Wid/J5Tc556x7UC9Yb1O96WmEcIZFfn
-        h11HnhdNg8Ox78FPk/M1BuiQb7Vu0bLuNK4uM6C/aoU16+maO4hm9FYEJo/LJRh7hx44pnL+Sz6q
-        ycOHso58D8//i+xS3+jaQ/EVfUNB8228mFbH/vmKRh/fSKvR+MgkZuAZpWBy9SJgORfdUqOPVqXz
-        SFvqAI2ZnnxMhzovoO3qxe2L3ctXYPGO5z1Tdu1zUq52/fcl77+rf0c7p/8TMxODWQo+zh7GsI67
-        R4YWGAb+++b+FwAA//8DAJnyxoyCBQAA
+        H4sIAAAAAAAAAwAAAP//dFPbbqswEHzPVyA/N0cmFyD5lapCi1lSnxqvZa+jRlX+/QgTCJy2b8nO
+        7jA7s/7aZJnQrThnwmNwtSwLlHl3qiTA/qhQyqLqTkVRwWm3P1T5STbH9qDkPs+75nTAQomXgYKa
+        v6h4oiEbcKwrj8DY1jBgeVnkeXnMyyphgYFjGGYU9c4gYzsONaA+Lp6iHXR1YAKOZW2Mthdxzr42
+        WZZlwsEN/TDf4hUNOfRik2X31Ize04DZaEwqaDt9pW6RQZuwRgP7qFiTXdV7+KwpsotcM33gd5CJ
+        TK3ArOl6atEMyi6Otwfa7uTusJXVVhYPuxKlOGevaZNxnzmJPlx+D6I5nHI5BAGo9l1bHruyKvI8
+        rxJzYuGbw8SDIcAFn8BvjidQkWW0T1FLYSvayQ/85Hk6NYC1xDB5+Pq2Ag1dnKfmByQRnTOxq4pj
+        KWbk/vg1NwtPJgmAEHRgsDw2D42pSTjwYAyadSrs43hAzuNVUwz1dKN18ntOzXnqHdcK1DvWH3hb
+        Yh4hkF2dH3YdeV40DQ7Hvgc/Tc7XGKBDvtW6Rcu607i6zID+qhXWrKdr7iCa0VsRmDwul2DsHXrg
+        mMr5H/moJg8fyjryPTz/L7JLfaNrD8VX9A0FzbfxYlod++crGn18J61G4yOTmIFnlILJ1YuA5Vx0
+        S40+WpXOI22pAzRmevIxHeq8gLarF7cvdi/fgcU7nvdM2bXPSbna9f+XvP+p/hPtnP5vzEwMZin4
+        OHsYwzruHhlaYBj475v7PwAAAP//AwAvjudvggUAAA==
     headers:
       CF-RAY:
-      - 99240b1c6818a384-SEA
+      - 992cb8815d1831ba-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -72,7 +72,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:03:11 GMT
+      - Wed, 22 Oct 2025 23:19:39 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -88,13 +88,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1081'
+      - '909'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1089'
+      - '961'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -108,7 +108,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 28ms
       x-request-id:
-      - req_78bd8b81d76c4a9cb2741ab28708aeda
+      - req_1fd45fa1e2b64806877c734da86ce3b3
     status:
       code: 200
       message: OK
