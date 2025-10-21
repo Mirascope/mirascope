@@ -83,6 +83,12 @@ def _encode_content(
                     url=part.source.url,
                 )
             blocks.append(anthropic_types.ImageBlockParam(type="image", source=source))
+        elif part.type == "audio":
+            raise FeatureNotSupportedError(
+                "audio input",
+                "anthropic",
+                message="Anthropic does not support audio inputs.",
+            )
         elif part.type == "tool_output":
             blocks.append(
                 anthropic_types.ToolResultBlockParam(

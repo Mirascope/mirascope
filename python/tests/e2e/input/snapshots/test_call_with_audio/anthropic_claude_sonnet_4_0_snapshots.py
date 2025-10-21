@@ -3,8 +3,11 @@ from inline_snapshot import snapshot
 test_snapshot = snapshot(
     {
         "exception": {
-            "type": "NotImplementedError",
-            "args": "('Unsupported content type: audio',)",
+            "type": "FeatureNotSupportedError",
+            "args": "('Anthropic does not support audio inputs.',)",
+            "feature": "audio input",
+            "model_id": "None",
+            "provider": "anthropic",
         }
     }
 )
