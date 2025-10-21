@@ -4,24 +4,24 @@ from collections.abc import Sequence
 from typing import TypedDict, cast
 
 from openai import NotGiven
-from openai.types import responses as openai_types
-from openai.types.responses import response_create_params
-from openai.types.responses.easy_input_message_param import EasyInputMessageParam
-from openai.types.responses.function_tool_param import FunctionToolParam
-from openai.types.responses.response_format_text_json_schema_config_param import (
+from openai.types.responses import (
+    FunctionToolParam,
     ResponseFormatTextJSONSchemaConfigParam,
-)
-from openai.types.responses.response_function_tool_call_param import (
     ResponseFunctionToolCallParam,
-)
-from openai.types.responses.response_input_param import (
-    FunctionCallOutput,
+    ResponseInputContentParam,
     ResponseInputItemParam,
     ResponseInputParam,
+    ResponseInputTextParam,
+    ResponseTextConfigParam,
+    ToolChoiceAllowedParam,
+    ToolChoiceFunctionParam,
+    response_create_params,
 )
-from openai.types.responses.response_text_config_param import ResponseTextConfigParam
-from openai.types.responses.tool_choice_allowed_param import ToolChoiceAllowedParam
-from openai.types.responses.tool_choice_function_param import ToolChoiceFunctionParam
+from openai.types.responses.easy_input_message_param import EasyInputMessageParam
+from openai.types.responses.response_input_param import (
+    FunctionCallOutput,
+    Message as ResponseInputMessageParam,
+)
 from openai.types.shared_params import Reasoning
 from openai.types.shared_params.response_format_json_object import (
     ResponseFormatJSONObject,
@@ -34,7 +34,7 @@ from .....formatting import (
     _utils as _formatting_utils,
     resolve_format,
 )
-from .....messages import Message
+from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ....base import Params, _utils as _base_utils
 from ...shared import _utils as _shared_utils
@@ -46,7 +46,7 @@ class ResponseCreateKwargs(TypedDict, total=False):
     """Kwargs to the OpenAI `client.responses.create` method."""
 
     model: ResponsesModel
-    input: str | openai_types.ResponseInputParam
+    input: str | ResponseInputParam
     instructions: str
     temperature: float
     max_output_tokens: int
@@ -55,6 +55,88 @@ class ResponseCreateKwargs(TypedDict, total=False):
     tool_choice: response_create_params.ToolChoice | NotGiven
     text: ResponseTextConfigParam
     reasoning: Reasoning | NotGiven
+
+
+def _encode_user_message(
+    message: UserMessage,
+) -> ResponseInputParam:
+    current_content: list[ResponseInputContentParam] = []
+    result: ResponseInputParam = []
+
+    def flush_message_content() -> None:
+        nonlocal current_content
+        if current_content:
+            result.append(
+                ResponseInputMessageParam(
+                    content=current_content, role="user", type="message"
+                )
+            )
+            current_content = []
+
+    for part in message.content:
+        if part.type == "text":
+            current_content.append(
+                ResponseInputTextParam(text=part.text, type="input_text")
+            )
+        elif part.type == "tool_output":
+            flush_message_content()
+            result.append(
+                FunctionCallOutput(
+                    call_id=part.id,
+                    output=str(part.value),
+                    type="function_call_output",
+                )
+            )
+        else:
+            raise NotImplementedError(
+                f"Unsupported user content part type: {part.type}"
+            )
+    flush_message_content()
+
+    return result
+
+
+def _encode_assistant_message(
+    message: AssistantMessage, encode_thoughts: bool
+) -> ResponseInputParam:
+    result: ResponseInputParam = []
+
+    # Note: OpenAI does not provide any way to encode multiplie pieces of assistant-generated
+    # text as adjacent content within the same Message, except as part of
+    # ResponseOutputMessageParam which requires OpenAI-provided `id` and `status` on the message,
+    # and `annotations` and `logprobs` on the output text.
+    # Rather than generating a fake or nonexistent fields and triggering potentially undefined
+    # server-side behavior, we use `EasyInputMessageParam` for assistant generated text,
+    # with the caveat that assistant messages containing multiple text parts will be encoded
+    # as though they are separate messages.
+    # (It would seem as though the `Message` class in `response_input_param.py` would be suitable,
+    # especially as it supports the "assistant" role; however attempting to use it triggers a server
+    # error when text of type input_text is passed as part of an assistant message.)
+    for part in message.content:
+        if part.type == "text":
+            result.append(EasyInputMessageParam(content=part.text, role="assistant"))
+        elif part.type == "thought":
+            if encode_thoughts:
+                result.append(
+                    EasyInputMessageParam(
+                        content="**Thinking:** " + part.thought, role="assistant"
+                    )
+                )
+        elif part.type == "tool_call":
+            result.append(
+                ResponseFunctionToolCallParam(
+                    call_id=part.id,
+                    name=part.name,
+                    arguments=part.args,
+                    type="function_call",
+                )
+            )
+        else:
+            raise NotImplementedError(
+                f"Unsupported assistant content part type: {part.type}"
+            )
+
+    return result
 
 
 def _encode_message(
@@ -81,39 +163,10 @@ def _encode_message(
     ):
         return cast(ResponseInputParam, message.raw_message)
 
-    result: ResponseInputParam = []
-
-    for part in message.content:
-        if part.type == "text":
-            result.append(EasyInputMessageParam(role=message.role, content=part.text))
-        elif part.type == "tool_call":
-            result.append(
-                ResponseFunctionToolCallParam(
-                    call_id=part.id,
-                    name=part.name,
-                    arguments=part.args,
-                    type="function_call",
-                )
-            )
-        elif part.type == "tool_output":
-            result.append(
-                FunctionCallOutput(
-                    call_id=part.id,
-                    output=str(part.value),
-                    type="function_call_output",
-                )
-            )
-        elif part.type == "thought":
-            if encode_thoughts:
-                result.append(
-                    EasyInputMessageParam(
-                        role=message.role, content="**Thinking:** " + part.thought
-                    )
-                )
-        else:
-            raise NotImplementedError(f"Unsupported content part type: {part.type}")
-
-    return result
+    if message.role == "assistant":
+        return _encode_assistant_message(message, encode_thoughts)
+    else:
+        return _encode_user_message(message)
 
 
 def _convert_tool_to_function_tool_param(tool: ToolSchema) -> FunctionToolParam:

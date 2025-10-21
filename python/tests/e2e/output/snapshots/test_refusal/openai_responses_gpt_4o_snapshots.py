@@ -23,15 +23,17 @@ sync_snapshot = snapshot(
                     ]
                 ),
                 AssistantMessage(
-                    content=[Text(text="I'm sorry, I can't assist with that.")],
+                    content=[
+                        Text(text="I'm very sorry, but I can't assist with that.")
+                    ],
                     provider="openai:responses",
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0a2dbf61ade398920068f2995a4f8881979a9040b8b5e40cf0",
+                            "id": "msg_0ce4d43fa47651100068f80355fe1c8196b2753b0f7c095c90",
                             "content": [
                                 {
-                                    "refusal": "I'm sorry, I can't assist with that.",
+                                    "refusal": "I'm very sorry, but I can't assist with that.",
                                     "type": "refusal",
                                 }
                             ],
@@ -76,17 +78,15 @@ async_snapshot = snapshot(
                     ]
                 ),
                 AssistantMessage(
-                    content=[
-                        Text(text="I'm very sorry, but I can't assist with that.")
-                    ],
+                    content=[Text(text="I'm sorry, I can't assist with that.")],
                     provider="openai:responses",
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0ce20fa12eeb06da0068f299636a4c8197b7ce6a2345505b97",
+                            "id": "msg_0e8958dc3c84cef50068f80357d0d88195b3c3d39c8a071cc2",
                             "content": [
                                 {
-                                    "refusal": "I'm very sorry, but I can't assist with that.",
+                                    "refusal": "I'm sorry, I can't assist with that.",
                                     "type": "refusal",
                                 }
                             ],
@@ -135,7 +135,7 @@ stream_snapshot = snapshot(
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0d307ea79b8492ae0068f2996d405c8193aa9833a826dc4889",
+                            "id": "msg_0edcfeff84266d190068f803590d3c8190a1af4876795cc844",
                             "content": [
                                 {
                                     "refusal": "I'm sorry, I can't assist with that.",
@@ -188,7 +188,7 @@ async_stream_snapshot = snapshot(
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_06d822a78d98cd140068f29979192481968491870837de3f34",
+                            "id": "msg_0a8eae9955c3c5800068f8035a9c748196937adc321714932d",
                             "content": [
                                 {
                                     "refusal": "I'm sorry, I can't assist with that.",

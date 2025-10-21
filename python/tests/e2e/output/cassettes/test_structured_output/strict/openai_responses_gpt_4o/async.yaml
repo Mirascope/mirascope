@@ -1,7 +1,7 @@
 interactions:
 - request:
-    body: '{"input":[{"role":"user","content":"Please recommend the most popular book
-      by Patrick Rothfuss"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"Book","schema":{"$defs":{"Author":{"description":"The
+    body: '{"input":[{"content":[{"text":"Please recommend the most popular book by
+      Patrick Rothfuss","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"Book","schema":{"$defs":{"Author":{"description":"The
       author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
       Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"description":"A
       book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
@@ -15,7 +15,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '910'
+      - '958'
       content-type:
       - application/json
       host:
@@ -35,7 +35,7 @@ interactions:
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '0'
+      - '1'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
@@ -45,27 +45,27 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 99026d002cdddef2-SEA
+      - 99240cd28eaaba52-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -73,15 +73,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 20:08:05 GMT
+      - Tue, 21 Oct 2025 22:04:21 GMT
       Server:
       - cloudflare
-      Set-Cookie:
-      - __cf_bm=9UsR8SocY2PulkTiuVOqbThjwP.ho1rFU7v0GNKuCfM-1760731685-1.0.1.1-vvTrhEvXtgvHfh4jsIn5qIwlSWjRZ95U3aSfx.CZqVCCLho3uvRBJL6rnDy5ZD35Dio7QDhFJtiYAJR6f2lI71mV4tS.vt.fFww5McTNwHI;
-        path=/; expires=Fri, 17-Oct-25 20:38:05 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=54Fz4_qabuSK8qfrMP4kh_5jawXNjr7d9Q2QsMIRdmk-1760731685162-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -95,13 +89,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1198'
+      - '1524'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1203'
+      - '1532'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -115,7 +109,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 13ms
       x-request-id:
-      - req_314a66d1edc642c3a0fc44d6ba160d33
+      - req_3ee8d26be6b84400977ff3148ace696b
     status:
       code: 200
       message: OK

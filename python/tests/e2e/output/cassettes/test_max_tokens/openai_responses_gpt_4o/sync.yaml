@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"input":[{"role":"user","content":"List all U.S. states."}],"max_output_tokens":50,"model":"gpt-4o"}'
+    body: '{"input":[{"content":[{"text":"List all U.S. states.","type":"input_text"}],"role":"user","type":"message"}],"max_output_tokens":50,"model":"gpt-4o"}'
     headers:
       accept:
       - application/json
@@ -9,12 +9,9 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '101'
+      - '149'
       content-type:
       - application/json
-      cookie:
-      - __cf_bm=x1cOT0MIL.Kb29qBZyE8OJgKhz0VUSFj5e8sZ.Fi6DY-1760728514-1.0.1.1-0ULHvg1H4iDCmY_Nrk1AAPHEZ5x4PDwYNbdoFgiu9mLOzLFHnOpvewmc1PSBuOFiWuZUmFjvY2fOLe2mam4MAXjOJGKsgaXgThBLSgqNGWk;
-        _cfuvid=Jwpuea6eQDG6bp_P8Cf.nhKpa5JuxqGm5MlxgWVqYy4-1760727602448-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -42,22 +39,22 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3RUTW/bMAy991doPreGnE87t2HDsHux0zwYtE2nWmTRkKhu2dD/PkhO7HhtbxIf
-        +cSPR/29EyJRbXIQiUU3VBJ2q91u3e0xL9bbYiXlLu9WRbHOO9zmeVbsIdtj0a5lu94UmcQ2uQ8U
-        VP/Ehq80ZByO9sYiMLYVBCzb7+R+VWxkFjHHwN6FGGUa6geNfImqoTkdLXkTEutAOxzNSmtljslB
-        /L0TQohkgDPaQNDiM2oa0CZ3QrxEZ7SWAma81tEwP1K1yKC0m4ksgiMTmHr4XZHnwXPFdELjZkZl
-        HFvfsCLjbolfhxzEVk4QE+mqAa2XQdSiDg8eB37Y0MNKrjYPMn+Qu0tDI2FyEN9jhmOe06x6d3x/
-        VEW9rTdhVDnIOm9lDpA3cpuNzJGFzwNGHnQOjjgD784kog0ZRjNndZvZgvfaDvzNU3R0AGOI4drC
-        7z8WoKbjYKl+A4lEB5E8eosfxFe0KJQTILRyLKgToLXYSvEtfUxFKAHdoTSlyVLxUUMNPZRmFc/u
-        BKVZp+KjVX/IQGk24XwC48CVZpuKT6BVR9YoKM0uFZ9Ik4WWSrMPF2OwYdV4Lk2eis+o4RdYLE2R
-        ii+arGohmdJ+uZymShJLOnYHnFOOwfDoHByjUzKABa1RLzXD1o/6Hyw+K/Kuuu5YFdUwaWqw1A9c
-        NdA8YXXC8y02KnyxPdh1ZPnGKczf9z3Ya+QkfQcd8rlSLRpWncLFYjm0z6rBitV1GTvwehx84pgs
-        3hbB2A9ogX00Z6m8WOOAL5l1ZHuY7zfCin5j1y4ZP6OtySk+j3pule/nlR37+ESqGRvvmZIJmHWW
-        MA3VjfrkZBxuc7TeNFG7sUrloNbX/8/HNZoKUGbxG2Sb+9f2V79QWLAwunYOlItS3/5k/gfe4p2m
-        /x41E4Oewd1maqF3y2n3yNACQ6B/uXv5BwAA//8DAM343XpBBgAA
+        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
     headers:
       CF-RAY:
-      - 99023543b9ed75f7-SEA
+      - 99240c398d8995dd-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -65,7 +62,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:30:02 GMT
+      - Tue, 21 Oct 2025 22:03:58 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -81,13 +78,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1509'
+      - '2234'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1514'
+      - '2425'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -101,7 +98,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 2ms
       x-request-id:
-      - req_ad16628eaadf44dfbc6a5bba5b4312d0
+      - req_886e6c2819d846ca8e5847a6f2cbcaa4
     status:
       code: 200
       message: OK

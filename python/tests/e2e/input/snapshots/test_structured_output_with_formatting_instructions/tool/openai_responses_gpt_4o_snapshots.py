@@ -37,10 +37,10 @@ lucky number 7.\
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',
-                            "call_id": "call_ndB4LR01LU5LL1EPSKzabN6b",
+                            "call_id": "call_5Ziemp4F3PCT4lxmWobVC2mF",
                             "name": "__mirascope_formatted_output_tool__",
                             "type": "function_call",
-                            "id": "fc_0a8d5154615116a60068f29e1ea63881908cfde473a3054e46",
+                            "id": "fc_0880a803716ba1070068f805ca8e788197a30db21f71fa9507",
                             "status": "completed",
                         }
                     ],

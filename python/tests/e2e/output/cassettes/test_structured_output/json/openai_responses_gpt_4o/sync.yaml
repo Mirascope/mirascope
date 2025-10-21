@@ -12,8 +12,8 @@ interactions:
       {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
       \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
       \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
-      \"Book\",\n  \"type\": \"object\"\n}"},{"role":"user","content":"Please recommend
-      the most popular book by Patrick Rothfuss"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
+      \"Book\",\n  \"type\": \"object\"\n}"},{"content":[{"text":"Please recommend
+      the most popular book by Patrick Rothfuss","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
     headers:
       accept:
       - application/json
@@ -22,12 +22,9 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1278'
+      - '1326'
       content-type:
       - application/json
-      cookie:
-      - __cf_bm=0CHv9hVaZmXfzgKDYL2O6u_2xOpsk5z9LT6kYHZHkEE-1760731656-1.0.1.1-mcgM8zps8TcPSOvvhy4i.uv.gk2.GHnegmpVE0RcZGbk6fHrw4vSw0wncnlhT7SsKtOoiRzQOE54UpKHLNvtNLteNmYgbzPQS3_1dabVfVY;
-        _cfuvid=xsL86Ef4F2w_W6.U_47W1w3Qtfsjrp1bBNnbnKZaUh0-1760731656087-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
@@ -55,22 +52,22 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3RUy27bMBC8+ysInuNCkh9SfCvQFO2haVEU6KEuhJW0shlTpEAujRiB/70g9bDU
-        JDd5Z3a8j1m+LBjjouI7xg3aNo82VRlDXVfrMsEY0ijaZnUCSYQpZussvt8WcVZvVlmCcJ/Uq2LL
-        77yELp6wpEFGK4tdvDQIhFUOHovTbZSu4u02CZglIGd9TqmbViJh1SUVUJ4ORjvl66pBWuzCQkqh
-        DnzHXhaMMcZbuKDx+RWeUeoWDV8wdg1kNEZ7TDkpQ0Co4V/yCgmEtHPUknElCa1m8Qaec+2odZST
-        PuFrkLSWeQlyLtfoCqWv7NDScq2XSZSsl1G2jIZxBUm+Y39CJ10/4yYae3h/EfUqhbAIWMV4v44h
-        ybDYZFEclIMKXVoMOmgtHPAGvDfxAJZaEapbUdPCZrLDPPCZxuxAAKU0wTDDP39noNSH1ujiDSQI
-        7Rh/2SvG9pwESdzzHdvzX18e2OPHbw/s+2fmv39/ffy053cdDxwdtfHEkOhDtTCWcgVNn/8DyIjy
-        1Kd4hoQZ4aemY+2s3XNPuPbKBkiog2eke3XlY63X/mssnxstw0jAWmEJFHVkTwwk3oIBKVHOfULG
-        dZZuDZ6FdjYfriYPDhh91BrdtJSXUB4xP+FlihkEq9XsILCutaEJye/cNQ2YIXO8Dws10iUXFSoS
-        tcDZrVg0Z1FiTmK4rxqc7LbNLWmD0yYImxYNkAvh+EPUR8NW+8pqbRq4/Z646clqlffPRze8vvAz
-        mkJbQZfOypVwze28u3EetSi7+TvSfARuHuOk23zivGgMttNSjVNl8G1oVlgo5PAWuXBBYx9CzZ6C
-        JM3uXgOTB2ZsN6ywumVGs17/f2LW6VvAW7qjC96TJk0gb+Aq2YxDdHa+9gYJKiDw+tfF9R8AAAD/
-        /wMAtH2f3RwGAAA=
+        H4sIAAAAAAAAA3RUy27bMBC85ysInuNCtvyQfSvQFO2haVEU6KEuhJW0tBlTpEAujRiB/70g9bDU
+        JDd5Z3a8j1m+3DHGZcV3jFt0TZ7AKi1Fkm3SlSgWgEmyzkSWpKtqW4ksm2/X2TIVK0gT3OJyDcWW
+        3wcJUzxhSb2M0Q7beGkRCKscAjbfrOdJtlys0og5AvIu5JSmbhQSVm1SAeXpYI3XoS4BymEblkpJ
+        feA79nLHGGO8gQvakF/hGZVp0PI7xq6RjNaagGmvVAxI3f9LXiGBVG6KOrK+JGn0JF7Dc248NZ5y
+        Mid8DZIxKi9BTeVqU6EKlR0ami3NbJEslrMkmyXrblxRku/Yn9hJ28+widod3l8EZmlRhkVAsahE
+        iiVukgRhJaJyVKFLg1EHnYMD3oD3Jh7B0mhCfStqXNhEtp8HPtOQHQmgtSHoZ/jn7wRU5tBYU7yB
+        RKEd4y97zdiekySFe75je/7rywN7/PjtgX3/zML376+Pn/b8vuWBp6OxgRgTQ0hI6yjXUHf5P4Cs
+        LE9dSmAomBB+GjoK79yeB8K1U7ZAUh8CY7PXVz7Ueu2+hvK5NSqOBJyTjkBTSw7ESOINWFAK1dQn
+        ZH1r6cbiWRrv8v5q8uiAwUeNNXVDeQnlEfMTXsaYRXBGTw4ChTCWRqSwc1/XYPvM4T4cCKRLLivU
+        JIXEya04tGdZYk6yvy8BXrXb5o6MxXEThHWDFsjH8PxD0kXjVrvKhLE13H6P3PTkjM6756MdXlf4
+        GW1hnKRLa+VK+vp23u04j0aW7fw9GT4AN49xMk0+cl4yBJtxqdbrMvo2NisdFKp/i3y8oKEPqSdP
+        wWKT3b8GRg/M0G5cYXXLTCa9/v/ELDdvAW/pDi54T5oMgbqB6WI1DNG76dprJKiAIOhf767/AAAA
+        //8DAFJAEOwcBgAA
     headers:
       CF-RAY:
-      - 99026c7a2a1c275a-SEA
+      - 99240ca8ad0e95dd-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -78,7 +75,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 20:07:44 GMT
+      - Tue, 21 Oct 2025 22:04:15 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -94,13 +91,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '2037'
+      - '2098'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '2040'
+      - '2107'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -108,13 +105,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799702'
+      - '799703'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
       - 22ms
       x-request-id:
-      - req_31684b97a9fe4628904083c4c744d710
+      - req_555f3a3c13c144848dd410398443575e
     status:
       code: 200
       message: OK

@@ -21,10 +21,10 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Thought(
-                            thought='The user is asking for the 100th Fibonacci number. I have access to a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make this function call.'
+                            thought='The user is asking for the 100th Fibonacci number. I have a function available called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.'
                         ),
                         ToolCall(
-                            id="toolu_01Mjec5pPiK2o6jGwzNFA9wS",
+                            id="toolu_01CL5eUDHsg9AGHyBotNfisY",
                             name="compute_fib",
                             args='{"n": 100}',
                         ),
@@ -35,12 +35,12 @@ test_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "signature": "ErUDCkYICBgCKkBu3sY/7ZuUOcbiLFXGUIPtQ96joTBhtL6mSUbAAiXw+fGhn5Inf6ahCEc4YPLvNE/oEG94XNHLzQLE5Wb3r1AsEgyuA/2S/2rRT3EWUfsaDOWE/d+50T7CsY8tBiIwT4yQ2SIuulksatbv/zKFauBwemVeyh8jpzEXCuzfwUdpx/sHztErkPJD7r13WrExKpwC+VnoZjXGG9TzjOVVdagBwdp5omjt3DGvLa0icKZ7IbOWmyqwubFV6bpsPSp5a5Yyse4Sazc1DkSdPw29H2gJUMjowV9IWsi+A1Mhq8Lgpy0xgcBfqy26z1jbBi7m4cisjdwGzAcy9tin4taiyEY3WTwsNjtzts2ENGV+c0nap4G95GbU0N9NfSfra4Bbx+Ln3jaNFDXewdD04WG1fETWOHPMCA2O4QhU1LDnFbgm6qEZdb79090Q1RPjc3IYdCz458ug+/KYLxtDmeoXBUyYVY29gC9V5fDmgXRB1ln9hZZSrdr/zGbhlZxHJTuG4eIbEUopi5838KS1sSEpSbrG4L0X8wSThafdvIjti2uRfn3R9SKyw0CyxlzYDwoYAQ==",
-                                "thinking": 'The user is asking for the 100th Fibonacci number. I have access to a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make this function call.',
+                                "signature": "ErQDCkYICBgCKkCsItOUHNinar+NABlYn+UTCEV462H15XiUdax8L7lhYMAvN2X2YxzcMd8Obghv+2Menhq/JUHTvDvU3gt3TiOQEgwbJS5D9xNGwcTpovgaDIWaDuk5agJhVcc67CIwQTu7O3W/HWUsl4CWXns5CbrWEKEDFpBaC/jIojdf37xLxSaKF/CYBpzGNemQ5kT4KpsCOFrS1f/TnnRDLRSGmrRE0n1JXup6FGelkDA3Lgrj9e25KzwINfQWLJ+kFa1ujPNLGwhMqs9qykmuE9pL+3zScityn9s05T3NBxcNi5HcmH/7PGTGWYy5R2MBwKSruk8ClRVBUeBo9KXOVEIfolaIVu+CUrCH13yU98qFDvdJdVu+KWPAIZHTr7q4qOpjkzYtjruSZfrz0fzMir8ajLzkCDAOgNOzKobqtrDvjuyoku2A3ni7jzpoOA0S7c4VzwEt/JjzPKeBfnbQwr6n0FKSjzl2HdhrKFl0R0fLcpgrdYG2O3yQoO87xgXYQ902VratKLhNz8aCGUU702+8CwzdF7bgYL4X2kFnPMi/SrtXp0f8K46BqP1bAsR1vBgB",
+                                "thinking": 'The user is asking for the 100th Fibonacci number. I have a function available called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.',
                                 "type": "thinking",
                             },
                             {
-                                "id": "toolu_01Mjec5pPiK2o6jGwzNFA9wS",
+                                "id": "toolu_01CL5eUDHsg9AGHyBotNfisY",
                                 "input": {"n": 100},
                                 "name": "compute_fib",
                                 "type": "tool_use",
@@ -51,7 +51,7 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01Mjec5pPiK2o6jGwzNFA9wS",
+                            id="toolu_01CL5eUDHsg9AGHyBotNfisY",
                             name="compute_fib",
                             value="218922995834555169026",
                         )
@@ -67,7 +67,7 @@ test_snapshot = snapshot(
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_00d582e3fce6d7ce0068f29b871b3481949d7c68ddf48043f3",
+                            "id": "msg_0c39e9e96939d63c0068f8032a699c819598a4227b3bfaf979",
                             "content": [
                                 {
                                     "annotations": [],

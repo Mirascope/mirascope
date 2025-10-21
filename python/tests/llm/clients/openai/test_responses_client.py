@@ -25,7 +25,11 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         {
             "model": "gpt-4o",
             "input": [
-                {"role": "user", "content": "Hello there"},
+                {
+                    "role": "user",
+                    "content": [{"text": "Hello there", "type": "input_text"}],
+                    "type": "message",
+                },
                 {"role": "assistant", "content": "General "},
                 {"role": "assistant", "content": "Kenobi"},
             ],
@@ -48,7 +52,11 @@ def test_prepare_message_multiple_system_messages() -> None:
         {
             "model": "gpt-4o",
             "input": [
-                {"role": "user", "content": "Hello there"},
+                {
+                    "role": "user",
+                    "content": [{"text": "Hello there", "type": "input_text"}],
+                    "type": "message",
+                },
                 {"role": "developer", "content": "Be concise."},
                 {"role": "developer", "content": "On second thought, be verbose."},
             ],

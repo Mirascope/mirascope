@@ -90,6 +90,7 @@ def vcr_config() -> VCRConfig:
             "x-api-key",  # Anthropic API keys
             "x-goog-api-key",  # Google/Gemini API keys
             "anthropic-organization-id",  # Anthropic org identifiers
+            "cookie",
         ],
         "filter_post_data_parameters": [],
     }

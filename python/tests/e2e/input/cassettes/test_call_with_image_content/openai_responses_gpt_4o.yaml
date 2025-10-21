@@ -259,7 +259,7 @@ interactions:
       access-control-allow-origin:
       - '*'
       age:
-      - '73020'
+      - '11350'
       cache-control:
       - max-age=31536000
       content-length:
@@ -267,11 +267,11 @@ interactions:
       content-type:
       - image/png
       date:
-      - Mon, 20 Oct 2025 06:12:10 GMT
+      - Tue, 21 Oct 2025 18:53:57 GMT
       etag:
       - '"3484-640857429fa00"'
       expires:
-      - Tue, 20 Oct 2026 06:12:10 GMT
+      - Wed, 21 Oct 2026 18:53:57 GMT
       last-modified:
       - Mon, 06 Oct 2025 23:03:04 GMT
       nel:
@@ -281,30 +281,30 @@ interactions:
       - '{ "group": "wm_nel", "max_age": 604800, "endpoints": [{ "url": "https://intake-logging.wikimedia.org/v1/events?stream=w3c.reportingapi.network_error&schema_uri=/w3c/reportingapi/network_error/1.0.0"
         }] }'
       server:
-      - mw-web.codfw.main-669ddffffc-bfhxz
+      - ATS/9.2.11
       server-timing:
-      - cache;desc="hit-front", host;desc="cp4039"
+      - cache;desc="hit-front", host;desc="cp4042"
       set-cookie:
       - WMF-Last-Access=21-Oct-2025;Path=/;HttpOnly;secure;Expires=Sat, 22 Nov 2025
-        00:00:00 GMT
+        12:00:00 GMT
       - WMF-Last-Access-Global=21-Oct-2025;Path=/;Domain=.wikipedia.org;HttpOnly;secure;Expires=Sat,
-        22 Nov 2025 00:00:00 GMT
-      - GeoIP=US:WA:Seattle:47.54:-122.28:v4; Path=/; secure; Domain=.wikipedia.org
+        22 Nov 2025 12:00:00 GMT
+      - GeoIP=US:WA:Seattle:47.61:-122.31:v4; Path=/; secure; Domain=.wikipedia.org
       - NetworkProbeLimit=0.001;Path=/;Secure;SameSite=None;Max-Age=3600
-      - WMF-Uniq=g7TMOqEykiGknMFmi6eiEQKTAAAAAFvda1aa2ybi2-E2wJcpJ3L6zlGePS86mcRW;Domain=.wikipedia.org;Path=/;HttpOnly;secure;SameSite=None;Expires=Wed,
+      - WMF-Uniq=mhGFDKvzLcvvOCABiElkSwKTAAAAAFvdc4GkylRfeUD2tDln_3nJKpCYUusFvDlM;Domain=.wikipedia.org;Path=/;HttpOnly;secure;SameSite=None;Expires=Wed,
         21 Oct 2026 00:00:00 GMT
       strict-transport-security:
       - max-age=106384710; includeSubDomains; preload
       x-analytics:
       - ''
       x-cache:
-      - cp4039 hit, cp4039 hit/170099
+      - cp4042 hit, cp4042 hit/72743
       x-cache-status:
       - hit-front
       x-client-ip:
-      - 97.113.225.86
+      - 71.212.69.193
       x-request-id:
-      - b401c304-7b09-420e-a31b-553a6665c11c
+      - c0af436a-410c-4eef-9504-92413ad66766
     status:
       code: 200
       message: OK

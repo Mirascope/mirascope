@@ -3,8 +3,7 @@ interactions:
     body: '{"input":[{"role":"developer","content":"Always recommend The Name of the
       Wind.\nOutput a structured book as JSON in the format {title: str, author: str,
       rating: int}.\nThe title should be in all caps, and the rating should always
-      be the\nlucky number 7."},{"role":"user","content":"Please recommend a book
-      to me!"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"Book","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object","additionalProperties":false},"strict":true}}}'
+      be the\nlucky number 7."},{"content":[{"text":"Please recommend a book to me!","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"Book","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"rating":{"title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object","additionalProperties":false},"strict":true}}}'
     headers:
       accept:
       - application/json
@@ -13,7 +12,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '659'
+      - '707'
       content-type:
       - application/json
       host:
@@ -43,24 +42,24 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA5xVTa/aOhDd8yssr++tAgQI7Pr0+tQu+qGqUheliibJBFwc27XHV0VX/PfKDgSH
-        crt4u2TO+Hg+zoyfJ4xx0fAN4xadKbNiXaxhNV8UbbGE6TzLlkU7W2PWVvN5VkzXebWY5zAr1gvM
-        F3m+RP4QKHT1A2u60GjlzvbaIhA2JQRsulpmq3m2nK8j5gjIu3Cm1p2RSNj0hyqoDzurvQpxtSAd
-        9mYhpVA7vmHPE8YY4waOaMP5Bp9QaoOWTxg7RWe0VgdMeSmjQajLLWWDBEK6MerI+pqEViN7B79K
-        7cl4Kkkf8E+QtJZlDXJM1+kGZYhsZ+gx14+zbJY/ZsVjtjyXK1LyDfsWM+nzGTrRud2LjZhm1WKV
-        h0YU2RSxKqpqVawzbPraRRY6Gow86Bzs8Aq8VPEI1loRqmtQaWAj2ks98BcNp6MDKKUJLjX89n0E
-        Sr0zVld3kEi0Yfx5y0mQxC3fbPmXt2/Yh9fv37CP/7Hw/fXdh3+3/GHLwdNe2+jzCciK+sA+a9q3
-        3rmIWyChdlu+WZ34cMvp/DVczK2WMRlwTjgCRb1zcIxO3IAFKVGOO0zW92I0Fp+E9q686L2MvRsU
-        YKzuDJU11HssD3hMMYvgtBpJGdtWW0qcQrd814G9nByU7aBFOpaiQUWiFThSuUP7JGosSVwmowUv
-        +z5xR9pimgRhZ9AC+WievsrO1tiPc2Stth1c/xMd/HBala7eYwdXFTXoaitMEMEoG8a4gi6e+0fr
-        Q6LJnmCTaC0Uz6AlgW5kD3cHgdwYEzP/Ej8ebtBzwI5sKHoCnsb6jdL6C/vr3uF/0vfK/Av9597h
-        BXqhCHf9iruV9egmbvGnFxab0SQP99zL+F6YgykZ1muoox6mu6F/BxIEmkYENYD8lHY1rvXJTfCx
-        hPEZCRKdJBh/QltpJ+jYL7ZG+O667PsR3WtR9zPtSfMBuG4cTtqUyR7KBqNJ5W+9quEsYN4IB5W8
-        vEw+7tNhNoQaPQzT2ezhTyB5boYRimuhuZ7MRrnePjiz6T3gHu+wWV6iJk0gk4jz+VBE78arpEOC
-        BiiO5mly+g0AAP//AwDTqCAzKggAAA==
+        H4sIAAAAAAAAA5xVTY/bNhC9+1cIPO8Gkla2bN9SNEVyaBIEAXqIA2FMjmzGFKmSw0WMhf97QcqW
+        KcebQ2/SvOHjfLwZvsyyjEnB1hmz6Pomny+K1byqsN7mlWjrPF8s22U+59WyxHxZrJ6A13VerFaL
+        7XbRiqJiD4HCbH8gpwuN0Q4HO7cIhKKBgBX1osiX1XKxjJgjIO/CGW66XiGhGA5tgR921ngd4mpB
+        ORzMUimpd2ydvcyyLMtYD0e04bzAZ1SmR8tmWXaKzmitCZj2SkWD1JdbGoEEUrkp6sh6TtLoib2D
+        n43x1HtqyBzwV5CMUQ0HNaXrjEAVItv19FiZxzIvq8d8+ZgvzuWKlGydfYuZDPmMnejc7vVGzHld
+        LkMjVvVqXkP9tKrKnItyFZkjCx17jDzoHOzwCrxW8Qhyown1Nag0sAntpR74k8bT0QG0NgSXGn77
+        PgGV2fXWbO8gkWidsZcNI0kKN2y9YV/fv8s+vv37Xfbpryx8//Ph458b9rBh4GlvbPT5DGQlP2Rf
+        DO1b71zELZDUuw1b1yc23nI6f40XM2tUTAack45A0+AcHKMT68GCUqimHSbrBzH2Fp+l8a656L2J
+        vRsV0FvT9dRw4HtsDnhMMYvgjJ5IGdvWWEqcQrd814G9nByV7aBFOjZSoCbZSpyo3KF9lhwbkpfJ
+        aMGroU/MkbGYJkHY9WiBfDQXb/KzNfbjHFlrbAfX/0QHP5zRjeN77OCqIoGOW9kHEUyyyTKmoYvn
+        /jDmkGhyIFgnWgvF69GSRDexh7uDQG6MiZl9jR8PN+g5YEc2FD0BT1P9Rmn9hv3t4PA/6Qdl/ob+
+        y+DwCr3UhLthxd3KenITs/ivlxbFZJLHe+5lfC/M0ZQM6zXUSQ/T3TC8AwkCQsigBlCf067GtT67
+        CT6WMD4jQaKzBGPPaLfGSToOi01I312X/TCieyP5MNOeDBuB68ZhZPom2UP5aOxT+VuvOZwFzIR0
+        sFWXl8nHfTrOhtSTh6Eoy4dfgeS5GUcorgVxPZlPcr19cMriHnCPd9wsr1GTIVBJxNXTWETvpquk
+        QwIBFEfzNDv9BwAA//8DAMtW+LEqCAAA
     headers:
       CF-RAY:
-      - 990253819efd7658-SEA
+      - 99241bab795ba381-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -68,15 +67,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:50:41 GMT
+      - Tue, 21 Oct 2025 22:14:30 GMT
       Server:
       - cloudflare
-      Set-Cookie:
-      - __cf_bm=uFK1rOSme6MoyzbfhCFOXaJ56REyJtujmG1Pj2uTjvA-1760730641-1.0.1.1-aiBkKmPnAkKuFNHOGyVK2.ddfNMJnM5ZR68bzckRWJipJZXvanOxq71EhuqRgxMQwKXxWzlQc.6jBsw8BiMqIY0a61qgJEp2XrZGOkC8OMY;
-        path=/; expires=Fri, 17-Oct-25 20:20:41 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=5sVTVYucUtd10GHlcYJCyqc49USLSp2DQe2Ur9_Undc-1760730641231-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -90,13 +83,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1524'
+      - '1908'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1530'
+      - '1924'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -110,7 +103,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 10ms
       x-request-id:
-      - req_85db60de0d894acdb6fba8b0504d19a0
+      - req_004bde5cc0434150923d53c9e9f77a14
     status:
       code: 200
       message: OK
