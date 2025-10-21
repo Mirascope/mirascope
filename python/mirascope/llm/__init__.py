@@ -28,6 +28,7 @@ from .content import (
     AssistantContentChunk,
     AssistantContentPart,
     Audio,
+    Base64ImageSource,
     Document,
     Image,
     Text,
@@ -43,6 +44,7 @@ from .content import (
     ToolCallEndChunk,
     ToolCallStartChunk,
     ToolOutput,
+    URLImageSource,
     UserContentPart,
 )
 from .context import Context
@@ -130,6 +132,7 @@ __all__ = [
     "Audio",
     "AuthenticationError",
     "BadRequestError",
+    "Base64ImageSource",
     "ChunkIterator",
     "ConnectionError",
     "Context",
@@ -180,6 +183,7 @@ __all__ = [
     "ToolNotFoundError",
     "ToolOutput",
     "Toolkit",
+    "URLImageSource",
     "UserContent",
     "UserContentPart",
     "UserMessage",

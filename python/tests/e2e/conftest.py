@@ -143,8 +143,10 @@ def formatting_mode(
 # python. (Ruff --fix will clean out unused symbols)
 SNAPSHOT_IMPORT_SYMBOLS = [
     "AssistantMessage",
+    "Base64ImageSource",
     "FinishReason",
     "Format",
+    "Image",
     "SystemMessage",
     "Text",
     "TextChunk",
@@ -156,5 +158,6 @@ SNAPSHOT_IMPORT_SYMBOLS = [
     "ToolCallEndChunk",
     "ToolCallStartChunk",
     "ToolOutput",
+    "URLImageSource",
     "UserMessage",
 ]

@@ -25,7 +25,7 @@ def test_call_with_image_content(
     @llm.call(provider=provider, model_id=model_id)
     def analyze_image(image_url: str) -> llm.UserContent:
         return [
-            "Describe the following image",
+            "Describe the following image in one sentence",
             llm.Image.download(image_url),
         ]
 
@@ -47,7 +47,7 @@ def test_call_with_image_url(
     @llm.call(provider=provider, model_id=model_id)
     def analyze_image(image_url: str) -> llm.UserContent:
         return [
-            "Describe the following image",
+            "Describe the following image in one sentence",
             llm.Image.from_url(image_url),
         ]
 
