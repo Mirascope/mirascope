@@ -204,8 +204,7 @@ Now checking which are prime:
             ],
             "format": None,
             "tools": [],
-        },
-        "logging": [],
+        }
     }
 )
 async_snapshot = snapshot(
@@ -363,8 +362,7 @@ Compiling the results, I identify three primes containing "79": 79, 179, and 379
             ],
             "format": None,
             "tools": [],
-        },
-        "logging": [],
+        }
     }
 )
 stream_snapshot = snapshot(
@@ -527,8 +525,7 @@ The primes below 400 containing "79" are 79, 179, and 379 - totaling 3 such prim
             "format": None,
             "tools": [],
             "n_chunks": 6,
-        },
-        "logging": [],
+        }
     }
 )
 async_stream_snapshot = snapshot(
@@ -702,7 +699,6 @@ I've identified 179 and 379 as prime numbers containing "79".\
             "format": None,
             "tools": [],
             "n_chunks": 3,
-        },
-        "logging": [],
+        }
     }
 )

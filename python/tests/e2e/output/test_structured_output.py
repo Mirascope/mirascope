@@ -4,11 +4,10 @@ import pytest
 from pydantic import BaseModel, Field
 
 from mirascope import llm
-from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS, Snapshot
+from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS
 from tests.utils import (
-    exception_snapshot_dict,
-    response_snapshot_dict,
-    stream_response_snapshot_dict,
+    Snapshot,
+    snapshot_test,
 )
 
 
@@ -53,20 +52,15 @@ def test_structured_output_sync(
     def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = recommend_book("Patrick Rothfuss")
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
 
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -93,20 +87,15 @@ def test_structured_output_sync_context(
         return f"Please recommend the most popular book by {ctx.deps}"
 
     ctx = llm.Context(deps="Patrick Rothfuss")
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = recommend_book(ctx)
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
 
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 # ============= ASYNC TESTS =============
@@ -136,20 +125,15 @@ async def test_structured_output_async(
     async def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await recommend_book("Patrick Rothfuss")
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
 
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -177,20 +161,15 @@ async def test_structured_output_async_context(
         return f"Please recommend the most popular book by {ctx.deps}"
 
     ctx = llm.Context(deps="Patrick Rothfuss")
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await recommend_book(ctx)
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
 
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 # ============= STREAM TESTS =============
@@ -219,22 +198,17 @@ def test_structured_output_stream(
     def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = recommend_book.stream("Patrick Rothfuss")
         response.finish()
 
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
 
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -261,22 +235,17 @@ def test_structured_output_stream_context(
         return f"Please recommend the most popular book by {ctx.deps}"
 
     ctx = llm.Context(deps="Patrick Rothfuss")
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = recommend_book.stream(ctx)
         response.finish()
 
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
 
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 # ============= ASYNC STREAM TESTS =============
@@ -306,22 +275,17 @@ async def test_structured_output_async_stream(
     async def recommend_book(author: str) -> str:
         return f"Please recommend the most popular book by {author}"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await recommend_book.stream("Patrick Rothfuss")
         await response.finish()
 
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
 
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -349,19 +313,14 @@ async def test_structured_output_async_stream_context(
         return f"Please recommend the most popular book by {ctx.deps}"
 
     ctx = llm.Context(deps="Patrick Rothfuss")
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await recommend_book.stream(ctx)
         await response.finish()
 
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
 
         book = response.parse()
         assert book.author.first_name == "Patrick"
         assert book.author.last_name == "Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot

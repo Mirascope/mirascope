@@ -40,7 +40,7 @@ test_snapshot = snapshot(
                 "tools": [],
             },
         ),
-        "logging": [
+        "logs": [
             "Skipping unsupported parameter: top_k=50 (provider: openai:completions)",
             "Skipping unsupported parameter: thinking=False (provider: openai:completions)",
         ],

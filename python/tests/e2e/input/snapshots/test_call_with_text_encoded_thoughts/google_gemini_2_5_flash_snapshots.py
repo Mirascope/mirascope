@@ -1,3 +1,3 @@
 from inline_snapshot import snapshot
 
-test_snapshot = snapshot({"response": "28657", "logging": []})
+test_snapshot = snapshot({"response": "28657"})

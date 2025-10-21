@@ -3,11 +3,10 @@
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS, Snapshot
+from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
 from tests.utils import (
-    exception_snapshot_dict,
-    response_snapshot_dict,
-    stream_response_snapshot_dict,
+    Snapshot,
+    snapshot_test,
 )
 
 PASSWORD_MAP = {"mellon": "Welcome to Moria!", "radiance": "Life before Death"}
@@ -40,8 +39,7 @@ def test_call_with_tools_sync(
             ),
         ]
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = call(["mellon", "radiance"])
         assert len(response.tool_calls) == 2, (
             f"Expected response to have two tool calls: {response.pretty()}"
@@ -50,16 +48,12 @@ def test_call_with_tools_sync(
         tool_outputs = response.execute_tools()
         response = response.resume(tool_outputs)
 
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         pretty = response.pretty()
         assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
         assert "Life before Death" in pretty, (
             f"Expected 'Life before Death' to be in response: {pretty}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -89,8 +83,7 @@ def test_call_with_tools_sync_context(
             ),
         ]
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         ctx = llm.Context(deps=PASSWORD_MAP)
         response = call(ctx, ["mellon", "radiance"])
         assert len(response.tool_calls) == 2, (
@@ -102,16 +95,12 @@ def test_call_with_tools_sync_context(
         )
         response = response.resume(ctx, tool_outputs)
 
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         pretty = response.pretty()
         assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
         assert "Life before Death" in pretty, (
             f"Expected 'Life before Death' to be in response: {pretty}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 # ============= ASYNC TESTS =============
@@ -143,8 +132,7 @@ async def test_call_with_tools_async(
             ),
         ]
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await call(["mellon", "radiance"])
         assert len(response.tool_calls) == 2, (
             f"Expected response to have two tool calls: {response.pretty()}"
@@ -153,16 +141,12 @@ async def test_call_with_tools_async(
         tool_outputs = await response.execute_tools()
         response = await response.resume(tool_outputs)
 
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         pretty = response.pretty()
         assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
         assert "Life before Death" in pretty, (
             f"Expected 'Life before Death' to be in response: {pretty}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -195,8 +179,7 @@ async def test_call_with_tools_async_context(
             ),
         ]
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         ctx = llm.Context(deps=PASSWORD_MAP)
         response = await call(ctx, ["mellon", "radiance"])
         assert len(response.tool_calls) == 2, (
@@ -206,16 +189,12 @@ async def test_call_with_tools_async_context(
         tool_outputs = await response.execute_tools(ctx)
         response = await response.resume(ctx, tool_outputs)
 
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         pretty = response.pretty()
         assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
         assert "Life before Death" in pretty, (
             f"Expected 'Life before Death' to be in response: {pretty}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 # ============= STREAM TESTS =============
@@ -246,8 +225,7 @@ def test_call_with_tools_stream(
             ),
         ]
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = call.stream(["mellon", "radiance"])
         response.finish()
 
@@ -259,16 +237,12 @@ def test_call_with_tools_stream(
         response = response.resume(tool_outputs)
         response.finish()
 
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         pretty = response.pretty()
         assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
         assert "Life before Death" in pretty, (
             f"Expected 'Life before Death' to be in response: {pretty}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -298,8 +272,7 @@ def test_call_with_tools_stream_context(
             ),
         ]
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         ctx = llm.Context(deps=PASSWORD_MAP)
         response = call.stream(ctx, ["mellon", "radiance"])
         response.finish()
@@ -312,16 +285,12 @@ def test_call_with_tools_stream_context(
         response = response.resume(ctx, tool_outputs)
         response.finish()
 
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         pretty = response.pretty()
         assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
         assert "Life before Death" in pretty, (
             f"Expected 'Life before Death' to be in response: {pretty}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 # ============= ASYNC STREAM TESTS =============
@@ -353,8 +322,7 @@ async def test_call_with_tools_async_stream(
             ),
         ]
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await call.stream(["mellon", "radiance"])
         await response.finish()
 
@@ -366,16 +334,12 @@ async def test_call_with_tools_async_stream(
         response = await response.resume(tool_outputs)
         await response.finish()
 
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         pretty = response.pretty()
         assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
         assert "Life before Death" in pretty, (
             f"Expected 'Life before Death' to be in response: {pretty}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -408,8 +372,7 @@ async def test_call_with_tools_async_stream_context(
             ),
         ]
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         ctx = llm.Context(deps=PASSWORD_MAP)
         response = await call.stream(ctx, ["mellon", "radiance"])
         await response.finish()
@@ -422,13 +385,9 @@ async def test_call_with_tools_async_stream_context(
         response = await response.resume(ctx, tool_outputs)
         await response.finish()
 
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         pretty = response.pretty()
         assert "Moria" in pretty, f"Expected 'Moria' to be in response: {pretty}"
         assert "Life before Death" in pretty, (
             f"Expected 'Life before Death' to be in response: {pretty}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot

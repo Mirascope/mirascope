@@ -6,10 +6,10 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope import llm
-from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS, Snapshot
+from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS
 from tests.utils import (
-    exception_snapshot_dict,
-    response_snapshot_dict,
+    Snapshot,
+    snapshot_test,
 )
 
 
@@ -49,16 +49,11 @@ def test_structured_output_with_formatting_instructions(
             llm.messages.user("Please recommend a book to me!"),
         ]
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = recommend_book("The Name of the Wind")
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
 
         book = response.parse()
         assert book.author == "Patrick Rothfuss"
         assert book.title == "THE NAME OF THE WIND"
         assert book.rating == 7
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot

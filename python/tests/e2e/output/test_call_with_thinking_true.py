@@ -1,15 +1,11 @@
 """End-to-end tests for LLM call with thinking=True parameter."""
 
-import logging
-
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import Snapshot
 from tests.utils import (
-    exception_snapshot_dict,
-    response_snapshot_dict,
-    stream_response_snapshot_dict,
+    Snapshot,
+    snapshot_test,
 )
 
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
@@ -40,22 +36,11 @@ def test_call_with_thinking_true_sync(
     def call(query: str) -> str:
         return query
 
-    snapshot_data = {}
-    with caplog.at_level(logging.WARNING):
-        try:
-            response = call(PROMPT)
-            with llm.model(provider=provider, model_id=model_id, thinking=False):
-                response = response.resume(RESUME_PROMPT)
-            snapshot_data["response"] = response_snapshot_dict(response)
-        except Exception as e:
-            snapshot_data["exception"] = exception_snapshot_dict(e)
-
-        snapshot_data["logging"] = [
-            record.message
-            for record in caplog.records
-            if record.levelno >= logging.WARNING
-        ]
-        assert snapshot_data == snapshot
+    with snapshot_test(snapshot, caplog) as snap:
+        response = call(PROMPT)
+        with llm.model(provider=provider, model_id=model_id, thinking=False):
+            response = response.resume(RESUME_PROMPT)
+        snap.set_response(response)
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -72,24 +57,13 @@ def test_call_with_thinking_true_stream(
     def call(query: str) -> str:
         return query
 
-    snapshot_data = {}
-    with caplog.at_level(logging.WARNING):
-        try:
-            response = call.stream(PROMPT)
-            response.finish()
-            with llm.model(provider=provider, model_id=model_id, thinking=False):
-                response = response.resume(RESUME_PROMPT)
-            response.finish()
-            snapshot_data["response"] = stream_response_snapshot_dict(response)
-        except Exception as e:
-            snapshot_data["exception"] = exception_snapshot_dict(e)
-
-        snapshot_data["logging"] = [
-            record.message
-            for record in caplog.records
-            if record.levelno >= logging.WARNING
-        ]
-        assert snapshot_data == snapshot
+    with snapshot_test(snapshot, caplog) as snap:
+        response = call.stream(PROMPT)
+        response.finish()
+        with llm.model(provider=provider, model_id=model_id, thinking=False):
+            response = response.resume(RESUME_PROMPT)
+        response.finish()
+        snap.set_response(response)
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -107,22 +81,11 @@ async def test_call_with_thinking_true_async(
     async def call(query: str) -> str:
         return query
 
-    snapshot_data = {}
-    with caplog.at_level(logging.WARNING):
-        try:
-            response = await call(PROMPT)
-            with llm.model(provider=provider, model_id=model_id, thinking=False):
-                response = await response.resume(RESUME_PROMPT)
-            snapshot_data["response"] = response_snapshot_dict(response)
-        except Exception as e:
-            snapshot_data["exception"] = exception_snapshot_dict(e)
-
-        snapshot_data["logging"] = [
-            record.message
-            for record in caplog.records
-            if record.levelno >= logging.WARNING
-        ]
-        assert snapshot_data == snapshot
+    with snapshot_test(snapshot, caplog) as snap:
+        response = await call(PROMPT)
+        with llm.model(provider=provider, model_id=model_id, thinking=False):
+            response = await response.resume(RESUME_PROMPT)
+        snap.set_response(response)
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -140,21 +103,10 @@ async def test_call_with_thinking_true_async_stream(
     async def call(query: str) -> str:
         return query
 
-    snapshot_data = {}
-    with caplog.at_level(logging.WARNING):
-        try:
-            response = await call.stream(PROMPT)
-            await response.finish()
-            with llm.model(provider=provider, model_id=model_id, thinking=False):
-                response = await response.resume(RESUME_PROMPT)
-            await response.finish()
-            snapshot_data["response"] = stream_response_snapshot_dict(response)
-        except Exception as e:
-            snapshot_data["exception"] = exception_snapshot_dict(e)
-
-        snapshot_data["logging"] = [
-            record.message
-            for record in caplog.records
-            if record.levelno >= logging.WARNING
-        ]
-        assert snapshot_data == snapshot
+    with snapshot_test(snapshot, caplog) as snap:
+        response = await call.stream(PROMPT)
+        await response.finish()
+        with llm.model(provider=provider, model_id=model_id, thinking=False):
+            response = await response.resume(RESUME_PROMPT)
+        await response.finish()
+        snap.set_response(response)

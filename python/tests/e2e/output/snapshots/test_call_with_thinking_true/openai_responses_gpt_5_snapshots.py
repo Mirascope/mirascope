@@ -159,8 +159,7 @@ I also re-checked the primality of both 179 and 379, confirming they are indeed 
             ],
             "format": None,
             "tools": [],
-        },
-        "logging": [],
+        }
     }
 )
 async_snapshot = snapshot(
@@ -311,8 +310,7 @@ I checked the number 397, which doesn't contain the substring "79." The only can
             ],
             "format": None,
             "tools": [],
-        },
-        "logging": [],
+        }
     }
 )
 stream_snapshot = snapshot(
@@ -491,8 +489,7 @@ Since I found three prime numbers containing the substring "79" (79, 179, and 37
             "format": None,
             "tools": [],
             "n_chunks": 6,
-        },
-        "logging": [],
+        }
     }
 )
 async_stream_snapshot = snapshot(
@@ -651,7 +648,6 @@ So, the answer is simply "3."\
             "format": None,
             "tools": [],
             "n_chunks": 6,
-        },
-        "logging": [],
+        }
     }
 )

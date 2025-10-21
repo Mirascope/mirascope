@@ -195,8 +195,7 @@ The primes below 400 that contain 79 as a substring are 79, 179, and 379. There 
             ],
             "format": None,
             "tools": [],
-        },
-        "logging": [],
+        }
     }
 )
 async_snapshot = snapshot(
@@ -317,8 +316,7 @@ Let me double-check. I will use a simple Python script to generate the prime num
             ],
             "format": None,
             "tools": [],
-        },
-        "logging": [],
+        }
     }
 )
 stream_snapshot = snapshot(
@@ -546,8 +544,7 @@ I'm now confident I have a complete and accurate solution. I've methodically ide
             "format": None,
             "tools": [],
             "n_chunks": 4,
-        },
-        "logging": [],
+        }
     }
 )
 async_stream_snapshot = snapshot(
@@ -1000,7 +997,6 @@ The primes below 400 that contain 79 as a substring are 79, 179, and 379. There 
             "format": None,
             "tools": [],
             "n_chunks": 4,
-        },
-        "logging": [],
+        }
     }
 )

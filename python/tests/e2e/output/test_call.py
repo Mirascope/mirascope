@@ -3,14 +3,10 @@
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import (
-    PROVIDER_MODEL_ID_PAIRS,
-    Snapshot,
-)
+from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
 from tests.utils import (
-    exception_snapshot_dict,
-    response_snapshot_dict,
-    stream_response_snapshot_dict,
+    Snapshot,
+    snapshot_test,
 )
 
 # ============= SYNC TESTS =============
@@ -30,17 +26,12 @@ def test_call_sync(
     def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = add_numbers(4200, 42)
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -54,18 +45,13 @@ def test_call_sync_context(
     def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         ctx = llm.Context(deps=4200)
         response = add_numbers(ctx, 42)
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 # ============= ASYNC TESTS =============
@@ -83,17 +69,12 @@ async def test_call_async(
     async def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await add_numbers(4200, 42)
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -108,18 +89,13 @@ async def test_call_async_context(
     async def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         ctx = llm.Context(deps=4200)
         response = await add_numbers(ctx, 42)
-        snapshot_data["response"] = response_snapshot_dict(response)
+        snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 # ============= STREAM TESTS =============
@@ -136,18 +112,13 @@ def test_call_stream(
     def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = add_numbers.stream(4200, 42)
         response.finish()
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -161,19 +132,14 @@ def test_call_stream_context(
     def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         ctx = llm.Context(deps=4200)
         response = add_numbers.stream(ctx, 42)
         response.finish()
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 # ============= ASYNC STREAM TESTS =============
@@ -191,18 +157,13 @@ async def test_call_async_stream(
     async def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         response = await add_numbers.stream(4200, 42)
         await response.finish()
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -217,16 +178,11 @@ async def test_call_async_stream_context(
     async def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
-    snapshot_data = {}
-    try:
+    with snapshot_test(snapshot) as snap:
         ctx = llm.Context(deps=4200)
         response = await add_numbers.stream(ctx, 42)
         await response.finish()
-        snapshot_data["response"] = stream_response_snapshot_dict(response)
+        snap.set_response(response)
         assert "4242" in response.pretty(), (
             f"Expected '4242' in response: {response.pretty()}"
         )
-    except Exception as e:
-        snapshot_data["exception"] = exception_snapshot_dict(e)
-
-    assert snapshot_data == snapshot
