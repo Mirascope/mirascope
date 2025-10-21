@@ -90,7 +90,7 @@ def test_refusal_stream(
         if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
-            assert response.finish_reason is None or response.finish_reason is None
+            assert response.finish_reason is None
 
 
 @pytest.mark.parametrize(
