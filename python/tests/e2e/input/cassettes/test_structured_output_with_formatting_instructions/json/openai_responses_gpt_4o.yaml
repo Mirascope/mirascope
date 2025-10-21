@@ -3,7 +3,7 @@ interactions:
     body: '{"input":[{"role":"developer","content":"Always recommend The Name of the
       Wind.\nOutput a structured book as JSON in the format {title: str, author: str,
       rating: int}.\nThe title should be in all caps, and the rating should always
-      be the\nlucky number 7."},{"content":[{"text":"Please recommend a book to me!","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
+      be the\nlucky number 7."},{"content":"Please recommend a book to me!","role":"user"}],"model":"gpt-4o","text":{"format":{"type":"json_object"}}}'
     headers:
       accept:
       - application/json
@@ -12,7 +12,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '423'
+      - '375'
       content-type:
       - application/json
       host:
@@ -42,21 +42,21 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 99241bb92e32a381-SEA
+      - 992cb8df2b3431ba-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -64,7 +64,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:14:33 GMT
+      - Wed, 22 Oct 2025 23:19:54 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -80,13 +80,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '2574'
+      - '1158'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '2696'
+      - '1241'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -100,7 +100,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 6ms
       x-request-id:
-      - req_48b65b870a2f4ac8ae0d9953762c1106
+      - req_036e2f4514da40bd85b65ba2b7750039
     status:
       code: 200
       message: OK

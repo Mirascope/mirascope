@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"input":[{"content":[{"text":"What is 4200 + 42?","type":"input_text"}],"role":"user","type":"message"}],"max_output_tokens":500,"model":"gpt-4o","temperature":0.7,"top_p":0.3}'
+    body: '{"input":[{"content":"What is 4200 + 42?","role":"user"}],"max_output_tokens":500,"model":"gpt-4o","temperature":0.7,"top_p":0.3}'
     headers:
       accept:
       - application/json
@@ -9,7 +9,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '177'
+      - '129'
       content-type:
       - application/json
       host:
@@ -39,20 +39,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3RU0Y6jMAx871dEeb3tKVBKS39ldUJuYrq5DUkucaqtVv33E6FAudt9A4892DM2
-        nxvGuFb8xHjA6FshEZuqVDvcya5WeyHqY3cUu0JiqY7HoqnPRdPtm52UAg/NXhz4y0Dhzr9R0kTj
-        bMQxLgMCoWphwIpDXYhjVRybjEUCSnGoka73BgnVWHQG+X4JLtmhrw5MxDGsjdH2wk/sc8MYY9zD
-        DcNQr/CKxnkMfMPYPSdjCG7AbDImB7SdvtIqJNAmrtFIIUnSzq7iPXy0LpFP1JJ7xwzuhZgxcs60
-        EsyarXcKzdDYxdO2cttSlNVWHLeifqiVGfmJveZBxnFmI/p4+d4HBaoUDx8OZV3KfdE0u64Ypcss
-        dPOYeTBGuOACfCd4BqWzhHZp6rmxFe0kB37QXJ0TwFpHMEn4+msFGnfxwZ2/QDLRifGqFIL9YFXJ
-        8E8CE1lVVuVPPqfeH09zNQ/O5I4gRh0JLI3JQ2JO4h4CGINmbROFNC6UD3jVLsV22tk2GzDb6IPr
-        PbUS5Bu273h7xgJCdHa1jth1LtBT0iB56nsIU+W8nRE6pFurFVrSncbVpkYMVy2xJT1tdwfJjGLz
-        SC7g8xCEvccAlHJY/Dw8olnUR2edCz0s709m5rxRtUfHVwxnFzXdxhVSOvXLVY06vjktR+ETOT4D
-        i7ecnG+fHBdz0Oced+N7SFbmfclT6ghnM/0CUt7ceQBtVxdY1C//x5/Oeh4zW6eWQrEa9d/DLoqv
-        gK94Z/e/oyZHYBawPMwSprh2u0cCBQQD/X1z/wsAAP//AwC8YZJ4kQUAAA==
+        H4sIAAAAAAAAA3RU246jMAx971dEed3pKtCWS39ltEKGmE52QpJNnGqqUf99RSgUdmfewMc+2OfY
+        fO4Y40ryM+Meg2uErEUuBVYHiSd5KoQoqr4uiqpqi76qsrqoenHIyoPAohBVnpf8ZaSw7W/saKax
+        JuAU7zwCoWxgxLKyyLLylJVFwgIBxTDWdHZwGgnlVNRC937xNpqxrx50wCmstFbmws/sc8cYY9zB
+        Df1YL/GK2jr0fMfYPSWj93bETNQ6BZSZv9JIJFA6bNFAPnakrNnEB/hobCQXqSH7jgk8CbFgZK1u
+        OtBbtsFK1GNjF0f7o93nIj/uRbUXxUOtxMjP7DUNMo2zGDGEy/c+1L1okw911dfdAURdyjYr+ywx
+        Jxa6OUw8GAJc8Al8J3gCO2sIzbOpdWMb2lkO/KClOiWAMZZglvD11wbU9uK8bb9AEtGZ8WMuBPvB
+        jjnDPxF0YMf8mP/kS+r98bRUc2916ghCUIHA0JQ8JqYk7sCD1qi3NpGP00I5j1dlY2jmnW2SAYuN
+        ztvBUdNB94bNO97WmEcI1mzWEfveeloljZLHYQA/Vy7bGaBHujVKoiHVK9xsakB/VR02pObt7iHq
+        SWweyHpcD0E4OPRAMYXFz/IRTaI+OuutH+D5vjIz5U2qPTq+om9tUHSbVkiqODyvatLxzapuEj6S
+        5Qvw9JaTdc3KcbEEXerxML37aLq0L2lKFaDV8y8gps1dBlBmc4FZ8fJ/fHXWy5jJOvksFJtR/z3s
+        LPsK+Ip3cf87arIE+gnm5SJhDFu3BySQQDDS33f3vwAAAP//AwDK1E8vkQUAAA==
     headers:
       CF-RAY:
-      - 99240b141983a384-SEA
+      - 992cb87338cb31ba-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -60,15 +60,9 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:03:10 GMT
+      - Wed, 22 Oct 2025 23:19:38 GMT
       Server:
       - cloudflare
-      Set-Cookie:
-      - __cf_bm=MRHkwPoUWvTHKkm_PjHwq14taZ9HbCNP_AFqmH6MrNs-1761084190-1.0.1.1-ZEXMfnVcFesGmZ_DLJdEgmuNoFWIVWYBus.zFUXsU0lP3bl0J.kz8FoaIoddl7CiEdecJ_oMN8zLy6xIk1Tn2IOW3UNb4KVXLNwCLOHd5yg;
-        path=/; expires=Tue, 21-Oct-25 22:33:10 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=LtKS2w9Ws82f46SAMdIBbxU6h9Zs7uPwXvBw.h2gnP8-1761084190024-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -82,13 +76,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1121'
+      - '1588'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1127'
+      - '1595'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -102,7 +96,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 2ms
       x-request-id:
-      - req_d086ae6f912847cda68256eccc846101
+      - req_0c4c7bcc329b4bf897cf08e0788202de
     status:
       code: 200
       message: OK

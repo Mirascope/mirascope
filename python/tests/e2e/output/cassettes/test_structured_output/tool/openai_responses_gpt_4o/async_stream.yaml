@@ -1,8 +1,8 @@
 interactions:
 - request:
     body: '{"input":[{"role":"developer","content":"Always respond to the user''s
-      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":[{"text":"Please
-      recommend the most popular book by Patrick Rothfuss","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","stream":true,"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
+      recommend the most popular book by Patrick Rothfuss","role":"user"}],"model":"gpt-4o","stream":true,"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in Book format for a final response.\nA book with
       a rating. The title should be in all caps!","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
       testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
@@ -16,7 +16,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1199'
+      - '1151'
       content-type:
       - application/json
       host:
@@ -47,7 +47,7 @@ interactions:
     body:
       string: 'event: response.created
 
-        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_099be5393fd430750068f80378e6b8819799ac59c14183c7fe","object":"response","created_at":1761084281,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Use
+        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_0d5546885926d4490068f966ee45b481909b24858aad2fd2fd","object":"response","created_at":1761175278,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Use
         this tool to extract data in Book format for a final response.\nA book with
         a rating. The title should be in all caps!","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
         testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
@@ -57,7 +57,7 @@ interactions:
 
         event: response.in_progress
 
-        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_099be5393fd430750068f80378e6b8819799ac59c14183c7fe","object":"response","created_at":1761084281,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Use
+        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_0d5546885926d4490068f966ee45b481909b24858aad2fd2fd","object":"response","created_at":1761175278,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Use
         this tool to extract data in Book format for a final response.\nA book with
         a rating. The title should be in all caps!","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
         testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
@@ -67,174 +67,174 @@ interactions:
 
         event: response.output_item.added
 
-        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","type":"function_call","status":"in_progress","arguments":"","call_id":"call_DVo9TZdjZg2XHAJmEfmNEz3E","name":"__mirascope_formatted_output_tool__"}}
+        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","type":"function_call","status":"in_progress","arguments":"","call_id":"call_K0Bs1rULMx3eT8lF8LRocdTv","name":"__mirascope_formatted_output_tool__"}}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":3,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"{\"","obfuscation":"g4eU13Q2pVj1UQ"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":3,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"{\"","obfuscation":"NzOpcbVVsyU2iG"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":4,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"title","obfuscation":"APwpQor6X2Y"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":4,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"title","obfuscation":"7XlK332Z1b8"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":5,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"\":\"","obfuscation":"VbMnetLBMn52b"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":5,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"\":\"","obfuscation":"smmQzZBiJ2AuK"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":6,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"THE","obfuscation":"G1IGA74EbLuvs"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":6,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"THE","obfuscation":"cp7hr3olx7Lnt"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":7,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"
-        NAME","obfuscation":"0qX5eWH2Pud"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":7,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"
+        NAME","obfuscation":"72nghjVv1ar"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":8,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"
-        OF","obfuscation":"rWUoIyKRQODHv"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":8,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"
+        OF","obfuscation":"nnGzL7HPWAB68"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":9,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"
-        THE","obfuscation":"PerwCzZLVI1Y"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":9,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"
+        THE","obfuscation":"6BEQiRkGD05N"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":10,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"
-        WIND","obfuscation":"XCsqArSoiv5"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":10,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"
+        WIND","obfuscation":"08CTI6ZBLqj"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":11,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"\",\"","obfuscation":"ToTCNdi90AQNq"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":11,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"\",\"","obfuscation":"VGrn6nwNkQgw1"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":12,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"author","obfuscation":"f80Ft0UZRB"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":12,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"author","obfuscation":"rS0tigFmTE"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":13,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"\":{\"","obfuscation":"gK3SdehkX228"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":13,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"\":{\"","obfuscation":"oi8wzlhMdBZt"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":14,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"first","obfuscation":"UtkmutvjET8"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":14,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"first","obfuscation":"xyH8xT0aPJW"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":15,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"_name","obfuscation":"oTWZ6AbejTE"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":15,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"_name","obfuscation":"EwVL4bFu3kG"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":16,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"\":\"","obfuscation":"Sy7j3VHGbBT3c"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":16,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"\":\"","obfuscation":"aiUEiPtpMzpXs"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":17,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"Patrick","obfuscation":"23Vl11VR0"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":17,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"Patrick","obfuscation":"ic5IgyteX"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":18,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"\",\"","obfuscation":"ZFcKNznJ9zxHV"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":18,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"\",\"","obfuscation":"uDvVv1jWnqyz3"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":19,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"last","obfuscation":"JHE4zTLBXccl"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":19,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"last","obfuscation":"H1bTBZKUKqf1"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":20,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"_name","obfuscation":"CBCBcO5po35"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":20,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"_name","obfuscation":"Eh6TDHIxPjQ"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":21,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"\":\"","obfuscation":"WZzfuhNUURfHc"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":21,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"\":\"","obfuscation":"JpkltvHwOi7A6"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":22,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"R","obfuscation":"KLosfsQCspjYGVz"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":22,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"R","obfuscation":"NLE8qRZMJ7S7t8y"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":23,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"oth","obfuscation":"mz8yzLHkcEt65"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":23,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"oth","obfuscation":"vSA9hDAgZ7fMS"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":24,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"f","obfuscation":"gKNLoRB1eBpKLug"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":24,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"f","obfuscation":"JLq8l2ABtgR45aG"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":25,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"uss","obfuscation":"QqZ5zhXFfaedG"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":25,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"uss","obfuscation":"CXbs3qBttF4cD"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":26,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"\"}","obfuscation":"oE77wyX4CTV9GS"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":26,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"\"}","obfuscation":"olasBMa1YjivLl"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":27,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":",\"","obfuscation":"HpdIW8WR5Z2DFt"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":27,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":",\"","obfuscation":"vi24ZsSfCOCid9"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":28,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"rating","obfuscation":"c1iWYXJWdl"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":28,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"rating","obfuscation":"D0PVV1jZf4"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":29,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"\":","obfuscation":"o9J7DAUHBtST9X"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":29,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"\":","obfuscation":"t3HSszsf3ofQSt"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":30,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"7","obfuscation":"C2lI3IbSVnu4X5N"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":30,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"7","obfuscation":"c0ik6DhuDuYCbuB"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":31,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"delta":"}","obfuscation":"yx1W1lJObuf3BkW"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":31,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"delta":"}","obfuscation":"3SJBywoBJR6n1Dg"}
 
 
         event: response.function_call_arguments.done
 
-        data: {"type":"response.function_call_arguments.done","sequence_number":32,"item_id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","output_index":0,"arguments":"{\"title\":\"THE
+        data: {"type":"response.function_call_arguments.done","sequence_number":32,"item_id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","output_index":0,"arguments":"{\"title\":\"THE
         NAME OF THE WIND\",\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},\"rating\":7}"}
 
 
         event: response.output_item.done
 
-        data: {"type":"response.output_item.done","sequence_number":33,"output_index":0,"item":{"id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","type":"function_call","status":"completed","arguments":"{\"title\":\"THE
-        NAME OF THE WIND\",\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},\"rating\":7}","call_id":"call_DVo9TZdjZg2XHAJmEfmNEz3E","name":"__mirascope_formatted_output_tool__"}}
+        data: {"type":"response.output_item.done","sequence_number":33,"output_index":0,"item":{"id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","type":"function_call","status":"completed","arguments":"{\"title\":\"THE
+        NAME OF THE WIND\",\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},\"rating\":7}","call_id":"call_K0Bs1rULMx3eT8lF8LRocdTv","name":"__mirascope_formatted_output_tool__"}}
 
 
         event: response.completed
 
-        data: {"type":"response.completed","sequence_number":34,"response":{"id":"resp_099be5393fd430750068f80378e6b8819799ac59c14183c7fe","object":"response","created_at":1761084281,"status":"completed","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[{"id":"fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c","type":"function_call","status":"completed","arguments":"{\"title\":\"THE
-        NAME OF THE WIND\",\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},\"rating\":7}","call_id":"call_DVo9TZdjZg2XHAJmEfmNEz3E","name":"__mirascope_formatted_output_tool__"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Use
+        data: {"type":"response.completed","sequence_number":34,"response":{"id":"resp_0d5546885926d4490068f966ee45b481909b24858aad2fd2fd","object":"response","created_at":1761175278,"status":"completed","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[{"id":"fc_0d5546885926d4490068f966ef0e148190ae98875802831707","type":"function_call","status":"completed","arguments":"{\"title\":\"THE
+        NAME OF THE WIND\",\"author\":{\"first_name\":\"Patrick\",\"last_name\":\"Rothfuss\"},\"rating\":7}","call_id":"call_K0Bs1rULMx3eT8lF8LRocdTv","name":"__mirascope_formatted_output_tool__"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Use
         this tool to extract data in Book format for a final response.\nA book with
         a rating. The title should be in all caps!","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
         testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
@@ -245,13 +245,13 @@ interactions:
         '
     headers:
       CF-RAY:
-      - 99240d532d850899-SEA
+      - 992cbaf01c8f2838-SEA
       Connection:
       - keep-alive
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Tue, 21 Oct 2025 22:04:41 GMT
+      - Wed, 22 Oct 2025 23:21:18 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -267,15 +267,15 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '222'
+      - '306'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '237'
+      - '342'
       x-request-id:
-      - req_f3f2930ebae24b89a5c8ebc977ec7b8b
+      - req_3acdc1163ea3441987c98e93de890037
     status:
       code: 200
       message: OK

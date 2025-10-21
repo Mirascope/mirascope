@@ -1,7 +1,7 @@
 interactions:
 - request:
-    body: '{"input":[{"content":[{"text":"Please look up the book with ISBN 0-7653-1178-X
-      and provide detailed info and a recommendation score","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"BookSummary","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+    body: '{"input":[{"content":"Please look up the book with ISBN 0-7653-1178-X and
+      provide detailed info and a recommendation score","role":"user"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"BookSummary","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
       Year","type":"integer"}},"required":["title","author","pages","publication_year"],"title":"BookSummary","type":"object","additionalProperties":false},"strict":true}},"tools":[{"type":"function","name":"get_book_info","description":"Look
       up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false}]}'
     headers:
@@ -12,7 +12,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '878'
+      - '830'
       content-type:
       - application/json
       host:
@@ -42,25 +42,25 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA5xW227bOBB991cIfI4LylZlJW9boAUCdBcBukW72BQCRY1k1pTIJYdGjMD/XpCy
-        dXGsbNs3ew55OJczM3peRBERJbmLiAGrc8rLW5pV2SqNOaVQUZpmVUbXt3S9SrIsvt0Uyapar4si
-        rSoGG07JjadQxXfgeKZRrYXOzg0whDJnHos3aUyzZE2TgFlk6Ky/w1WjJSCU3aWC8V1tlGu9XxWT
-        FjqzkFK0NbmLnhdRFEVEswMYf7+EPUilwZBFFB3DYTBGeax1UgaDaM+v5CUgE9JOUYvGcRSqndgb
-        9pQrh9phjmoHL0FUSuacySldo0qQ3rNa4zJRyxVdJUuaLWl6SlegJHfRvyGSLp6+EhWfr0OcpDwJ
-        dSjSmKbVbVzygvJ4HYgDCR40BBrXhoCCewM8l/YAMlO7BloM+PMjEbZoH8ndI6HLTfp2vYzjTbb8
-        +kiOwxXPnneOh59f9l+/bO/f6w+f/xRQqPS+2T1VG5UMN1rWBAdrwLxQapeLtlIkoMdFFH0LKdLM
-        MClBTjOMxnVi0Ab2Qjmbn/XWudBXQBvVaMw541vId3AYYwaYVe1ESlBVyuDokE+Uaxpmzjd7ZVlW
-        AR5yUUKLohIwUZkFsxccchRnZVbMSSQnwSsD4yAQGg2GoQvm+A09WZ9w8KxSpmHD/1F9v1vV5pZv
-        oWFDbkuw3Ajt6z6JZpT2d0rtPp1iG1TR8QzPdDnUYFCAndi9CwIlXBhHZvJ3+HFzgZ78tmh87kfg
-        cXySMIfb0Ltz7H90B36TXrP6RUBj9oeAz5CLFqHu5swMuyuk4Cz03QHYa2E8DEejf/zRX3hzceV1
-        YuA/JwyU/VyZvHgtx1cS83o0Pfht9G4f0TVljQI5LYkRwspSeHImH8ZaCzN/cRFgKGzYMb5/FiOM
-        7MEUygr0vUoaKIVrhk3QzY+tEjw4wRwq0gP25Qy+HJ9zvUU+KrWLnI78CIv8CPON6otZHKL7T+/+
-        evN/E6+H/axrAMHYn21AP5dfkda9h3++P35JTeHpqzp4rZrzcpiv8yCDYS2g0rlUtTaq8Ny0N+rx
-        BDWu7VQbZrCwrJDnjwtnWT2MLiLayW6P18nNS2D0xfA8rD2+hXK4SSeKvPxmWK2vAdd4++U0R40K
-        mRx5/HbTS93Z6TZqAFnJMIz14+L4AwAA//8DAA1SVzftCQAA
+        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
     headers:
       CF-RAY:
-      - 99240de4be34c39a-SEA
+      - 992cbb7c18e3ed00-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -68,7 +68,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:05:05 GMT
+      - Wed, 22 Oct 2025 23:21:41 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -84,13 +84,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1484'
+      - '1263'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1490'
+      - '1269'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -104,13 +104,13 @@ interactions:
       x-ratelimit-reset-tokens:
       - 26ms
       x-request-id:
-      - req_14102f8aee854f08aa1c8bf98898d124
+      - req_45dae5b7075e446ea62f31ade817a30c
     status:
       code: 200
       message: OK
 - request:
-    body: '{"input":[{"content":[{"text":"Please look up the book with ISBN 0-7653-1178-X
-      and provide detailed info and a recommendation score","type":"input_text"}],"role":"user","type":"message"},{"arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_WvXWhIEpFUMiebo6Imkxf7o4","name":"get_book_info","type":"function_call","id":"fc_0cd908f8261c00ef0068f8039146c48197bb6106f91dcb0c13","status":"completed"},{"call_id":"call_WvXWhIEpFUMiebo6Imkxf7o4","output":"Title:
+    body: '{"input":[{"content":"Please look up the book with ISBN 0-7653-1178-X and
+      provide detailed info and a recommendation score","role":"user"},{"arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_17eYs2P0KfuDdmU5nJx09OK5","name":"get_book_info","type":"function_call","id":"fc_0f268704e49f9e100068f9670573ac8196a8eb7a71df67a311","status":"completed"},{"call_id":"call_17eYs2P0KfuDdmU5nJx09OK5","output":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25","type":"function_call_output"}],"model":"gpt-4o","text":{"format":{"type":"json_schema","name":"BookSummary","schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
       Year","type":"integer"}},"required":["title","author","pages","publication_year"],"title":"BookSummary","type":"object","additionalProperties":false},"strict":true}},"tools":[{"type":"function","name":"get_book_info","description":"Look
@@ -123,7 +123,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1274'
+      - '1226'
       content-type:
       - application/json
       host:
@@ -153,26 +153,26 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 99240dee9ed9c39a-SEA
+      - 992cbb84ef9fed00-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -180,7 +180,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:05:07 GMT
+      - Wed, 22 Oct 2025 23:21:44 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -196,13 +196,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1832'
+      - '2586'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1840'
+      - '2600'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -216,7 +216,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 30ms
       x-request-id:
-      - req_c90979b000b64788b5b4f70f61951001
+      - req_5f1fdf8ec757436781023e14fad429e4
     status:
       code: 200
       message: OK

@@ -8,6 +8,44 @@ from mirascope import llm
 from mirascope.llm.clients.openai.completions._utils import encode_request
 
 
+def test_prepare_message_multiple_user_text_parts() -> None:
+    """Test preparing an OpenAI request with multiple text parts in a user message.
+
+    Included for code coverage.
+    """
+
+    messages = [
+        llm.messages.user(["Hello there", "fellow humans"]),
+    ]
+    assert encode_request(
+        model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
+    ) == snapshot(
+        (
+            [
+                llm.UserMessage(
+                    content=[
+                        llm.Text(text="Hello there"),
+                        llm.Text(text="fellow humans"),
+                    ]
+                )
+            ],
+            None,
+            {
+                "model": "gpt-4o",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"text": "Hello there", "type": "text"},
+                            {"text": "fellow humans", "type": "text"},
+                        ],
+                    }
+                ],
+            },
+        )
+    )
+
+
 def test_prepare_message_multiple_assistant_text_parts() -> None:
     """Test preparing an OpenAI request with multiple text parts in an assistant message.
 

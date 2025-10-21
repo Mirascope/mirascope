@@ -28,12 +28,12 @@ sync_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_VP1Hss5Mco8swJxuCQgAwg1z",
+                            id="call_bzXaB1HDWsWy7n6bMrxJzNNa",
                             name="secret_retrieval_tool",
                             args='{"password":"mellon"}',
                         ),
                         ToolCall(
-                            id="call_PQt2R8pTpPM48nfEVptZquEE",
+                            id="call_Dd4wvykCr6NttXKxRK0BFH96",
                             name="secret_retrieval_tool",
                             args='{"password":"radiance"}',
                         ),
@@ -43,18 +43,18 @@ sync_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"password":"mellon"}',
-                            "call_id": "call_VP1Hss5Mco8swJxuCQgAwg1z",
+                            "call_id": "call_bzXaB1HDWsWy7n6bMrxJzNNa",
                             "name": "secret_retrieval_tool",
                             "type": "function_call",
-                            "id": "fc_05a638d56eea032f0068f8033d4fac81979b6232f3344d1333",
+                            "id": "fc_05020a9191cad7ac0068f966b1446c8190b34b78d6f788eeec",
                             "status": "completed",
                         },
                         {
                             "arguments": '{"password":"radiance"}',
-                            "call_id": "call_PQt2R8pTpPM48nfEVptZquEE",
+                            "call_id": "call_Dd4wvykCr6NttXKxRK0BFH96",
                             "name": "secret_retrieval_tool",
                             "type": "function_call",
-                            "id": "fc_05a638d56eea032f0068f8033d6b8081979644045ac1177e20",
+                            "id": "fc_05020a9191cad7ac0068f966b16f80819088f6dab6c16c4653",
                             "status": "completed",
                         },
                     ],
@@ -62,12 +62,12 @@ sync_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_VP1Hss5Mco8swJxuCQgAwg1z",
+                            id="call_bzXaB1HDWsWy7n6bMrxJzNNa",
                             name="secret_retrieval_tool",
                             value="Welcome to Moria!",
                         ),
                         ToolOutput(
-                            id="call_PQt2R8pTpPM48nfEVptZquEE",
+                            id="call_Dd4wvykCr6NttXKxRK0BFH96",
                             name="secret_retrieval_tool",
                             value="Life before Death",
                         ),
@@ -77,10 +77,10 @@ sync_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Here are the secrets associated with the passwords:
+Here are the secrets:
 
-- **mellon**: "Welcome to Moria!"
-- **radiance**: "Life before Death"\
+- For password "mellon": Welcome to Moria!
+- For password "radiance": Life before Death\
 """
                         )
                     ],
@@ -88,15 +88,15 @@ Here are the secrets associated with the passwords:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_05a638d56eea032f0068f8033e766c81979ea1b4f5aa398368",
+                            "id": "msg_05020a9191cad7ac0068f966b29f2c8190b17e1e76b16eb31c",
                             "content": [
                                 {
                                     "annotations": [],
                                     "text": """\
-Here are the secrets associated with the passwords:
+Here are the secrets:
 
-- **mellon**: "Welcome to Moria!"
-- **radiance**: "Life before Death"\
+- For password "mellon": Welcome to Moria!
+- For password "radiance": Life before Death\
 """,
                                     "type": "output_text",
                                     "logprobs": [],
@@ -154,12 +154,12 @@ async_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_HGG1nGDs6kiMDFgFpKarnZx6",
+                            id="call_MqvcNQ1vcN1deGFjDbYja1zn",
                             name="secret_retrieval_tool",
                             args='{"password":"mellon"}',
                         ),
                         ToolCall(
-                            id="call_lX21b6EAa5e8ypmLbkM2xKYV",
+                            id="call_EqSzc4ybAc3ffmvwzL4rrdkg",
                             name="secret_retrieval_tool",
                             args='{"password":"radiance"}',
                         ),
@@ -169,18 +169,18 @@ async_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"password":"mellon"}',
-                            "call_id": "call_HGG1nGDs6kiMDFgFpKarnZx6",
+                            "call_id": "call_MqvcNQ1vcN1deGFjDbYja1zn",
                             "name": "secret_retrieval_tool",
                             "type": "function_call",
-                            "id": "fc_0c4d870f86c990ad0068f80340b18c8196b32f72de4212f9a1",
+                            "id": "fc_019289b83a1261ca0068f966b5b4848195a23104951bd770cd",
                             "status": "completed",
                         },
                         {
                             "arguments": '{"password":"radiance"}',
-                            "call_id": "call_lX21b6EAa5e8ypmLbkM2xKYV",
+                            "call_id": "call_EqSzc4ybAc3ffmvwzL4rrdkg",
                             "name": "secret_retrieval_tool",
                             "type": "function_call",
-                            "id": "fc_0c4d870f86c990ad0068f80340dc648196be2aca7c3325eebe",
+                            "id": "fc_019289b83a1261ca0068f966b6cab881958f1e435d61dcbd63",
                             "status": "completed",
                         },
                     ],
@@ -188,12 +188,12 @@ async_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_HGG1nGDs6kiMDFgFpKarnZx6",
+                            id="call_MqvcNQ1vcN1deGFjDbYja1zn",
                             name="secret_retrieval_tool",
                             value="Welcome to Moria!",
                         ),
                         ToolOutput(
-                            id="call_lX21b6EAa5e8ypmLbkM2xKYV",
+                            id="call_EqSzc4ybAc3ffmvwzL4rrdkg",
                             name="secret_retrieval_tool",
                             value="Life before Death",
                         ),
@@ -203,7 +203,7 @@ async_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Here are the secrets:
+The secrets for the passwords are:
 
 - "mellon": Welcome to Moria!
 - "radiance": Life before Death\
@@ -214,12 +214,12 @@ Here are the secrets:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0c4d870f86c990ad0068f80342851081968addd63f6fb0a7ce",
+                            "id": "msg_019289b83a1261ca0068f966b87fa88195986a24eb8e39c47f",
                             "content": [
                                 {
                                     "annotations": [],
                                     "text": """\
-Here are the secrets:
+The secrets for the passwords are:
 
 - "mellon": Welcome to Moria!
 - "radiance": Life before Death\
@@ -279,12 +279,12 @@ stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_8mWOlD2knIPTChQYr7GQ4Hxi",
+                            id="call_sKC7OABqf2A2PTLCm0CLeRWV",
                             name="secret_retrieval_tool",
                             args='{"password":"mellon"}',
                         ),
                         ToolCall(
-                            id="call_3UNGcrPBkfEG8ueZGjz6s00h",
+                            id="call_OdR3s3xop0vtgkDyWRMLafuH",
                             name="secret_retrieval_tool",
                             args='{"password":"radiance"}',
                         ),
@@ -294,18 +294,18 @@ stream_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"password":"mellon"}',
-                            "call_id": "call_8mWOlD2knIPTChQYr7GQ4Hxi",
+                            "call_id": "call_sKC7OABqf2A2PTLCm0CLeRWV",
                             "name": "secret_retrieval_tool",
                             "type": "function_call",
-                            "id": "fc_08622b4f543dc1510068f803450d1c819686d379e0da7b29d8",
+                            "id": "fc_0c3b09d20eedf2d30068f966bad8b88190af96d232f504ef1f",
                             "status": "completed",
                         },
                         {
                             "arguments": '{"password":"radiance"}',
-                            "call_id": "call_3UNGcrPBkfEG8ueZGjz6s00h",
+                            "call_id": "call_OdR3s3xop0vtgkDyWRMLafuH",
                             "name": "secret_retrieval_tool",
                             "type": "function_call",
-                            "id": "fc_08622b4f543dc1510068f803457c7081969163370cc2f28787",
+                            "id": "fc_0c3b09d20eedf2d30068f966bafd288190a9045fdc554de6d5",
                             "status": "completed",
                         },
                     ],
@@ -313,12 +313,12 @@ stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_8mWOlD2knIPTChQYr7GQ4Hxi",
+                            id="call_sKC7OABqf2A2PTLCm0CLeRWV",
                             name="secret_retrieval_tool",
                             value="Welcome to Moria!",
                         ),
                         ToolOutput(
-                            id="call_3UNGcrPBkfEG8ueZGjz6s00h",
+                            id="call_OdR3s3xop0vtgkDyWRMLafuH",
                             name="secret_retrieval_tool",
                             value="Life before Death",
                         ),
@@ -328,7 +328,7 @@ stream_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-Here are the secrets for the provided passwords:
+Here are the secrets associated with each password:
 
 - **mellon**: Welcome to Moria!
 - **radiance**: Life before Death\
@@ -339,12 +339,12 @@ Here are the secrets for the provided passwords:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_08622b4f543dc1510068f80346cd088196a0679646c918d73a",
+                            "id": "msg_0c3b09d20eedf2d30068f966bc0afc81909ccc6a383749530f",
                             "content": [
                                 {
                                     "annotations": [],
                                     "text": """\
-Here are the secrets for the provided passwords:
+Here are the secrets associated with each password:
 
 - **mellon**: Welcome to Moria!
 - **radiance**: Life before Death\
@@ -405,12 +405,12 @@ async_stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_q1t9XZMJIkrsHvmorg22clzL",
+                            id="call_4l0LYGshWqEvG3DEq9hY8PKo",
                             name="secret_retrieval_tool",
                             args='{"password":"mellon"}',
                         ),
                         ToolCall(
-                            id="call_5l4sCPMYHaNlQDLW5DoksdHs",
+                            id="call_hG4DmWUygGVSGrsCV3zwCiZU",
                             name="secret_retrieval_tool",
                             args='{"password":"radiance"}',
                         ),
@@ -420,18 +420,18 @@ async_stream_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"password":"mellon"}',
-                            "call_id": "call_q1t9XZMJIkrsHvmorg22clzL",
+                            "call_id": "call_4l0LYGshWqEvG3DEq9hY8PKo",
                             "name": "secret_retrieval_tool",
                             "type": "function_call",
-                            "id": "fc_00c4f15a862212440068f8034908948193b1effcabcb862cb5",
+                            "id": "fc_03573e2d83248b7c0068f966be406c8194b614ddb98cfce9fe",
                             "status": "completed",
                         },
                         {
                             "arguments": '{"password":"radiance"}',
-                            "call_id": "call_5l4sCPMYHaNlQDLW5DoksdHs",
+                            "call_id": "call_hG4DmWUygGVSGrsCV3zwCiZU",
                             "name": "secret_retrieval_tool",
                             "type": "function_call",
-                            "id": "fc_00c4f15a862212440068f803492f848193aea4fcadd7119614",
+                            "id": "fc_03573e2d83248b7c0068f966be7e148194868e9cbe2160c4ec",
                             "status": "completed",
                         },
                     ],
@@ -439,12 +439,12 @@ async_stream_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_q1t9XZMJIkrsHvmorg22clzL",
+                            id="call_4l0LYGshWqEvG3DEq9hY8PKo",
                             name="secret_retrieval_tool",
                             value="Welcome to Moria!",
                         ),
                         ToolOutput(
-                            id="call_5l4sCPMYHaNlQDLW5DoksdHs",
+                            id="call_hG4DmWUygGVSGrsCV3zwCiZU",
                             name="secret_retrieval_tool",
                             value="Life before Death",
                         ),
@@ -454,10 +454,10 @@ async_stream_snapshot = snapshot(
                     content=[
                         Text(
                             text="""\
-The secrets associated with the passwords are:
+Here are the secrets:
 
-- "mellon": Welcome to Moria!
-- "radiance": Life before Death\
+- Password "mellon": Welcome to Moria!
+- Password "radiance": Life before Death\
 """
                         )
                     ],
@@ -465,15 +465,15 @@ The secrets associated with the passwords are:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_00c4f15a862212440068f8034ad20c8193bdbd6456240d2773",
+                            "id": "msg_03573e2d83248b7c0068f966bf89d081949ff26b5e39341c99",
                             "content": [
                                 {
                                     "annotations": [],
                                     "text": """\
-The secrets associated with the passwords are:
+Here are the secrets:
 
-- "mellon": Welcome to Moria!
-- "radiance": Life before Death\
+- Password "mellon": Welcome to Moria!
+- Password "radiance": Life before Death\
 """,
                                     "type": "output_text",
                                     "logprobs": [],
@@ -509,7 +509,7 @@ The secrets associated with the passwords are:
                     "strict": False,
                 }
             ],
-            "n_chunks": 29,
+            "n_chunks": 28,
         }
     }
 )

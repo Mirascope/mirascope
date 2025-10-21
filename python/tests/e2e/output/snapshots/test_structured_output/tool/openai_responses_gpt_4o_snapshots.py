@@ -38,10 +38,10 @@ sync_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                            "call_id": "call_NeErs3GCt2bIKqMSShXfO1sY",
+                            "call_id": "call_iX4PjF0mvj6qVNIP1N2GyL9v",
                             "name": "__mirascope_formatted_output_tool__",
                             "type": "function_call",
-                            "id": "fc_0e480c8adf8eb5c20068f803607d9c8195a03883f0a4db9316",
+                            "id": "fc_0ae3ac6597d0b6cf0068f966d381448195858ced56b0b77a5d",
                             "status": "completed",
                         }
                     ],
@@ -115,10 +115,10 @@ async_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                            "call_id": "call_naaqsvA0zq0UveL6zXb2CY8i",
+                            "call_id": "call_lxzAFj5Lkjb2pvrXB50JAapD",
                             "name": "__mirascope_formatted_output_tool__",
                             "type": "function_call",
-                            "id": "fc_0ce5d44531554bb20068f8036a0e98819083b9120bfed2c4ee",
+                            "id": "fc_0e92c5605a0410a90068f966ddde608195817fcad49b8d61b9",
                             "status": "completed",
                         }
                     ],
@@ -191,10 +191,10 @@ stream_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                            "call_id": "call_o6re0ta2aiEIVoIVb6IrXvPI",
+                            "call_id": "call_7twmO5KPQdMUpahq4tA4ZhJu",
                             "name": "__mirascope_formatted_output_tool__",
                             "type": "function_call",
-                            "id": "fc_0eb5ded1c000ab800068f8037189488194a838af4e0149e6e8",
+                            "id": "fc_02081d7ebf3b828d0068f966e5ba288197a988ed7e29d9afe5",
                             "status": "completed",
                         }
                     ],
@@ -268,10 +268,10 @@ async_stream_snapshot = snapshot(
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                            "call_id": "call_DVo9TZdjZg2XHAJmEfmNEz3E",
+                            "call_id": "call_K0Bs1rULMx3eT8lF8LRocdTv",
                             "name": "__mirascope_formatted_output_tool__",
                             "type": "function_call",
-                            "id": "fc_099be5393fd430750068f80379d6e08197b39ee2a8d956d17c",
+                            "id": "fc_0d5546885926d4490068f966ef0e148190ae98875802831707",
                             "status": "completed",
                         }
                     ],

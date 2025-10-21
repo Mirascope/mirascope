@@ -259,7 +259,7 @@ interactions:
       access-control-allow-origin:
       - '*'
       age:
-      - '12769'
+      - '111296'
       cache-control:
       - max-age=31536000
       content-length:
@@ -267,11 +267,11 @@ interactions:
       content-type:
       - image/png
       date:
-      - Tue, 21 Oct 2025 18:53:57 GMT
+      - Tue, 21 Oct 2025 16:24:31 GMT
       etag:
       - '"3484-640857429fa00"'
       expires:
-      - Wed, 21 Oct 2026 18:53:57 GMT
+      - Wed, 21 Oct 2026 16:24:31 GMT
       last-modified:
       - Mon, 06 Oct 2025 23:03:04 GMT
       nel:
@@ -281,30 +281,30 @@ interactions:
       - '{ "group": "wm_nel", "max_age": 604800, "endpoints": [{ "url": "https://intake-logging.wikimedia.org/v1/events?stream=w3c.reportingapi.network_error&schema_uri=/w3c/reportingapi/network_error/1.0.0"
         }] }'
       server:
-      - ATS/9.2.11
+      - mw-web.codfw.main-79758cdbb8-7zq6v
       server-timing:
-      - cache;desc="hit-front", host;desc="cp4042"
+      - cache;desc="hit-front", host;desc="cp2035"
       set-cookie:
-      - WMF-Last-Access=21-Oct-2025;Path=/;HttpOnly;secure;Expires=Sat, 22 Nov 2025
+      - WMF-Last-Access=22-Oct-2025;Path=/;HttpOnly;secure;Expires=Sun, 23 Nov 2025
         12:00:00 GMT
-      - WMF-Last-Access-Global=21-Oct-2025;Path=/;Domain=.wikipedia.org;HttpOnly;secure;Expires=Sat,
-        22 Nov 2025 12:00:00 GMT
-      - GeoIP=US:WA:Seattle:47.61:-122.31:v4; Path=/; secure; Domain=.wikipedia.org
+      - WMF-Last-Access-Global=22-Oct-2025;Path=/;Domain=.wikipedia.org;HttpOnly;secure;Expires=Sun,
+        23 Nov 2025 12:00:00 GMT
+      - GeoIP=US:WA:Seattle:47.54:-122.30:v4; Path=/; secure; Domain=.wikipedia.org
       - NetworkProbeLimit=0.001;Path=/;Secure;SameSite=None;Max-Age=3600
-      - WMF-Uniq=YRbJ4-Bs1BfY2AA3JkmgpAKTAAAAAFvdzEh8SnF6gcn5bgnyea2ZhGgWlfsXiSpd;Domain=.wikipedia.org;Path=/;HttpOnly;secure;SameSite=None;Expires=Wed,
-        21 Oct 2026 00:00:00 GMT
+      - WMF-Uniq=R8GvmqBl7290uqCWGVhdvgKUAAAAAFvd4GlVWN7OEwrrnpWMi47mN3lSAPFSdlaP;Domain=.wikipedia.org;Path=/;HttpOnly;secure;SameSite=None;Expires=Thu,
+        22 Oct 2026 00:00:00 GMT
       strict-transport-security:
       - max-age=106384710; includeSubDomains; preload
       x-analytics:
       - ''
       x-cache:
-      - cp4042 hit, cp4042 hit/82570
+      - cp2031 hit, cp2035 hit/151636
       x-cache-status:
       - hit-front
       x-client-ip:
-      - 71.212.69.193
+      - 50.251.218.18
       x-request-id:
-      - caab84fb-a054-4b1a-bb70-4e9ad2a65a34
+      - 7ef10e6b-a84f-4330-b7ba-281fe9cf015f
     status:
       code: 200
       message: OK
@@ -348,21 +348,22 @@ interactions:
   response:
     body:
       string: !!binary |
-        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
+        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
+        AAAA//8DAIg4CzQaBgAA
     headers:
       CF-RAY:
-      - 99242db22db8fd8a-SEA
+      - 992cb8409f9531ba-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -370,14 +371,14 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:26:50 GMT
+      - Wed, 22 Oct 2025 23:19:31 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=k93_.5nSyKbdeLgO5__6Kff.Kj5vQV7YP8_aY.v8Dd8-1761085610-1.0.1.1-ahdR5HJQyBdLjs1gA_LTCb_oBgaupOtTiQAQk0DGVMnvS829T1P8iajClDEdIMEOLp9UoC25_5ZjOT8XjWY0INUhBk75BtlLAYruVEltg5Q;
-        path=/; expires=Tue, 21-Oct-25 22:56:50 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=fhM9KzwDLU2cL1VZZV7OBm3Ry52hnX0vX1kqMCoauQw-1761175171-1.0.1.1-EMkjJBe8rIGB_birWFD2ameW_FSd6TABR4bjuA.fxqmmAaSXMxrbb9dOqIwWmQPfP272VVTeBRtideqVGqZRlpbFvfn5YmT1uMZnaGdIKr4;
+        path=/; expires=Wed, 22-Oct-25 23:49:31 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=Nf0EabN3PVlhmI4nh0YqCzV7oAi.8XlYOkxicPocPrg-1761085610853-0.0.1.1-604800000;
+      - _cfuvid=nmOvdErqqdKswiFL46FqmJVN5X0pH.l0s_dFu9h9Rh8-1761175171858-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -392,13 +393,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '3548'
+      - '3071'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '4028'
+      - '3076'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -412,7 +413,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 57ms
       x-request-id:
-      - req_43d13c4e70ad4e109961321929b5bd8c
+      - req_88f829a1c37141fca848cb2aaab1e79b
     status:
       code: 200
       message: OK

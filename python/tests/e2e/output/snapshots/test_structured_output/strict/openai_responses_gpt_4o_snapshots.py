@@ -31,7 +31,7 @@ sync_snapshot = snapshot(
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0cabb11fc07acc4c0068f8035c6ea8819389e04e635b3e291a",
+                            "id": "msg_005e0ab32c3df1050068f966cedb648190a1769c7ec5dea7e9",
                             "content": [
                                 {
                                     "annotations": [],
@@ -110,7 +110,7 @@ async_snapshot = snapshot(
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0fef2d0a40e8ddce0068f803653e4881978a321cb774edf9a6",
+                            "id": "msg_0e2af4b9d9313f560068f966d8ede48197886f72c0b5c845a2",
                             "content": [
                                 {
                                     "annotations": [],
@@ -188,7 +188,7 @@ stream_snapshot = snapshot(
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_01661eb21b60990b0068f8036d6438819499e13251ee0f1b54",
+                            "id": "msg_089d7482d1faaec10068f966e1afec8196ada045413e3b10a2",
                             "content": [
                                 {
                                     "annotations": [],
@@ -267,7 +267,7 @@ async_stream_snapshot = snapshot(
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_06a8e02841f7033d0068f8037570e88196971d14638379d62f",
+                            "id": "msg_09e0316a14ecf6580068f966e900988193835e59c7f4b80e25",
                             "content": [
                                 {
                                     "annotations": [],

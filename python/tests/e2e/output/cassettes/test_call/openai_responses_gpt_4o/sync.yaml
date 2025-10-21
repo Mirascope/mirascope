@@ -1,6 +1,6 @@
 interactions:
 - request:
-    body: '{"input":[{"content":[{"text":"What is 4200 + 42?","type":"input_text"}],"role":"user","type":"message"}],"model":"gpt-4o"}'
+    body: '{"input":[{"content":"What is 4200 + 42?","role":"user"}],"model":"gpt-4o"}'
     headers:
       accept:
       - application/json
@@ -9,7 +9,7 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '123'
+      - '75'
       content-type:
       - application/json
       host:
@@ -39,20 +39,20 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dFTLbuMwDLznKwRdtynkR1I7v1IsDFqmU21lSStRQYMi/76wHDv2tr0l
-        HHJCzozyuWOMq46fGPcYXCPkIW/z4thDVbWHohbiWPWVKApRQymqrD5AdeiEFFDX7bFrXzr+NFLY
-        9g9KmmmsCTjVpUcg7BoYsezlmImqzEWVsEBAMYwz0g5OI+GdrAX5fvY2mnGvHnTAqay0VubMT+xz
-        xxhj3MEV/Tjf4QW1dej5jrFbakbv7YiZqHUqKDP/StMhgdJhiwbyUZKyZlMf4KOxkVykhuw7fgXJ
-        Wt1I0Fu6wXaox83Ojval3eciL/ei2ovjXa5EyU/sNV0y3bM4MYTzz0ZkddGWoxF1V8KxkNB2dVGI
-        vEjMiYWuDhMPhgBnfAA/KZ5AaQ2heSy1XmxDO+uBH7RMpwYwxhLMGr7+3oDanp237TdIIjoxXuZC
-        sF+szBn+jaADK/Myf+ZL6+3+aZnm3uq0EYSgAoGhqXlsTE3cgQetUW9tIh+nRDmPF2VjaObQNsmA
-        xUbn7eCokSDfsHnH6xrzCMGaTR6x762nVdMoeRwG8PPkEs8APdK1UR0aUr3CTVQD+ouS2JCa491D
-        1JPYPJD1uD6CcHDogWIqZ8/iXk2i3jfrrR/g8X1lZuqbVLtvfEHf2qDoOkWoU3F4PKtJxzer5CR8
-        JMsX4OEtJ+ualeNiKbr1jj4amfKSrlQBWj3/B8SU3OUAZTZPMDs+fa2v3vVyZrKuewyKzan/v+ws
-        +w74jndx/ydqsgT6AeYvi4QxbN0ekKADgpH+trv9AwAA//8DAP7nqwWSBQAA
+        H4sIAAAAAAAAAwAAAP//dFTRbqMwEHzPV1h+vaYyLoGQX6lOaIEl9dXYPnsdNary7ydMIHBt35Kd
+        3cnuzDifO8a46viJcY/B1aJBrCo4dHhoMlllQhTHviqKqj/2L/kxqw7H4iBBVqUU3bEsioo/jRS2
+        +YMtzTTWBJzqrUcg7GoYsawssqw8SCESFggohnGmtYPTSNhNQw2072dvoxn36kEHnMpKa2XO/MQ+
+        d4wxxh1c0Y/zHV5QW4ee7xi7pWb03o6YiVqngjLzr9QdEigdtmggH1tS1mzqA3zUNpKLVJN9x68g
+        WavrFvSWbrAd6nGzs6N9bvdSyHwvjntR3OVKlPzEXtMl0z2LE0M4/2gEZH3z0iYjSswOpZRl377I
+        su8Tc2Khq8PEgyHAGR/AT4onsLWG0DyWWi+2oZ31wA9aplMDGGMJZg1ff29Abc/O2+YbJBGdGM+l
+        EOwXyyXDvxF0YLnM5TNfWm/3T8s091anjSAEFQgMTc1jY2riDjxojXprE/k4Jcp5vCgbQz2Htk4G
+        LDY6bwdHdQvtG9bveF1jHiFYs8kj9r31tGoaJY/DAH6eXOIZoEe61qpDQ6pXuIlqQH9RLdak5nj3
+        EPUkNg9kPa6PIBwceqCYytmzuFeTqPfNeusHeHxfmZn6JtXuG1/QNzYouk4R6lQcHs9q0vHNqnYS
+        PpLlC/DwlpN19cpxsRTdekcfTZvykq5UARo9/wfElNzlAGU2TzArnr7WV+96OTNZ1z0GxebU/192
+        ln0HfMe7uP8TNVkC/QBluUgYw9btAQk6IBjpb7vbPwAAAP//AwDGFJ3BkgUAAA==
     headers:
       CF-RAY:
-      - 99240b8f4bf6a384-SEA
+      - 992cb904581531ba-SEA
       Connection:
       - keep-alive
       Content-Encoding:
@@ -60,7 +60,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 21 Oct 2025 22:03:30 GMT
+      - Wed, 22 Oct 2025 23:20:02 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -76,13 +76,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1402'
+      - '3392'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1409'
+      - '3418'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -96,7 +96,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 2ms
       x-request-id:
-      - req_fa448216789843a793a62c356b9a48d2
+      - req_25818ebaacbf4d138f67ed6c263141e1
     status:
       code: 200
       message: OK

@@ -31,7 +31,7 @@ test_snapshot = snapshot(
                         model_id="gpt-4o",
                         raw_message=[
                             {
-                                "id": "msg_0cee942d3e3cf6d50068f8031dad208196b197262c51993f1d",
+                                "id": "msg_0d902d0e83de5d560068f96689f0b8819698f9c3a097db17f1",
                                 "content": [
                                     {
                                         "annotations": [],
