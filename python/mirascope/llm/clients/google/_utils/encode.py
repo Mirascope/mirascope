@@ -99,9 +99,7 @@ def _encode_content(
                     genai_types.PartDict(text="**Thinking:** " + part.thought)
                 )
         else:
-            raise NotImplementedError(
-                f"Have not implemented conversion for {part.type}"
-            )
+            raise NotImplementedError(f"Unsupported content type: {part.type}")
     return result
 
 
