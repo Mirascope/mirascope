@@ -7,6 +7,9 @@ omit =
     mirascope/llm/mcp/client.py
     mirascope/llm/formatting/partial.py
 
+    # TODO: Add unittest coverage for anthropic_bedrock in separate branch
+    mirascope/llm/clients/anthropic_bedrock/*
+
     # TODO: Add tests for Azure OpenAI client and remove from omit list
     mirascope/llm/clients/azure_openai/*
 

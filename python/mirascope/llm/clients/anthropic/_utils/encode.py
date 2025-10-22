@@ -54,10 +54,11 @@ class MessageCreateKwargs(TypedDict, total=False):
 
 
 def _encode_content(
-    content: Sequence[ContentPart], encode_thoughts: bool
+    content: Sequence[ContentPart],
+    encode_thoughts: bool,
+    provider: Literal["anthropic", "anthropic-bedrock"],
 ) -> str | Sequence[anthropic_types.ContentBlockParam]:
-    """Convert mirascope content to Anthropic content format."""
-
+    """Returns encoded Anthropic content blocks from mirascope content."""
     if len(content) == 1 and content[0].type == "text":
         return content[0].text
 
@@ -77,18 +78,19 @@ def _encode_content(
                     media_type=encode_image_mime_type(part.source.mime_type),
                     data=part.source.data,
                 )
-            else:  # url_image_source
+            else:
+                if provider == "anthropic-bedrock":  # pragma: no cover
+                    # TODO: Add test coverage for Bedrock URL image error case
+                    raise FeatureNotSupportedError(
+                        "url_image_source",
+                        provider,
+                        message="Anthropic Bedrock does not support URL-referenced images. Try `llm.Image.download(...)` or `llm.Image.download_async(...)`",
+                    )
                 source = anthropic_types.URLImageSourceParam(
                     type="url",
                     url=part.source.url,
                 )
             blocks.append(anthropic_types.ImageBlockParam(type="image", source=source))
-        elif part.type == "audio":
-            raise FeatureNotSupportedError(
-                "audio input",
-                "anthropic",
-                message="Anthropic does not support audio inputs.",
-            )
         elif part.type == "tool_output":
             blocks.append(
                 anthropic_types.ToolResultBlockParam(
@@ -113,8 +115,17 @@ def _encode_content(
                         type="text", text="**Thinking:** " + part.thought
                     )
                 )
+        elif part.type == "audio":
+            provider_name = (
+                "Anthropic Bedrock" if provider == "anthropic-bedrock" else "Anthropic"
+            )
+            raise FeatureNotSupportedError(
+                "audio input",
+                provider,
+                message=f"{provider_name} does not support audio inputs.",
+            )
         else:
-            raise NotImplementedError(f"Unsupported content type: {part.type}")
+            raise NotImplementedError(f"Content type {part.type} not supported")
 
     return blocks
 
@@ -123,20 +134,12 @@ def _encode_message(
     message: UserMessage | AssistantMessage,
     model_id: AnthropicModelId,
     encode_thoughts: bool,
+    provider: Literal["anthropic", "anthropic-bedrock"],
 ) -> anthropic_types.MessageParam:
-    """Convert user or assistant `Message`s to Anthropic `MessageParam` format.
-
-    Args:
-        messages: A Sequence containing `UserMessage`s or `AssistantMessage`s
-        model_id: The Anthropic model ID being used
-
-    Returns:
-        A Sequence of converted Anthropic `MessageParam`
-    """
-
+    """Returns Anthropic MessageParam from mirascope Message."""
     if (
         message.role == "assistant"
-        and message.provider == "anthropic"
+        and message.provider in ("anthropic", "anthropic-bedrock")
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -144,31 +147,27 @@ def _encode_message(
         return cast(anthropic_types.MessageParam, message.raw_message)
     return {
         "role": message.role,
-        "content": _encode_content(message.content, encode_thoughts),
+        "content": _encode_content(message.content, encode_thoughts, provider),
     }
 
 
-@lru_cache(maxsize=128)
-def _convert_tool_to_tool_param(tool: ToolSchema) -> anthropic_types.ToolParam:
-    """Convert a single Mirascope tool to Anthropic tool format with caching."""
-    schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
-    schema_dict["type"] = "object"
-    return anthropic_types.ToolParam(
-        name=tool.name,
-        description=tool.description,
-        input_schema=schema_dict,
-    )
-
-
-def encode_request(
+def _prepare_request(
     *,
     model_id: AnthropicModelId,
     messages: Sequence[Message],
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
-) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
-    """Prepares a request for the `Anthropic.messages.create` method."""
+    provider: Literal["anthropic", "anthropic-bedrock"],
+) -> tuple[
+    Sequence[Message],
+    Format[FormattableT] | None,
+    MessageCreateKwargs,
+    bool,
+    Sequence[UserMessage | AssistantMessage],
+    str | None,
+]:
+    """Setup shared request state prior to message encoding."""
     kwargs: MessageCreateKwargs = MessageCreateKwargs(
         {
             "model": model_id,
@@ -192,7 +191,6 @@ def encode_request(
             kwargs["stop_sequences"] = param_accessor.stop_sequences
         if param_accessor.thinking is not None:
             if param_accessor.thinking:
-                # Set budget to 50% of max_tokens with minimum of 1024
                 budget_tokens = max(1024, kwargs["max_tokens"] // 2)
                 kwargs["thinking"] = {"type": "enabled", "budget_tokens": budget_tokens}
             else:
@@ -206,7 +204,7 @@ def encode_request(
     if format is not None:
         if format.mode == "strict":
             raise FormattingModeNotSupportedError(
-                formatting_mode="strict", provider="anthropic"
+                formatting_mode="strict", provider=provider
             )
         elif format.mode == "tool":
             format_tool_schema = _formatting_utils.create_tool_schema(format)
@@ -232,12 +230,60 @@ def encode_request(
         messages
     )
 
+    return (
+        messages,
+        format,
+        kwargs,
+        encode_thoughts,
+        remaining_messages,
+        system_message_content,
+    )
+
+
+@lru_cache(maxsize=128)
+def _convert_tool_to_tool_param(tool: ToolSchema) -> anthropic_types.ToolParam:
+    """Returns cached Anthropic ToolParam from Mirascope ToolSchema."""
+    schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
+    schema_dict["type"] = "object"
+    return anthropic_types.ToolParam(
+        name=tool.name,
+        description=tool.description,
+        input_schema=schema_dict,
+    )
+
+
+def encode_request(
+    *,
+    model_id: AnthropicModelId,
+    messages: Sequence[Message],
+    tools: Sequence[ToolSchema] | BaseToolkit | None,
+    format: type[FormattableT] | Format[FormattableT] | None,
+    params: Params,
+    provider: Literal["anthropic", "anthropic-bedrock"],
+) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
+    """Returns tuple of (messages, format, kwargs) for Anthropic.messages.create."""
+    (
+        prepared_messages,
+        format,
+        kwargs,
+        encode_thoughts,
+        remaining_messages,
+        system_message_content,
+    ) = _prepare_request(
+        model_id=model_id,
+        messages=messages,
+        tools=tools,
+        format=format,
+        params=params,
+        provider=provider,
+    )
+
     kwargs["messages"] = [
-        _encode_message(remaining_message, model_id, encode_thoughts)
+        _encode_message(remaining_message, model_id, encode_thoughts, provider)
         for remaining_message in remaining_messages
     ]
 
     if system_message_content:
         kwargs["system"] = system_message_content
 
-    return messages, format, kwargs
+    return prepared_messages, format, kwargs
