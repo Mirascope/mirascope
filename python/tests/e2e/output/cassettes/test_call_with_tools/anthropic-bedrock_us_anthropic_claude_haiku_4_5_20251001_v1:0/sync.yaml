@@ -1,0 +1,140 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
+      the secrets associated with each of these passwords: mellon,radiance"}],"system":"Use
+      parallel tool calling.","tools":[{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '487'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.64.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_013Ad7VUFLw53evddNsJpG2y","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01UMFJ8LRGwqns2QkckjdoC8","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_bdrk_01Wmzu3yWgP6xVcim7vEcirx","name":"secret_retrieval_tool","input":{"password":"radiance"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":599,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":98}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '530'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 07:14:21 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '599'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '897'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '98'
+      x-amzn-RequestId:
+      - febc00f1-267d-4832-90f4-834cf19fad85
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
+      the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"id":"toolu_bdrk_01UMFJ8LRGwqns2QkckjdoC8","input":{"password":"mellon"},"name":"secret_retrieval_tool","type":"tool_use"},{"id":"toolu_bdrk_01Wmzu3yWgP6xVcim7vEcirx","input":{"password":"radiance"},"name":"secret_retrieval_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01UMFJ8LRGwqns2QkckjdoC8","content":"Welcome
+      to Moria!"},{"type":"tool_result","tool_use_id":"toolu_bdrk_01Wmzu3yWgP6xVcim7vEcirx","content":"Life
+      before Death"}]}],"system":"Use parallel tool calling.","tools":[{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1008'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.64.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: "{\"model\":\"claude-haiku-4-5-20251001\",\"id\":\"msg_bdrk_016ZHpq3zqfUJzJNWQGMY7vc\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"I've
+        successfully retrieved the secrets associated with both passwords:\\n\\n1.
+        **Password: \\\"mellon\\\"** \u2192 Secret: \\\"Welcome to Moria!\\\"\\n2.
+        **Password: \\\"radiance\\\"** \u2192 Secret: \\\"Life before Death\\\"\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":774,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":54}}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '507'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 07:14:22 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '774'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '822'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '54'
+      x-amzn-RequestId:
+      - cd48b68c-a063-4796-b819-a0a2077bbb9a
+    status:
+      code: 200
+      message: OK
+version: 1

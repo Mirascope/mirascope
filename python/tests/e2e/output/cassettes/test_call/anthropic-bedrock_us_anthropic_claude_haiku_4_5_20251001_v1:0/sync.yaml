@@ -1,0 +1,68 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is 4200
+      + 42?"}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '121'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.64.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01RTGSohN3U49jQ4BYEfwrnw","type":"message","role":"assistant","content":[{"type":"text","text":"4200
+        + 42 = 4242"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":17,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":15}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '321'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 07:12:49 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '17'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '631'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '15'
+      x-amzn-RequestId:
+      - 8d5e3b22-8ecc-4cb0-943a-0466f5890143
+    status:
+      code: 200
+      message: OK
+version: 1
