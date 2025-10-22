@@ -14,7 +14,7 @@ ImageMimeType = Literal[
     "image/gif",
     "image/heic",
     "image/heif",
-]
+]  # TODO: add e2e tests for every supported type
 
 MIME_TYPES = get_args(ImageMimeType)
 

@@ -15,6 +15,11 @@ HELLO_AUDIO_PATH = str(
     Path(__file__).parent.parent / "assets" / "audio" / "tagline.mp3"
 )
 
+PROVIDER_MODEL_ID_PAIRS = [
+    *PROVIDER_MODEL_ID_PAIRS,
+    ("openai:completions", "gpt-audio"),
+]
+
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
