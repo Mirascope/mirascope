@@ -16,6 +16,7 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
     "google/gemini-2.5-flash",
     "openai/gpt-4o",
     "openai:responses/gpt-4o",
+    "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
 ]
 
 
