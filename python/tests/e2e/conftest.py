@@ -144,7 +144,9 @@ def formatting_mode(
 # python. (Ruff --fix will clean out unused symbols)
 SNAPSHOT_IMPORT_SYMBOLS = [
     "AssistantMessage",
+    "Audio",
     "Base64ImageSource",
+    "Base64AudioSource",
     "FinishReason",
     "Format",
     "Image",
