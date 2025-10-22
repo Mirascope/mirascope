@@ -47,6 +47,13 @@ def test_get_client_openai_responses() -> None:
     assert client1.client.api_key == os.getenv("OPENAI_API_KEY")
 
 
+def test_get_client_mlx() -> None:
+    client1 = llm.get_client("mlx")
+    client2 = llm.get_client("mlx")
+    assert isinstance(client1, llm.clients.MLXClient)
+    assert client1 is client2
+
+
 def test_get_client_unknown_provider() -> None:
     """Test that get_client raises ValueError for unknown providers."""
     with pytest.raises(ValueError, match="Unknown provider: unknown"):
