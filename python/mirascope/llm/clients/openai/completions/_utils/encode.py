@@ -8,7 +8,10 @@ from openai import NotGiven
 from openai.types import chat as openai_types, shared_params as shared_openai_types
 from openai.types.shared_params.response_format_json_schema import JSONSchema
 
-from .....exceptions import FormattingModeNotSupportedError
+from .....exceptions import (
+    FeatureNotSupportedError,
+    FormattingModeNotSupportedError,
+)
 from .....formatting import (
     Format,
     FormattableT,
@@ -20,6 +23,7 @@ from .....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ....base import Params, _utils as _base_utils
 from ...shared import _utils as _shared_utils
 from ..model_ids import OpenAICompletionsModelId
+from .model_features import MODEL_FEATURES
 
 
 class ChatCompletionCreateKwargs(TypedDict, total=False):
@@ -45,6 +49,7 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
 
 def _encode_user_message(
     message: UserMessage,
+    model_id: OpenAICompletionsModelId,
 ) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert Mirascope `UserMessage` to a list of OpenAI `ChatCompletionMessageParam`.
 
@@ -54,6 +59,7 @@ def _encode_user_message(
     current_content: list[
         openai_types.ChatCompletionContentPartTextParam
         | openai_types.ChatCompletionContentPartImageParam
+        | openai_types.ChatCompletionContentPartInputAudioParam
     ] = []
     result: list[openai_types.ChatCompletionMessageParam] = []
 
@@ -91,6 +97,31 @@ def _encode_user_message(
                 type="image_url", image_url={"url": url, "detail": "auto"}
             )
             current_content.append(content)
+        elif part.type == "audio":
+            model_status = MODEL_FEATURES.get(model_id)
+            if model_status == "no_audio_support":
+                raise FeatureNotSupportedError(
+                    feature="Audio inputs",
+                    provider="openai:completions",
+                    message=f"Model '{model_id}' does not support audio inputs.",
+                )
+
+            if part.source.type == "base64_audio_source":
+                audio_format = part.source.mime_type.split("/")[1]
+                if audio_format not in ("wav", "mp3"):
+                    raise FeatureNotSupportedError(
+                        feature=f"Audio format: {audio_format}",
+                        provider="openai:completions",
+                        message="OpenAI only supports 'wav' and 'mp3' audio formats.",
+                    )  # pragma: no cover
+                audio_content = openai_types.ChatCompletionContentPartInputAudioParam(
+                    type="input_audio",
+                    input_audio={
+                        "data": part.source.data,
+                        "format": audio_format,
+                    },
+                )
+                current_content.append(audio_content)
         elif part.type == "tool_output":
             flush_message_content()
             result.append(
@@ -187,7 +218,7 @@ def _encode_message(
             )
         ]
     elif message.role == "user":
-        return _encode_user_message(message)
+        return _encode_user_message(message, model_id)
     elif message.role == "assistant":
         return [_encode_assistant_message(message, model_id, encode_thoughts)]
     else:

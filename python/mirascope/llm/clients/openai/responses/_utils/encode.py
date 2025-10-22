@@ -40,7 +40,7 @@ from .....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
 from ....base import Params, _utils as _base_utils
 from ...shared import _utils as _shared_utils
 from ..model_ids import OpenAIResponsesModelId
-from ..model_info import NON_REASONING_MODELS
+from .model_features import NON_REASONING_MODELS
 
 
 class ResponseCreateKwargs(TypedDict, total=False):

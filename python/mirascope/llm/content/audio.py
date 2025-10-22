@@ -14,7 +14,7 @@ AudioMimeType = Literal[
     "audio/aac",
     "audio/ogg",
     "audio/flac",
-]
+]  # TODO: add e2e tests for every supported type
 
 MIME_TYPES = get_args(AudioMimeType)
 
