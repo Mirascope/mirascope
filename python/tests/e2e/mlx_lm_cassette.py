@@ -1,0 +1,251 @@
+import hashlib
+import struct
+from collections.abc import Generator
+from contextlib import ExitStack, contextmanager
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Any, Literal, TypeAlias
+from unittest.mock import Mock, patch
+
+import mlx.nn as nn
+import yaml
+from mlx_lm.generate import stream_generate
+from mlx_lm.tokenizer_utils import TokenizerWrapper, load
+from mlx_lm.utils import hf_repo_to_path
+
+RecordMode = Literal["once", "new_episodes", "all", "none"]
+
+
+@dataclass
+class MLXCassetteResponse:
+    """A single response from an MLX model generation."""
+
+    text: str
+    token: int
+    finish_reason: str | None = None
+
+
+Recording: TypeAlias = dict[str, list[MLXCassetteResponse]]
+
+
+class MLXRecorder:
+    """Records MLX model interactions for cassette storage."""
+
+    def __init__(self, mode: RecordMode) -> None:
+        """Initialize the recorder.
+
+        Args:
+            mode: The recording mode to use.
+        """
+        self.mode = mode
+        self.interactions: Recording = {}
+
+    def record(self, prompt_hash: str, responses: list[MLXCassetteResponse]) -> None:
+        """Record an interaction.
+
+        Args:
+            prompt_hash: Hash of the prompt tokens.
+            responses: List of responses for this prompt.
+        """
+        self.interactions[prompt_hash] = responses
+
+
+class MLXCassette:
+    """Manages recording and playback of MLX model interactions."""
+
+    def __init__(self, path: Path, record_mode: RecordMode) -> None:
+        """Initialize the cassette.
+
+        Args:
+            path: Path to the cassette file.
+            record_mode: The recording mode to use.
+
+        Raises:
+            FileNotFoundError: If mode is 'none' and file doesn't exist.
+        """
+        self.path = path
+        self.record_mode: RecordMode = record_mode
+
+        self.file_recording: Recording = {}
+        self.new_recording: Recording = {}
+
+        if path.is_file():
+            with open(path) as f:
+                data = yaml.safe_load(f)
+                for hash, responses in data.get("interactions", {}).items():
+                    mlx_responses = [
+                        MLXCassetteResponse(**response) for response in responses
+                    ]
+                    self.file_recording[hash] = mlx_responses
+        elif self.record_mode == "none":
+            raise FileNotFoundError(f"Cassette file not found: {path}")
+
+    def record(self, prompt_hash: str, responses: list[MLXCassetteResponse]) -> None:
+        """Record a new interaction.
+
+        Args:
+            prompt_hash: Hash of the prompt tokens.
+            responses: List of responses for this prompt.
+        """
+        self.new_recording[prompt_hash] = responses
+
+    def _save_file(self, interactions: Recording) -> None:
+        """Save interactions to the cassette file.
+
+        Args:
+            interactions: The interactions to save.
+        """
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.path, "w") as f:
+            data = {
+                "interactions": {
+                    hash: [asdict(response) for response in responses]
+                    for hash, responses in interactions.items()
+                }
+            }
+            yaml.safe_dump(data, f)
+
+    def save(self) -> None:
+        """Save the cassette based on the recording mode.
+
+        Raises:
+            FileExistsError: If mode is 'once' and file already exists.
+        """
+        if self.record_mode == "once":
+            if self.path.is_file():
+                raise FileExistsError(f"Cassette file already exists: {self.path}")
+            self._save_file(self.new_recording)
+        elif self.record_mode == "all":
+            self._save_file(self.new_recording)
+        elif self.record_mode == "new_episodes":
+            recording = self.file_recording
+            for hash, responses in self.new_recording.items():
+                if hash not in recording:
+                    recording[hash] = responses
+            self._save_file(recording)
+        elif self.record_mode == "none":
+            pass
+
+
+def _hash_prompt(prompt: list[int]) -> str:
+    """Hash a tokenized prompt for cassette lookup.
+
+    Args:
+        prompt: The tokenized prompt.
+
+    Returns:
+        SHA256 hex digest of the prompt tokens.
+    """
+    hasher = hashlib.sha256()
+    for token in prompt:
+        hasher.update(struct.pack(">I", token))
+
+    return hasher.hexdigest()
+
+
+def _patched_stream_generate(
+    cassette: MLXCassette,
+    model: nn.Module,
+    tokenizer: TokenizerWrapper,
+    prompt: list[int],
+    *args: Any,  # noqa: ANN401
+    **kwargs: Any,  # noqa: ANN401
+) -> Generator[MLXCassetteResponse, None, None]:
+    """Patched stream_generate that records/replays from cassette.
+
+    Args:
+        cassette: The cassette to use for recording/playback.
+        model: The MLX model (may be mocked).
+        tokenizer: The tokenizer.
+        prompt: The tokenized prompt.
+        *args: Additional positional arguments.
+        **kwargs: Additional keyword arguments.
+
+    Yields:
+        MLXCassetteResponse objects from cache or live generation.
+
+    Raises:
+        ValueError: If no cached response and recording is disabled.
+    """
+    prompt_hash = _hash_prompt(prompt)
+    cached_response = cassette.file_recording.get(prompt_hash)
+
+    if cached_response is not None and cassette.record_mode in ("none", "new_episodes"):
+        yield from cached_response
+        return
+
+    if cassette.record_mode == "none":
+        raise ValueError("No cached response found and recording is disabled.")
+
+    interaction: list[MLXCassetteResponse] = []
+    for response in stream_generate(model, tokenizer, prompt, *args, **kwargs):
+        cassette_response = MLXCassetteResponse(
+            text=response.text,
+            token=response.token,
+            finish_reason=response.finish_reason,
+        )
+        interaction.append(cassette_response)
+        yield cassette_response
+
+    cassette.record(prompt_hash, interaction)
+
+
+def _patched_mlx_lm_load(
+    path_or_hf_repo: str,
+    tokenizer_config: dict[str, Any] = {},  # noqa: B006
+    *args: Any,  # noqa: ANN401
+    **kwargs: Any,  # noqa: ANN401
+) -> tuple[Mock, TokenizerWrapper]:
+    """Patched mlx_load that returns a mock model with real tokenizer.
+
+    Args:
+        path_or_hf_repo: Path or HuggingFace repo ID.
+        tokenizer_config: Tokenizer configuration.
+        *args: Additional positional arguments (ignored).
+        **kwargs: Additional keyword arguments (ignored).
+
+    Returns:
+        Tuple of mock model and real tokenizer.
+    """
+    path = hf_repo_to_path(path_or_hf_repo)
+    tokenizer = load(path, tokenizer_config)
+    return Mock(), tokenizer
+
+
+@contextmanager
+def record_mlx_lm(cassette_path: Path, mode: RecordMode) -> Generator[None, None, None]:
+    """Context manager for recording/replaying MLX model interactions.
+
+    Args:
+        cassette_path: Path to the cassette file.
+        mode: The recording mode to use.
+
+    Yields:
+        None - use within a with block to record/replay interactions.
+    """
+    # TODO: Right now, we only patch the MLX client. However, at some point we'll
+    # need to generalize it to other clients as well, such as Grok which uses gRPC.
+
+    with ExitStack() as stack:
+        cassette = MLXCassette(cassette_path, mode)
+        if cassette.record_mode == "none":
+            stack.enter_context(
+                patch(
+                    "mirascope.llm.clients.mlx.clients.mlx_load",
+                    new=_patched_mlx_lm_load,
+                )
+            )
+
+        stack.enter_context(
+            patch(
+                "mirascope.llm.clients.mlx.mlx.stream_generate",
+                new=lambda *args, **kwargs: _patched_stream_generate(
+                    cassette, *args, **kwargs
+                ),
+            )
+        )
+
+        try:
+            yield
+        finally:
+            cassette.save()
