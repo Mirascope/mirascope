@@ -154,6 +154,32 @@ def test_client_azure_missing_endpoint() -> None:
             os.environ["AZURE_OPENAI_ENDPOINT"] = old_endpoint
 
 
+def test_get_client_anthropic_bedrock() -> None:
+    """Test that get_client('anthropic-bedrock') returns same instance on multiple calls."""
+    client1 = llm.get_client("anthropic-bedrock")
+    client2 = llm.get_client("anthropic-bedrock")
+
+    assert isinstance(client1, llm.clients.AnthropicBedrockClient)
+    assert client1 is client2
+
+
+def test_client_anthropic_bedrock_with_params() -> None:
+    """Test that client('anthropic-bedrock', ...) returns cached instances."""
+    client1 = llm.client(
+        "anthropic-bedrock",
+        aws_region="us-west-2",
+        aws_profile="test-profile",
+    )
+    client2 = llm.client(
+        "anthropic-bedrock",
+        aws_region="us-west-2",
+        aws_profile="test-profile",
+    )
+
+    assert isinstance(client1, llm.clients.AnthropicBedrockClient)
+    assert client1 is client2
+
+
 def test_get_client_unknown_provider() -> None:
     """Test that get_client raises ValueError for unknown providers."""
     with pytest.raises(ValueError, match="Unknown provider: unknown"):

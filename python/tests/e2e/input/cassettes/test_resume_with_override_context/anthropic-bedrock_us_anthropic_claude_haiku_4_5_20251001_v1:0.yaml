@@ -1,0 +1,177 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"}],"model":"claude-sonnet-4-0"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '106'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dJDBSgMxEIZfZfnPqeyW7qG59dCDCqJ4FAkxGbrB3ck2mVRL2XeXLRax
+        4mlgvm9mfuaEIXrqoeF6WzwtcmQmWawWy3rZ1m2zgkLw0BjyztTN+vFh2Dab7q4cunL/vPbtbvu0
+        h4IcR5otytnuCAop9nPD5hyyWBYouMhCLNAvp4sv9DmTc9G4rT5srlwiK+Srt2O1YelSHIO7wfSq
+        kCWOJpHNkaFB7I2UxPgGmfaF2BE0l75XKOck+oTAYxEj8Z04QzeNgrOuI3M+FCKb30J94Yms/49d
+        Zuf9NHY0ULK9aYe//g9tums6KcQi1+kypUNwZCRQgsb8Pm+TxzR9AQAA//8DAPgB0WqvAQAA
+    headers:
+      CF-RAY:
+      - 992f6d4cfda2d76c-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 07:12:37 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-10-23T07:12:37Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-10-23T07:12:37Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-10-23T07:12:35Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-10-23T07:12:37Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CUPiRLWjVNmd92XwsHmYv
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      via:
+      - 1.1 google
+      x-envoy-upstream-service-time:
+      - '2148'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
+      was created by Anthropic."},{"role":"user","content":"Can you double-check that?"}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '235'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.64.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_015WhgEJUefuZs9gYn5pZzVb","type":"message","role":"assistant","content":[{"type":"text","text":"Yes,
+        I''ve double-checked and can confirm: I was created by Anthropic, an AI safety
+        company. Anthropic built me to be helpful, harmless, and honest. Is there
+        something specific you''d like to know about Anthropic or how I was created?"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":32,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":61}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '537'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 07:12:38 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '32'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '1170'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '61'
+      x-amzn-RequestId:
+      - 96f4f235-361a-403e-b782-daca892c4b3b
+    status:
+      code: 200
+      message: OK
+version: 1

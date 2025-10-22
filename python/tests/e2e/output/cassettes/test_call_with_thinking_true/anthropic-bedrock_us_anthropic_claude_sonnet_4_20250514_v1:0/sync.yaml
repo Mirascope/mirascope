@@ -1,0 +1,189 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"How many primes
+      below 400 contain 79 as a substring? Answer ONLY with the number, not sharing
+      which primes they are."}],"thinking":{"type":"enabled","budget_tokens":8000},"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '270'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.64.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-sonnet-4-20250514-v1:0/invoke
+  response:
+    body:
+      string: "{\"id\":\"msg_bdrk_01KF5RkFgvBYvDHLNF3U2go6\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"claude-sonnet-4-20250514\",\"content\":[{\"type\":\"thinking\",\"thinking\":\"I
+        need to find all primes below 400 that contain \\\"79\\\" as a substring.\\n\\nFirst,
+        let me think about what numbers below 400 could contain \\\"79\\\" as a substring:\\n-
+        Numbers of the form 79X (where X is a digit): 790, 791, 792, 793, 794, 795,
+        796, 797, 798, 799\\n- Numbers of the form X79 (where X is a digit): 179,
+        279, 379\\n- The number 79 itself\\n\\nWait, let me be more systematic. Numbers
+        below 400 that contain \\\"79\\\":\\n- 79\\n- 179\\n- 279\\n- 379\\n- 790,
+        791, 792, 793, 794, 795, 796, 797, 798, 799 (but these are all \u2265 790
+        > 400, so none of these work)\\n\\nSo the candidates are: 79, 179, 279, 379\\n\\nNow
+        I need to check which of these are prime:\\n\\n79: Let me check if 79 is prime.\\n79
+        = ? \\nI need to check divisibility by primes up to \u221A79 \u2248 8.9\\nSo
+        I check 2, 3, 5, 7\\n- 79 is odd, so not divisible by 2\\n- 7+9 = 16, not
+        divisible by 3\\n- Doesn't end in 0 or 5, so not divisible by 5  \\n- 79 \xF7
+        7 = 11.28..., so not divisible by 7\\nSo 79 is prime.\\n\\n179: Let me check
+        if 179 is prime.\\nI need to check divisibility by primes up to \u221A179
+        \u2248 13.4\\nSo I check 2, 3, 5, 7, 11, 13\\n- 179 is odd, so not divisible
+        by 2\\n\\n\\n- 1+7+9 = 17, not divisible by 3\\n- Doesn't end in 0 or 5, so
+        not divisible by 5\\n- 179 \xF7 7 = 25.57..., so not divisible by 7\\n- 179
+        \xF7 11 = 16.27..., so not divisible by 11\\n- 179 \xF7 13 = 13.76..., so
+        not divisible by 13\\nSo 179 is prime.\\n\\n279: I'll systematically check
+        its divisibility by checking small prime numbers.\\n- Fails the 2 test, but
+        2+7+9 = 18 means it's divisible by 3\\n- 279 breaks down to 3 \xD7 93, further
+        factoring to 9 \xD7 31\\nTherefore, 279 is a composite number.\\n\\n379: I'll
+        investigate primality by testing divisors up to its square root.\\n- Odd number,
+        ruling out 2\\n- Sum of digits doesn't indicate divisibility by 3\\n- Not
+        ending in 0 or 5 suggests no simple divisibility\\n- Checking primes systematically
+        reveals no factors\\nConfirming 379 as a prime number.\\n\\nPrimes with \\\"79\\\"
+        below 400 total 3: 79, 179, 379.\",\"signature\":\"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\"},{\"type\":\"text\",\"text\":\"3\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":66,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":1008}}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '5433'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 07:13:16 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '66'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '22912'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '1008'
+      x-amzn-RequestId:
+      - c9e60c05-5b48-4b83-9f12-598df41b632d
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"max_tokens\":16000,\"messages\":[{\"role\":\"user\",\"content\":\"How
+      many primes below 400 contain 79 as a substring? Answer ONLY with the number,
+      not sharing which primes they are.\"},{\"role\":\"assistant\",\"content\":[{\"signature\":\"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\",\"thinking\":\"I
+      need to find all primes below 400 that contain \\\"79\\\" as a substring.\\n\\nFirst,
+      let me think about what numbers below 400 could contain \\\"79\\\" as a substring:\\n-
+      Numbers of the form 79X (where X is a digit): 790, 791, 792, 793, 794, 795,
+      796, 797, 798, 799\\n- Numbers of the form X79 (where X is a digit): 179, 279,
+      379\\n- The number 79 itself\\n\\nWait, let me be more systematic. Numbers below
+      400 that contain \\\"79\\\":\\n- 79\\n- 179\\n- 279\\n- 379\\n- 790, 791, 792,
+      793, 794, 795, 796, 797, 798, 799 (but these are all \u2265 790 > 400, so none
+      of these work)\\n\\nSo the candidates are: 79, 179, 279, 379\\n\\nNow I need
+      to check which of these are prime:\\n\\n79: Let me check if 79 is prime.\\n79
+      = ? \\nI need to check divisibility by primes up to \u221A79 \u2248 8.9\\nSo
+      I check 2, 3, 5, 7\\n- 79 is odd, so not divisible by 2\\n- 7+9 = 16, not divisible
+      by 3\\n- Doesn't end in 0 or 5, so not divisible by 5  \\n- 79 \xF7 7 = 11.28...,
+      so not divisible by 7\\nSo 79 is prime.\\n\\n179: Let me check if 179 is prime.\\nI
+      need to check divisibility by primes up to \u221A179 \u2248 13.4\\nSo I check
+      2, 3, 5, 7, 11, 13\\n- 179 is odd, so not divisible by 2\\n\\n\\n- 1+7+9 = 17,
+      not divisible by 3\\n- Doesn't end in 0 or 5, so not divisible by 5\\n- 179
+      \xF7 7 = 25.57..., so not divisible by 7\\n- 179 \xF7 11 = 16.27..., so not
+      divisible by 11\\n- 179 \xF7 13 = 13.76..., so not divisible by 13\\nSo 179
+      is prime.\\n\\n279: I'll systematically check its divisibility by checking small
+      prime numbers.\\n- Fails the 2 test, but 2+7+9 = 18 means it's divisible by
+      3\\n- 279 breaks down to 3 \xD7 93, further factoring to 9 \xD7 31\\nTherefore,
+      279 is a composite number.\\n\\n379: I'll investigate primality by testing divisors
+      up to its square root.\\n- Odd number, ruling out 2\\n- Sum of digits doesn't
+      indicate divisibility by 3\\n- Not ending in 0 or 5 suggests no simple divisibility\\n-
+      Checking primes systematically reveals no factors\\nConfirming 379 as a prime
+      number.\\n\\nPrimes with \\\"79\\\" below 400 total 3: 79, 179, 379.\",\"type\":\"thinking\"},{\"citations\":null,\"text\":\"3\",\"type\":\"text\"}]},{\"role\":\"user\",\"content\":\"If
+      you remember what the primes were, then share them, or say 'I don't remember.'\"}],\"thinking\":{\"type\":\"disabled\"},\"anthropic_version\":\"bedrock-2023-05-31\"}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '5563'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.64.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-sonnet-4-20250514-v1:0/invoke
+  response:
+    body:
+      string: '{"id":"msg_bdrk_01EkaVoW1SWnWMXFwpjjX7Xn","type":"message","role":"assistant","model":"claude-sonnet-4-20250514","content":[{"type":"text","text":"I
+        don''t remember."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":68,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":8}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '320'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 07:13:17 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '68'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '820'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '8'
+      x-amzn-RequestId:
+      - ffa4f6d2-d463-4ba2-9a36-a4a95d97bfa4
+    status:
+      code: 200
+      message: OK
+version: 1

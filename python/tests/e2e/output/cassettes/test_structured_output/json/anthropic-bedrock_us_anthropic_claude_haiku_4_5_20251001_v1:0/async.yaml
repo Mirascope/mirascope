@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"system":"Respond only with valid
+      JSON that matches this exact schema:\n{\n  \"$defs\": {\n    \"Author\": {\n      \"description\":
+      \"The author of a book.\",\n      \"properties\": {\n        \"first_name\":
+      {\n          \"title\": \"First Name\",\n          \"type\": \"string\"\n        },\n        \"last_name\":
+      {\n          \"title\": \"Last Name\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\":
+      [\n        \"first_name\",\n        \"last_name\"\n      ],\n      \"title\":
+      \"Author\",\n      \"type\": \"object\"\n    }\n  },\n  \"description\": \"A
+      book with a rating. The title should be in all caps!\",\n  \"properties\": {\n    \"title\":
+      {\n      \"title\": \"Title\",\n      \"type\": \"string\"\n    },\n    \"author\":
+      {\n      \"$ref\": \"#/$defs/Author\"\n    },\n    \"rating\": {\n      \"description\":
+      \"For testing purposes, the rating should be 7\",\n      \"title\": \"Rating\",\n      \"type\":
+      \"integer\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"author\",\n    \"rating\"\n  ],\n  \"title\":
+      \"Book\",\n  \"type\": \"object\"\n}","anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1261'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AsyncAnthropicBedrock/Python 0.64.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_011YjoYEqzAuuSmKYDJ9zXkL","type":"message","role":"assistant","content":[{"type":"text","text":"```json\n{\n  \"title\":
+        \"THE NAME OF THE WIND\",\n  \"author\": {\n    \"first_name\": \"Patrick\",\n    \"last_name\":
+        \"Rothfuss\"\n  },\n  \"rating\": 7\n}\n```"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":328,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":63}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '471'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 07:14:59 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '328'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '1211'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '63'
+      x-amzn-RequestId:
+      - 86aa6837-320f-4cdb-b8ee-e730764d5ec4
+    status:
+      code: 200
+      message: OK
+version: 1

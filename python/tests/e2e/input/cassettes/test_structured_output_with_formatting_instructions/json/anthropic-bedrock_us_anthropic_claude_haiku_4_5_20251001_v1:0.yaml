@@ -1,0 +1,77 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      a book to me!"}],"system":"Always recommend The Name of the Wind.\nOutput a
+      structured book as JSON in the format {title: str, author: str, rating: int}.\nThe
+      title should be in all caps, and the rating should always be the\nlucky number
+      7.","anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '358'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.64.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01FvmVUX7AGJs1jYAuLvwSke","type":"message","role":"assistant","content":[{"type":"text","text":"```json\n{\n  \"title\":
+        \"THE NAME OF THE WIND\",\n  \"author\": \"Patrick Rothfuss\",\n  \"rating\":
+        7\n}\n```\n\nI highly recommend this book! It''s an epic fantasy novel that
+        follows Kvothe, a legendary figure, as he recounts his extraordinary life
+        story. The prose is beautifully written, the magic system is creative and
+        well-developed, and the world-building is immersive. It''s the first book
+        in *The Kingkiller Chronicle* series and is perfect if you enjoy character-driven
+        narratives with mystery and adventure."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":67,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":135}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '825'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 23 Oct 2025 07:12:45 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '67'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '1446'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '135'
+      x-amzn-RequestId:
+      - aa5bdeab-c262-474e-b92d-5e80553d1b8d
+    status:
+      code: 200
+      message: OK
+version: 1

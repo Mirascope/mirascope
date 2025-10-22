@@ -162,8 +162,7 @@ def get_client(
     match provider:
         case "anthropic":
             return get_anthropic_client()
-        case "anthropic-bedrock":  # pragma: no cover
-            # TODO: Add test coverage for anthropic-bedrock in separate test branch
+        case "anthropic-bedrock":
             return get_anthropic_bedrock_client()
         case "azure-openai:completions":
             return get_azure_openai_completions_client()
@@ -298,8 +297,7 @@ def client(
     match provider:
         case "anthropic":
             return anthropic_client(api_key=api_key, base_url=base_url)
-        case "anthropic-bedrock":  # pragma: no cover
-            # TODO: Add test coverage for anthropic-bedrock in separate test branch
+        case "anthropic-bedrock":
             return anthropic_bedrock_client(
                 base_url=base_url,
                 aws_region=kwargs.get("aws_region"),
