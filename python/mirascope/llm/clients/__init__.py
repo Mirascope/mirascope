@@ -4,6 +4,7 @@ from .anthropic import (
     AnthropicClient,
     AnthropicModelId,
 )
+from .anthropic_bedrock import AnthropicBedrockClient
 from .azure_openai.completions import AzureOpenAICompletionsClient
 from .azure_openai.responses import AzureOpenAIResponsesClient
 from .base import BaseClient, ClientT, Params
@@ -19,6 +20,7 @@ from .providers import PROVIDERS, ModelId, Provider, client, get_client
 
 __all__ = [
     "PROVIDERS",
+    "AnthropicBedrockClient",
     "AnthropicClient",
     "AnthropicModelId",
     "AzureOpenAICompletionsClient",

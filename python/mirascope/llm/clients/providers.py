@@ -1,5 +1,5 @@
 from collections.abc import Callable
-from typing import Any, Literal, TypeAlias, TypedDict, get_args, overload
+from typing import Any, Literal, TypeAlias, get_args, overload
 
 from openai.lib.azure import AzureADTokenProvider
 
@@ -9,6 +9,12 @@ from .anthropic import (
     clear_cache as clear_anthropic_cache,
     client as anthropic_client,
     get_client as get_anthropic_client,
+)
+from .anthropic_bedrock import (
+    AnthropicBedrockClient,
+    clear_cache as clear_anthropic_bedrock_cache,
+    client as anthropic_bedrock_client,
+    get_client as get_anthropic_bedrock_client,
 )
 from .azure_openai.completions import (
     AzureOpenAICompletionsClient,
@@ -44,6 +50,7 @@ from .openai import (
 
 Provider: TypeAlias = Literal[
     "anthropic",  # AnthropicClient
+    "anthropic-bedrock",  # AnthropicBedrockClient
     "azure-openai:completions",  # AzureOpenAICompletionsClient
     "azure-openai:responses",  # AzureOpenAIResponsesClient
     "google",  # GoogleClient
@@ -62,47 +69,26 @@ ModelId: TypeAlias = (
 )
 
 
-class ProviderInfo(TypedDict):
-    """Information about a provider implementation."""
-
-    name: Provider
-    """The provider identifier (e.g., "anthropic", "openai:completions")."""
-
-    clear_cache: Callable[[], None]
-    """Function to clear the provider's client cache."""
-
-
-PROVIDER_REGISTRY: dict[Provider, ProviderInfo] = {
-    "anthropic": {
-        "name": "anthropic",
-        "clear_cache": clear_anthropic_cache,
-    },
-    "azure-openai:completions": {
-        "name": "azure-openai:completions",
-        "clear_cache": clear_azure_openai_completions_cache,
-    },
-    "azure-openai:responses": {
-        "name": "azure-openai:responses",
-        "clear_cache": clear_azure_openai_responses_cache,
-    },
-    "google": {
-        "name": "google",
-        "clear_cache": clear_google_cache,
-    },
-    "openai:completions": {
-        "name": "openai:completions",
-        "clear_cache": clear_openai_completions_cache,
-    },
-    "openai:responses": {
-        "name": "openai:responses",
-        "clear_cache": clear_openai_responses_cache,
-    },
+PROVIDER_REGISTRY: dict[Provider, Callable[[], None]] = {
+    "anthropic": clear_anthropic_cache,
+    "anthropic-bedrock": clear_anthropic_bedrock_cache,  # pragma: no cover
+    "azure-openai:completions": clear_azure_openai_completions_cache,
+    "azure-openai:responses": clear_azure_openai_responses_cache,
+    "google": clear_google_cache,
+    "openai:completions": clear_openai_completions_cache,
+    "openai:responses": clear_openai_responses_cache,
 }
 
 
 @overload
 def get_client(provider: Literal["anthropic"]) -> AnthropicClient:
     """Get an Anthropic client instance."""
+    ...
+
+
+@overload
+def get_client(provider: Literal["anthropic-bedrock"]) -> AnthropicBedrockClient:
+    """Get an Anthropic Bedrock client instance."""
     ...
 
 
@@ -146,6 +132,7 @@ def get_client(
     provider: Provider,
 ) -> (
     AnthropicClient
+    | AnthropicBedrockClient
     | AzureOpenAICompletionsClient
     | AzureOpenAIResponsesClient
     | GoogleClient
@@ -163,6 +150,7 @@ def get_client(
         - "openai:completions" returns `OpenAICompletionsClient` (ChatCompletion API)
         - "openai:responses" returns `OpenAIResponsesClient` (Responses API)
         - "anthropic" returns `AnthropicClient`
+        - "anthropic-bedrock" returns `AnthropicBedrockClient`
         - "google" returns `GoogleClient`
 
     Multiple calls to get_client will return the same Client rather than constructing
@@ -174,6 +162,9 @@ def get_client(
     match provider:
         case "anthropic":
             return get_anthropic_client()
+        case "anthropic-bedrock":  # pragma: no cover
+            # TODO: Add test coverage for anthropic-bedrock in separate test branch
+            return get_anthropic_bedrock_client()
         case "azure-openai:completions":
             return get_azure_openai_completions_client()
         case "azure-openai:responses":
@@ -223,6 +214,21 @@ def client(
 
 @overload
 def client(
+    provider: Literal["anthropic-bedrock"],
+    *,
+    base_url: str | None = None,
+    aws_region: str | None = None,
+    aws_access_key: str | None = None,
+    aws_secret_key: str | None = None,
+    aws_session_token: str | None = None,
+    aws_profile: str | None = None,
+) -> AnthropicBedrockClient:
+    """Create a cached Anthropic Bedrock client with the given parameters."""
+    ...
+
+
+@overload
+def client(
     provider: Literal["google"],
     *,
     api_key: str | None = None,
@@ -266,6 +272,7 @@ def client(
     **kwargs: Any,
 ) -> (
     AnthropicClient
+    | AnthropicBedrockClient
     | AzureOpenAICompletionsClient
     | AzureOpenAIResponsesClient
     | GoogleClient
@@ -291,6 +298,16 @@ def client(
     match provider:
         case "anthropic":
             return anthropic_client(api_key=api_key, base_url=base_url)
+        case "anthropic-bedrock":  # pragma: no cover
+            # TODO: Add test coverage for anthropic-bedrock in separate test branch
+            return anthropic_bedrock_client(
+                base_url=base_url,
+                aws_region=kwargs.get("aws_region"),
+                aws_access_key=kwargs.get("aws_access_key"),
+                aws_secret_key=kwargs.get("aws_secret_key"),
+                aws_session_token=kwargs.get("aws_session_token"),
+                aws_profile=kwargs.get("aws_profile"),
+            )
         case "azure-openai:completions":
             return azure_openai_completions_client(
                 api_key=api_key,
