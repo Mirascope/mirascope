@@ -73,6 +73,16 @@ def _encode_content(
                     "google",
                     message="Google does not support URL-referenced images. Try `llm.Image.download(...) or `llm.Image.download_async(...)`",
                 )
+        elif part.type == "audio":
+            if part.source.type == "base64_audio_source":
+                result.append(
+                    genai_types.PartDict(
+                        inline_data=genai_types.BlobDict(
+                            data=base64.b64decode(part.source.data),
+                            mime_type=part.source.mime_type,
+                        )
+                    )
+                )
         elif part.type == "tool_call":
             result.append(
                 genai_types.PartDict(
