@@ -31,7 +31,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="The image shows a grey and white 3D globe made of jigsaw puzzle pieces, many inscribed with symbols from various writing systems, and a prominent missing piece at its top."
+                            text="The image displays a three-dimensional jigsaw puzzle globe, composed of white pieces featuring characters from various writing systems, with a few pieces missing to reveal a dark gray interior."
                         )
                     ],
                     provider="google",
@@ -48,7 +48,7 @@ test_snapshot = snapshot(
                                 "executable_code": None,
                                 "function_call": None,
                                 "function_response": None,
-                                "text": "The image shows a grey and white 3D globe made of jigsaw puzzle pieces, many inscribed with symbols from various writing systems, and a prominent missing piece at its top.",
+                                "text": "The image displays a three-dimensional jigsaw puzzle globe, composed of white pieces featuring characters from various writing systems, with a few pieces missing to reveal a dark gray interior.",
                             }
                         ],
                         "role": "model",

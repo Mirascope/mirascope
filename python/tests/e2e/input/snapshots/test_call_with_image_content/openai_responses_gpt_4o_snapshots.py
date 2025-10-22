@@ -31,18 +31,18 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="The image depicts the Wikipedia logo, which is a globe composed of jigsaw puzzle pieces with various characters on them, symbolizing multilingual knowledge."
+                            text="The image is a globe composed of puzzle pieces displaying various characters, representing the logo of Wikipedia."
                         )
                     ],
                     provider="openai:responses",
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_010787bce4acf6ae0068f9668301ac8194afe9a05e6b9d2b0a",
+                            "id": "msg_0e123783deb788010068f96c34a5988193a8a5f3e10c95de15",
                             "content": [
                                 {
                                     "annotations": [],
-                                    "text": "The image depicts the Wikipedia logo, which is a globe composed of jigsaw puzzle pieces with various characters on them, symbolizing multilingual knowledge.",
+                                    "text": "The image is a globe composed of puzzle pieces displaying various characters, representing the logo of Wikipedia.",
                                     "type": "output_text",
                                     "logprobs": [],
                                 }
