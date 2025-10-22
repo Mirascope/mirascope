@@ -31,13 +31,13 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="The image is a logo of a globe composed of puzzle pieces with various symbols and letters on them, representing Wikipedia."
+                            text="The image is the Wikipedia globe logo, made of puzzle pieces with various letters and symbols on them."
                         )
                     ],
                     provider="openai:completions",
                     model_id="gpt-4o",
                     raw_message={
-                        "content": "The image is a logo of a globe composed of puzzle pieces with various symbols and letters on them, representing Wikipedia.",
+                        "content": "The image is the Wikipedia globe logo, made of puzzle pieces with various letters and symbols on them.",
                         "role": "assistant",
                         "annotations": [],
                     },
