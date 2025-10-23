@@ -29,6 +29,7 @@ from openai.types.shared_params.response_format_json_object import (
 )
 from openai.types.shared_params.responses_model import ResponsesModel
 
+from .....exceptions import FeatureNotSupportedError
 from .....formatting import (
     Format,
     FormattableT,
@@ -102,6 +103,12 @@ def _encode_user_message(
                     output=str(part.value),
                     type="function_call_output",
                 )
+            )
+        elif part.type == "audio":
+            raise FeatureNotSupportedError(
+                "audio input",
+                "openai:responses",
+                message='provider "openai:responses" does not support audio inputs. Try using "openai:completions" instead',
             )
         else:
             raise NotImplementedError(
