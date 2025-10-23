@@ -25,7 +25,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AnthropicBedrock/Python 0.64.0
+      - AnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -35,7 +35,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -50,7 +50,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01GNZkRh9rModubmrzcpFezK","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01F6wnGa3ufLWwYMJ1edWmp7","name":"__mirascope_formatted_output_tool__","input":{"title":"THE
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_019URYcjN67dQBA2zajnQoUK","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01JrqXGhSQLA5MzD14uwSwsN","name":"__mirascope_formatted_output_tool__","input":{"title":"THE
         NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":880,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":81}}'
     headers:
       Connection:
@@ -60,15 +60,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:55 GMT
+      - Thu, 06 Nov 2025 09:12:02 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '880'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '902'
+      - '1209'
       X-Amzn-Bedrock-Output-Token-Count:
       - '81'
       x-amzn-RequestId:
-      - 40d41e32-dce4-404d-b928-2a2a3cdd3947
+      - 819aca9d-9660-4a7e-a726-143feb7c4ac8
     status:
       code: 200
       message: OK

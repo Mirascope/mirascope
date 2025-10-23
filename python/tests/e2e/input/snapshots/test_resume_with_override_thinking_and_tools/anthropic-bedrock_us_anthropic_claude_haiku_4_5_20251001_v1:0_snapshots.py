@@ -11,91 +11,111 @@ from mirascope.llm import (
 
 test_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {"thinking": False},
-        "finish_reason": None,
-        "messages": [
-            UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
-            AssistantMessage(
-                content=[
-                    Thought(
-                        thought='The user is asking for the 100th Fibonacci number. I have a function available called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make this function call.'
-                    ),
-                    Text(text="I'll compute the 100th Fibonacci number for you."),
-                    ToolCall(
-                        id="toolu_01KyfnGtAxQP73fNgYzniVBF",
-                        name="compute_fib",
-                        args='{"n": 100}',
-                    ),
-                ],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "signature": "ErUDCkYICBgCKkAZ8Eyo/8TVOqZn7wmDOwDNCnvMQZnR8ebbqmE1iXAyk0CI8vPxchSKHhby929aBl6m37sFV14KFFq9D3adnjL0Egy2lhHFyokdxegShCAaDPqTQUfBnGL0PXCqUiIwWbZVxdFYldYArJudAXqGxBQPQ2fzn9eGC7txPMj9SnsfA2F9q1BUngTPxsFkeGPtKpwCnTqq000CwNtvWpYM2nyG+WBpAQFzN7whwVLSld1YTF0z5N1Vt1xM4BwPewQmbqhln8v3GhAqzdOSh22Pw7tc917f2ggNg5Cfy5u3NsKsFw+GPvS/8bpIecRSoJ/hwbhzqwNewiVtK79+86ZurQqYrioU6MOw59PmPaGebUzyl6q1IgK/LdczCUpxqZPhhP9h/YUvYjh7fuOcDGOfIHMp8IkTQAjhk9+EjHCxBguSeGYJ70/cKLpXP0twLGAFJAiYB5lemCfycDj0FyxPSZN1Oy03s35KtK1G4E52gpcFwCyJaJnzX3e10cJa8ZuaGlkQD41YdoCSO09YITKi5yraSa2LRbK6aIfyo62RcGosMwP7g0eb0VefHlmBmg8YAQ==",
-                            "thinking": 'The user is asking for the 100th Fibonacci number. I have a function available called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make this function call.',
-                            "type": "thinking",
-                        },
-                        {
-                            "citations": None,
-                            "text": "I'll compute the 100th Fibonacci number for you.",
-                            "type": "text",
-                        },
-                        {
-                            "id": "toolu_01KyfnGtAxQP73fNgYzniVBF",
-                            "input": {"n": 100},
-                            "name": "compute_fib",
-                            "type": "tool_use",
-                        },
-                    ],
-                },
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_01KyfnGtAxQP73fNgYzniVBF",
-                        name="compute_fib",
-                        value="218922995834555169026",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
-The 100th Fibonacci number is **218,922,995,834,555,169,026**.
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {"thinking": False},
+            "finish_reason": None,
+            "messages": [
+                UserMessage(content=[Text(text="What is the 100th fibonacci number?")]),
+                AssistantMessage(
+                    content=[
+                        Thought(
+                            thought="""\
+**Solving for the Hundredth Fibonacci Number**
 
-This is a very large number with 21 digits! The Fibonacci sequence grows exponentially, so the numbers become quite substantial as you progress through the sequence.\
+Okay, so I see the user wants the 100th Fibonacci number.  No problem.  Fortunately, the documentation clearly states that the `default_api.compute_fib` function is designed for precisely this kind of calculation.  The input `n` determines which Fibonacci number we're after.  Therefore, to get the 100th number, I'll simply call this function with `n=100`.  Straightforward and efficient.
 """
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "citations": None,
-                            "text": """\
+                        ),
+                        ToolCall(
+                            id="google_unknown_tool_id",
+                            name="compute_fib",
+                            args='{"n": 100}',
+                        ),
+                    ],
+                    provider="google",
+                    model_id="gemini-2.5-flash",
+                    raw_message={
+                        "parts": [
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Solving for the Hundredth Fibonacci Number**
+
+Okay, so I see the user wants the 100th Fibonacci number.  No problem.  Fortunately, the documentation clearly states that the `default_api.compute_fib` function is designed for precisely this kind of calculation.  The input `n` determines which Fibonacci number we're after.  Therefore, to get the 100th number, I'll simply call this function with `n=100`.  Straightforward and efficient.
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            },
+                            {
+                                "function_call": {
+                                    "id": None,
+                                    "args": {"n": 100},
+                                    "name": "compute_fib",
+                                },
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": None,
+                                "thought": None,
+                                "thought_signature": b'\n\xe2\x01\x01\xd1\xed\x8ao\xc9"\xb2\xd7\x84\xe7z47\xf5\xbe\xdc\xaf\xcc\x01\xfa\xa7Z\x03\xdf\x00$\x80\x00\x00\xd3\xa6\xfd\xe2\x92\x8d\xae\xcc\xc1\xb2\xcc\x8c\x0f\x02\x88\xe7c}\x1fc\xd0)>\x85h\xe2\xecTW\xda1\x14\xae\x1c!D\xc2Y\xc4\x88H\x18d)\x82\xe8 \xc0\xf1R\xe3\x82\xe0Z\x0fc\x84j\xeb+\xcf\xa0\x19*\x97M\xb4r\xe0\xfc\xf1\x16\xd7\x81\xf0\x01\x03\x82R\xb7\\\x16_%YW\x84\xb6\xdc\xad\x9dw\x07L\x11b6\xafxv\x8a\xfd\x1bN\x12\xa0\xa8\xe9T?}\x8d\x13\xc9$\xb4\x8cb\x9e\xb4r\xd6\xb8\xe6\xba\x8c\x8bLd&\x1b\xedKO\xf2\xa3>\xc1P>\xb7\xc7\xf5\xb4\xe1\xdf\xa8k\xaf\xaf?4j<\x13\xf9\x90V\xd4\x18C\xc2\x0eL\xa4\xee\x10Bo\xfa\xc7\xd3\xa0\xfe\xb6\x1d"\xbe\x80\xea\x0b\x0f\xe2\xc2!\xd1\x18S\xb5IV\x95\x13\x8b\x9e\x9f',
+                                "video_metadata": None,
+                            },
+                        ],
+                        "role": "model",
+                    },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="google_unknown_tool_id",
+                            name="compute_fib",
+                            value="218922995834555169026",
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 The 100th Fibonacci number is **218,922,995,834,555,169,026**.
 
-This is a very large number with 21 digits! The Fibonacci sequence grows exponentially, so the numbers become quite substantial as you progress through the sequence.\
-""",
-                            "type": "text",
-                        }
+This is a very large number with 21 digits! The Fibonacci sequence grows exponentially, so the numbers get quite massive as you go further along the sequence.\
+"""
+                        )
                     ],
-                },
-            ),
-        ],
-        "format": None,
-        "tools": [
-            {
-                "name": "compute_fib",
-                "description": "Compute the nth Fibonacci number (1-indexed).",
-                "parameters": """\
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": """\
+The 100th Fibonacci number is **218,922,995,834,555,169,026**.
+
+This is a very large number with 21 digits! The Fibonacci sequence grows exponentially, so the numbers get quite massive as you go further along the sequence.\
+""",
+                                "type": "text",
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [
+                {
+                    "name": "compute_fib",
+                    "description": "Compute the nth Fibonacci number (1-indexed).",
+                    "parameters": """\
 {
   "properties": {
     "n": {
@@ -110,8 +130,9 @@ This is a very large number with 21 digits! The Fibonacci sequence grows exponen
   "defs": null
 }\
 """,
-                "strict": False,
-            }
-        ],
+                    "strict": False,
+                }
+            ],
+        }
     }
 )

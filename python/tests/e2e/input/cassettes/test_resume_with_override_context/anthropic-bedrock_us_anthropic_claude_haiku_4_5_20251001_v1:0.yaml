@@ -1,114 +1,68 @@
 interactions:
 - request:
-    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"}],"model":"claude-sonnet-4-0"}'
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
     headers:
       accept:
-      - application/json
+      - '*/*'
       accept-encoding:
       - gzip, deflate
-      anthropic-version:
-      - '2023-06-01'
       connection:
       - keep-alive
       content-length:
-      - '106'
+      - '73'
       content-type:
       - application/json
       host:
-      - api.anthropic.com
+      - generativelanguage.googleapis.com
       user-agent:
-      - Anthropic/Python 0.64.0
-      x-api-key:
+      - google-genai-sdk/1.48.0 gl-python/3.10.15
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.15
+      x-goog-api-key:
       - <filtered>
-      x-stainless-arch:
-      - arm64
-      x-stainless-async:
-      - 'false'
-      x-stainless-lang:
-      - python
-      x-stainless-os:
-      - MacOS
-      x-stainless-package-version:
-      - 0.64.0
-      x-stainless-read-timeout:
-      - '600'
-      x-stainless-retry-count:
-      - '0'
-      x-stainless-runtime:
-      - CPython
-      x-stainless-runtime-version:
-      - 3.10.15
-      x-stainless-timeout:
-      - '600'
     method: POST
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJDBSgMxEIZfZfnPqeyW7qG59dCDCqJ4FAkxGbrB3ck2mVRL2XeXLRax
-        4mlgvm9mfuaEIXrqoeF6WzwtcmQmWawWy3rZ1m2zgkLw0BjyztTN+vFh2Dab7q4cunL/vPbtbvu0
-        h4IcR5otytnuCAop9nPD5hyyWBYouMhCLNAvp4sv9DmTc9G4rT5srlwiK+Srt2O1YelSHIO7wfSq
-        kCWOJpHNkaFB7I2UxPgGmfaF2BE0l75XKOck+oTAYxEj8Z04QzeNgrOuI3M+FCKb30J94Yms/49d
-        Zuf9NHY0ULK9aYe//g9tums6KcQi1+kypUNwZCRQgsb8Pm+TxzR9AQAA//8DAPgB0WqvAQAA
+        H4sIAAAAAAAC/2WQQU/CQBCF7/0Vmz0XIiiYeDNqCAcCkWo0xpjRDu2G7U7dnRoI4b+7bSks2sNm
+        Mu/1zcy3i4SQX2BSlQKjkzfizXeE2DVvrZFhNOyFruWbJVg+edtvF9Tewripf5JTAYUAocFm6F+T
+        VeCLglLUsWALymAqPrdiQpRp7MsgZX+s3+PTbEsa6+AmorPvO4NcKaNc/ojgyNS2ZTJfyKOqTIob
+        376IugFNtKyc32qGDJ4CHG+VpaWi5ITWaO6oaiiM2qyA2Zk8GBx0JgZ9Lo0v43+x7t4PVTqEGXD2
+        N4JWvK0PSR5eEhlw4LOtOg5RgEtyTlWW858Nr66jA7CW4TNap1pYGRYeX2/YH/VWGlzezJMWXUnG
+        4TStPU+TbAav4+W8+iiHlhb655vXt05G++gXslCsBU0CAAA=
     headers:
-      CF-RAY:
-      - 992f6d4cfda2d76c-NRT
-      Connection:
-      - keep-alive
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
       Content-Encoding:
       - gzip
       Content-Type:
-      - application/json
+      - application/json; charset=UTF-8
       Date:
-      - Thu, 23 Oct 2025 07:12:37 GMT
+      - Thu, 06 Nov 2025 09:20:18 GMT
       Server:
-      - cloudflare
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1613
       Transfer-Encoding:
       - chunked
-      X-Robots-Tag:
-      - none
-      anthropic-organization-id:
-      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
-      anthropic-ratelimit-input-tokens-limit:
-      - '2000000'
-      anthropic-ratelimit-input-tokens-remaining:
-      - '2000000'
-      anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-23T07:12:37Z'
-      anthropic-ratelimit-output-tokens-limit:
-      - '400000'
-      anthropic-ratelimit-output-tokens-remaining:
-      - '400000'
-      anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-23T07:12:37Z'
-      anthropic-ratelimit-requests-limit:
-      - '4000'
-      anthropic-ratelimit-requests-remaining:
-      - '3999'
-      anthropic-ratelimit-requests-reset:
-      - '2025-10-23T07:12:35Z'
-      anthropic-ratelimit-tokens-limit:
-      - '2400000'
-      anthropic-ratelimit-tokens-remaining:
-      - '2400000'
-      anthropic-ratelimit-tokens-reset:
-      - '2025-10-23T07:12:37Z'
-      cf-cache-status:
-      - DYNAMIC
-      request-id:
-      - req_011CUPiRLWjVNmd92XwsHmYv
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      via:
-      - 1.1 google
-      x-envoy-upstream-service-time:
-      - '2148'
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
-      was created by Anthropic."},{"role":"user","content":"Can you double-check that?"}],"anthropic_version":"bedrock-2023-05-31"}'
+      am a large language model, trained by Google."},{"role":"user","content":"Can
+      you double-check that?"}],"anthropic_version":"bedrock-2023-05-31"}'
     headers:
       accept:
       - application/json
@@ -119,13 +73,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '235'
+      - '255'
       content-type:
       - application/json
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AnthropicBedrock/Python 0.64.0
+      - AnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -135,7 +89,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -150,27 +104,26 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_015WhgEJUefuZs9gYn5pZzVb","type":"message","role":"assistant","content":[{"type":"text","text":"Yes,
-        I''ve double-checked and can confirm: I was created by Anthropic, an AI safety
-        company. Anthropic built me to be helpful, harmless, and honest. Is there
-        something specific you''d like to know about Anthropic or how I was created?"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":32,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":61}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01XkWs3BDQnwaPoEEjp6tC55","type":"message","role":"assistant","content":[{"type":"text","text":"You''re
+        right to ask me to double-check. I apologize for the error. I''m Claude, and
+        I was created by Anthropic, not Google. Thank you for catching that mistake."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":35,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":44}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '537'
+      - '464'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:38 GMT
+      - Thu, 06 Nov 2025 09:20:20 GMT
       X-Amzn-Bedrock-Input-Token-Count:
-      - '32'
+      - '35'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1170'
+      - '1252'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '61'
+      - '44'
       x-amzn-RequestId:
-      - 96f4f235-361a-403e-b782-daca892c4b3b
+      - 88cbd80f-b22a-4bd7-9c7e-2fd0817116e9
     status:
       code: 200
       message: OK

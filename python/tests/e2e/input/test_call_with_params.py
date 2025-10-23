@@ -34,6 +34,19 @@ def test_all_params_includes_every_param() -> None:
     )
 
 
+def get_test_params(model_id: llm.ModelId) -> llm.Params:
+    """Get appropriate test parameters for the given provider and model."""
+
+    # This specific Bedrock model doesn't support temperature + top_p simultaneously
+    # https://docs.claude.com/en/docs/about-claude/models/migrating-to-claude-4
+    if model_id == "us.anthropic.claude-haiku-4-5-20251001-v1:0":
+        params = ALL_PARAMS.copy()
+        params.pop("top_p", None)
+        return params
+
+    return ALL_PARAMS
+
+
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_params(
@@ -44,7 +57,9 @@ def test_call_with_params(
 ) -> None:
     """Test synchronous call with all parameters to verify param handling and logging."""
 
-    @llm.call(provider=provider, model_id=model_id, **ALL_PARAMS)
+    params = get_test_params(model_id)
+
+    @llm.call(provider=provider, model_id=model_id, **params)
     def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 

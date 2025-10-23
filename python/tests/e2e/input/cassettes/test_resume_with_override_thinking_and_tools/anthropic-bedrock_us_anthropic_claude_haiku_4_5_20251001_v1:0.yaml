@@ -1,130 +1,82 @@
 interactions:
 - request:
-    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
-      fibonacci number?"}],"model":"claude-sonnet-4-0","thinking":{"type":"enabled","budget_tokens":8000},"tools":[{"name":"compute_fib","description":"Compute
-      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"}}]}'
+    body: '{"contents": [{"parts": [{"text": "What is the 100th fibonacci number?"}],
+      "role": "user"}], "tools": [{"functionDeclarations": [{"description": "Compute
+      the nth Fibonacci number (1-indexed).", "name": "compute_fib", "parameters":
+      {"properties": {"n": {"title": "N", "type": "INTEGER"}}, "required": ["n"],
+      "type": "OBJECT"}}]}], "generationConfig": {"thinkingConfig": {"include_thoughts":
+      true, "thinking_budget": -1}}}'
     headers:
       accept:
-      - application/json
+      - '*/*'
       accept-encoding:
       - gzip, deflate
-      anthropic-version:
-      - '2023-06-01'
       connection:
       - keep-alive
       content-length:
-      - '400'
+      - '420'
       content-type:
       - application/json
       host:
-      - api.anthropic.com
+      - generativelanguage.googleapis.com
       user-agent:
-      - Anthropic/Python 0.64.0
-      x-api-key:
+      - google-genai-sdk/1.48.0 gl-python/3.10.15
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.15
+      x-goog-api-key:
       - <filtered>
-      x-stainless-arch:
-      - arm64
-      x-stainless-async:
-      - 'false'
-      x-stainless-lang:
-      - python
-      x-stainless-os:
-      - MacOS
-      x-stainless-package-version:
-      - 0.64.0
-      x-stainless-read-timeout:
-      - '600'
-      x-stainless-retry-count:
-      - '0'
-      x-stainless-runtime:
-      - CPython
-      x-stainless-runtime-version:
-      - 3.10.15
-      x-stainless-timeout:
-      - '600'
     method: POST
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
-      CF-RAY:
-      - 992f6d64992ad76c-NRT
-      Connection:
-      - keep-alive
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
       Content-Encoding:
       - gzip
       Content-Type:
-      - application/json
+      - application/json; charset=UTF-8
       Date:
-      - Thu, 23 Oct 2025 07:12:42 GMT
+      - Thu, 06 Nov 2025 09:21:29 GMT
       Server:
-      - cloudflare
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3905
       Transfer-Encoding:
       - chunked
-      X-Robots-Tag:
-      - none
-      anthropic-organization-id:
-      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
-      anthropic-ratelimit-input-tokens-limit:
-      - '2000000'
-      anthropic-ratelimit-input-tokens-remaining:
-      - '2000000'
-      anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-23T07:12:40Z'
-      anthropic-ratelimit-output-tokens-limit:
-      - '400000'
-      anthropic-ratelimit-output-tokens-remaining:
-      - '400000'
-      anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-23T07:12:42Z'
-      anthropic-ratelimit-requests-limit:
-      - '4000'
-      anthropic-ratelimit-requests-remaining:
-      - '3999'
-      anthropic-ratelimit-requests-reset:
-      - '2025-10-23T07:12:39Z'
-      anthropic-ratelimit-tokens-limit:
-      - '2400000'
-      anthropic-ratelimit-tokens-remaining:
-      - '2400000'
-      anthropic-ratelimit-tokens-reset:
-      - '2025-10-23T07:12:40Z'
-      cf-cache-status:
-      - DYNAMIC
-      request-id:
-      - req_011CUPiRceqiQNpPY2623zH9
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      via:
-      - 1.1 google
-      x-envoy-upstream-service-time:
-      - '3273'
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
-      fibonacci number?"},{"role":"assistant","content":[{"type":"text","text":"I''ll
-      compute the 100th Fibonacci number for you."},{"type":"tool_use","id":"toolu_01KyfnGtAxQP73fNgYzniVBF","name":"compute_fib","input":{"n":100}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01KyfnGtAxQP73fNgYzniVBF","content":"218922995834555169026"}]}],"thinking":{"type":"disabled"},"tools":[{"name":"compute_fib","description":"Compute
+      fibonacci number?"},{"role":"assistant","content":[{"type":"tool_use","id":"google_unknown_tool_id","name":"compute_fib","input":{"n":100}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"google_unknown_tool_id","content":"218922995834555169026"}]}],"thinking":{"type":"disabled"},"tools":[{"name":"compute_fib","description":"Compute
       the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"}}],"anthropic_version":"bedrock-2023-05-31"}'
     headers:
       accept:
@@ -136,13 +88,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '729'
+      - '639'
       content-type:
       - application/json
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AnthropicBedrock/Python 0.64.0
+      - AnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -152,7 +104,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -167,27 +119,27 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01RB8d4kQrem3W3BB69T8XDu","type":"message","role":"assistant","content":[{"type":"text","text":"The
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Ur6hD4toW7ejG9MtJPzmvJ","type":"message","role":"assistant","content":[{"type":"text","text":"The
         100th Fibonacci number is **218,922,995,834,555,169,026**.\n\nThis is a very
         large number with 21 digits! The Fibonacci sequence grows exponentially, so
-        the numbers become quite substantial as you progress through the sequence."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":673,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":60}}'
+        the numbers get quite massive as you go further along the sequence."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":660,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":61}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '537'
+      - '530'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:43 GMT
+      - Thu, 06 Nov 2025 09:21:32 GMT
       X-Amzn-Bedrock-Input-Token-Count:
-      - '673'
+      - '660'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1233'
+      - '1386'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '60'
+      - '61'
       x-amzn-RequestId:
-      - d258d284-3f60-4149-b63d-2026710cd038
+      - 66ff649b-4751-4925-988c-85d72f00f383
     status:
       code: 200
       message: OK

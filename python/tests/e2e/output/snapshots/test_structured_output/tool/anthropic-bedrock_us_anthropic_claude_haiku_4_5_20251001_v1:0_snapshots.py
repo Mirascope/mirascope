@@ -9,333 +9,341 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "id": "toolu_bdrk_01F6wnGa3ufLWwYMJ1edWmp7",
-                            "input": {
-                                "title": "THE NAME OF THE WIND",
-                                "author": {
-                                    "first_name": "Patrick",
-                                    "last_name": "Rothfuss",
-                                },
-                                "rating": 7,
-                            },
-                            "name": "__mirascope_formatted_output_tool__",
-                            "type": "tool_use",
-                        }
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
+                        )
                     ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "id": "toolu_bdrk_01JrqXGhSQLA5MzD14uwSwsN",
+                                "input": {
+                                    "title": "THE NAME OF THE WIND",
+                                    "author": {
+                                        "first_name": "Patrick",
+                                        "last_name": "Rothfuss",
+                                    },
+                                    "rating": 7,
+                                },
+                                "name": "__mirascope_formatted_output_tool__",
+                                "type": "tool_use",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
+                "mode": "tool",
+                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
-        },
-        "tools": [],
+            "tools": [],
+        }
     }
 )
 async_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "id": "toolu_bdrk_01Bym95fTEpEgmURgC1qGtjJ",
-                            "input": {
-                                "title": "THE NAME OF THE WIND",
-                                "author": {
-                                    "first_name": "Patrick",
-                                    "last_name": "Rothfuss",
-                                },
-                                "rating": 7,
-                            },
-                            "name": "__mirascope_formatted_output_tool__",
-                            "type": "tool_use",
-                        }
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
+                        )
                     ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "id": "toolu_bdrk_01AQo4fsPg7LGB8nB1MrV3Wn",
+                                "input": {
+                                    "title": "THE NAME OF THE WIND",
+                                    "author": {
+                                        "first_name": "Patrick",
+                                        "last_name": "Rothfuss",
+                                    },
+                                    "rating": 7,
+                                },
+                                "name": "__mirascope_formatted_output_tool__",
+                                "type": "tool_use",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
+                "mode": "tool",
+                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
-        },
-        "tools": [],
+            "tools": [],
+        }
     }
 )
 stream_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "THE NAME OF THE WIND", "author": {"first_name":"Patrick","last_name":"Rothfuss"}, "rating": 7}'
-                    )
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "tool_use",
-                            "id": "toolu_bdrk_01AQYJGGuzbRzP1xVqMuYyqJ",
-                            "name": "__mirascope_formatted_output_tool__",
-                            "input": {
-                                "title": "THE NAME OF THE WIND",
-                                "author": {
-                                    "first_name": "Patrick",
-                                    "last_name": "Rothfuss",
-                                },
-                                "rating": 7,
-                            },
-                        }
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "THE NAME OF THE WIND", "author": {"first_name":"Patrick","last_name":"Rothfuss"}, "rating": 7}'
+                        )
                     ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_bdrk_01SiEc2arAwJ47QVrhfs1xX6",
+                                "name": "__mirascope_formatted_output_tool__",
+                                "input": {
+                                    "title": "THE NAME OF THE WIND",
+                                    "author": {
+                                        "first_name": "Patrick",
+                                        "last_name": "Rothfuss",
+                                    },
+                                    "rating": 7,
+                                },
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
+                "mode": "tool",
+                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
-        },
-        "tools": [],
-        "n_chunks": 22,
+            "tools": [],
+            "n_chunks": 18,
+        }
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
                     )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "THE NAME OF THE WIND", "author": {"first_name":"Patrick","last_name":"Rothfuss"}, "rating": 7}'
-                    )
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "tool_use",
-                            "id": "toolu_bdrk_01GjqVwYnCHzAUeys6XpB86d",
-                            "name": "__mirascope_formatted_output_tool__",
-                            "input": {
-                                "title": "THE NAME OF THE WIND",
-                                "author": {
-                                    "first_name": "Patrick",
-                                    "last_name": "Rothfuss",
-                                },
-                                "rating": 7,
-                            },
-                        }
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "THE NAME OF THE WIND", "author": {"first_name":"Patrick","last_name":"Rothfuss"}, "rating": 7}'
+                        )
                     ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_bdrk_01UGcJGqjsPxTw8viWJsZksm",
+                                "name": "__mirascope_formatted_output_tool__",
+                                "input": {
+                                    "title": "THE NAME OF THE WIND",
+                                    "author": {
+                                        "first_name": "Patrick",
+                                        "last_name": "Rothfuss",
+                                    },
+                                    "rating": 7,
+                                },
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
+                "mode": "tool",
+                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
             },
-            "mode": "tool",
-            "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
-        },
-        "tools": [],
-        "n_chunks": 21,
+            "tools": [],
+            "n_chunks": 20,
+        }
     }
 )

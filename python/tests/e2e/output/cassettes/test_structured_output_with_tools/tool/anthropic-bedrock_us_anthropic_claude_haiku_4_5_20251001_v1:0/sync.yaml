@@ -23,7 +23,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AnthropicBedrock/Python 0.64.0
+      - AnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -33,7 +33,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -48,7 +48,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01ByDyL2b21XHHXWVbXR96VW","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_016wMpmVH5GosQARiVhLMzbC","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":862,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":48}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01P1ierSQiG9rn5epvm6FEPZ","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_019HoSHeWxkQppKyGnLvbv5Y","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":862,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":48}}'
     headers:
       Connection:
       - keep-alive
@@ -57,22 +57,22 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:15:22 GMT
+      - Thu, 06 Nov 2025 09:12:45 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '862'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '631'
+      - '1217'
       X-Amzn-Bedrock-Output-Token-Count:
       - '48'
       x-amzn-RequestId:
-      - d18dcfe5-ad5f-49cb-bf6a-30b76fe2372c
+      - 8a425a48-0079-43a0-a5f4-207e8d1bb579
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"role":"assistant","content":[{"id":"toolu_bdrk_016wMpmVH5GosQARiVhLMzbC","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_016wMpmVH5GosQARiVhLMzbC","content":"Title:
+      score"},{"role":"assistant","content":[{"id":"toolu_bdrk_019HoSHeWxkQppKyGnLvbv5Y","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_019HoSHeWxkQppKyGnLvbv5Y","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25"}]}],"system":"Always respond to the user''s query using the __mirascope_formatted_output_tool__
       tool for structured output.","tool_choice":{"type":"any"},"tools":[{"name":"get_book_info","description":"Look
@@ -95,7 +95,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AnthropicBedrock/Python 0.64.0
+      - AnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -105,7 +105,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -120,7 +120,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01EDM9Pm69gsJZrZA8dfhMBG","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_018YFWXaaTq7ukkiwDEU1TrS","name":"__mirascope_formatted_output_tool__","input":{"title":"Mistborn:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01T2ShELpEotKhQFPLh8Y1cp","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01JgTEcxt5a5FKD3vkRo731R","name":"__mirascope_formatted_output_tool__","input":{"title":"Mistborn:
         The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":968,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":109}}'
     headers:
       Connection:
@@ -130,15 +130,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:15:23 GMT
+      - Thu, 06 Nov 2025 09:12:46 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '968'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1302'
+      - '1449'
       X-Amzn-Bedrock-Output-Token-Count:
       - '109'
       x-amzn-RequestId:
-      - f91c6737-0ae8-4da8-af2c-6f0da1d60dc1
+      - 9dfb074a-a2ef-4f6e-b522-8990ff6cf737
     status:
       code: 200
       message: OK

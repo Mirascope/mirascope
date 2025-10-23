@@ -17,7 +17,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AsyncAnthropicBedrock/Python 0.64.0
+      - AsyncAnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -27,11 +27,11 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '1'
+      - '0'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
@@ -42,26 +42,26 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01SgAavEX7iL6FDzjRhtNcBF","type":"message","role":"assistant","content":[{"type":"text","text":"#
-        U.S. States (Alphabetical Order)\n\n1. Alabama\n2. Alaska\n3. Arizona\n4.
-        Arkansas\n5. California\n6. Colorado\n7. Connecticut\n8. Delaware\n9. Florida\n10"}],"stop_reason":"max_tokens","stop_sequence":null,"usage":{"input_tokens":15,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":50}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01FTNJMh8RnM5qSk6uWYK8qS","type":"message","role":"assistant","content":[{"type":"text","text":"#
+        U.S. States (50 total)\n\n1. Alabama\n2. Alaska\n3. Arizona\n4. Arkansas\n5.
+        California\n6. Colorado\n7. Connecticut\n8. Delaware\n9. Florida\n10."}],"stop_reason":"max_tokens","stop_sequence":null,"usage":{"input_tokens":15,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":50}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '464'
+      - '455'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:36 GMT
+      - Thu, 06 Nov 2025 09:11:27 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '15'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1199'
+      - '1484'
       X-Amzn-Bedrock-Output-Token-Count:
       - '50'
       x-amzn-RequestId:
-      - f5851a05-3a58-4236-a76b-d1558887ece6
+      - 2f525aea-f066-469b-9c2a-8c699e3fda08
     status:
       code: 200
       message: OK

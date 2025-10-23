@@ -25,7 +25,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AsyncAnthropicBedrock/Python 0.64.0
+      - AsyncAnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -35,11 +35,11 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '1'
+      - '0'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
@@ -50,7 +50,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Su796RNFiamyZ2UqyK1Brg","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01Bym95fTEpEgmURgC1qGtjJ","name":"__mirascope_formatted_output_tool__","input":{"title":"THE
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_019rAxwQBbu7o3wJ3rrkXKk8","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01AQo4fsPg7LGB8nB1MrV3Wn","name":"__mirascope_formatted_output_tool__","input":{"title":"THE
         NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":880,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":81}}'
     headers:
       Connection:
@@ -60,15 +60,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:15:01 GMT
+      - Thu, 06 Nov 2025 09:12:10 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '880'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1241'
+      - '1288'
       X-Amzn-Bedrock-Output-Token-Count:
       - '81'
       x-amzn-RequestId:
-      - 19700ede-2de8-4cfb-8c8e-1109907b32c1
+      - 84cd4d40-6268-4e59-8fa9-d05fbc0bf921
     status:
       code: 200
       message: OK

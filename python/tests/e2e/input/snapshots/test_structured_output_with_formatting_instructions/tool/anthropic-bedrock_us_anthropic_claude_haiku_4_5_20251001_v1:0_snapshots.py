@@ -9,67 +9,69 @@ from mirascope.llm import (
 
 test_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
+                        text="""\
 Always recommend The Name of the Wind.
 Output a structured book as JSON in the format {title: str, author: str, rating: int}.
 The title should be in all caps, and the rating should always be the
 lucky number 7.\
 """
-                )
-            ),
-            UserMessage(content=[Text(text="Please recommend a book to me!")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text='{"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss", "rating": 7}'
                     )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "id": "toolu_bdrk_01AtTTfGdnf6gNm9C3cV1VyJ",
-                            "input": {
-                                "title": "THE NAME OF THE WIND",
-                                "author": "Patrick Rothfuss",
-                                "rating": 7,
-                            },
-                            "name": "__mirascope_formatted_output_tool__",
-                            "type": "tool_use",
-                        }
+                ),
+                UserMessage(content=[Text(text="Please recommend a book to me!")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title": "THE NAME OF THE WIND", "author": "Patrick Rothfuss", "rating": 7}'
+                        )
                     ],
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "id": "toolu_bdrk_01D5oJrgGSd5L7T84cgrj3d9",
+                                "input": {
+                                    "title": "THE NAME OF THE WIND",
+                                    "author": "Patrick Rothfuss",
+                                    "rating": 7,
+                                },
+                                "name": "__mirascope_formatted_output_tool__",
+                                "type": "tool_use",
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "rating": {"title": "Rating", "type": "integer"},
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "rating": {"title": "Rating", "type": "integer"},
-                },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "tool",
-            "formatting_instructions": """\
+                "mode": "tool",
+                "formatting_instructions": """\
 Output a structured book as JSON in the format {title: str, author: str, rating: int}.
 The title should be in all caps, and the rating should always be the
 lucky number 7.\
 """,
-        },
-        "tools": [],
+            },
+            "tools": [],
+        }
     }
 )

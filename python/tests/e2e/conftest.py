@@ -5,18 +5,20 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
-import re
-from collections.abc import Callable
 import hashlib
+import inspect
+import re
 from collections.abc import Awaitable, Callable, Generator
 from copy import deepcopy
-from typing import Any, ParamSpec, TypeAlias, TypedDict, get_args
+from typing import ParamSpec, TypedDict, get_args
+from typing_extensions import TypeIs
 
 import httpx
 import pytest
 from anthropic.lib.bedrock import _auth as bedrock_auth
 from anthropic.lib.bedrock._client import AnthropicBedrock, AsyncAnthropicBedrock
-from vcr.cassette import Cassette
+from vcr.cassette import Cassette as VCRCassette
+from vcr.request import Request as VCRRequest
 from vcr.stubs import httpx_stubs
 
 from mirascope import llm
@@ -81,17 +83,28 @@ class VCRConfig(TypedDict, total=False):
     - 'uri': Request URI/URL
     - 'body': Request body content (use 'raw_body' for exact binary matching)
     - 'headers': Request headers
+    - 'scheme', 'host', 'port', 'path', 'query': URL components
     """
 
-    before_record_request: Callable[[Any], Any]
-    """Callback to sanitize requests before saving to cassette.
+    filter_headers: list[str]
+    """Headers to filter out from recordings for security/privacy.
 
-    This function is called AFTER the real HTTP request is sent (with valid auth),
-    but BEFORE it's written to the cassette file. Use this to sanitize sensitive
-    headers without affecting the actual HTTP requests.
+    DEPRECATED: Use before_record_request instead for better control.
+    These headers will be removed from both recorded cassettes and
+    when matching requests during playback. Commonly used for:
+    - Authentication tokens
+    - API keys
+    - Organization identifiers
     """
 
-    before_record_request: Any
+    filter_post_data_parameters: list[str]
+    """POST data parameters to filter out from recordings.
+
+    Similar to filter_headers but for form data and request body parameters.
+    Useful for removing sensitive data from request bodies.
+    """
+
+    before_record_request: Callable[[VCRRequest], VCRRequest]
     """Callback to sanitize requests before saving to cassette.
 
     This function is called AFTER the real HTTP request is sent (with valid auth),
@@ -108,7 +121,7 @@ class VCRConfig(TypedDict, total=False):
     """
 
 
-def sanitize_request(request: Any) -> Any:  # noqa: ANN401
+def sanitize_request(request: VCRRequest) -> VCRRequest:
     """Sanitize sensitive headers in VCR request before recording to cassette.
 
     This hook is called AFTER the real HTTP request is sent (with valid auth),
@@ -119,8 +132,7 @@ def sanitize_request(request: Any) -> Any:  # noqa: ANN401
     cassettes work in CI without real Azure credentials.
 
     Args:
-        request: VCR request object to sanitize (Any type since VCR doesn't
-            provide typed request objects)
+        request: VCR request object to sanitize
 
     Returns:
         Sanitized copy of the request safe for cassette storage
@@ -177,15 +189,12 @@ def vcr_config() -> VCRConfig:
     """
     return {
         "record_mode": "once",
-        "match_on": ["method", "scheme", "host", "port", "path", "query", "raw_body"],
+        "match_on": ["method", "uri", "body"],
         "filter_headers": [],  # Don't filter here; use before_record_request
         "filter_post_data_parameters": [],
         "before_record_request": sanitize_request,
         "decode_compressed_response": False,  # Preserve exact response bytes
     }
-
-
-Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
 
 
 def _remove_auth_headers(headers: httpx.Headers) -> None:
@@ -312,7 +321,7 @@ def _bedrock_resign_vcr_httpx() -> Generator[None, None, None]:
     original_sync_send = httpx_stubs._sync_vcr_send
     original_async_send = httpx_stubs._async_vcr_send
 
-    def _is_bedrock_request(request: httpx.Request | None) -> bool:
+    def _is_bedrock_request(request: httpx.Request | None) -> TypeIs[httpx.Request]:
         """Check if the request is targeting AWS Bedrock API.
 
         We identify Bedrock requests by checking for 'bedrock-runtime' in the
@@ -364,7 +373,7 @@ def _bedrock_resign_vcr_httpx() -> Generator[None, None, None]:
         _reset_request_body(real_request, body_bytes)
 
         resign_sync = real_request.extensions.get("mirascope_bedrock_resign")
-        if callable(resign_sync):
+        if inspect.isfunction(resign_sync):
             _remove_auth_headers(real_request.headers)
             resign_sync()
             _reset_request_body(real_request, body_bytes)
@@ -384,26 +393,27 @@ def _bedrock_resign_vcr_httpx() -> Generator[None, None, None]:
         resign_async = real_request.extensions.get("mirascope_bedrock_resign_async")
         resign_sync = real_request.extensions.get("mirascope_bedrock_resign")
 
-        if callable(resign_async):
+        if inspect.iscoroutinefunction(resign_async):
             _remove_auth_headers(real_request.headers)
             await resign_async()
             _reset_request_body(real_request, body_bytes)
-        elif callable(resign_sync):
+        elif inspect.isfunction(resign_sync):
             _remove_auth_headers(real_request.headers)
             resign_sync()
             _reset_request_body(real_request, body_bytes)
 
     def _patched_sync_send(
-        cassette: Cassette,
-        real_send: Callable[P, ...],
-        *args: P.args,
-        **kwargs: P.kwargs,
+        cassette: VCRCassette,
+        real_send: Callable[..., httpx.Response],
+        client: httpx.Client,
+        request: httpx.Request,
+        **kwargs: object,
     ) -> httpx.Response:
+        args = (client, request)
         vcr_request, response = original_shared_send(
             cassette, real_send, *args, **kwargs
         )
-        client = args[0]
-        real_request = args[1] if len(args) > 1 else None
+        real_request: httpx.Request | None = request
 
         if response is not None:
             client.cookies.extract_cookies(response)
@@ -423,16 +433,18 @@ def _bedrock_resign_vcr_httpx() -> Generator[None, None, None]:
         return real_response
 
     async def _patched_async_send(
-        cassette: Cassette,
-        real_send: Callable[P, Awaitable[...]],
-        *args: P.args,
-        **kwargs: P.kwargs,
+        cassette: VCRCassette,
+        real_send: Callable[..., Awaitable[httpx.Response]],
+        client: httpx.AsyncClient,
+        request: httpx.Request,
+        **kwargs: object,
     ) -> httpx.Response:
+        # VCR expects args tuple, so reconstruct it for original_shared_send
+        args = (client, request)
         vcr_request, response = original_shared_send(
             cassette, real_send, *args, **kwargs
         )
-        client = args[0]
-        real_request = args[1] if len(args) > 1 else None
+        real_request: httpx.Request | None = request
 
         if response is not None:
             client.cookies.extract_cookies(response)

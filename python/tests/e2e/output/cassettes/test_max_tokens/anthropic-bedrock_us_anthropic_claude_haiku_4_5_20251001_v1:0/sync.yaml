@@ -17,7 +17,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AnthropicBedrock/Python 0.64.0
+      - AnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -27,7 +27,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -42,26 +42,26 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Cveud2QUjPwELAwNk75ZZW","type":"message","role":"assistant","content":[{"type":"text","text":"#
-        U.S. States (50 total)\n\n1. Alabama\n2. Alaska\n3. Arizona\n4. Arkansas\n5.
-        California\n6. Colorado\n7. Connecticut\n8. Delaware\n9. Florida\n10."}],"stop_reason":"max_tokens","stop_sequence":null,"usage":{"input_tokens":15,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":50}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_0148irQ1o9qCzaDNKh5d22Lp","type":"message","role":"assistant","content":[{"type":"text","text":"#
+        U.S. States\n\n1. Alabama\n2. Alaska\n3. Arizona\n4. Arkansas\n5. California\n6.
+        Colorado\n7. Connecticut\n8. Delaware\n9. Florida\n10. Georgia\n11. Hawaii"}],"stop_reason":"max_tokens","stop_sequence":null,"usage":{"input_tokens":15,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":50}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '455'
+      - '464'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:34 GMT
+      - Thu, 06 Nov 2025 09:11:23 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '15'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '811'
+      - '760'
       X-Amzn-Bedrock-Output-Token-Count:
       - '50'
       x-amzn-RequestId:
-      - abf0e466-c4f5-466b-aa9d-3fbb95015c55
+      - 691afaa9-f0d6-4c0b-a218-cd1aba35499c
     status:
       code: 200
       message: OK

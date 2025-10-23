@@ -355,8 +355,7 @@ def client(
             azure_ad_token_provider_async=kwargs.get("azure_ad_token_provider_async"),
         )
     elif normalized_provider == "anthropic-bedrock":
-        # TODO: Add test coverage for anthropic-bedrock in separate test branch
-        return anthropic_bedrock_client(  # pragma: no cover
+        return anthropic_bedrock_client(
             base_url=base_url,
             aws_region=kwargs.get("aws_region"),
             aws_access_key=kwargs.get("aws_access_key"),

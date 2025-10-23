@@ -26,7 +26,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AnthropicBedrock/Python 0.64.0
+      - AnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -36,7 +36,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -51,7 +51,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Wotq97mcZiv7WgRxxmxWbR","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01WkrVv7daF1uNS7qciX2hjf","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":777,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":64}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01WESksVsb8gKzqLihheb3hQ","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01JQVvd7aToxbKGDs1UAUXdJ","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":777,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":64}}'
     headers:
       Connection:
       - keep-alive
@@ -60,22 +60,22 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:15:17 GMT
+      - Thu, 06 Nov 2025 09:12:37 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '777'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1313'
+      - '1100'
       X-Amzn-Bedrock-Output-Token-Count:
       - '64'
       x-amzn-RequestId:
-      - 8cfea3c3-cab9-4a54-90ba-9b7c82baa70d
+      - 950291d7-782a-4df3-91b9-f49dda2e258c
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"role":"assistant","content":[{"id":"toolu_bdrk_01WkrVv7daF1uNS7qciX2hjf","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01WkrVv7daF1uNS7qciX2hjf","content":"Title:
+      score"},{"role":"assistant","content":[{"id":"toolu_bdrk_01JQVvd7aToxbKGDs1UAUXdJ","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01JQVvd7aToxbKGDs1UAUXdJ","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25"}]}],"system":"Respond only with valid JSON that matches this exact
       schema:\n{\n  \"properties\": {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\":
@@ -101,7 +101,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AnthropicBedrock/Python 0.64.0
+      - AnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -111,7 +111,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -126,40 +126,41 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01BSJxQbZTTYT9WnvXTueVJc","type":"message","role":"assistant","content":[{"type":"text","text":"Based
-        on the book information retrieved, here''s the detailed information:\n\n```json\n{\n  \"title\":
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01JPsuiaNjxPR7oFigkrxykk","type":"message","role":"assistant","content":[{"type":"text","text":"Based
+        on the lookup, here is the book information in the required format:\n\n```json\n{\n  \"title\":
         \"Mistborn: The Final Empire\",\n  \"author\": \"Brandon Sanderson\",\n  \"pages\":
-        544,\n  \"publication_year\": 2006\n}\n```\n\n**Additional Recommendation:**\n\n**Book:**
-        Mistborn: The Final Empire\n**Recommendation Score:** 9/10\n\n**Why I recommend
-        it:**\n- **Engaging World-Building**: Brandon Sanderson is renowned for his
-        intricate magic systems, and this book features the innovative \"Mistborn\"
-        system with unique powers based on ingesting metals\n- **Compelling Story**:
-        The novel combines epic fantasy with a heist narrative, following Vin, a street
-        orphan who discovers she''s a Mistborn with extraordinary powers\n- **Character
-        Development**: Strong character arcs with a diverse cast that evolves throughout
-        the 544-page journey\n- **Page-Turner**: Despite its substantial length, it''s
-        highly engaging and difficult to put down\n- **Series Potential**: The first
-        in a trilogy, it sets up an excellent foundation for continued reading\n-
-        **Critical Acclaim**: Widely praised by fantasy readers and won multiple awards\n\n**Best
-        For:** Readers who enjoy epic fantasy, magic systems, character-driven narratives,
-        and don''t mind longer books with complex world-building."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":884,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":299}}'
+        544,\n  \"publication_year\": 2006\n}\n```\n\n**Detailed Information & Recommendation:**\n\n**Mistborn:
+        The Final Empire** is the first book in Brandon Sanderson''s acclaimed Mistborn
+        trilogy. Published in 2006, this 544-page fantasy novel has become a modern
+        classic in the genre.\n\n**What makes this book special:**\n- **Innovative
+        Magic System**: Features Allomancy, a unique magic system based on consuming
+        metals to gain abilities\n- **Strong World-building**: Set in a richly detailed
+        fantasy world under eternal ash and oppressive imperial rule\n- **Character
+        Development**: Follows Vin, a street urchin who discovers her incredible potential\n-
+        **Page-turner Plot**: Combines heist elements with epic fantasy adventure\n\n**Recommendation
+        Score: 9/10**\n\nThis is highly recommended for:\n- Fantasy fans seeking original
+        magic systems\n- Readers who enjoy character-driven narratives\n- Those interested
+        in series with excellent continuity\n- Anyone looking for a standalone story
+        with sequel options\n\n**Perfect for**: Fantasy enthusiasts, especially those
+        who appreciate intricate world-building and well-developed characters. If
+        you enjoyed other epic fantasies, this is a must-read that won''t disappoint."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":884,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":325}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '1590'
+      - '1710'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:15:21 GMT
+      - Thu, 06 Nov 2025 09:12:41 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '884'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '3361'
+      - '4068'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '299'
+      - '325'
       x-amzn-RequestId:
-      - 70077ebf-97e0-4dcb-bee1-8e1bbdb45952
+      - ba2695b0-6300-4eb5-ad5e-8320e316fcf1
     status:
       code: 200
       message: OK

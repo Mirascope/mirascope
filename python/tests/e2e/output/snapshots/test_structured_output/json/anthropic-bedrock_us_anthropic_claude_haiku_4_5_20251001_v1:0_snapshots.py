@@ -9,74 +9,75 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "$defs": {
-    "Author": {
-      "description": "The author of a book.",
-      "properties": {
-        "first_name": {
-          "title": "First Name",
-          "type": "string"
-        },
-        "last_name": {
-          "title": "Last Name",
-          "type": "string"
-        }
-      },
-      "required": [
-        "first_name",
-        "last_name"
-      ],
-      "title": "Author",
-      "type": "object"
-    }
-  },
-  "description": "A book with a rating. The title should be in all caps!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "$ref": "#/$defs/Author"
-    },
-    "rating": {
-      "description": "For testing purposes, the rating should be 7",
-      "title": "Rating",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "rating"
-  ],
-  "title": "Book",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "$ref": "#/$defs/Author"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+"""
+                    )
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -88,16 +89,16 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "citations": None,
-                            "text": """\
+                        )
+                    ],
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": """\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -109,44 +110,44 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """,
-                            "type": "text",
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                                "type": "text",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -194,80 +195,82 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [],
+            },
+            "tools": [],
+        }
     }
 )
 async_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "$defs": {
-    "Author": {
-      "description": "The author of a book.",
-      "properties": {
-        "first_name": {
-          "title": "First Name",
-          "type": "string"
-        },
-        "last_name": {
-          "title": "Last Name",
-          "type": "string"
-        }
-      },
-      "required": [
-        "first_name",
-        "last_name"
-      ],
-      "title": "Author",
-      "type": "object"
-    }
-  },
-  "description": "A book with a rating. The title should be in all caps!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "$ref": "#/$defs/Author"
-    },
-    "rating": {
-      "description": "For testing purposes, the rating should be 7",
-      "title": "Rating",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "rating"
-  ],
-  "title": "Book",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "$ref": "#/$defs/Author"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+"""
+                    )
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -279,16 +282,16 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "citations": None,
-                            "text": """\
+                        )
+                    ],
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": """\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -300,44 +303,44 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """,
-                            "type": "text",
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                                "type": "text",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -385,79 +388,81 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [],
+            },
+            "tools": [],
+        }
     }
 )
 stream_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "$defs": {
-    "Author": {
-      "description": "The author of a book.",
-      "properties": {
-        "first_name": {
-          "title": "First Name",
-          "type": "string"
-        },
-        "last_name": {
-          "title": "Last Name",
-          "type": "string"
-        }
-      },
-      "required": [
-        "first_name",
-        "last_name"
-      ],
-      "title": "Author",
-      "type": "object"
-    }
-  },
-  "description": "A book with a rating. The title should be in all caps!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "$ref": "#/$defs/Author"
-    },
-    "rating": {
-      "description": "For testing purposes, the rating should be 7",
-      "title": "Rating",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "rating"
-  ],
-  "title": "Book",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "$ref": "#/$defs/Author"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+"""
+                    )
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -469,16 +474,16 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """
-                    )
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": """\
+                        )
+                    ],
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": """\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -490,43 +495,43 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """,
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -574,80 +579,82 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [],
-        "n_chunks": 13,
+            },
+            "tools": [],
+            "n_chunks": 7,
+        }
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "$defs": {
-    "Author": {
-      "description": "The author of a book.",
-      "properties": {
-        "first_name": {
-          "title": "First Name",
-          "type": "string"
-        },
-        "last_name": {
-          "title": "Last Name",
-          "type": "string"
-        }
-      },
-      "required": [
-        "first_name",
-        "last_name"
-      ],
-      "title": "Author",
-      "type": "object"
-    }
-  },
-  "description": "A book with a rating. The title should be in all caps!",
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "$ref": "#/$defs/Author"
-    },
-    "rating": {
-      "description": "For testing purposes, the rating should be 7",
-      "title": "Rating",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "rating"
-  ],
-  "title": "Book",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please recommend the most popular book by Patrick Rothfuss"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
+Respond only with valid JSON that matches this exact schema:
+{
+  "$defs": {
+    "Author": {
+      "description": "The author of a book.",
+      "properties": {
+        "first_name": {
+          "title": "First Name",
+          "type": "string"
+        },
+        "last_name": {
+          "title": "Last Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first_name",
+        "last_name"
+      ],
+      "title": "Author",
+      "type": "object"
+    }
+  },
+  "description": "A book with a rating. The title should be in all caps!",
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "$ref": "#/$defs/Author"
+    },
+    "rating": {
+      "description": "For testing purposes, the rating should be 7",
+      "title": "Rating",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "rating"
+  ],
+  "title": "Book",
+  "type": "object"
+}\
+"""
+                    )
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -659,16 +666,16 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """
-                    )
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": """\
+                        )
+                    ],
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": """\
 ```json
 {
   "title": "THE NAME OF THE WIND",
@@ -680,43 +687,43 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```\
 """,
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "Book",
-            "description": "A book with a rating. The title should be in all caps!",
-            "schema": {
-                "$defs": {
-                    "Author": {
-                        "description": "The author of a book.",
-                        "properties": {
-                            "first_name": {"title": "First Name", "type": "string"},
-                            "last_name": {"title": "Last Name", "type": "string"},
-                        },
-                        "required": ["first_name", "last_name"],
-                        "title": "Author",
-                        "type": "object",
-                    }
-                },
-                "description": "A book with a rating. The title should be in all caps!",
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"$ref": "#/$defs/Author"},
-                    "rating": {
-                        "description": "For testing purposes, the rating should be 7",
-                        "title": "Rating",
-                        "type": "integer",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
                 },
-                "required": ["title", "author", "rating"],
-                "title": "Book",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "$defs": {
@@ -764,8 +771,9 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [],
-        "n_chunks": 13,
+            },
+            "tools": [],
+            "n_chunks": 9,
+        }
     }
 )

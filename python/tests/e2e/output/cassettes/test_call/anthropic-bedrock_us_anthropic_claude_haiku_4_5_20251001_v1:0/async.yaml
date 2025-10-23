@@ -18,7 +18,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AsyncAnthropicBedrock/Python 0.64.0
+      - AsyncAnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -28,7 +28,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -43,7 +43,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01LVLcHi8qVRYYfUeq661L6K","type":"message","role":"assistant","content":[{"type":"text","text":"4200
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Vhmnmxg6Uo7dLEYxGTPjpk","type":"message","role":"assistant","content":[{"type":"text","text":"4200
         + 42 = 4242"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":17,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":15}}'
     headers:
       Connection:
@@ -53,15 +53,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:50 GMT
+      - Thu, 06 Nov 2025 09:08:56 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '17'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '588'
+      - '805'
       X-Amzn-Bedrock-Output-Token-Count:
       - '15'
       x-amzn-RequestId:
-      - b0454afe-6229-4f48-9767-5f018c838412
+      - 6ee47bd6-e4ed-477f-af3d-ad3744749182
     status:
       code: 200
       message: OK

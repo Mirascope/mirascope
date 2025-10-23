@@ -22,7 +22,7 @@ def default_provider_and_model(
     Used to ensure that we can test having the provider under test resume
     from a response that was created by a different provider.
     """
-    if provider == "anthropic":
+    if provider in ["anthropic", "anthropic-bedrock"]:
         return {"provider": "google", "model_id": "gemini-2.5-flash"}
     else:
         return {"provider": "anthropic", "model_id": "claude-sonnet-4-0"}

@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"max_tokens":500,"messages":[{"role":"user","content":"What is 4200 +
-      42?"}],"stop_sequences":["4242"],"temperature":0.7,"thinking":{"type":"disabled"},"top_k":50,"top_p":0.3,"anthropic_version":"bedrock-2023-05-31"}'
+      42?"}],"stop_sequences":["4242"],"temperature":0.7,"thinking":{"type":"disabled"},"top_k":50,"anthropic_version":"bedrock-2023-05-31"}'
     headers:
       accept:
       - application/json
@@ -12,13 +12,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '217'
+      - '205'
       content-type:
       - application/json
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AnthropicBedrock/Python 0.64.0
+      - AnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -28,7 +28,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -43,22 +43,26 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"message":"`temperature` and `top_p` cannot both be specified for
-        this model. Please use only one."}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01QLw8645VGXJmPBnVhWtE1Z","type":"message","role":"assistant","content":[{"type":"text","text":"4200
+        + 42 = "}],"stop_reason":"stop_sequence","stop_sequence":"4242","usage":{"input_tokens":17,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":12}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '101'
+      - '324'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:30 GMT
-      x-amzn-ErrorType:
-      - ValidationException:http://internal.amazon.com/coral/com.amazon.bedrock/
+      - Thu, 06 Nov 2025 09:08:17 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '17'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '828'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '12'
       x-amzn-RequestId:
-      - f7f81a64-12fe-42b2-aaaf-ed477e07331b
+      - c00c30ae-1657-421d-968f-48dbb2dc6ead
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
 version: 1

@@ -20,7 +20,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AsyncAnthropicBedrock/Python 0.64.0
+      - AsyncAnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -30,11 +30,11 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
-      - '1'
+      - '0'
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
@@ -45,7 +45,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_016quKMdcbf4wyRsmjNDpezx","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01YWQTGAFFzTb47yBsQ4b6rq","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_bdrk_017A97Qdu6W5r95bWwSD6tux","name":"secret_retrieval_tool","input":{"password":"radiance"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":599,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":98}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Wwyfus8x9ekvnADrQeooYW","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01ERW2ruQ1M8FUc5X3iTdYyU","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_bdrk_01GzXqYQM1QzY8VxHxgNW7JF","name":"secret_retrieval_tool","input":{"password":"radiance"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":599,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":98}}'
     headers:
       Connection:
       - keep-alive
@@ -54,22 +54,22 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:25 GMT
+      - Thu, 06 Nov 2025 09:11:05 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '599'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1266'
+      - '960'
       X-Amzn-Bedrock-Output-Token-Count:
       - '98'
       x-amzn-RequestId:
-      - 9e77fc93-3d71-4dfb-a11b-438c5a00858f
+      - 2f21c393-990e-4f66-bf5b-ebad7d1125ea
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
-      the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"id":"toolu_bdrk_01YWQTGAFFzTb47yBsQ4b6rq","input":{"password":"mellon"},"name":"secret_retrieval_tool","type":"tool_use"},{"id":"toolu_bdrk_017A97Qdu6W5r95bWwSD6tux","input":{"password":"radiance"},"name":"secret_retrieval_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01YWQTGAFFzTb47yBsQ4b6rq","content":"Welcome
-      to Moria!"},{"type":"tool_result","tool_use_id":"toolu_bdrk_017A97Qdu6W5r95bWwSD6tux","content":"Life
+      the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"id":"toolu_bdrk_01ERW2ruQ1M8FUc5X3iTdYyU","input":{"password":"mellon"},"name":"secret_retrieval_tool","type":"tool_use"},{"id":"toolu_bdrk_01GzXqYQM1QzY8VxHxgNW7JF","input":{"password":"radiance"},"name":"secret_retrieval_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01ERW2ruQ1M8FUc5X3iTdYyU","content":"Welcome
+      to Moria!"},{"type":"tool_result","tool_use_id":"toolu_bdrk_01GzXqYQM1QzY8VxHxgNW7JF","content":"Life
       before Death"}]}],"system":"Use parallel tool calling.","tools":[{"name":"secret_retrieval_tool","description":"A
       tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}],"anthropic_version":"bedrock-2023-05-31"}'
     headers:
@@ -88,7 +88,7 @@ interactions:
       host:
       - bedrock-runtime.us-east-1.amazonaws.com
       user-agent:
-      - AsyncAnthropicBedrock/Python 0.64.0
+      - AsyncAnthropicBedrock/Python 0.72.0
       x-amz-date:
       - <filtered>
       x-stainless-arch:
@@ -98,7 +98,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 0.64.0
+      - 0.72.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -113,27 +113,26 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: "{\"model\":\"claude-haiku-4-5-20251001\",\"id\":\"msg_bdrk_01B4xUDopmARqC7d9VXqk2kv\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Here
-        are the secrets associated with each password:\\n\\n1. **Password: \\\"mellon\\\"**
-        \u2192 Secret: \\\"Welcome to Moria!\\\"\\n2. **Password: \\\"radiance\\\"**
-        \u2192 Secret: \\\"Life before Death\\\"\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":774,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":52}}"
+      string: "{\"model\":\"claude-haiku-4-5-20251001\",\"id\":\"msg_bdrk_01AsD5nJM7EwuU43hA2tWS2X\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Here
+        are the secrets retrieved:\\n\\n1. **Password: mellon** \u2192 Secret: \\\"Welcome
+        to Moria!\\\"\\n2. **Password: radiance** \u2192 Secret: \\\"Life before Death\\\"\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":774,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":45}}"
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '487'
+      - '459'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:26 GMT
+      - Thu, 06 Nov 2025 09:11:06 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '774'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1387'
+      - '1218'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '52'
+      - '45'
       x-amzn-RequestId:
-      - 523acf5c-6181-4cdf-91ba-b526b7c9ff2e
+      - a834b397-a639-4b3d-8849-056a1fc33cef
     status:
       code: 200
       message: OK
