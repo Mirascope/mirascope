@@ -5,11 +5,22 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
-from typing import TypedDict, get_args
+from collections.abc import Callable
+from copy import deepcopy
+from typing import Any, TypedDict, get_args
 
 import pytest
 
 from mirascope import llm
+
+SENSITIVE_HEADERS = [
+    # Common API authentication headers
+    "authorization",
+    "x-api-key",
+    "x-goog-api-key",
+    "anthropic-organization-id",
+    "cookie",
+]
 
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("anthropic", "claude-sonnet-4-0"),
@@ -51,22 +62,40 @@ class VCRConfig(TypedDict):
     - 'headers': Request headers
     """
 
-    filter_headers: list[str]
-    """Headers to filter out from recordings for security/privacy.
+    before_record_request: Callable[[Any], Any]
+    """Callback to sanitize requests before saving to cassette.
 
-    These headers will be removed from both recorded cassettes and
-    when matching requests during playback. Commonly used for:
-    - Authentication tokens
-    - API keys
-    - Organization identifiers
+    This function is called AFTER the real HTTP request is sent (with valid auth),
+    but BEFORE it's written to the cassette file. Use this to sanitize sensitive
+    headers without affecting the actual HTTP requests.
     """
 
-    filter_post_data_parameters: list[str]
-    """POST data parameters to filter out from recordings.
 
-    Similar to filter_headers but for form data and request body parameters.
-    Useful for removing sensitive data from request bodies.
+def sanitize_request(request: Any) -> Any:  # noqa: ANN401
+    """Sanitize sensitive headers in VCR request before recording to cassette.
+
+    This hook is called AFTER the real HTTP request is sent (with valid auth),
+    but BEFORE it's written to the cassette file. We deep copy the request
+    and replace sensitive headers with placeholders.
+
+    Args:
+        request: VCR request object to sanitize (Any type since VCR doesn't
+            provide typed request objects)
+
+    Returns:
+        Sanitized copy of the request safe for cassette storage
     """
+    request = deepcopy(request)
+
+    headers_to_filter = {header.lower() for header in SENSITIVE_HEADERS}
+    for req_header in request.headers:
+        if req_header.lower() in headers_to_filter:
+            if isinstance(request.headers[req_header], list):
+                request.headers[req_header] = ["<filtered>"]
+            else:
+                request.headers[req_header] = "<filtered>"
+
+    return request
 
 
 @pytest.fixture(scope="session")
@@ -79,20 +108,19 @@ def vcr_config() -> VCRConfig:
     - Google/Gemini (x-goog-api-key header)
     - Anthropic (x-api-key, anthropic-organization-id headers)
 
+    Note:
+        We use before_record_request hook for sanitizing sensitive headers.
+        This ensures the real HTTP requests (with valid auth) are sent
+        successfully, but sensitive headers are replaced with placeholders
+        in the cassette files.
+
     Returns:
         VCRConfig: Dictionary with VCR.py configuration settings
     """
     return {
         "record_mode": "once",
         "match_on": ["method", "uri", "body"],
-        "filter_headers": [
-            "authorization",  # OpenAI Bearer tokens
-            "x-api-key",  # Anthropic API keys
-            "x-goog-api-key",  # Google/Gemini API keys
-            "anthropic-organization-id",  # Anthropic org identifiers
-            "cookie",
-        ],
-        "filter_post_data_parameters": [],
+        "before_record_request": sanitize_request,
     }
 
 
