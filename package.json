@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "docs:dev": "cd docs && bun i && bun run dev",
-    "docs:build": "cd docs && bun i &&  bun run build",
+    "docs:build": "cd docs && bun i && bun run build",
     "docs:preview": "bunx serve --single docs/dist",
     "typecheck": "bun run typecheck:typescript && bun run typecheck:python",
     "typecheck:python": "cd python && uv run pyright .",

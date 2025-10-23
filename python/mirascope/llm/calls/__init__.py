@@ -12,5 +12,5 @@ __all__ = [
     "Call",
     "CallDecorator",
     "ContextCall",
-    "calls",
+    "call",
 ]
