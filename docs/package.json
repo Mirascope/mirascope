@@ -2,18 +2,8 @@
   "name": "mirascope-docs",
   "private": true,
   "scripts": {
-    "dev": "bun docs:prepare && bun docs:serve",
-    "build": "bun docs:prepare && bun docs:build",
-    "docs:clean": "rm -rf .docs-content dist",
-    "docs:copy": "./copy-docs.sh",
-    "docs:api": "uvx api2mdx --source-path ../python --package mirascope.llm --output .docs-content/docs/api",
-    "docs:merge-api": "bun scripts/merge-api-meta.ts",
-    "docs:serve": "rm -rf node_modules/.vite && node_modules/@mirascope/docs-viewer/scripts/start.ts --content-dir .docs-content --working-dir dist",
-    "docs:prepare": "bun docs:clean && bun docs:copy",
-    "docs:build": "bun node_modules/@mirascope/docs-viewer/scripts/build.ts --content-dir .docs-content --output-dir dist"
-  },
-  "devDependencies": {
-    "@mirascope/docs-viewer": "0.4.11",
-    "@types/node": "^24.0.0"
+    "prepare-website": "bun run scripts/sync-website.ts && cd .build-cache/mirascope-website && bun i",
+    "dev": "bun run prepare-website && cd .build-cache/mirascope-website && SKIP_DOCS_SYNC=1 bun run start",
+    "build": "bun run prepare-website && (cd .build-cache/mirascope-website && SKIP_DOCS_SYNC=1 bun run build) && cp -r .build-cache/mirascope-website/dist dist"
   }
 }

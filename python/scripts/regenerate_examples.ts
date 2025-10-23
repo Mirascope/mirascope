@@ -13,44 +13,6 @@ import {
   type ExampleOptions,
 } from "./example_generator.ts";
 
-function getAllCombinations(options: string[]): string[][] {
-  const allCombos: string[][] = [];
-
-  // Base case (no options)
-  allCombos.push([]);
-
-  // All possible combinations of options
-  for (let r = 1; r <= options.length; r++) {
-    const combinations = getCombinations(options, r);
-    allCombos.push(...combinations);
-  }
-
-  return allCombos;
-}
-
-function getCombinations<T>(arr: T[], r: number): T[][] {
-  if (r === 1) return arr.map((item) => [item]);
-
-  const result: T[][] = [];
-  for (let i = 0; i <= arr.length - r; i++) {
-    const first = arr[i];
-    const rest = getCombinations(arr.slice(i + 1), r - 1);
-    for (const combo of rest) {
-      result.push([first, ...combo]);
-    }
-  }
-  return result;
-}
-
-function getFilename(basename: string, combo: string[]): string {
-  if (combo.length === 0) {
-    return `${basename}.py`;
-  }
-
-  const parts = [basename, ...combo.sort()];
-  return `${parts.join("_")}.py`;
-}
-
 async function runCommand(
   command: string,
   args: string[],
@@ -146,7 +108,7 @@ function generateExamplesMdx(
     "Progressive examples of Mirascope: LLM Abstractions that Aren't Obstructions."
   );
   content.push(
-    "These are intended to give LLMs an extensive primer on Mirascope's interface."
+    "These are intended to give LLMs a primer on Mirascope's interface."
   );
   content.push("");
 
@@ -156,6 +118,7 @@ function generateExamplesMdx(
     content.push("");
     content.push(`<CodeExample file="examples/${relPath}" />`);
     content.push("");
+    break; // Just include one example for now
   }
 
   writeFileSync(outputPath, content.join("\n"));
