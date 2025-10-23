@@ -46,31 +46,26 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01FvmVUX7AGJs1jYAuLvwSke","type":"message","role":"assistant","content":[{"type":"text","text":"```json\n{\n  \"title\":
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_011buk3s7yn1Q38VVdEjQuip","type":"message","role":"assistant","content":[{"type":"text","text":"```json\n{\n  \"title\":
         \"THE NAME OF THE WIND\",\n  \"author\": \"Patrick Rothfuss\",\n  \"rating\":
-        7\n}\n```\n\nI highly recommend this book! It''s an epic fantasy novel that
-        follows Kvothe, a legendary figure, as he recounts his extraordinary life
-        story. The prose is beautifully written, the magic system is creative and
-        well-developed, and the world-building is immersive. It''s the first book
-        in *The Kingkiller Chronicle* series and is perfect if you enjoy character-driven
-        narratives with mystery and adventure."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":67,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":135}}'
+        7\n}\n```"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":67,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":43}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '825'
+      - '417'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:45 GMT
+      - Thu, 23 Oct 2025 08:42:02 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '67'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1446'
+      - '1251'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '135'
+      - '43'
       x-amzn-RequestId:
-      - aa5bdeab-c262-474e-b92d-5e80553d1b8d
+      - cdfbc874-6fbf-42ad-bcae-5ebc3194468a
     status:
       code: 200
       message: OK

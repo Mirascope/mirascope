@@ -45,14 +45,14 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//dJDRSsNAEEV/JdznrSSlFdk3adGK71oQWdbdoQkms3FnopaSf5cUi1jx
-        aWDOmZnLHNClSC0sQuuHSDNJzKSzxWxezpflslrAoImw6GTnymqz5atNvo03l7vH7X23klUt6wcY
-        6L6nySIRvyMY5NRODS/SiHpWGITESqywT4eTr/Q5kWOxuCs+vBQhk1eKxcu+uGatc+qbcIHx2UA0
-        9S6Tl8SwII5Oh8z4BkJvA3EgWB7a1mA4JrEHNNwP6jS9EgtsVRkEH2pyx0NNYvdbKE88k4//sdPs
-        tJ/6mjrKvnXL7q//Q6v6nI4GadDzdEL5vQnktKEMi+l90eeIcfwCAAD//wMAuw8vVK8BAAA=
+        H4sIAAAAAAAAAwAAAP//dJDBSsQwEIZfpfznrLSlveTmZUEQTwuCIiEmw7baTmoycbssfXfp4iKu
+        eBqY75uZnzlhDJ4GaLjBZk+bFJhJNs2mLuu2bKsGCr2Hxpj2pqy2tp63c56l3T3eHx7yrn5q3loo
+        yHGi1aKU7J6gEMOwNmxKfRLLAgUXWIgF+vl08YXmlZyLxl1xsKlwkayQL16PxS1LF8PUuxssLwpJ
+        wmQi2RQYGsTeSI6Mb5DoIxM7guY8DAr5nESf0POUxUh4J07QVaXgrOvInA/1gc1vobzwSNb/xy6z
+        636aOhop2sG041//h1bdNV0UQpbrdIniZ+/ISE8RGuv7vI0ey/IFAAD//wMAWJkov68BAAA=
     headers:
       CF-RAY:
-      - 992f6d33fd53d76c-NRT
+      - 992ff0035fb6e3a7-NRT
       Connection:
       - keep-alive
       Content-Encoding:
@@ -60,7 +60,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:34 GMT
+      - Thu, 23 Oct 2025 08:41:51 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -74,35 +74,35 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-23T07:12:33Z'
+      - '2025-10-23T08:41:51Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-23T07:12:33Z'
+      - '2025-10-23T08:41:51Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-23T07:12:31Z'
+      - '2025-10-23T08:41:49Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-23T07:12:33Z'
+      - '2025-10-23T08:41:51Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CUPiR3Y2ZQ5wt3V2eE1ag
+      - req_011CUPqE13Di6bwxut64ag9B
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '2702'
+      - '1838'
     status:
       code: 200
       message: OK
@@ -150,26 +150,26 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01AYFsLDh1gTochHvbncs9jU","type":"message","role":"assistant","content":[{"type":"text","text":"Yes,
-        I can confirm that I was created by Anthropic. I''m Claude, Anthropic''s AI
-        assistant. Is there something specific you''d like to verify or ask about?"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":32,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":41}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01XsNQFgHhtHKF1RyZdRPRCD","type":"message","role":"assistant","content":[{"type":"text","text":"Yes,
+        I can confirm that. I was created by Anthropic, an AI safety company. This
+        is accurate to the best of my knowledge."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":32,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":33}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '457'
+      - '425'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:35 GMT
+      - Thu, 23 Oct 2025 08:41:52 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '32'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '782'
+      - '931'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '41'
+      - '33'
       x-amzn-RequestId:
-      - 14e11aab-ebf5-4a0d-b652-8880bd423426
+      - c8500131-b8c2-47b7-96ea-19caf063e400
     status:
       code: 200
       message: OK

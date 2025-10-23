@@ -51,7 +51,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Wotq97mcZiv7WgRxxmxWbR","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01WkrVv7daF1uNS7qciX2hjf","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":777,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":64}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Y7HDrBZYnq4J3zwrrSUGYb","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_012uaLyACAipedC8JkvK9uTH","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":777,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":64}}'
     headers:
       Connection:
       - keep-alive
@@ -60,22 +60,22 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:15:17 GMT
+      - Thu, 23 Oct 2025 08:44:58 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '777'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1313'
+      - '812'
       X-Amzn-Bedrock-Output-Token-Count:
       - '64'
       x-amzn-RequestId:
-      - 8cfea3c3-cab9-4a54-90ba-9b7c82baa70d
+      - 4b848071-c0df-4f55-bf9d-c9473c7589b4
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"role":"assistant","content":[{"id":"toolu_bdrk_01WkrVv7daF1uNS7qciX2hjf","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01WkrVv7daF1uNS7qciX2hjf","content":"Title:
+      score"},{"role":"assistant","content":[{"id":"toolu_bdrk_012uaLyACAipedC8JkvK9uTH","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_012uaLyACAipedC8JkvK9uTH","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25"}]}],"system":"Respond only with valid JSON that matches this exact
       schema:\n{\n  \"properties\": {\n    \"title\": {\n      \"title\": \"Title\",\n      \"type\":
@@ -126,40 +126,45 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01BSJxQbZTTYT9WnvXTueVJc","type":"message","role":"assistant","content":[{"type":"text","text":"Based
-        on the book information retrieved, here''s the detailed information:\n\n```json\n{\n  \"title\":
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01TLJPUhozq7umbK5Q9WFuJ4","type":"message","role":"assistant","content":[{"type":"text","text":"Based
+        on the lookup, here is the information for the book:\n\n```json\n{\n  \"title\":
         \"Mistborn: The Final Empire\",\n  \"author\": \"Brandon Sanderson\",\n  \"pages\":
-        544,\n  \"publication_year\": 2006\n}\n```\n\n**Additional Recommendation:**\n\n**Book:**
-        Mistborn: The Final Empire\n**Recommendation Score:** 9/10\n\n**Why I recommend
-        it:**\n- **Engaging World-Building**: Brandon Sanderson is renowned for his
-        intricate magic systems, and this book features the innovative \"Mistborn\"
-        system with unique powers based on ingesting metals\n- **Compelling Story**:
-        The novel combines epic fantasy with a heist narrative, following Vin, a street
-        orphan who discovers she''s a Mistborn with extraordinary powers\n- **Character
-        Development**: Strong character arcs with a diverse cast that evolves throughout
-        the 544-page journey\n- **Page-Turner**: Despite its substantial length, it''s
-        highly engaging and difficult to put down\n- **Series Potential**: The first
-        in a trilogy, it sets up an excellent foundation for continued reading\n-
-        **Critical Acclaim**: Widely praised by fantasy readers and won multiple awards\n\n**Best
-        For:** Readers who enjoy epic fantasy, magic systems, character-driven narratives,
-        and don''t mind longer books with complex world-building."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":884,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":299}}'
+        544,\n  \"publication_year\": 2006\n}\n```\n\n**Detailed Information:**\n\n**Mistborn:
+        The Final Empire** is an epic fantasy novel by Brandon Sanderson, published
+        in 2006. This 544-page book marks the beginning of the original Mistborn trilogy
+        and is renowned for introducing one of the most intricate magic systems in
+        modern fantasy literature.\n\n**Key Highlights:**\n- **Setting**: A dark fantasy
+        world ruled by an immortal tyrant\n- **Magic System**: Features \"Allomancy,\"
+        a unique system where metals grant magical powers when ingested and burned\n-
+        **Protagonist**: Vin, a street urchin who discovers her incredible potential\n-
+        **Themes**: Revolution, identity, loyalty, and the cost of freedom\n\n**Recommendation
+        Score: 9/10**\n\nThis book is highly recommended for:\n- Fantasy readers seeking
+        innovative magic systems\n- Those who enjoy character-driven narratives with
+        strong protagonists\n- Readers looking for a well-plotted trilogy starter
+        with excellent world-building\n- Anyone who appreciates Brandon Sanderson''s
+        meticulous storytelling\n\n**Why the high score**: The novel combines compelling
+        character development, an intricate and logical magic system, engaging plot
+        twists, and excellent pacing. It''s considered a modern classic in the fantasy
+        genre and has sparked a thriving fan community. The only minor deduction is
+        that some readers may find the pacing slow in the opening chapters, but this
+        pays off magnificently as the story progresses."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":884,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":378}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '1590'
+      - '1945'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:15:21 GMT
+      - Thu, 23 Oct 2025 08:45:03 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '884'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '3361'
+      - '4192'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '299'
+      - '378'
       x-amzn-RequestId:
-      - 70077ebf-97e0-4dcb-bee1-8e1bbdb45952
+      - ade542ab-8443-4fef-9e6d-34f2a90eaf3a
     status:
       code: 200
       message: OK

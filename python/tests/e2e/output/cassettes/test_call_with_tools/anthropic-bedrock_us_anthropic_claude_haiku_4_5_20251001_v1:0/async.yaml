@@ -45,7 +45,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_016quKMdcbf4wyRsmjNDpezx","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01YWQTGAFFzTb47yBsQ4b6rq","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_bdrk_017A97Qdu6W5r95bWwSD6tux","name":"secret_retrieval_tool","input":{"password":"radiance"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":599,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":98}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_019dptXwQuvaSvof9f9uHBHQ","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01JCU2CAK9uA3iCaJimytqmX","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_bdrk_013SZGjJghyrwpmx57c34URa","name":"secret_retrieval_tool","input":{"password":"radiance"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":599,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":98}}'
     headers:
       Connection:
       - keep-alive
@@ -54,22 +54,22 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:25 GMT
+      - Thu, 23 Oct 2025 08:44:07 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '599'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1266'
+      - '996'
       X-Amzn-Bedrock-Output-Token-Count:
       - '98'
       x-amzn-RequestId:
-      - 9e77fc93-3d71-4dfb-a11b-438c5a00858f
+      - f9bc1485-a6ef-4bde-a12a-96c8ff52620e
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
-      the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"id":"toolu_bdrk_01YWQTGAFFzTb47yBsQ4b6rq","input":{"password":"mellon"},"name":"secret_retrieval_tool","type":"tool_use"},{"id":"toolu_bdrk_017A97Qdu6W5r95bWwSD6tux","input":{"password":"radiance"},"name":"secret_retrieval_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01YWQTGAFFzTb47yBsQ4b6rq","content":"Welcome
-      to Moria!"},{"type":"tool_result","tool_use_id":"toolu_bdrk_017A97Qdu6W5r95bWwSD6tux","content":"Life
+      the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"id":"toolu_bdrk_01JCU2CAK9uA3iCaJimytqmX","input":{"password":"mellon"},"name":"secret_retrieval_tool","type":"tool_use"},{"id":"toolu_bdrk_013SZGjJghyrwpmx57c34URa","input":{"password":"radiance"},"name":"secret_retrieval_tool","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01JCU2CAK9uA3iCaJimytqmX","content":"Welcome
+      to Moria!"},{"type":"tool_result","tool_use_id":"toolu_bdrk_013SZGjJghyrwpmx57c34URa","content":"Life
       before Death"}]}],"system":"Use parallel tool calling.","tools":[{"name":"secret_retrieval_tool","description":"A
       tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}],"anthropic_version":"bedrock-2023-05-31"}'
     headers:
@@ -113,7 +113,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: "{\"model\":\"claude-haiku-4-5-20251001\",\"id\":\"msg_bdrk_01B4xUDopmARqC7d9VXqk2kv\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Here
+      string: "{\"model\":\"claude-haiku-4-5-20251001\",\"id\":\"msg_bdrk_01NHbGVNQjBQkZ9mWZ3vw3tB\",\"type\":\"message\",\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"Here
         are the secrets associated with each password:\\n\\n1. **Password: \\\"mellon\\\"**
         \u2192 Secret: \\\"Welcome to Moria!\\\"\\n2. **Password: \\\"radiance\\\"**
         \u2192 Secret: \\\"Life before Death\\\"\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":774,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":52}}"
@@ -125,15 +125,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:26 GMT
+      - Thu, 23 Oct 2025 08:44:08 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '774'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1387'
+      - '912'
       X-Amzn-Bedrock-Output-Token-Count:
       - '52'
       x-amzn-RequestId:
-      - 523acf5c-6181-4cdf-91ba-b526b7c9ff2e
+      - 21de0100-79f8-428a-ac19-f161cd3530d3
     status:
       code: 200
       message: OK

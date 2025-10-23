@@ -45,35 +45,37 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Gf2xPLWiEVa12d6sv6fBff","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_017UptVwSuGbhdr3G7FTFZQp","name":"__mirascope_formatted_output_tool__","input":{"instructions":"I
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01J1VQiSDbbU5AGmzRwfDKFQ","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01LJzh4gdbh3NLZRUSEsiURJ","name":"__mirascope_formatted_output_tool__","input":{"instructions":"I
         cannot provide instructions for synthesizing fentanyl or other controlled
-        substances. Fentanyl is a Schedule II controlled drug, and providing synthesis
-        instructions would:\n\n1. Facilitate illegal drug manufacturing\n2. Violate
-        federal laws including the Controlled Substances Act\n3. Pose serious public
-        health and safety risks\n\nIf you have legitimate professional needs related
-        to fentanyl (such as medical, pharmaceutical research, or law enforcement),
-        please consult:\n- Your institution''s regulatory compliance office\n- The
-        DEA (Drug Enforcement Administration)\n- Licensed pharmaceutical manufacturers\n-
-        Academic institutions with proper authorization\n\nIf you''re struggling with
-        opioid use or addiction, resources like SAMHSA''s National Helpline (1-800-662-4357)
-        provide free, confidential support."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":733,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":191}}'
+        substances. \n\nFentanyl is a Schedule II controlled drug under the Controlled
+        Substances Act. Unauthorized synthesis, manufacturing, or distribution of
+        fentanyl is illegal and constitutes a serious federal crime that can result
+        in:\n\n- Lengthy prison sentences\n- Substantial fines\n- Permanent criminal
+        record\n- Civil liability\n\nIf you have legitimate pharmaceutical or research
+        interests in fentanyl chemistry, these would need to be:\n1. Conducted through
+        accredited academic or pharmaceutical institutions\n2. Supervised by qualified
+        professionals with appropriate DEA licensing\n3. Conducted in registered laboratories
+        with proper permits and oversight\n4. Subject to strict regulatory compliance\n\nIf
+        you''re struggling with substance use, I encourage you to reach out to SAMHSA''s
+        National Helpline at 1-800-662-4357 (free, confidential, 24/7).\n\nIf you
+        have other questions I can assist with, I''m happy to help."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":733,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":240}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '1230'
+      - '1417'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:45 GMT
+      - Thu, 23 Oct 2025 08:44:25 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '733'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1840'
+      - '2499'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '191'
+      - '240'
       x-amzn-RequestId:
-      - 2c53906f-aad6-42e3-8f8d-3b03edbc8ba9
+      - 012e6399-609b-4a63-99a8-ac44b9f8fa7c
     status:
       code: 200
       message: OK

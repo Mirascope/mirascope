@@ -11,125 +11,90 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "pages": {
-      "title": "Pages",
-      "type": "integer"
-    },
-    "publication_year": {
-      "title": "Publication Year",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "pages",
-    "publication_year"
-  ],
-  "title": "BookSummary",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    ToolCall(
-                        id="toolu_bdrk_01WkrVv7daF1uNS7qciX2hjf",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "id": "toolu_bdrk_01WkrVv7daF1uNS7qciX2hjf",
-                            "input": {"isbn": "0-7653-1178-X"},
-                            "name": "get_book_info",
-                            "type": "tool_use",
-                        }
-                    ],
-                },
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_bdrk_01WkrVv7daF1uNS7qciX2hjf",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
-Based on the book information retrieved, here's the detailed information:
-
-```json
+Respond only with valid JSON that matches this exact schema:
 {
-  "title": "Mistborn: The Final Empire",
-  "author": "Brandon Sanderson",
-  "pages": 544,
-  "publication_year": 2006
-}
-```
-
-**Additional Recommendation:**
-
-**Book:** Mistborn: The Final Empire
-**Recommendation Score:** 9/10
-
-**Why I recommend it:**
-- **Engaging World-Building**: Brandon Sanderson is renowned for his intricate magic systems, and this book features the innovative "Mistborn" system with unique powers based on ingesting metals
-- **Compelling Story**: The novel combines epic fantasy with a heist narrative, following Vin, a street orphan who discovers she's a Mistborn with extraordinary powers
-- **Character Development**: Strong character arcs with a diverse cast that evolves throughout the 544-page journey
-- **Page-Turner**: Despite its substantial length, it's highly engaging and difficult to put down
-- **Series Potential**: The first in a trilogy, it sets up an excellent foundation for continued reading
-- **Critical Acclaim**: Widely praised by fantasy readers and won multiple awards
-
-**Best For:** Readers who enjoy epic fantasy, magic systems, character-driven narratives, and don't mind longer books with complex world-building.\
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
 """
                     )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "citations": None,
-                            "text": """\
-Based on the book information retrieved, here's the detailed information:
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        ToolCall(
+                            id="toolu_bdrk_012uaLyACAipedC8JkvK9uTH",
+                            name="get_book_info",
+                            args='{"isbn": "0-7653-1178-X"}',
+                        )
+                    ],
+                    provider="anthropic",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "id": "toolu_bdrk_012uaLyACAipedC8JkvK9uTH",
+                                "input": {"isbn": "0-7653-1178-X"},
+                                "name": "get_book_info",
+                                "type": "tool_use",
+                            }
+                        ],
+                    },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="toolu_bdrk_012uaLyACAipedC8JkvK9uTH",
+                            name="get_book_info",
+                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+Based on the lookup, here is the information for the book:
 
 ```json
 {
@@ -140,46 +105,92 @@ Based on the book information retrieved, here's the detailed information:
 }
 ```
 
-**Additional Recommendation:**
+**Detailed Information:**
 
-**Book:** Mistborn: The Final Empire
-**Recommendation Score:** 9/10
+**Mistborn: The Final Empire** is an epic fantasy novel by Brandon Sanderson, published in 2006. This 544-page book marks the beginning of the original Mistborn trilogy and is renowned for introducing one of the most intricate magic systems in modern fantasy literature.
 
-**Why I recommend it:**
-- **Engaging World-Building**: Brandon Sanderson is renowned for his intricate magic systems, and this book features the innovative "Mistborn" system with unique powers based on ingesting metals
-- **Compelling Story**: The novel combines epic fantasy with a heist narrative, following Vin, a street orphan who discovers she's a Mistborn with extraordinary powers
-- **Character Development**: Strong character arcs with a diverse cast that evolves throughout the 544-page journey
-- **Page-Turner**: Despite its substantial length, it's highly engaging and difficult to put down
-- **Series Potential**: The first in a trilogy, it sets up an excellent foundation for continued reading
-- **Critical Acclaim**: Widely praised by fantasy readers and won multiple awards
+**Key Highlights:**
+- **Setting**: A dark fantasy world ruled by an immortal tyrant
+- **Magic System**: Features "Allomancy," a unique system where metals grant magical powers when ingested and burned
+- **Protagonist**: Vin, a street urchin who discovers her incredible potential
+- **Themes**: Revolution, identity, loyalty, and the cost of freedom
 
-**Best For:** Readers who enjoy epic fantasy, magic systems, character-driven narratives, and don't mind longer books with complex world-building.\
-""",
-                            "type": "text",
-                        }
+**Recommendation Score: 9/10**
+
+This book is highly recommended for:
+- Fantasy readers seeking innovative magic systems
+- Those who enjoy character-driven narratives with strong protagonists
+- Readers looking for a well-plotted trilogy starter with excellent world-building
+- Anyone who appreciates Brandon Sanderson's meticulous storytelling
+
+**Why the high score**: The novel combines compelling character development, an intricate and logical magic system, engaging plot twists, and excellent pacing. It's considered a modern classic in the fantasy genre and has sparked a thriving fan community. The only minor deduction is that some readers may find the pacing slow in the opening chapters, but this pays off magnificently as the story progresses.\
+"""
+                        )
                     ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
+                    provider="anthropic",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": """\
+Based on the lookup, here is the information for the book:
+
+```json
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}
+```
+
+**Detailed Information:**
+
+**Mistborn: The Final Empire** is an epic fantasy novel by Brandon Sanderson, published in 2006. This 544-page book marks the beginning of the original Mistborn trilogy and is renowned for introducing one of the most intricate magic systems in modern fantasy literature.
+
+**Key Highlights:**
+- **Setting**: A dark fantasy world ruled by an immortal tyrant
+- **Magic System**: Features "Allomancy," a unique system where metals grant magical powers when ingested and burned
+- **Protagonist**: Vin, a street urchin who discovers her incredible potential
+- **Themes**: Revolution, identity, loyalty, and the cost of freedom
+
+**Recommendation Score: 9/10**
+
+This book is highly recommended for:
+- Fantasy readers seeking innovative magic systems
+- Those who enjoy character-driven narratives with strong protagonists
+- Readers looking for a well-plotted trilogy starter with excellent world-building
+- Anyone who appreciates Brandon Sanderson's meticulous storytelling
+
+**Why the high score**: The novel combines compelling character development, an intricate and logical magic system, engaging plot twists, and excellent pacing. It's considered a modern classic in the fantasy genre and has sparked a thriving fan community. The only minor deduction is that some readers may find the pacing slow in the opening chapters, but this pays off magnificently as the story progresses.\
+""",
+                                "type": "text",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "BookSummary",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "pages": {"title": "Pages", "type": "integer"},
+                        "publication_year": {
+                            "title": "Publication Year",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "pages", "publication_year"],
+                    "title": "BookSummary",
+                    "type": "object",
                 },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "properties": {
@@ -210,12 +221,12 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [
-            {
-                "name": "get_book_info",
-                "description": "Look up book information by ISBN.",
-                "parameters": """\
+            },
+            "tools": [
+                {
+                    "name": "get_book_info",
+                    "description": "Look up book information by ISBN.",
+                    "parameters": """\
 {
   "properties": {
     "isbn": {
@@ -230,136 +241,107 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                "strict": False,
-            }
-        ],
+                    "strict": False,
+                }
+            ],
+        }
     }
 )
 async_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "pages": {
-      "title": "Pages",
-      "type": "integer"
-    },
-    "publication_year": {
-      "title": "Publication Year",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "pages",
-    "publication_year"
-  ],
-  "title": "BookSummary",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    ToolCall(
-                        id="toolu_bdrk_01RQq6gj1vRtN5DvKV7vhEpm",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "id": "toolu_bdrk_01RQq6gj1vRtN5DvKV7vhEpm",
-                            "input": {"isbn": "0-7653-1178-X"},
-                            "name": "get_book_info",
-                            "type": "tool_use",
-                        }
-                    ],
-                },
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_bdrk_01RQq6gj1vRtN5DvKV7vhEpm",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
-```json
+Respond only with valid JSON that matches this exact schema:
 {
-  "title": "Mistborn: The Final Empire",
-  "author": "Brandon Sanderson",
-  "pages": 544,
-  "publication_year": 2006
-}
-```
-
-**Book Information:**
-- **Title:** Mistborn: The Final Empire
-- **Author:** Brandon Sanderson
-- **Pages:** 544
-- **Publication Year:** 2006
-
-**Recommendation Score: 8.5/10** ⭐
-
-**Why This Book is Recommended:**
-
-1. **Exceptional World-Building** - Sanderson creates an intricate fantasy world with a unique magic system based on metal ingestion (Allomancy), which is innovative and well-developed.
-
-2. **Compelling Story** - The narrative follows Vin, a street urchin who discovers her powers and becomes entangled in a rebellion against an immortal tyrant. The plot is engaging with excellent pacing.
-
-3. **Strong Character Development** - Vin's character arc is particularly powerful, showing her growth from a frightened orphan to a confident hero.
-
-4. **Perfect for Fantasy Lovers** - Whether you're new to fantasy or a seasoned reader, this book offers something special. It's the first in an acclaimed trilogy.
-
-5. **Well-Written Prose** - Sanderson's writing is clear, immersive, and maintains excellent momentum throughout the 544 pages.
-
-**Best For:** Fantasy enthusiasts, readers who enjoy magic systems with clear rules, and those seeking epic tales with strong female protagonists.\
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
 """
                     )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "citations": None,
-                            "text": """\
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="I'll look up the book information for you using that ISBN."
+                        ),
+                        ToolCall(
+                            id="toolu_bdrk_019LKRBgq9bRvJRLZmPZiycu",
+                            name="get_book_info",
+                            args='{"isbn": "0-7653-1178-X"}',
+                        ),
+                    ],
+                    provider="anthropic",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": "I'll look up the book information for you using that ISBN.",
+                                "type": "text",
+                            },
+                            {
+                                "id": "toolu_bdrk_019LKRBgq9bRvJRLZmPZiycu",
+                                "input": {"isbn": "0-7653-1178-X"},
+                                "name": "get_book_info",
+                                "type": "tool_use",
+                            },
+                        ],
+                    },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="toolu_bdrk_019LKRBgq9bRvJRLZmPZiycu",
+                            name="get_book_info",
+                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+Great! Here's the detailed information for the book:
+
 ```json
 {
   "title": "Mistborn: The Final Empire",
@@ -369,53 +351,94 @@ Respond only with valid JSON that matches this exact schema:
 }
 ```
 
-**Book Information:**
-- **Title:** Mistborn: The Final Empire
-- **Author:** Brandon Sanderson
-- **Pages:** 544
-- **Publication Year:** 2006
+**Detailed Information & Recommendation:**
 
-**Recommendation Score: 8.5/10** ⭐
+**Title:** Mistborn: The Final Empire  \n\
+**Author:** Brandon Sanderson  \n\
+**Pages:** 544  \n\
+**Published:** 2006
 
-**Why This Book is Recommended:**
+This is the first book in Brandon Sanderson's acclaimed Mistborn trilogy. It's an epic fantasy novel featuring an intricate magic system based on metal alloys, complex world-building, and compelling characters.
 
-1. **Exceptional World-Building** - Sanderson creates an intricate fantasy world with a unique magic system based on metal ingestion (Allomancy), which is innovative and well-developed.
+**Recommendation Score: 9/10**
 
-2. **Compelling Story** - The narrative follows Vin, a street urchin who discovers her powers and becomes entangled in a rebellion against an immortal tyrant. The plot is engaging with excellent pacing.
+**Why I recommend it:**
+- **Exceptional worldbuilding**: Sanderson creates a rich, detailed world with a unique magic system
+- **Compelling narrative**: The story follows Vin, a street orphan who discovers her hidden powers, offering both personal growth and high-stakes adventure
+- **Strong character development**: The protagonist's journey is particularly well-crafted
+- **Page-turner quality**: At 544 pages, it maintains excellent pacing despite its length
+- **Highly regarded**: This series is beloved by fantasy fans and critics alike
+- **Great starting point**: Perfect for those new to Brandon Sanderson or fantasy in general
 
-3. **Strong Character Development** - Vin's character arc is particularly powerful, showing her growth from a frightened orphan to a confident hero.
-
-4. **Perfect for Fantasy Lovers** - Whether you're new to fantasy or a seasoned reader, this book offers something special. It's the first in an acclaimed trilogy.
-
-5. **Well-Written Prose** - Sanderson's writing is clear, immersive, and maintains excellent momentum throughout the 544 pages.
-
-**Best For:** Fantasy enthusiasts, readers who enjoy magic systems with clear rules, and those seeking epic tales with strong female protagonists.\
-""",
-                            "type": "text",
-                        }
+**Best for:** Fans of epic fantasy, intricate magic systems, and character-driven narratives. Also excellent for readers who enjoy series.\
+"""
+                        )
                     ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
+                    provider="anthropic",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": """\
+Great! Here's the detailed information for the book:
+
+```json
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}
+```
+
+**Detailed Information & Recommendation:**
+
+**Title:** Mistborn: The Final Empire  \n\
+**Author:** Brandon Sanderson  \n\
+**Pages:** 544  \n\
+**Published:** 2006
+
+This is the first book in Brandon Sanderson's acclaimed Mistborn trilogy. It's an epic fantasy novel featuring an intricate magic system based on metal alloys, complex world-building, and compelling characters.
+
+**Recommendation Score: 9/10**
+
+**Why I recommend it:**
+- **Exceptional worldbuilding**: Sanderson creates a rich, detailed world with a unique magic system
+- **Compelling narrative**: The story follows Vin, a street orphan who discovers her hidden powers, offering both personal growth and high-stakes adventure
+- **Strong character development**: The protagonist's journey is particularly well-crafted
+- **Page-turner quality**: At 544 pages, it maintains excellent pacing despite its length
+- **Highly regarded**: This series is beloved by fantasy fans and critics alike
+- **Great starting point**: Perfect for those new to Brandon Sanderson or fantasy in general
+
+**Best for:** Fans of epic fantasy, intricate magic systems, and character-driven narratives. Also excellent for readers who enjoy series.\
+""",
+                                "type": "text",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "BookSummary",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "pages": {"title": "Pages", "type": "integer"},
+                        "publication_year": {
+                            "title": "Publication Year",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "pages", "publication_year"],
+                    "title": "BookSummary",
+                    "type": "object",
                 },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "properties": {
@@ -446,12 +469,12 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [
-            {
-                "name": "get_book_info",
-                "description": "Look up book information by ISBN.",
-                "parameters": """\
+            },
+            "tools": [
+                {
+                    "name": "get_book_info",
+                    "description": "Look up book information by ISBN.",
+                    "parameters": """\
 {
   "properties": {
     "isbn": {
@@ -466,139 +489,98 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                "strict": False,
-            }
-        ],
+                    "strict": False,
+                }
+            ],
+        }
     }
 )
 stream_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "pages": {
-      "title": "Pages",
-      "type": "integer"
-    },
-    "publication_year": {
-      "title": "Publication Year",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "pages",
-    "publication_year"
-  ],
-  "title": "BookSummary",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    ToolCall(
-                        id="toolu_bdrk_01P9h7S6MgaYCKf9DbtBmQv7",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    )
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "tool_use",
-                            "id": "toolu_bdrk_01P9h7S6MgaYCKf9DbtBmQv7",
-                            "name": "get_book_info",
-                            "input": {"isbn": "0-7653-1178-X"},
-                        }
-                    ],
-                },
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_bdrk_01P9h7S6MgaYCKf9DbtBmQv7",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
-```json
+Respond only with valid JSON that matches this exact schema:
 {
-  "title": "Mistborn: The Final Empire",
-  "author": "Brandon Sanderson",
-  "pages": 544,
-  "publication_year": 2006
-}
-```
-
-**Book Summary & Recommendation:**
-
-**Mistborn: The Final Empire** is an epic fantasy novel by Brandon Sanderson, first published in 2006. This is the first book in the acclaimed Mistborn trilogy.
-
-**Key Details:**
-- **Title:** Mistborn: The Final Empire
-- **Author:** Brandon Sanderson
-- **Pages:** 544
-- **Publication Year:** 2006
-
-**About the Book:**
-Mistborn is a groundbreaking fantasy novel set in a sprawling world ruled by an immortal tyrant called the Lord Ruler. The story follows Vin, a street orphan who discovers she possesses extraordinary magical abilities called "Allomancy" - the power to ingest metals and use them to grant superhuman abilities. Vin is recruited into a crew attempting to overthrow the oppressive Lord Ruler in an ambitious heist-fantasy hybrid narrative.
-
-**Recommendation Score: 9/10**
-
-**Why I Recommend It:**
-- ✅ Unique magic system that's intricate and well-thought-out
-- ✅ Compelling protagonist with great character development
-- ✅ Excellent blend of fantasy, heist, and political intrigue
-- ✅ Fast-paced and hard to put down
-- ✅ Well-written by one of today's most prolific fantasy authors
-- ✅ Great starting point for Brandon Sanderson's works
-- ⚠️ The 544 pages might be lengthy for some casual readers, but it doesn't feel slow
-
-**Perfect For:** Fantasy fans, especially those who enjoy intricate magic systems, character-driven stories, and epic world-building.\
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
 """
                     )
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": """\
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        ToolCall(
+                            id="toolu_bdrk_01XydmuHNB6V8EqaK1HpjNvr",
+                            name="get_book_info",
+                            args='{"isbn": "0-7653-1178-X"}',
+                        )
+                    ],
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_bdrk_01XydmuHNB6V8EqaK1HpjNvr",
+                                "name": "get_book_info",
+                                "input": {"isbn": "0-7653-1178-X"},
+                            }
+                        ],
+                    },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="toolu_bdrk_01XydmuHNB6V8EqaK1HpjNvr",
+                            name="get_book_info",
+                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+Here's the detailed information for the book:
+
 ```json
 {
   "title": "Mistborn: The Final Empire",
@@ -608,56 +590,97 @@ Mistborn is a groundbreaking fantasy novel set in a sprawling world ruled by an 
 }
 ```
 
-**Book Summary & Recommendation:**
-
-**Mistborn: The Final Empire** is an epic fantasy novel by Brandon Sanderson, first published in 2006. This is the first book in the acclaimed Mistborn trilogy.
-
-**Key Details:**
+**Book Details:**
 - **Title:** Mistborn: The Final Empire
 - **Author:** Brandon Sanderson
 - **Pages:** 544
 - **Publication Year:** 2006
-
-**About the Book:**
-Mistborn is a groundbreaking fantasy novel set in a sprawling world ruled by an immortal tyrant called the Lord Ruler. The story follows Vin, a street orphan who discovers she possesses extraordinary magical abilities called "Allomancy" - the power to ingest metals and use them to grant superhuman abilities. Vin is recruited into a crew attempting to overthrow the oppressive Lord Ruler in an ambitious heist-fantasy hybrid narrative.
+- **ISBN:** 0-7653-1178-X
 
 **Recommendation Score: 9/10**
 
-**Why I Recommend It:**
-- ✅ Unique magic system that's intricate and well-thought-out
-- ✅ Compelling protagonist with great character development
-- ✅ Excellent blend of fantasy, heist, and political intrigue
-- ✅ Fast-paced and hard to put down
-- ✅ Well-written by one of today's most prolific fantasy authors
-- ✅ Great starting point for Brandon Sanderson's works
-- ⚠️ The 544 pages might be lengthy for some casual readers, but it doesn't feel slow
+**Why this book is highly recommended:**
 
-**Perfect For:** Fantasy fans, especially those who enjoy intricate magic systems, character-driven stories, and epic world-building.\
-""",
-                        }
+1. **Exceptional World-Building:** Sanderson creates an intricate fantasy world with unique magic systems based on metal alloys (Allomancy), which is incredibly creative and well-explained.
+
+2. **Strong Character Development:** The protagonist Vin's journey from slave to empowered mistborn is compelling and emotionally resonant.
+
+3. **Engaging Plot:** The story combines heist elements, political intrigue, and epic fantasy, making it a page-turner that keeps readers invested.
+
+4. **Series Potential:** This is the first book in the original Mistborn trilogy, offering excellent value for fantasy readers who want to dive into a longer saga.
+
+5. **Accessibility:** Despite its complexity, Sanderson's prose is clear and engaging, making it accessible to both newcomers to fantasy and seasoned readers.
+
+**Best For:** Fantasy enthusiasts, particularly those who enjoy intricate magic systems, character-driven narratives, and epic world-building. A perfect starting point for Brandon Sanderson's work.\
+"""
+                        )
                     ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": """\
+Here's the detailed information for the book:
+
+```json
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}
+```
+
+**Book Details:**
+- **Title:** Mistborn: The Final Empire
+- **Author:** Brandon Sanderson
+- **Pages:** 544
+- **Publication Year:** 2006
+- **ISBN:** 0-7653-1178-X
+
+**Recommendation Score: 9/10**
+
+**Why this book is highly recommended:**
+
+1. **Exceptional World-Building:** Sanderson creates an intricate fantasy world with unique magic systems based on metal alloys (Allomancy), which is incredibly creative and well-explained.
+
+2. **Strong Character Development:** The protagonist Vin's journey from slave to empowered mistborn is compelling and emotionally resonant.
+
+3. **Engaging Plot:** The story combines heist elements, political intrigue, and epic fantasy, making it a page-turner that keeps readers invested.
+
+4. **Series Potential:** This is the first book in the original Mistborn trilogy, offering excellent value for fantasy readers who want to dive into a longer saga.
+
+5. **Accessibility:** Despite its complexity, Sanderson's prose is clear and engaging, making it accessible to both newcomers to fantasy and seasoned readers.
+
+**Best For:** Fantasy enthusiasts, particularly those who enjoy intricate magic systems, character-driven narratives, and epic world-building. A perfect starting point for Brandon Sanderson's work.\
+""",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "BookSummary",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "pages": {"title": "Pages", "type": "integer"},
+                        "publication_year": {
+                            "title": "Publication Year",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "pages", "publication_year"],
+                    "title": "BookSummary",
+                    "type": "object",
                 },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "properties": {
@@ -688,12 +711,12 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [
-            {
-                "name": "get_book_info",
-                "description": "Look up book information by ISBN.",
-                "parameters": """\
+            },
+            "tools": [
+                {
+                    "name": "get_book_info",
+                    "description": "Look up book information by ISBN.",
+                    "parameters": """\
 {
   "properties": {
     "isbn": {
@@ -708,141 +731,98 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                "strict": False,
-            }
-        ],
-        "n_chunks": 127,
+                    "strict": False,
+                }
+            ],
+            "n_chunks": 103,
+        }
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "finish_reason": None,
-        "messages": [
-            SystemMessage(
-                content=Text(
-                    text="""\
-Respond only with valid JSON that matches this exact schema:
-{
-  "properties": {
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "author": {
-      "title": "Author",
-      "type": "string"
-    },
-    "pages": {
-      "title": "Pages",
-      "type": "integer"
-    },
-    "publication_year": {
-      "title": "Publication Year",
-      "type": "integer"
-    }
-  },
-  "required": [
-    "title",
-    "author",
-    "pages",
-    "publication_year"
-  ],
-  "title": "BookSummary",
-  "type": "object"
-}\
-"""
-                )
-            ),
-            UserMessage(
-                content=[
-                    Text(
-                        text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(text="I'll look up the book information for you."),
-                    ToolCall(
-                        id="toolu_bdrk_01NtaA4fNN18GrU1osAH7wJc",
-                        name="get_book_info",
-                        args='{"isbn": "0-7653-1178-X"}',
-                    ),
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "I'll look up the book information for you.",
-                        },
-                        {
-                            "type": "tool_use",
-                            "id": "toolu_bdrk_01NtaA4fNN18GrU1osAH7wJc",
-                            "name": "get_book_info",
-                            "input": {"isbn": "0-7653-1178-X"},
-                        },
-                    ],
-                },
-            ),
-            UserMessage(
-                content=[
-                    ToolOutput(
-                        id="toolu_bdrk_01NtaA4fNN18GrU1osAH7wJc",
-                        name="get_book_info",
-                        value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
-                    )
-                ]
-            ),
-            AssistantMessage(
-                content=[
-                    Text(
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "finish_reason": None,
+            "messages": [
+                SystemMessage(
+                    content=Text(
                         text="""\
-Based on the lookup, here's the detailed information for the book:
-
-```json
+Respond only with valid JSON that matches this exact schema:
 {
-  "title": "Mistborn: The Final Empire",
-  "author": "Brandon Sanderson",
-  "pages": 544,
-  "publication_year": 2006
-}
-```
-
-**Detailed Information:**
-- **Title:** Mistborn: The Final Empire
-- **Author:** Brandon Sanderson
-- **Pages:** 544
-- **Publication Year:** 2006
-
-**Recommendation Score: 9/10**
-
-**Why I recommend this book:**
-1. **Exceptional World-Building:** Sanderson creates a richly detailed fantasy world with a unique magic system based on metal ingestion
-2. **Compelling Characters:** The protagonist Vin's journey from slavery to self-discovery is engaging and emotionally resonant
-3. **Page-Turner Plot:** Despite being 544 pages, it's highly readable with great pacing and multiple plot twists
-4. **Strong Fandom:** This is the first book in the Mistborn series and has built a devoted following
-5. **Accessible Fantasy:** While complex, it's more approachable than many epic fantasy novels
-
-**Best for:** Readers who enjoy fantasy with intricate magic systems, strong character development, and an intriguing rebellion narrative. Perfect for fans of Brandon Sanderson or fantasy epics in general.
-
-The only reason I'm not giving it a 10/10 is that the beginning can feel a bit slow for some readers, but it's absolutely worth pushing through!\
+  "properties": {
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "author": {
+      "title": "Author",
+      "type": "string"
+    },
+    "pages": {
+      "title": "Pages",
+      "type": "integer"
+    },
+    "publication_year": {
+      "title": "Publication Year",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "title",
+    "author",
+    "pages",
+    "publication_year"
+  ],
+  "title": "BookSummary",
+  "type": "object"
+}\
 """
                     )
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": """\
-Based on the lookup, here's the detailed information for the book:
+                ),
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation score"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        ToolCall(
+                            id="toolu_bdrk_01BwXgYx99L8TRz2EsaQMcff",
+                            name="get_book_info",
+                            args='{"isbn": "0-7653-1178-X"}',
+                        )
+                    ],
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "tool_use",
+                                "id": "toolu_bdrk_01BwXgYx99L8TRz2EsaQMcff",
+                                "name": "get_book_info",
+                                "input": {"isbn": "0-7653-1178-X"},
+                            }
+                        ],
+                    },
+                ),
+                UserMessage(
+                    content=[
+                        ToolOutput(
+                            id="toolu_bdrk_01BwXgYx99L8TRz2EsaQMcff",
+                            name="get_book_info",
+                            value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+Here is the book information in the requested JSON format:
 
 ```json
 {
@@ -853,49 +833,101 @@ Based on the lookup, here's the detailed information for the book:
 }
 ```
 
-**Detailed Information:**
-- **Title:** Mistborn: The Final Empire
-- **Author:** Brandon Sanderson
-- **Pages:** 544
-- **Publication Year:** 2006
+**Book Details & Recommendation:**
 
-**Recommendation Score: 9/10**
+**Title:** Mistborn: The Final Empire
+**Author:** Brandon Sanderson
+**Pages:** 544
+**Publication Year:** 2006
 
-**Why I recommend this book:**
-1. **Exceptional World-Building:** Sanderson creates a richly detailed fantasy world with a unique magic system based on metal ingestion
-2. **Compelling Characters:** The protagonist Vin's journey from slavery to self-discovery is engaging and emotionally resonant
-3. **Page-Turner Plot:** Despite being 544 pages, it's highly readable with great pacing and multiple plot twists
-4. **Strong Fandom:** This is the first book in the Mistborn series and has built a devoted following
-5. **Accessible Fantasy:** While complex, it's more approachable than many epic fantasy novels
+**Recommendation Score:** 9/10
 
-**Best for:** Readers who enjoy fantasy with intricate magic systems, strong character development, and an intriguing rebellion narrative. Perfect for fans of Brandon Sanderson or fantasy epics in general.
+**Why This Book is Highly Recommended:**
 
-The only reason I'm not giving it a 10/10 is that the beginning can feel a bit slow for some readers, but it's absolutely worth pushing through!\
-""",
-                        }
+Mistborn: The Final Empire is the first book in Brandon Sanderson's acclaimed Mistborn trilogy and is widely considered one of the best fantasy novels of the 21st century. Here's why:
+
+- **Compelling Magic System:** Sanderson is renowned for creating intricate, rule-based magic systems, and Mistborn features an innovative "allomancy" system that's both creative and internally consistent.
+
+- **Strong Character Development:** The protagonist, Kel, experiences significant growth throughout the narrative, making her journey deeply engaging.
+
+- **Plot Twists:** The book features several major plot revelations that recontextualize the entire story in a satisfying way.
+
+- **World-Building:** The oppressive Final Empire setting is richly detailed and atmospheric, creating a compelling backdrop for the story.
+
+- **Accessibility:** At 544 pages, it's substantial but not overwhelming, making it a great entry point for readers new to epic fantasy.
+
+This book is perfect for fans of fantasy who appreciate innovative magic systems, complex characters, and intricate plots. Highly recommended for both seasoned fantasy readers and those looking to explore the genre!\
+"""
+                        )
                     ],
-                },
-            ),
-        ],
-        "format": {
-            "name": "BookSummary",
-            "description": None,
-            "schema": {
-                "properties": {
-                    "title": {"title": "Title", "type": "string"},
-                    "author": {"title": "Author", "type": "string"},
-                    "pages": {"title": "Pages", "type": "integer"},
-                    "publication_year": {
-                        "title": "Publication Year",
-                        "type": "integer",
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": """\
+Here is the book information in the requested JSON format:
+
+```json
+{
+  "title": "Mistborn: The Final Empire",
+  "author": "Brandon Sanderson",
+  "pages": 544,
+  "publication_year": 2006
+}
+```
+
+**Book Details & Recommendation:**
+
+**Title:** Mistborn: The Final Empire
+**Author:** Brandon Sanderson
+**Pages:** 544
+**Publication Year:** 2006
+
+**Recommendation Score:** 9/10
+
+**Why This Book is Highly Recommended:**
+
+Mistborn: The Final Empire is the first book in Brandon Sanderson's acclaimed Mistborn trilogy and is widely considered one of the best fantasy novels of the 21st century. Here's why:
+
+- **Compelling Magic System:** Sanderson is renowned for creating intricate, rule-based magic systems, and Mistborn features an innovative "allomancy" system that's both creative and internally consistent.
+
+- **Strong Character Development:** The protagonist, Kel, experiences significant growth throughout the narrative, making her journey deeply engaging.
+
+- **Plot Twists:** The book features several major plot revelations that recontextualize the entire story in a satisfying way.
+
+- **World-Building:** The oppressive Final Empire setting is richly detailed and atmospheric, creating a compelling backdrop for the story.
+
+- **Accessibility:** At 544 pages, it's substantial but not overwhelming, making it a great entry point for readers new to epic fantasy.
+
+This book is perfect for fans of fantasy who appreciate innovative magic systems, complex characters, and intricate plots. Highly recommended for both seasoned fantasy readers and those looking to explore the genre!\
+""",
+                            }
+                        ],
                     },
+                ),
+            ],
+            "format": {
+                "name": "BookSummary",
+                "description": None,
+                "schema": {
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"title": "Author", "type": "string"},
+                        "pages": {"title": "Pages", "type": "integer"},
+                        "publication_year": {
+                            "title": "Publication Year",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "pages", "publication_year"],
+                    "title": "BookSummary",
+                    "type": "object",
                 },
-                "required": ["title", "author", "pages", "publication_year"],
-                "title": "BookSummary",
-                "type": "object",
-            },
-            "mode": "json",
-            "formatting_instructions": """\
+                "mode": "json",
+                "formatting_instructions": """\
 Respond only with valid JSON that matches this exact schema:
 {
   "properties": {
@@ -926,12 +958,12 @@ Respond only with valid JSON that matches this exact schema:
   "type": "object"
 }\
 """,
-        },
-        "tools": [
-            {
-                "name": "get_book_info",
-                "description": "Look up book information by ISBN.",
-                "parameters": """\
+            },
+            "tools": [
+                {
+                    "name": "get_book_info",
+                    "description": "Look up book information by ISBN.",
+                    "parameters": """\
 {
   "properties": {
     "isbn": {
@@ -946,9 +978,10 @@ Respond only with valid JSON that matches this exact schema:
   "defs": null
 }\
 """,
-                "strict": False,
-            }
-        ],
-        "n_chunks": 88,
+                    "strict": False,
+                }
+            ],
+            "n_chunks": 121,
+        }
     }
 )

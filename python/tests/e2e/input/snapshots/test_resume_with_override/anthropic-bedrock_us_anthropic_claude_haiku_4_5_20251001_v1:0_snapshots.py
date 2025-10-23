@@ -8,49 +8,51 @@ from mirascope.llm import (
 
 test_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {},
-        "finish_reason": None,
-        "messages": [
-            UserMessage(content=[Text(text="Who created you?")]),
-            AssistantMessage(
-                content=[Text(text="I was created by Anthropic.")],
-                provider="anthropic",
-                model_id="claude-sonnet-4-0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "citations": None,
-                            "text": "I was created by Anthropic.",
-                            "type": "text",
-                        }
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                UserMessage(content=[Text(text="Who created you?")]),
+                AssistantMessage(
+                    content=[Text(text="I was created by Anthropic.")],
+                    provider="anthropic",
+                    model_id="claude-sonnet-4-0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": "I was created by Anthropic.",
+                                "type": "text",
+                            }
+                        ],
+                    },
+                ),
+                UserMessage(content=[Text(text="Can you double-check that?")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="Yes, I can confirm that. I was created by Anthropic, an AI safety company. This is accurate to the best of my knowledge."
+                        )
                     ],
-                },
-            ),
-            UserMessage(content=[Text(text="Can you double-check that?")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="Yes, I can confirm that I was created by Anthropic. I'm Claude, Anthropic's AI assistant. Is there something specific you'd like to verify or ask about?"
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "citations": None,
-                            "text": "Yes, I can confirm that I was created by Anthropic. I'm Claude, Anthropic's AI assistant. Is there something specific you'd like to verify or ask about?",
-                            "type": "text",
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": None,
-        "tools": [],
+                    provider="anthropic",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": "Yes, I can confirm that. I was created by Anthropic, an AI safety company. This is accurate to the best of my knowledge.",
+                                "type": "text",
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [],
+        }
     }
 )

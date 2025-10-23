@@ -48,7 +48,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01K8hPGppbxKqEP2MGXHBrVa","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01151BhYmWh3TigV4jKiyJ9h","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":862,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":48}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01GNKahpKVuYvMkfFRHvw4yJ","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01EiVvfhDgoATzanKSWXbNmm","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":862,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":48}}'
     headers:
       Connection:
       - keep-alive
@@ -57,22 +57,22 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:15:39 GMT
+      - Thu, 23 Oct 2025 08:45:21 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '862'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1195'
+      - '742'
       X-Amzn-Bedrock-Output-Token-Count:
       - '48'
       x-amzn-RequestId:
-      - bad7c40f-3e45-4cb9-bedb-4a0f7189ef05
+      - fb96c833-c2a2-47c8-94c5-5bd522947c98
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
       the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score"},{"role":"assistant","content":[{"id":"toolu_bdrk_01151BhYmWh3TigV4jKiyJ9h","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01151BhYmWh3TigV4jKiyJ9h","content":"Title:
+      score"},{"role":"assistant","content":[{"id":"toolu_bdrk_01EiVvfhDgoATzanKSWXbNmm","input":{"isbn":"0-7653-1178-X"},"name":"get_book_info","type":"tool_use"}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_bdrk_01EiVvfhDgoATzanKSWXbNmm","content":"Title:
       Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
       2006-07-25"}]}],"system":"Always respond to the user''s query using the __mirascope_formatted_output_tool__
       tool for structured output.","tool_choice":{"type":"any"},"tools":[{"name":"get_book_info","description":"Look
@@ -120,7 +120,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_015jSm5oKoBTcWxv2MmqKRi3","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_0153wZzzrA7xQSFZr3bpMc4g","name":"__mirascope_formatted_output_tool__","input":{"title":"Mistborn:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01UTd66NuHKjv2QzgPajYmZo","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01JGwn2aSKEMfQQLvGTSHRtK","name":"__mirascope_formatted_output_tool__","input":{"title":"Mistborn:
         The Final Empire","author":"Brandon Sanderson","pages":544,"publication_year":2006}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":968,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":109}}'
     headers:
       Connection:
@@ -130,15 +130,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:15:40 GMT
+      - Thu, 23 Oct 2025 08:45:22 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '968'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '858'
+      - '970'
       X-Amzn-Bedrock-Output-Token-Count:
       - '109'
       x-amzn-RequestId:
-      - 385035b1-5b36-43d1-a3d3-c2371a58e118
+      - 0305acd0-906b-4ea4-84d2-7a3837fd15a9
     status:
       code: 200
       message: OK

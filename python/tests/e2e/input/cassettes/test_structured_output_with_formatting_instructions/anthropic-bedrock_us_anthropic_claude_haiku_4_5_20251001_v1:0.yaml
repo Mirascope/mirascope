@@ -47,7 +47,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_014fbdq6rnjLFbeum3koNiHL","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01JSH9JPEKnHqPWEv7d81PH7","name":"__mirascope_formatted_output_tool__","input":{"title":"THE
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01NWPevnAVo9mLN3bsrBbVUi","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01UYfCjgDDFWiCYgmnRhc7Eu","name":"__mirascope_formatted_output_tool__","input":{"title":"THE
         NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":789,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":67}}'
     headers:
       Connection:
@@ -57,15 +57,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:48 GMT
+      - Thu, 23 Oct 2025 08:42:05 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '789'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1125'
+      - '1034'
       X-Amzn-Bedrock-Output-Token-Count:
       - '67'
       x-amzn-RequestId:
-      - 086bc2a4-6aaf-406f-9c80-4bd244e2aada
+      - f89320f1-cab7-4f33-ade7-5c926944dda1
     status:
       code: 200
       message: OK

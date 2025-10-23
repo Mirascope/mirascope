@@ -47,27 +47,27 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA2yUW2+jOBzFv4rll91V08aQCyFSH4AEkpALaS5TsrOqDBhwAuZiEyBVv/sq1XZm
-        R5on20fnf3Rs6ed3mGYBSeAY+gmuAvLIM8aIeOw/ykgeoIHUhx1IAziGKY/ekKSwWWbrem7IZ2O1
-        HN2U2VHHF9iBos3J3UU4xxGBHVhmyV3AnFMuMBOwA/2MCcIEHP/9/uUXMWUXyqJ7wtd2DPcxARUn
-        JaAcYH4XQZiVQMQESAiJGJjUyxj2fQpYlXqkfAJzEOMrARiEFfMFzRjAV0wT7CUE+DhJSAC+Qz9L
-        80qQt5B63yEQMRbAxwz8J3/ms9+kgz+lR8oC0pDgryfwo1yMOcjL7EoDEnzO8pz4NKQ+uOKkIoA9
-        Swh1AM9+lEuST19JioqWJAA5LnFKBCk5EBlI8eXegfKfd7g3f4IdyGnEsKjK+5NNy8PEuLhzQ48M
-        +6KdRtM26472x01xYkqdTjb1ZG2w62p7Yi8j4nlFOpXoq9ZekDEfXZ3Gj3f2LPZaVVaxngzTnsLN
-        o9S3TbNQJz0csPMSTaNWTuKZ2WaXoCHRLjY0PHGK/fYQ6sxaIufVKA50Xn/zTscmMN0kcLVyUQXa
-        a2E1+tbZyuGNqcQyFNE4q7O6YzzUZFMtJP3Aor3TcPNCLEfYeW2wfVEghIx6La7fcncls9Z6+Kbn
-        2ta8rZU6ro/LXRJI7t5Et8FaOgqpWfX12iH1NvWKOGGja8+KteIWbHaxLDu1InxVUkI5itbRwAjb
-        QdVbc5ub9YPlXHfdkZfPif+yyxbduPbiW1GvSU2PwlbUh9HwVJXbwi1pdhiuNvVAdVIHW8Q73Npk
-        WEjzyO4uA/9mHPKmODlx7Khx1z1c3XOshNXGn1ibcD5b5aP5Zb/VzvFFfZieZ0ajR9WOWO5CQV3f
-        XuavDhL10tLMhUZdfZCQ1Ahbf3JGZts4u9Na2rSox3sDW9iS1Z8O5Cj3zdpoF3jBbq89IiF/gUen
-        ClvJZTvpS26QGbsNUt353qaDtsQ7LC9fPHuI52GbDeUX38r4qnaUCBEPHUk4S1I9jUautn1+hh+d
-        nziS5g7q5zKG8z+S5Bc4fg/fJ5ttVj39kpRlyVvFydf3cT9Xb0iy25BZQmu2jtIL15F7Y/Som7AD
-        GU7vc/9D9D7K8krA8TtkcCwh9PHxTwdykeVvJfmXjjLYQRgEgui/7JmDtXqQnyEbmIRGCrqAF8O/
-        N9Q0Wo3XebM7pxnOKe5zVpBxr4gWpGMNQVFd50g/X69MSVfETPo0HhVZth7GCriXzewdh40L2P1j
-        220PwM1jhnAw5/nX/6aD/6ZNUarlUxrGi6IMeUwWpkwQ0tRX1LE4am0BAAD//wMAqItXgbYFAAA=
+        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
     headers:
       CF-RAY:
-      - 992f6d64992ad76c-NRT
+      - 992ff02c4c0fe3a7-NRT
       Connection:
       - keep-alive
       Content-Encoding:
@@ -75,7 +75,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:42 GMT
+      - Thu, 23 Oct 2025 08:41:59 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -89,42 +89,42 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-23T07:12:40Z'
+      - '2025-10-23T08:41:58Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-23T07:12:42Z'
+      - '2025-10-23T08:41:59Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-23T07:12:39Z'
+      - '2025-10-23T08:41:56Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-23T07:12:40Z'
+      - '2025-10-23T08:41:58Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CUPiRceqiQNpPY2623zH9
+      - req_011CUPqEVBdyAe1esCGT3ZHK
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
       via:
       - 1.1 google
       x-envoy-upstream-service-time:
-      - '3273'
+      - '3712'
     status:
       code: 200
       message: OK
 - request:
     body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
       fibonacci number?"},{"role":"assistant","content":[{"type":"text","text":"I''ll
-      compute the 100th Fibonacci number for you."},{"type":"tool_use","id":"toolu_01KyfnGtAxQP73fNgYzniVBF","name":"compute_fib","input":{"n":100}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01KyfnGtAxQP73fNgYzniVBF","content":"218922995834555169026"}]}],"thinking":{"type":"disabled"},"tools":[{"name":"compute_fib","description":"Compute
+      compute the 100th Fibonacci number for you."},{"type":"tool_use","id":"toolu_015gzCmZHkowWCdiXYiocCNb","name":"compute_fib","input":{"n":100}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_015gzCmZHkowWCdiXYiocCNb","content":"218922995834555169026"}]}],"thinking":{"type":"disabled"},"tools":[{"name":"compute_fib","description":"Compute
       the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"}}],"anthropic_version":"bedrock-2023-05-31"}'
     headers:
       accept:
@@ -167,27 +167,27 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01RB8d4kQrem3W3BB69T8XDu","type":"message","role":"assistant","content":[{"type":"text","text":"The
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Br8EG9qmXjBEB7bQRtBUMc","type":"message","role":"assistant","content":[{"type":"text","text":"The
         100th Fibonacci number is **218,922,995,834,555,169,026**.\n\nThis is a very
-        large number with 21 digits! The Fibonacci sequence grows exponentially, so
-        the numbers become quite substantial as you progress through the sequence."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":673,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":60}}'
+        large number! The Fibonacci sequence grows exponentially, so by the 100th
+        term, we get numbers with 21 digits."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":673,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":59}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '537'
+      - '497'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:43 GMT
+      - Thu, 23 Oct 2025 08:42:01 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '673'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1233'
+      - '1202'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '60'
+      - '59'
       x-amzn-RequestId:
-      - d258d284-3f60-4149-b63d-2026710cd038
+      - c4659087-646f-4664-9286-46f843232536
     status:
       code: 200
       message: OK

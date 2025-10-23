@@ -42,9 +42,9 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01SgAavEX7iL6FDzjRhtNcBF","type":"message","role":"assistant","content":[{"type":"text","text":"#
-        U.S. States (Alphabetical Order)\n\n1. Alabama\n2. Alaska\n3. Arizona\n4.
-        Arkansas\n5. California\n6. Colorado\n7. Connecticut\n8. Delaware\n9. Florida\n10"}],"stop_reason":"max_tokens","stop_sequence":null,"usage":{"input_tokens":15,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":50}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_018JhihZbKVSPdCgEz3UH4RN","type":"message","role":"assistant","content":[{"type":"text","text":"#
+        U.S. States\n\n1. Alabama\n2. Alaska\n3. Arizona\n4. Arkansas\n5. California\n6.
+        Colorado\n7. Connecticut\n8. Delaware\n9. Florida\n10. Georgia\n11. Hawaii"}],"stop_reason":"max_tokens","stop_sequence":null,"usage":{"input_tokens":15,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":50}}'
     headers:
       Connection:
       - keep-alive
@@ -53,15 +53,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:36 GMT
+      - Thu, 23 Oct 2025 08:44:16 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '15'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '1199'
+      - '741'
       X-Amzn-Bedrock-Output-Token-Count:
       - '50'
       x-amzn-RequestId:
-      - f5851a05-3a58-4236-a76b-d1558887ece6
+      - 9fd19287-1906-43e0-8b60-dff151cfe0e7
     status:
       code: 200
       message: OK

@@ -71,7 +71,7 @@ ModelId: TypeAlias = (
 
 PROVIDER_REGISTRY: dict[Provider, Callable[[], None]] = {
     "anthropic": clear_anthropic_cache,
-    "anthropic-bedrock": clear_anthropic_bedrock_cache,  # pragma: no cover
+    "anthropic-bedrock": clear_anthropic_bedrock_cache,
     "azure-openai:completions": clear_azure_openai_completions_cache,
     "azure-openai:responses": clear_azure_openai_responses_cache,
     "google": clear_google_cache,

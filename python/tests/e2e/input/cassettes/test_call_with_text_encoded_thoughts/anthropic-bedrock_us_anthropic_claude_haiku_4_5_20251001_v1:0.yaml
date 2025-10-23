@@ -54,7 +54,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_015RzbJ3B8WXedjVLJG8YSxM","type":"message","role":"assistant","content":[{"type":"text","text":"28657"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":416,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":6}}'
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01Sy8TYmuW2PVeS5XkgGFvP2","type":"message","role":"assistant","content":[{"type":"text","text":"28657"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":416,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":6}}'
     headers:
       Connection:
       - keep-alive
@@ -63,15 +63,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:31 GMT
+      - Thu, 23 Oct 2025 08:41:49 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '416'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '576'
+      - '1230'
       X-Amzn-Bedrock-Output-Token-Count:
       - '6'
       x-amzn-RequestId:
-      - 9612c9b1-8c63-4076-b173-fe93da6cefa7
+      - 6c86cc17-a02f-4cb8-9b70-779c38e9fdaf
     status:
       code: 200
       message: OK

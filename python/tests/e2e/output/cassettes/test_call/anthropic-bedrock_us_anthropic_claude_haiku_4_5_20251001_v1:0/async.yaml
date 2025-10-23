@@ -43,7 +43,7 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01LVLcHi8qVRYYfUeq661L6K","type":"message","role":"assistant","content":[{"type":"text","text":"4200
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01SN4t4W5u1RVWPfNi9dSBgm","type":"message","role":"assistant","content":[{"type":"text","text":"4200
         + 42 = 4242"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":17,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":15}}'
     headers:
       Connection:
@@ -53,15 +53,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:12:50 GMT
+      - Thu, 23 Oct 2025 08:42:08 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '17'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '588'
+      - '1171'
       X-Amzn-Bedrock-Output-Token-Count:
       - '15'
       x-amzn-RequestId:
-      - b0454afe-6229-4f48-9767-5f018c838412
+      - db8afa8c-9f1f-404a-b809-128565ad877a
     status:
       code: 200
       message: OK

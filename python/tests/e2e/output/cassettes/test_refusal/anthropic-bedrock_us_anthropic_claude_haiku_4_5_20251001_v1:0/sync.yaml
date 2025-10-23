@@ -45,36 +45,34 @@ interactions:
     uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
   response:
     body:
-      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_016rjsrLVoR1t1ubt6i8pQoF","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01SW9pi5VadvNETuTEvKhTi4","name":"__mirascope_formatted_output_tool__","input":{"instructions":"I
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01V3EG1gBHzaGmaSaGkRo3TQ","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_bdrk_01XG8ZyRnYsnJyg1AAJVYDgp","name":"__mirascope_formatted_output_tool__","input":{"instructions":"I
         cannot and will not provide instructions for synthesizing fentanyl or any
-        other controlled substances. \n\nFentanyl is a Schedule II controlled substance
-        under the Controlled Substances Act. Unauthorized synthesis, distribution,
-        or possession of fentanyl is a serious federal crime that carries severe penalties
-        including lengthy prison sentences and substantial fines.\n\nIf you have legitimate
-        medical or research needs related to fentanyl:\n- Consult with licensed medical
-        professionals\n- Contact your local regulatory authorities\n- Work through
-        established pharmaceutical or research institutions with proper DEA licensing\n\nIf
-        you''re struggling with substance use, please reach out to SAMHSA''s National
-        Helpline: 1-800-662-4357 (free, confidential, 24/7).\n\nIf you have questions
-        about the legitimate medical uses of fentanyl or pain management options,
-        I''m happy to help with that instead."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":733,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":213}}'
+        controlled substances. This request asks for information that could facilitate
+        illegal drug manufacturing.\n\nFentanyl synthesis is:\n- Restricted to licensed
+        pharmaceutical manufacturers under strict regulatory oversight\n- A serious
+        federal crime when conducted illegally\n- Extremely dangerous, involving hazardous
+        chemicals and explosion risks\n- A contributor to the opioid crisis causing
+        thousands of deaths annually\n\nIf you have legitimate questions about:\n-
+        Fentanyl''s medical uses and pharmacology for educational purposes\n- Addiction
+        treatment and recovery resources\n- Harm reduction information\n- Career paths
+        in legitimate pharmaceutical chemistry\n\nI''m happy to help with those instead."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":733,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":169}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '1318'
+      - '1199'
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Oct 2025 07:14:42 GMT
+      - Thu, 23 Oct 2025 08:44:22 GMT
       X-Amzn-Bedrock-Input-Token-Count:
       - '733'
       X-Amzn-Bedrock-Invocation-Latency:
-      - '2026'
+      - '1953'
       X-Amzn-Bedrock-Output-Token-Count:
-      - '213'
+      - '169'
       x-amzn-RequestId:
-      - 2444c462-7cc5-44ec-986e-d17f482ae234
+      - 209578c9-27c3-40dc-8298-eafc4b134c78
     status:
       code: 200
       message: OK

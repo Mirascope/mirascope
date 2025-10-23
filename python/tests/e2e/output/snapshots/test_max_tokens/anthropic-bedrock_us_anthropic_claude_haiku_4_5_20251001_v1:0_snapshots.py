@@ -9,17 +9,18 @@ from mirascope.llm import (
 
 sync_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {"max_tokens": 50},
-        "finish_reason": FinishReason.MAX_TOKENS,
-        "messages": [
-            UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
-# U.S. States (50 total)
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {"max_tokens": 50},
+            "finish_reason": FinishReason.MAX_TOKENS,
+            "messages": [
+                UserMessage(content=[Text(text="List all U.S. states.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+# U.S. States (50 Total)
 
 1. Alabama
 2. Alaska
@@ -32,17 +33,17 @@ sync_snapshot = snapshot(
 9. Florida
 10.\
 """
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "citations": None,
-                            "text": """\
-# U.S. States (50 total)
+                        )
+                    ],
+                    provider="anthropic",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": """\
+# U.S. States (50 Total)
 
 1. Alabama
 2. Alaska
@@ -55,29 +56,31 @@ sync_snapshot = snapshot(
 9. Florida
 10.\
 """,
-                            "type": "text",
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": None,
-        "tools": [],
+                                "type": "text",
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [],
+        }
     }
 )
 async_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "params": {"max_tokens": 50},
-        "finish_reason": FinishReason.MAX_TOKENS,
-        "messages": [
-            UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
-# U.S. States (Alphabetical Order)
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "params": {"max_tokens": 50},
+            "finish_reason": FinishReason.MAX_TOKENS,
+            "messages": [
+                UserMessage(content=[Text(text="List all U.S. states.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+# U.S. States
 
 1. Alabama
 2. Alaska
@@ -88,19 +91,20 @@ async_snapshot = snapshot(
 7. Connecticut
 8. Delaware
 9. Florida
-10\
+10. Georgia
+11. Hawaii\
 """
-                    )
-                ],
-                provider="anthropic",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "citations": None,
-                            "text": """\
-# U.S. States (Alphabetical Order)
+                        )
+                    ],
+                    provider="anthropic",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "citations": None,
+                                "text": """\
+# U.S. States
 
 1. Alabama
 2. Alaska
@@ -111,29 +115,32 @@ async_snapshot = snapshot(
 7. Connecticut
 8. Delaware
 9. Florida
-10\
+10. Georgia
+11. Hawaii\
 """,
-                            "type": "text",
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": None,
-        "tools": [],
+                                "type": "text",
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [],
+        }
     }
 )
 stream_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "finish_reason": FinishReason.MAX_TOKENS,
-        "messages": [
-            UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "finish_reason": FinishReason.MAX_TOKENS,
+            "messages": [
+                UserMessage(content=[Text(text="List all U.S. states.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 # U.S. States (50 total)
 
 1. Alabama
@@ -147,16 +154,16 @@ stream_snapshot = snapshot(
 9. Florida
 10.\
 """
-                    )
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": """\
+                        )
+                    ],
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": """\
 # U.S. States (50 total)
 
 1. Alabama
@@ -170,27 +177,29 @@ stream_snapshot = snapshot(
 9. Florida
 10.\
 """,
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": None,
-        "tools": [],
-        "n_chunks": 12,
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "n_chunks": 12,
+        }
     }
 )
 async_stream_snapshot = snapshot(
     {
-        "provider": "anthropic-bedrock",
-        "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-        "finish_reason": FinishReason.MAX_TOKENS,
-        "messages": [
-            UserMessage(content=[Text(text="List all U.S. states.")]),
-            AssistantMessage(
-                content=[
-                    Text(
-                        text="""\
+        "response": {
+            "provider": "anthropic-bedrock",
+            "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+            "finish_reason": FinishReason.MAX_TOKENS,
+            "messages": [
+                UserMessage(content=[Text(text="List all U.S. states.")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
 # U.S. States (50 total)
 
 1. Alabama
@@ -204,16 +213,16 @@ async_stream_snapshot = snapshot(
 9. Florida
 10.\
 """
-                    )
-                ],
-                provider="anthropic-bedrock",
-                model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
-                raw_message={
-                    "role": "assistant",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": """\
+                        )
+                    ],
+                    provider="anthropic-bedrock",
+                    model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    raw_message={
+                        "role": "assistant",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": """\
 # U.S. States (50 total)
 
 1. Alabama
@@ -227,13 +236,14 @@ async_stream_snapshot = snapshot(
 9. Florida
 10.\
 """,
-                        }
-                    ],
-                },
-            ),
-        ],
-        "format": None,
-        "tools": [],
-        "n_chunks": 12,
+                            }
+                        ],
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [],
+            "n_chunks": 12,
+        }
     }
 )
