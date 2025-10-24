@@ -1,0 +1,50 @@
+from inline_snapshot import snapshot
+
+sync_snapshot = snapshot(
+    {
+        "exception": {
+            "type": "FormattingModeNotSupportedError",
+            "args": "(\"Formatting mode 'strict' is not supported by provider 'anthropic-vertex'\",)",
+            "feature": "formatting_mode:strict",
+            "formatting_mode": "strict",
+            "model_id": "None",
+            "provider": "anthropic-vertex",
+        }
+    }
+)
+async_snapshot = snapshot(
+    {
+        "exception": {
+            "type": "FormattingModeNotSupportedError",
+            "args": "(\"Formatting mode 'strict' is not supported by provider 'anthropic-vertex'\",)",
+            "feature": "formatting_mode:strict",
+            "formatting_mode": "strict",
+            "model_id": "None",
+            "provider": "anthropic-vertex",
+        }
+    }
+)
+stream_snapshot = snapshot(
+    {
+        "exception": {
+            "type": "FormattingModeNotSupportedError",
+            "args": "(\"Formatting mode 'strict' is not supported by provider 'anthropic-vertex'\",)",
+            "feature": "formatting_mode:strict",
+            "formatting_mode": "strict",
+            "model_id": "None",
+            "provider": "anthropic-vertex",
+        }
+    }
+)
+async_stream_snapshot = snapshot(
+    {
+        "exception": {
+            "type": "FormattingModeNotSupportedError",
+            "args": "(\"Formatting mode 'strict' is not supported by provider 'anthropic-vertex'\",)",
+            "feature": "formatting_mode:strict",
+            "formatting_mode": "strict",
+            "model_id": "None",
+            "provider": "anthropic-vertex",
+        }
+    }
+)

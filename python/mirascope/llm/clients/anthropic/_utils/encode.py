@@ -43,7 +43,7 @@ def _pretty_provider_name(
     """Convert provider string to a pretty name for user-facing messages."""
     if provider == "anthropic-bedrock":
         return "Anthropic Bedrock"
-    elif provider == "anthropic-vertex":  # pragma: no cover
+    elif provider == "anthropic-vertex":
         return "Anthropic Vertex AI"
     else:
         return "Anthropic"

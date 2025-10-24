@@ -74,12 +74,13 @@ def client(
 
 
 def clear_cache() -> None:
-    """Clear the client singleton cache.
+    """Clear the client singleton cache and reset context.
 
     This is useful for testing or when you need to force recreation
     of clients with updated configuration.
     """
     _anthropic_vertex_singleton.cache_clear()
+    ANTHROPIC_VERTEX_CLIENT_CONTEXT.set(None)
 
 
 def get_client() -> "AnthropicVertexClient":
