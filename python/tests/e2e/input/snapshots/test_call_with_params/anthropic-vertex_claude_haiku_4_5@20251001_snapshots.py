@@ -10,8 +10,8 @@ test_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "anthropic-bedrock",
-                "model_id": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                "provider": "anthropic-vertex",
+                "model_id": "claude-haiku-4-5@20251001",
                 "params": {
                     "temperature": 0.7,
                     "max_tokens": 500,
@@ -27,7 +27,7 @@ test_snapshot = snapshot(
                     AssistantMessage(
                         content=[Text(text="4200 + 42 = ")],
                         provider="anthropic",
-                        model_id="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+                        model_id="claude-haiku-4-5@20251001",
                         raw_message={
                             "role": "assistant",
                             "content": [

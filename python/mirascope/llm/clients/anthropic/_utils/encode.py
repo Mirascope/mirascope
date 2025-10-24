@@ -122,8 +122,7 @@ def _encode_content(
         elif part.type == "audio":
             if provider == "anthropic-bedrock":
                 provider_name = "Anthropic Bedrock"
-            elif provider == "anthropic-vertex":  # pragma: no cover
-                # TODO: Add unittest for anthropic-vertex in another PR.
+            elif provider == "anthropic-vertex":
                 provider_name = "Anthropic Vertex AI"
             else:
                 provider_name = "Anthropic"

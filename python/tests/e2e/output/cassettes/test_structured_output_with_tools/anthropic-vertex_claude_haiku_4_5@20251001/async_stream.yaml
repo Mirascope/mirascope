@@ -1,0 +1,253 @@
+interactions:
+- request:
+    body: grant_type=refresh_token&client_id=764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com&client_secret=%3Cfiltered%3E&refresh_token=%3Cfiltered%3E
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.4
+      x-goog-api-client:
+      - gl-python/3.10.15 auth/2.40.3 cred-type/u
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: '{"access_token": "<filtered>", "expires_in": 3599, "scope": "https://www.googleapis.com/auth/sqlservice.login
+        openid https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email",
+        "token_type": "Bearer", "id_token": "<filtered>"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 05 Nov 2025 15:51:38 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
+      the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"}],"system":"Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output.","tools":[{"name":"get_book_info","description":"Look
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}},{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in BookSummary format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"}}],"tool_choice":{"type":"any"},"stream":true,"anthropic_version":"vertex-2023-10-16"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1052'
+      content-type:
+      - application/json
+      host:
+      - us-east5-aiplatform.googleapis.com
+      user-agent:
+      - AsyncAnthropicVertex/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://us-east5-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-east5/publishers/anthropic/models/claude-haiku-4-5@20251001:streamRawPredict
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2SOwWrDMBBE7/4Ks+cYZJO4RV/RQG8lCFneJkqUleNdJS3B/14Zaqjp3vbNMDN4
+        RxJdXpHZHtGw2FGK3orV5RPke0DQsBJhs/ygn3CNPYZsccGmHquT9ZdUbatd1ahmVytVZ7vv5ww+
+        mvsoX0bV75/7x23LXdNJLWca2raT81s2rusyGGOYgWX2uZvmbhdJ8mLQH4cNsMTBjGg5EmhKIfwi
+        xltCcrjAtMz1NCQxEi9IDPq1bXKgdSc0LqeIj2TWDrXoWe7/azHJX/IyTeXqpqL4AQAA//9KhYRv
+        QWZeOlqwKiiBBJWAagAAAAD//4KqgXotPiknPzkbe0xgUQIK4LyU1AqIY5HlQR6G6ivJz8+JLy1O
+        hcUGiF8Ki4/gdKPw4NSs5Cgnr0DXfF+T0qrk3FIPoNK8xFyQ5vRUoIH5+dlA/6flg60DehpoOIpv
+        gd4AAAAA///C6g1g8ihJxO8NsBIUb0BEEM6HBHwWMJrhiguAXs9MzAELAlUoobkFAAAA//8aSLdU
+        xyhlFiflxQCZtRDXAAAAAP//GkjXKMQoGeiaQ8IH6BQAAAAA//8aSKeYmRrrGhqiRxUAAAD//xpI
+        F5lb6EbEKNUqoeZboKMAAAAA///CkSXzCwjlyPwCJCfBTAMAAAD//0pFLWSxeg5FUgnJMyiFHHJO
+        xlLU1SKVdWiFk4kFZuEEAAAA//9KRS/8Mf2HLKeErh8AAAD//wMAcx1ppj0GAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+      cache-control:
+      - no-cache
+      date:
+      - Wed, 05 Nov 2025 15:51:39 GMT
+      request-id:
+      - req_vrtx_011CUq1Wzo4gqsZTZSpGVNRU
+      server:
+      - hypercorn-h11
+      x-accel-buffering:
+      - 'no'
+      x-vertex-ai-received-request-id:
+      - 6e3553da-92e8-46f0-89af-daadfaba6068
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please look up
+      the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_vrtx_01Sg2WSejcZBJQEoM4uzcmuH","name":"get_book_info","input":{"isbn":"0-7653-1178-X"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_vrtx_01Sg2WSejcZBJQEoM4uzcmuH","content":"Title:
+      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
+      2006-07-25"}]}],"system":"Always respond to the user''s query using the __mirascope_formatted_output_tool__
+      tool for structured output.","tools":[{"name":"get_book_info","description":"Look
+      up book information by ISBN.","input_schema":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"}},{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in BookSummary format for a final response.","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"}}],"tool_choice":{"type":"any"},"stream":true,"anthropic_version":"vertex-2023-10-16"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1415'
+      content-type:
+      - application/json
+      host:
+      - us-east5-aiplatform.googleapis.com
+      user-agent:
+      - AsyncAnthropicVertex/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://us-east5-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-east5/publishers/anthropic/models/claude-haiku-4-5@20251001:streamRawPredict
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2SOzWrDMBCE734Ko3MMckiKo3vppZdCKf2hCFXaxqqVle1dhYbgd68MNdR0b/vN
+        MDNwBmRVnoDIHEETm5ELZ9io8ir40oNQYiWKzfILdRWn6CBkiw0mOaha47tU7ap9tZXbfS1lne3e
+        zRl01OeRv7Ws7x5fnjschrZ5uN192Nf7p8/D5Ssb13UZjDHMwBD53I1zt43IebFQb+8bQRx7PYKh
+        iEJhCuEXEQwJ0MIC0zLXY59Yc+wASajDTZMDjW1B25zCPqJeO+SiZ9n912Liv6Rupqlc31QUPwAA
+        AP//SoWEcEFmXjpawCoogQSVgGoAAAAA//+CqoF6Lj4pJz85G3tcYFECCuK8lNQKiHOR5UFehuor
+        yc/PiS8tToXFB4hfCosR5woTo5AsC1PH1ADXwNTCyNTwqqgSkNK8xFyQ5vj43MyixOLk/ILU+LT8
+        otzEkpLUlHi474Emx4MdAeQCrUQOBKDfAAAAAP//wuo3YKopScTvN7ASFL9BRBB+gsRHFjD24YoL
+        gOGRmZgDFgSqUKoFuQAAAAD//xpIF1THKJVklgCTcS08QAAAAAD//xpI58QAU12Mki8wOyUp1WIk
+        VQAAAAD//xpIl+UX5QEzBKabAAAAAP//Gkg3hWSkKrhlQhIRAAAA//8aSHfkJebAQwboFAAAAAD/
+        /xpIpyi45hZAQwQAAAD//xpIZxSlxighZSkAAAAA//8aSKfoADNUolIt0BUAAAAA//8aSFeUlmTk
+        F6FkH6CDAAAAAP//GviSxqkoMS8lH+EuoKMAAAAA//8a0IykEAx0D8g5QIcAAAAA//8aSIekFgFp
+        RBJGjjQAAAAA//8a6LQMdhPQHQAAAAD//xpIdxQA22vFoBRkCilqAAAAAP//Gki3mJggFTQAAAAA
+        //8a6MgpKE3KyUwGNlXRUg7QaQAAAAD//xrQyjsvvjI1ESmcAAAAAP//GtC6AZRwjAwMYAkZAAAA
+        //8aSLeY1WJp0gAAAAD//8LR2s8vINTYzy9Acg5myQEAAAD//0pF7cth9SKKpBKSl1D6UsjdBSw9
+        qlqkLhV6H8jAEq0SAgAAAP//SkXvYWL6E1lOCaYPAAAA//8DAI1ftXWaDgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+      cache-control:
+      - no-cache
+      date:
+      - Wed, 05 Nov 2025 15:51:40 GMT
+      request-id:
+      - req_vrtx_011CUq1X46FvtHXJTpPXLh2D
+      server:
+      - hypercorn-h11
+      x-accel-buffering:
+      - 'no'
+      x-vertex-ai-received-request-id:
+      - 7875bc3d-264c-40b5-b05f-cb59b99b0994
+    status:
+      code: 200
+      message: OK
+version: 1

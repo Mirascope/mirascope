@@ -1,0 +1,259 @@
+interactions:
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
+      fibonacci number?"}],"model":"claude-sonnet-4-0","thinking":{"type":"enabled","budget_tokens":8000},"tools":[{"name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '400'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - Anthropic/Python 0.64.0
+      x-api-key:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://api.anthropic.com/v1/messages
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//bFRtj6o4GP0rTT/tRmcERQWT/aCgIyqOCr5uNt7SFugIBWlBZDL/faN3
+        7929yX7rc3rO6cmTnH7CJCU0hgOIY1QQ+iJSzql80V7aSrurdFUNNiEjcAATEZ4VtZ1u++tDcNTd
+        g+Pvp5udUzOtDZtQ3jP6YFEhUEhhE+Zp/ACQEExIxCVsQpxySbmEgz8/f/BlxPiF8fDh8OM4gF5E
+        QSFoDpgASDxAEKQ5kBEFqqLICEyYn3KEMQO8SHyavwIbRKikAGFMhQAyBQgEBceSpRxgFMeUgG84
+        TbJC0nPA/G9ARkgCjDj4B3268//xBr+pL4wTWlHy+yv4GS1CAmR5WjJCyVMrMopZwDAoUVxQwP9Q
+        FaUJRPozWhw/eTm9FiynBGQoRwmVNH/mTdDle4ZfYr/CJhQs5EgW+WNf43xtmZejbW5Cc36x0DT1
+        jVvUaPUWM02/K0s82puG3/X5YsMIkWXDqDrxXPqGpEkDJV5HjdbcTiIPtyPP8A+TSeTuyMjq78Yp
+        XumzRmsWjMNba9e5C7u0qwWdK0NNQ9a4k+kkuTiHadETWPqufSPLaS3GQw1XLg7fr6s1bzg1rt9H
+        96y06o9Rt6rvq/frZSrMhklVz65bZEw6IsT8yLVrMc+E2dr3/EN1W9+K3NjmFq59wVMyu66Gm36J
+        dm/DTtcI1bA4jSq9876Vh2BB6Ko3VOI8dWLPXvN8O+rHCSLoTb6vT92scN7mfpc3iDOiJ8Pub/lp
+        XutavEmPp7GHLy2j56VkEy/X49lOdok2lcuFqZ0OiyoY8oaf3foO5v3tJpowXdUrmYW9jF4viTcO
+        9h+7lV5e/ZKdFvd7vLQqusz0eLQPWplQ7Q9J2G0VmOl0ku/WBTI037X2trVYvRmjuWcZ142uHbnZ
+        zq8Xr/N2ymz3tKwPznFS3fr60N6HGu0viR+LHG+3LVPUZaPTi1qVO2Q3hyVDo1iUS++jdKetw/0y
+        6dZhwy8O2B8Wtli4tWcdu/1oZ29nkZdkpRv0nUK9uWzVHTqxe/3IdTM5Zkt2UCe9TTiCX81/e5im
+        8bkQ9EfbH3NxVtTdShrrS8/Z79yOTtpjg2wNawqbkKPkoftPpR5SnhUSDj4hhwNVUb6+/mpCIdPs
+        nFMkUv7rO88LQa8F5ZjCAS/iuAmL5+8x+PxudZbp5W+l5hUrWZkYG+koJScmZ6TGJxelJoKyRzyq
+        CgOYfFFqYgouOZhekAWpBRmpualFiTnxprmY6hGyhhnosrU6SvmlJchChkZmOkrFqUVlmcmp8SWZ
+        qUVKVkqgQi8lsShFqbYWAAAA//8DAA7L9cVlBQAA
+    headers:
+      CF-RAY:
+      - 999d7e690f07db53-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 05 Nov 2025 15:48:13 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      anthropic-organization-id:
+      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
+      anthropic-ratelimit-input-tokens-limit:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-remaining:
+      - '2000000'
+      anthropic-ratelimit-input-tokens-reset:
+      - '2025-11-05T15:48:12Z'
+      anthropic-ratelimit-output-tokens-limit:
+      - '400000'
+      anthropic-ratelimit-output-tokens-remaining:
+      - '400000'
+      anthropic-ratelimit-output-tokens-reset:
+      - '2025-11-05T15:48:13Z'
+      anthropic-ratelimit-requests-limit:
+      - '4000'
+      anthropic-ratelimit-requests-remaining:
+      - '3999'
+      anthropic-ratelimit-requests-reset:
+      - '2025-11-05T15:48:10Z'
+      anthropic-ratelimit-tokens-limit:
+      - '2400000'
+      anthropic-ratelimit-tokens-remaining:
+      - '2400000'
+      anthropic-ratelimit-tokens-reset:
+      - '2025-11-05T15:48:12Z'
+      cf-cache-status:
+      - DYNAMIC
+      request-id:
+      - req_011CUq1FYohz98nRaV7Q6iAd
+      retry-after:
+      - '49'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '3729'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: grant_type=refresh_token&client_id=764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com&client_secret=%3Cfiltered%3E&refresh_token=%3Cfiltered%3E
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.4
+      x-goog-api-client:
+      - gl-python/3.10.15 auth/2.40.3 cred-type/u
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: '{"access_token": "<filtered>", "expires_in": 3599, "scope": "https://www.googleapis.com/auth/userinfo.email
+        openid https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/sqlservice.login",
+        "token_type": "Bearer", "id_token": "<filtered>"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 05 Nov 2025 15:48:14 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"What is the 100th
+      fibonacci number?"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_01VPt9Qk6MWVS38d2E9dU9DH","name":"compute_fib","input":{"n":100}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_01VPt9Qk6MWVS38d2E9dU9DH","content":"218922995834555169026"}]}],"thinking":{"type":"disabled"},"tools":[{"name":"compute_fib","description":"Compute
+      the nth Fibonacci number (1-indexed).","input_schema":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"}}],"anthropic_version":"vertex-2023-10-16"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '654'
+      content-type:
+      - application/json
+      host:
+      - us-east5-aiplatform.googleapis.com
+      user-agent:
+      - AnthropicVertex/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://us-east5-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-east5/publishers/anthropic/models/claude-haiku-4-5@20251001:rawPredict
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WOwU7DMAyGX6XKsUpRGtay9sx6QdwQoCEUZam1Rm2dLXFgaNq7k02AQJxs/d8n
+        +z+y2fUwsZaZScceikHbMRaLoiqkkFUpRMk4s30S5rBVb54OSpTLu9UYO/+8Rv/0fnO/v4XHbrVO
+        In3s4KxCCHoLKfBuOgc6BBtII6XIOCRIW/ty/PYJDmdyGS17GCBLj2nIOrtxqI2xGcZ5Az6zIctz
+        WS55IyVvmoovrxe8qipe1g0Xss7zK3Z65SyQ2ykPOjhMBwF7RdEj+wIB9hHQpM8Yp4mzeCnbHpnF
+        XSRFbgQMrK1rkdpqM4Ay6RZZh+qv8cMT7v8zF+l3IuvT6RMoT0+KcAEAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+      content-type:
+      - application/json
+      date:
+      - Wed, 05 Nov 2025 15:48:15 GMT
+      request-id:
+      - req_vrtx_011CUq1Fw69bqTyDBESoXujq
+      x-vertex-ai-internal-prediction-backend:
+      - harpoon
+    status:
+      code: 200
+      message: OK
+version: 1

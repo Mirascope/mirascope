@@ -1,0 +1,159 @@
+interactions:
+- request:
+    body: grant_type=refresh_token&client_id=764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com&client_secret=%3Cfiltered%3E&refresh_token=%3Cfiltered%3E
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.4
+      x-goog-api-client:
+      - gl-python/3.10.15 auth/2.40.3 cred-type/u
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: '{"access_token": "<filtered>", "expires_in": 3599, "scope": "https://www.googleapis.com/auth/sqlservice.login
+        openid https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email",
+        "token_type": "Bearer", "id_token": "<filtered>"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 05 Nov 2025 15:50:26 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please recommend
+      the most popular book by Patrick Rothfuss"}],"system":"Always respond to the
+      user''s query using the __mirascope_formatted_output_tool__ tool for structured
+      output.","tools":[{"name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in Book format for a final response.\nA book with
+      a rating. The title should be in all caps!","input_schema":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}},"type":"object"}}],"tool_choice":{"type":"tool","name":"__mirascope_formatted_output_tool__","disable_parallel_tool_use":true},"stream":true,"anthropic_version":"vertex-2023-10-16"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1144'
+      content-type:
+      - application/json
+      host:
+      - us-east5-aiplatform.googleapis.com
+      user-agent:
+      - AnthropicVertex/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://us-east5-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-east5/publishers/anthropic/models/claude-haiku-4-5@20251001:streamRawPredict
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2SOQUvEMBCF7/0VZc5bSMouLjnqevGkIF5EwpCMu7Fp0m0mi7L0v5uCFYtzm+89
+        3nt0ocCq7iklPJJOjCNXFhlVfQX+GggUrETYLD+oK/TRki8W4zFbak7outxsm13TinYnhZDF7uyc
+        kY76MvKnFvLutn0/H/qXj+3NY+ge5P1zZHwqxnVdAWP0M8CUXOkOc7eJgctiUK9vG0gcBz0SphhA
+        hez9D0p0zhQMLTAvc10YMmuOHYUEar8XJRDNibQpKexi0GvHr15k+1+Lmf8SKaepnm+qqm8AAAD/
+        /0qFhGtBZl46WnAqKIEElYBqAAAAAP//gqqBeik+KSc/ORt7DGBRAgrYvJTUCogjkeVBHoXqK8nP
+        z4kvLU6FxQKIXwqLB5PgwPBQ18K8NKPSsODC7NTSdO8KQ2Og0rzEXJDm+PjczKLE4uT8gtT4tPyi
+        3MSSktSUeLifgSbHgx0B5AKthHodBoDeAwAAAP//wuo9YHIpScTvPbASFO9BRBDegkREFjDa4YoL
+        gEGSmZgDFgSqUKqFOgIAAAD//xpIR1THKJVkluQo1SKHCgAAAP//GkgHpcYAk1+MUoiHq1ItalwB
+        AAAA//8aSFcp+Dn6uir4uykoYSQhAAAAAP//GkhnAUNJIRzoJKAzAAAAAP//GkhnePq5xCjBQgbo
+        FgAAAAD//xpIt+gAE09iaUlGfhHCScjRBQAAAP//Gki3AQ2PUUrLLCouicfmNAAAAAD//xpIp+Ul
+        orsI6CAAAAAA//8aSAflggqCGKWAxJKiTNTSCQAAAP//GkhXJWfHKOnEKOVghBbIYQAAAAD//xpI
+        hwGTFLhKrAW7BAAAAP//GkiXgKMtCDl8gA4CAAAA//8aSAfll2SklRYXg4oDoEsAAAAA//8aSJfU
+        gl0AAAAA//8a6NKxCNiKzEsHVbNYsjwAAAD//xpIx5nXQpMvAAAA///C0ejMLyDU5swvQHICutcA
+        AAAA//9KRe1GYPUUiqQSkidQmvHIbVYsjflapNY8WvPbwhClKAMAAAD//0pF79lgehFZTgmmDwAA
+        AP//AwAWGacwEg0AAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+      cache-control:
+      - no-cache
+      date:
+      - Wed, 05 Nov 2025 15:50:27 GMT
+      request-id:
+      - req_vrtx_011CUq1RhsSfvhwBgHrYpnL1
+      server:
+      - hypercorn-h11
+      x-accel-buffering:
+      - 'no'
+      x-vertex-ai-received-request-id:
+      - dc10621a-097a-41c9-b416-79f288a56225
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -7,9 +7,6 @@ omit =
     mirascope/llm/mcp/client.py
     mirascope/llm/formatting/partial.py
 
-    # TODO: Add unittest coverage for anthropic_vertex in separate branch
-    mirascope/llm/clients/anthropic_vertex/*
-
     # Exclude other top-level modules for now
     mirascope/graphs/*
     

@@ -18,6 +18,7 @@ from .anthropic_bedrock import (
 )
 from .anthropic_vertex import (
     AnthropicVertexClient,
+    clear_cache as clear_anthropic_vertex_cache,
     client as anthropic_vertex_client,
     get_client as get_anthropic_vertex_client,
 )
@@ -78,6 +79,7 @@ ModelId: TypeAlias = (
 PROVIDER_REGISTRY: dict[Provider, Callable[[], None]] = {
     "anthropic": clear_anthropic_cache,
     "anthropic-bedrock": clear_anthropic_bedrock_cache,
+    "anthropic-vertex": clear_anthropic_vertex_cache,
     "azure-openai:completions": clear_azure_openai_completions_cache,
     "azure-openai:responses": clear_azure_openai_responses_cache,
     "google": clear_google_cache,
@@ -180,8 +182,7 @@ def get_client(
             return get_anthropic_client()
         case "anthropic-bedrock":
             return get_anthropic_bedrock_client()
-        case "anthropic-vertex":  # pragma: no cover
-            # TODO: Add unittest for anthropic-vertex in another PR.
+        case "anthropic-vertex":
             return get_anthropic_vertex_client()
         case "azure-openai:completions":
             return get_azure_openai_completions_client()
@@ -348,8 +349,7 @@ def client(
                 aws_session_token=kwargs.get("aws_session_token"),
                 aws_profile=kwargs.get("aws_profile"),
             )
-        case "anthropic-vertex":  # pragma: no cover
-            # TODO: Add unittest for anthropic-vertex in another PR.
+        case "anthropic-vertex":
             return anthropic_vertex_client(
                 project_id=kwargs.get("project_id"),
                 region=kwargs.get("region"),

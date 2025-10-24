@@ -1,0 +1,148 @@
+interactions:
+- request:
+    body: grant_type=refresh_token&client_id=764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com&client_secret=%3Cfiltered%3E&refresh_token=%3Cfiltered%3E
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.4
+      x-goog-api-client:
+      - gl-python/3.10.15 auth/2.40.3 cred-type/u
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: '{"access_token": "<filtered>", "expires_in": 3599, "scope": "https://www.googleapis.com/auth/sqlservice.login
+        https://www.googleapis.com/auth/cloud-platform openid https://www.googleapis.com/auth/userinfo.email",
+        "token_type": "Bearer", "id_token": "<filtered>"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 05 Nov 2025 15:49:50 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":50,"messages":[{"role":"user","content":"List all U.S. states."}],"stream":true,"anthropic_version":"vertex-2023-10-16"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '134'
+      content-type:
+      - application/json
+      host:
+      - us-east5-aiplatform.googleapis.com
+      user-agent:
+      - AsyncAnthropicVertex/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://us-east5-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-east5/publishers/anthropic/models/claude-haiku-4-5@20251001:streamRawPredict
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2SOwWrDMBBE7/4Ks+cYZBP3oFt76DkhkENLEIq0JCKK5GhXISH43ytDDTXd284b
+        ZgbvGFjWVyTSJ1TEOnFlNWtZv4CfA4KEBYTV/IN8wTVa9MVivM4Wm7N2l9ysm77pRNe3QrTF7uyU
+        QSd1T/xQot0ls8l7isftx9vj6z1/pq09dsW4rCtCin4SNJEr3WHqNjFwWQzy+7AC4jiohJpiABmy
+        978S4S1jMDiLeZ7rwpBZcbxgIJBtX/K0OaMyJYRdDGppEDMv2P5nMfMibhzrvzdW1Q8AAAD//0qF
+        hG5BZl46WqAqKIEElYBqAAAAAP//gqqBeiw+KSc/ORt7PGBRAgrevJTUCohbkeVB3oXqK0mtACkE
+        U1ZKSrVojgQAAAD//8LqAGC0liTidwBYCYoDICKoFsOVQa1XhtgPtBcAAAD//6KvvQqhCI8DLQcA
+        AAD//6Kv5XrBegrBJYklqcUxeTF5hihRAHQMAAAA//+is2MUHHMSkxJzE2PyjMDs4mwg0xgleAAA
+        AAD//6K7i4oyq/LzgM4wAbGzE/OKE4FBZQp1E9BBAAAAAP//oreDnBNzMtPyi/IygW4yA3Lzc/KL
+        ElPyY/LM4ekXAAAA//+iu5Py8/JSk0syk0tLYvIs9BRcUnMSyxOLUmPyLBHhBAAAAP//orej3IDh
+        kpkCDCRDAz0F99T8onRQiBkawkMJAAAA//+it4M8gGGSmalUC7QaAAAA///CUbLmFxAqWPMLkCxG
+        ZAoAAAAA//9KRa0rsXoCRVIJydEodZVSbmIFrN7AWmfVIlVaaNWMqUEtSuEBAAAA//9KRa/BMf2H
+        LKcE1wgAAAD//wMAdz+znPsHAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+      cache-control:
+      - no-cache
+      date:
+      - Wed, 05 Nov 2025 15:49:51 GMT
+      request-id:
+      - req_vrtx_011CUq1P2KNi7hFAkSauTAVG
+      server:
+      - hypercorn-h11
+      x-accel-buffering:
+      - 'no'
+      x-vertex-ai-received-request-id:
+      - 780332a6-aba7-4635-ab1c-00a42a6de3ba
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -7,17 +7,20 @@ from __future__ import annotations
 
 import hashlib
 import inspect
+import json
 import re
 from collections.abc import Awaitable, Callable, Generator
 from copy import deepcopy
-from typing import ParamSpec, TypedDict, get_args
+from typing import Any, ParamSpec, TypedDict, get_args
 from typing_extensions import TypeIs
+from urllib.parse import parse_qs, urlencode
 
 import httpx
 import pytest
 from anthropic.lib.bedrock import _auth as bedrock_auth
 from anthropic.lib.bedrock._client import AnthropicBedrock, AsyncAnthropicBedrock
 from vcr.cassette import Cassette as VCRCassette
+from vcr.config import VCR
 from vcr.request import Request as VCRRequest
 from vcr.stubs import httpx_stubs
 
@@ -29,6 +32,7 @@ P = ParamSpec("P")
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("anthropic", "claude-sonnet-4-0"),
     ("anthropic-bedrock", "us.anthropic.claude-haiku-4-5-20251001-v1:0"),
+    ("anthropic-vertex", "claude-haiku-4-5@20251001"),
     ("azure-openai:completions", "gpt-4o-mini"),
     ("azure-openai:responses", "gpt-4o-mini"),
     ("google", "gemini-2.5-flash"),
@@ -112,6 +116,25 @@ class VCRConfig(TypedDict, total=False):
     headers without affecting the actual HTTP requests.
     """
 
+    before_record_response: Callable[[dict[str, Any]], dict[str, Any]]
+    """Callback to sanitize responses before saving to cassette.
+
+    This function is called AFTER the real HTTP response is received,
+    but BEFORE it's written to the cassette file. Use this to sanitize sensitive
+    data in response bodies (e.g., OAuth tokens) without affecting the actual
+    HTTP responses received by the application.
+    """
+
+    before_record: Callable[
+        [VCRRequest, dict[str, Any]], tuple[VCRRequest, dict[str, Any]] | None
+    ]
+    """Callback to sanitize both request and response before saving to cassette.
+
+    This function is called AFTER the HTTP interaction completes,
+    but BEFORE it's written to the cassette file. Returns a tuple of
+    (request, response) to record, or None to skip recording.
+    """
+
     decode_compressed_response: bool
     """Whether to decode compressed responses.
 
@@ -120,13 +143,21 @@ class VCRConfig(TypedDict, total=False):
     and avoiding issues with binary data or signatures.
     """
 
+    ignore_hosts: list[str]
+    """List of hosts to ignore when recording/replaying.
+
+    Requests to these hosts will not be intercepted by VCR and will be
+    made as normal HTTP requests. Useful for metadata servers or health
+    check endpoints that should not be recorded.
+    """
+
 
 def sanitize_request(request: VCRRequest) -> VCRRequest:
-    """Sanitize sensitive headers in VCR request before recording to cassette.
+    """Sanitize sensitive headers and body in VCR request before recording to cassette.
 
     This hook is called AFTER the real HTTP request is sent (with valid auth),
     but BEFORE it's written to the cassette file. We deep copy the request
-    and replace sensitive headers with placeholders.
+    and replace sensitive headers and OAuth tokens with placeholders.
 
     Also normalizes Azure OpenAI URLs to use a dummy endpoint so that
     cassettes work in CI without real Azure credentials.
@@ -146,6 +177,16 @@ def sanitize_request(request: VCRRequest) -> VCRRequest:
             request.uri,
         )
 
+    if (
+        "aiplatform.googleapis.com" in request.uri
+        and "/publishers/anthropic/" in request.uri
+    ):
+        request.uri = re.sub(
+            r"https://[\w-]+-aiplatform\.googleapis\.com/v1/projects/[\w-]+/locations/[\w-]+/publishers/anthropic/",
+            "https://us-east5-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-east5/publishers/anthropic/",
+            request.uri,
+        )
+
     for header in SENSITIVE_HEADERS:
         header_lower = header.lower()
         for req_header in list(request.headers.keys()):
@@ -155,7 +196,144 @@ def sanitize_request(request: VCRRequest) -> VCRRequest:
                 else:
                     request.headers[req_header] = "<filtered>"
 
+    if "oauth2.googleapis.com/token" in request.uri and request.body:
+        if isinstance(request.body, bytes):
+            body_str = request.body.decode()
+            is_bytes = True
+        elif isinstance(request.body, str):
+            body_str = request.body
+            is_bytes = False
+        else:
+            return request
+
+        params = parse_qs(body_str, keep_blank_values=True)
+
+        sensitive_params = ["refresh_token", "client_secret", "access_token"]
+        for param in sensitive_params:
+            if param in params:
+                params[param] = ["<filtered>"]
+
+        sanitized_body = urlencode(params, doseq=True)
+        request.body = sanitized_body.encode() if is_bytes else sanitized_body
+
     return request
+
+
+def sanitize_response(response: dict[str, Any]) -> dict[str, Any]:
+    """Sanitize sensitive tokens in VCR response before recording to cassette.
+
+    This hook is called AFTER the real HTTP response is received,
+    but BEFORE it's written to the cassette file. We deep copy the response
+    and replace OAuth tokens (access_token, id_token) with placeholders.
+
+    Args:
+        response: VCR response dictionary to sanitize
+
+    Returns:
+        Sanitized copy of the response safe for cassette storage
+    """
+    response = deepcopy(response)
+
+    if "body" not in response:
+        return response
+
+    body_content = response["body"].get("string", "")
+
+    if not body_content:
+        return response
+
+    is_bytes = isinstance(body_content, bytes)
+    if is_bytes:
+        try:
+            body_string = body_content.decode("utf-8")
+        except UnicodeDecodeError:
+            return response
+    elif isinstance(body_content, str):
+        body_string = body_content
+    else:
+        return response
+
+    try:
+        response_data = json.loads(body_string)
+
+        sensitive_fields = ["access_token", "id_token", "refresh_token"]
+        for field in sensitive_fields:
+            if field in response_data:
+                response_data[field] = "<filtered>"
+
+        sanitized_json = json.dumps(response_data)
+        response["body"]["string"] = (
+            sanitized_json.encode("utf-8") if is_bytes else sanitized_json
+        )
+    except (json.JSONDecodeError, TypeError):
+        pass
+
+    return response
+
+
+def sanitize_interaction(
+    request: VCRRequest, response: dict[str, Any]
+) -> tuple[VCRRequest, dict[str, Any]]:
+    """Sanitize both request and response before recording to cassette.
+
+    This hook combines sanitize_request and sanitize_response to ensure
+    all sensitive data is filtered from recorded cassettes.
+
+    Args:
+        request: VCR request object
+        response: VCR response dictionary
+
+    Returns:
+        Tuple of (sanitized_request, sanitized_response)
+    """
+    sanitized_request = sanitize_request(request)
+    sanitized_response = sanitize_response(response)
+    return sanitized_request, sanitized_response
+
+
+def _normalize_vertex_uri(uri: str) -> str:
+    """Normalize Anthropic Vertex AI URIs by replacing project ID and region with dummy values."""
+    if "aiplatform.googleapis.com" in uri and "/publishers/anthropic/" in uri:
+        return re.sub(
+            r"https://[\w-]+-aiplatform\.googleapis\.com/v1/projects/[\w-]+/locations/[\w-]+/publishers/anthropic/",
+            "https://us-east5-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-east5/publishers/anthropic/",
+            uri,
+        )
+    return uri
+
+
+def _custom_uri_matcher(
+    cassette_request: VCRRequest, incoming_request: VCRRequest
+) -> bool:
+    """Custom URI matcher that normalizes Vertex AI project IDs and regions."""
+    return _normalize_vertex_uri(cassette_request.uri) == _normalize_vertex_uri(
+        incoming_request.uri
+    )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _register_custom_matchers() -> None:
+    """Replace default matchers with custom ones for Vertex AI and OAuth handling.
+
+    Custom body matcher skips OAuth token endpoint body matching since OAuth
+    token requests contain credentials that differ between real and dummy
+    service accounts. The response tokens are sanitized in cassettes, making
+    this safe.
+    """
+    original_init = VCR.__init__
+
+    def patched_init(self: VCR, *args: Any, **kwargs: Any) -> None:  # noqa: ANN401
+        original_init(self, *args, **kwargs)
+        self.matchers["uri"] = _custom_uri_matcher  # type: ignore[assignment]
+        self.matchers["body"] = (  # type: ignore[assignment]
+            lambda cassette_req, incoming_req: (
+                True
+                if "oauth2.googleapis.com/token" in cassette_req.uri
+                else cassette_req.body == incoming_req.body
+            )
+        )
+
+    VCR.__init__ = patched_init
 
 
 @pytest.fixture(autouse=True)
@@ -174,16 +352,22 @@ def vcr_config() -> VCRConfig:
     - Google/Gemini (x-goog-api-key header)
     - Anthropic (x-api-key, anthropic-organization-id headers)
     - AWS Bedrock (AWS SigV4 headers: authorization, x-amz-*)
+    - Google Vertex AI (OAuth tokens in request/response bodies)
 
     Note:
-        We use before_record_request hook for sanitizing sensitive headers.
-        This ensures the real HTTP requests (with valid auth) are sent
-        successfully, but sensitive headers are replaced with placeholders
-        in the cassette files.
+        We use before_record_request hook for sanitizing sensitive headers and
+        request bodies. We use before_record_response hook for sanitizing OAuth
+        tokens in response bodies. This ensures the real HTTP requests (with
+        valid auth) are sent successfully, but sensitive data is replaced with
+        placeholders in the cassette files.
 
         We use 'raw_body' in match_on for exact binary matching and
         decode_compressed_response=False to preserve exact response bytes
         (important for AWS SigV4 signatures and binary data integrity).
+
+        We ignore the GCE metadata server (169.254.169.254) to prevent Google
+        auth from making requests to it during tests. The NO_GCE_CHECK env var
+        is also set to skip these checks entirely.
 
     Returns:
         VCRConfig: Dictionary with VCR.py configuration settings
@@ -191,10 +375,12 @@ def vcr_config() -> VCRConfig:
     return {
         "record_mode": "once",
         "match_on": ["method", "uri", "body"],
-        "filter_headers": [],  # Don't filter here; use before_record_request
+        "filter_headers": [],
         "filter_post_data_parameters": [],
         "before_record_request": sanitize_request,
-        "decode_compressed_response": False,  # Preserve exact response bytes
+        "before_record_response": sanitize_response,
+        "decode_compressed_response": False,
+        "ignore_hosts": ["169.254.169.254"],
     }
 
 

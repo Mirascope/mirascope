@@ -1,0 +1,247 @@
+interactions:
+- request:
+    body: grant_type=refresh_token&client_id=764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com&client_secret=%3Cfiltered%3E&refresh_token=%3Cfiltered%3E
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '268'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.32.4
+      x-goog-api-client:
+      - gl-python/3.10.15 auth/2.40.3 cred-type/u
+    method: POST
+    uri: https://oauth2.googleapis.com/token
+  response:
+    body:
+      string: '{"access_token": "<filtered>", "expires_in": 3599, "scope": "https://www.googleapis.com/auth/sqlservice.login
+        https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email
+        openid", "token_type": "Bearer", "id_token": "<filtered>"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 05 Nov 2025 15:49:35 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
+      the secrets associated with each of these passwords: mellon,radiance"}],"system":"Use
+      parallel tool calling.","tools":[{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}],"stream":true,"anthropic_version":"vertex-2023-10-16"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '500'
+      content-type:
+      - application/json
+      host:
+      - us-east5-aiplatform.googleapis.com
+      user-agent:
+      - AnthropicVertex/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://us-east5-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-east5/publishers/anthropic/models/claude-haiku-4-5@20251001:streamRawPredict
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2SOwWrDMBBE7/4Ks+cYZLVusT6h+NRTQyhCtZZYRJYc7yq0BP97ZahLTfe2b4aZ
+        wRsGVuWIROaMmtjMXFjDRpV34K8JQcFOhMP2g7rDGC36bOm9SRarwbhLqh6rppJCNrUQdbY7u2bQ
+        Wd9m/tSiPn48ddcuPjyPIb3abniJrXyT2bivy2COfgWGyOXusHb3MXBeDOr0fgDiOOkZDcUAKiTv
+        fxDhNWHocYNpm+vClFhzvGAgUE3b5kDTD6j7nMIuBr13iE3Psv2vxcR/iWyWpfy9pSi+AQAA//9K
+        hQRuQWZeOlqYKiiBBJWAagAAAAD//4KqgforPiknPzkbezRgUQIK3byU1AqIS5HlQb6F6ivJz8+J
+        Ly1OhUUFiF8Ki4zgrOyC8FKz0JSQIp+sEjfH7DDvUnBA5yXmgjQXpwKDpgTo/5KizNSyxJx4kG6w
+        tUCfAy2prQX6AQAAAP//wuoHYMIoScTvB7ASFD9ARBBuhwR5FjCC4YoLgP7OBDokCxzrSkq1SAEO
+        AAAA//8aSIdUxwBFiovL84uUkFIB2FkAAAAA//8aSGelxABTW4xSLko4AQAAAP//GkgHpebkQN0C
+        dAgAAAD//xpIh+TnxSjVgp0CdAgAAAD//8KRDfMLCOXC/AIkZ0B9BQAAAP//olKeNiQ3T1d4hCWa
+        5UZmhZubJBUmGyU6+wblu5GSpxVQAdBLAAAAAP//olJEGVKWxSFuAQAAAP//Gki3QHK5EqjUAwAA
+        AP//GkhngIqZFHi4AB0DAAAA//8aSMdASpiixJTMxDyIm4AOAgAAAP//GkgHAWv+WpAbAAAAAP//
+        GthAAZctQFcAAAAA//+iStFiCAlVAAAAAP//SkVtrmH1C4qkEpLbUZpLyEUIlkZTLVKrCa2ZY2kB
+        Sv0AAAAA//9KRW84YvoHWU4J7HwAAAAA//8DAIydIjZuCgAA
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+      cache-control:
+      - no-cache
+      date:
+      - Wed, 05 Nov 2025 15:49:36 GMT
+      request-id:
+      - req_vrtx_011CUq1Mv5JZpsgspKJgvaRN
+      server:
+      - hypercorn-h11
+      x-accel-buffering:
+      - 'no'
+      x-vertex-ai-received-request-id:
+      - f40402ef-faa6-4e0c-9bba-0505ba08b555
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Please retrieve
+      the secrets associated with each of these passwords: mellon,radiance"},{"role":"assistant","content":[{"type":"tool_use","id":"toolu_vrtx_01SjkpWu6UdTrLjtFAkVKunt","name":"secret_retrieval_tool","input":{"password":"mellon"}},{"type":"tool_use","id":"toolu_vrtx_01SxHVa6mYjW74bqc2aCMRoF","name":"secret_retrieval_tool","input":{"password":"radiance"}}]},{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_vrtx_01SjkpWu6UdTrLjtFAkVKunt","content":"Welcome
+      to Moria!"},{"type":"tool_result","tool_use_id":"toolu_vrtx_01SxHVa6mYjW74bqc2aCMRoF","content":"Life
+      before Death"}]}],"system":"Use parallel tool calling.","tools":[{"name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","input_schema":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"}}],"stream":true,"anthropic_version":"vertex-2023-10-16"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1021'
+      content-type:
+      - application/json
+      host:
+      - us-east5-aiplatform.googleapis.com
+      user-agent:
+      - AnthropicVertex/Python 0.64.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.64.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-stream-helper:
+      - messages
+      x-stainless-timeout:
+      - NOT_GIVEN
+    method: POST
+    uri: https://us-east5-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-east5/publishers/anthropic/models/claude-haiku-4-5@20251001:streamRawPredict
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2SO0UrEMBBF3/sVZZ63kC5dK/kABUHfBEEkDOmwjc0m3c5kdVn676ZgweLjnHu4
+        d+hCQXR5ImY8kmHBSYoOBXV5A7mOBBo2IezWG/QNTrEjnxXrMXVU9eiGVDXVodqr/aFWqs6665YO
+        PprLJN9G1W9P9xHPvXOvzddw/eTnl7uHxzaL27kMpugXgMwub4dl28Yg+WPQ7x87YImjmQg5BtAh
+        ef+LmM6JgqUVpvVdF8YkRuJAgUG3bZML0fZkbG4RF4PZGmrNc9z9z2KSv6Se53Iuih8AAAD//0qF
+        BGlBZl46WkgqKIEElYBqAAAAAP//gqqB+iY+KSc/ORt74GNRAgrTvJTUCoj7kOVBfoTqK0mtACkE
+        U1ZKSrUKqADoBgAAAAD//8LqBmB0liTidwNYCYobICKodsOVQV3gDgphpVqgvQAAAAD//6KvvYoK
+        nuplqSj+B7oBAAAA//+80tENABAMBcBV3hzGQYWvSlsR23sxhA3u4/4a4KsUrm7ceGASNgioiC5w
+        4b1wNDVkjY7J7lutenpoYi8AAAD//6KvY2PyYvIMQVYDbQYAAAD//6KvzXoKWloBEN9D7QcAAAD/
+        /6Kv/SlWCjFK6CkFAAAA//+irxNyU3Ny8vNilLS0FB61TYK4BegIAAAAAP//onNy1dIKBqdKbKUG
+        AAAA//+ir1NAMRKempOcn5sKLjsAAAAA//+ic0CU5Cv45hdlJiqCYiQmzwg5QICuAQAAAP//GrDs
+        AU6pRYkpmYnAWg6RZoFOAgAAAP//oq+TIMkUnl5ArvLJTEtVSEoFFmep8OQLAAAA//+ic6y5AGua
+        DFCMwQpQAAAAAP//wlHb5hcQqmzzC5BsR4l6AAAAAP//SkVtN2H1DIqkEpLjUdotSql5KfElpUV5
+        SlhbL7VIzRe09oapZS2SiwAAAAD//0pFb8lheg9ZTgmkBwAAAP//AwCIBfvA/gkAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+      cache-control:
+      - no-cache
+      date:
+      - Wed, 05 Nov 2025 15:49:37 GMT
+      request-id:
+      - req_vrtx_011CUq1N2XVXPPzgC5chyHXo
+      server:
+      - hypercorn-h11
+      x-accel-buffering:
+      - 'no'
+      x-vertex-ai-received-request-id:
+      - 221f0f0f-9e7e-401d-a237-6c934371bcd6
+    status:
+      code: 200
+      message: OK
+version: 1
