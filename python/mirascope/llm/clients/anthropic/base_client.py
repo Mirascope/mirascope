@@ -64,18 +64,18 @@ class BaseAnthropicClient(
     """Base client for Anthropic-compatible APIs.
 
     This class implements all the API call logic that is shared between
-    Anthropic and Anthropic Bedrock. Subclasses only need to define `_context_var`,
-    `provider`, and `__init__`.
+    Anthropic, Anthropic Bedrock, and Anthropic Vertex. Subclasses only need to
+    define `_context_var`, `provider`, and `__init__`.
 
     Type parameters:
-        ProviderClientT: The sync provider client type (Anthropic or AnthropicBedrock).
-        AsyncProviderClientT: The async provider client type (AsyncAnthropic or AsyncAnthropicBedrock).
+        ProviderClientT: The sync provider client type (Anthropic, AnthropicBedrock, or AnthropicVertex).
+        AsyncProviderClientT: The async provider client type (AsyncAnthropic, AsyncAnthropicBedrock, or AsyncAnthropicVertex).
         ClientT: The concrete client type (for ContextVar typing).
     """
 
     @property
     @abstractmethod
-    def provider(self) -> Literal["anthropic", "anthropic-bedrock"]:
+    def provider(self) -> Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"]:
         """Return the provider name for Anthropic-compatible clients."""
         ...
 

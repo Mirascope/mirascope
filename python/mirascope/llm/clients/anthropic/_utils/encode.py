@@ -37,6 +37,18 @@ def encode_image_mime_type(
     )  # pragma: no cover
 
 
+def _pretty_provider_name(
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
+) -> str:
+    """Convert provider string to a pretty name for user-facing messages."""
+    if provider == "anthropic-bedrock":
+        return "Anthropic Bedrock"
+    elif provider == "anthropic-vertex":  # pragma: no cover
+        return "Anthropic Vertex AI"
+    else:
+        return "Anthropic"
+
+
 class MessageCreateKwargs(TypedDict, total=False):
     """Kwargs for Anthropic Message.create method."""
 
@@ -56,7 +68,7 @@ class MessageCreateKwargs(TypedDict, total=False):
 def _encode_content(
     content: Sequence[ContentPart],
     encode_thoughts: bool,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> str | Sequence[anthropic_types.ContentBlockParam]:
     """Returns encoded Anthropic content blocks from mirascope content."""
     if len(content) == 1 and content[0].type == "text":
@@ -79,12 +91,11 @@ def _encode_content(
                     data=part.source.data,
                 )
             else:
-                if provider == "anthropic-bedrock":  # pragma: no cover
-                    # TODO: Add test coverage for Bedrock URL image error case
+                if provider in ("anthropic-bedrock", "anthropic-vertex"):
                     raise FeatureNotSupportedError(
                         "url_image_source",
                         provider,
-                        message="Anthropic Bedrock does not support URL-referenced images. Try `llm.Image.download(...)` or `llm.Image.download_async(...)`",
+                        message=f"{_pretty_provider_name(provider)} does not support URL-referenced images. Try `llm.Image.download(...)` or `llm.Image.download_async(...)`",
                     )
                 source = anthropic_types.URLImageSourceParam(
                     type="url",
@@ -116,13 +127,10 @@ def _encode_content(
                     )
                 )
         elif part.type == "audio":
-            provider_name = (
-                "Anthropic Bedrock" if provider == "anthropic-bedrock" else "Anthropic"
-            )
             raise FeatureNotSupportedError(
                 "audio input",
                 provider,
-                message=f"{provider_name} does not support audio inputs.",
+                message=f"{_pretty_provider_name(provider)} does not support audio inputs.",
             )
         else:
             raise NotImplementedError(f"Content type {part.type} not supported")
@@ -134,12 +142,12 @@ def _encode_message(
     message: UserMessage | AssistantMessage,
     model_id: AnthropicModelId,
     encode_thoughts: bool,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> anthropic_types.MessageParam:
     """Returns Anthropic MessageParam from mirascope Message."""
     if (
         message.role == "assistant"
-        and message.provider in ("anthropic", "anthropic-bedrock")
+        and message.provider in ("anthropic", "anthropic-bedrock", "anthropic-vertex")
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -158,7 +166,7 @@ def _prepare_request(
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> tuple[
     Sequence[Message],
     Format[FormattableT] | None,
@@ -259,7 +267,7 @@ def encode_request(
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Returns tuple of (messages, format, kwargs) for Anthropic.messages.create."""
     (
