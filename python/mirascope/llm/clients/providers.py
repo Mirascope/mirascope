@@ -16,6 +16,11 @@ from .anthropic_bedrock import (
     client as anthropic_bedrock_client,
     get_client as get_anthropic_bedrock_client,
 )
+from .anthropic_vertex import (
+    AnthropicVertexClient,
+    client as anthropic_vertex_client,
+    get_client as get_anthropic_vertex_client,
+)
 from .azure_openai.completions import (
     AzureOpenAICompletionsClient,
     clear_cache as clear_azure_openai_completions_cache,
@@ -51,6 +56,7 @@ from .openai import (
 Provider: TypeAlias = Literal[
     "anthropic",  # AnthropicClient
     "anthropic-bedrock",  # AnthropicBedrockClient
+    "anthropic-vertex",  # AnthropicVertexClient
     "azure-openai:completions",  # AzureOpenAICompletionsClient
     "azure-openai:responses",  # AzureOpenAIResponsesClient
     "google",  # GoogleClient
@@ -89,6 +95,12 @@ def get_client(provider: Literal["anthropic"]) -> AnthropicClient:
 @overload
 def get_client(provider: Literal["anthropic-bedrock"]) -> AnthropicBedrockClient:
     """Get an Anthropic Bedrock client instance."""
+    ...
+
+
+@overload
+def get_client(provider: Literal["anthropic-vertex"]) -> AnthropicVertexClient:
+    """Get an Anthropic Vertex AI client instance."""
     ...
 
 
@@ -133,6 +145,7 @@ def get_client(
 ) -> (
     AnthropicClient
     | AnthropicBedrockClient
+    | AnthropicVertexClient
     | AzureOpenAICompletionsClient
     | AzureOpenAIResponsesClient
     | GoogleClient
@@ -151,6 +164,9 @@ def get_client(
         - "openai:responses" returns `OpenAIResponsesClient` (Responses API)
         - "anthropic" returns `AnthropicClient`
         - "anthropic-bedrock" returns `AnthropicBedrockClient`
+        - "anthropic-vertex" returns `AnthropicVertexClient`
+        - "azure-openai:completions" returns `AzureOpenAICompletionsClient`
+        - "azure-openai:responses" returns `AzureOpenAIResponsesClient`
         - "google" returns `GoogleClient`
 
     Multiple calls to get_client will return the same Client rather than constructing
@@ -164,6 +180,9 @@ def get_client(
             return get_anthropic_client()
         case "anthropic-bedrock":
             return get_anthropic_bedrock_client()
+        case "anthropic-vertex":  # pragma: no cover
+            # TODO: Add unittest for anthropic-vertex in another PR.
+            return get_anthropic_vertex_client()
         case "azure-openai:completions":
             return get_azure_openai_completions_client()
         case "azure-openai:responses":
@@ -228,6 +247,17 @@ def client(
 
 @overload
 def client(
+    provider: Literal["anthropic-vertex"],
+    *,
+    project_id: str | None = None,
+    region: str | None = None,
+) -> AnthropicVertexClient:
+    """Create a cached Anthropic Vertex AI client with the given parameters."""
+    ...
+
+
+@overload
+def client(
     provider: Literal["google"],
     *,
     api_key: str | None = None,
@@ -272,6 +302,7 @@ def client(
 ) -> (
     AnthropicClient
     | AnthropicBedrockClient
+    | AnthropicVertexClient
     | AzureOpenAICompletionsClient
     | AzureOpenAIResponsesClient
     | GoogleClient
@@ -284,9 +315,20 @@ def client(
         provider: The provider name.
         api_key: API key for authentication. If None, uses provider-specific env var.
         base_url: Base URL for the API. For Azure, this is the endpoint URL.
-        **kwargs: Provider-specific parameters. For Azure providers, accepts:
-            - azure_api_version: Azure OpenAI API version
-            - azure_ad_token_provider: Azure AD token provider
+            For Bedrock, this overrides the default Bedrock endpoint.
+        **kwargs: Provider-specific parameters:
+            - For Azure providers:
+                - azure_api_version: Azure OpenAI API version
+                - azure_ad_token_provider: Azure AD token provider
+            - For Bedrock provider:
+                - aws_region: AWS region
+                - aws_access_key: AWS access key
+                - aws_secret_key: AWS secret key
+                - aws_session_token: AWS session token
+                - aws_profile: AWS profile name
+            - For Vertex AI provider:
+                - project_id: GCP project ID
+                - region: GCP region
 
     Returns:
         A cached client instance for the specified provider with the given parameters.
@@ -305,6 +347,12 @@ def client(
                 aws_secret_key=kwargs.get("aws_secret_key"),
                 aws_session_token=kwargs.get("aws_session_token"),
                 aws_profile=kwargs.get("aws_profile"),
+            )
+        case "anthropic-vertex":  # pragma: no cover
+            # TODO: Add unittest for anthropic-vertex in another PR.
+            return anthropic_vertex_client(
+                project_id=kwargs.get("project_id"),
+                region=kwargs.get("region"),
             )
         case "azure-openai:completions":
             return azure_openai_completions_client(

@@ -56,7 +56,7 @@ class MessageCreateKwargs(TypedDict, total=False):
 def _encode_content(
     content: Sequence[ContentPart],
     encode_thoughts: bool,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> str | Sequence[anthropic_types.ContentBlockParam]:
     """Returns encoded Anthropic content blocks from mirascope content."""
     if len(content) == 1 and content[0].type == "text":
@@ -79,12 +79,16 @@ def _encode_content(
                     data=part.source.data,
                 )
             else:
-                if provider == "anthropic-bedrock":  # pragma: no cover
-                    # TODO: Add test coverage for Bedrock URL image error case
+                if provider in ("anthropic-bedrock", "anthropic-vertex"):
+                    provider_name = (
+                        "Anthropic Bedrock"
+                        if provider == "anthropic-bedrock"
+                        else "Anthropic Vertex AI"
+                    )
                     raise FeatureNotSupportedError(
                         "url_image_source",
                         provider,
-                        message="Anthropic Bedrock does not support URL-referenced images. Try `llm.Image.download(...)` or `llm.Image.download_async(...)`",
+                        message=f"{provider_name} does not support URL-referenced images. Try `llm.Image.download(...)` or `llm.Image.download_async(...)`",
                     )
                 source = anthropic_types.URLImageSourceParam(
                     type="url",
@@ -116,9 +120,13 @@ def _encode_content(
                     )
                 )
         elif part.type == "audio":
-            provider_name = (
-                "Anthropic Bedrock" if provider == "anthropic-bedrock" else "Anthropic"
-            )
+            if provider == "anthropic-bedrock":
+                provider_name = "Anthropic Bedrock"
+            elif provider == "anthropic-vertex":  # pragma: no cover
+                # TODO: Add unittest for anthropic-vertex in another PR.
+                provider_name = "Anthropic Vertex AI"
+            else:
+                provider_name = "Anthropic"
             raise FeatureNotSupportedError(
                 "audio input",
                 provider,
@@ -133,7 +141,7 @@ def _encode_content(
 async def _encode_content_async(
     content: Sequence[ContentPart],
     encode_thoughts: bool,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> str | Sequence[anthropic_types.ContentBlockParam]:
     """Returns encoded Anthropic content blocks from mirascope content (async)."""
     return _encode_content(content, encode_thoughts, provider)
@@ -143,12 +151,12 @@ def _encode_message(
     message: UserMessage | AssistantMessage,
     model_id: AnthropicModelId,
     encode_thoughts: bool,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> anthropic_types.MessageParam:
     """Returns Anthropic MessageParam from mirascope Message."""
     if (
         message.role == "assistant"
-        and message.provider in ("anthropic", "anthropic-bedrock")
+        and message.provider in ("anthropic", "anthropic-bedrock", "anthropic-vertex")
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -164,12 +172,12 @@ async def _encode_message_async(
     message: UserMessage | AssistantMessage,
     model_id: AnthropicModelId,
     encode_thoughts: bool,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> anthropic_types.MessageParam:
     """Returns Anthropic MessageParam from mirascope Message (async)."""
     if (
         message.role == "assistant"
-        and message.provider in ("anthropic", "anthropic-bedrock")
+        and message.provider in ("anthropic", "anthropic-bedrock", "anthropic-vertex")
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -190,7 +198,7 @@ def _prepare_request(
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> tuple[
     Sequence[Message],
     Format[FormattableT] | None,
@@ -291,7 +299,7 @@ def encode_request(
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Returns tuple of (messages, format, kwargs) for Anthropic.messages.create."""
     (
@@ -328,7 +336,7 @@ async def encode_request_async(
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
-    provider: Literal["anthropic", "anthropic-bedrock"],
+    provider: Literal["anthropic", "anthropic-bedrock", "anthropic-vertex"],
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Returns tuple of (messages, format, kwargs) for Anthropic.messages.create (async)."""
     (
