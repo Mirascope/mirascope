@@ -2,8 +2,11 @@
   "name": "mirascope-docs",
   "private": true,
   "scripts": {
-    "prepare-website": "bun run scripts/sync-website.ts && cd .build-cache/mirascope-website && bun i",
-    "dev": "bun run prepare-website && cd .build-cache/mirascope-website && SKIP_DOCS_SYNC=1 bun run start",
-    "build": "bun run prepare-website && (cd .build-cache/mirascope-website && SKIP_DOCS_SYNC=1 bun run build) && cp -r .build-cache/mirascope-website/dist dist"
+    "prepare-website": "bun run scripts/sync-website.ts && (cd .build-cache/mirascope-website && bun i)",
+    "dev": "bun run prepare-website && (trap 'kill 0' EXIT; bun run scripts/sync-website.ts --watch --skip-initial-sync & cd .build-cache/mirascope-website && bun run start)",
+    "build": "bun run prepare-website && (cd .build-cache/mirascope-website && bun run build) && cp -r .build-cache/mirascope-website/dist dist"
+  },
+  "devDependencies": {
+    "chokidar": "^4.0.3"
   }
 }
