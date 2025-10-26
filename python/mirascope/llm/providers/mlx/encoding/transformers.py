@@ -93,6 +93,14 @@ def _encode_message(message: Message) -> TransformersMessage:
     raise ValueError(f"Unsupported message: {message}")
 
 
+def _tool_to_json(tool: AnyToolSchema) -> Jsonable:
+    return {
+        "name": tool.name,
+        "description": tool.description,
+        "parameters": tool.parameters.properties,
+    }
+
+
 @dataclass(frozen=True)
 class TransformersEncoder(BaseEncoder):
     """Encoder for Transformers models."""
@@ -108,8 +116,8 @@ class TransformersEncoder(BaseEncoder):
     ) -> tuple[Sequence[Message], Format[FormattableT] | None, TokenIds]:
         """Encode a request into a format suitable for the model."""
         tool_schemas = tools.tools if isinstance(tools, BaseToolkit) else tools or []
-        if len(tool_schemas) > 0:
-            raise NotImplementedError("Tool usage is not supported.")
+        json_tools = [_tool_to_json(tool) for tool in tool_schemas]
+
         if format is not None:
             raise NotImplementedError("Formatting is not supported.")
 
@@ -120,6 +128,7 @@ class TransformersEncoder(BaseEncoder):
             str,
             self.tokenizer.apply_chat_template(  # pyright: ignore[reportUnknownMemberType]
                 cast(list[dict[str, str]], hf_messages),
+                tools=json_tools,  # pyright: ignore[reportArgumentType]
                 tokenize=False,
                 add_generation_prompt=True,
             ),
