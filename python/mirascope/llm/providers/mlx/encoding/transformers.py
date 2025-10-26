@@ -6,41 +6,52 @@ from typing_extensions import TypedDict
 from mlx_lm.generate import GenerationResponse
 from transformers import PreTrainedTokenizer
 
-from ....content import ContentPart
 from ....formatting import Format, FormattableT
 from ....messages import AssistantContent, Message
 from ....responses import ChunkIterator, FinishReasonChunk, RawStreamEventChunk
 from ....tools import AnyToolSchema, BaseToolkit
+from ....types import Jsonable
 from .. import _utils
 from .base import BaseEncoder, TokenIds
 from .stream_processors import SpecialTokens, TextProcessor
 
-HFRole = Literal["system", "user", "assistant"] | str
+HFRole = Literal["system", "user", "assistant", "tool"] | str
 
 
-class TransformersMessage(TypedDict):
-    """Message in Transformers format."""
+class TransformersTextMessage(TypedDict):
+    """Text message in Transformers format."""
 
     role: HFRole
     content: str
 
 
-def _encode_content(content: Sequence[ContentPart]) -> str:
-    """Encode content parts into a string.
+class TransformersThoughtMessage(TypedDict):
+    role: Literal["assistant"]
+    reasoning_content: str
 
-    Args:
-        content: The sequence of content parts to encode.
 
-    Returns:
-        The encoded content as a string.
+class TransformersToolCall(TypedDict):
+    id: str
+    name: str
+    arguments: Jsonable
 
-    Raises:
-        NotImplementedError: If content contains non-text parts.
-    """
-    if len(content) == 1 and content[0].type == "text":
-        return content[0].text
 
-    raise NotImplementedError("Only text content is supported in this example.")
+class TransformersToolCallMessage(TypedDict):
+    role: Literal["assistant"]
+    tool_calls: list[TransformersToolCall]
+
+
+class TransformersToolOutputMessage(TypedDict):
+    role: Literal["tool"]
+    content: str
+
+
+TransformersMessage = (
+    TransformersTextMessage
+    | TransformersThoughtMessage
+    | TransformersToolCallMessage
+    | TransformersToolOutputMessage
+)
 
 
 def _encode_message(message: Message) -> TransformersMessage:
@@ -56,13 +67,30 @@ def _encode_message(message: Message) -> TransformersMessage:
         ValueError: If the message role is not supported.
     """
     if message.role == "system":
-        return TransformersMessage(role="system", content=message.content.text)
+        return TransformersTextMessage(role="system", content=message.content.text)
     elif message.role == "assistant" or message.role == "user":
-        return TransformersMessage(
-            role=message.role, content=_encode_content(message.content)
-        )
-    else:
-        raise ValueError(f"Unsupported message type: {type(message)}")
+        for part in message.content:
+            if part.type == "text":
+                return TransformersTextMessage(role=message.role, content=part.text)
+            elif part.type == "thought":
+                return TransformersThoughtMessage(
+                    role="assistant", reasoning_content=part.thought
+                )
+            elif part.type == "tool_call":
+                return TransformersToolCallMessage(
+                    role="assistant",
+                    tool_calls=[
+                        TransformersToolCall(
+                            id=part.id, name=part.name, arguments=part.args
+                        )
+                    ],
+                )
+            elif part.type == "tool_output":
+                return TransformersToolOutputMessage(
+                    role="tool", content=str(part.value)
+                )
+
+    raise ValueError(f"Unsupported message: {message}")
 
 
 @dataclass(frozen=True)
