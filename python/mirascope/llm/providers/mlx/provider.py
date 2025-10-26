@@ -32,7 +32,7 @@ from ...tools import (
 )
 from ..base import BaseProvider, Params
 from . import _utils
-from .encoding import TransformersEncoder
+from .encoding import SpecialTokens, TransformersEncoder
 from .mlx import MLX
 from .model_id import MLXModelId
 
@@ -50,8 +50,12 @@ def client() -> "MLXProvider":
 
 @lru_cache(maxsize=16)
 def _get_mlx(model_id: MLXModelId) -> MLX:
-    model, tokenizer = cast(tuple[nn.Module, PreTrainedTokenizer], mlx_load(model_id))
-    encoder = TransformersEncoder(tokenizer)
+    if not model_id.startswith("mlx/"):  # pragma: no cover
+        raise ValueError(f"Model ID must start with 'mlx/' prefix, got: {model_id}")
+
+    model_name = model_id.removeprefix("mlx/")
+    model, tokenizer = cast(tuple[nn.Module, PreTrainedTokenizer], mlx_load(model_name))
+    encoder = TransformersEncoder(tokenizer, SpecialTokens.flat_text())
     return MLX(
         model_id,
         model,

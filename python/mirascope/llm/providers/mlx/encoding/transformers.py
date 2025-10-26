@@ -1,4 +1,3 @@
-import io
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import Literal, cast
@@ -7,13 +6,14 @@ from typing_extensions import TypedDict
 from mlx_lm.generate import GenerationResponse
 from transformers import PreTrainedTokenizer
 
-from ....content import ContentPart, TextChunk, TextEndChunk, TextStartChunk
+from ....content import ContentPart
 from ....formatting import Format, FormattableT
 from ....messages import AssistantContent, Message
 from ....responses import ChunkIterator, FinishReasonChunk, RawStreamEventChunk
 from ....tools import AnyToolSchema, BaseToolkit
 from .. import _utils
 from .base import BaseEncoder, TokenIds
+from .stream_processors import SpecialTokens, TextProcessor
 
 HFRole = Literal["system", "user", "assistant"] | str
 
@@ -70,7 +70,7 @@ class TransformersEncoder(BaseEncoder):
     """Encoder for Transformers models."""
 
     tokenizer: PreTrainedTokenizer
-    """The tokenizer to use for encoding."""
+    special_tokens: SpecialTokens
 
     def encode_request(
         self,
@@ -106,26 +106,35 @@ class TransformersEncoder(BaseEncoder):
         self, stream: Iterable[GenerationResponse]
     ) -> tuple[AssistantContent, GenerationResponse | None]:
         """Decode a response into a format suitable for the model."""
-        with io.StringIO() as buffer:
-            last_response: GenerationResponse | None = None
-            for response in stream:
-                buffer.write(response.text)
-                last_response = response
+        last_response: GenerationResponse | None = None
 
-            return buffer.getvalue(), last_response
+        def _response_texts(stream: Iterable[GenerationResponse]) -> Iterable[str]:
+            nonlocal last_response
+            for response in stream:
+                last_response = response
+                yield response.text
+
+        content = list(
+            TextProcessor.process_text_stream_to_contents(
+                text_stream=_response_texts(stream),
+                special_tokens=self.special_tokens,
+            )
+        )
+        return content, last_response
 
     def decode_stream(self, stream: Iterable[GenerationResponse]) -> ChunkIterator:
         """Decode a stream of responses into a format suitable for the model."""
-        yield TextStartChunk()
+        processor = TextProcessor(special_tokens=self.special_tokens, min_length=0)
 
         response: GenerationResponse | None = None
         for response in stream:
             yield RawStreamEventChunk(raw_stream_event=response)
-            yield TextChunk(delta=response.text)
+            yield from processor.process_text(response.text)
 
         assert response is not None
         finish_reason = _utils.extract_finish_reason(response)
         if finish_reason is not None:
+            yield from processor.flush_contents()
             yield FinishReasonChunk(finish_reason=finish_reason)
         else:
-            yield TextEndChunk()
+            yield from processor.flush()
