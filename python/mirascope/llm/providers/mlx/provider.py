@@ -4,6 +4,7 @@ from typing import cast
 from typing_extensions import Unpack
 
 import mlx.nn as nn
+from huggingface_hub.utils.tqdm import disable_progress_bars
 from mlx_lm import load as mlx_load
 from transformers import PreTrainedTokenizer
 
@@ -35,6 +36,8 @@ from . import _utils
 from .encoding import SpecialTokens, TransformersEncoder
 from .mlx import MLX
 from .model_id import MLXModelId
+
+disable_progress_bars()
 
 
 @cache
