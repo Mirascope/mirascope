@@ -18,6 +18,7 @@ from .openai import (
     OpenAIResponsesModelId,
 )
 from .providers import PROVIDERS, ModelId, Provider, client, get_client
+from .xai import GrokClient, GrokModelId
 
 __all__ = [
     "PROVIDERS",
@@ -31,6 +32,8 @@ __all__ = [
     "ClientT",
     "GoogleClient",
     "GoogleModelId",
+    "GrokClient",
+    "GrokModelId",
     "ModelId",
     "OpenAICompletionsClient",
     "OpenAICompletionsModelId",

@@ -55,6 +55,13 @@ from .openai import (
     get_responses_client as get_openai_responses_client,
     responses_client as openai_responses_client,
 )
+from .xai import (
+    GrokClient,
+    GrokModelId,
+    clear_cache as clear_grok_cache,
+    client as grok_client,
+    get_client as get_grok_client,
+)
 
 Provider: TypeAlias = Literal[
     "anthropic",  # AnthropicClient
@@ -66,6 +73,7 @@ Provider: TypeAlias = Literal[
     "openai:completions",  # OpenAICompletionsClient
     "openai:responses",  # OpenAIResponsesClient
     "openai",  # Alias for "openai:responses"
+    "xai",  # GrokClient
 ]
 PROVIDERS = get_args(Provider)
 
@@ -76,6 +84,7 @@ ModelId: TypeAlias = (
     | AzureOpenAICompletionsModelId
     | AzureOpenAIResponsesModelId
     | GoogleModelId
+    | GrokModelId
     | OpenAIResponsesModelId
     | OpenAICompletionsModelId
     | str
@@ -147,6 +156,12 @@ PROVIDER_INFO: dict[Provider, ProviderInfo] = {
         "get_client": get_openai_responses_client,
         "client": openai_responses_client,
     },
+    "xai": {
+        "name": "xai",
+        "clear_cache": clear_grok_cache(),
+        "get_client": get_grok_client,
+        "client": grok_client
+    }
 }
 
 
@@ -204,6 +219,12 @@ def get_client(
     ...
 
 
+@overload
+def get_client(provider: Literal["xai"]) -> GrokClient:
+    """Get a Grok client instance."""
+    ...
+
+
 def get_client(
     provider: Provider,
 ) -> (
@@ -213,6 +234,7 @@ def get_client(
     | AzureOpenAICompletionsClient
     | AzureOpenAIResponsesClient
     | GoogleClient
+    | GrokClient
     | OpenAICompletionsClient
     | OpenAIResponsesClient
 ):
@@ -345,6 +367,16 @@ def client(
     ...
 
 
+@overload
+def client(
+    provider: Literal["xai"],
+    *,
+    api_key: str | None = None,
+) -> GrokClient:
+    """Create a cached Grok client with the given parameters."""
+    ...
+
+
 def client(
     provider: Provider,
     *,
@@ -358,6 +390,7 @@ def client(
     | AzureOpenAICompletionsClient
     | AzureOpenAIResponsesClient
     | GoogleClient
+    | GrokClient
     | OpenAICompletionsClient
     | OpenAIResponsesClient
 ):
