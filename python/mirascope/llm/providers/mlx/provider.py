@@ -6,6 +6,7 @@ from typing_extensions import Unpack
 import mlx.nn as nn
 from huggingface_hub.utils.tqdm import disable_progress_bars
 from mlx_lm import load as mlx_load
+from openai_harmony import HarmonyEncodingName
 from transformers import PreTrainedTokenizer
 
 from ...context import Context, DepsT
@@ -33,7 +34,7 @@ from ...tools import (
 )
 from ..base import BaseProvider, Params
 from . import _utils
-from .encoding import SpecialTokens, TransformersEncoder
+from .encoding import BaseEncoder, HarmonyEncoder, SpecialTokens, TransformersEncoder
 from .mlx import MLX
 from .model_id import MLXModelId
 
@@ -51,6 +52,19 @@ def client() -> "MLXProvider":
     return _mlx_client_singleton()
 
 
+def _encoder_for_model(
+    model_id: MLXModelId, tokenizer: PreTrainedTokenizer
+) -> BaseEncoder:
+    """Get the appropriate encoder for the given MLX model ID."""
+
+    if model_id == "mlx-community/Qwen3-0.6B-4bit-DWQ-053125":
+        return TransformersEncoder(tokenizer, SpecialTokens.qwen3())
+    elif model_id == "mlx-community/gpt-oss-20b-MXFP4-Q8":
+        return HarmonyEncoder(HarmonyEncodingName.HARMONY_GPT_OSS)
+    else:
+        return TransformersEncoder(tokenizer, SpecialTokens.flat_text())
+
+
 @lru_cache(maxsize=16)
 def _get_mlx(model_id: MLXModelId) -> MLX:
     if not model_id.startswith("mlx/"):  # pragma: no cover
@@ -58,7 +72,7 @@ def _get_mlx(model_id: MLXModelId) -> MLX:
 
     model_name = model_id.removeprefix("mlx/")
     model, tokenizer = cast(tuple[nn.Module, PreTrainedTokenizer], mlx_load(model_name))
-    encoder = TransformersEncoder(tokenizer, SpecialTokens.flat_text())
+    encoder = _encoder_for_model(model_id, tokenizer)
     return MLX(
         model_id,
         model,
