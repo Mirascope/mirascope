@@ -5,6 +5,8 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
+import gzip
+import re
 import hashlib
 import inspect
 import json
@@ -39,7 +41,6 @@ PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("openai:completions", "gpt-4o"),
     ("openai:responses", "gpt-4o"),
 ]
-
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (
     None,
@@ -169,6 +170,9 @@ def sanitize_request(request: VCRRequest) -> VCRRequest:
     This hook is called AFTER the real HTTP request is sent (with valid auth),
     but BEFORE it's written to the cassette file. We deep copy the request
     and replace sensitive headers and OAuth tokens with placeholders.
+
+    Also sanitizes OAuth token refresh requests to Google's OAuth2 endpoint,
+    which contain sensitive refresh_token, client_id, and client_secret.
 
     Also normalizes Azure OpenAI URLs to use a dummy endpoint so that
     cassettes work in CI without real Azure credentials.
@@ -351,6 +355,7 @@ def vcr_config() -> VCRConfig:
     - OpenAI (authorization header)
     - Google/Gemini (x-goog-api-key header)
     - Anthropic (x-api-key, anthropic-organization-id headers)
+    - AnthropicVertex (Google OAuth tokens in request/response bodies)
     - AWS Bedrock (AWS SigV4 headers: authorization, x-amz-*)
     - Google Vertex AI (OAuth tokens in request/response bodies)
 

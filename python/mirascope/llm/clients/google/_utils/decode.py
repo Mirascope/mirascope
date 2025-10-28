@@ -128,6 +128,7 @@ class _GoogleChunkProcessor:
 
     def __init__(self) -> None:
         self.current_content_type: Literal["text", "tool_call", "thought"] | None = None
+        self.current_tool_id: str | None = None
         self.accumulated_parts: list[genai_types.Part] = []
         self.reconstructed_content = genai_types.Content(parts=[])
 
@@ -150,11 +151,13 @@ class _GoogleChunkProcessor:
                 yield TextEndChunk()  # pragma: no cover
                 self.current_content_type = None  # pragma: no cover
             elif self.current_content_type == "tool_call" and not part.function_call:
-                # In testing, Gemini never emits tool calls and text in the same message
-                # (even when specifically asked in system and user prompt), so
-                # the following code is uncovered but included for completeness
-                yield ToolCallEndChunk()  # pragma: no cover
+                if self.current_tool_id is None:
+                    raise RuntimeError(
+                        "Missing tool_id when ending tool call"
+                    )  # pragma: no cover
+                yield ToolCallEndChunk(id=self.current_tool_id)  # pragma: no cover
                 self.current_content_type = None  # pragma: no cover
+                self.current_tool_id = None  # pragma: no cover
 
             if part.thought:
                 if self.current_content_type is None:
@@ -179,17 +182,23 @@ class _GoogleChunkProcessor:
                         "Required name missing on Google function call"
                     )  # pragma: no cover
 
+                tool_id = function_call.id or UNKNOWN_TOOL_ID
+                self.current_content_type = "tool_call"
+                self.current_tool_id = tool_id
                 yield ToolCallStartChunk(
-                    id=function_call.id or UNKNOWN_TOOL_ID,
+                    id=tool_id,
                     name=function_call.name,
                 )
 
                 yield ToolCallChunk(
+                    id=tool_id,
                     delta=json.dumps(function_call.args)
                     if function_call.args
                     else "{}",
                 )
-                yield ToolCallEndChunk()
+                yield ToolCallEndChunk(id=tool_id)
+                self.current_content_type = None
+                self.current_tool_id = None
 
         if candidate.finish_reason:
             if self.current_content_type == "text":

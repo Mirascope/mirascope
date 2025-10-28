@@ -47,7 +47,9 @@ class ToolCallChunk:
     type: Literal["tool_call_chunk"] = "tool_call_chunk"
 
     content_type: Literal["tool_call"] = "tool_call"
-    """The type of content reconstructed by this chunk."""
+
+    id: str
+    """The unique identifier for the tool call this chunk belongs to."""
 
     delta: str
     """The incremental json args added in this chunk."""
@@ -60,4 +62,6 @@ class ToolCallEndChunk:
     type: Literal["tool_call_end_chunk"] = "tool_call_end_chunk"
 
     content_type: Literal["tool_call"] = "tool_call"
-    """The type of content reconstructed by this chunk."""
+
+    id: str
+    """The unique identifier for the tool call being ended."""
