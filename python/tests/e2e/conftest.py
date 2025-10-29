@@ -21,6 +21,10 @@ import httpx
 import pytest
 from anthropic.lib.bedrock import _auth as bedrock_auth
 from anthropic.lib.bedrock._client import AnthropicBedrock, AsyncAnthropicBedrock
+from google.auth.credentials import Credentials
+from google.genai import Client as GoogleGenAIClient
+from google.genai.client import DebugConfig
+from google.genai.types import HttpOptions, HttpOptionsDict
 from vcr.cassette import Cassette as VCRCassette
 from vcr.config import VCR
 from vcr.request import Request as VCRRequest
@@ -387,6 +391,73 @@ def vcr_config() -> VCRConfig:
         "decode_compressed_response": False,
         "ignore_hosts": ["169.254.169.254"],
     }
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _google_force_httpx() -> Generator[None, None, None]:
+    """Force Google GenAI SDK to use httpx for async operations.
+    Google SDK uses aiohttp by default for async when available, but VCR.py has
+    better support for httpx. This fixture patches the Google GenAI Client to
+    always use httpx.AsyncHTTPTransport() for async operations, ensuring VCR
+    compatibility.
+    The Problem:
+    - When aiohttp is installed, Google SDK switches from httpx to aiohttp
+    - VCR.py has a bug with aiohttp that causes HTTP method matching to fail
+      (POST vs post case mismatch)
+    - This breaks cassette playback for async tests
+    The Solution:
+    - Patch GoogleGenAIClient.__init__ to force httpx transport
+    - Ensure all async operations use httpx regardless of aiohttp availability
+    """
+    original_init = GoogleGenAIClient.__init__
+
+    def _patched_init(
+        self: GoogleGenAIClient,
+        *,
+        vertexai: bool | None = None,
+        api_key: str | None = None,
+        credentials: Credentials | None = None,
+        project: str | None = None,
+        location: str | None = None,
+        debug_config: DebugConfig | None = None,
+        http_options: HttpOptions | HttpOptionsDict | None = None,
+    ) -> None:
+        """Patched __init__ that forces httpx for async operations."""
+        if http_options is None:
+            http_options = HttpOptions(
+                async_client_args={"transport": httpx.AsyncHTTPTransport()}
+            )
+        elif isinstance(http_options, dict):
+            async_client_args = http_options.get("async_client_args")
+            if not async_client_args:
+                http_options["async_client_args"] = {
+                    "transport": httpx.AsyncHTTPTransport()
+                }
+            elif "transport" not in async_client_args:
+                async_client_args["transport"] = httpx.AsyncHTTPTransport()
+        else:
+            if not http_options.async_client_args:
+                http_options.async_client_args = {
+                    "transport": httpx.AsyncHTTPTransport()
+                }
+            elif "transport" not in http_options.async_client_args:
+                http_options.async_client_args["transport"] = httpx.AsyncHTTPTransport()
+        original_init(
+            self,
+            vertexai=vertexai,
+            api_key=api_key,
+            credentials=credentials,
+            project=project,
+            location=location,
+            debug_config=debug_config,
+            http_options=http_options,
+        )
+
+    GoogleGenAIClient.__init__ = _patched_init
+    try:
+        yield
+    finally:
+        GoogleGenAIClient.__init__ = original_init
 
 
 def _remove_auth_headers(headers: httpx.Headers) -> None:
