@@ -3,6 +3,7 @@
 from inline_snapshot import snapshot
 
 from mirascope import llm
+from mirascope.llm.clients import clear_all_client_caches
 from mirascope.llm.clients.openai.responses._utils import encode_request
 
 
@@ -91,6 +92,8 @@ def test_context_manager() -> None:
 
 def test_client_caching() -> None:
     """Test that client() returns cached instances for identical parameters."""
+    clear_all_client_caches()
+
     client1 = llm.client(
         "openai:responses", api_key="test-key", base_url="https://api.example.com"
     )
