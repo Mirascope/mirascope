@@ -103,6 +103,11 @@ def client(
     )
 
 
+def clear_cache() -> None:
+    """Clear the cached Azure OpenAI Responses client singletons."""
+    _azure_responses_singleton.cache_clear()
+
+
 def get_client() -> "AzureOpenAIResponsesClient":
     """Get the current `AzureOpenAIResponsesClient` from context."""
     current_client = AZURE_OPENAI_RESPONSES_CLIENT_CONTEXT.get()

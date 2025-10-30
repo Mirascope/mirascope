@@ -31,6 +31,11 @@ def client(
     return _openai_responses_singleton(api_key, base_url)
 
 
+def clear_cache() -> None:
+    """Clear the cached OpenAI Responses client singletons."""
+    _openai_responses_singleton.cache_clear()
+
+
 def get_client() -> "OpenAIResponsesClient":
     """Get the current `OpenAIResponsesClient` from context."""
     current_client = OPENAI_RESPONSES_CLIENT_CONTEXT.get()

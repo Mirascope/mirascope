@@ -7,6 +7,7 @@ from .anthropic import (
 from .azure_openai.completions import AzureOpenAICompletionsClient
 from .azure_openai.responses import AzureOpenAIResponsesClient
 from .base import BaseClient, ClientT, Params
+from .cache import clear_all_client_caches
 from .google import GoogleClient, GoogleModelId
 from .openai import (
     OpenAICompletionsClient,
@@ -33,6 +34,7 @@ __all__ = [
     "OpenAIResponsesModelId",
     "Params",
     "Provider",
+    "clear_all_client_caches",
     "client",
     "get_client",
 ]

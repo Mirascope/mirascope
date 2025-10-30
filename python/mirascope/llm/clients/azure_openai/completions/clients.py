@@ -97,6 +97,11 @@ def client(
     )
 
 
+def clear_cache() -> None:
+    """Clear the cached Azure OpenAI Completions client singletons."""
+    _azure_completions_singleton.cache_clear()
+
+
 def get_client() -> "AzureOpenAICompletionsClient":
     """Get the current `AzureOpenAICompletionsClient` from context."""
     current_client = AZURE_OPENAI_COMPLETIONS_CLIENT_CONTEXT.get()

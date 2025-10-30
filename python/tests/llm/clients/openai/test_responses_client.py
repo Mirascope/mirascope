@@ -91,6 +91,13 @@ def test_context_manager() -> None:
 
 def test_client_caching() -> None:
     """Test that client() returns cached instances for identical parameters."""
+    # Clear context from previous tests
+    from mirascope.llm.clients.openai.responses.clients import (
+        OPENAI_RESPONSES_CLIENT_CONTEXT,
+    )
+
+    OPENAI_RESPONSES_CLIENT_CONTEXT.set(None)
+
     client1 = llm.client(
         "openai:responses", api_key="test-key", base_url="https://api.example.com"
     )

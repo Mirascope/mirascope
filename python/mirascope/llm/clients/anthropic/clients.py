@@ -72,6 +72,11 @@ def client(
     return _anthropic_singleton(api_key, base_url)
 
 
+def clear_cache() -> None:
+    """Clear the cached Anthropic client singletons."""
+    _anthropic_singleton.cache_clear()
+
+
 def get_client() -> "AnthropicClient":
     """Retrieve the current Anthropic client from context, or a global default.
 

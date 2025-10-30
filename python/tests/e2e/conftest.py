@@ -13,6 +13,7 @@ from typing import Any, TypedDict, get_args
 import pytest
 
 from mirascope import llm
+from mirascope.llm.clients import clear_all_client_caches
 
 SENSITIVE_HEADERS = [
     # Common API authentication headers
@@ -111,6 +112,12 @@ def sanitize_request(request: Any) -> Any:  # noqa: ANN401
                     request.headers[req_header] = "<filtered>"
 
     return request
+
+
+@pytest.fixture(autouse=True)
+def _clear_client_caches() -> None:
+    """Ensure cached LLM client singletons do not bleed across e2e tests."""
+    clear_all_client_caches()
 
 
 @pytest.fixture(scope="session")

@@ -71,6 +71,11 @@ def client(
     return _google_singleton(api_key, base_url)
 
 
+def clear_cache() -> None:
+    """Clear the cached Google client singletons."""
+    _google_singleton.cache_clear()
+
+
 def get_client() -> "GoogleClient":
     """Retrieve the current Google client from context, or a global default.
 
