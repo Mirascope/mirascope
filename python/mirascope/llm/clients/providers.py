@@ -36,10 +36,10 @@ from .openai import (
 )
 
 Provider: TypeAlias = Literal[
-    "anthropic",
+    "anthropic",  # AnthropicClient
     "azure-openai:completions",  # AzureOpenAICompletionsClient
     "azure-openai:responses",  # AzureOpenAIResponsesClient
-    "google",
+    "google",  # GoogleClient
     "openai:completions",  # OpenAICompletionsClient
     "openai:responses",  # OpenAIResponsesClient
     "openai",  # Alias for "openai:responses"
