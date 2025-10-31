@@ -262,6 +262,14 @@ class BaseStreamResponse(
                 raise RuntimeError(
                     "Received text_start_chunk while processing another chunk"
                 )
+            if self._current_thought is not None:
+                raise RuntimeError(
+                    "Received text_start_chunk while processing another chunk"
+                )
+            if self._current_tool_calls_by_id:
+                raise RuntimeError(
+                    "Received text_start_chunk while processing another chunk"
+                )
             self._current_text = Text(text="")
             # Text gets included in content even when unfinished.
             self._content.append(self._current_text)
@@ -282,6 +290,14 @@ class BaseStreamResponse(
     ) -> None:
         if chunk.type == "thought_start_chunk":
             if self._current_thought is not None:
+                raise RuntimeError(
+                    "Received thought_start_chunk while processing another chunk"
+                )
+            if self._current_text is not None:
+                raise RuntimeError(
+                    "Received thought_start_chunk while processing another chunk"
+                )
+            if self._current_tool_calls_by_id:
                 raise RuntimeError(
                     "Received thought_start_chunk while processing another chunk"
                 )
@@ -308,6 +324,14 @@ class BaseStreamResponse(
         self, chunk: ToolCallStartChunk | ToolCallChunk | ToolCallEndChunk
     ) -> None:
         if chunk.type == "tool_call_start_chunk":
+            if self._current_text is not None:
+                raise RuntimeError(
+                    "Received tool_call_start_chunk while processing another chunk"
+                )
+            if self._current_thought is not None:
+                raise RuntimeError(
+                    "Received tool_call_start_chunk while processing another chunk"
+                )
             tool_call = ToolCall(
                 id=chunk.id,
                 name=chunk.name,
