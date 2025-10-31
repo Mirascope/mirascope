@@ -1,26 +1,31 @@
-from typing import Any, Literal, TypeAlias, get_args, overload
+from collections.abc import Callable
+from typing import Any, Literal, TypeAlias, TypedDict, get_args, overload
 
 from openai.lib.azure import AzureADTokenProvider
 
 from .anthropic import (
     AnthropicClient,
     AnthropicModelId,
+    clear_cache as clear_anthropic_cache,
     client as anthropic_client,
     get_client as get_anthropic_client,
 )
 from .azure_openai.completions import (
     AzureOpenAICompletionsClient,
+    clear_cache as clear_azure_openai_completions_cache,
     client as azure_openai_completions_client,
     get_client as get_azure_openai_completions_client,
 )
 from .azure_openai.responses import (
     AzureOpenAIResponsesClient,
+    clear_cache as clear_azure_openai_responses_cache,
     client as azure_openai_responses_client,
     get_client as get_azure_openai_responses_client,
 )
 from .google import (
     GoogleClient,
     GoogleModelId,
+    clear_cache as clear_google_cache,
     client as google_client,
     get_client as get_google_client,
 )
@@ -29,6 +34,8 @@ from .openai import (
     OpenAICompletionsModelId,
     OpenAIResponsesClient,
     OpenAIResponsesModelId,
+    clear_completions_cache as clear_openai_completions_cache,
+    clear_responses_cache as clear_openai_responses_cache,
     completions_client as openai_completions_client,
     get_completions_client as get_openai_completions_client,
     get_responses_client as get_openai_responses_client,
@@ -53,6 +60,44 @@ ModelId: TypeAlias = (
     | OpenAICompletionsModelId
     | str
 )
+
+
+class ProviderInfo(TypedDict):
+    """Information about a provider implementation."""
+
+    name: Provider
+    """The provider identifier (e.g., "anthropic", "openai:completions")."""
+
+    clear_cache: Callable[[], None]
+    """Function to clear the provider's client cache."""
+
+
+PROVIDER_REGISTRY: dict[Provider, ProviderInfo] = {
+    "anthropic": {
+        "name": "anthropic",
+        "clear_cache": clear_anthropic_cache,
+    },
+    "azure-openai:completions": {
+        "name": "azure-openai:completions",
+        "clear_cache": clear_azure_openai_completions_cache,
+    },
+    "azure-openai:responses": {
+        "name": "azure-openai:responses",
+        "clear_cache": clear_azure_openai_responses_cache,
+    },
+    "google": {
+        "name": "google",
+        "clear_cache": clear_google_cache,
+    },
+    "openai:completions": {
+        "name": "openai:completions",
+        "clear_cache": clear_openai_completions_cache,
+    },
+    "openai:responses": {
+        "name": "openai:responses",
+        "clear_cache": clear_openai_responses_cache,
+    },
+}
 
 
 @overload
