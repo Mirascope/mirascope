@@ -1,25 +1,29 @@
 from collections.abc import Callable
-from typing import Any, Literal, TypeAlias, get_args, overload
+from typing import Any, Literal, TypeAlias, TypedDict, get_args, overload
 
 from .anthropic import (
     AnthropicClient,
     AnthropicModelId,
+    clear_cache as clear_anthropic_cache,
     client as anthropic_client,
     get_client as get_anthropic_client,
 )
 from .azure_openai.completions import (
     AzureOpenAICompletionsClient,
+    clear_cache as clear_azure_openai_completions_cache,
     client as azure_openai_completions_client,
     get_client as get_azure_openai_completions_client,
 )
 from .azure_openai.responses import (
     AzureOpenAIResponsesClient,
+    clear_cache as clear_azure_openai_responses_cache,
     client as azure_openai_responses_client,
     get_client as get_azure_openai_responses_client,
 )
 from .google import (
     GoogleClient,
     GoogleModelId,
+    clear_cache as clear_google_cache,
     client as google_client,
     get_client as get_google_client,
 )
@@ -28,6 +32,8 @@ from .openai import (
     OpenAICompletionsModelId,
     OpenAIResponsesClient,
     OpenAIResponsesModelId,
+    clear_completions_cache as clear_openai_completions_cache,
+    clear_responses_cache as clear_openai_responses_cache,
     completions_client as openai_completions_client,
     get_completions_client as get_openai_completions_client,
     get_responses_client as get_openai_responses_client,
@@ -52,6 +58,62 @@ ModelId: TypeAlias = (
     | OpenAICompletionsModelId
     | str
 )
+
+
+class ProviderInfo(TypedDict):
+    """Information about a provider implementation."""
+
+    name: Provider
+    """The provider identifier (e.g., "anthropic", "openai:completions")."""
+
+    clear_cache: Callable[[], None]
+    """Function to clear the provider's client cache."""
+
+    get_client: Callable[[], Any]
+    """Function to get the default provider client instance."""
+
+    client: Callable[..., Any]
+    """Function to create a cached client instance with custom parameters."""
+
+
+PROVIDER_INFO: dict[Provider, ProviderInfo] = {
+    "anthropic": {
+        "name": "anthropic",
+        "clear_cache": clear_anthropic_cache,
+        "get_client": get_anthropic_client,
+        "client": anthropic_client,
+    },
+    "azure-openai:completions": {
+        "name": "azure-openai:completions",
+        "clear_cache": clear_azure_openai_completions_cache,
+        "get_client": get_azure_openai_completions_client,
+        "client": azure_openai_completions_client,
+    },
+    "azure-openai:responses": {
+        "name": "azure-openai:responses",
+        "clear_cache": clear_azure_openai_responses_cache,
+        "get_client": get_azure_openai_responses_client,
+        "client": azure_openai_responses_client,
+    },
+    "google": {
+        "name": "google",
+        "clear_cache": clear_google_cache,
+        "get_client": get_google_client,
+        "client": google_client,
+    },
+    "openai:completions": {
+        "name": "openai:completions",
+        "clear_cache": clear_openai_completions_cache,
+        "get_client": get_openai_completions_client,
+        "client": openai_completions_client,
+    },
+    "openai:responses": {
+        "name": "openai:responses",
+        "clear_cache": clear_openai_responses_cache,
+        "get_client": get_openai_responses_client,
+        "client": openai_responses_client,
+    },
+}
 
 
 @overload
@@ -125,21 +187,14 @@ def get_client(
     Raises:
         ValueError: If the provider is not supported.
     """
-    match provider:
-        case "anthropic":
-            return get_anthropic_client()
-        case "azure-openai:completions":
-            return get_azure_openai_completions_client()
-        case "azure-openai:responses":
-            return get_azure_openai_responses_client()
-        case "google":
-            return get_google_client()
-        case "openai:completions":
-            return get_openai_completions_client()
-        case "openai:responses" | "openai":
-            return get_openai_responses_client()
-        case _:
-            raise ValueError(f"Unknown provider: {provider}")
+    normalized_provider: Provider = (
+        "openai:responses" if provider == "openai" else provider
+    )
+
+    if normalized_provider in PROVIDER_INFO:
+        return PROVIDER_INFO[normalized_provider]["get_client"]()
+
+    raise ValueError(f"Unknown provider: {provider}")
 
 
 @overload
@@ -241,32 +296,19 @@ def client(
     Raises:
         ValueError: If the provider is not supported or required parameters are missing.
     """
-    match provider:
-        case "anthropic":
-            return anthropic_client(api_key=api_key, base_url=base_url)
-        case "azure-openai:completions":
-            return azure_openai_completions_client(
-                api_key=api_key,
-                base_url=base_url,
-                azure_ad_token_provider=kwargs.get("azure_ad_token_provider"),
-                azure_ad_token_provider_async=kwargs.get(
-                    "azure_ad_token_provider_async"
-                ),
-            )
-        case "azure-openai:responses":
-            return azure_openai_responses_client(
-                api_key=api_key,
-                base_url=base_url,
-                azure_ad_token_provider=kwargs.get("azure_ad_token_provider"),
-                azure_ad_token_provider_async=kwargs.get(
-                    "azure_ad_token_provider_async"
-                ),
-            )
-        case "google":
-            return google_client(api_key=api_key, base_url=base_url)
-        case "openai:completions":
-            return openai_completions_client(api_key=api_key, base_url=base_url)
-        case "openai:responses" | "openai":
-            return openai_responses_client(api_key=api_key, base_url=base_url)
-        case _:  # pragma: no cover
-            raise ValueError(f"Unknown provider: {provider}")
+    normalized_provider: Provider = (
+        "openai:responses" if provider == "openai" else provider
+    )
+
+    if normalized_provider not in PROVIDER_INFO:
+        raise ValueError(f"Unknown provider: {provider}")  # pragma: no cover
+
+    client_factory = PROVIDER_INFO[normalized_provider]["client"]
+    if normalized_provider.startswith("azure-openai:"):
+        return client_factory(
+            api_key=api_key,
+            base_url=base_url,
+            azure_ad_token_provider=kwargs.get("azure_ad_token_provider"),
+            azure_ad_token_provider_async=kwargs.get("azure_ad_token_provider_async"),
+        )
+    return client_factory(api_key=api_key, base_url=base_url)
