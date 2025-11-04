@@ -48,7 +48,7 @@ Issues = "https://github.com/Mirascope/mirascope/issues"
 Changelog = "https://github.com/Mirascope/mirascope/releases"
 
 [project.optional-dependencies]
-anthropic = ["anthropic>=0.64.0,<1.0"]
+anthropic = ["anthropic>=0.72.0,<1.0"]
 google = ["google-genai>=1.31.0,<2", "pillow>=10.4.0,<11", "proto-plus>=1.24.0"]
 openai = ["openai>=1.100.2,<2"]
 mcp = ["mcp>=1.0.0,<2"]

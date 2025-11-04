@@ -6,7 +6,7 @@ from functools import lru_cache
 from typing import Literal, TypedDict, cast
 from typing_extensions import Required
 
-from anthropic import NotGiven, types as anthropic_types
+from anthropic import Omit, types as anthropic_types
 
 from ....content import ContentPart, ImageMimeType
 from ....exceptions import FeatureNotSupportedError, FormattingModeNotSupportedError
@@ -43,14 +43,14 @@ class MessageCreateKwargs(TypedDict, total=False):
     model: Required[str]
     max_tokens: Required[int]
     messages: Sequence[anthropic_types.MessageParam]
-    system: str | NotGiven
-    tools: Sequence[anthropic_types.ToolParam] | NotGiven
-    tool_choice: anthropic_types.ToolChoiceParam | NotGiven
-    temperature: float | NotGiven
-    top_p: float | NotGiven
-    top_k: int | NotGiven
-    stop_sequences: list[str] | NotGiven
-    thinking: anthropic_types.ThinkingConfigParam | NotGiven
+    system: str | Omit
+    tools: Sequence[anthropic_types.ToolParam] | Omit
+    tool_choice: anthropic_types.ToolChoiceParam | Omit
+    temperature: float | Omit
+    top_p: float | Omit
+    top_k: int | Omit
+    stop_sequences: list[str] | Omit
+    thinking: anthropic_types.ThinkingConfigParam | Omit
 
 
 def _encode_content(
