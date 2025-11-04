@@ -3,5 +3,277 @@ title: Mirascope v2
 description: Mirascope v2 Documentation
 ---
 
-# Welcome to Mirascope v2
+# Mirascope v2 Alpha
 
+**Welcome to the Mirascope v2 alpha!**
+
+We've taken everything we learned from Mirascope v0 and v1, and have re-written Mirascope from the ground up. Mirascope v2 focuses on providing type-safe, consistent abstractions that unify across all major LLM providers. Our goal is to fully abstract over provider-specific differences, providing a flexible interface that is fully portable across LLM providers. 
+
+Mirascope provides a `llm.call` decorator for a smooth and Pythonic approach to writing functions that call LLMs. However, we've implemented this on top of an equally powerful `llm.Model`, which is available for those who would prefer not to use decorators.
+
+We're proud to share this alpha with you, and look forward to your feedback!
+
+## The Call Decorator
+
+The most convenient way to use Mirascope v2 is via the `llm.call` decorator:
+
+<TabbedSection>
+<Tab value="Sync">
+<CodeExample file="examples/intro/decorator/sync.py" />
+</Tab>
+<Tab value="Stream">
+<CodeExample file="examples/intro/decorator/stream.py" />
+</Tab>
+<Tab value="Async">
+<CodeExample file="examples/intro/decorator/async.py" />
+</Tab>
+<Tab value="Async Stream">
+<CodeExample file="examples/intro/decorator/async_stream.py" />
+</Tab>
+</TabbedSection>
+
+The call decorator decorates a "prompt function", which returns the content that's provided to the LLM. In many cases that content is a string that is transformed into a user message. The decorator itself requires `provider` and `model_id` as arguments, and may accept additional parameters, like tools. It returns an `llm.Call`, which may be called to actually invoke the chosen LLM with the provided content.
+
+The prompt function may take arguments (`genre: str` in the above example), which are passed to the call when you invoke it. 
+
+As you can see by clicking on the tabs above, it's easy to switch to async calls (by decorating an async prompt function), or to switch to streaming the LLM responses (via calling `.stream()` on the `Call` object).
+
+<Info title="About Prompt Functions" collapsible={true} defaultOpen={false}>
+A prompt function must return one of the following:
+
+- A single piece of `llm.UserContent`, such as a string, an `llm.Image`, etc. This will be converted to a user message containing that content.
+- A `list[llm.UserContent]`, which will be converted into a user message containing that content.
+- A `list[llm.Message]`, which will be provided directly to the LLM. This allows providing system instructions via `llm.SystemMessage`, or encoding a past conversation containing `llm.AssistantMessage`s, too.
+</Info>
+
+## The Model Class
+
+All of Mirascope's LLM functionality is implemented in terms of the `llm.Model` class, which provides a consistent interface for calling any supported large language model.
+
+The `llm.call` decorator acts as a wrapper around models, but using the call decorator is optional. You can retrieve a model via `llm.use_model`, and then call it directly.
+
+<TabbedSection>
+<Tab value="Sync">
+<CodeExample file="examples/intro/model/sync.py" />
+</Tab>
+<Tab value="Stream">
+<CodeExample file="examples/intro/model/stream.py" />
+</Tab>
+<Tab value="Async">
+<CodeExample file="examples/intro/model/async.py" />
+</Tab>
+<Tab value="Async Stream">
+<CodeExample file="examples/intro/model/async_stream.py" />
+</Tab>
+</TabbedSection>
+
+<Note title="Why we call use_model instead of instantiating llm.Model" collapsible={true} defaultOpen={true}>
+
+It's also possible to directly instantiate an `llm.Model`, rather than calling `llm.use_model`. The advantage of `use_model` is that it supports overriding model choice or model parameters at call time, via `with llm.model(...):`. Use `llm.Model` if you want to hard-code the model choice and make it impossible to overwrite.
+</Note>
+
+## LLM Responses
+
+Regardless of how you call the LLM, you will get back an `llm.Response`, or a variant (like `llm.AsyncResponse` or `llm.StreamResponse`.) 
+
+All responses inherit from `llm.RootResponse`, and contain the full message history of the interaction with the LLM (including the most recent assistant message), and convenient property accessors for the content of the LLM's response. For example, `response.texts` contains all of the `llm.Text` pieces of the model's response. (In simple cases, the response content will consist of a single text piece.) 
+
+In our examples, we print `response.pretty()`, which is a convenience method that turns all of the response content into an organized, human-readable string.
+
+After calling the LLM, you get back an `llm.Response`. Our example code calls `response.pretty()`
+as a convenient helper for converting response content to text; however, in production code you might reference `response.content` or `response.texts` instead.
+
+<Info title="Responses Reference" collapsible={true} defaultOpen={false}>
+| Property | Type | Description |
+| --- | --- | --- |
+| `raw` | `Any` | The raw response from the LLM |
+| `provider` | `Provider` | The provider that generated this response |
+| `model_id` | `ModelId` | The model id that generated this response |
+| `params` | `Params` | The params that were used to generate this response |
+| `toolkit` | `ToolkitT` | The toolkit containing the tools used when generating this response. One of `llm.Toolkit`, `llm.AsyncToolkit`, etc. |
+| `messages` | `list[Message]` | The message history, including the most recent assistant message |
+| `content` | `Sequence[AssistantContentPart]` | The content generated by the LLM |
+| `texts` | `Sequence[Text]` | The text content in the generated response, if any |
+| `tool_calls` | `Sequence[ToolCall]` | The tools the LLM wants called on its behalf, if any |
+| `thoughts` | `Sequence[Thought]` | The readable thoughts from the model's thinking process, if any. May be direct output from the model thinking process, or a generated summary depending on the provider |
+| `finish_reason` | `FinishReason \| None` | The reason why the LLM finished generating a response, if set. Only set if the response did not finish generating normally (e.g. `FinishReason.MAX_TOKENS`). `None` when the response generates normally |
+| `format` | `Format[FormattableT] \| None` | The `Format` describing the structured response format, if available |
+| `model` | `Model` | A `Model` with parameters matching this response |
+
+**Methods:**
+| Method | Description |
+| --- | --- |
+| `parse()` | Format the response according to the response format parser. Returns the formatted response object of type `FormatT` |
+| `parse(partial=True)` | Format the response into a `Partial[BaseModel]` with optional fields. Useful when the stream is only partially consumed |
+| `pretty()` | Return a human-readable string representation of all response content with clear formatting for text, tool calls, and thinking |
+</Info>
+
+
+<Info title="About Stream Responses" collapsible={true} defaultOpen={false}>
+The `llm.Response` and `llm.AsyncResponse` are populated with all of the LLM's content as soon as they are instantiated. However, the `llm.StreamResponse` and `llm.AsyncStreamResponse` will only accumulate content when you actually iterate through the streamed chunks that the LLM provider sends back. There are a few ways to do so:
+
+| Stream Response Iterator | Description | 
+| --- | --- |
+| `response.pretty_stream()` | Yields human-readable text deltas that represent streamed content; concatenating all the chunks is equivalent to `response.pretty()` | 
+| `response.streams()` | Yields substreams corresponding to each streamed content piece; iterate over the substream to get content deltas, or use `substream.collect()` to accumulate the completed piece | 
+| `response.chunk_stream()` | Yields the Mirascope `llm.AssistantContentChunk`s that consist of start, content, and end chunks for each content piece. All the other iterators are built on top of this one. | 
+
+Regardless of which iterator you use, as you iterate through the streamed response content, it will be added to `response.content` and to the assistant message at `response.messages[-1]`. After you've fully iterated through a stream response, you can treat it like a regular response, e.g. calling `response.pretty()` or accessing `response.content`. If you'd like to immediately process the whole response, you can call `response.finish()`.
+
+It's safe to call the stream iterators multiple times, even on a finished response. The stream response's content chunks are cached on the response, so if you call `response.streams()` a second time, you will get a fresh iterator that replays content from the beginning of the stream.
+</Info>
+
+## Call Parameters
+
+Mirascope has a common set of parameters that may be used to configure the LLM; for example, `max_tokens` to limit the token usage, or `temperature` to adjust the variability of the responses. 
+
+<TabbedSection>
+<Tab value="Decorator">
+<CodeExample file="examples/intro/parameters/decorator.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/intro/parameters/model.py" />
+</Tab>
+</TabbedSection>
+
+<Info title="Parameters Reference" collapsible={true} defaultOpen={false}>
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `temperature` | `float` | Controls randomness in the output (0.0 to 1.0). Lower temperatures are good for prompts that require a less open-ended or creative response, while higher temperatures can lead to more diverse or creative results |
+| `max_tokens` | `int` | Maximum number of tokens to generate |
+| `top_p` | `float` | Nucleus sampling parameter (0.0 to 1.0). Tokens are selected from the most to least probable until the sum of their probabilities equals this value. Use a lower value for less random responses and a higher value for more random responses |
+| `top_k` | `int` | Limits token selection to the k most probable tokens (typically 1 to 100). For each token selection step, the `top_k` tokens with the highest probabilities are sampled. Then tokens are further filtered based on `top_p` with the final token selected using temperature sampling |
+| `seed` | `int` | Random seed for reproducibility. When `seed` is fixed to a specific number, the model makes a best effort to provide the same response for repeated requests. Not supported by all providers, and does not guarantee strict reproducibility |
+| `stop_sequences` | `list[str]` | Stop sequences to end generation. The model will stop generating text if one of these strings is encountered in the response |
+| `thinking` | `bool` | Configures whether the model should use thinking. Thinking is a process where the model spends additional tokens thinking about the prompt before generating a response. If `True`, thinking and thought summaries will be enabled (if supported) with a default budget. If `False`, thinking will be wholly disabled (if the model allows). If unset, provider-specific default behavior is used |
+| `encode_thoughts_as_text` | `bool` | Configures whether `Thought` content should be re-encoded as text for model consumption. If `True`, when an `AssistantMessage` contains `Thoughts` and is passed back to an LLM, those `Thoughts` will be encoded as `Text`, ensuring the assistant has access to its reasoning process. Defaults to `False` if unset |
+
+**Note:** Not every provider supports every parameter. If a specified parameter is unsupported for your chosen provider, Mirascope will log an error and ignore the unsupported param.
+
+</Info>
+
+
+## Overriding Models or Params
+
+If you wish, you can override your choice of provider, model, and params at call time, using the `llm.model` context manager. You can change model params, or even the provider and model itself. (However, it is not possible to change the call's tools or response format.)
+
+
+<TabbedSection>
+<Tab value="Decorator">
+<CodeExample file="examples/intro/override/decorator.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/intro/override/model.py" />
+</Tab>
+</TabbedSection>
+
+
+You can use the same pattern to override the model being used when calling `response.resume` (regardless of whether the response was generated via the decorator or a direct model call). You can also use `with llm.model` to change the model params such as `thinking`, `temperature`, etc.
+
+## Resuming Responses
+
+The `llm.Response` class makes it easy to continue a conversation using all the prior messages as context: just call `response.resume` with additional user content. Here's a simple example:
+
+<TabbedSection>
+<Tab value="Decorator">
+<CodeExample file="examples/intro/resume/decorator.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/intro/resume/model.py" />
+</Tab>
+</TabbedSection>
+
+`response.resume`'s behavior and return type depend on the response it's being called on. So `AsyncResponse.resume` is async and returns an `AsyncResponse`, `StreamResponse.resume` returns a new `StreamResponse`, etc.
+
+## Tools and Tool calling
+
+We've made tool calling a breeze. Use the `llm.tool` decorator to convert a python function into an `llm.Tool`, and provide it via the `tools` argument to the call decorator (or the model call). Then, if `response.tool_calls` is present, you can call `response.execute_tools()` to call those tools (generating a sequence of `llm.ToolOutput`s), and `response.resume(...)` to use those outputs and create a new response. Here's an example:
+
+<TabbedSection>
+<Tab value="Decorator">
+<CodeExample file="examples/intro/tool_call/decorator.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/intro/tool_call/model.py" />
+</Tab>
+</TabbedSection>
+
+A note on async tool calling: if the decorated tool function is async, then an `llm.AsyncTool` is created. If any tool is async, then all must be, and the call must be, too. In that case, you'd use `await response.execute_tools()`.
+
+<Info title="Notes on Tool Construction" collapsible={true} defaultOpen={false}>
+When creating a tool, the name and docstring of the tool function both become part of the prompt to the LLM. The function name is used as the tool name, and the docstring is the tool's description. So, in the example above the LLM knows it has a tool called `"available_library_books"`. 
+
+It can be helpful to add some examples of intended tool usage to its docstring to help guide the LLM.
+</Info>
+
+## Response Formatting
+
+If you'd like the LLM to return structured output, simply define a format class that inherits from pydantic `BaseModel`, and pass it as the `format=` argument to the decorator (or model call). Then, call `response.parse()` afterwards:
+
+<TabbedSection>
+<Tab value="Decorator">
+<CodeExample file="examples/intro/format/decorator.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/intro/format/model.py" />
+</Tab>
+</TabbedSection>
+
+For type safety, the `llm.Response` is generic on the type of format that the response may be parsed into. Thus, in the example above, we get a `llm.Response[Book]`, indicating that the response can be parsed to return a `Book`. When a format is not provided, we set the format type to `None`, so `llm.Response` is effectively an alias for `llm.Response[None]`.
+
+<Info title="Notes on response formatting" collapsible={true} defaultOpen={false}>
+
+As with tools, the name and docstring of the format class are part of the input to the LLM. It may be helpful to provide some examples via the docstring.
+
+There are a few approaches for having LLMs generate structured outputs, with varying degrees of provider support:
+- `"strict"` mode, where the model is provided with a JSON schema for the format it outputs, and the provider guarantees the response will match the schema. 
+- `"json"` mode, where the model must output JSON, and we modify the prompt to include instructions on what schema is expected.
+- `"tool"` mode, in which Mirascope constructs a hidden formatting tool that corresponds to the expected format, and the model is instructed to call that tool when it is ready to respond. The formatting tool is always named `"__mirascope_formatted_output_tool__"`.
+
+By default, Mirascope uses `"strict"` mode if the provider supports it, and otherwise falls back to `"tool"` mode, which is always supported.
+
+If you want to force usage of a particular formatting mode, you can use the `llm.format` function to specify a mode, by passing `format=llm.format(FormatClass, mode=formatting_mode)`.  Thus, if we were modifying the book example above to force usage of strict formatting mode, we'd replace `format=Book` with `format=llm.format(Book, formatting_mode="strict")`.
+
+In that case, the code would only succeed if the underlying provider supported strict formatting. Otherwise, it would raise `llm.FeatureNotSupportedError`.
+
+Depending on the formatting mode, Mirascope may automatically generate formatting instructions, which are appended onto the system message. For example, in tool mode, Mirascope's formatting instructions tell the model to call the `"__mirascope_formatted_output_tool__"` tool for its final response. 
+
+You can assume direct control over the formatting instructions by adding a `formatting_instructions` class method to your format class. If the `formatting_instructions` class method returns a string, that will always be used as the formatting instructions; or if it returns `None`, then formatting instructions will never be used.
+
+</Info>
+
+
+## Context Prompts & Context Tools 
+
+Sometimes, your prompt or tools may have dependencies that you'd like to inject at call time, not at function definition time. Mirascope's Context system is designed for just this use case. To use context, define your prompts and tool definitions so that their first arg is named `ctx`, and has type `llm.Context` (or a subclass of `llm.Context`).
+
+When using a context call, you will generally need to pass a `llm.Context` object of the right type as the first argument whenever interacting with the LLM or with tools. Thus, `ContextCall.call`, `ContextResponse.resume`, and `ContextResponse.execute_tools` all take `ctx: llm.Context` as their first argument.
+
+Here's an example, in which both the prompt and the tool depend on a `Library` context object.
+
+<TabbedSection>
+<Tab value="Decorator">
+<CodeExample file="examples/intro/context/decorator.py" />
+</Tab>
+<Tab value="Model">
+<CodeExample file="examples/intro/context/model.py" />
+</Tab>
+</TabbedSection>
+
+When using context, the prompt and all provided context tools must agree on the type of the dependency being stored in context. (If multiple tools want different dependency objects, you should combine these into a wrapper dependency so they can still take the same object.) The context system is type-safe, so your typechecker will warn you if anything goes wrong.
+
+It is okay to mix context tools and non-context tools in a single call, so long as the prompt is a context prompt taking a context object that matches what the tools expect.
+
+For type safety, the `llm.ContextResponse[DepsT, FormatT]`. The first is the type of dependency that must be injected via `llm.Context`; the second is the format type (if specified).
+
+## Learning More 
+
+If you'd like to learn more about Mirascope v2, consider the following resources:
+
+- We have some [additional examples](/examples) that you may peruse.
+- We have extensive [end-to-end snapshot testing](https://github.com/Mirascope/mirascope/tree/v2/python/tests/e2e) which consists of real runnable Mirascope code, and snapshots that serialize the expected output. For example, here are [end to end tests for cross-provider thinking support](https://github.com/Mirascope/mirascope/blob/v2/python/tests/e2e/output/test_call_with_thinking_true.py) and [here are the corresponding snapshots](https://github.com/Mirascope/mirascope/tree/v2/python/tests/e2e/output/snapshots/test_call_with_thinking_true).
+- The [API reference](/api) documents all of the public functionality in Mirascope.
+- You can hop on our [Discord](/discord-invite) and ask us questions directly!
+
+We welcome your feedback, questions, and bug reports.
