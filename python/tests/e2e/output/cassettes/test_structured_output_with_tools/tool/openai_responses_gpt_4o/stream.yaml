@@ -12,12 +12,16 @@ interactions:
       - application/json
       accept-encoding:
       - gzip, deflate
+      authorization:
+      - <filtered>
       connection:
       - keep-alive
       content-length:
       - '1236'
       content-type:
       - application/json
+      cookie:
+      - <filtered>
       host:
       - api.openai.com
       user-agent:
@@ -39,14 +43,14 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.10.16
+      - 3.10.15
     method: POST
     uri: https://api.openai.com/v1/responses
   response:
     body:
       string: 'event: response.created
 
-        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_080ef7d1f38539e70068f9671f9b288190939b254f26dc197d","object":"response","created_at":1761175327,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","description":"Look
+        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_0d3c00fa56b7a15000690a20fd4654819498b7323202bf4a61","object":"response","created_at":1762271485,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","description":"Look
         up book information by ISBN.","name":"get_book_info","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","description":"Use
         this tool to extract data in BookSummary format for a final response.","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
         Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
@@ -54,7 +58,7 @@ interactions:
 
         event: response.in_progress
 
-        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_080ef7d1f38539e70068f9671f9b288190939b254f26dc197d","object":"response","created_at":1761175327,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","description":"Look
+        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_0d3c00fa56b7a15000690a20fd4654819498b7323202bf4a61","object":"response","created_at":1762271485,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","description":"Look
         up book information by ISBN.","name":"get_book_info","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","description":"Use
         this tool to extract data in BookSummary format for a final response.","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
         Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
@@ -62,82 +66,82 @@ interactions:
 
         event: response.output_item.added
 
-        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","type":"function_call","status":"in_progress","arguments":"","call_id":"call_0C0lm2bJk0qtb2BrgwgmvKMy","name":"get_book_info"}}
+        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","type":"function_call","status":"in_progress","arguments":"","call_id":"call_N66aZ6aFsMUMljMdRITvljUZ","name":"get_book_info"}}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":3,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"{\"","obfuscation":"joNK3DMZ7wK6S9"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":3,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"{\"","obfuscation":"qGRnUjZUkgPL5Y"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":4,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"isbn","obfuscation":"Kf3wpdrwTnh7"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":4,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"isbn","obfuscation":"5saARoPqE9lD"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":5,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"\":\"","obfuscation":"GtkIj86KVjHYU"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":5,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"\":\"","obfuscation":"RtkBJPE37dq0O"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":6,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"0","obfuscation":"aCwVhGAZuMzJmpj"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":6,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"0","obfuscation":"CckM67UtoIeXU6c"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":7,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"-","obfuscation":"o58LDY9Dq972hbH"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":7,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"-","obfuscation":"cDXTlcsuyXdEK8p"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":8,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"765","obfuscation":"wmhUU5bK1jvuG"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":8,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"765","obfuscation":"xZcGa7jHWEsHs"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":9,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"3","obfuscation":"vovzl8o9TWP4SFB"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":9,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"3","obfuscation":"NT2UiLHeuHkpY5a"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":10,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"-","obfuscation":"qyx1y9Q1rfHiyem"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":10,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"-","obfuscation":"KlxYSQ6RTTTmjKk"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":11,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"117","obfuscation":"eW8xHeOFSTpkI"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":11,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"117","obfuscation":"UmWab4Qw4iVjm"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":12,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"8","obfuscation":"T5bbr0wnhQSQYx9"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":12,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"8","obfuscation":"WwXoStzHwZKAXk6"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":13,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"-X","obfuscation":"5x9KWirdSu92j3"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":13,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"-X","obfuscation":"lDlwqxLBgt6Xe4"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":14,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"delta":"\"}","obfuscation":"7aAX48lHJoDr8G"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":14,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"delta":"\"}","obfuscation":"3n5kmbuLZ2kgmC"}
 
 
         event: response.function_call_arguments.done
 
-        data: {"type":"response.function_call_arguments.done","sequence_number":15,"item_id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","output_index":0,"arguments":"{\"isbn\":\"0-7653-1178-X\"}"}
+        data: {"type":"response.function_call_arguments.done","sequence_number":15,"item_id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","output_index":0,"arguments":"{\"isbn\":\"0-7653-1178-X\"}"}
 
 
         event: response.output_item.done
 
-        data: {"type":"response.output_item.done","sequence_number":16,"output_index":0,"item":{"id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","type":"function_call","status":"completed","arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_0C0lm2bJk0qtb2BrgwgmvKMy","name":"get_book_info"}}
+        data: {"type":"response.output_item.done","sequence_number":16,"output_index":0,"item":{"id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","type":"function_call","status":"completed","arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_N66aZ6aFsMUMljMdRITvljUZ","name":"get_book_info"}}
 
 
         event: response.completed
 
-        data: {"type":"response.completed","sequence_number":17,"response":{"id":"resp_080ef7d1f38539e70068f9671f9b288190939b254f26dc197d","object":"response","created_at":1761175327,"status":"completed","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[{"id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","type":"function_call","status":"completed","arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_0C0lm2bJk0qtb2BrgwgmvKMy","name":"get_book_info"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","description":"Look
+        data: {"type":"response.completed","sequence_number":17,"response":{"id":"resp_0d3c00fa56b7a15000690a20fd4654819498b7323202bf4a61","object":"response","created_at":1762271485,"status":"completed","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[{"id":"fc_0d3c00fa56b7a15000690a20fe21348194a227d1f327985117","type":"function_call","status":"completed","arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_N66aZ6aFsMUMljMdRITvljUZ","name":"get_book_info"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","description":"Look
         up book information by ISBN.","name":"get_book_info","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","description":"Use
         this tool to extract data in BookSummary format for a final response.","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
         Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":152,"input_tokens_details":{"cached_tokens":0},"output_tokens":23,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":175},"user":null,"metadata":{}}}
@@ -146,13 +150,13 @@ interactions:
         '
     headers:
       CF-RAY:
-      - 992cbc250ae5b98d-SEA
+      - 999545cdcce08eb8-NRT
       Connection:
       - keep-alive
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Wed, 22 Oct 2025 23:22:07 GMT
+      - Tue, 04 Nov 2025 15:51:25 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -170,23 +174,19 @@ interactions:
       openai-processing-ms:
       - '184'
       openai-project:
-      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '201'
+      - '213'
       x-request-id:
-      - req_60eaedd308da4e048bf904ca85518673
+      - req_460fcb1e136f4900b5d9cbaac46e048c
     status:
       code: 200
       message: OK
 - request:
-    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
-      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
-      look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
-      score","role":"user"},{"arguments":"{\"isbn\":\"0-7653-1178-X\"}","call_id":"call_0C0lm2bJk0qtb2BrgwgmvKMy","name":"get_book_info","type":"function_call","id":"fc_080ef7d1f38539e70068f9672052888190a6319058cac902c6","status":"completed"},{"call_id":"call_0C0lm2bJk0qtb2BrgwgmvKMy","output":"Title:
-      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
-      2006-07-25","type":"function_call_output"}],"model":"gpt-4o","stream":true,"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","name":"get_book_info","description":"Look
+    body: '{"input":[{"call_id":"call_N66aZ6aFsMUMljMdRITvljUZ","output":"Title: Mistborn:
+      The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25","type":"function_call_output"}],"model":"gpt-4o","previous_response_id":"resp_0d3c00fa56b7a15000690a20fd4654819498b7323202bf4a61","stream":true,"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","name":"get_book_info","description":"Look
       up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
       this tool to extract data in BookSummary format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
       Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}]}'
@@ -195,12 +195,16 @@ interactions:
       - application/json
       accept-encoding:
       - gzip, deflate
+      authorization:
+      - <filtered>
       connection:
       - keep-alive
       content-length:
-      - '1632'
+      - '1131'
       content-type:
       - application/json
+      cookie:
+      - <filtered>
       host:
       - api.openai.com
       user-agent:
@@ -222,14 +226,14 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.10.16
+      - 3.10.15
     method: POST
     uri: https://api.openai.com/v1/responses
   response:
     body:
       string: 'event: response.created
 
-        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_080ef7d1f38539e70068f96720b14481908d9e262c66579510","object":"response","created_at":1761175328,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","description":"Look
+        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_0d3c00fa56b7a15000690a20fed050819482baf817ee693d47","object":"response","created_at":1762271486,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":"resp_0d3c00fa56b7a15000690a20fd4654819498b7323202bf4a61","prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Look
         up book information by ISBN.","name":"get_book_info","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","description":"Use
         this tool to extract data in BookSummary format for a final response.","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
         Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
@@ -237,7 +241,7 @@ interactions:
 
         event: response.in_progress
 
-        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_080ef7d1f38539e70068f96720b14481908d9e262c66579510","object":"response","created_at":1761175328,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","description":"Look
+        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_0d3c00fa56b7a15000690a20fed050819482baf817ee693d47","object":"response","created_at":1762271486,"status":"in_progress","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[],"parallel_tool_calls":true,"previous_response_id":"resp_0d3c00fa56b7a15000690a20fd4654819498b7323202bf4a61","prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Look
         up book information by ISBN.","name":"get_book_info","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","description":"Use
         this tool to extract data in BookSummary format for a final response.","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
         Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
@@ -245,179 +249,179 @@ interactions:
 
         event: response.output_item.added
 
-        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","type":"function_call","status":"in_progress","arguments":"","call_id":"call_JGRho7xlgYVKcbpEXdylfeCy","name":"__mirascope_formatted_output_tool__"}}
+        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","type":"function_call","status":"in_progress","arguments":"","call_id":"call_6z4qGHD8LfRVZz9FKPDJGgQm","name":"__mirascope_formatted_output_tool__"}}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":3,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"{\"","obfuscation":"2kW6ox3SMR6TgK"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":3,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"{\"","obfuscation":"ILJtq4Au2M8h4F"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":4,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"title","obfuscation":"gV6CwvHu33a"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":4,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"title","obfuscation":"jkylrQRwIOm"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":5,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"\":\"","obfuscation":"ZhDgrs1uTmrjC"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":5,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"\":\"","obfuscation":"9vZrEHeo1jGM2"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":6,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"Mist","obfuscation":"ZoJ1eyi1Osht"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":6,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"Mist","obfuscation":"V8uZd8ROpOe2"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":7,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"born","obfuscation":"GXLZiAIwhT7u"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":7,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"born","obfuscation":"jZMpzmvgUBzR"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":8,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":":","obfuscation":"rE5lS4Cvg1vzxiI"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":8,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":":","obfuscation":"y2cEjs3z9PfkHK9"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":9,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"
-        The","obfuscation":"Vm5JjwlGEPYr"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":9,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"
+        The","obfuscation":"NC2Q928BGGnd"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":10,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"
-        Final","obfuscation":"38GeY4SYNm"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":10,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"
+        Final","obfuscation":"ogXSpIJ889"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":11,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"
-        Empire","obfuscation":"ECJHv4mUT"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":11,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"
+        Empire","obfuscation":"c8fUnrkdM"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":12,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"\",\"","obfuscation":"hKur0YOYiMFkw"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":12,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"\",\"","obfuscation":"f7fhq9mrGtc6G"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":13,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"author","obfuscation":"E9uailTBaS"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":13,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"author","obfuscation":"5DRqNR8Bn4"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":14,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"\":\"","obfuscation":"U6YcN3Xqfry3G"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":14,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"\":\"","obfuscation":"GEGWt8PxjsKPR"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":15,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"Br","obfuscation":"VN9JIPKZRhSW5S"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":15,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"Br","obfuscation":"UlkWImvDc15k7j"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":16,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"andon","obfuscation":"k4IOLs0r97m"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":16,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"andon","obfuscation":"OwHN4eIXQGE"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":17,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"
-        Sand","obfuscation":"WZPo9EiPEUC"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":17,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"
+        Sand","obfuscation":"V1h61U7SXec"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":18,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"erson","obfuscation":"GhwoSWPZ1R5"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":18,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"erson","obfuscation":"Jen71IJiMpt"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":19,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"\",\"","obfuscation":"CXbPkAId8crWb"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":19,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"\",\"","obfuscation":"QI5OzzgvcfLNX"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":20,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"pages","obfuscation":"l5Jj3OklWFU"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":20,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"pages","obfuscation":"mFkbrTGDazC"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":21,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"\":","obfuscation":"QITCL4K4VbgtR9"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":21,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"\":","obfuscation":"Zef7FpMxpfeFwx"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":22,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"544","obfuscation":"U5sJbJGFf8uhK"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":22,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"544","obfuscation":"qBTwA2Y9Tm9bP"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":23,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":",\"","obfuscation":"VfnblIysnVunYk"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":23,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":",\"","obfuscation":"RanJZO6TZrcmwh"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":24,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"publication","obfuscation":"VzPn4"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":24,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"publication","obfuscation":"KYDdN"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":25,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"_year","obfuscation":"WoEYaSOuNDJ"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":25,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"_year","obfuscation":"DX20V9G4VlN"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":26,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"\":","obfuscation":"EtGNOBMc3tuA5E"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":26,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"\":","obfuscation":"2MFQjvm2DCMoO7"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":27,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"200","obfuscation":"j4RMtvWSGEt6y"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":27,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"200","obfuscation":"Ee2uK0mP1w3V7"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":28,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"6","obfuscation":"63NUpaOHX14hvNq"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":28,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"6","obfuscation":"bH8zRNDG5vMuTXc"}
 
 
         event: response.function_call_arguments.delta
 
-        data: {"type":"response.function_call_arguments.delta","sequence_number":29,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"delta":"}","obfuscation":"bUENfqR7pRuV9bY"}
+        data: {"type":"response.function_call_arguments.delta","sequence_number":29,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"delta":"}","obfuscation":"FHxm7g8SoxycsLj"}
 
 
         event: response.function_call_arguments.done
 
-        data: {"type":"response.function_call_arguments.done","sequence_number":30,"item_id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","output_index":0,"arguments":"{\"title\":\"Mistborn:
+        data: {"type":"response.function_call_arguments.done","sequence_number":30,"item_id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","output_index":0,"arguments":"{\"title\":\"Mistborn:
         The Final Empire\",\"author\":\"Brandon Sanderson\",\"pages\":544,\"publication_year\":2006}"}
 
 
         event: response.output_item.done
 
-        data: {"type":"response.output_item.done","sequence_number":31,"output_index":0,"item":{"id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","type":"function_call","status":"completed","arguments":"{\"title\":\"Mistborn:
-        The Final Empire\",\"author\":\"Brandon Sanderson\",\"pages\":544,\"publication_year\":2006}","call_id":"call_JGRho7xlgYVKcbpEXdylfeCy","name":"__mirascope_formatted_output_tool__"}}
+        data: {"type":"response.output_item.done","sequence_number":31,"output_index":0,"item":{"id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","type":"function_call","status":"completed","arguments":"{\"title\":\"Mistborn:
+        The Final Empire\",\"author\":\"Brandon Sanderson\",\"pages\":544,\"publication_year\":2006}","call_id":"call_6z4qGHD8LfRVZz9FKPDJGgQm","name":"__mirascope_formatted_output_tool__"}}
 
 
         event: response.completed
 
-        data: {"type":"response.completed","sequence_number":32,"response":{"id":"resp_080ef7d1f38539e70068f96720b14481908d9e262c66579510","object":"response","created_at":1761175328,"status":"completed","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[{"id":"fc_080ef7d1f38539e70068f96721ae8881908235ebaaf99bab30","type":"function_call","status":"completed","arguments":"{\"title\":\"Mistborn:
-        The Final Empire\",\"author\":\"Brandon Sanderson\",\"pages\":544,\"publication_year\":2006}","call_id":"call_JGRho7xlgYVKcbpEXdylfeCy","name":"__mirascope_formatted_output_tool__"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","description":"Look
+        data: {"type":"response.completed","sequence_number":32,"response":{"id":"resp_0d3c00fa56b7a15000690a20fed050819482baf817ee693d47","object":"response","created_at":1762271486,"status":"completed","background":false,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-2024-08-06","output":[{"id":"fc_0d3c00fa56b7a15000690a20ff6d3c81949040e650e8737b42","type":"function_call","status":"completed","arguments":"{\"title\":\"Mistborn:
+        The Final Empire\",\"author\":\"Brandon Sanderson\",\"pages\":544,\"publication_year\":2006}","call_id":"call_6z4qGHD8LfRVZz9FKPDJGgQm","name":"__mirascope_formatted_output_tool__"}],"parallel_tool_calls":true,"previous_response_id":"resp_0d3c00fa56b7a15000690a20fd4654819498b7323202bf4a61","prompt_cache_key":null,"prompt_cache_retention":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":{"type":"function","name":"__mirascope_formatted_output_tool__"},"tools":[{"type":"function","description":"Look
         up book information by ISBN.","name":"get_book_info","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","description":"Use
         this tool to extract data in BookSummary format for a final response.","name":"__mirascope_formatted_output_tool__","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
-        Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":213,"input_tokens_details":{"cached_tokens":0},"output_tokens":44,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":257},"user":null,"metadata":{}}}
+        Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":229,"input_tokens_details":{"cached_tokens":0},"output_tokens":28,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":257},"user":null,"metadata":{}}}
 
 
         '
     headers:
       CF-RAY:
-      - 992cbc2bc81db98d-SEA
+      - 999545d7dedf8eb8-NRT
       Connection:
       - keep-alive
       Content-Type:
       - text/event-stream; charset=utf-8
       Date:
-      - Wed, 22 Oct 2025 23:22:09 GMT
+      - Tue, 04 Nov 2025 15:51:27 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -433,15 +437,15 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '393'
+      - '205'
       openai-project:
-      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '429'
+      - '209'
       x-request-id:
-      - req_9d60151dba8d4aa7b8e1fa7b8508d4fb
+      - req_47c0b973ea274804a23744000e8b4076
     status:
       code: 200
       message: OK

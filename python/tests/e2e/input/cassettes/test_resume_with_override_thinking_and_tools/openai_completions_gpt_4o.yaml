@@ -20,6 +20,8 @@ interactions:
       - api.anthropic.com
       user-agent:
       - Anthropic/Python 0.64.0
+      x-api-key:
+      - <filtered>
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -37,7 +39,7 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.10.16
+      - 3.10.15
       x-stainless-timeout:
       - '600'
     method: POST
@@ -45,28 +47,27 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//bFRdj6o4AP0rDS97NzojIPiV7IOICoKo+DluNnMLVAqWgrQFdTL/fePs
-        zuxOcp/anp5zetrk9E3K8ggRaSCFBIoIPbGcUsSftCdVVnVZVzSpKSWRNJAyFr/KylLU6dDfFJu0
-        h4W/P8GbeQuR1JT4rUAPFmIMxg+gzMkDgIwljEPKpaYU5pQjyqXBn2+ffI4Tek5o/HD4nA6kDUZA
-        MFSChAHIHiA45SXgGAFFljkGkyTIKQzDBFCRBah8BjbAsEIAgpOgIU9yCmAFEwIDgkAICUER+Bnm
-        WSE4ej0lwU/AMeQghBT8i3640194gx/KU0IjdEXR78/gKxqGDBRlXiURij60rEBhckpCUEEiEKB/
-        KLLcBCz/ikbIB69EF5GUKAIFLGGGOCoZ4DnI4PmfDF8XeMR+lpoSS2IKuSgf7zUuV+bo/GKPjHjk
-        nIcVTDv3moSjA+73+mZ6CmfOFdMx0b3VUIOLuX9p0eN99ELxcnLYhZPOYk4wWW5bsdPAdy/do5dW
-        e9W13FU155eyXd+y1ji+dQJFcxdovVLqXTVRNWh6janO3RclEDcDh1q8tutscUgrseezoHFtuzvF
-        nBeHc6D4/e64Xfs3mzXczdWddYu+O0SBSfdaZE/4jOvVZntxNNkp2Oje0HYHC9W4NDP3fljkPb03
-        UyfW+i5WRXmpt+5wGUDlDNnI2oy5ctTROmxz7IvpzEdHrxhte6oxQeO1VZVOqunGurSuzpaVQR9t
-        +zNjGq3j6N4KYydK22519m1cDi8dz5722jieqqHTIRN1iNodpW44yLARtVK91zfrvjhlUcdLO9nG
-        qzx1b4Rm4B8pbRw0PiS9q43IUWbGtBtU4m5cd91kWXUbnnrZB4mbdXpLq72FRmqqrbUTLreBZeis
-        0r0Ogdd6Pe/49vHWwnG7TWR0WM03cmqlluVolS1PiMg0NKu9VrdczDVzSGcjS1zVfteqMRrv7kM/
-        0lz9sjptSuXSP0cTk5TjrtGY7LApe1s/MxyzOIcrNXwZxdRpCP+uNtx9yz5elntRRsluacSG9N78
-        r4fo+mjoxzCQ7N8I+daLX7fuo5S3XDx/c8pz8ioY+vw3HmvxKivbysVjVajHaRgl2MOHbabUhdSU
-        KMweuv+V8yGlheDS4E2i0kCR5ff3v5oS43nxWiLIcvr9nI8Nhi4C/U1H2esgDMNA+F08Z6AUBvIy
-        luWclIo0RW7CgvLuKKCKP7Hed2dPd1lBPteUHNXHDvnb8xSX5Yy8kj+Me0cqGsFqkF40/nTsNm6Q
-        8I9t2f4Al4gZJomP86//RYf4TZujpZZ3aRhPjlbYdVJwmWDkqc9nEAvU2h0AAP//AwCo1eVDrwUA
-        AA==
+        H4sIAAAAAAAAA2xUbY+qOBj9K00/7Q3OCIKvyf2gKC+KOr6LezemQMFqaYECCpP57xvn7tzdm+y3
+        PqfnnJ48yek7jHmAKRxAn6IiwC+CM4bzF+2lJbfaclvRYAOSAA5gLKKzrGzY9mSQuWu1YnNTYy9c
+        KRuDwAbMqwQ/WVgIFGHYgBmnTwAJQUSOWA4b0OcsxyyHgz/fv/j5hbAbYdHT4es4gNsLBoXAGSAC
+        IPEEQcgzkF8wUGQ5vwCDeJwh3yeAFbGHs1dggwsqMUAgLJifE86AjyjFAfgBfR4nRY7PIfF+QJBf
+        UA58xMA/8Kcr+x9P8IfyQliAHzj49gp+RbogAZKMlyTAwadWJNgnIfFBiWiBAfuuyHIDCP4rEqWf
+        vAynBclwABKUoRjnOBMg5yBGt58Zfgv+ChtQkIihvMiee5qkfKzfXFtfR/rsNhwepF4YbVhGraob
+        CQWHt7ju0wTfh2FkX3es6eyou6Zpb1GWB2knE9kYSeZb2qp6qaRJlTnprvxwNe/xbu1Q+1hTQidR
+        vZSkuRkG3X75yLzRxkfjSR2t50rbvcfOyFC7JbHvzdjoGt3+vnkip6UkS2Kz0++VNK/Xbf8e+onv
+        Ke3ZPUpzEl9cVfNdKWXoJiwnLTVyssgsmeiSbZSb0jxavLVt6m+6t5XcdLN01rJVrvNqO9vdqbrk
+        S7lSV/V0Uk3WwtjQu3UwvErFmTktDni+X3BHPi7ixdiyzW1vV9f6dDW6a3EWu9N9sVzriTZd6ZjL
+        zt0KRWa0m87BbI+O2O3rgWd3em5huM1QsTS9Vq9Vi4vSwPlNM9DK6RT4EI+ssPbVdVZL5opvda2F
+        DzXrO3NF9h/m6pH37dhiotURatLxvf1yPxpVptLCWCXLcjWbGEZG1851NU2LA15ETt/e7WfxXOU3
+        tbzs59ueMcvYzZmZVZlp+3oYqx6r92GQWIV9iovNQ52eaHrvCjos1Hwe2p0xrYa2LY+3Q1OXnVln
+        WqG+GXMaTo4ENf1pIIpssbv0ZVNjSYe7vfXVHE6+w4/Gv53jnJ4Lgb+a/ZyLs6w4R88dP9bXyomu
+        89J/2+N6V1mwARmKn7r/9OgpZUmRw8E7ZHCgyPLHx18NKHKenDOMBGe/v/N5IXBaYOZjOGAFpQ1Y
+        fP4Ug/efVuec3zATcKCprQb0kX/B57+VXJSaCMoS8agqDGDyRamJKbjkYHpBFqQWZKTmphYl5sSb
+        5mKqR8gaZqDL1uoo5ZeWIAsZGpnoKBWnFpVlJqfGl2SmFilZKYEKuJTEohSl2loAAAAA//8DACYL
+        qNxRBQAA
     headers:
       CF-RAY:
-      - 990243793fccc3a1-SEA
+      - 999534b749de9d35-NRT
       Connection:
       - keep-alive
       Content-Encoding:
@@ -74,7 +75,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:39:46 GMT
+      - Tue, 04 Nov 2025 15:39:48 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -88,57 +89,57 @@ interactions:
       anthropic-ratelimit-input-tokens-remaining:
       - '2000000'
       anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-17T19:39:44Z'
+      - '2025-11-04T15:39:47Z'
       anthropic-ratelimit-output-tokens-limit:
       - '400000'
       anthropic-ratelimit-output-tokens-remaining:
       - '400000'
       anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-17T19:39:46Z'
+      - '2025-11-04T15:39:48Z'
       anthropic-ratelimit-requests-limit:
       - '4000'
       anthropic-ratelimit-requests-remaining:
       - '3999'
       anthropic-ratelimit-requests-reset:
-      - '2025-10-17T19:39:43Z'
+      - '2025-11-04T15:39:45Z'
       anthropic-ratelimit-tokens-limit:
       - '2400000'
       anthropic-ratelimit-tokens-remaining:
       - '2400000'
       anthropic-ratelimit-tokens-reset:
-      - '2025-10-17T19:39:44Z'
+      - '2025-11-04T15:39:47Z'
       cf-cache-status:
       - DYNAMIC
       request-id:
-      - req_011CUDLYGidW9tEdFJB1xh9D
+      - req_011CUo6oSKzjXanL2eCHkoFs
+      retry-after:
+      - '14'
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
-      via:
-      - 1.1 google
       x-envoy-upstream-service-time:
-      - '3244'
+      - '3539'
     status:
       code: 200
       message: OK
 - request:
-    body: '{"messages":[{"role":"user","content":"What is the 100th fibonacci number?"},{"role":"assistant","content":"I''ll
-      compute the 100th Fibonacci number for you.","tool_calls":[{"id":"toolu_01UvLhE2u2ZGcdihNhXUm1wp","type":"function","function":{"name":"compute_fib","arguments":"{\"n\":
-      100}"}}]},{"role":"tool","content":"218922995834555169026","tool_call_id":"toolu_01UvLhE2u2ZGcdihNhXUm1wp"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"compute_fib","description":"Compute
+    body: '{"messages":[{"role":"user","content":"What is the 100th fibonacci number?"},{"role":"assistant","content":null,"tool_calls":[{"id":"toolu_01LXbYDxRjyLgjMvcPVezUyH","type":"function","function":{"name":"compute_fib","arguments":"{\"n\":
+      100}"}}]},{"role":"tool","content":"218922995834555169026","tool_call_id":"toolu_01LXbYDxRjyLgjMvcPVezUyH"}],"model":"gpt-4o","tools":[{"type":"function","function":{"name":"compute_fib","description":"Compute
       the nth Fibonacci number (1-indexed).","parameters":{"properties":{"n":{"title":"N","type":"integer"}},"required":["n"],"additionalProperties":false,"type":"object"},"strict":false}}]}'
     headers:
       accept:
       - application/json
       accept-encoding:
       - gzip, deflate
+      authorization:
+      - <filtered>
       connection:
       - keep-alive
       content-length:
-      - '677'
+      - '631'
       content-type:
       - application/json
       cookie:
-      - __cf_bm=bqAuKHQq_WDoddjc_8n4ZVETbcYhyNCTv6mLZp6hopY-1760729941-1.0.1.1-RLGJrXs96ZY4dJMtqAfrv.hqBx36iattz6ZmbRDi2GSgIeUjf7W73fme4aMKCNhVTf7Ql5Kr6DhrTAdt1gY20p3yrJuUEqWGP9Od4Q58C5Q;
-        _cfuvid=mdcfYnlzNel6gz4BdSZjRIMc0.ltGGjbt3mn9dSlDeI-1760727600979-0.0.1.1-604800000
+      - <filtered>
       host:
       - api.openai.com
       user-agent:
@@ -160,23 +161,23 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.10.16
+      - 3.10.15
     method: POST
     uri: https://api.openai.com/v1/chat/completions
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFJNb9wgEL37VyDOOMJk17veWz7anHKpcqgURRYLY5ssBgQ4aRXtf4+w
-        N2unTaVeOMyb93hvZt4yhLCSeIew6HgUvdP5zY8Db38eWq7a+286PFw/X71W8u72evN6f4tJYtj9
-        M4j4wboQtncaorJmgoUHHiGpFpuSblhVbcsR6K0EnWiti/nK5oyyVU63OS1PxM4qAQHv0GOGEEJv
-        45ssGgm/8A5R8lHpIQTeAt6dmxDC3upUwTwEFSI3EZMZFNZEMKPrhw5QQWns0He1t4YLoZAZ+j14
-        pAJixZZUjJGqWpPt5Yqs12tSlBWhrLxYCnpohsBTHjNovQC4MTbyNI8xytMJOZ7Na9s6b/fhDypu
-        lFGhqz3wYE0yGqJ1eESPGUJP45CGT7mx87Z3sY72AON3BS0nPTyvZUbZ5QmMNnK9YLGKfKFXS4hc
-        6bAYMxZcdCBn6rwTPkhlF0C2SP23m6+0p+TKtP8jPwNCgIsga+dBKvE58dzmIV3tv9rOUx4N4wD+
-        RQmoowKfNiGh4YOeDgqH3yFCXzfKtOCdV9NVNa5uylXDKsobhrNj9g4AAP//AwAraaGHXgMAAA==
+        H4sIAAAAAAAAAwAAAP//jFJNb9UwELznV1g+O1Xivny9I1QcKkAgEBJFVeQ4m8TFsS17g0DV++8o
+        yetLCkXi4sPOznhmdx8jQqhq6ZFQOQiUo9Px6683H98+3EBzq8P77u6DRuTvbsOXSb7ynyibGbZ5
+        AIlPrCtpR6cBlTUrLD0IhFk1LXLOi6QoqwUYbQt6pvUO44ONecIPcVLGSX4mDlZJCPRIvkWEEPK4
+        vLNF08JPeiQJe6qMEILogR4vTYRQb/VcoSIEFVAYpGwDpTUIZnH9eQCSJgkO5I1qrBFSKmKmsQFP
+        VCA8LVnFOauqjJXXB5ZlGUvziiU8v9oLeuimIOY8ZtJ6BwhjLIp5HkuU+zNyupjXtnfeNuEPKu2U
+        UWGoPYhgzWw0oHV0QU8RIffLkKZnuanzdnRYo/0Oy3dVusrRbSsbyK/PIFoUequn6YG9IFe3gELp
+        sJsylUIO0G7UbSViapXdAdEu9N9uXtJegyvT/4/8BkgJDqGtnYdWyeeJtzYP89H+q+0y5MUwDeB/
+        KAk1KvDzIlroxKTXe6LhV0AY606ZHrzzaj2qztWy6dKizLK8oNEp+g0AAP//AwAfMYM4XQMAAA==
     headers:
       CF-RAY:
-      - 9902438e59d6c4cb-SEA
+      - 999534ceceb7686f-NRT
       Connection:
       - keep-alive
       Content-Encoding:
@@ -184,9 +185,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:39:47 GMT
+      - Tue, 04 Nov 2025 15:39:50 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=gg2yvy1QpZzyHOjWpImzq.jJoaYO.po1uOaVUXL6CW4-1762270790-1.0.1.1-7E5WeWPts3aqJLzrHeboAwJCf1CfN4HpsGgqrjEh6h.D82Dk2gQ6hjisiTUodNljtJVLxwu45h.wmRr1VuNFLEDQhwuemnkeIdF3bpWJTIA;
+        path=/; expires=Tue, 04-Nov-25 16:09:50 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=RlhqD3nR_G65TZ.0GjaIpBlnJCqDOT9RpiJKgligYn0-1762270790118-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -202,13 +209,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '766'
+      - '396'
       openai-project:
-      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '794'
+      - '622'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -218,13 +225,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799970'
+      - '799982'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 2ms
+      - 1ms
       x-request-id:
-      - req_59de396370604c0abd09a04dd4e100d0
+      - req_01540da7ed1e4da99f50063848adb513
     status:
       code: 200
       message: OK

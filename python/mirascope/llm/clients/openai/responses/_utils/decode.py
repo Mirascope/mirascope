@@ -89,13 +89,17 @@ def decode_response(
     elif details := response.incomplete_details:
         finish_reason = INCOMPLETE_DETAILS_TO_FINISH_REASON.get(details.reason or "")
 
+    serialized_items = [
+        _serialize_output_item(output_item) for output_item in response.output
+    ]
+    if serialized_items:
+        serialized_items[0]["response_id"] = response.id
+
     assistant_message = AssistantMessage(
         content=parts,
         provider="openai:responses",
         model_id=model_id,
-        raw_message=[
-            _serialize_output_item(output_item) for output_item in response.output
-        ],
+        raw_message=serialized_items,
     )
 
     return assistant_message, finish_reason
@@ -166,11 +170,13 @@ class _OpenAIResponsesChunkProcessor:
                 if finish_reason:
                     yield FinishReasonChunk(finish_reason=finish_reason)
             elif event.type == "response.completed":
-                yield RawMessageChunk(
-                    raw_message=[
-                        _serialize_output_item(item) for item in event.response.output
-                    ]
-                )
+                serialized_items = [
+                    _serialize_output_item(item) for item in event.response.output
+                ]
+                if serialized_items:
+                    serialized_items[0]["response_id"] = event.response.id
+
+                yield RawMessageChunk(raw_message=serialized_items)
                 if self.refusal_encountered:
                     yield FinishReasonChunk(finish_reason=FinishReason.REFUSAL)
 

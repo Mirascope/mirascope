@@ -21,10 +21,10 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Thought(
-                            thought='The user is asking for the 100th Fibonacci number. I have a function available called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.'
+                            thought="The user is asking for the 100th Fibonacci number. I have access to a function called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call."
                         ),
                         ToolCall(
-                            id="toolu_01LVmhRSWyUc2ep2hbP7hH84",
+                            id="toolu_01T6RCnKArQXwXMWXneZC1Dr",
                             name="compute_fib",
                             args='{"n": 100}',
                         ),
@@ -35,12 +35,12 @@ test_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "signature": "ErQDCkYICBgCKkCsItOUHNinar+NABlYn+UTCEV462H15XiUdax8L7lhYMAvN2X2YxzcMd8Obghv+2Menhq/JUHTvDvU3gt3TiOQEgwBwO65BrVeQDsdzOsaDJLQlWqNjpXdBBjgGiIwd7VNj7mVC11HNOFLqTxqq/O2ERu9FYdGiOFTwMyutumJ2sWNTrrAIzNf9SpAk5SSKpsC0hXQacdwPhqJQxZc8hauodhKwKfpksYOm0yJd7v1aRdrAZHrYwfMYlyiygzctAx3wLXzFE7Ez1frJkF+PZYok76DU7BMP2wC+JSiGsPdeaNcy7RnsP7S2/U86non+98+/LLM6TtJ0tTYl1e5q2H0KFl/J3i+ivRGTkbw7+Nf/LKGxT+luaiZPxwvcSqoQiuRUAx0TV875THH5FWYjxxtRpOFmoYmNglLJ9jkoXc2Z4Tvi1ESojBFWW0aBm8yWPaEb/pnDVKebCXBro+J6Gndpx17Dn74eOv9lmAQqu0QM+ymgMWBeJezBvf7QUQGZ511Dnyliy3HkcahbdT1XMhim6i6lf9Zugcha1lL2ZFHuzaZnMhnG9NxC867vhgB",
-                                "thinking": 'The user is asking for the 100th Fibonacci number. I have a function available called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.',
+                                "signature": "ErQDCkYICRgCKkDaHob9wh+/6LJ48y0NcBWC9b5bnLRiddtv+9x3lKtb9tem+amT31hQnImhTc2hT9bXFFhSVdBD7VEocP8J+/JfEgxw3aUKCBi+vOaGnbIaDL/PxlAtKliVNzM9pCIwzbeeB8v1We9yVgZ/2z54D3153AhhV2DNYFoqHBCXWfFe3dz+60tDwPCHd+0wgMmwKpsCZH7g5mEjuGWh0FBltEmnQnEcnorTT0gfPJTlk5HUvbIFTa0UGonGccnPgidGOLiCZqPfL3Xo0AbyMvhS+yAMKlEE9AlqbBDxoezfpLv0Z+ojBCufeH4oM9xHMtvZbDvAW2wucQQvVT70lIKvTpWM4j6RuWMo8rotZp0awVx0tOlvV6oZLl9BtBoLddXWUwbZz3rSMOByyjydAYUz7SpRuY/ZsV8rR5ibSXUY3rFSrMwFXb13z6BErOoI9/Hbl+d1A35Z3t0m2gRrETvwMTmnEi1+IRwQX5CK189qNTeMA/1R16XZnS9G7W1j73A9r0JjBghphDMKYouca8oX2xqczX/J7uO+/UxEwLYZDeVQt2YejzzJef4cREjs/BgB",
+                                "thinking": "The user is asking for the 100th Fibonacci number. I have access to a function called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.",
                                 "type": "thinking",
                             },
                             {
-                                "id": "toolu_01LVmhRSWyUc2ep2hbP7hH84",
+                                "id": "toolu_01T6RCnKArQXwXMWXneZC1Dr",
                                 "input": {"n": 100},
                                 "name": "compute_fib",
                                 "type": "tool_use",
@@ -51,7 +51,7 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01LVmhRSWyUc2ep2hbP7hH84",
+                            id="toolu_01T6RCnKArQXwXMWXneZC1Dr",
                             name="compute_fib",
                             value="218922995834555169026",
                         )
@@ -67,7 +67,7 @@ test_snapshot = snapshot(
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_094f26de235459b00068f9669723508194938b9bf3722348d9",
+                            "id": "msg_0ea88e5cd959147100690a1e4a547c8193b00f753c9a61f348",
                             "content": [
                                 {
                                     "annotations": [],
@@ -79,6 +79,7 @@ test_snapshot = snapshot(
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_0ea88e5cd959147100690a1e49d21081938a3e1d67a0ebe69e",
                         }
                     ],
                 ),

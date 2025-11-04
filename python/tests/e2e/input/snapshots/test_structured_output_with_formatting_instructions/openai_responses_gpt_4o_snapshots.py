@@ -48,6 +48,7 @@ lucky number 7.\
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_07e251ec752216f10068f9669e20e88197a6082dab1e90d5e8",
                         }
                     ],
                 ),

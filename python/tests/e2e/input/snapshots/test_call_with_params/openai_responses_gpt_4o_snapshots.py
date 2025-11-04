@@ -43,6 +43,7 @@ test_snapshot = snapshot(
                                 "role": "assistant",
                                 "status": "completed",
                                 "type": "message",
+                                "response_id": "resp_0d902d0e83de5d560068f96688b6f881968f031730e6608227",
                             }
                         ],
                     ),

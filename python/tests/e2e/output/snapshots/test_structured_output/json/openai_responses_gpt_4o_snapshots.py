@@ -114,6 +114,7 @@ Respond only with valid JSON that matches this exact schema:
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_0c56259124d74c410068f966cf91c88195984fea0f618dde83",
                         }
                     ],
                 ),
@@ -309,6 +310,7 @@ Respond only with valid JSON that matches this exact schema:
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_0f9c89c401370d9e0068f966daa3d88196b29f256cd5b4c392",
                         }
                     ],
                 ),
@@ -503,6 +505,7 @@ Respond only with valid JSON that matches this exact schema:
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_036491543731fbfb0068f966e29b6c81909d9e98a023c9480d",
                         }
                     ],
                 ),
@@ -698,6 +701,7 @@ Respond only with valid JSON that matches this exact schema:
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_00edc40ff3f879d50068f966ea1f78819386de4b37d7121980",
                         }
                     ],
                 ),

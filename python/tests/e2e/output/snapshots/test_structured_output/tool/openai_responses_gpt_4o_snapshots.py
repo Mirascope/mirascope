@@ -43,6 +43,7 @@ sync_snapshot = snapshot(
                             "type": "function_call",
                             "id": "fc_0ae3ac6597d0b6cf0068f966d381448195858ced56b0b77a5d",
                             "status": "completed",
+                            "response_id": "resp_0ae3ac6597d0b6cf0068f966d246dc81958b2c41989f590f16",
                         }
                     ],
                 ),
@@ -120,6 +121,7 @@ async_snapshot = snapshot(
                             "type": "function_call",
                             "id": "fc_0e92c5605a0410a90068f966ddde608195817fcad49b8d61b9",
                             "status": "completed",
+                            "response_id": "resp_0e92c5605a0410a90068f966dcf62c819599af22e28feba984",
                         }
                     ],
                 ),
@@ -196,6 +198,7 @@ stream_snapshot = snapshot(
                             "type": "function_call",
                             "id": "fc_02081d7ebf3b828d0068f966e5ba288197a988ed7e29d9afe5",
                             "status": "completed",
+                            "response_id": "resp_02081d7ebf3b828d0068f966e51f308197bc16ea0ba76aba75",
                         }
                     ],
                 ),
@@ -273,6 +276,7 @@ async_stream_snapshot = snapshot(
                             "type": "function_call",
                             "id": "fc_0d5546885926d4490068f966ef0e148190ae98875802831707",
                             "status": "completed",
+                            "response_id": "resp_0d5546885926d4490068f966ee45b481909b24858aad2fd2fd",
                         }
                     ],
                 ),

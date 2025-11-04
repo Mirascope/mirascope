@@ -57,6 +57,7 @@ class ResponseCreateKwargs(TypedDict, total=False):
     tool_choice: response_create_params.ToolChoice | Omit
     text: ResponseTextConfigParam
     reasoning: Reasoning | Omit
+    previous_response_id: str
 
 
 def _encode_user_message(
@@ -241,6 +242,37 @@ def _compute_reasoning(thinking: bool) -> Reasoning:
         return {"effort": "minimal"}
 
 
+def _find_previous_response_context(
+    messages: Sequence[Message],
+    model_id: OpenAIResponsesModelId,
+) -> tuple[str | None, Sequence[Message]]:
+    """Locate prior OpenAI Responses output to enable follow-up behavior."""
+    for index in range(len(messages) - 1, -1, -1):
+        message = messages[index]
+        if not (
+            message.role == "assistant"
+            and message.provider == "openai:responses"
+            and message.model_id == model_id
+        ):
+            continue
+
+        raw_message = message.raw_message
+        if not (
+            isinstance(raw_message, list)
+            and raw_message
+            and isinstance(raw_message[0], dict)
+        ):
+            continue
+
+        previous_response_entry = raw_message[0]
+        previous_response_id = previous_response_entry.get("response_id")
+        if not isinstance(previous_response_id, str):
+            continue  # pragma: no cover
+        return previous_response_id, list(messages[index + 1 :])
+
+    return None, messages
+
+
 def encode_request(
     *,
     model_id: OpenAIResponsesModelId,
@@ -322,8 +354,25 @@ def encode_request(
                 messages, format.formatting_instructions
             )
 
+    previous_response_id, messages_to_encode = _find_previous_response_context(
+        messages, model_id
+    )
+
+    if previous_response_id is not None:
+        kwargs["previous_response_id"] = previous_response_id
+
+        if openai_tools:
+            format_tool_present = any(
+                tool["name"] == FORMAT_TOOL_NAME for tool in openai_tools
+            )
+            if format_tool_present:
+                kwargs["tool_choice"] = ToolChoiceFunctionParam(
+                    type="function",
+                    name=FORMAT_TOOL_NAME,
+                )
+
     encoded_messages: list[ResponseInputItemParam] = []
-    for message in messages:
+    for message in messages_to_encode:
         encoded_messages.extend(_encode_message(message, model_id, encode_thoughts))
     kwargs["input"] = encoded_messages
 

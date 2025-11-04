@@ -7,12 +7,16 @@ interactions:
       - application/json
       accept-encoding:
       - gzip, deflate
+      authorization:
+      - <filtered>
       connection:
       - keep-alive
       content-length:
       - '221'
       content-type:
       - application/json
+      cookie:
+      - <filtered>
       host:
       - api.openai.com
       user-agent:
@@ -34,45 +38,39 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.10.16
+      - 3.10.15
     method: POST
     uri: https://api.openai.com/v1/responses
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       CF-RAY:
-      - 992cbe0ade9675e6-SEA
+      - 999542a34962eb76-NRT
       Connection:
       - keep-alive
       Content-Encoding:
@@ -80,7 +78,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 22 Oct 2025 23:23:45 GMT
+      - Tue, 04 Nov 2025 15:49:34 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -96,13 +94,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '19872'
+      - '18488'
       openai-project:
-      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '19875'
+      - '18496'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -110,65 +108,34 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '1998994'
+      - '1999378'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 30ms
+      - 18ms
       x-request-id:
-      - req_aa2c1f3ffd80480cb4bd95bb3a5beedd
+      - req_b3a4fcd818e041a58f32b4041581dc02
     status:
       code: 200
       message: OK
 - request:
-    body: "{\"input\":[{\"content\":\"How many primes below 400 contain 79 as a substring?
-      Answer ONLY with the number, not sharing which primes they are.\",\"role\":\"user\"},{\"id\":\"rs_0d53aa13846e03a60068f9676daff881959d7f269101ba6689\",\"summary\":[{\"text\":\"**Counting
-      primes with \\\"79\\\" substring**\\n\\nI need to find primes less than 400
-      that contain \\\"79\\\" as a substring. The possible candidates are 79 itself,
-      and three-digit numbers like 179, 279, and 379. However, 790 and above don\u2019t
-      count since they exceed 400. It\u2019s important to remember that \\\"79\\\"
-      must be contiguous, so numbers like 97 or variations across boundaries don\u2019t
-      qualify. Ultimately, the valid primes are 79, 179, 279, and 379.\",\"type\":\"summary_text\"},{\"text\":\"**Finalizing
-      prime list with \\\"79\\\"**\\n\\nI\u2019m surveying numbers that can contain
-      \\\"79.\\\" The only valid two-digit option is 79 itself. For three-digit numbers
-      below 400, we have 179, 279, and 379. Upon checking, 179 and 79 are confirmed
-      as primes, while 279 is divisible by 3 and therefore not a prime. I thought
-      about 97 but it doesn\u2019t contain \\\"79,\\\" and, even though 197 has 97
-      as digits, it doesn\u2019t qualify either. Ultimately, my confirmed primes are
-      79, 179, and 379.\",\"type\":\"summary_text\"},{\"text\":\"**Confirming prime
-      status of candidates**\\n\\nI\u2019ve confirmed that the primes are 79, 179,
-      and 379, which gives us three valid primes. To verify: 79 is standardly recognized
-      as prime. Next, I checked 179 by testing divisibility with primes under its
-      square root (about 13.38) and confirmed it\u2019s prime through various checks.
-      \\n\\n279 isn\u2019t prime since it's divisible by 3. Lastly, I checked 379,
-      and after testing it against primes below its square root (about 19.4), it turns
-      out to be prime too. So, the final count remains three, but 97, 197, and 297
-      don\u2019t qualify.\",\"type\":\"summary_text\"},{\"text\":\"**Finalizing primes
-      containing \\\"79\\\"**\\n\\nI\u2019m checking 397, but it actually contains
-      \\\"97\\\" as digits 2-3, not \\\"79.\\\" My valid primes so far are 79, 179,
-      and 379, which totals three. I need to be careful here because I want to ensure
-      there aren\u2019t any other primes under 400 that include \\\"79\\\" in a non-contiguous
-      way, but that doesn\u2019t apply. Numbers like 197 don\u2019t count either,
-      as it spells \\\"97,\\\" not \\\"79.\\\" So, the final count of primes with
-      \\\"79\\\" as a substring is exactly three.\",\"type\":\"summary_text\"},{\"text\":\"**Final
-      check on primes with \\\"79\\\"**\\n\\nI\u2019m confirming if there are any
-      primes under 400 that have \\\"79\\\" as non-consecutive digits. It turns out
-      there aren\u2019t any. To be thorough, I checked possible patterns like x79,
-      where x ranges from 0 to 3. I found 79, 179, and 379 as primes, but 279 is composite.
-      The pattern 79x leads to 790-799, all of which exceed 400. Thus, I reaffirm
-      that the only valid primes containing \\\"79\\\" are three: 79, 179, and 379.\",\"type\":\"summary_text\"}],\"type\":\"reasoning\"},{\"id\":\"msg_0d53aa13846e03a60068f96780d46c819584f9622a799dc650\",\"content\":[{\"annotations\":[],\"text\":\"3\",\"type\":\"output_text\",\"logprobs\":[]}],\"role\":\"assistant\",\"status\":\"completed\",\"type\":\"message\"},{\"content\":\"If
-      you remember what the primes were, then share them, or say 'I don't remember.'\",\"role\":\"user\"}],\"model\":\"gpt-5\",\"reasoning\":{\"effort\":\"minimal\"}}"
+    body: '{"input":[{"content":"If you remember what the primes were, then share
+      them, or say ''I don''t remember.''","role":"user"}],"model":"gpt-5","previous_response_id":"resp_0c9d4e63dac6126a00690a207b84688195ac01b41a1dae52f2","reasoning":{"effort":"minimal"}}'
     headers:
       accept:
       - application/json
       accept-encoding:
       - gzip, deflate
+      authorization:
+      - <filtered>
       connection:
       - keep-alive
       content-length:
-      - '3230'
+      - '251'
       content-type:
       - application/json
+      cookie:
+      - <filtered>
       host:
       - api.openai.com
       user-agent:
@@ -190,27 +157,27 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.10.16
+      - 3.10.15
     method: POST
     uri: https://api.openai.com/v1/responses
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3xUy27jMAy85ysMXfbSFLbjR5I/2G8oCoOW6VQbvSBRQYMi/76wnPixTfeWcMjx
-        kEPqa5MkTHTsmDCH3jZpV+4Ast2+qDDdQZWm1b4/VPU+K/s+3WeH8lDsEEus8g77rKyRvQwUpv2D
-        nB40Rvt7nDsEwq6BAcvqKsvqssjLiHkCCn6o4UZZiYTdWNQCP5+cCXrQ1YP0OIaFlEKf2DH52iRJ
-        kjALV3RDfYcXlMaiY5skucVkdM4MmA5SxoDQj680HRII6deoJxc4CaNXcQWfjQlkAzVkzvgdJGNk
-        w0Gu6ZTpUA7KTpa25TZP83Kb7rdpfZ9WZGTH5C02MrYzG+F/tiHPspRHG0rMi11ZHniRFztsI3Ek
-        oavF0QjwRg8DmyAflAJ3HT78HmO3l2cClD/9R8HuUEcFe8z4HuqqwDTvsMq+K1DoPZxw8f0fHI8g
-        N5pQz1NZClvRPvzAT5qqYwJobQgeHr69r0BpTtaZ9gkSiY4J+510Rv+ixKFC1aJ7ZVPW7f5rKmTO
-        yCgGvBeeQNOYPCTGJGbBgZQo1xtCLozLbB1ehAm+edxLE2c/bZB1RllqOPAPbM54XWKzs9MpYN8b
-        F7tQQgsF8j6ZheVD+XQeHnqkayM61CR6gatT8egugmND4nFePQQ5Dpt5Mg6XnRAqiw4oxHD2mt6j
-        cah3eb1xCub/CzNj3nIX2QVda7yg67hCnQhqPutxmB9G8HH6gQybgNlbRsY2C8fTKWiXGl3QPO5L
-        7FJ4aOXjDQpxc6cGhF49AVX+8j2+eFemNqN/3VyYrlr992XJ0mfAM95pBX6iJkMgZ7DOpxEGv3Zb
-        IUEHBAP9bXP7CwAA//8DAL3FtMMSBgAA
+        H4sIAAAAAAAAA4xUy27jMAy85ysMXfbSFLLj2En+YL+hKAxaolNt9TAkKmhQ5N8XlhPH3qbFIheH
+        Q44ozlCfqyxjSrJDxjyGvuFiL0usNhJElRcVcF7tORR8h5ttVe7y/baV3fBrc9gLrHfAngYK1/5B
+        QTcaZwOOceERCGUDA5bXVVHU+aYuExYIKIahRjjTaySUY1EL4v3oXbRDXx3ogGNYaa3skR2yz1WW
+        ZRnr4Yx+qJd4Qu169GyVZZeUjN67AbNR6xRQ9nZKI5FA6bBEA/koSDm7iBv4aFykPlJD7h2/guSc
+        bgToJZ1xEvXQ2bGn9XZd8GK75rs1r6/TSozskL2ki4zXuQsRfpBhLzs+yAAV55tyV2AnN4Xc80Sc
+        SOjc4ygEBGeHgU1QiMaAPw8Hv6bY5elRAyYcf+hAIi/HDkRRtfsSod7WdSm+dmAwBDji7PxvFE+g
+        cJbQ3qcyb2xBe9MDP2iqTglgrSO4afjyugC1O/betQ+QRHTI2O9MOvuLMo8GTYv+mU1Zl+vXVMi8
+        06kZCEEFAktj8pCYklgPHrRGvXQI+Tiaufd4Ui6G5rYvzX9sYd3uymqXhi943pY55BJwW3QFu5I6
+        01MjQLxh847nuSUXmMdh1MrZecbdMNOGYdc5n4ZjlFUG9HXgMycN5dPWBeiQzo2SA3uncLGBAf1J
+        CWxI3ba2g6hHDVkg53E+IELToweKKZw/82s0aXVtr3PewP3/zCMpb25xdkLfuqDoPDpTqmjur8Wo
+        0ZtTYhQ1kmMTcLcMI9c3MyPxKdjPe/TRCrhOl0kVoNW3py2mhZguoOziZamKp6/x2XM1XTOpKO+F
+        fHHVfx+snD8CHvFOFviOmhyBvoN1MY0whqXaBgkkEAz0l9XlLwAAAP//AwCOo3A0aQYAAA==
     headers:
       CF-RAY:
-      - 992cbe881c9f75e6-SEA
+      - 999543182835eb76-NRT
       Connection:
       - keep-alive
       Content-Encoding:
@@ -218,7 +185,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 22 Oct 2025 23:23:46 GMT
+      - Tue, 04 Nov 2025 15:49:35 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -234,13 +201,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '1259'
+      - '1725'
       openai-project:
-      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '1264'
+      - '1733'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -254,7 +221,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 0s
       x-request-id:
-      - req_ddbe2375572f4113abca56f8feba3752
+      - req_5a25ae648fcc4858a75a71330d64bebd
     status:
       code: 200
       message: OK

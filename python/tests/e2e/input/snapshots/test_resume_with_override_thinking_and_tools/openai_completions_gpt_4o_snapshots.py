@@ -21,11 +21,10 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Thought(
-                            thought="The user is asking for the 100th Fibonacci number. I have a function available called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call."
+                            thought='The user is asking for the 100th Fibonacci number. I have a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.'
                         ),
-                        Text(text="I'll compute the 100th Fibonacci number for you."),
                         ToolCall(
-                            id="toolu_01UvLhE2u2ZGcdihNhXUm1wp",
+                            id="toolu_01LXbYDxRjyLgjMvcPVezUyH",
                             name="compute_fib",
                             args='{"n": 100}',
                         ),
@@ -36,17 +35,12 @@ test_snapshot = snapshot(
                         "role": "assistant",
                         "content": [
                             {
-                                "signature": "ErQDCkYICBgCKkAvaj6zwlcCXh989DjfcJKxhnEl5NQA4aOMRq/nZzCYnhPFXVcF6OMlhlPU/gK+hzNjWeY/3Q7HLQvMtqr3wym/Egy6b14LOeSQ1wVvF24aDN+G5tLY1buyBhc4gSIwmOXjvuWtJb+x3LV1DMpXkb1R97E3wRyIs+LTxLJ7p9LAebDnW4dIFtJt5vTUqK40KpsCz+4VXHewhrDmLzXOo858J2FHSzuQprqwULAPba1kasCHTEt1Z5eSc3thRuGJReZNpCU82BFeESHvrKj45BSrHxKUsrb9eU9JBGdSgdz/cgKdj3LvkRIhrAq6NIG83hgG2cK6lF2Ae361w+KeBIenHj589Dw9ufmd6Nj6mTNvN2WBcDbRZnn+X4tAl8xIelZ0sBG7bvuzBxV7iPv7+N2qWbiLm68PH3UaBjD2/SKcPUbHB5sv5N6laxwSM6RIZy/hg33l0eXQMT0jHjHHK4vI0Flum4eJwN/7rOM4DAnJCHux297HwheEVzARd4L5qQfTr1q9kdFDlrE7B+FVhD0NURmBKDpkcQ2cYCgnK+uRz2+LW/IZqPWurdiVPBgB",
-                                "thinking": "The user is asking for the 100th Fibonacci number. I have a function available called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.",
+                                "signature": "EqoDCkYICRgCKkAAW+8fgSnrlHy7gs1efkmz9lpewAfgIjUn/LUlYRlq8NvvW+U0i0FB+GPq2y8q+4+yGE7QcfQM8o7zLlIXzlilEgzO++MGfd79vxrbBScaDEzgRM15YwmLBF37viIw/mF7F79V/ZiZO+0+sSUCwy+MzR5cwfcpcb15KwgqtimhY34cY+qnaksHLqv4iZHiKpEC+IFvSvGXHo2T/CPCbT+YqSOLR0HvRtyTKUwl3OoO0y3QzJEyERsFSlwHWFby3erGJuWeMVNoL0XNmNDHIGT8UzzCJQBw4mrmYJVuORCp4JQCeo0LwHfsrF5/LWG5BXeY9CdbI68YuFY/f1H4Cz3jy2osvFetk4FaQL6ueWmBHfzc3Rrz+GQoTC42eWzn9LM10cxGQxt9ImHns26s3p6cbVOVBByG12ee3iOvQKEFFrlRLjQJquWeNgL9IUVKmM3ok3vhVMT8FKrnkLKGyvr4VzAm3bnzVfdpHuIZmuSx3JZlqw7slAu3tMfI6DlyAII0DTAGC0LK6Jya9GmolfEXia/cJdsurNUh90G4np6oY8RjGAE=",
+                                "thinking": 'The user is asking for the 100th Fibonacci number. I have a function called "compute_fib" that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.',
                                 "type": "thinking",
                             },
                             {
-                                "citations": None,
-                                "text": "I'll compute the 100th Fibonacci number for you.",
-                                "type": "text",
-                            },
-                            {
-                                "id": "toolu_01UvLhE2u2ZGcdihNhXUm1wp",
+                                "id": "toolu_01LXbYDxRjyLgjMvcPVezUyH",
                                 "input": {"n": 100},
                                 "name": "compute_fib",
                                 "type": "tool_use",
@@ -57,7 +51,7 @@ test_snapshot = snapshot(
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01UvLhE2u2ZGcdihNhXUm1wp",
+                            id="toolu_01LXbYDxRjyLgjMvcPVezUyH",
                             name="compute_fib",
                             value="218922995834555169026",
                         )

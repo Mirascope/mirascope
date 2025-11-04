@@ -33,6 +33,7 @@ sync_snapshot = snapshot(
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_0bee99a5de5b12910068f9669f8f3481958652a29720d87669",
                         }
                     ],
                 ),
@@ -69,6 +70,7 @@ async_snapshot = snapshot(
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_03b14221ccca5c620068f966a32fa0819580a8ac3e59222bce",
                         }
                     ],
                 ),
@@ -104,6 +106,7 @@ stream_snapshot = snapshot(
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_0360bd45725b0a010068f966a4c4a881959717ba17b93477ef",
                         }
                     ],
                 ),
@@ -140,6 +143,7 @@ async_stream_snapshot = snapshot(
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_05aee6862dd20adc0068f966a7186c8193b56f2a2a8b514dc5",
                         }
                     ],
                 ),

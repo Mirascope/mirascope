@@ -62,7 +62,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_vGDl14wuUgjKmbX3QvSPOUOl",
+                            id="call_vgvPxdtt05BqtDlE7j8BW12v",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -72,18 +72,19 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
-                            "call_id": "call_vGDl14wuUgjKmbX3QvSPOUOl",
+                            "call_id": "call_vgvPxdtt05BqtDlE7j8BW12v",
                             "name": "get_book_info",
                             "type": "function_call",
-                            "id": "fc_099b2074297131ee0068f966f805588195ab0a3266a3485eb2",
+                            "id": "fc_056c95731187f0c900690a1ffe96b88196bc64571058b3dcd9",
                             "status": "completed",
+                            "response_id": "resp_056c95731187f0c900690a1ffdebfc81969b376d9375304c85",
                         }
                     ],
                 ),
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_vGDl14wuUgjKmbX3QvSPOUOl",
+                            id="call_vgvPxdtt05BqtDlE7j8BW12v",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -106,7 +107,7 @@ Respond only with valid JSON that matches this exact schema:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_099b2074297131ee0068f966f961e88195b52bc39cd2c63caf",
+                            "id": "msg_056c95731187f0c900690a1fffe948819689a8586174f6cfd2",
                             "content": [
                                 {
                                     "annotations": [],
@@ -125,6 +126,7 @@ Respond only with valid JSON that matches this exact schema:
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_056c95731187f0c900690a1fff2cb88196a3eef8dfd30d1872",
                         }
                     ],
                 ),
@@ -257,7 +259,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_gvc1qWKn09rI7p2qrit1MWSl",
+                            id="call_jllsly7uXP0AHGquf2uNrr24",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -267,18 +269,19 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
-                            "call_id": "call_gvc1qWKn09rI7p2qrit1MWSl",
+                            "call_id": "call_jllsly7uXP0AHGquf2uNrr24",
                             "name": "get_book_info",
                             "type": "function_call",
-                            "id": "fc_001734ab3b50b4140068f9670a2160819488ed306c0f9ae85f",
+                            "id": "fc_0492f3235a2f2ceb00690a20ef1b388195aa731bdc3cf13059",
                             "status": "completed",
+                            "response_id": "resp_0492f3235a2f2ceb00690a20ee9b6c8195a12dad3f218c7cbd",
                         }
                     ],
                 ),
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_gvc1qWKn09rI7p2qrit1MWSl",
+                            id="call_jllsly7uXP0AHGquf2uNrr24",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -301,7 +304,7 @@ Respond only with valid JSON that matches this exact schema:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_001734ab3b50b4140068f9670b55e88194a0e018fd79284d50",
+                            "id": "msg_0492f3235a2f2ceb00690a20f00a5481959339a8063c2645ff",
                             "content": [
                                 {
                                     "annotations": [],
@@ -320,6 +323,7 @@ Respond only with valid JSON that matches this exact schema:
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_0492f3235a2f2ceb00690a20efa040819588c5338fb4df536d",
                         }
                     ],
                 ),
@@ -451,7 +455,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_V1BAu6CPIaeWyMim4iiKLay2",
+                            id="call_3dRVRGLC0ZOgqqAqqwxLP1oA",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -461,18 +465,19 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
-                            "call_id": "call_V1BAu6CPIaeWyMim4iiKLay2",
+                            "call_id": "call_3dRVRGLC0ZOgqqAqqwxLP1oA",
                             "name": "get_book_info",
                             "type": "function_call",
-                            "id": "fc_0f1f1f1012662e2a0068f9671c3ef08194bfaebc9329d2baf8",
+                            "id": "fc_0ba0218446ccdbff00690a20fb00dc81948a3a6ff990f79e12",
                             "status": "completed",
+                            "response_id": "resp_0ba0218446ccdbff00690a20f9cf80819484e26f182a9b9648",
                         }
                     ],
                 ),
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_V1BAu6CPIaeWyMim4iiKLay2",
+                            id="call_3dRVRGLC0ZOgqqAqqwxLP1oA",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -495,7 +500,7 @@ Respond only with valid JSON that matches this exact schema:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0f1f1f1012662e2a0068f9671dde588194a49f52a567767f75",
+                            "id": "msg_0ba0218446ccdbff00690a20fc504c81948b5d07e9d1829604",
                             "content": [
                                 {
                                     "annotations": [],
@@ -514,6 +519,7 @@ Respond only with valid JSON that matches this exact schema:
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_0ba0218446ccdbff00690a20fbb9248194a1737b7ca1166ecc",
                         }
                     ],
                 ),
@@ -646,7 +652,7 @@ Respond only with valid JSON that matches this exact schema:
                 AssistantMessage(
                     content=[
                         ToolCall(
-                            id="call_WeASSdshXbzOg7UDwf1RHvre",
+                            id="call_EvbQN4bviS5tMkqeccx4QAqK",
                             name="get_book_info",
                             args='{"isbn":"0-7653-1178-X"}',
                         )
@@ -656,18 +662,19 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message=[
                         {
                             "arguments": '{"isbn":"0-7653-1178-X"}',
-                            "call_id": "call_WeASSdshXbzOg7UDwf1RHvre",
+                            "call_id": "call_EvbQN4bviS5tMkqeccx4QAqK",
                             "name": "get_book_info",
                             "type": "function_call",
-                            "id": "fc_0075d4e9136cabd30068f9672aa9b481938088b390244ed3ec",
+                            "id": "fc_02f36303af99bf2d00690a2108724c81979d716e2b2c5602dc",
                             "status": "completed",
+                            "response_id": "resp_02f36303af99bf2d00690a2107d73481979e58d6ed7df16089",
                         }
                     ],
                 ),
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="call_WeASSdshXbzOg7UDwf1RHvre",
+                            id="call_EvbQN4bviS5tMkqeccx4QAqK",
                             name="get_book_info",
                             value="Title: Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published: 2006-07-25",
                         )
@@ -690,7 +697,7 @@ Respond only with valid JSON that matches this exact schema:
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0075d4e9136cabd30068f9672c86288193a65c26fdd8affb48",
+                            "id": "msg_02f36303af99bf2d00690a2109cb44819798fc869fb0318573",
                             "content": [
                                 {
                                     "annotations": [],
@@ -709,6 +716,7 @@ Respond only with valid JSON that matches this exact schema:
                             "role": "assistant",
                             "status": "completed",
                             "type": "message",
+                            "response_id": "resp_02f36303af99bf2d00690a210932048197a680b67d9debbae0",
                         }
                     ],
                 ),

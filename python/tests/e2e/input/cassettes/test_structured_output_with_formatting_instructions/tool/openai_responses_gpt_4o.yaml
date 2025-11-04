@@ -10,12 +10,16 @@ interactions:
       - application/json
       accept-encoding:
       - gzip, deflate
+      authorization:
+      - <filtered>
       connection:
       - keep-alive
       content-length:
       - '830'
       content-type:
       - application/json
+      cookie:
+      - <filtered>
       host:
       - api.openai.com
       user-agent:
@@ -37,31 +41,31 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.10.16
+      - 3.10.15
     method: POST
     uri: https://api.openai.com/v1/responses
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA5xV227bOBB991cQfE4KyXHky1uL7WILdJOizWJRrAthTI5srilSSw6DpIH/fUHK
-        liXHLtA+WZ7DOZzLGc7LiDGuJF8w7tA3ZZblMJF5Vcgqn85mRZYVs2peFPPVLP7P5xOoptNZJm5y
-        IYvxzWTMryKFXf2Lgg401nhs7cIhEMoSIpZPizyf3ubz24R5Ago++ghbNxoJZeu0ArFdOxtMjKsC
-        7bE1K62VWfMFexkxxhhv4Bld9Jf4iNo26PiIsV06jM7ZiJmgdTIoc7illEigtB+inlwQpKwZ2Gt4
-        Km2gJlBJdouvQbJWlwL0kK62EnWMbN3Q9cRej7Px5DqbXWfFvlyJki/YPymTNp+uE5W43AdZTG9T
-        H2arm1U2ETf5WMpbOZ8n4kRCzw0mmmBSQim8I3yp7AkEtw41Gkr4y5KTIo1Lvljyhz/es7u3f75n
-        97+z+P33h7vflvxqySHQxrp05hOQU2LLPlvaVMH7hDsgZdZLvpjujvfEkMo22/R5B1/ww/3Xj372
-        QF+Nz/Mv99nH7/r70cNAnbIqy1o58MI2WFbW1UBRX12PrC5Lnnx2I8a+pWo34EBr1MNmkQutrhqH
-        j8oGXx6k2wbWNbNxtm6oFCA2WG7xuY85BG/NQJVYVdZR71CseahrcAfPTqQeKqTnUkk0pCqFA8F6
-        dI9KYEnqIPIKgia+nx3rsJ8EYd2gAwrJnL/J9tYnOkbWlqv735NKOtdWbR/xI7qV9YpizLxGqUJ9
-        HK62jhurBB7ZT2W3b93PNu54g389HxfuYLE6XjjVJOOC8b88MtoozyIRI8vwiRwIYhIImDLsnbVb
-        1oYRfxiwShnQ7KCBN7+mvM4paq5GQud79W7F1KAjhUN7zC2O2omxZ+YP6ePqBN0XxJOLIuyBu/7J
-        /ZD+gP1te+AX6dsZ/wH95/bABXplCNft693xj87cxB3+F5RD2SljcM+5jM+F2Zm+9ahBShXVA/pT
-        v0Xd+jkJeb/wRicxpkqlRRgn8+QdItuU2q4bZ1eROuuMTX9kXTACDjqWysNKHxZj8LDuTZwyg72U
-        T4qr10Bv270cX1+xQXn0zAajf7rvxvk54Bxv9xpeoiZLoHsRF9Nu4oMfPn81EsRhjfy70e5/AAAA
-        //8DADKXny+pCAAA
+        H4sIAAAAAAAAAwAAAP//nFVLj+I4EL7zKyyfu0dJoAPhNq/VzmFnZ+ehPiyjqHAqwYsTZ+wyatTi
+        v4/sQEhoGGnnRKiv6nM9vrKfJ4xxWfAl4wZtm0fFQzydZw8P5UMM6wijKM0iiHEmFslCLOJslk2n
+        mZhGxSKJknKdlPzOU+j1fyjoRKMbi51dGATCIgePxfM0SebRPEsDZgnIWR8jdN0qJCy6oDWIbWW0
+        a3xeJSiLnVkqJZuKL9nzhDHGeAt7ND6+wB0q3aLhE8YOwRmN0R5rnFLBIJvTKXmBBFLZMWrJOEFS
+        NyN7DU+5dtQ6yklv8SVIWqtcgBrT1bpA5TOrWrqf6fskSmb30eI+So/tCpR8yf4NlXT19JMoxe05
+        FPMoC3OALE0XWTRN40LAOooCcSChfYuBxjWhoJDeGb7V9gCCqVyNDQX8ecVJksIVX6741z/fs4+v
+        /3rP/v6D+e/HDx/frfjdioOjjTbB5xOQkWLLPmvalM7agBsg2VQrvpwfzuf4lPKu2vC5pW9f3nx5
+        /KHqt7GsP+yTp3/E7jGuzhEN1KGqPK+lASt0i3mpTQ3k9dXPSKs85yHmMGHse+h2CwaUQjUeFhnX
+        6ao1uJPa2fwk3S6xfpit0XVLuQCxwXyL+5uYQcLGd3zoYRCsbka6xbLUhgZOfiqursGcuHsZWyiR
+        9rksPHEpcSRpi2YnBeYkT2tQglPEj9ulDQ7LJKxbNEAumONX0dH6ROfMuob2/wdiCn5dX48Z79Cs
+        tZXkc+Y1FtLV5/XrOr3RUuCZ/VKYx+H+39GeT7AvN+jGGcx3xwoj2+N8+DeLjDbSMk/ESDN8IgOC
+        WAEETDbsjdZb1qXhfxiwUjag2Eklr35Pm32QV2WNhMYO+t1JqkVDEsd2X5tfxgvjwMy/ho+7C/TY
+        EEvGi3AAHoaexzX+BfvrzuE36btb4Bf0nzuHG/SyIay6+73nn1w5iRv84aTBolfG6JxrFV9Lszd9
+        H1BDUUivHlCfhiPqH6iLlI9P4uQix9Cp8FT6zby4qUi3udJVa/TaU0e9sR2urHGNgJOOC2lhrU5P
+        p7NQDTZONqOXK56ldy+BwXv4fL6fxQaLc2Q0Wv3LFzGJrwHXePvb8BY1aQI1yDid9xvv7Pj6q5HA
+        L6vnP0wOPwEAAP//AwBZcGswywgAAA==
     headers:
       CF-RAY:
-      - 992cb8e84a7831ba-SEA
+      - 999534fd2c806877-NRT
       Connection:
       - keep-alive
       Content-Encoding:
@@ -69,7 +73,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 22 Oct 2025 23:19:57 GMT
+      - Tue, 04 Nov 2025 15:39:58 GMT
       Server:
       - cloudflare
       Strict-Transport-Security:
@@ -85,13 +89,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '2307'
+      - '1752'
       openai-project:
-      - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '2315'
+      - '1759'
       x-ratelimit-limit-requests:
       - '5000'
       x-ratelimit-limit-tokens:
@@ -105,7 +109,7 @@ interactions:
       x-ratelimit-reset-tokens:
       - 27ms
       x-request-id:
-      - req_5d831b9fa8d84b2082f3585147187b99
+      - req_9b7f4740c09b45418ab217d6341ca7a6
     status:
       code: 200
       message: OK

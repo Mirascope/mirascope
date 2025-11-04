@@ -62,6 +62,7 @@ Sure! Here is a list of all 50 U.S. states:
                             "role": "assistant",
                             "status": "incomplete",
                             "type": "message",
+                            "response_id": "resp_043a58ea47ac058e0068f966c095748197bf176643cf204a03",
                         }
                     ],
                 ),
@@ -128,6 +129,7 @@ Sure! Here are all the U.S. states:
                             "role": "assistant",
                             "status": "incomplete",
                             "type": "message",
+                            "response_id": "resp_0d9a87a8899d31be0068f966c2b0b08194979bf347c1bee405",
                         }
                     ],
                 ),
