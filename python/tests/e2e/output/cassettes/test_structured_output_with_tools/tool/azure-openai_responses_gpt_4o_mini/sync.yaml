@@ -1,0 +1,260 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
+      look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score","role":"user"}],"model":"gpt-4o-mini","tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in BookSummary format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1227'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AzureOpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_0a294506b18f42ac00690ac63ee1088195ba51a4ada687af85\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1762313790,\n  \"status\":
+        \"completed\",\n  \"background\": false,\n  \"content_filters\": null,\n  \"error\":
+        null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\":
+        null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-4o-mini\",\n  \"output\":
+        [\n    {\n      \"id\": \"fc_0a294506b18f42ac00690ac63fb8a0819583458fc7b85ef5b9\",\n
+        \     \"type\": \"function_call\",\n      \"status\": \"completed\",\n      \"arguments\":
+        \"{\\\"isbn\\\":\\\"0-7653-1178-X\\\"}\",\n      \"call_id\": \"call_o6W241hesup8gcgidCoNLIVq\",\n
+        \     \"name\": \"get_book_info\"\n    }\n  ],\n  \"parallel_tool_calls\":
+        true,\n  \"previous_response_id\": null,\n  \"prompt_cache_key\": null,\n
+        \ \"reasoning\": {\n    \"effort\": null,\n    \"summary\": null\n  },\n  \"safety_identifier\":
+        null,\n  \"service_tier\": \"default\",\n  \"store\": true,\n  \"temperature\":
+        1.0,\n  \"text\": {\n    \"format\": {\n      \"type\": \"text\"\n    },\n
+        \   \"verbosity\": \"medium\"\n  },\n  \"tool_choice\": {\n    \"type\": \"allowed_tools\",\n
+        \   \"mode\": \"required\",\n    \"tools\": [\n      {\n        \"type\":
+        \"function\",\n        \"name\": \"get_book_info\"\n      },\n      {\n        \"type\":
+        \"function\",\n        \"name\": \"__mirascope_formatted_output_tool__\"\n
+        \     }\n    ]\n  },\n  \"tools\": [\n    {\n      \"type\": \"function\",\n
+        \     \"description\": \"Look up book information by ISBN.\",\n      \"name\":
+        \"get_book_info\",\n      \"parameters\": {\n        \"properties\": {\n          \"isbn\":
+        {\n            \"title\": \"Isbn\",\n            \"type\": \"string\"\n          }\n
+        \       },\n        \"required\": [\n          \"isbn\"\n        ],\n        \"additionalProperties\":
+        false,\n        \"type\": \"object\"\n      },\n      \"strict\": false\n
+        \   },\n    {\n      \"type\": \"function\",\n      \"description\": \"Use
+        this tool to extract data in BookSummary format for a final response.\",\n
+        \     \"name\": \"__mirascope_formatted_output_tool__\",\n      \"parameters\":
+        {\n        \"properties\": {\n          \"title\": {\n            \"title\":
+        \"Title\",\n            \"type\": \"string\"\n          },\n          \"author\":
+        {\n            \"title\": \"Author\",\n            \"type\": \"string\"\n
+        \         },\n          \"pages\": {\n            \"title\": \"Pages\",\n
+        \           \"type\": \"integer\"\n          },\n          \"publication_year\":
+        {\n            \"title\": \"Publication Year\",\n            \"type\": \"integer\"\n
+        \         }\n        },\n        \"required\": [\n          \"title\",\n          \"author\",\n
+        \         \"pages\",\n          \"publication_year\"\n        ],\n        \"additionalProperties\":
+        false,\n        \"type\": \"object\"\n      },\n      \"strict\": true\n    }\n
+        \ ],\n  \"top_logprobs\": 0,\n  \"top_p\": 1.0,\n  \"truncation\": \"disabled\",\n
+        \ \"usage\": {\n    \"input_tokens\": 152,\n    \"input_tokens_details\":
+        {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 23,\n    \"output_tokens_details\":
+        {\n      \"reasoning_tokens\": 0\n    },\n    \"total_tokens\": 175\n  },\n
+        \ \"user\": null,\n  \"metadata\": {}\n}"
+    headers:
+      Content-Length:
+      - '2863'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 05 Nov 2025 03:36:31 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 8b97e003-9a55-4b67-924c-a97763c56476
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-limit-tokens:
+      - '30000'
+      x-ratelimit-remaining-requests:
+      - '295'
+      x-ratelimit-remaining-tokens:
+      - '27950'
+      x-request-id:
+      - 20d61c01-0acd-4729-8bed-06802575ae78
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Always respond to the user''s
+      query using the __mirascope_formatted_output_tool__ tool for structured output."},{"content":"Please
+      look up the book with ISBN 0-7653-1178-X and provide detailed info and a recommendation
+      score","role":"user"},{"call_id":"call_o6W241hesup8gcgidCoNLIVq","name":"get_book_info","arguments":"{\"isbn\":\"0-7653-1178-X\"}","type":"function_call"},{"call_id":"call_o6W241hesup8gcgidCoNLIVq","output":"Title:
+      Mistborn: The Final Empire, Author: Brandon Sanderson, Pages: 544, Published:
+      2006-07-25","type":"function_call_output"}],"model":"gpt-4o-mini","tool_choice":{"type":"allowed_tools","mode":"required","tools":[{"type":"function","name":"get_book_info"},{"type":"function","name":"__mirascope_formatted_output_tool__"}]},"tools":[{"type":"function","name":"get_book_info","description":"Look
+      up book information by ISBN.","parameters":{"properties":{"isbn":{"title":"Isbn","type":"string"}},"required":["isbn"],"additionalProperties":false,"type":"object"},"strict":false},{"type":"function","name":"__mirascope_formatted_output_tool__","description":"Use
+      this tool to extract data in BookSummary format for a final response.","parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"},"pages":{"title":"Pages","type":"integer"},"publication_year":{"title":"Publication
+      Year","type":"integer"}},"required":["title","author","pages","publication_year"],"additionalProperties":false,"type":"object"},"strict":true}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1541'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AzureOpenAI/Python 1.100.2
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.100.2
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_01eb97667404982200690ac64026e081948485e7faa7cc2e2c\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1762313792,\n  \"status\":
+        \"completed\",\n  \"background\": false,\n  \"content_filters\": null,\n  \"error\":
+        null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\":
+        null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-4o-mini\",\n  \"output\":
+        [\n    {\n      \"id\": \"fc_01eb97667404982200690ac641190481949ec5381f15d83683\",\n
+        \     \"type\": \"function_call\",\n      \"status\": \"completed\",\n      \"arguments\":
+        \"{\\\"title\\\":\\\"Mistborn: The Final Empire\\\",\\\"author\\\":\\\"Brandon
+        Sanderson\\\",\\\"pages\\\":544,\\\"publication_year\\\":2006}\",\n      \"call_id\":
+        \"call_8xzngEIdwIRchDwV9MiOgfpY\",\n      \"name\": \"__mirascope_formatted_output_tool__\"\n
+        \   }\n  ],\n  \"parallel_tool_calls\": true,\n  \"previous_response_id\":
+        null,\n  \"prompt_cache_key\": null,\n  \"reasoning\": {\n    \"effort\":
+        null,\n    \"summary\": null\n  },\n  \"safety_identifier\": null,\n  \"service_tier\":
+        \"default\",\n  \"store\": true,\n  \"temperature\": 1.0,\n  \"text\": {\n
+        \   \"format\": {\n      \"type\": \"text\"\n    },\n    \"verbosity\": \"medium\"\n
+        \ },\n  \"tool_choice\": {\n    \"type\": \"allowed_tools\",\n    \"mode\":
+        \"required\",\n    \"tools\": [\n      {\n        \"type\": \"function\",\n
+        \       \"name\": \"get_book_info\"\n      },\n      {\n        \"type\":
+        \"function\",\n        \"name\": \"__mirascope_formatted_output_tool__\"\n
+        \     }\n    ]\n  },\n  \"tools\": [\n    {\n      \"type\": \"function\",\n
+        \     \"description\": \"Look up book information by ISBN.\",\n      \"name\":
+        \"get_book_info\",\n      \"parameters\": {\n        \"properties\": {\n          \"isbn\":
+        {\n            \"title\": \"Isbn\",\n            \"type\": \"string\"\n          }\n
+        \       },\n        \"required\": [\n          \"isbn\"\n        ],\n        \"additionalProperties\":
+        false,\n        \"type\": \"object\"\n      },\n      \"strict\": false\n
+        \   },\n    {\n      \"type\": \"function\",\n      \"description\": \"Use
+        this tool to extract data in BookSummary format for a final response.\",\n
+        \     \"name\": \"__mirascope_formatted_output_tool__\",\n      \"parameters\":
+        {\n        \"properties\": {\n          \"title\": {\n            \"title\":
+        \"Title\",\n            \"type\": \"string\"\n          },\n          \"author\":
+        {\n            \"title\": \"Author\",\n            \"type\": \"string\"\n
+        \         },\n          \"pages\": {\n            \"title\": \"Pages\",\n
+        \           \"type\": \"integer\"\n          },\n          \"publication_year\":
+        {\n            \"title\": \"Publication Year\",\n            \"type\": \"integer\"\n
+        \         }\n        },\n        \"required\": [\n          \"title\",\n          \"author\",\n
+        \         \"pages\",\n          \"publication_year\"\n        ],\n        \"additionalProperties\":
+        false,\n        \"type\": \"object\"\n      },\n      \"strict\": true\n    }\n
+        \ ],\n  \"top_logprobs\": 0,\n  \"top_p\": 1.0,\n  \"truncation\": \"disabled\",\n
+        \ \"usage\": {\n    \"input_tokens\": 210,\n    \"input_tokens_details\":
+        {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 44,\n    \"output_tokens_details\":
+        {\n      \"reasoning_tokens\": 0\n    },\n    \"total_tokens\": 254\n  },\n
+        \ \"user\": null,\n  \"metadata\": {}\n}"
+    headers:
+      Content-Length:
+      - '2972'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 05 Nov 2025 03:36:33 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - d8095f08-bfe1-4aa3-80e4-3de4b1eeb182
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-limit-tokens:
+      - '30000'
+      x-ratelimit-remaining-requests:
+      - '294'
+      x-ratelimit-remaining-tokens:
+      - '27524'
+      x-request-id:
+      - a7bcc887-2437-4f3f-bb64-60e1729ea6d6
+    status:
+      code: 200
+      message: OK
+version: 1

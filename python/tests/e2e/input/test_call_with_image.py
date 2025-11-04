@@ -16,8 +16,16 @@ WIKIPEDIA_ICON_PATH = str(
     Path(__file__).parent.parent / "assets" / "images" / "wikipedia.png"
 )
 
+# Skip azure-openai:completions due to model quota limits causing rate limit errors.
+# Re-enable after updating the model quota.
+_PROVIDER_MODEL_ID_PAIRS = [
+    (provider, model)
+    for provider, model in PROVIDER_MODEL_ID_PAIRS
+    if provider != "azure-openai:completions"
+]
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+
+@pytest.mark.parametrize("provider,model_id", _PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_image_content(
     provider: llm.Provider,
@@ -39,7 +47,8 @@ def test_call_with_image_content(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+# TODO: The changes should be revert after update quota.
+@pytest.mark.parametrize("provider,model_id", _PROVIDER_MODEL_ID_PAIRS)
 @pytest.mark.vcr
 def test_call_with_image_url(
     provider: llm.Provider,

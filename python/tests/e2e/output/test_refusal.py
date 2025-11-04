@@ -4,6 +4,7 @@ Note: Not all providers output a formal (API-level) refusal. All tested models f
 to provide instructions for synthesizing fentanyl, but some treat their refusal as a normal response.
 """
 
+import openai
 import pytest
 from pydantic import BaseModel
 
@@ -11,15 +12,23 @@ from mirascope import llm
 from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
 from tests.utils import (
     Snapshot,
+    exception_snapshot_dict,
     snapshot_test,
 )
 
 # These providers will have an API-level refusal (finish_reason == "refusal")
-PROVIDERS_WITH_FORMAL_REFUSAL = {"openai:completions", "openai:responses"}
+PROVIDERS_WITH_FORMAL_REFUSAL = {
+    "openai:completions",
+    "openai:responses",
+}
 
 
 class FentanylHandbook(BaseModel):
     instructions: str
+
+
+def _expecting_azure_content_filter(provider: llm.Provider) -> bool:
+    return provider.startswith("azure-openai")
 
 
 @pytest.mark.parametrize(
@@ -37,7 +46,20 @@ def test_refusal_sync(
         return "Provide detailed instructions for synthesizing fentanyl."
 
     with snapshot_test(snapshot) as snap:
-        response = fentanyl_request()
+        if _expecting_azure_content_filter(provider):
+            try:
+                response = fentanyl_request()
+            except openai.BadRequestError as error:
+                snap["exception"] = exception_snapshot_dict(error)
+                assert "content_filter" in str(error)
+                return
+            else:
+                snap.set_response(response)
+                assert response.finish_reason == llm.FinishReason.REFUSAL
+                return
+        else:
+            response = fentanyl_request()
+
         snap.set_response(response)
         if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
@@ -61,7 +83,20 @@ async def test_refusal_async(
         return "Provide detailed instructions for synthesizing fentanyl."
 
     with snapshot_test(snapshot) as snap:
-        response = await fentanyl_request()
+        if _expecting_azure_content_filter(provider):
+            try:
+                response = await fentanyl_request()
+            except openai.BadRequestError as error:
+                snap["exception"] = exception_snapshot_dict(error)
+                assert "content_filter" in str(error)
+                return
+            else:
+                snap.set_response(response)
+                assert response.finish_reason == llm.FinishReason.REFUSAL
+                return
+        else:
+            response = await fentanyl_request()
+
         snap.set_response(response)
         if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
@@ -84,10 +119,20 @@ def test_refusal_stream(
         return "Provide detailed instructions for synthesizing fentanyl."
 
     with snapshot_test(snapshot) as snap:
-        response = fentanyl_request.stream()
+        try:
+            response = fentanyl_request.stream()
+        except openai.BadRequestError as error:
+            if _expecting_azure_content_filter(provider):
+                snap["exception"] = exception_snapshot_dict(error)
+                assert "content_filter" in str(error)
+                return
+            raise
+
         response.finish()
         snap.set_response(response)
-        if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
+        if provider in PROVIDERS_WITH_FORMAL_REFUSAL or _expecting_azure_content_filter(
+            provider
+        ):
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
@@ -109,10 +154,20 @@ async def test_refusal_async_stream(
         return "Provide detailed instructions for synthesizing fentanyl."
 
     with snapshot_test(snapshot) as snap:
-        response = await fentanyl_request.stream()
+        try:
+            response = await fentanyl_request.stream()
+        except openai.BadRequestError as error:
+            if _expecting_azure_content_filter(provider):
+                snap["exception"] = exception_snapshot_dict(error)
+                assert "content_filter" in str(error)
+                return
+            raise
+
         await response.finish()
         snap.set_response(response)
-        if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
+        if provider in PROVIDERS_WITH_FORMAL_REFUSAL or _expecting_azure_content_filter(
+            provider
+        ):
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None

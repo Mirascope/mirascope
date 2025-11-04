@@ -1,0 +1,344 @@
+from inline_snapshot import snapshot
+
+from mirascope.llm import (
+    AssistantMessage,
+    Text,
+    UserMessage,
+)
+
+sync_snapshot = snapshot(
+    {
+        "response": {
+            "provider": "azure-openai:responses",
+            "model_id": "gpt-4o-mini",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+
+
+{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}\
+"""
+                        )
+                    ],
+                    provider="azure-openai:responses",
+                    model_id="gpt-4o-mini",
+                    raw_message=[
+                        {
+                            "id": "msg_0a215fccc668512700690a437bf33481959cdff017546eafd0",
+                            "content": [
+                                {
+                                    "annotations": [],
+                                    "text": """\
+
+
+{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}\
+""",
+                                    "type": "output_text",
+                                    "logprobs": [],
+                                }
+                            ],
+                            "role": "assistant",
+                            "status": "completed",
+                            "type": "message",
+                        }
+                    ],
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "additionalProperties": False,
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
+                },
+                "mode": "strict",
+                "formatting_instructions": None,
+            },
+            "tools": [],
+        }
+    }
+)
+async_snapshot = snapshot(
+    {
+        "response": {
+            "provider": "azure-openai:responses",
+            "model_id": "gpt-4o-mini",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+
+{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}\
+"""
+                        )
+                    ],
+                    provider="azure-openai:responses",
+                    model_id="gpt-4o-mini",
+                    raw_message=[
+                        {
+                            "id": "msg_088b1145e6ecb8ff00690a438611248190bc64f371e0cf9ade",
+                            "content": [
+                                {
+                                    "annotations": [],
+                                    "text": """\
+
+{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}\
+""",
+                                    "type": "output_text",
+                                    "logprobs": [],
+                                }
+                            ],
+                            "role": "assistant",
+                            "status": "completed",
+                            "type": "message",
+                        }
+                    ],
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "additionalProperties": False,
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
+                },
+                "mode": "strict",
+                "formatting_instructions": None,
+            },
+            "tools": [],
+        }
+    }
+)
+stream_snapshot = snapshot(
+    {
+        "response": {
+            "provider": "azure-openai:responses",
+            "model_id": "gpt-4o-mini",
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
+                        )
+                    ],
+                    provider="azure-openai:responses",
+                    model_id="gpt-4o-mini",
+                    raw_message=[
+                        {
+                            "id": "msg_0c8f12d7277b3a5800690a438ddb30819695c9cab3bf65e833",
+                            "content": [
+                                {
+                                    "annotations": [],
+                                    "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                                    "type": "output_text",
+                                    "logprobs": [],
+                                }
+                            ],
+                            "role": "assistant",
+                            "status": "completed",
+                            "type": "message",
+                        }
+                    ],
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "additionalProperties": False,
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
+                },
+                "mode": "strict",
+                "formatting_instructions": None,
+            },
+            "tools": [],
+            "n_chunks": 31,
+        }
+    }
+)
+async_stream_snapshot = snapshot(
+    {
+        "response": {
+            "provider": "azure-openai:responses",
+            "model_id": "gpt-4o-mini",
+            "finish_reason": None,
+            "messages": [
+                UserMessage(
+                    content=[
+                        Text(
+                            text="Please recommend the most popular book by Patrick Rothfuss"
+                        )
+                    ]
+                ),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+
+{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}\
+"""
+                        )
+                    ],
+                    provider="azure-openai:responses",
+                    model_id="gpt-4o-mini",
+                    raw_message=[
+                        {
+                            "id": "msg_053f0421f951974c00690a439870508190bfdae6179da3d5c7",
+                            "content": [
+                                {
+                                    "annotations": [],
+                                    "text": """\
+
+{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}\
+""",
+                                    "type": "output_text",
+                                    "logprobs": [],
+                                }
+                            ],
+                            "role": "assistant",
+                            "status": "completed",
+                            "type": "message",
+                        }
+                    ],
+                ),
+            ],
+            "format": {
+                "name": "Book",
+                "description": "A book with a rating. The title should be in all caps!",
+                "schema": {
+                    "$defs": {
+                        "Author": {
+                            "description": "The author of a book.",
+                            "properties": {
+                                "first_name": {"title": "First Name", "type": "string"},
+                                "last_name": {"title": "Last Name", "type": "string"},
+                            },
+                            "required": ["first_name", "last_name"],
+                            "title": "Author",
+                            "type": "object",
+                            "additionalProperties": False,
+                        }
+                    },
+                    "description": "A book with a rating. The title should be in all caps!",
+                    "properties": {
+                        "title": {"title": "Title", "type": "string"},
+                        "author": {"$ref": "#/$defs/Author"},
+                        "rating": {
+                            "description": "For testing purposes, the rating should be 7",
+                            "title": "Rating",
+                            "type": "integer",
+                        },
+                    },
+                    "required": ["title", "author", "rating"],
+                    "title": "Book",
+                    "type": "object",
+                },
+                "mode": "strict",
+                "formatting_instructions": None,
+            },
+            "tools": [],
+            "n_chunks": 32,
+        }
+    }
+)

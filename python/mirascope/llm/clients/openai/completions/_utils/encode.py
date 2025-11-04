@@ -237,8 +237,7 @@ def _create_strict_response_format(
     _shared_utils._ensure_additional_properties_false(schema)
 
     if provider.startswith("azure-openai") and format.formatting_instructions:
-        # TODO: Add test coverage for Azure OpenAI formatting instructions
-        schema["description"] = format.formatting_instructions  # pragma: no cover
+        schema["description"] = format.formatting_instructions
 
     json_schema = JSONSchema(
         name=format.name,
