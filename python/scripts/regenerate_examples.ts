@@ -10,7 +10,6 @@ import {
   ExampleGenerator,
   filenameForOptions,
   allOptions,
-  type ExampleOptions,
 } from "./example_generator.ts";
 
 async function runCommand(
@@ -102,10 +101,10 @@ function generateExamplesMdx(
   );
   content.push("---");
   content.push("");
-  content.push("# Mirascope: Progressive Examples");
+  content.push("# Mirascope v2: Progressive Examples");
   content.push("");
   content.push(
-    "Progressive examples of Mirascope: LLM Abstractions that Aren't Obstructions."
+    "The following examples show how to use Mirascope v2 with a variety of usage patterns."
   );
   content.push(
     "These are intended to give LLMs a primer on Mirascope's interface."
@@ -118,7 +117,6 @@ function generateExamplesMdx(
     content.push("");
     content.push(`<CodeExample file="examples/${relPath}" />`);
     content.push("");
-    break; // Just include one example for now
   }
 
   writeFileSync(outputPath, content.join("\n"));
