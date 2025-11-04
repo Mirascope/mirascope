@@ -2,6 +2,7 @@
 
 import contextlib
 import logging
+import re
 from collections.abc import Generator
 from typing import Any, TypeAlias
 
@@ -93,10 +94,19 @@ def exception_snapshot_dict(exception: Exception) -> dict:
         if "Connection error" in arg or "Can't overwrite existing cassette" in arg:
             raise exception
 
+    def sanitize_url(value: str) -> str:
+        """Sanitize environment-specific URLs in exception attributes."""
+        value = re.sub(
+            r"https://[a-zA-Z0-9-]+\.openai\.azure\.com",
+            "https://REDACTED.openai.azure.com",
+            value,
+        )
+        return value
+
     return {
         "type": type(exception).__name__,
         **{
-            attr: str(getattr(exception, attr))
+            attr: sanitize_url(str(getattr(exception, attr)))
             for attr in dir(exception)
             if not attr.startswith("_") and not callable(getattr(exception, attr))
         },

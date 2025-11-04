@@ -16,8 +16,14 @@ WIKIPEDIA_ICON_PATH = str(
     Path(__file__).parent.parent / "assets" / "images" / "wikipedia.png"
 )
 
+PROVIDER_MODEL_ID_PAIRS_FOR_IMAGE = [
+    (provider, model)
+    for provider, model in PROVIDER_MODEL_ID_PAIRS
+    if provider != "azure-openai:completions"
+] + [("azure-openai:completions", "gpt-5-mini")]
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS_FOR_IMAGE)
 @pytest.mark.vcr
 def test_call_with_image_content(
     provider: llm.Provider,
@@ -39,7 +45,7 @@ def test_call_with_image_content(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS_FOR_IMAGE)
 @pytest.mark.vcr
 def test_call_with_image_url(
     provider: llm.Provider,

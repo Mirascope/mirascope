@@ -1,0 +1,106 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"List all U.S. states.","role":"user"}],"max_output_tokens":50,"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '106'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AsyncAzureOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_054c6c04a3a46f3d00690c21a35c7081979916e538b6f8892d\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1762402723,\n  \"status\":
+        \"incomplete\",\n  \"background\": false,\n  \"content_filters\": null,\n
+        \ \"error\": null,\n  \"incomplete_details\": {\n    \"reason\": \"max_output_tokens\"\n
+        \ },\n  \"instructions\": null,\n  \"max_output_tokens\": 50,\n  \"max_tool_calls\":
+        null,\n  \"model\": \"gpt-4o-mini\",\n  \"output\": [\n    {\n      \"id\":
+        \"msg_054c6c04a3a46f3d00690c21a4f398819798a47bf7af3bc016\",\n      \"type\":
+        \"message\",\n      \"status\": \"incomplete\",\n      \"content\": [\n        {\n
+        \         \"type\": \"output_text\",\n          \"annotations\": [],\n          \"logprobs\":
+        [],\n          \"text\": \"Sure! Here\\u2019s a list of all U.S. states:\\n\\n1.
+        Alabama\\n2. Alaska\\n3. Arizona\\n4. Arkansas\\n5. California\\n6. Colorado\\n7.
+        Connecticut\\n8. Delaware\\n9. Florida\\n10\"\n        }\n      ],\n      \"role\":
+        \"assistant\"\n    }\n  ],\n  \"parallel_tool_calls\": true,\n  \"previous_response_id\":
+        null,\n  \"prompt_cache_key\": null,\n  \"reasoning\": {\n    \"effort\":
+        null,\n    \"summary\": null\n  },\n  \"safety_identifier\": null,\n  \"service_tier\":
+        \"default\",\n  \"store\": true,\n  \"temperature\": 1.0,\n  \"text\": {\n
+        \   \"format\": {\n      \"type\": \"text\"\n    },\n    \"verbosity\": \"medium\"\n
+        \ },\n  \"tool_choice\": \"auto\",\n  \"tools\": [],\n  \"top_logprobs\":
+        0,\n  \"top_p\": 1.0,\n  \"truncation\": \"disabled\",\n  \"usage\": {\n    \"input_tokens\":
+        14,\n    \"input_tokens_details\": {\n      \"cached_tokens\": 0\n    },\n
+        \   \"output_tokens\": 50,\n    \"output_tokens_details\": {\n      \"reasoning_tokens\":
+        0\n    },\n    \"total_tokens\": 64\n  },\n  \"user\": null,\n  \"metadata\":
+        {}\n}"
+    headers:
+      Content-Length:
+      - '1582'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 06 Nov 2025 04:18:45 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - eb699ace-ef01-45a3-b28d-7943383feef0
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-limit-tokens:
+      - '30000'
+      x-ratelimit-remaining-requests:
+      - '281'
+      x-ratelimit-remaining-tokens:
+      - '24668'
+      x-request-id:
+      - 2e8f7004-913f-4e66-85df-61ffd3aab4d1
+    status:
+      code: 200
+      message: OK
+version: 1

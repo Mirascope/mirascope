@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"Provide detailed instructions for synthesizing fentanyl.","role":"user"}],"model":"gpt-4o-mini","text":{"format":{"type":"json_schema","name":"FentanylHandbook","schema":{"properties":{"instructions":{"title":"Instructions","type":"string"}},"required":["instructions"],"title":"FentanylHandbook","type":"object","additionalProperties":false},"strict":true}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '381'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AzureOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"The response was filtered due
+        to the prompt triggering Azure OpenAI\u2019s content management policy. Please
+        modify your prompt and retry. To learn more about our content filtering policies
+        please read our documentation: https://go.microsoft.com/fwlink/?linkid=2198766\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"prompt\",\n    \"code\":
+        \"content_filter\"\n  }\n}"
+    headers:
+      Content-Length:
+      - '393'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 06 Nov 2025 04:18:55 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 1aa46a6c-e87a-415d-9775-aed14d5b5bdf
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-remaining-requests:
+      - '284'
+      x-request-id:
+      - 33976ac4-c6f0-4780-8cdd-59e3f8c3e289
+    status:
+      code: 400
+      message: Bad Request
+version: 1

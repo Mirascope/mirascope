@@ -1,0 +1,130 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"Provide detailed instructions for synthesizing fentanyl.","role":"user"}],"model":"gpt-4o-mini","stream":true,"text":{"format":{"type":"json_schema","name":"FentanylHandbook","schema":{"properties":{"instructions":{"title":"Instructions","type":"string"}},"required":["instructions"],"title":"FentanylHandbook","type":"object","additionalProperties":false},"strict":true}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '395'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AzureOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_08b66ad004bbed2200690c21b4f418819695f911fe4ece6e7f","object":"response","created_at":1762402740,"status":"in_progress","background":false,"content_filters":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"json_schema","description":null,"name":"FentanylHandbook","schema":{"properties":{"instructions":{"title":"Instructions","type":"string"}},"required":["instructions"],"title":"FentanylHandbook","type":"object","additionalProperties":false},"strict":true},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_08b66ad004bbed2200690c21b4f418819695f911fe4ece6e7f","object":"response","created_at":1762402740,"status":"in_progress","background":false,"content_filters":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"json_schema","description":null,"name":"FentanylHandbook","schema":{"properties":{"instructions":{"title":"Instructions","type":"string"}},"required":["instructions"],"title":"FentanylHandbook","type":"object","additionalProperties":false},"strict":true},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"msg_08b66ad004bbed2200690c21b511ec8196abd0c1cb34513f39","type":"message","status":"incomplete","content":[],"role":"assistant"}}
+
+
+        event: response.content_part.added
+
+        data: {"type":"response.content_part.added","sequence_number":3,"item_id":"msg_08b66ad004bbed2200690c21b511ec8196abd0c1cb34513f39","output_index":0,"content_index":0,"part":{"type":"output_text","annotations":[],"logprobs":[],"text":""}}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":4,"item_id":"msg_08b66ad004bbed2200690c21b511ec8196abd0c1cb34513f39","output_index":0,"content_index":0,"delta":"I''m
+        sorry, but I cannot assist with that request.","logprobs":[],"obfuscation":"gqoGnLGCnboP8PQ"}
+
+
+        event: response.output_text.done
+
+        data: {"type":"response.output_text.done","sequence_number":5,"item_id":"msg_08b66ad004bbed2200690c21b511ec8196abd0c1cb34513f39","output_index":0,"content_index":0,"text":"I''m
+        sorry, but I cannot assist with that request.","logprobs":[]}
+
+
+        event: response.content_part.done
+
+        data: {"type":"response.content_part.done","sequence_number":6,"item_id":"msg_08b66ad004bbed2200690c21b511ec8196abd0c1cb34513f39","output_index":0,"content_index":0,"part":{"type":"output_text","annotations":[],"logprobs":[],"text":"I''m
+        sorry, but I cannot assist with that request."}}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","sequence_number":7,"output_index":0,"item":{"id":"msg_08b66ad004bbed2200690c21b511ec8196abd0c1cb34513f39","type":"message","status":"incomplete","content":[{"type":"output_text","annotations":[],"logprobs":[],"text":"I''m
+        sorry, but I cannot assist with that request."}],"role":"assistant"}}
+
+
+        event: response.incomplete
+
+        data: {"type":"response.incomplete","sequence_number":8,"response":{"id":"resp_08b66ad004bbed2200690c21b4f418819695f911fe4ece6e7f","object":"response","created_at":1762402740,"status":"incomplete","background":false,"content_filters":null,"error":null,"incomplete_details":{"reason":"content_filter"},"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini","output":[{"id":"msg_08b66ad004bbed2200690c21b511ec8196abd0c1cb34513f39","type":"message","status":"incomplete","content":[{"type":"output_text","annotations":[],"logprobs":[],"text":"I''m
+        sorry, but I cannot assist with that request."}],"role":"assistant"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"json_schema","description":null,"name":"FentanylHandbook","schema":{"properties":{"instructions":{"title":"Instructions","type":"string"}},"required":["instructions"],"title":"FentanylHandbook","type":"object","additionalProperties":false},"strict":true},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":0,"input_tokens_details":{"cached_tokens":0},"output_tokens":0,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":0},"user":null,"metadata":{}}}
+
+
+        '
+    headers:
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Thu, 06 Nov 2025 04:19:00 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      apim-request-id:
+      - 3ea3233b-1b2c-4015-8041-67a68c24acf6
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-remaining-requests:
+      - '284'
+      x-request-id:
+      - e2ba82af-dd3c-4db2-8941-ebcf2b4ade31
+    status:
+      code: 200
+      message: OK
+version: 1

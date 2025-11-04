@@ -1,0 +1,228 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"}],"model":"gpt-4o-mini","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '499'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AzureOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_09bcedb16f2020fb00690c218179688196ad2e0497400ef68d\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1762402689,\n  \"status\":
+        \"completed\",\n  \"background\": false,\n  \"content_filters\": null,\n  \"error\":
+        null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\":
+        null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-4o-mini\",\n  \"output\":
+        [\n    {\n      \"id\": \"fc_09bcedb16f2020fb00690c2182cf208196bf4632743bd1c7db\",\n
+        \     \"type\": \"function_call\",\n      \"status\": \"completed\",\n      \"arguments\":
+        \"{\\\"password\\\":\\\"mellon\\\"}\",\n      \"call_id\": \"call_ItUb0ok6QKqLmF3waT7Wi7Du\",\n
+        \     \"name\": \"secret_retrieval_tool\"\n    },\n    {\n      \"id\": \"fc_09bcedb16f2020fb00690c2183763c8196973eda953e08c699\",\n
+        \     \"type\": \"function_call\",\n      \"status\": \"completed\",\n      \"arguments\":
+        \"{\\\"password\\\":\\\"radiance\\\"}\",\n      \"call_id\": \"call_kOPG7p73gWiOqGWGRpEAaVqP\",\n
+        \     \"name\": \"secret_retrieval_tool\"\n    }\n  ],\n  \"parallel_tool_calls\":
+        true,\n  \"previous_response_id\": null,\n  \"prompt_cache_key\": null,\n
+        \ \"reasoning\": {\n    \"effort\": null,\n    \"summary\": null\n  },\n  \"safety_identifier\":
+        null,\n  \"service_tier\": \"default\",\n  \"store\": true,\n  \"temperature\":
+        1.0,\n  \"text\": {\n    \"format\": {\n      \"type\": \"text\"\n    },\n
+        \   \"verbosity\": \"medium\"\n  },\n  \"tool_choice\": \"auto\",\n  \"tools\":
+        [\n    {\n      \"type\": \"function\",\n      \"description\": \"A tool that
+        requires a password to retrieve a secret.\",\n      \"name\": \"secret_retrieval_tool\",\n
+        \     \"parameters\": {\n        \"properties\": {\n          \"password\":
+        {\n            \"title\": \"Password\",\n            \"type\": \"string\"\n
+        \         }\n        },\n        \"required\": [\n          \"password\"\n
+        \       ],\n        \"additionalProperties\": false,\n        \"type\": \"object\"\n
+        \     },\n      \"strict\": false\n    }\n  ],\n  \"top_logprobs\": 0,\n  \"top_p\":
+        1.0,\n  \"truncation\": \"disabled\",\n  \"usage\": {\n    \"input_tokens\":
+        36,\n    \"input_tokens_details\": {\n      \"cached_tokens\": 0\n    },\n
+        \   \"output_tokens\": 54,\n    \"output_tokens_details\": {\n      \"reasoning_tokens\":
+        0\n    },\n    \"total_tokens\": 90\n  },\n  \"user\": null,\n  \"metadata\":
+        {}\n}"
+    headers:
+      Content-Length:
+      - '2080'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 06 Nov 2025 04:18:11 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 753c96a0-152c-47ee-9f22-0279e3bbff07
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-limit-tokens:
+      - '30000'
+      x-ratelimit-remaining-requests:
+      - '284'
+      x-ratelimit-remaining-tokens:
+      - '26164'
+      x-request-id:
+      - 96c2b3da-8545-40af-9918-cde576612fab
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"},{"call_id":"call_ItUb0ok6QKqLmF3waT7Wi7Du","name":"secret_retrieval_tool","arguments":"{\"password\":\"mellon\"}","type":"function_call"},{"call_id":"call_kOPG7p73gWiOqGWGRpEAaVqP","name":"secret_retrieval_tool","arguments":"{\"password\":\"radiance\"}","type":"function_call"},{"call_id":"call_ItUb0ok6QKqLmF3waT7Wi7Du","output":"Welcome
+      to Moria!","type":"function_call_output"},{"call_id":"call_kOPG7p73gWiOqGWGRpEAaVqP","output":"Life
+      before Death","type":"function_call_output"}],"model":"gpt-4o-mini","tool_choice":"none","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1004'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AzureOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_09dad9c01511a20600690c2183f5c88193add9d474c0962863\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1762402691,\n  \"status\":
+        \"completed\",\n  \"background\": false,\n  \"content_filters\": null,\n  \"error\":
+        null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\":
+        null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-4o-mini\",\n  \"output\":
+        [\n    {\n      \"id\": \"msg_09dad9c01511a20600690c21846f1c819380a5e1b353cde515\",\n
+        \     \"type\": \"message\",\n      \"status\": \"completed\",\n      \"content\":
+        [\n        {\n          \"type\": \"output_text\",\n          \"annotations\":
+        [],\n          \"logprobs\": [],\n          \"text\": \"Here are the secrets
+        associated with the provided passwords:\\n\\n- For **mellon**: \\\"Welcome
+        to Moria!\\\"\\n- For **radiance**: \\\"Life before Death.\\\"\"\n        }\n
+        \     ],\n      \"role\": \"assistant\"\n    }\n  ],\n  \"parallel_tool_calls\":
+        true,\n  \"previous_response_id\": null,\n  \"prompt_cache_key\": null,\n
+        \ \"reasoning\": {\n    \"effort\": null,\n    \"summary\": null\n  },\n  \"safety_identifier\":
+        null,\n  \"service_tier\": \"default\",\n  \"store\": true,\n  \"temperature\":
+        1.0,\n  \"text\": {\n    \"format\": {\n      \"type\": \"text\"\n    },\n
+        \   \"verbosity\": \"medium\"\n  },\n  \"tool_choice\": \"none\",\n  \"tools\":
+        [\n    {\n      \"type\": \"function\",\n      \"description\": \"A tool that
+        requires a password to retrieve a secret.\",\n      \"name\": \"secret_retrieval_tool\",\n
+        \     \"parameters\": {\n        \"properties\": {\n          \"password\":
+        {\n            \"title\": \"Password\",\n            \"type\": \"string\"\n
+        \         }\n        },\n        \"required\": [\n          \"password\"\n
+        \       ],\n        \"additionalProperties\": false,\n        \"type\": \"object\"\n
+        \     },\n      \"strict\": false\n    }\n  ],\n  \"top_logprobs\": 0,\n  \"top_p\":
+        1.0,\n  \"truncation\": \"disabled\",\n  \"usage\": {\n    \"input_tokens\":
+        137,\n    \"input_tokens_details\": {\n      \"cached_tokens\": 0\n    },\n
+        \   \"output_tokens\": 37,\n    \"output_tokens_details\": {\n      \"reasoning_tokens\":
+        0\n    },\n    \"total_tokens\": 174\n  },\n  \"user\": null,\n  \"metadata\":
+        {}\n}"
+    headers:
+      Content-Length:
+      - '1991'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 06 Nov 2025 04:18:13 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 2f39df33-294e-4a61-bc71-1f5c45bad9b5
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-limit-tokens:
+      - '30000'
+      x-ratelimit-remaining-requests:
+      - '284'
+      x-ratelimit-remaining-tokens:
+      - '26140'
+      x-request-id:
+      - 4774816c-d0bc-40ae-afd0-62160bdfbee6
+    status:
+      code: 200
+      message: OK
+version: 1
