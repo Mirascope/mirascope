@@ -8,6 +8,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from mirascope.llm.content.image import (
+    _VERSION,
     MAX_IMAGE_SIZE,
     Base64ImageSource,
     Image,
@@ -136,6 +137,46 @@ class TestImageDownload:
         with pytest.raises(ValueError, match="exceeds maximum allowed size"):
             Image.download(url, max_size=10)
 
+    @pytest.mark.parametrize(
+        "custom_headers,expected_headers",
+        [
+            (
+                None,
+                {
+                    "User-Agent": f"Mirascope/{_VERSION} (https://github.com/Mirascope/mirascope)"
+                },
+            ),
+            (
+                {"X-Custom-Header": "custom-value"},
+                {
+                    "User-Agent": f"Mirascope/{_VERSION} (https://github.com/Mirascope/mirascope)",
+                    "X-Custom-Header": "custom-value",
+                },
+            ),
+            (
+                {"User-Agent": "CustomAgent/1.0"},
+                {"User-Agent": "CustomAgent/1.0"},
+            ),
+        ],
+        ids=["default", "with_custom", "override_default"],
+    )
+    def test_download_headers(
+        self,
+        httpserver: HTTPServer,
+        image_data: dict,
+        custom_headers: dict[str, str] | None,
+        expected_headers: dict[str, str],
+    ) -> None:
+        """Test that download handles headers correctly."""
+        httpserver.expect_request("/image", headers=expected_headers).respond_with_data(
+            image_data["png"]
+        )
+        url = httpserver.url_for("/image")
+
+        image = Image.download(url, headers=custom_headers)
+
+        assert isinstance(image.source, Base64ImageSource)
+
 
 class TestImageDownloadAsync:
     """Tests for Image.download_async class method."""
@@ -188,6 +229,47 @@ class TestImageDownloadAsync:
 
         with pytest.raises(ValueError, match="Unsupported image type"):
             await Image.download_async(url)
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "custom_headers,expected_headers",
+        [
+            (
+                None,
+                {
+                    "User-Agent": f"Mirascope/{_VERSION} (https://github.com/Mirascope/mirascope)"
+                },
+            ),
+            (
+                {"X-Custom-Header": "custom-value"},
+                {
+                    "User-Agent": f"Mirascope/{_VERSION} (https://github.com/Mirascope/mirascope)",
+                    "X-Custom-Header": "custom-value",
+                },
+            ),
+            (
+                {"User-Agent": "CustomAgent/1.0"},
+                {"User-Agent": "CustomAgent/1.0"},
+            ),
+        ],
+        ids=["default", "with_custom", "override_default"],
+    )
+    async def test_download_async_headers(
+        self,
+        httpserver: HTTPServer,
+        image_data: dict,
+        custom_headers: dict[str, str] | None,
+        expected_headers: dict[str, str],
+    ) -> None:
+        """Test that download_async handles headers correctly."""
+        httpserver.expect_request("/image", headers=expected_headers).respond_with_data(
+            image_data["png"]
+        )
+        url = httpserver.url_for("/image")
+
+        image = await Image.download_async(url, headers=custom_headers)
+
+        assert isinstance(image.source, Base64ImageSource)
 
 
 class TestImageFromFile:
