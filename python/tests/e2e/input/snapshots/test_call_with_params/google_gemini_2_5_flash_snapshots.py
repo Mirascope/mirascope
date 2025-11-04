@@ -29,12 +29,11 @@ test_snapshot = snapshot(
                         content=[
                             Text(
                                 text="""\
-To find the sum of 4200 and 42, you can add them together:
+To calculate 4200 + 42, you can add the numbers together:
 
-   4200
-+    42
-------
-   \
+4200
++ 42
+-----
 """
                             )
                         ],
@@ -53,12 +52,11 @@ To find the sum of 4200 and 42, you can add them together:
                                     "function_call": None,
                                     "function_response": None,
                                     "text": """\
-To find the sum of 4200 and 42, you can add them together:
+To calculate 4200 + 42, you can add the numbers together:
 
-   4200
-+    42
-------
-   \
+4200
++ 42
+-----
 """,
                                 }
                             ],

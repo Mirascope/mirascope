@@ -7,7 +7,7 @@ interactions:
       be the\nlucky number 7."}], "role": "user"}, "generationConfig": {"responseMimeType":
       "application/json", "responseSchema": {"properties": {"title": {"title": "Title",
       "type": "STRING"}, "author": {"title": "Author", "type": "STRING"}, "rating":
-      {"title": "Rating", "type": "INTEGER"}}, "propertyOrdering": ["title", "author",
+      {"title": "Rating", "type": "INTEGER"}}, "property_ordering": ["title", "author",
       "rating"], "required": ["title", "author", "rating"], "title": "Book", "type":
       "OBJECT"}}}'
     headers:
@@ -18,27 +18,27 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '737'
+      - '738'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WRzW6DMBCE7zyF5XNStSgEtbeoSVUO+VGK2kqlBytswArYyF6kRIh3rw0hMSoH
-        tOyMd9YfjUcIPTCR8pQhaPpCfkyHkKZ7W00KBIFGGFqmWTGFd2//NE5tLAhne4g2CUWOBSTmI6Hx
-        +4psFusV2b4RW39Fm2VCJ0ZhNeZS9a4dQ8UPJ7KXmB9rrXuHYshFZh1hS52w9lb/Tu4rKlmAzS9l
-        CsVgbwcDPXLBdb4HpqWwto94u6M3lYsUzqb96A0B3Whaa5bBGpAZWOyGhFZKlhXG8gTiVdYdrLnf
-        D3PYjnR/dtVRIitG0tM8mPybq5cmlRcudOd/mEuyguPF3iRefcfUAYHjtQYSngOMGvR1luN4xfDZ
-        uxLrIX6C0rynlUFp+E39h2B6LJjOuzyqQFdSaIhS64mC8MIiP15AWZZ42s3CaSAXmnqt9weQ0H5+
-        dQIAAA==
+        H4sIAAAAAAAC/1WRX2+CMBTF3/kUTZ91cW6K29syXWaMoo79ScaydFKgsbakvSRuhO++FkQLD+Ry
+        z+k9tz9KDyG8IyJmMQGq8T36NB2EyvptNSmACjBC2zLNnCi4eJundGpjAXq0h3AZYWDAaWQ+Ihw+
+        z9DqYTlDwROy9ft8NY1wzyikgEyqxrUmoNhuj7YSsqTQunEoAkyk1uFX2AmrzvVX77Kikpza/IOM
+        KW/tVWvACRNMZ1tKtBTW9hIGa3xWmYjp0bQHXhtQj8aFJildUiAGFjkjwbmShxxCuafiURY1rPGw
+        Geaw7ejD25MOEgjvSNd+qzlz9dSkMu5Cd/6HuSThDH7tTcLZR4gdENBdqyXhOcCwQV+kGXRXnEy8
+        E7EG4htVmjW0Unow/PrDq1E/4URndR5WVOdSaDqPrSe52SzITxAs7vzXP3++Hn0nm/FmgL3K+wcY
+        CcdgdQIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -47,11 +47,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 17 Oct 2025 19:50:59 GMT
+      - Tue, 04 Nov 2025 21:47:43 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1399
+      - gfet4t7; dur=1321
       Transfer-Encoding:
       - chunked
       Vary:

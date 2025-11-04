@@ -12,8 +12,8 @@ interactions:
       "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
       "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
       should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
-      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
-      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"function_calling_config":
+      {"mode": "ANY", "allowed_function_names": ["__mirascope_formatted_output_tool__"]}},
       "generationConfig": {}}'
     headers:
       accept:
@@ -23,28 +23,28 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1174'
+      - '1178'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
         {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"THE
-        NAME OF THE WIND\",\"rating\": 7,\"author\": {\"first_name\": \"Patrick\",\"last_name\":
-        \"Rothfuss\"}}},\"thoughtSignature\": \"CiQB0e2Kb8NON/k9S7JcYMpCTDvLPCw8aLvG7jubMV0Zy9e3sLYKcwHR7YpvfjiClqYIIxnA2gr2wWtAAISmbT9lRhed0JZNxOca3JdAIAVmFMbXbSpJ1HrP2lGBCJngTW01LhDz/6HiVwqF7BqBZ8LDai0HuVQNwav2u1Q2OVHa/kDv6dwCP2671tx6n9ilMg1zIsR+jFEQVbYK0AEB0e2Kb74PY/HKVmgK5eWEil0bzpbD4WzjmSeih0r/GBSNltCZRjF4cWThNWH6EWIrckaAauJlmJqCz4N5NhwU2hy+5Nr/PJv3fv4tuu4qYTpf9j+bWqJoOE9RQ8eJGRo74pyRu+uBif2gL9SKKiUSbqk+xqUTLBc4gqoCB7iak4NLBAUdypqRzoyWlqCrI8pWL3/tI6DaRfML2INi15v9EwNOyJIXAgiOSzS7WVkorj1ThxbZVO+ez3cjJ1Lqb6v6AM+T4yzzUbpNC5J3yT/XCsYBAdHtim/qcHNDyotL50sp/wH6uzPMJa0p7hY8BRFK9yToSPijGRvi/dC1rLpW4LYMXt/4jq2dLsWdRmAn4rEWEEHIxnzxVnYD+r21WPDA6Q2y0r5MvtDtMqdOApzpUM6I4OlVsvzkXGuCxMGja6W/uio5PMh6tnbd/geMz3eF9+daJdwRqznO9fnOR9Z5oAE3xwsJCiFDk4lz6oSb5psOqljGz23GZBDKc+Wt9gcsQxexGX7k0T+bOZRmNPV29Cm+wfJUyg+4CoUCAdHtim+qKfir0dF3D9ojbvUIWawpuFyCzGfz87BYqzTbsQSiSN/bkBbD8gyr8yf4/UmiE9h7LTWncCs9Dj450+XynUsM7WGmN0WF7wYsjbUPCZ3kt12pOHC12O6ok8ouZSwsLcgEaJFvRGVtO6h3e+/6Ad8k0XI/+daFkTb32rzEriY5L2wdkwdRsQi/2TyLXiGhqCAEufWj/08vMazqxsDQZdbGLRPIl2ULxumU/YWRod48fEExpwTUiscH/rDmuG+h5Edo3tqfcXwQQ/xLPCLkl8JbZFuefifPytsxMOtoG0bQueT5J5QeSxNSsIDTuYTeBZRUx/rK67lZxUPoFPtqAAdwCtEBAdHtim/ikD5pv8lCM+hW1P6ND2ia1Pngx73LuZGoGj8u3lh/KIImVfAZoMtCSUU94uCP08CaoIWNrvopeiSfYu2ZvpfsITV1wVbjB89iWY3fiqnjaU9i0BJaCFc/Zj+/yvVKdK6CVrrM9GM5vis4aIkVn7JjJwoBXjJVhj5LWVNxdpiGbdrZyCuyPT8Wsz+gSKlrfInILssj3rlEzOBr14dHW7sGTF5bHOsIeeAuzb4Y550zFhb4JWD/qJif0HULh5Vt9Uv6Qu+2ZS/c8zIJtZwKxwEB0e2Kb/NcwVjK43Ges7qZDMhOBVU9FVDlhpAK+MR4wGZVRdjNZTw4KAyvxicfGFkh6dj2WSMMPw4bCWomJiI95R8JJ41GmbAy8RXsNzlh28a8mpbAA3vosVYKCes1plzd1m5lkVPR5eEyIZhvF68sezGKjapppJCEhbGNuMfOoFqA+ScCYUYGca95PLmc2zJvgS87F5nGWH5bB+M9baE1pifGnnJPCXTZ/kYBub985IGAjvh3/TTSYFGWKJ5fGbq+MJ3MTHPF\"}],\"role\":
+        NAME OF THE WIND\",\"rating\": 7,\"author\": {\"last_name\": \"Rothfuss\",\"first_name\":
+        \"Patrick\"}}},\"thoughtSignature\": \"CiQB0e2Kb8NX5SsfVI44deUN5DODgjVX4cX5W1xNkNLLvRlJTr4KeQHR7Ypv4OWQFwQ/EocHDsqqQr6KrDPqTuW5ysIhjMqN0wnaVWz2vus3uTvr0B5HN+HbMV3fLA7bT8xL+Rg5uhwcHe3+lX8LUsIywhnzfUoFD+TCXWN8SgHl5GAp8TS6l3zkxiMR7wBGEtubCknzfmU7ev7aMYdUviQK4AEB0e2KbzsZQX375lvDeJLrDTC5h9YxY1ASB1xVFgFxpXcT2ZlmlzcQAwonxGMWeh3VYBs44FEBzY4F3A2zjigkagoU0gxOVlRl/BMB0IKWqzQpgUxX/+tj28aIjeX0sZSbf86ijlPhDGvbrTWz9Kvx7hNThBx6IB1/hmlHXQmL52A11s/ZZV0DiVMI6FuY2+0+vZiode17+/A+XgkwLWkaRqQQkOX8iIGD82ARowCuFLAnIE3syGxsan6crBEot9noOHbK3F0S+VLzB6smctMntglfB41wcq6e9zLulzt8pwrlAQHR7YpvxC1/kTWjqNx+k0ak8bCkEHgGkhKsSoNcUYcG4ABScv+gWVgz40PkMnWHMQNLf9/rsA04h01ALO8pYsOqxMAXtslcSiF8ZxO8qquevgi9DrZbTbSwQzHjyGKFcrPvOZKVJXyj2CB+RAjSpBjYgACp57lKizLUOG+/DJ/FA1LmkO013J52gWynoRc93hGcXJJpXOINxYoFiLjUOKwp01HysIG3I+IVvApNSmFDUJER1HXImZdyAxE6FIt0oC9/BH1y++ylZgjjnOX65Caqu+nrFQzCkR0RWjZ8lWeDljrLhzYKzQEB0e2Kb+O8KsDOrc+7vK/+ltVRee64upWdps9vfkVWYD02Objm9NOoZsm21CEkvJUHKoMR403Mtk3IQ3gl9tPil+aDM97MWj7SmEr39WPVCHj0BLKDOnuK6h69HIG6/axICVelcnuoQ4jT7TQeIaA9mQWB/c+n6pm50Ip8vO9X2IDiM+ELZ91RLwUHlZa22NEXMt7yOT3j4VawIKrmD3ezAOzrBwGfY5/MIE2BgUgVB+XQfrZ5nyg721O6jyKsOPSWUOBm/iafIQKA3OYc\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
         generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
-        217,\"candidatesTokenCount\": 49,\"totalTokenCount\": 533,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 217}],\"thoughtsTokenCount\": 267},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"b6LyaPqOG-Wez7IP1P6B6Aw\"}\r\n\r\n"
+        217,\"candidatesTokenCount\": 49,\"totalTokenCount\": 433,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 217}],\"thoughtsTokenCount\": 167},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"HnUKaYTkE77oz7IPuvW02A8\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -53,11 +53,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Fri, 17 Oct 2025 20:09:21 GMT
+      - Tue, 04 Nov 2025 21:50:23 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2429
+      - gfet4t7; dur=1603
       Transfer-Encoding:
       - chunked
       Vary:

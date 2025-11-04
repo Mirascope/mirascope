@@ -94,15 +94,12 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 {
   "title": "THE NAME OF THE WIND",
@@ -113,6 +110,9 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -290,15 +290,12 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 {
   "title": "THE NAME OF THE WIND",
@@ -309,6 +306,9 @@ Respond only with valid JSON that matches this exact schema:
   "rating": 7
 }\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -485,15 +485,12 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 {
   "title": "THE NAME OF THE WIND",
@@ -501,23 +498,26 @@ Respond only with valid JSON that matches this exact schema:
     "first_name": "Patrick",
     "last_name": "Rothfuss\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 "
   },
   "rating": 7
 }\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                         ],
                         "role": "model",
@@ -695,15 +695,12 @@ Respond only with valid JSON that matches this exact schema:
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 {
   "title": "THE NAME OF THE WIND",
@@ -711,23 +708,26 @@ Respond only with valid JSON that matches this exact schema:
     "first_name": "Patrick",
     "last_name": "Rothfuss\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 "
   },
   "rating": 7
 }\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                         ],
                         "role": "model",

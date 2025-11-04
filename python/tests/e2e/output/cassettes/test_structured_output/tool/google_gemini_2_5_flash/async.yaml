@@ -12,8 +12,8 @@ interactions:
       "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
       "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
       should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
-      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
-      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"function_calling_config":
+      {"mode": "ANY", "allowed_function_names": ["__mirascope_formatted_output_tool__"]}},
       "generationConfig": {}}'
     headers:
       accept:
@@ -23,47 +23,41 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1174'
+      - '1178'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        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
+        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
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -72,11 +66,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 17 Oct 2025 20:08:18 GMT
+      - Tue, 04 Nov 2025 21:50:21 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2625
+      - gfet4t7; dur=1854
       Transfer-Encoding:
       - chunked
       Vary:
