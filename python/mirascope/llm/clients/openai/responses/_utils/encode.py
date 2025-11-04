@@ -3,7 +3,7 @@
 from collections.abc import Sequence
 from typing import TypedDict, cast
 
-from openai import NotGiven
+from openai import Omit
 from openai.types.responses import (
     FunctionToolParam,
     ResponseFormatTextJSONSchemaConfigParam,
@@ -53,10 +53,10 @@ class ResponseCreateKwargs(TypedDict, total=False):
     temperature: float
     max_output_tokens: int
     top_p: float
-    tools: list[FunctionToolParam] | NotGiven
-    tool_choice: response_create_params.ToolChoice | NotGiven
+    tools: list[FunctionToolParam] | Omit
+    tool_choice: response_create_params.ToolChoice | Omit
     text: ResponseTextConfigParam
-    reasoning: Reasoning | NotGiven
+    reasoning: Reasoning | Omit
 
 
 def _encode_user_message(

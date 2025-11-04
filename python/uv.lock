@@ -710,7 +710,7 @@ requires-dist = [
     { name = "docstring-parser", specifier = ">=0.17.0" },
     { name = "google-genai", marker = "extra == 'google'", specifier = ">=1.31.0,<2" },
     { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.0.0,<2" },
-    { name = "openai", marker = "extra == 'openai'", specifier = ">=1.100.2,<2" },
+    { name = "openai", marker = "extra == 'openai'", specifier = ">=2.7.1,<3" },
     { name = "pillow", marker = "extra == 'google'", specifier = ">=10.4.0,<11" },
     { name = "proto-plus", marker = "extra == 'google'", specifier = ">=1.24.0" },
     { name = "typing-extensions", specifier = ">=4.10.0" },
@@ -845,7 +845,7 @@ wheels = [
 
 [[package]]
 name = "openai"
-version = "1.100.2"
+version = "2.7.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -857,9 +857,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e7/36/e2e24d419438a5e66aa6445ec663194395226293d214bfe615df562b2253/openai-1.100.2.tar.gz", hash = "sha256:787b4c3c8a65895182c58c424f790c25c790cc9a0330e34f73d55b6ee5a00e32", size = 507954 }
+sdist = { url = "https://files.pythonhosted.org/packages/51/a2/f4023c1e0c868a6a5854955b3374f17153388aed95e835af114a17eac95b/openai-2.7.1.tar.gz", hash = "sha256:df4d4a3622b2df3475ead8eb0fbb3c27fd1c070fa2e55d778ca4f40e0186c726", size = 595933 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/db/8d/9ab1599c7942b3d04784ac5473905dc543aeb30a1acce3591d0b425682db/openai-1.100.2-py3-none-any.whl", hash = "sha256:54d3457b2c8d7303a1bc002a058de46bdd8f37a8117751c7cf4ed4438051f151", size = 787755 },
+    { url = "https://files.pythonhosted.org/packages/8c/74/6bfc3adc81f6c2cea4439f2a734c40e3a420703bbcdc539890096a732bbd/openai-2.7.1-py3-none-any.whl", hash = "sha256:2f2530354d94c59c614645a4662b9dab0a5b881c5cd767a8587398feac0c9021", size = 1008780 },
 ]
 
 [[package]]
