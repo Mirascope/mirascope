@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from functools import lru_cache
 from typing import TypedDict, cast
 
-from openai import NotGiven
+from openai import Omit
 from openai.types import chat as openai_types, shared_params as shared_openai_types
 from openai.types.shared_params.response_format_json_schema import JSONSchema
 
@@ -31,20 +31,20 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
 
     model: str
     messages: Sequence[openai_types.ChatCompletionMessageParam]
-    tools: Sequence[openai_types.ChatCompletionToolParam] | NotGiven
+    tools: Sequence[openai_types.ChatCompletionToolParam] | Omit
     response_format: (
         shared_openai_types.ResponseFormatJSONObject
         | shared_openai_types.ResponseFormatJSONSchema
-        | NotGiven
+        | Omit
     )
-    tool_choice: openai_types.ChatCompletionToolChoiceOptionParam | NotGiven
-    parallel_tool_calls: bool | NotGiven
-    temperature: float | NotGiven
-    max_tokens: int | NotGiven
-    top_p: float | NotGiven
-    seed: int | NotGiven
-    stop: str | list[str] | NotGiven
-    reasoning_effort: shared_openai_types.ReasoningEffort | NotGiven
+    tool_choice: openai_types.ChatCompletionToolChoiceOptionParam | Omit
+    parallel_tool_calls: bool | Omit
+    temperature: float | Omit
+    max_tokens: int | Omit
+    top_p: float | Omit
+    seed: int | Omit
+    stop: str | list[str] | Omit
+    reasoning_effort: shared_openai_types.ReasoningEffort | Omit
 
 
 def _encode_user_message(
