@@ -7,10 +7,12 @@ license = { file = "../LICENSE" }
 requires-python = ">=3.10"
 authors = [
     { name = "William Bakst", email = "william@mirascope.com" },
-    { name = "Brendan Kao", email = "brendan@mirascope.com" },
     { name = "Dandelion Mané", email = "dandelion@mirascope.com" },
 ]
-maintainers = [{ name = "William Bakst", email = "william@mirascope.com" }]
+maintainers = [
+    { name = "William Bakst", email = "william@mirascope.com" },
+    { name = "Dandelion Mané", email = "dandelion@mirascope.com" },
+]
 keywords = [
     "agents",
     "artificial intelligence",
