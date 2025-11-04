@@ -24,16 +24,7 @@ sync_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text="""\
-{
-  "title": "THE NAME OF THE WIND",
-  "author": {
-    "first_name": "Patrick",
-    "last_name": "Rothfuss"
-  },
-  "rating": 7
-}\
-"""
+                            text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
                     provider="google",
@@ -41,25 +32,16 @@ sync_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
-                                "text": """\
-{
-  "title": "THE NAME OF THE WIND",
-  "author": {
-    "first_name": "Patrick",
-    "last_name": "Rothfuss"
-  },
-  "rating": 7
-}\
-""",
+                                "inline_data": None,
+                                "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -132,7 +114,16 @@ async_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
+                            text="""\
+{
+"title": "THE NAME OF THE WIND",
+"author": {
+"first_name": "Patrick",
+"last_name": "Rothfuss"
+},
+"rating": 7
+}\
+"""
                         )
                     ],
                     provider="google",
@@ -140,16 +131,25 @@ async_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
-                                "text": '{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}',
+                                "inline_data": None,
+                                "text": """\
+{
+"title": "THE NAME OF THE WIND",
+"author": {
+"first_name": "Patrick",
+"last_name": "Rothfuss"
+},
+"rating": 7
+}\
+""",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -229,16 +229,16 @@ stream_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -311,7 +311,7 @@ async_stream_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Text(
-                            text='{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}'
+                            text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
                     provider="google",
@@ -319,16 +319,16 @@ async_stream_snapshot = snapshot(
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
-                                "text": '{"title": "THE NAME OF THE WIND", "author": {"first_name": "Patrick", "last_name": "Rothfuss"}, "rating": 7}',
+                                "inline_data": None,
+                                "text": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",

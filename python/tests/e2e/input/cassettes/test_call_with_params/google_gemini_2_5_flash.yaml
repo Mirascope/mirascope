@@ -2,8 +2,8 @@ interactions:
 - request:
     body: '{"contents": [{"parts": [{"text": "What is 4200 + 42?"}], "role": "user"}],
       "generationConfig": {"temperature": 0.7, "topP": 0.3, "topK": 50.0, "maxOutputTokens":
-      500, "stopSequences": ["4242"], "seed": 42, "thinkingConfig": {"includeThoughts":
-      false, "thinkingBudget": 0}}}'
+      500, "stopSequences": ["4242"], "seed": 42, "thinkingConfig": {"include_thoughts":
+      false, "thinking_budget": 0}}}'
     headers:
       accept:
       - '*/*'
@@ -12,26 +12,26 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '274'
+      - '276'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2WRQU/CQBCF7/0Vk70KpgKGhJsRYzAYURrBWA4bdwob253a3SYg4b873VIocQ/t
-        y7y3M9Ov+wBAfEmjtJIOrRjBJ1cA9v5ZeWQcGsdGU+JiLgt3ztZn39IccbitLomIINFGgdsg2DID
-        SmDQC0PgkSw6sKMSeD5I5TMZOFoji2IUm9hwpyodmyvwMjZdf7wjWhMPJ73qnPcsKMVqiYwUpk38
-        0AQEL6bt5g2lJVPF5tHLTJxc3hq3XA6DZoBvLUor1/iMTjIxeeIi8oKy3EX0jeaeSk/spl83awG+
-        8PuDo+/IyfTCGgw7/9raMQ/VaRt865/wN8pUu52H/rCMRIuDu9yqAeHfq+CIpKb0joXVNY41Zgyo
-        27u+7SaptBvfURRoczIWJ6rK/DxNd3K6WN7l88ff4WQWqrHOXj9EcAj+ADjvXlNbAgAA
+        H4sIAAAAAAAC/2WRX0/CMBTF3/cpmr7KDH+mJrwZMYYYA+pCTBwPhV6gsbtd2i4Byb67txuDEfuw
+        dvecntv+eowY42uBUknhwfEx+6YKY8f6GzSDHtCT0JaoWAjrL95mHDtrsnjYh008NWwt9LrUFM+S
+        Yb/PbmjqsYMpSUAmpGR+BwzLfAXWMW+2QP92nGGGwZ9h2JBhHEaGvNOmOq+XvcvhrNEQOudGgm7t
+        VWvgG4XK7T5AOIPB9pnO5vysKpSwp3I/ahvU0bx0Ygtv4AVhEmcYvLAmL3xqfgCfTFljGoyasA7V
+        K300OOneeKGvpCTp/Yt1E2qqdJd25yHojkIrf6hJP3+lvMPBX5+qBVHPy+iEpKG0IPKqwbGFnADF
+        w9u7eKOF29WJ3IIrDDqYyuBZ4furgOH9i5xNfh+mczsdLeLHhEdV9AfLoPO4UAIAAA==
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -40,11 +40,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 17 Oct 2025 19:02:00 GMT
+      - Tue, 04 Nov 2025 21:47:26 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=758
+      - gfet4t7; dur=720
       Transfer-Encoding:
       - chunked
       Vary:

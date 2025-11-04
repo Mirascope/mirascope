@@ -9,7 +9,7 @@ interactions:
       "Last Name", "type": "STRING"}}, "property_ordering": ["first_name", "last_name"],
       "required": ["first_name", "last_name"], "title": "Author", "type": "OBJECT"},
       "rating": {"description": "For testing purposes, the rating should be 7", "title":
-      "Rating", "type": "INTEGER"}}, "propertyOrdering": ["title", "author", "rating"],
+      "Rating", "type": "INTEGER"}}, "property_ordering": ["title", "author", "rating"],
       "required": ["title", "author", "rating"], "title": "Book", "type": "OBJECT"}}}'
     headers:
       accept:
@@ -19,27 +19,27 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '883'
+      - '884'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/2VRTW+CQBC98ys2e9amSlrb3ky1KUlFY+lHUhozlQU2wi7ZHRKt4b93F0Qh5UBm
-        572ZefPm6BBCtyAiHgEyTR/Il8kQcqz/FpMCmUADtCmTLEDhhdt8x05sKMj2togeQ4ocMxaaR0iD
-        5znxp4s5WT4RG394/iykA4NAialUlmUqYq40bgTkp7IVoOLbXcPMoIetJaZxqXVIK4sqQC4SC00q
-        2pFUnePvwWURJTNmVeYyYllLr1qC0SG4TtcMtBSW9hosV/SMchGxvUlfO+2AujUtNSRswRCMpXA2
-        jhZK5gUGcsfEoyxrS0ejplnnAj3cvT3hKBGyHjR27wb/+uqZmcqz7mk6VzNLQsbxYDcJ5p8B7RiB
-        fVmtE07HMGoOVCYp9iWO7i25tqxx8Z0pzRu7EpYbA4fjq5thbK6W1gOpYrqQQjMvshwPXg7gC9ff
-        /Lz9TryVG08W+dSjTuX8Abfc4N6cAgAA
+        H4sIAAAAAAAC/2VR22qDQBB99yuWeU5KDWlC+xZqSkLJpam9QC1liasu0V3ZHaGt+O/d9ZIo9UFm
+        zzlzO1M6hMCRipCHFJmGO/JhEELK+m85KZAJNEQHGTCnCi/a5it7sZEg+7ZJUAYiAOSYssA8A/BX
+        S7JdbJZk90Bs/LbeegGMrIoWmEhlZXVSxJXGL0GzNnNPUfHjqRWndEAeJCZRoXUAgahqgaLIRWzZ
+        uYGgN111jj9Hl52UTJkdOJMhSzt51QnMNILr5MColsLKnv3dHs4sFyH7NvC10zWoS0Ohacw2DKlx
+        l549hFzJLEdfnpi4l0Xtrus2xXrHGPDTWcujRJoOqIl7O/pXV3umK0/7V+od0CxJU44/dhN/+e5D
+        zwgcjtU54fQMA3OoIk5wOKI7mzitZY2Lr0xp3tgVs8wYOJ5c3Ywjc7qkbgiK6VwKzdah1RSrp0d6
+        jA5esXr5na/303Hk8cUUnMr5A/ZpfHWnAgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -48,11 +48,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 17 Oct 2025 20:08:01 GMT
+      - Tue, 04 Nov 2025 21:48:40 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2059
+      - gfet4t7; dur=1487
       Transfer-Encoding:
       - chunked
       Vary:

@@ -12,8 +12,8 @@ interactions:
       "type": "STRING"}}, "required": ["first_name", "last_name"], "title": "Author",
       "type": "OBJECT"}, "rating": {"description": "For testing purposes, the rating
       should be 7", "title": "Rating", "type": "INTEGER"}}, "required": ["title",
-      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
-      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"function_calling_config":
+      {"mode": "ANY", "allowed_function_names": ["__mirascope_formatted_output_tool__"]}},
       "generationConfig": {}}'
     headers:
       accept:
@@ -23,28 +23,28 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '1174'
+      - '1178'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse
   response:
     body:
       string: "data: {\"candidates\": [{\"content\": {\"parts\": [{\"functionCall\":
-        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"title\": \"THE
-        NAME OF THE WIND\",\"rating\": 7,\"author\": {\"first_name\": \"Patrick\",\"last_name\":
-        \"Rothfuss\"}}},\"thoughtSignature\": \"CiQB0e2Kb6KKAcECUtRxaFrJVvXc3QRJvViOJyqqhNO+Okp61GcKcwHR7YpvY+4RInvI9X6nnnOcGZpZmOvU1wW2/erUEsbbTpFr1bh0TwS86AfSQcCW+zoO+pug/bGoEVO8GlrmBQSGEcTIcE1ONRtDgdv4hMXtbtpsmq0svJzubtBUKu6JVGoxPq9S63qSO5dvYFZPaZ8NUUIK8wEB0e2Kb1mPTmwlZ+y/RNaT2oSO/2YM9SjuTwDVKAy2MiWQ0BpK+ACoNdvt8LorH2G1o3Zt/O2iFnT6oPU1CuP0paPN70K3gzXofeCp4zYwJYdf3qaGnUkpoeU4c8fpuzM216mKl3Klp2I34O5AIYiMNZjKq+cNSLyLbds/CqQ5jZwMFHqkoagC6u8Xtif6ir5cyIckKEylJF8cohr6/DJS4Xt6D/6/C9+6KnigSc31GeikWTyidC/xCq80oCpU09CUmKh3Ur0OsG+sXXBodU8JFT3dMAX/vkX700g31Fl8cxyheAnRNQbfct/pQT2PrEKDiEMK3gEB0e2Kb7PXjt2CDjAFmHz/dOGE6jyuoytFD8uh8SFWejTCqMgUcAnFjhRvUxxkUPia6olJNi27++1r3pdJ4Sg7XKWgr39UlZfcJ+4n9e7ADrtGIohAfKXLtnpvBq8qboos/J1HfXEY9SjYHMesd72RI8ipRmXYr+G6MAr4sMiDlR1Z4hz+mYnKGTOml1xZH471AZc1hhrDR5Zdgg3X7j15UCSeCxCGmmbeE+hwAWVfpjWjaXfL/4MvtrhD5wr3VSqrLOsmbEAljDGTazLrNgmxuL8aNUIOmuSwKLuRGnUKvQEB0e2Kb4WgeRVwU/z/pRG5Dwon8ySv1cKkzL8vQjVrz9eYMi1f2i1mxgmccrLUcDBmjVknGfiiXPhe64xJv/65IeSEWmzaKsM7k40pf1LkLLXY4itnkLc6x3yPz2KZSltu9BWWJHHcuL+OcfH6QmuO/adEVj29ayO5ftJSPi2qKi9q1HrEkh6WHju+j1Fw4cX6ZiDwEZScbLBzNjWDFhKTDsxOkCuXKW8w71dMiz1otN+B5WL6unBFaS6H/DMKjgEB0e2Kb39X9WmPcRU2gtwqn+xAZXxd5S5EUTglFgZ8qCku7gDNpb4K14fKRFHbsLlsO5GWMZEJIf3wvRWj2KNYsr53Ws7jFkKsw2D1DxafhRk3VA7EIcdhi7W7e8++7jz9na2xNGTB21+uyYLwgfT/NjC29iz8YxKWdtKExetwgAiHhTRVSfk+7xZx9yrZ\"}],\"role\":
+        {\"name\": \"__mirascope_formatted_output_tool__\",\"args\": {\"author\":
+        {\"first_name\": \"Patrick\",\"last_name\": \"Rothfuss\"},\"title\": \"THE
+        NAME OF THE WIND\",\"rating\": 7}},\"thoughtSignature\": \"CiQB0e2Kb4VKxFJIW71qn7CrUybw+3/xkFloOxvVHhhyBVsAkFgKeQHR7Ypvl1EQyyIzDEoYaiMsNqwIshdt0f8X14R2RL2jJSrz4PHNEEpzuX7SI9nyjwq0E0KRcyTjN76hkFBpHxoQ0h5bG7mkb+q6BaMKrDs9l9vVbMLc4kBk8vvJ83DSpWDx3CGwiiwOUMIPML1uaN0UeC2BT9ekLYsK6AEB0e2Kb6hibXpOlZMB2CbLLNJR38kxVVIV4zkDaQANqNmLqprDf+HZarjNy63loT7knisGSmA7JsAP+OgeKl+yEfPSQNUphyYOFtr+W7RywB8kF+NGZ7fwLBt3grFVcCHkuUqOZHTaxAJR9OdCnMOGifCfOtBVSBmKbbYpTfICTSnrS3AZFxBF94nftS2w5YMP7xPxkQBk5qWJDnQ5jswPMYIYWZHbQAwQWardXptjnuw5aCaOfMMHPnA9aG/90ZsqwhFFWb1zjTQQ2slODHvRdfUq+SqkPKVIJsPzLpojD8eMAAnvz9YvCuABAdHtim9PjnWZhmdyX8hjvRbvsqp+iCQvc//P1Vahnncvsa8UrkS+RFWpTIuEuT2+vFQ4eTJulyfK5vCrpJcKWks6fzoXfRJgYICR6Z9N9gTO7kB+NFQcgE8QwsH4TrXmQzrhdFuOYB9LwoIiEOWo34jBqNkHIT/ycFG2MlRo6u3s5qjtNsK97lEsPkwyRMJyFVyO34Vz1nzg2wSCTGqsCSWf4OV9u7i8GZQuPxjR2ZZpbfhdFl/MNqyN5T5BqHahm2UCQikVqLy/YRVN7h86ykSoyeTsjaS/qBidg6i3UE8K4AEB0e2Kb8uCJu+J/oCrYDQdrpc3dS+T1AeFOENMjm6pDzaqr7ztQfU+Tj5KAaRT9uweYIrYMYGJJH6Gdn3Za9vDK2yWpzECxaUiOfEaS6z2OXv9D0ok8ZXb/ZMR0vrsVYcXWuBsx3qGyr3shThLobHrq4kvpbVl0b43OHuAwPVcPqqBz8tUbKq3uxl679D0qJ3TsSusOlsEv062zUrqYytKVzHB3an45UV7/j1iKZo4WW/LMbQY3QszzO2ITMHXkbfPAq4YBf8JgdxoFapuBbi7ol6cPrD0PMxvNyHGh/HDgQpiAdHtim9trlFTq60vI2r66DUkP6TC/GT5faD4bdDpkKM+XE+LNdKC2pgV5d2CQqkX4YVDPsXw6yYm6COeOrq7MxVluJpY/z5Cr3mQzXk6RJtuuUijSP74It72t37Mfm1SNGA=\"}],\"role\":
         \"model\"},\"finishReason\": \"STOP\",\"index\": 0,\"finishMessage\": \"Model
         generated function call(s).\"}],\"usageMetadata\": {\"promptTokenCount\":
-        217,\"candidatesTokenCount\": 49,\"totalTokenCount\": 459,\"promptTokensDetails\":
-        [{\"modality\": \"TEXT\",\"tokenCount\": 217}],\"thoughtsTokenCount\": 193},\"modelVersion\":
-        \"gemini-2.5-flash\",\"responseId\": \"VKLyaM6ZH_OVmtkP59m96Ao\"}\r\n\r\n"
+        217,\"candidatesTokenCount\": 49,\"totalTokenCount\": 455,\"promptTokensDetails\":
+        [{\"modality\": \"TEXT\",\"tokenCount\": 217}],\"thoughtsTokenCount\": 189},\"modelVersion\":
+        \"gemini-2.5-flash\",\"responseId\": \"xXQKaeeRGJngz7IPxefwyAI\"}\r\n\r\n"
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -53,11 +53,11 @@ interactions:
       Content-Type:
       - text/event-stream
       Date:
-      - Fri, 17 Oct 2025 20:08:53 GMT
+      - Tue, 04 Nov 2025 21:48:54 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=2265
+      - gfet4t7; dur=2056
       Transfer-Encoding:
       - chunked
       Vary:

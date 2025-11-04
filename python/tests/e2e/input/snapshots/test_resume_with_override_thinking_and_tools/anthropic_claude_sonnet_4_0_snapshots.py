@@ -22,9 +22,9 @@ test_snapshot = snapshot(
                     content=[
                         Thought(
                             thought="""\
-**The Fibonacci Challenge**
+**Let's Get This Fibonacci Number**
 
-Okay, so the user needs the 100th Fibonacci number.  Fortunately, I know that `default_api.compute_fib` is the function to use for this kind of calculation. That's a no-brainer.  So, I just need to call that function with the input `n=100`. Simple and straightforward. No need to overthink this.
+Okay, so I see the user wants the 100th Fibonacci number.  No problem. I immediately think of that handy `compute_fib` function in the `default_api`.  Seems like the perfect tool for this task.  I just need to call `compute_fib` with `n=100`, and I should have the answer in no time. Simple and straightforward, exactly how I like it.
 """
                         ),
                         ToolCall(
@@ -48,9 +48,9 @@ Okay, so the user needs the 100th Fibonacci number.  Fortunately, I know that `d
                                 "function_call": None,
                                 "function_response": None,
                                 "text": """\
-**The Fibonacci Challenge**
+**Let's Get This Fibonacci Number**
 
-Okay, so the user needs the 100th Fibonacci number.  Fortunately, I know that `default_api.compute_fib` is the function to use for this kind of calculation. That's a no-brainer.  So, I just need to call that function with the input `n=100`. Simple and straightforward. No need to overthink this.
+Okay, so I see the user wants the 100th Fibonacci number.  No problem. I immediately think of that handy `compute_fib` function in the `default_api`.  Seems like the perfect tool for this task.  I just need to call `compute_fib` with `n=100`, and I should have the answer in no time. Simple and straightforward, exactly how I like it.
 """,
                             },
                             {
@@ -58,7 +58,7 @@ Okay, so the user needs the 100th Fibonacci number.  Fortunately, I know that `d
                                 "thought": None,
                                 "inline_data": None,
                                 "file_data": None,
-                                "thought_signature": b"\n\xee\x01\x01\xd1\xed\x8ao\xd6f\xb0&\xa3d\xe66Q\x0cZ\x96<yfw4u*7us5\xd0y\xb6\xa61\xa8\xce\x1eq\x12\xedq+\xf9\xccd\xfa\x972\"\xa4\x8a)`\x12\xe8\xc2b\xf43\x9c\xb5:\xca\xf6\x11\x91\\\xfe>\xfa\xf7yl\xe9l&\xe8r=+\x98^\xe9R\xc2\x9a\xcc\xb6\xfe 7\xef/\x03\xe5\xd1\xbb>\x99\xac\xa5\xf0>\xf9\x8f\x8f\xe0k1\x9bR0\xb3\xa2\x84\x17\xe1\xa8i\xc1\xe8]:\xef\x93/\xd9(\x9f\xb3N\x0e\xc7Z\xcb\x03\xca\x03\xbe6w7v\xfe\xd2\xfaC4\xae,C\xea\rP\xcaL&\xca$Y\x96-l\xef\xf6t\x94M\x81\xcd\x15Ct\x82\xd2\xa1\xfd\x8d\xcbc\x18\x94F\xeb\x84J\xbb\xe8\xdb\x8ca\xd5'\x9e\x1bP)\x9d\xfe\xc5/\x19\xfa\xa2%\x1b\xea\xee\x8a\x14\xefp)\xd3y\xefk-z\xf3P\x8e\x96D\xe4\x07\xfbd\xd3Uv\x84\xa8\xc7O\x8a\x9a\xd0\xee",
+                                "thought_signature": b"\n\xcc\x01\x01\xd1\xed\x8aoC>s\xdd\x7f\xa6\xeb\x01\xdf>R\x07\xddI\xc3\xe6x\xbb\xa2\xbd/\x8f\x1c\x05'\x12\x945\xecv6w<\x86\x9d\x89\xb6\xbc\xfd\x85m\xd9\xfb&\xa5MR\xe7]_\r\x16\x1c\x13\x18\xac\xe7\x95\xfcW\x90\x9e\x14O\xf1D\x97\xcb\x87e\xb9\x94R\x8d\xb0\xc4\xed\xf37#\xbb1\xdf\xae\xd7\xf0\xe39\xf3T\x01]\xfb:Q\xae@\xfc\x12;\xfdFj\x02!\x89\x02\x9ez>\xfaK\x940}f\xe2\xdav\xac\x1f\x14l\xffJ\xf0\x0c\xcb?\xdf&\xfb9'z|\xa4\x1a\xc0\x03OQ\x80\xcd\xd0\xd6\x92\xc9hi{f\x07\x1c\xf5X\x0e\x93\x8d\xdf\xad\xb5l]\x8f\x856\xb8V\xa3]!\x8a\x1d\x9b\xd7\xef\xc9Y)\xb6\x01}!\xd7\xb8]\xf8\xdf\xa7\x1bJ\x870\x81N&]@",
                                 "code_execution_result": None,
                                 "executable_code": None,
                                 "function_call": {
@@ -85,7 +85,11 @@ Okay, so the user needs the 100th Fibonacci number.  Fortunately, I know that `d
                 AssistantMessage(
                     content=[
                         Text(
-                            text="The 100th Fibonacci number is 218,922,995,834,555,169,026. This is a very large number with 21 digits!"
+                            text="""\
+The 100th Fibonacci number is **218,922,995,834,555,169,026**.
+
+This is quite a large number! The Fibonacci sequence grows exponentially, so by the time we reach the 100th term, we're dealing with a 21-digit number.\
+"""
                         )
                     ],
                     provider="anthropic",
@@ -95,7 +99,11 @@ Okay, so the user needs the 100th Fibonacci number.  Fortunately, I know that `d
                         "content": [
                             {
                                 "citations": None,
-                                "text": "The 100th Fibonacci number is 218,922,995,834,555,169,026. This is a very large number with 21 digits!",
+                                "text": """\
+The 100th Fibonacci number is **218,922,995,834,555,169,026**.
+
+This is quite a large number! The Fibonacci sequence grows exponentially, so by the time we reach the 100th term, we're dealing with a 21-digit number.\
+""",
                                 "type": "text",
                             }
                         ],

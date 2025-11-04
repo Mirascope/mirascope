@@ -9,8 +9,8 @@ interactions:
       "name": "__mirascope_formatted_output_tool__", "parameters": {"properties":
       {"title": {"title": "Title", "type": "STRING"}, "author": {"title": "Author",
       "type": "STRING"}, "rating": {"title": "Rating", "type": "INTEGER"}}, "required":
-      ["title", "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"functionCallingConfig":
-      {"mode": "ANY", "allowedFunctionNames": ["__mirascope_formatted_output_tool__"]}},
+      ["title", "author", "rating"], "type": "OBJECT"}}]}], "toolConfig": {"function_calling_config":
+      {"mode": "ANY", "allowed_function_names": ["__mirascope_formatted_output_tool__"]}},
       "generationConfig": {}}'
     headers:
       accept:
@@ -20,38 +20,38 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '923'
+      - '927'
       content-type:
       - application/json
       host:
       - generativelanguage.googleapis.com
       user-agent:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
       x-goog-api-client:
-      - google-genai-sdk/1.31.0 gl-python/3.10.16
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
     method: POST
     uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAC/21U25KiSBB9768weNoNd6ZFsMGN2Ae8ICCIiAKysWGUUEApVCFVXnBi/n3Rnu7V
-        2eGBKPKcPJmRVJ5vL60WFwEcoxgwSLk/W383kVbr2/19wwhmELMG+Ag1wRJU7D/u+/Pt4dxQkiOO
-        GCJ4CPL8KfkHjkEBmzi32RSoAjQiJdwkpCoAYzDekCMrj2zDCMk3G+6Pn5NBldJfiDYIQyy/6y61
-        cWumWOOWrbZuZ1+fjf4ndJM6soxUt4w5YBWK9q0FYVlypPRX7AowhNOGLf2EfX/6/v6cyjUljmnG
-        XJRiwI7VvcHhKRopscZQ8VquCtwT5XEdmqim+swNU7+PECX7OEBts2eqZXDt+intSfusnfaCwjHg
-        CO8SZZFTz8/Vi0jE857PHHHnjmUgCWG33Y/2RuhvD5Ol6r+u8JRZqRhPFFnMwun1kltyKXc0pbb0
-        tSzzrz3nUC9HB+vNUZz9K16owOFreDBX5+mglGLnHPm6mVdC31D92YUyITKl2Jgs94SavB32F6Is
-        xrTEbnApgvEptIWR6qSybHTtKtxZs9L3+G0K4DbIqSi5kyuzrXGWBZqbUcoKt63aerIQdtZrfOI9
-        PRSsuFieZFh3tOi03Gb79WH1Fun6rsOc/Jrvpv7KD0xiT7xaXgqyrfVxdbAHwshRWH/NtLfSXm6l
-        UbKtY00cGnm37wqZ0HWWo446lPozkU92cI7fpsQxEtR3TvQ6sM5gGuyv2njFm+6ees62FJ2E77Zx
-        Yk9cR2RtIF0YCXruGoVtb531cI83B/YAn8ThKpvI1169mBel2RFNoohrM9XWwsCZIbM9tLP2gBbU
-        8IW9VQazSvf4qT2FubSYHIbQg5o8ig7uGtTtWumvQjXlw9Qh6uqymiTXleRss8tq3TbDyod+EA/M
-        tVIO7QE5oAyoZ3Mfx17nuDDKvPCwqLLjvNSDhRKdqd8mCIFitDgHVlpMxp6HihniE10fG7kjjg0D
-        KrU834lnyzTffHO4NUwyhceRcyHkL+7lVzf8n/9uN1eR93UrSAzzD/rn9ecShBHNFhBQgm80d2nP
-        P/eKQziGlybc+YlvQUpBete1brqtFGLYrB6MWx+20ooaX/mN/v71veatuXtb3PGWaUEGGj8Dnx7B
-        lRUpSrYke4iH5Hj3M16Q3us++N8T4RNnhIH8Ger86PlRmI6asih/NMYHz2wmBHLE6rs5jYPlg700
-        BZ77+pjjy8O4P0zkuUe++/byY+Dv/8CDFUXvw05h0YzzS/dr70uSA5rdK3IVpCXBFOrxjaMZUg0M
-        F2tzdDgwOq+3pkwUyr18f/kXyy1owBsGAAA=
+        H4sIAAAAAAAC/21UXZOqOBB9n19h8bRb3HsVFZGt2gcFRWYUQRGVrS0rSoDwkUAIKk7Nf190vpy5
+        ywOVdJ/u0zTd5/mh0eAOAHvIAwwW3F+Nf2pLo/F8e199BDOIWe14N9XGDFD2iX19nu/ONcQv8YEh
+        ghWQJF+C3/wYpLC2c7tdiigoDiSDO5/QFDAGvR0pWVayHSMk2e24H9+DAQ2K/0laeyhgCAe1T/oe
+        dA0rWUjoldUEjKJD3FgQFvplUfxGUaMZYsmtRHsyahiD2agxHzeu57VuqNw3/MuX+8vXdFxNWwYh
+        W6IAA1bSW1bl2FIH3oShlD95ppfPm/i8TLHNtI2wbws+mRANb4z19hzjZBnk/Q46S5K6OlBG9cKa
+        nC+znOYSsy9et7lsSZHuMMfaL8TCmneiwdq2kbOaDpRzpD1t+lGWPFmLY8a6XY+o3swwKhLzVq43
+        41W+0lsLY99MyoSHVS9uG/Ecp6c56naaujachRozBRRK50eZti9HV3Jjn7aoxtZ21lLlx2Hlni7K
+        Yrnho0nZWUyEQXd8Zn1N0Y4+oFnoTPGIt8oMjqeZ5FImkrPbSRHws4vJtt1qss9a61ie4kpxx1AX
+        c2ElOt2y5zqq0Lc37VMldIn/dBgO5dBq+6IeqVv+GLd5sxgN7UUTm655akJVsbyeJEcjvuUVh54j
+        A1HtVE/mWOvnpqNmj2kUmPzZjPvdjtFfbrwmlXk0FSw4EwP9KJO9rMT7Y1Mc4pWot7O08MfZ8SSH
+        AxnwsoAMf7bqo+BxQnuSbtGQuGYFketv4d5W9IHX76s67xEcDJdjXxl39G3P0JgyjQ6nLDzHnkJX
+        /PBylMVVuN16XQJ8g0/mHeikS8OqWtHkWJ1EdpCgINgXOtSiptLhY1cYH1E5TDp2vA5DQBwyoSwo
+        l2NJ1NA0I6kk2aRa8mGBmb8fn1i/pXZNWxppbjzM28flXmhbvFSPlRqpdFa1iDNcuaXhtk97P286
+        YGtdpPUmkHynuU70aOv465l02Vc03uaTS64Y8fbv+2n/nPR/P6eco+R1V1LiweQd/rEGnI8wKsIF
+        BAXBV9jSnpsfO8ch7MFzbW59w89gUYDglnd2zdsIIIb1hkOv8S4vjUOtL38Uf/565bwWdyuLK6+R
+        M8hArWvgQyu4jJI0YzaJIVZIedM1ofOmFXc6+AXw4WeEgeSrSxB+/Ja4UGtalNwL5J121h0CCWLV
+        TVlGG/tOemqCr3W99/Hhrt3vYlJ8/4iHt4a//gMH0gK9NjuAad3On+1f4k8/AUV4Y+QoLDKCC6h7
+        V4yPrSewne9G+a6eB90MgZSjQYt7eHn4D6TSEegjBgAA
     headers:
       Alt-Svc:
       - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
@@ -60,11 +60,11 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Fri, 17 Oct 2025 19:50:52 GMT
+      - Tue, 04 Nov 2025 21:47:42 GMT
       Server:
       - scaffolding on HTTPServer2
       Server-Timing:
-      - gfet4t7; dur=1565
+      - gfet4t7; dur=1349
       Transfer-Encoding:
       - chunked
       Vary:
