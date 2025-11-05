@@ -8,7 +8,7 @@ from typing import Literal
 from anthropic import NOT_GIVEN
 from anthropic.lib.vertex._client import AnthropicVertex, AsyncAnthropicVertex
 
-from ..anthropic import BaseAnthropicClient
+from .base_client import BaseAnthropicClient
 
 ANTHROPIC_VERTEX_CLIENT_CONTEXT: ContextVar["AnthropicVertexClient | None"] = (
     ContextVar("ANTHROPIC_VERTEX_CLIENT_CONTEXT", default=None)

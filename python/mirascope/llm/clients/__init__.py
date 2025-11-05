@@ -1,11 +1,11 @@
 """Client interfaces for LLM providers."""
 
 from .anthropic import (
+    AnthropicBedrockClient,
     AnthropicClient,
     AnthropicModelId,
+    AnthropicVertexClient,
 )
-from .anthropic_bedrock import AnthropicBedrockClient
-from .anthropic_vertex import AnthropicVertexClient
 from .azure_openai.completions import AzureOpenAICompletionsClient
 from .azure_openai.responses import AzureOpenAIResponsesClient
 from .base import BaseClient, ClientT, Params

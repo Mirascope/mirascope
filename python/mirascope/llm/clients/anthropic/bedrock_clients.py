@@ -7,7 +7,7 @@ from typing import Literal
 
 from anthropic.lib.bedrock._client import AnthropicBedrock, AsyncAnthropicBedrock
 
-from ..anthropic import BaseAnthropicClient
+from .base_client import BaseAnthropicClient
 
 ANTHROPIC_BEDROCK_CLIENT_CONTEXT: ContextVar["AnthropicBedrockClient | None"] = (
     ContextVar("ANTHROPIC_BEDROCK_CLIENT_CONTEXT", default=None)

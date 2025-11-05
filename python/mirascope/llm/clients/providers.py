@@ -4,23 +4,19 @@ from typing import Any, Literal, TypeAlias, get_args, overload
 from openai.lib.azure import AzureADTokenProvider
 
 from .anthropic import (
+    AnthropicBedrockClient,
     AnthropicClient,
     AnthropicModelId,
-    clear_cache as clear_anthropic_cache,
-    client as anthropic_client,
-    get_client as get_anthropic_client,
-)
-from .anthropic_bedrock import (
-    AnthropicBedrockClient,
-    clear_cache as clear_anthropic_bedrock_cache,
-    client as anthropic_bedrock_client,
-    get_client as get_anthropic_bedrock_client,
-)
-from .anthropic_vertex import (
     AnthropicVertexClient,
-    clear_cache as clear_anthropic_vertex_cache,
-    client as anthropic_vertex_client,
-    get_client as get_anthropic_vertex_client,
+    bedrock_client as anthropic_bedrock_client,
+    clear_bedrock_cache as clear_anthropic_bedrock_cache,
+    clear_cache as clear_anthropic_cache,
+    clear_vertex_cache as clear_anthropic_vertex_cache,
+    client as anthropic_client,
+    get_bedrock_client as get_anthropic_bedrock_client,
+    get_client as get_anthropic_client,
+    get_vertex_client as get_anthropic_vertex_client,
+    vertex_client as anthropic_vertex_client,
 )
 from .azure_openai.completions import (
     AzureOpenAICompletionsClient,
