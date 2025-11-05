@@ -1,6 +1,6 @@
 """Test context manager behavior for Azure OpenAI clients."""
 
-from mirascope.llm.clients.azure_openai.completions import client, get_client
+from mirascope.llm.clients.openai.azure_completions import client, get_client
 
 
 def test_get_client_with_context() -> None:

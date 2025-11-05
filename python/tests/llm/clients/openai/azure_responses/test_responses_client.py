@@ -1,14 +1,13 @@
-"""Tests for AzureOpenAICompletionsClient"""
+"""Tests for AzureOpenAIResponsesClient"""
 
-from openai.types.chat import ChatCompletion, ChatCompletionMessage
-from openai.types.chat.chat_completion import Choice
+from openai.types import responses as openai_types
 
-from mirascope.llm.clients.azure_openai.completions import (
-    AzureOpenAICompletionsClient,
+from mirascope.llm.clients.openai.azure_responses import (
+    AzureOpenAIResponsesClient,
     client,
     get_client,
 )
-from mirascope.llm.clients.openai.completions import _utils
+from mirascope.llm.clients.openai.responses import _utils
 
 
 def test_context_manager() -> None:
@@ -76,13 +75,13 @@ def test_provider_name() -> None:
     Included for code coverage.
     """
 
-    client_instance = AzureOpenAICompletionsClient(
+    client_instance = AzureOpenAIResponsesClient(
         api_key="test-key",
         base_url="https://test.openai.azure.com",
         azure_api_version="2024-10-21",
     )
 
-    assert client_instance.provider == "azure-openai:completions"
+    assert client_instance.provider == "azure-openai:responses"
 
 
 def test_assistant_message_provider_attribution() -> None:
@@ -91,25 +90,33 @@ def test_assistant_message_provider_attribution() -> None:
     Included for code coverage.
     """
 
-    openai_response = ChatCompletion(
+    openai_response = openai_types.Response(
         id="test-id",
-        choices=[
-            Choice(
-                finish_reason="stop",
-                index=0,
-                message=ChatCompletionMessage(
-                    content="Test response",
-                    role="assistant",
-                ),
+        object="response",
+        created_at=1234567890,
+        model="o1",
+        parallel_tool_calls=False,
+        tool_choice="auto",
+        tools=[],
+        output=[
+            openai_types.ResponseOutputMessage(
+                type="message",
+                id="msg-1",
+                role="assistant",
+                status="completed",
+                content=[
+                    openai_types.ResponseOutputText(
+                        type="output_text",
+                        text="Test response",
+                        annotations=[],
+                    )
+                ],
             )
         ],
-        created=1234567890,
-        model="gpt-4",
-        object="chat.completion",
     )
 
     assistant_message, _ = _utils.decode_response(
-        openai_response, "gpt-4", "azure-openai:completions"
+        openai_response, "o1", "azure-openai:responses"
     )
 
-    assert assistant_message.provider == "azure-openai:completions"
+    assert assistant_message.provider == "azure-openai:responses"

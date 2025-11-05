@@ -18,18 +18,6 @@ from .anthropic import (
     get_vertex_client as get_anthropic_vertex_client,
     vertex_client as anthropic_vertex_client,
 )
-from .azure_openai.completions import (
-    AzureOpenAICompletionsClient,
-    clear_cache as clear_azure_openai_completions_cache,
-    client as azure_openai_completions_client,
-    get_client as get_azure_openai_completions_client,
-)
-from .azure_openai.responses import (
-    AzureOpenAIResponsesClient,
-    clear_cache as clear_azure_openai_responses_cache,
-    client as azure_openai_responses_client,
-    get_client as get_azure_openai_responses_client,
-)
 from .google import (
     GoogleClient,
     GoogleModelId,
@@ -38,13 +26,21 @@ from .google import (
     get_client as get_google_client,
 )
 from .openai import (
+    AzureOpenAICompletionsClient,
+    AzureOpenAIResponsesClient,
     OpenAICompletionsClient,
     OpenAICompletionsModelId,
     OpenAIResponsesClient,
     OpenAIResponsesModelId,
+    azure_completions_client as azure_openai_completions_client,
+    azure_responses_client as azure_openai_responses_client,
+    clear_azure_completions_cache as clear_azure_openai_completions_cache,
+    clear_azure_responses_cache as clear_azure_openai_responses_cache,
     clear_completions_cache as clear_openai_completions_cache,
     clear_responses_cache as clear_openai_responses_cache,
     completions_client as openai_completions_client,
+    get_azure_completions_client as get_azure_openai_completions_client,
+    get_azure_responses_client as get_azure_openai_responses_client,
     get_completions_client as get_openai_completions_client,
     get_responses_client as get_openai_responses_client,
     responses_client as openai_responses_client,
