@@ -74,7 +74,7 @@ from .messages import (
     UserContent,
     UserMessage,
 )
-from .models import Model, model
+from .models import Model, model, use_model
 from .prompts import prompt
 from .responses import (
     AsyncChunkIterator,
@@ -208,4 +208,5 @@ __all__ = [
     "tool",
     "tools",
     "types",
+    "use_model",
 ]
