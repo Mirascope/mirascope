@@ -177,7 +177,7 @@ function startWatching(): void {
   }
 
   // Watch Python source for API doc regeneration
-  const pythonSourcePath = resolve(V2_ROOT, "python");
+  const pythonSourcePath = resolve(V2_ROOT, "python/mirascope");
 
   if (existsSync(pythonSourcePath)) {
     let regenerateTimeout: NodeJS.Timeout | null = null;
