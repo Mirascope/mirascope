@@ -1,15 +1,16 @@
 """The `llm.models` module for implementing the `Model` interface and utilities.
 
 This module provides a unified interface for interacting with different LLM models
-through the `Model` abstract class. The `llm.model` context manager allows you to
-easily run an LLM call with a model specified at runtime rather than definition
-time.
+through the `Model` class. The `llm.model()` context manager allows you to override
+the model at runtime, and `llm.use_model()` retrieves the model from context or
+creates a default one.
 """
 
-from .models import Model, get_model_from_context, model
+from .models import Model, get_model_from_context, model, use_model
 
 __all__ = [
     "Model",
     "get_model_from_context",
     "model",
+    "use_model",
 ]

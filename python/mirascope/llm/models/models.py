@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from contextvars import ContextVar, Token
-from types import TracebackType
-from typing import TYPE_CHECKING, Literal, overload
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
+from contextvars import ContextVar
+from typing import TYPE_CHECKING, overload
 from typing_extensions import Unpack
 
 from ..clients import PROVIDERS, get_client
@@ -35,10 +35,7 @@ from ..tools import (
 
 if TYPE_CHECKING:
     from ..clients import (
-        AnthropicModelId,
-        GoogleModelId,
         ModelId,
-        OpenAICompletionsModelId,
         Params,
         Provider,
     )
@@ -59,34 +56,42 @@ class Model:
     from various providers. It handles the common operations like generating responses,
     streaming, and async variants by delegating to the appropriate client methods.
 
-    This class can also operate as a context manager, which will set this LLM as the
-    model in context for any call to a function decorated with `@llm.call`, which will
-    first attempt to use a model set in the context, if any. If no model is set in the
-    context, the default model will be used for that function.
+    **Usage Note:** In most cases, you should use `llm.use_model()` instead of instantiating
+    `Model` directly. This preserves the ability to override the model at runtime using
+    the `llm.model()` context manager. Only instantiate `Model` directly if you want to
+    hardcode a specific model and prevent it from being overridden by context.
 
-    This is useful for overriding the default model at runtime.
-
-    Example:
+    Example (recommended - allows override):
 
         ```python
         from mirascope import llm
 
-        @llm.call(
-            provider="openai:completions",
-            model_id="gpt-5",
-        )
-        def answer_question(question: str) -> str:
-            return f"Answer this question: {question}"
+        def recommend_book(genre: str) -> llm.Response:
+            # Uses context model if available, otherwise creates default
+            model = llm.use_model(provider="openai", model_id="gpt-4o-mini")
+            message = llm.messages.user(f"Please recommend a book in {genre}.")
+            return model.call(messages=[message])
 
-        # Run the call with a different model from the default
-        with llm.model(provider="anthropic", model_id="claude-4-sonnet"):
-            response: llm.Response = answer_question("What is the capital of France?")
-            print(response.content)
+        # Uses default model
+        response = recommend_book("fantasy")
+
+        # Override with different model
+        with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+            response = recommend_book("fantasy")  # Uses Claude
+        ```
+
+    Example (direct instantiation - prevents override):
+
+        ```python
+        from mirascope import llm
+
+        def recommend_book(genre: str) -> llm.Response:
+            # Hardcoded model, cannot be overridden by context
+            model = llm.Model(provider="openai", model_id="gpt-4o-mini")
+            message = llm.messages.user(f"Please recommend a book in {genre}.")
+            return model.call(messages=[message])
         ```
     """
-
-    _token: Token[Model | None] | None = None
-    """The token returned when setting the LLM context."""
 
     provider: Provider
     """The provider being used (e.g. `openai`)."""
@@ -109,22 +114,6 @@ class Model:
         self.provider = provider
         self.model_id = model_id
         self.params = params
-
-    def __enter__(self) -> Model:
-        """Sets MODEL_CONTEXT with this LLM and stores the token."""
-        self._token = MODEL_CONTEXT.set(self)
-        return self
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> None:
-        """Restores MODEL_CONTEXT to the token returned from the last setting."""
-        if self._token is not None:
-            MODEL_CONTEXT.reset(self._token)
-            self._token = None
 
     @overload
     def call(
@@ -1161,76 +1150,22 @@ class Model:
         )
 
 
-@overload
-def model(
-    *,
-    provider: Literal["anthropic"],
-    model_id: AnthropicModelId,
-    **params: Unpack[Params],
-) -> Model:
-    """Create an `llm.Model` instance for Anthropic models."""
-    ...
-
-
-@overload
-def model(
-    *,
-    provider: Literal["google"],
-    model_id: GoogleModelId,
-    **params: Unpack[Params],
-) -> Model:
-    """Create an `llm.Model` instance for Google models."""
-    ...
-
-
-@overload
-def model(
-    *,
-    provider: Literal["openai:completions"],
-    model_id: OpenAICompletionsModelId,
-    **params: Unpack[Params],
-) -> Model:
-    """Create an `llm.Model` instance for OpenAI models (using ChatCompletions API)."""
-    ...
-
-
-@overload
-def model(
-    *,
-    provider: Literal["openai:responses", "openai"],
-    model_id: OpenAICompletionsModelId,
-    **params: Unpack[Params],
-) -> Model:
-    """Create an `llm.Model` instance for OpenAI models (using Responses API)."""
-    ...
-
-
-@overload
+@contextmanager
 def model(
     *,
     provider: Provider,
     model_id: ModelId,
     **params: Unpack[Params],
-) -> Model:
-    """Create an `llm.Model` instance for any supported provider."""
-    ...
+) -> Iterator[None]:
+    """Set a model in context for the duration of the context manager.
 
-
-def model(
-    *,
-    provider: Provider,
-    model_id: ModelId,
-    **params: Unpack[Params],
-) -> Model:
-    """Create an `llm.Model` instance with the specified provider and settings.
+    This context manager sets a model that will be used by `llm.use_model()` calls
+    within the context. This allows you to override the default model at runtime.
 
     Args:
         provider: The LLM provider to use (e.g., "openai:completions", "anthropic", "google").
         model_id: The specific model identifier for the chosen provider.
         **params: Additional parameters to configure the model (e.g. temperature). See `llm.Params`.
-
-    Returns:
-        An `llm.Model` instance configured with the specified provider and model.
 
     Raises:
         ValueError: If the specified provider is not supported.
@@ -1240,14 +1175,69 @@ def model(
         ```python
         import mirascope.llm as llm
 
-        openai_model = llm.model(provider="openai:completions", model_id="gpt-4o-mini")
+        def recommend_book(genre: str) -> llm.Response:
+            model = llm.use_model(provider="openai", model_id="gpt-4o-mini")
+            message = llm.messages.user(f"Please recommend a book in {genre}.")
+            return model.call(messages=[message])
 
-        claude_model = llm.model(
-            provider="anthropic",
-            model_id="claude-3-5-sonnet-20241022",
-            temperature=0.7,
-            max_tokens=1000
-        )
+        # Override the default model at runtime
+        with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+            response = recommend_book("fantasy")  # Uses Claude instead of GPT
         ```
     """
+    token = MODEL_CONTEXT.set(Model(provider, model_id, **params))
+    try:
+        yield
+    finally:
+        MODEL_CONTEXT.reset(token)
+
+
+def use_model(
+    *,
+    provider: Provider,
+    model_id: ModelId,
+    **params: Unpack[Params],
+) -> Model:
+    """Get the model from context if available, otherwise create a new Model.
+
+    This function checks if a model has been set in the context (via `llm.model()`
+    context manager). If a model is found in the context, it returns that model.
+    Otherwise, it creates and returns a new `llm.Model` instance with the provided
+    arguments as defaults.
+
+    This allows you to write functions that work with a default model but can be
+    overridden at runtime using the `llm.model()` context manager.
+
+    Args:
+        provider: The LLM provider to use (e.g., "openai:completions", "anthropic", "google").
+        model_id: The specific model identifier for the chosen provider.
+        **params: Additional parameters to configure the model (e.g. temperature). See `llm.Params`.
+
+    Returns:
+        An `llm.Model` instance from context or a new instance with the specified settings.
+
+    Raises:
+        ValueError: If the specified provider is not supported.
+
+    Example:
+
+        ```python
+        import mirascope.llm as llm
+
+        def recommend_book(genre: str) -> llm.Response:
+            model = llm.use_model(provider="openai", model_id="gpt-4o-mini")
+            message = llm.messages.user(f"Please recommend a book in {genre}.")
+            return model.call(messages=[message])
+
+        # Uses the default model (gpt-4o-mini)
+        response = recommend_book("fantasy")
+
+        # Override with a different model
+        with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+            response = recommend_book("fantasy")  # Uses Claude instead
+        ```
+    """
+    context_model = get_model_from_context()
+    if context_model is not None:
+        return context_model
     return Model(provider, model_id, **params)
