@@ -3,7 +3,7 @@ name = "mirascope"
 version = "2.0.0-alpha.0"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
-license = { file = "../LICENSE" }
+license = { file = "LICENSE" }
 requires-python = ">=3.10"
 authors = [
     { name = "William Bakst", email = "william@mirascope.com" },
@@ -35,15 +35,12 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Software Development :: Libraries",
 ]
-dependencies = [
-    "docstring-parser>=0.17.0",
-    "typing-extensions>=4.10.0",
-]
+dependencies = ["docstring-parser>=0.17.0", "typing-extensions>=4.10.0"]
 
 [project.urls]
-Homepage = "https://v2.mirascope.com"
-Documentation = "https://v2.mirascope.com/"
-Repository = "https://github.com/Mirascope/mirascope"
+Homepage = "https://mirascope.com"
+Documentation = "https://mirascope.com/docs/mirascope/v2"
+Repository = "https://github.com/Mirascope/mirascope/tree/v2"
 Issues = "https://github.com/Mirascope/mirascope/issues"
 Changelog = "https://github.com/Mirascope/mirascope/releases"
 
@@ -73,7 +70,7 @@ dev-dependencies = [
 filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.inline-snapshot]
-format-command="ruff check --fix-only --stdin-filename {filename} | ruff format --stdin-filename {filename}"
+format-command = "ruff check --fix-only --stdin-filename {filename} | ruff format --stdin-filename {filename}"
 
 [tool.ruff]
 exclude = [

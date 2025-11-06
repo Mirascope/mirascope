@@ -24,6 +24,9 @@ jobs:
       - name: Set up Python
         run: uv python install 3.10
 
+      - name: Change to Python directory
+        run: cd python
+
       - name: Build Package
         run: uv build
 
