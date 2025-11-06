@@ -56,8 +56,8 @@ openai = ["openai>=2.7.1,<3"]
 mcp = ["mcp>=1.0.0,<2"]
 all = ["mirascope[anthropic,google,openai,mcp]"]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "ruff>=0.9.7",
     "pytest>=8.3.2",
     "pyright>=1.1.402",
