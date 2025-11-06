@@ -8,13 +8,14 @@ code that works with multiple LLM providers without changing your application lo
 # TODO: Across the API, audit docstrings to ensure they are compliant Google-style docstrings
 # (Write some tooling to ensure this happens consistently + in CI)
 
+from contextlib import suppress
+
 from . import (
     calls,
     clients,
     content,
     exceptions,
     formatting,
-    mcp,
     messages,
     models,
     prompts,
@@ -22,6 +23,9 @@ from . import (
     tools,
     types,
 )
+
+with suppress(ImportError):
+    from . import mcp
 from .calls import call
 from .clients import ModelId, Params, Provider, client, get_client
 from .content import (
