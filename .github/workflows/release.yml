@@ -24,11 +24,10 @@ jobs:
       - name: Set up Python
         run: uv python install 3.10
 
-      - name: Change to Python directory
-        run: cd python
-
       - name: Build Package
+        working-directory: ./python
         run: uv build
 
       - name: Publish Python Package
+        working-directory: ./python
         run: uv publish
