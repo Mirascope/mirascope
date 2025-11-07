@@ -1,4 +1,5 @@
 import base64
+import logging
 from os import PathLike
 from typing import cast
 
@@ -16,6 +17,8 @@ from mirascope.core.base import (
 from mirascope.core.base._utils._base_message_param_converter import (
     BaseMessageParamConverter,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class AnthropicMessageParamConverter(BaseMessageParamConverter):
@@ -125,6 +128,15 @@ class AnthropicMessageParamConverter(BaseMessageParamConverter):
                             id=block["tool_use_id"],
                             is_error=block.get("is_error", False),
                         )
+                    )
+                elif block["type"] in [
+                    "thinking",
+                    "redacted_thinking",
+                ]:  # pragma: no cover
+                    logger.warning(
+                        "Dropping thinking content blocks as they are not supported at "
+                        "the provider agnostic level in v1. For native thinking support "
+                        "check out [v2](https://mirascope.com/docs/mirascope/v2)"
                     )
                 else:
                     # Any other block type is not supported
