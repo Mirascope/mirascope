@@ -2,10 +2,17 @@
 
 import base64
 from dataclasses import dataclass
+from importlib.metadata import version
 from pathlib import Path
 from typing import Literal, get_args
 
 import httpx
+
+_VERSION = version("mirascope")
+
+_DEFAULT_HEADERS = {
+    "User-Agent": f"Mirascope/{_VERSION} (https://github.com/Mirascope/mirascope)"
+}
 
 ImageMimeType = Literal[
     "image/png",
@@ -132,12 +139,19 @@ class Image:
         return cls(source=URLImageSource(type="url_image_source", url=url))
 
     @classmethod
-    def download(cls, url: str, *, max_size: int = MAX_IMAGE_SIZE) -> "Image":
+    def download(
+        cls,
+        url: str,
+        *,
+        max_size: int = MAX_IMAGE_SIZE,
+        headers: dict[str, str] | None = None,
+    ) -> "Image":
         """Download and encode an image from a URL.
 
         Args:
             url: The URL of the image to download
             max_size: Maximum allowed image size in bytes (default: 20MB)
+            headers: Optional HTTP headers to include in the request
 
         Returns:
             An `Image` with a `Base64ImageSource`
@@ -145,19 +159,25 @@ class Image:
         Raises:
             ValueError: If the downloaded image exceeds max_size
         """
-        response = httpx.get(url, follow_redirects=True)
+        merged_headers = {**_DEFAULT_HEADERS, **(headers or {})}
+        response = httpx.get(url, headers=merged_headers, follow_redirects=True)
         response.raise_for_status()
         return cls(source=_process_image_bytes(response.content, max_size))
 
     @classmethod
     async def download_async(
-        cls, url: str, *, max_size: int = MAX_IMAGE_SIZE
+        cls,
+        url: str,
+        *,
+        max_size: int = MAX_IMAGE_SIZE,
+        headers: dict[str, str] | None = None,
     ) -> "Image":
         """Asynchronously download and encode an image from a URL.
 
         Args:
             url: The URL of the image to download
             max_size: Maximum allowed image size in bytes (default: 20MB)
+            headers: Optional HTTP headers to include in the request
 
         Returns:
             An `Image` with a `Base64ImageSource`
@@ -165,8 +185,11 @@ class Image:
         Raises:
             ValueError: If the downloaded image exceeds max_size
         """
+        merged_headers = {**_DEFAULT_HEADERS, **(headers or {})}
         async with httpx.AsyncClient() as client:
-            response = await client.get(url, follow_redirects=True)
+            response = await client.get(
+                url, headers=merged_headers, follow_redirects=True
+            )
             response.raise_for_status()
             return cls(source=_process_image_bytes(response.content, max_size))
 
