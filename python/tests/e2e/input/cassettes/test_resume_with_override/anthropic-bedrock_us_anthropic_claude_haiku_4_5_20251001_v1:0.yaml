@@ -1,0 +1,130 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.15
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.15
+      x-goog-api-key:
+      - <filtered>
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQT0/DMAzF7/0UUc7dtD8amrghQNMQEwMKAyEOhnhtRJpUiYs2TfvupO3apaKH
+        yPJ7fbZ/h4gx/g1aSAGEjl+yD99h7FC/lWY0oSYvtC3fLMDS2dt8h6D2FsJd9RNfMsgZMAU2Rf/q
+        tARf5EagihlZkBoF+9qzhTGpwiEPUo5d/RmfZ1ujsAquI1r7sTXwrdTSZU8IzujK9pw8rHmnSi1w
+        59ujqB1QR/PS+a1WSOApQHcrL6zJC0rMD+prU9YUZk1WwKwnj8cnnQyB6knT8Tz+F+tu/FCpQpgB
+        Z38jKEn76pDk9i3hAQfqbdVyiAJcnDJTphn1N5yOJtEJWMPwFa2TDawUc49vMBnOBlsFLqvncYuu
+        MNrhUtR7LNIViM3VvUheJtasf+8u3uePjkfH6A/r1KaxTQIAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 06 Nov 2025 09:20:12 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2291
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
+      am a large language model, trained by Google."},{"role":"user","content":"Can
+      you double-check that?"}],"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '255'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.72.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.72.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_0186hkNKwS14w8exCwHM9KoU","type":"message","role":"assistant","content":[{"type":"text","text":"You''re
+        right to ask me to double-check. I apologize for the error. I am Claude, an
+        AI assistant made by Anthropic. Thank you for catching that mistake."}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":35,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":41}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '456'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 06 Nov 2025 09:20:15 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '35'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '1288'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '41'
+      x-amzn-RequestId:
+      - b6aa4582-3fcb-4288-8c3a-796bacf165fb
+    status:
+      code: 200
+      message: OK
+version: 1

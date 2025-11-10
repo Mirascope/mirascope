@@ -1,0 +1,68 @@
+interactions:
+- request:
+    body: '{"max_tokens":500,"messages":[{"role":"user","content":"What is 4200 +
+      42?"}],"stop_sequences":["4242"],"temperature":0.7,"thinking":{"type":"disabled"},"top_k":50,"anthropic_version":"bedrock-2023-05-31"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '205'
+      content-type:
+      - application/json
+      host:
+      - bedrock-runtime.us-east-1.amazonaws.com
+      user-agent:
+      - AnthropicBedrock/Python 0.72.0
+      x-amz-date:
+      - <filtered>
+      x-stainless-arch:
+      - arm64
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.72.0
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+      x-stainless-timeout:
+      - '600'
+    method: POST
+    uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.anthropic.claude-haiku-4-5-20251001-v1:0/invoke
+  response:
+    body:
+      string: '{"model":"claude-haiku-4-5-20251001","id":"msg_bdrk_01QLw8645VGXJmPBnVhWtE1Z","type":"message","role":"assistant","content":[{"type":"text","text":"4200
+        + 42 = "}],"stop_reason":"stop_sequence","stop_sequence":"4242","usage":{"input_tokens":17,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":12}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '324'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 06 Nov 2025 09:08:17 GMT
+      X-Amzn-Bedrock-Input-Token-Count:
+      - '17'
+      X-Amzn-Bedrock-Invocation-Latency:
+      - '828'
+      X-Amzn-Bedrock-Output-Token-Count:
+      - '12'
+      x-amzn-RequestId:
+      - c00c30ae-1657-421d-968f-48dbb2dc6ead
+    status:
+      code: 200
+      message: OK
+version: 1

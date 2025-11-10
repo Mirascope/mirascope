@@ -23,3 +23,13 @@ def load_api_keys() -> None:
     # Azure OpenAI requires both API key and endpoint
     os.environ.setdefault("AZURE_OPENAI_API_KEY", "dummy-azure-openai-key")
     os.environ.setdefault("AZURE_OPENAI_ENDPOINT", "https://dummy.openai.azure.com")
+
+    # AWS Bedrock credentials: prefer ~/.aws/credentials file over dummy values
+    # Only set dummy credentials if ~/.aws/credentials doesn't exist
+    aws_credentials_path = os.path.expanduser("~/.aws/credentials")
+    if not os.path.isfile(aws_credentials_path):
+        os.environ.setdefault("AWS_ACCESS_KEY_ID", "dummy-aws-access-key")
+        os.environ.setdefault("AWS_SECRET_ACCESS_KEY", "dummy-aws-secret-key")
+
+    # Always set default region if not already set
+    os.environ.setdefault("AWS_REGION", "us-east-1")

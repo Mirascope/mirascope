@@ -1,0 +1,13 @@
+from inline_snapshot import snapshot
+
+test_snapshot = snapshot(
+    {
+        "exception": {
+            "type": "FeatureNotSupportedError",
+            "args": "('Anthropic Bedrock does not support audio inputs.',)",
+            "feature": "audio input",
+            "model_id": "None",
+            "provider": "anthropic-bedrock",
+        }
+    }
+)
