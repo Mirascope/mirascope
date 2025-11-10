@@ -159,7 +159,9 @@ class _AnthropicChunkProcessor:
                         f"Received input_json_delta for {self.current_block_param['type']} block"
                     )
                 self.accumulated_tool_json += delta.partial_json
-                yield ToolCallChunk(delta=delta.partial_json)
+                yield ToolCallChunk(
+                    id=self.current_block_param["id"], delta=delta.partial_json
+                )
             elif delta.type == "thinking_delta":
                 if self.current_block_param["type"] != "thinking":  # pragma: no cover
                     raise RuntimeError(
@@ -196,7 +198,7 @@ class _AnthropicChunkProcessor:
                     if self.accumulated_tool_json
                     else {}
                 )
-                yield ToolCallEndChunk()
+                yield ToolCallEndChunk(id=self.current_block_param["id"])
             elif block_type == "thinking":
                 yield ThoughtEndChunk()
             else:

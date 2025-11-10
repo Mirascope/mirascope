@@ -84,6 +84,7 @@ class _OpenAIChunkProcessor:
     def __init__(self) -> None:
         self.current_content_type: Literal["text", "tool_call"] | None = None
         self.current_tool_index: int | None = None
+        self.current_tool_id: str | None = None
         self.refusal_encountered = False
 
     def process_chunk(self, chunk: openai_types.ChatCompletionChunk) -> ChunkIterator:
@@ -127,8 +128,13 @@ class _OpenAIChunkProcessor:
                     self.current_tool_index is not None
                     and self.current_tool_index < index
                 ):
-                    yield ToolCallEndChunk()
+                    if self.current_tool_id is None:
+                        raise RuntimeError(
+                            "Missing tool_id when ending tool call"
+                        )  # pragma: no cover
+                    yield ToolCallEndChunk(id=self.current_tool_id)
                     self.current_tool_index = None
+                    self.current_tool_id = None
 
                 if self.current_tool_index is None:
                     if not tool_call_delta.function or not (
@@ -144,19 +150,31 @@ class _OpenAIChunkProcessor:
                             f"Missing id for tool call at index {index}"
                         )  # pragma: no cover
 
+                    self.current_tool_id = tool_id
                     yield ToolCallStartChunk(
                         id=tool_id,
                         name=name,
                     )
 
                 if tool_call_delta.function and tool_call_delta.function.arguments:
-                    yield ToolCallChunk(delta=tool_call_delta.function.arguments)
+                    if self.current_tool_id is None:
+                        raise RuntimeError(
+                            "Missing tool_id when processing tool call chunk"
+                        )  # pragma: no cover
+                    yield ToolCallChunk(
+                        id=self.current_tool_id,
+                        delta=tool_call_delta.function.arguments,
+                    )
 
         if choice.finish_reason:
             if self.current_content_type == "text":
                 yield TextEndChunk()
             elif self.current_content_type == "tool_call":
-                yield ToolCallEndChunk()
+                if self.current_tool_id is None:
+                    raise RuntimeError(
+                        "Missing tool_id when ending tool call at finish"
+                    )  # pragma: no cover
+                yield ToolCallEndChunk(id=self.current_tool_id)
             elif self.current_content_type is not None:  # pragma: no cover
                 raise NotImplementedError()
 

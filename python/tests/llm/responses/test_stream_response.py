@@ -100,9 +100,15 @@ def example_tool_call_chunks() -> list[llm.StreamResponseChunk]:
         llm.ToolCallStartChunk(
             type="tool_call_start_chunk", id="tool_call_123", name="test_function"
         ),
-        llm.ToolCallChunk(type="tool_call_chunk", delta='{"param1": "value1", '),
-        llm.ToolCallChunk(type="tool_call_chunk", delta='"param2": 42}'),
-        llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+        llm.ToolCallChunk(
+            type="tool_call_chunk", id="tool_call_123", delta='{"param1": "value1", '
+        ),
+        llm.ToolCallChunk(
+            type="tool_call_chunk", id="tool_call_123", delta='"param2": 42}'
+        ),
+        llm.ToolCallEndChunk(
+            type="tool_call_end_chunk", id="tool_call_123", content_type="tool_call"
+        ),
     ]
 
 
@@ -140,7 +146,9 @@ def test_sync_initialization(
     assert stream_response.toolkit == llm.Toolkit(tools=[])
     assert stream_response.finish_reason is None
     assert isinstance(stream_response._chunk_iterator, Iterator)
-    assert stream_response._current_content is None
+    assert stream_response._current_text is None
+    assert stream_response._current_thought is None
+    assert stream_response._current_tool_calls_by_id == {}
     assert not stream_response.consumed
     check_stream_response_consistency(stream_response, [], [])
 
@@ -157,7 +165,9 @@ async def test_async_initialization(
     assert stream_response.toolkit == llm.AsyncToolkit(tools=[])
     assert stream_response.finish_reason is None
     assert isinstance(stream_response._chunk_iterator, AsyncIterator)
-    assert stream_response._current_content is None
+    assert stream_response._current_text is None
+    assert stream_response._current_thought is None
+    assert stream_response._current_tool_calls_by_id == {}
     assert not stream_response.consumed
     check_stream_response_consistency(stream_response, [], [])
 
@@ -443,7 +453,7 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
                 id="tool_123",
                 name="empty_function",
             ),
-            llm.ToolCallEndChunk(),
+            llm.ToolCallEndChunk(id="tool_123"),
         ],
         expected_contents=[
             [],
@@ -456,9 +466,11 @@ CHUNK_PROCESSING_TEST_CASES: dict[str, ChunkProcessingTestCase] = {
                 id="tool_456",
                 name="test_function",
             ),
-            llm.ToolCallChunk(type="tool_call_chunk", delta='{"key": '),
-            llm.ToolCallChunk(type="tool_call_chunk", delta='"value"}'),
-            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.ToolCallChunk(id="tool_456", type="tool_call_chunk", delta='{"key": '),
+            llm.ToolCallChunk(id="tool_456", type="tool_call_chunk", delta='"value"}'),
+            llm.ToolCallEndChunk(
+                id="tool_456", type="tool_call_end_chunk", content_type="tool_call"
+            ),
         ],
         expected_contents=[
             [],
@@ -517,10 +529,18 @@ class TestToolCallSupport:
                 id="tool_complex",
                 name="complex_function",
             ),
-            llm.ToolCallChunk(type="tool_call_chunk", delta='{"nested":'),
-            llm.ToolCallChunk(type="tool_call_chunk", delta=' {"key": "value"},'),
-            llm.ToolCallChunk(type="tool_call_chunk", delta=' "array": [1, 2, 3]}'),
-            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.ToolCallChunk(
+                type="tool_call_chunk", id="tool_complex", delta='{"nested":'
+            ),
+            llm.ToolCallChunk(
+                type="tool_call_chunk", id="tool_complex", delta=' {"key": "value"},'
+            ),
+            llm.ToolCallChunk(
+                type="tool_call_chunk", id="tool_complex", delta=' "array": [1, 2, 3]}'
+            ),
+            llm.ToolCallEndChunk(
+                type="tool_call_end_chunk", id="tool_complex", content_type="tool_call"
+            ),
         ]
 
         stream_response = create_sync_stream_response(chunks)
@@ -703,12 +723,12 @@ INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
         expected_error="Received thought_end_chunk while not processing thought",
     ),
     "tool_call_chunk_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.ToolCallChunk(delta='{"test": "value"}')],
-        expected_error="Received tool_call_chunk while not processing tool call",
+        chunks=[llm.ToolCallChunk(id="unknown_id", delta='{"test": "value"}')],
+        expected_error="Received tool_call_chunk for unknown tool call id",
     ),
     "tool_call_end_without_start": InvalidChunkSequenceTestCase(
-        chunks=[llm.ToolCallEndChunk()],
-        expected_error="Received tool_call_end_chunk while not processing tool call",
+        chunks=[llm.ToolCallEndChunk(id="unknown_id")],
+        expected_error="Received tool_call_end_chunk for unknown tool call id",
     ),
     "overlapping_text_then_tool_call": InvalidChunkSequenceTestCase(
         chunks=[
@@ -734,9 +754,11 @@ INVALID_CHUNK_SEQUENCE_TEST_CASES: dict[str, InvalidChunkSequenceTestCase] = {
         chunks=[
             llm.TextStartChunk(type="text_start_chunk"),
             llm.TextChunk(type="text_chunk", delta="test"),
-            llm.ToolCallEndChunk(type="tool_call_end_chunk", content_type="tool_call"),
+            llm.ToolCallEndChunk(
+                id="unknown_id", type="tool_call_end_chunk", content_type="tool_call"
+            ),
         ],
-        expected_error="Received tool_call_end_chunk while not processing tool call",
+        expected_error="Received tool_call_end_chunk for unknown tool call id",
     ),
 }
 
@@ -1102,9 +1124,9 @@ def example_format_tool_chunks() -> list[llm.StreamResponseChunk]:
             id="call_format_123",
             name=FORMAT_TOOL_NAME,
         ),
-        llm.ToolCallChunk(delta='{"title": "The Hobbit"'),
-        llm.ToolCallChunk(delta=', "author": "Tolkien"}'),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallChunk(id="call_format_123", delta='{"title": "The Hobbit"'),
+        llm.ToolCallChunk(id="call_format_123", delta=', "author": "Tolkien"}'),
+        llm.ToolCallEndChunk(id="call_format_123"),
     ]
 
 
@@ -1122,15 +1144,15 @@ def example_format_tool_chunks_processed() -> list[llm.AssistantContentChunk]:
 def example_format_tool_chunks_mixed() -> list[llm.StreamResponseChunk]:
     return [
         llm.ToolCallStartChunk(id="call_007", name="ring_tool"),
-        llm.ToolCallChunk(delta='{"ring_purpose": "to_rule_them_all"}'),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallChunk(id="call_007", delta='{"ring_purpose": "to_rule_them_all"}'),
+        llm.ToolCallEndChunk(id="call_007"),
         llm.ToolCallStartChunk(
             id="call_format_123",
             name=FORMAT_TOOL_NAME,
         ),
-        llm.ToolCallChunk(delta='{"title": "The Hobbit"'),
-        llm.ToolCallChunk(delta=', "author": "Tolkien"}'),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallChunk(id="call_format_123", delta='{"title": "The Hobbit"'),
+        llm.ToolCallChunk(id="call_format_123", delta=', "author": "Tolkien"}'),
+        llm.ToolCallEndChunk(id="call_format_123"),
         llm.TextStartChunk(),
         llm.TextChunk(delta="A wizard is never late."),
         llm.TextEndChunk(),
@@ -1141,8 +1163,8 @@ def example_format_tool_chunks_mixed() -> list[llm.StreamResponseChunk]:
 def example_format_tool_chunks_mixed_processed() -> list[llm.AssistantContentChunk]:
     return [
         llm.ToolCallStartChunk(id="call_007", name="ring_tool"),
-        llm.ToolCallChunk(delta='{"ring_purpose": "to_rule_them_all"}'),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallChunk(id="call_007", delta='{"ring_purpose": "to_rule_them_all"}'),
+        llm.ToolCallEndChunk(id="call_007"),
         llm.TextStartChunk(),
         llm.TextChunk(delta='{"title": "The Hobbit"'),
         llm.TextChunk(delta=', "author": "Tolkien"}'),
@@ -1160,7 +1182,7 @@ def example_format_tool_chunks_max_tokens() -> list[llm.StreamResponseChunk]:
             id="call_format_123",
             name=FORMAT_TOOL_NAME,
         ),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallEndChunk(id="call_format_123"),
         llm.responses.FinishReasonChunk(finish_reason=llm.FinishReason.MAX_TOKENS),
     ]
 
@@ -1314,11 +1336,11 @@ def test_stream_response_execute_tools() -> None:
 
     tool_call_chunks = [
         llm.ToolCallStartChunk(id="call_1", name="tool_one"),
-        llm.ToolCallChunk(delta='{"x": 5}'),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallChunk(id="call_1", delta='{"x": 5}'),
+        llm.ToolCallEndChunk(id="call_1"),
         llm.ToolCallStartChunk(id="call_2", name="tool_two"),
-        llm.ToolCallChunk(delta='{"y": "hello"}'),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallChunk(id="call_2", delta='{"y": "hello"}'),
+        llm.ToolCallEndChunk(id="call_2"),
     ]
 
     stream_response = llm.StreamResponse(
@@ -1352,11 +1374,11 @@ async def test_async_stream_response_execute_tools() -> None:
 
     tool_call_chunks = [
         llm.ToolCallStartChunk(id="call_1", name="tool_one"),
-        llm.ToolCallChunk(delta='{"x": 5}'),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallChunk(id="call_1", delta='{"x": 5}'),
+        llm.ToolCallEndChunk(id="call_1"),
         llm.ToolCallStartChunk(id="call_2", name="tool_two"),
-        llm.ToolCallChunk(delta='{"y": "hello"}'),
-        llm.ToolCallEndChunk(),
+        llm.ToolCallChunk(id="call_2", delta='{"y": "hello"}'),
+        llm.ToolCallEndChunk(id="call_2"),
     ]
 
     async def async_chunk_iter() -> AsyncIterator[llm.AssistantContentChunk]:
