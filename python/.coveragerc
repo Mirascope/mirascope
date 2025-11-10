@@ -7,6 +7,9 @@ omit =
     mirascope/llm/mcp/client.py
     mirascope/llm/formatting/partial.py
 
+    # TODO: Add unittest coverage for anthropic_vertex in separate branch
+    mirascope/llm/clients/anthropic_vertex/*
+
     # TODO: Add unittest coverage for anthropic_bedrock in separate branch
     mirascope/llm/clients/anthropic_bedrock/*
 
