@@ -4,7 +4,7 @@ import os
 from collections.abc import Sequence
 from contextvars import ContextVar
 from functools import lru_cache
-from typing import overload
+from typing import TYPE_CHECKING, overload
 from typing_extensions import Unpack
 
 from openai import AsyncOpenAI, OpenAI
@@ -35,6 +35,9 @@ from ....tools import (
 from ...base import BaseClient, Params
 from . import _utils
 from .model_ids import OpenAIResponsesModelId
+
+if TYPE_CHECKING:
+    from ...providers import Provider
 
 OPENAI_RESPONSES_CLIENT_CONTEXT: ContextVar["OpenAIResponsesClient | None"] = (
     ContextVar("OPENAI_RESPONSES_CLIENT_CONTEXT", default=None)
@@ -73,6 +76,11 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     @property
     def _context_var(self) -> ContextVar["OpenAIResponsesClient | None"]:
         return OPENAI_RESPONSES_CLIENT_CONTEXT
+
+    @property
+    def provider(self) -> "Provider":
+        """Return the provider name for this client."""
+        return "openai:responses"
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
@@ -157,7 +165,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return Response(
             raw=openai_response,
-            provider="openai:responses",
+            provider=self.provider,
             model_id=model_id,
             params=params,
             tools=tools,
@@ -243,7 +251,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return AsyncResponse(
             raw=openai_response,
-            provider="openai:responses",
+            provider=self.provider,
             model_id=model_id,
             params=params,
             tools=tools,
@@ -331,7 +339,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         return StreamResponse(
-            provider="openai:responses",
+            provider=self.provider,
             model_id=model_id,
             params=params,
             tools=tools,
@@ -418,7 +426,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         return AsyncStreamResponse(
-            provider="openai:responses",
+            provider=self.provider,
             model_id=model_id,
             params=params,
             tools=tools,
@@ -516,7 +524,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return ContextResponse(
             raw=openai_response,
-            provider="openai:responses",
+            provider=self.provider,
             model_id=model_id,
             params=params,
             tools=tools,
@@ -615,7 +623,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return AsyncContextResponse(
             raw=openai_response,
-            provider="openai:responses",
+            provider=self.provider,
             model_id=model_id,
             params=params,
             tools=tools,
@@ -716,7 +724,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         return ContextStreamResponse(
-            provider="openai:responses",
+            provider=self.provider,
             model_id=model_id,
             params=params,
             tools=tools,
@@ -822,7 +830,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         )
 
         return AsyncContextStreamResponse(
-            provider="openai:responses",
+            provider=self.provider,
             model_id=model_id,
             params=params,
             tools=tools,

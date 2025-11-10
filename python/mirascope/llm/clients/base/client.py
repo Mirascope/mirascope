@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import Generic, overload
+from typing import TYPE_CHECKING, Generic, overload
 from typing_extensions import Self, TypeVar, Unpack
 
 from ...context import Context, DepsT
@@ -34,6 +34,9 @@ from ...tools import (
 )
 from .params import Params
 
+if TYPE_CHECKING:
+    from ..providers import Provider
+
 ModelIdT = TypeVar("ModelIdT", bound=str)
 ProviderClientT = TypeVar("ProviderClientT")
 
@@ -55,6 +58,16 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     @abstractmethod
     def _context_var(self) -> ContextVar:
         """The ContextVar for this client type."""
+        ...
+
+    @property
+    @abstractmethod
+    def provider(self) -> Provider:
+        """The provider name for this client.
+
+        This property provides the name of the provider and is available for
+        overriding by subclasses in the case of a mirrored or wrapped client.
+        """
         ...
 
     def __enter__(self) -> Self:
