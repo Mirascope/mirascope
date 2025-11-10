@@ -8,14 +8,23 @@ from .anthropic import (
     client as anthropic_client,
     get_client as get_anthropic_client,
 )
+from .anthropic_bedrock import (
+    AnthropicBedrockClient,
+    AnthropicBedrockModelId,
+    clear_cache as clear_anthropic_bedrock_cache,
+    client as anthropic_bedrock_client,
+    get_client as get_anthropic_bedrock_client,
+)
 from .azure_openai.completions import (
     AzureOpenAICompletionsClient,
+    AzureOpenAICompletionsModelId,
     clear_cache as clear_azure_openai_completions_cache,
     client as azure_openai_completions_client,
     get_client as get_azure_openai_completions_client,
 )
 from .azure_openai.responses import (
     AzureOpenAIResponsesClient,
+    AzureOpenAIResponsesModelId,
     clear_cache as clear_azure_openai_responses_cache,
     client as azure_openai_responses_client,
     get_client as get_azure_openai_responses_client,
@@ -42,6 +51,7 @@ from .openai import (
 
 Provider: TypeAlias = Literal[
     "anthropic",  # AnthropicClient
+    "anthropic-bedrock",  # AnthropicBedrockClient
     "azure-openai:completions",  # AzureOpenAICompletionsClient
     "azure-openai:responses",  # AzureOpenAIResponsesClient
     "google",  # GoogleClient
@@ -53,6 +63,9 @@ PROVIDERS = get_args(Provider)
 
 ModelId: TypeAlias = (
     AnthropicModelId
+    | AnthropicBedrockModelId
+    | AzureOpenAICompletionsModelId
+    | AzureOpenAIResponsesModelId
     | GoogleModelId
     | OpenAIResponsesModelId
     | OpenAICompletionsModelId
@@ -82,6 +95,12 @@ PROVIDER_INFO: dict[Provider, ProviderInfo] = {
         "clear_cache": clear_anthropic_cache,
         "get_client": get_anthropic_client,
         "client": anthropic_client,
+    },
+    "anthropic-bedrock": {
+        "name": "anthropic",
+        "clear_cache": clear_anthropic_bedrock_cache,
+        "get_client": get_anthropic_bedrock_client,
+        "client": anthropic_bedrock_client,
     },
     "azure-openai:completions": {
         "name": "azure-openai:completions",
@@ -119,6 +138,12 @@ PROVIDER_INFO: dict[Provider, ProviderInfo] = {
 @overload
 def get_client(provider: Literal["anthropic"]) -> AnthropicClient:
     """Get an Anthropic client instance."""
+    ...
+
+
+@overload
+def get_client(provider: Literal["anthropic-bedrock"]) -> AnthropicBedrockClient:
+    """Get an Anthropic Bedrock client instance."""
     ...
 
 
@@ -162,6 +187,7 @@ def get_client(
     provider: Provider,
 ) -> (
     AnthropicClient
+    | AnthropicBedrockClient
     | AzureOpenAICompletionsClient
     | AzureOpenAIResponsesClient
     | GoogleClient
@@ -179,6 +205,7 @@ def get_client(
         - "openai:completions" returns `OpenAICompletionsClient` (ChatCompletion API)
         - "openai:responses" returns `OpenAIResponsesClient` (Responses API)
         - "anthropic" returns `AnthropicClient`
+        - "anthropic-bedrock" returns `AnthropicBedrockClient`
         - "google" returns `GoogleClient`
 
     Multiple calls to get_client will return the same Client rather than constructing
@@ -232,6 +259,21 @@ def client(
 
 @overload
 def client(
+    provider: Literal["anthropic-bedrock"],
+    *,
+    base_url: str | None = None,
+    aws_region: str | None = None,
+    aws_access_key: str | None = None,
+    aws_secret_key: str | None = None,
+    aws_session_token: str | None = None,
+    aws_profile: str | None = None,
+) -> AnthropicBedrockClient:
+    """Create a cached Anthropic Bedrock client with the given parameters."""
+    ...
+
+
+@overload
+def client(
     provider: Literal["google"],
     *,
     api_key: str | None = None,
@@ -275,6 +317,7 @@ def client(
     **kwargs: Any,
 ) -> (
     AnthropicClient
+    | AnthropicBedrockClient
     | AzureOpenAICompletionsClient
     | AzureOpenAIResponsesClient
     | GoogleClient
@@ -310,5 +353,15 @@ def client(
             base_url=base_url,
             azure_ad_token_provider=kwargs.get("azure_ad_token_provider"),
             azure_ad_token_provider_async=kwargs.get("azure_ad_token_provider_async"),
+        )
+    elif normalized_provider == "anthropic-bedrock":
+        # TODO: Add test coverage for anthropic-bedrock in separate test branch
+        return anthropic_bedrock_client(  # pragma: no cover
+            base_url=base_url,
+            aws_region=kwargs.get("aws_region"),
+            aws_access_key=kwargs.get("aws_access_key"),
+            aws_secret_key=kwargs.get("aws_secret_key"),
+            aws_session_token=kwargs.get("aws_session_token"),
+            aws_profile=kwargs.get("aws_profile"),
         )
     return client_factory(api_key=api_key, base_url=base_url)

@@ -1,7 +1,7 @@
 """Anthropic response decoding."""
 
 import json
-from typing import Any, TypeAlias, cast
+from typing import TYPE_CHECKING, Any, TypeAlias, cast
 
 from anthropic import types as anthropic_types
 from anthropic.lib.streaming import AsyncMessageStreamManager, MessageStreamManager
@@ -32,6 +32,9 @@ from ....responses import (
 )
 from ..model_ids import AnthropicModelId
 
+if TYPE_CHECKING:
+    from .... import Provider
+
 ANTHROPIC_FINISH_REASON_MAP = {
     "max_tokens": FinishReason.MAX_TOKENS,
     "refusal": FinishReason.REFUSAL,
@@ -59,13 +62,12 @@ def _decode_assistant_content(
 
 
 def decode_response(
-    response: anthropic_types.Message,
-    model_id: AnthropicModelId,
+    response: anthropic_types.Message, model_id: AnthropicModelId, provider: "Provider"
 ) -> tuple[AssistantMessage, FinishReason | None]:
     """Convert Anthropic message to mirascope AssistantMessage."""
     assistant_message = AssistantMessage(
         content=[_decode_assistant_content(part) for part in response.content],
-        provider="anthropic",
+        provider=provider,
         model_id=model_id,
         raw_message={
             "role": response.role,
