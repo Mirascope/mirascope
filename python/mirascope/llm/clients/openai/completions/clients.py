@@ -42,6 +42,12 @@ def client(
     return _openai_singleton(api_key, base_url)
 
 
+def clear_cache() -> None:
+    """Clear the cached OpenAI Completions client singletons and reset context."""
+    _openai_singleton.cache_clear()
+    OPENAI_COMPLETIONS_CLIENT_CONTEXT.set(None)
+
+
 def get_client() -> "OpenAICompletionsClient":
     """Retrieve the current OpenAI client from context, or a global default.
 
