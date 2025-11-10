@@ -5,6 +5,7 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from copy import deepcopy
 from typing import Any, TypedDict, get_args
@@ -15,6 +16,7 @@ from mirascope import llm
 
 SENSITIVE_HEADERS = [
     # Common API authentication headers
+    "api-key",
     "authorization",
     "x-api-key",
     "x-goog-api-key",
@@ -24,6 +26,8 @@ SENSITIVE_HEADERS = [
 
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("anthropic", "claude-sonnet-4-0"),
+    ("azure-openai:completions", "gpt-4o-mini"),
+    ("azure-openai:responses", "gpt-4o-mini"),
     ("google", "gemini-2.5-flash"),
     ("openai:completions", "gpt-4o"),
     ("openai:responses", "gpt-4o"),
@@ -78,6 +82,9 @@ def sanitize_request(request: Any) -> Any:  # noqa: ANN401
     but BEFORE it's written to the cassette file. We deep copy the request
     and replace sensitive headers with placeholders.
 
+    Also normalizes Azure OpenAI URLs to use a dummy endpoint so that
+    cassettes work in CI without real Azure credentials.
+
     Args:
         request: VCR request object to sanitize (Any type since VCR doesn't
             provide typed request objects)
@@ -86,6 +93,13 @@ def sanitize_request(request: Any) -> Any:  # noqa: ANN401
         Sanitized copy of the request safe for cassette storage
     """
     request = deepcopy(request)
+
+    if ".openai.azure.com" in request.uri:
+        request.uri = re.sub(
+            r"https://[^/]+\.openai\.azure\.com",
+            "https://dummy.openai.azure.com",
+            request.uri,
+        )
 
     headers_to_filter = {header.lower() for header in SENSITIVE_HEADERS}
     for req_header in request.headers:

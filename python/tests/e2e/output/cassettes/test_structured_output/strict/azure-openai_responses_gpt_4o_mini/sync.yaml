@@ -1,0 +1,129 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"Please recommend the most popular book by Patrick
+      Rothfuss","role":"user"}],"model":"gpt-4o-mini","text":{"format":{"type":"json_schema","name":"Book","schema":{"$defs":{"Author":{"description":"The
+      author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last
+      Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object","additionalProperties":false}},"description":"A
+      book with a rating. The title should be in all caps!","properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For
+      testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"title":"Book","type":"object","additionalProperties":false},"description":"A
+      book with a rating. The title should be in all caps!","strict":true}}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '915'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AzureOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_0336af97fd38751000690c21b942ec81948cfaa93813ae2f46\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1762402745,\n  \"status\":
+        \"completed\",\n  \"background\": false,\n  \"content_filters\": null,\n  \"error\":
+        null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\":
+        null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-4o-mini\",\n  \"output\":
+        [\n    {\n      \"id\": \"msg_0336af97fd38751000690c21b9a99881948b87bfae35c28631\",\n
+        \     \"type\": \"message\",\n      \"status\": \"completed\",\n      \"content\":
+        [\n        {\n          \"type\": \"output_text\",\n          \"annotations\":
+        [],\n          \"logprobs\": [],\n          \"text\": \"{\\\"title\\\":\\\"THE
+        NAME OF THE WIND\\\",\\\"author\\\":{\\\"first_name\\\":\\\"Patrick\\\",\\\"last_name\\\":\\\"Rothfuss\\\"},\\\"rating\\\":7}\"\n
+        \       }\n      ],\n      \"role\": \"assistant\"\n    }\n  ],\n  \"parallel_tool_calls\":
+        true,\n  \"previous_response_id\": null,\n  \"prompt_cache_key\": null,\n
+        \ \"reasoning\": {\n    \"effort\": null,\n    \"summary\": null\n  },\n  \"safety_identifier\":
+        null,\n  \"service_tier\": \"default\",\n  \"store\": true,\n  \"temperature\":
+        1.0,\n  \"text\": {\n    \"format\": {\n      \"type\": \"json_schema\",\n
+        \     \"description\": \"A book with a rating. The title should be in all
+        caps!\",\n      \"name\": \"Book\",\n      \"schema\": {\n        \"$defs\":
+        {\n          \"Author\": {\n            \"description\": \"The author of a
+        book.\",\n            \"properties\": {\n              \"first_name\": {\n
+        \               \"title\": \"First Name\",\n                \"type\": \"string\"\n
+        \             },\n              \"last_name\": {\n                \"title\":
+        \"Last Name\",\n                \"type\": \"string\"\n              }\n            },\n
+        \           \"required\": [\n              \"first_name\",\n              \"last_name\"\n
+        \           ],\n            \"title\": \"Author\",\n            \"type\":
+        \"object\",\n            \"additionalProperties\": false\n          }\n        },\n
+        \       \"description\": \"A book with a rating. The title should be in all
+        caps!\",\n        \"properties\": {\n          \"title\": {\n            \"title\":
+        \"Title\",\n            \"type\": \"string\"\n          },\n          \"author\":
+        {\n            \"$ref\": \"#/$defs/Author\"\n          },\n          \"rating\":
+        {\n            \"description\": \"For testing purposes, the rating should
+        be 7\",\n            \"title\": \"Rating\",\n            \"type\": \"integer\"\n
+        \         }\n        },\n        \"required\": [\n          \"title\",\n          \"author\",\n
+        \         \"rating\"\n        ],\n        \"title\": \"Book\",\n        \"type\":
+        \"object\",\n        \"additionalProperties\": false\n      },\n      \"strict\":
+        true\n    },\n    \"verbosity\": \"medium\"\n  },\n  \"tool_choice\": \"auto\",\n
+        \ \"tools\": [],\n  \"top_logprobs\": 0,\n  \"top_p\": 1.0,\n  \"truncation\":
+        \"disabled\",\n  \"usage\": {\n    \"input_tokens\": 166,\n    \"input_tokens_details\":
+        {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 30,\n    \"output_tokens_details\":
+        {\n      \"reasoning_tokens\": 0\n    },\n    \"total_tokens\": 196\n  },\n
+        \ \"user\": null,\n  \"metadata\": {}\n}"
+    headers:
+      Content-Length:
+      - '2878'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 06 Nov 2025 04:19:05 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 2731b682-605c-4c4d-bf4e-ba3018e2b4bd
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-limit-tokens:
+      - '30000'
+      x-ratelimit-remaining-requests:
+      - '283'
+      x-ratelimit-remaining-tokens:
+      - '25398'
+      x-request-id:
+      - 2edf92f1-b58f-48dd-bcb7-cd3228f01e86
+    status:
+      code: 200
+      message: OK
+version: 1

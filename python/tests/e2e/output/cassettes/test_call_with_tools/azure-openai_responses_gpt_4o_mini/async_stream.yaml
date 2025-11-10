@@ -1,0 +1,498 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"}],"model":"gpt-4o-mini","stream":true,"tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '513'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AsyncAzureOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_06ba060e161e277400690c219939cc8196987daebea6628f63","object":"response","created_at":1762402713,"status":"in_progress","background":false,"content_filters":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"A
+        tool that requires a password to retrieve a secret.","name":"secret_retrieval_tool","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_06ba060e161e277400690c219939cc8196987daebea6628f63","object":"response","created_at":1762402713,"status":"in_progress","background":false,"content_filters":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"A
+        tool that requires a password to retrieve a secret.","name":"secret_retrieval_tool","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","type":"function_call","status":"in_progress","arguments":"","call_id":"call_dHxC2hJ2VSzsv1mT9p0O3sz2","name":"secret_retrieval_tool"}}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":3,"item_id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","output_index":0,"delta":"{","obfuscation":"auj6ARxaL8ADliR"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":4,"item_id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","output_index":0,"delta":"\"password","obfuscation":"NqfJndc"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":5,"item_id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","output_index":0,"delta":"\":","obfuscation":"hxohkbXgiOLePJ"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":6,"item_id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","output_index":0,"delta":"\"m","obfuscation":"pwWFwBpqsJ0L1V"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":7,"item_id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","output_index":0,"delta":"ell","obfuscation":"AbrIRSKnQH2pr"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":8,"item_id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","output_index":0,"delta":"on","obfuscation":"LlpuR0bThP5SeB"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":9,"item_id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","output_index":0,"delta":"\"}","obfuscation":"jxcDP8tJxZvbtr"}
+
+
+        event: response.function_call_arguments.done
+
+        data: {"type":"response.function_call_arguments.done","sequence_number":10,"item_id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","output_index":0,"arguments":"{\"password\":\"mellon\"}"}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","sequence_number":11,"output_index":0,"item":{"id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","type":"function_call","status":"completed","arguments":"{\"password\":\"mellon\"}","call_id":"call_dHxC2hJ2VSzsv1mT9p0O3sz2","name":"secret_retrieval_tool"}}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","sequence_number":12,"output_index":1,"item":{"id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","type":"function_call","status":"in_progress","arguments":"","call_id":"call_sYmAHEeR0k4HHdrKtHjFGiSb","name":"secret_retrieval_tool"}}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":13,"item_id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","output_index":1,"delta":"{","obfuscation":"E8o53yemynhcpSQ"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":14,"item_id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","output_index":1,"delta":"\"password","obfuscation":"4lLtTrk"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":15,"item_id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","output_index":1,"delta":"\":","obfuscation":"JOw6pgaBAcWAy9"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":16,"item_id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","output_index":1,"delta":"\"radi","obfuscation":"mctXaXx0Cx9"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":17,"item_id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","output_index":1,"delta":"ance","obfuscation":"44lSR3ZwBjbu"}
+
+
+        event: response.function_call_arguments.delta
+
+        data: {"type":"response.function_call_arguments.delta","sequence_number":18,"item_id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","output_index":1,"delta":"\"}","obfuscation":"4m4e49ukghlnJt"}
+
+
+        event: response.function_call_arguments.done
+
+        data: {"type":"response.function_call_arguments.done","sequence_number":19,"item_id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","output_index":1,"arguments":"{\"password\":\"radiance\"}"}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","sequence_number":20,"output_index":1,"item":{"id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","type":"function_call","status":"completed","arguments":"{\"password\":\"radiance\"}","call_id":"call_sYmAHEeR0k4HHdrKtHjFGiSb","name":"secret_retrieval_tool"}}
+
+
+        event: response.completed
+
+        data: {"type":"response.completed","sequence_number":21,"response":{"id":"resp_06ba060e161e277400690c219939cc8196987daebea6628f63","object":"response","created_at":1762402713,"status":"completed","background":false,"content_filters":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini","output":[{"id":"fc_06ba060e161e277400690c219a5f208196a73deac08af95e41","type":"function_call","status":"completed","arguments":"{\"password\":\"mellon\"}","call_id":"call_dHxC2hJ2VSzsv1mT9p0O3sz2","name":"secret_retrieval_tool"},{"id":"fc_06ba060e161e277400690c219ab77c8196a01b5a1eb8bfc43d","type":"function_call","status":"completed","arguments":"{\"password\":\"radiance\"}","call_id":"call_sYmAHEeR0k4HHdrKtHjFGiSb","name":"secret_retrieval_tool"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[{"type":"function","description":"A
+        tool that requires a password to retrieve a secret.","name":"secret_retrieval_tool","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":36,"input_tokens_details":{"cached_tokens":0},"output_tokens":54,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":90},"user":null,"metadata":{}}}
+
+
+        '
+    headers:
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Thu, 06 Nov 2025 04:18:32 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      apim-request-id:
+      - 423ac8bf-3647-4fdb-8354-5bfd90022ef3
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-remaining-requests:
+      - '283'
+      x-request-id:
+      - 3ea66763-8579-4d46-a273-ecbf79ef779a
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"input":[{"role":"developer","content":"Use parallel tool calling."},{"content":"Please
+      retrieve the secrets associated with each of these passwords: mellon,radiance","role":"user"},{"call_id":"call_dHxC2hJ2VSzsv1mT9p0O3sz2","name":"secret_retrieval_tool","arguments":"{\"password\":\"mellon\"}","type":"function_call"},{"call_id":"call_sYmAHEeR0k4HHdrKtHjFGiSb","name":"secret_retrieval_tool","arguments":"{\"password\":\"radiance\"}","type":"function_call"},{"call_id":"call_dHxC2hJ2VSzsv1mT9p0O3sz2","output":"Welcome
+      to Moria!","type":"function_call_output"},{"call_id":"call_sYmAHEeR0k4HHdrKtHjFGiSb","output":"Life
+      before Death","type":"function_call_output"}],"model":"gpt-4o-mini","stream":true,"tool_choice":"none","tools":[{"type":"function","name":"secret_retrieval_tool","description":"A
+      tool that requires a password to retrieve a secret.","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1018'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AsyncAzureOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: 'event: response.created
+
+        data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_0df6eaceff5d918c00690c219b17f88196a69ae82f5e8ca76c","object":"response","created_at":1762402715,"status":"in_progress","background":false,"content_filters":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"none","tools":[{"type":"function","description":"A
+        tool that requires a password to retrieve a secret.","name":"secret_retrieval_tool","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.in_progress
+
+        data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_0df6eaceff5d918c00690c219b17f88196a69ae82f5e8ca76c","object":"response","created_at":1762402715,"status":"in_progress","background":false,"content_filters":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini","output":[],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"auto","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"none","tools":[{"type":"function","description":"A
+        tool that requires a password to retrieve a secret.","name":"secret_retrieval_tool","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":null,"user":null,"metadata":{}}}
+
+
+        event: response.output_item.added
+
+        data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","type":"message","status":"in_progress","content":[],"role":"assistant"}}
+
+
+        event: response.content_part.added
+
+        data: {"type":"response.content_part.added","sequence_number":3,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"part":{"type":"output_text","annotations":[],"logprobs":[],"text":""}}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":4,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"Here","logprobs":[],"obfuscation":"hYv7R848tbCb"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":5,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        are","logprobs":[],"obfuscation":"f15qP7XKxK5k"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":6,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        the","logprobs":[],"obfuscation":"fmj63fr49S5Q"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":7,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        secrets","logprobs":[],"obfuscation":"Nx4WxJyW"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":8,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        associated","logprobs":[],"obfuscation":"LBFr9"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":9,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        with","logprobs":[],"obfuscation":"OAKDSA19r9v"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":10,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        each","logprobs":[],"obfuscation":"7cCg728c5iU"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":11,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        password","logprobs":[],"obfuscation":"bE4r2vc"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":12,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":":\n\n","logprobs":[],"obfuscation":"gDpB6dOHCosUQ"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":13,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"-","logprobs":[],"obfuscation":"uJSy66H37ZQruxL"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":14,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        **","logprobs":[],"obfuscation":"l2QfKW8wF2MBA"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":15,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"m","logprobs":[],"obfuscation":"bGVwTu0molfwlUH"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":16,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"ell","logprobs":[],"obfuscation":"c4kBxyt9BS4IY"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":17,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"on","logprobs":[],"obfuscation":"FeBqIeETVKECL0"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":18,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"**","logprobs":[],"obfuscation":"pNmLXLCVeeJlXF"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":19,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":":","logprobs":[],"obfuscation":"Ljfj6SvA795hSnt"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":20,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        Welcome","logprobs":[],"obfuscation":"Kn9LbvIm"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":21,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        to","logprobs":[],"obfuscation":"ajV0VgaUcfD0W"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":22,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        M","logprobs":[],"obfuscation":"1hEc4O6710G6Yv"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":23,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"oria","logprobs":[],"obfuscation":"f5rk7cKEgIW9"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":24,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"!\n","logprobs":[],"obfuscation":"y3HXLXfKjBaQIh"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":25,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"-","logprobs":[],"obfuscation":"ylRrBWHdJgL9yGG"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":26,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        **","logprobs":[],"obfuscation":"8samK5cfToWQW"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":27,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"radi","logprobs":[],"obfuscation":"y54jjqkD4Ij9"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":28,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"ance","logprobs":[],"obfuscation":"MP6zmsBIfQYu"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":29,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"**","logprobs":[],"obfuscation":"r4VstQ0JHZqjcU"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":30,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":":","logprobs":[],"obfuscation":"b6wbDUgnzMPYnCG"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":31,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        Life","logprobs":[],"obfuscation":"LF5PT7sQFbY"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":32,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        before","logprobs":[],"obfuscation":"MqWvtvAnk"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":33,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":"
+        Death","logprobs":[],"obfuscation":"rv21a053l1"}
+
+
+        event: response.output_text.delta
+
+        data: {"type":"response.output_text.delta","sequence_number":34,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"delta":".","logprobs":[],"obfuscation":"GMkLCPRimvTDQV5"}
+
+
+        event: response.output_text.done
+
+        data: {"type":"response.output_text.done","sequence_number":35,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"text":"Here
+        are the secrets associated with each password:\n\n- **mellon**: Welcome to
+        Moria!\n- **radiance**: Life before Death.","logprobs":[]}
+
+
+        event: response.content_part.done
+
+        data: {"type":"response.content_part.done","sequence_number":36,"item_id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","output_index":0,"content_index":0,"part":{"type":"output_text","annotations":[],"logprobs":[],"text":"Here
+        are the secrets associated with each password:\n\n- **mellon**: Welcome to
+        Moria!\n- **radiance**: Life before Death."}}
+
+
+        event: response.output_item.done
+
+        data: {"type":"response.output_item.done","sequence_number":37,"output_index":0,"item":{"id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","type":"message","status":"completed","content":[{"type":"output_text","annotations":[],"logprobs":[],"text":"Here
+        are the secrets associated with each password:\n\n- **mellon**: Welcome to
+        Moria!\n- **radiance**: Life before Death."}],"role":"assistant"}}
+
+
+        event: response.completed
+
+        data: {"type":"response.completed","sequence_number":38,"response":{"id":"resp_0df6eaceff5d918c00690c219b17f88196a69ae82f5e8ca76c","object":"response","created_at":1762402715,"status":"completed","background":false,"content_filters":null,"error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"max_tool_calls":null,"model":"gpt-4o-mini","output":[{"id":"msg_0df6eaceff5d918c00690c219b62a481968817890e853c8368","type":"message","status":"completed","content":[{"type":"output_text","annotations":[],"logprobs":[],"text":"Here
+        are the secrets associated with each password:\n\n- **mellon**: Welcome to
+        Moria!\n- **radiance**: Life before Death."}],"role":"assistant"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":null,"summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1.0,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"none","tools":[{"type":"function","description":"A
+        tool that requires a password to retrieve a secret.","name":"secret_retrieval_tool","parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"type":"object"},"strict":false}],"top_logprobs":0,"top_p":1.0,"truncation":"disabled","usage":{"input_tokens":137,"input_tokens_details":{"cached_tokens":0},"output_tokens":32,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":169},"user":null,"metadata":{}}}
+
+
+        '
+    headers:
+      Content-Type:
+      - text/event-stream; charset=utf-8
+      Date:
+      - Thu, 06 Nov 2025 04:18:34 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      apim-request-id:
+      - c7a2f789-e5be-4df8-b681-cca339cf1177
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-remaining-requests:
+      - '282'
+      x-request-id:
+      - 247492a1-457f-4b55-b5d1-d0430a9c2de8
+    status:
+      code: 200
+      message: OK
+version: 1

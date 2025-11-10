@@ -1,0 +1,115 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"Always answer with extreme concision,
+      giving the answer and no added context."},{"content":"Is the first fibonacci
+      number to end with the digits 57 prime?","role":"user"},{"content":"**Thinking:**
+      Let me see... I have instantenously remembered this table of fibonacci\nnumbers
+      with their prime factorizations. That''s sure convenient! Let\nme see if it
+      has the answer:\n0 : 0\n1 : 1\n2 : 1\n3 : 2\n4 : 3\n5 : 5\n6 : 8 = 23\n7 : 13\n8
+      : 21 = 3 x 7\n9 : 34 = 2 x 17\n10 : 55 = 5 x 11\n11 : 89\n12 : 144 = 24 x 32\n13
+      : 233\n14 : 377 = 13 x 29\n15 : 610 = 2 x 5 x 61\n16 : 987 = 3 x 7 x 47\n17
+      : 1597\n18 : 2584 = 23 x 17 x 19\n19 : 4181 = 37 x 113\n20 : 6765 = 3 x 5 x
+      11 x 41\n21 : 10946 = 2 x 13 x 421\n22 : 17711 = 89 x 199\n23 : 28657\n\nThere
+      we have it! 28657 is the first fibonacci number ending in 57,\nand it is prime.
+      I''m supposed to answer with extreme concision, so I''ll\njust say ''Yes.''","role":"assistant"},{"content":"Yes.","role":"assistant"},{"content":"Please
+      tell me what the number is.","role":"user"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      api-key:
+      - <filtered>
+      authorization:
+      - <filtered>
+      connection:
+      - keep-alive
+      content-length:
+      - '1083'
+      content-type:
+      - application/json
+      host:
+      - mirascope-east-azure-testing.openai.azure.com
+      user-agent:
+      - AzureOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://dummy.openai.azure.com/openai/responses?api-version=2025-03-01-preview
+  response:
+    body:
+      string: "{\n  \"id\": \"resp_059c5dceffb5fe4d00690c214e6970819797f0f944242281fa\",\n
+        \ \"object\": \"response\",\n  \"created_at\": 1762402638,\n  \"status\":
+        \"completed\",\n  \"background\": false,\n  \"content_filters\": null,\n  \"error\":
+        null,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\":
+        null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-4o-mini\",\n  \"output\":
+        [\n    {\n      \"id\": \"msg_059c5dceffb5fe4d00690c214ee73c8197bc6b15b778fe529e\",\n
+        \     \"type\": \"message\",\n      \"status\": \"completed\",\n      \"content\":
+        [\n        {\n          \"type\": \"output_text\",\n          \"annotations\":
+        [],\n          \"logprobs\": [],\n          \"text\": \"28657.\"\n        }\n
+        \     ],\n      \"role\": \"assistant\"\n    }\n  ],\n  \"parallel_tool_calls\":
+        true,\n  \"previous_response_id\": null,\n  \"prompt_cache_key\": null,\n
+        \ \"reasoning\": {\n    \"effort\": null,\n    \"summary\": null\n  },\n  \"safety_identifier\":
+        null,\n  \"service_tier\": \"default\",\n  \"store\": true,\n  \"temperature\":
+        1.0,\n  \"text\": {\n    \"format\": {\n      \"type\": \"text\"\n    },\n
+        \   \"verbosity\": \"medium\"\n  },\n  \"tool_choice\": \"auto\",\n  \"tools\":
+        [],\n  \"top_logprobs\": 0,\n  \"top_p\": 1.0,\n  \"truncation\": \"disabled\",\n
+        \ \"usage\": {\n    \"input_tokens\": 362,\n    \"input_tokens_details\":
+        {\n      \"cached_tokens\": 0\n    },\n    \"output_tokens\": 4,\n    \"output_tokens_details\":
+        {\n      \"reasoning_tokens\": 0\n    },\n    \"total_tokens\": 366\n  },\n
+        \ \"user\": null,\n  \"metadata\": {}\n}"
+    headers:
+      Content-Length:
+      - '1387'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 06 Nov 2025 04:17:18 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      apim-request-id:
+      - 57579f89-7839-4c4f-bf7c-f2761de56a5f
+      azure-openai-data-collection:
+      - 'true'
+      x-content-type-options:
+      - nosniff
+      x-ms-cmp-host:
+      - cmp.westus3.hyena.infra.ai.azure.com
+      x-ms-deployment-name:
+      - gpt-4o-mini
+      x-ms-oai-backend-host:
+      - https://aoai-sp-4om-0718-vlm-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-oai-clip-host:
+      - https://aoai-sp-4om-0718-vcl-usw3-prod.westus3.inference.ml.azure.com
+      x-ms-region:
+      - East US
+      x-ratelimit-limit-requests:
+      - '300'
+      x-ratelimit-limit-tokens:
+      - '30000'
+      x-ratelimit-remaining-requests:
+      - '296'
+      x-ratelimit-remaining-tokens:
+      - '28705'
+      x-request-id:
+      - 627805c5-7f61-4125-962a-90bf1b9df4d5
+    status:
+      code: 200
+      message: OK
+version: 1

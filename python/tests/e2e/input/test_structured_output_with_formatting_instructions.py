@@ -12,6 +12,12 @@ from tests.utils import (
     snapshot_test,
 )
 
+PROVIDER_MODEL_ID_PAIRS_FOR_FORMATTING_INSTRUCTIONS = [
+    (provider, model)
+    for provider, model in PROVIDER_MODEL_ID_PAIRS
+    if provider != "azure-openai:completions"
+] + [("azure-openai:completions", "gpt-5-mini")]
+
 
 class Book(BaseModel):
     title: str
@@ -27,7 +33,9 @@ class Book(BaseModel):
         """)
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize(
+    "provider, model_id", PROVIDER_MODEL_ID_PAIRS_FOR_FORMATTING_INSTRUCTIONS
+)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_formatting_instructions(
