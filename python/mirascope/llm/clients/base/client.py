@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import TYPE_CHECKING, Generic, overload
+from typing import TYPE_CHECKING, Generic, cast, overload
 from typing_extensions import Self, TypeVar, Unpack
 
 from ...context import Context, DepsT
@@ -39,24 +39,33 @@ if TYPE_CHECKING:
 
 ModelIdT = TypeVar("ModelIdT", bound=str)
 ProviderClientT = TypeVar("ProviderClientT")
-
+AsyncProviderClientT = TypeVar("AsyncProviderClientT")
 ClientT = TypeVar("ClientT", bound="BaseClient")
 """Type variable for an LLM client."""
 
 
-class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
+class BaseClient(
+    Generic[ModelIdT, ProviderClientT, AsyncProviderClientT, ClientT], ABC
+):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
     the need for complex overloads in provider implementations.
+
+    Type parameters:
+        ModelIdT: The model ID type for this client.
+        ProviderClientT: The underlying sync provider client type.
+        AsyncProviderClientT: The underlying async provider client type.
+        ClientT: The concrete client type itself (for ContextVar typing).
     """
 
-    client: ProviderClientT
+    _client_instance: ProviderClientT | None = None
+    _async_client_instance: AsyncProviderClientT | None = None
     _token: Token | None = None
 
     @property
     @abstractmethod
-    def _context_var(self) -> ContextVar:
+    def _context_var(self) -> ContextVar[ClientT | None]:
         """The ContextVar for this client type."""
         ...
 
@@ -72,7 +81,7 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
 
     def __enter__(self) -> Self:
         """Sets the client context and stores the token."""
-        self._token = self._context_var.set(self)
+        self._token = self._context_var.set(cast(ClientT, self))
         return self
 
     def __exit__(
@@ -1267,3 +1276,27 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
             format=response.format,
             **params,
         )
+
+    @property
+    def client(self) -> ProviderClientT:
+        """Return the underlying sync provider client."""
+
+        if self._client_instance is None:  # pragma: no cover
+            raise RuntimeError("Sync provider client is not initialized.")
+        return self._client_instance
+
+    @client.setter
+    def client(self, value: ProviderClientT) -> None:
+        self._client_instance = value
+
+    @property
+    def async_client(self) -> AsyncProviderClientT:
+        """Return the underlying async provider client."""
+
+        if self._async_client_instance is None:  # pragma: no cover
+            raise RuntimeError("Async provider client is not initialized.")
+        return self._async_client_instance
+
+    @async_client.setter
+    def async_client(self, value: AsyncProviderClientT) -> None:
+        self._async_client_instance = value

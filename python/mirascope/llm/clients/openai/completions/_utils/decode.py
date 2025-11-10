@@ -35,6 +35,7 @@ OPENAI_FINISH_REASON_MAP = {
 def decode_response(
     response: openai_types.ChatCompletion,
     model_id: OpenAICompletionsModelId,
+    provider: Literal["openai:completions", "azure-openai:completions"],
 ) -> tuple[AssistantMessage, FinishReason | None]:
     """Convert OpenAI ChatCompletion to mirascope AssistantMessage."""
     choice = response.choices[0]
@@ -69,7 +70,7 @@ def decode_response(
 
     assistant_message = AssistantMessage(
         content=parts,
-        provider="openai:completions",
+        provider=provider,
         model_id=model_id,
         raw_message=message.model_dump(exclude_none=True),
     )

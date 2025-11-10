@@ -1,7 +1,9 @@
 """OpenAI Responses message encoding and request preparation."""
 
+from __future__ import annotations
+
 from collections.abc import Sequence
-from typing import TypedDict, cast
+from typing import TYPE_CHECKING, TypedDict, cast
 
 from openai import Omit
 from openai.types.responses import (
@@ -42,6 +44,9 @@ from ....base import Params, _utils as _base_utils
 from ...shared import _utils as _shared_utils
 from ..model_ids import OpenAIResponsesModelId
 from .model_features import NON_REASONING_MODELS
+
+if TYPE_CHECKING:
+    from ....providers import Provider
 
 
 class ResponseCreateKwargs(TypedDict, total=False):
@@ -163,7 +168,10 @@ def _encode_assistant_message(
 
 
 def _encode_message(
-    message: Message, model_id: OpenAIResponsesModelId, encode_thoughts: bool
+    message: Message,
+    model_id: OpenAIResponsesModelId,
+    encode_thoughts: bool,
+    provider: Provider,
 ) -> ResponseInputParam:
     """Convert a Mirascope Message to OpenAI Responses input items.
 
@@ -179,7 +187,7 @@ def _encode_message(
 
     if (
         message.role == "assistant"
-        and message.provider == "openai:responses"
+        and message.provider == provider
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -248,6 +256,7 @@ def encode_request(
     tools: Sequence[ToolSchema] | BaseToolkit | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
+    provider: Provider,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""
     kwargs: ResponseCreateKwargs = ResponseCreateKwargs(
@@ -259,7 +268,7 @@ def encode_request(
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
-        provider="openai:responses",
+        provider=provider,
         unsupported_params=["top_k", "seed", "stop_sequences"],
     ) as param_accessor:
         if param_accessor.temperature is not None:
@@ -271,7 +280,7 @@ def encode_request(
         if param_accessor.thinking is not None:
             if model_id in NON_REASONING_MODELS:
                 param_accessor.emit_warning_for_unused_param(
-                    "thinking", param_accessor.thinking, "openai:responses", model_id
+                    "thinking", param_accessor.thinking, provider, model_id
                 )
             else:
                 # Assume model supports reasoning unless explicitly listed as non-reasoning
@@ -324,7 +333,9 @@ def encode_request(
 
     encoded_messages: list[ResponseInputItemParam] = []
     for message in messages:
-        encoded_messages.extend(_encode_message(message, model_id, encode_thoughts))
+        encoded_messages.extend(
+            _encode_message(message, model_id, encode_thoughts, provider)
+        )
     kwargs["input"] = encoded_messages
 
     if openai_tools:

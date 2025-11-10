@@ -82,7 +82,7 @@ def get_client() -> "GoogleClient":
     return ctx_client or client()
 
 
-class GoogleClient(BaseClient[GoogleModelId, Client]):
+class GoogleClient(BaseClient[GoogleModelId, Client, Client, "GoogleClient"]):
     """The client for the Google LLM model."""
 
     @property
@@ -103,6 +103,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client]):
             http_options = HttpOptions(base_url=base_url)
 
         self.client = Client(api_key=api_key, http_options=http_options)
+        self.async_client = self.client
 
     @overload
     def call(
