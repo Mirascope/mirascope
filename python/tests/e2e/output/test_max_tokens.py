@@ -4,10 +4,21 @@ import pytest
 
 from mirascope import llm
 from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
-from tests.utils import (
-    Snapshot,
-    snapshot_test,
-)
+from tests.utils import Snapshot, snapshot_test
+
+
+def _assert_finish_reason(response: object) -> None:
+    """Assert that the response indicates it respected the max_tokens limit.
+
+    Some providers (notably xAI Grok as of October 2025) do not currently
+    populate a FinishReason when the server stops generation at the requested
+    max_tokens. In that case we accept `None` but still cover it in snapshots.
+    """
+    provider = getattr(response, "provider", None)
+    finish_reason = getattr(response, "finish_reason", None)
+    if provider == "xai" and finish_reason is None:
+        return
+    assert finish_reason == llm.FinishReason.MAX_TOKENS
 
 
 @pytest.mark.parametrize(
@@ -27,7 +38,7 @@ def test_max_tokens_sync(
     with snapshot_test(snapshot) as snap:
         response = list_states()
         snap.set_response(response)
-        assert response.finish_reason == llm.FinishReason.MAX_TOKENS
+        _assert_finish_reason(response)
 
 
 @pytest.mark.parametrize(
@@ -48,7 +59,7 @@ async def test_max_tokens_async(
     with snapshot_test(snapshot) as snap:
         response = await list_states()
         snap.set_response(response)
-        assert response.finish_reason == llm.FinishReason.MAX_TOKENS
+        _assert_finish_reason(response)
 
 
 @pytest.mark.parametrize(
@@ -69,7 +80,7 @@ def test_max_tokens_stream(
         response = list_states.stream()
         response.finish()
         snap.set_response(response)
-        assert response.finish_reason == llm.FinishReason.MAX_TOKENS
+        _assert_finish_reason(response)
 
 
 @pytest.mark.parametrize(
@@ -91,4 +102,4 @@ async def test_max_tokens_async_stream(
         response = await list_states.stream()
         await response.finish()
         snap.set_response(response)
-        assert response.finish_reason == llm.FinishReason.MAX_TOKENS
+        _assert_finish_reason(response)

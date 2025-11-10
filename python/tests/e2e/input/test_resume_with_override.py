@@ -5,9 +5,7 @@ from typing import TypedDict
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import (
-    PROVIDER_MODEL_ID_PAIRS,
-)
+from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
 from tests.utils import Snapshot, snapshot_test
 
 

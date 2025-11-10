@@ -3,15 +3,30 @@
 from __future__ import annotations
 
 import importlib
+from collections.abc import Generator
+from contextlib import nullcontext
 from pathlib import Path
-from typing import Literal, get_args
+from typing import Any, Literal, get_args
 
 import pytest
+import vcr
 from pytest import FixtureRequest
 
 from mirascope import llm
-from tests.e2e.conftest import SNAPSHOT_IMPORT_SYMBOLS
+from tests.e2e.conftest import SNAPSHOT_IMPORT_SYMBOLS, VCRConfig
 from tests.utils import Snapshot
+
+
+@pytest.fixture(scope="session")
+def vcr_config(vcr_config: VCRConfig) -> VCRConfig:
+    """Override VCR config to set cassette directory for output tests.
+
+    Inherits the base VCR configuration from tests/e2e/conftest.py and adds
+    the cassette_library_dir to point to the output/cassettes directory.
+    """
+    vcr_config["cassette_library_dir"] = str(Path(__file__).parent / "cassettes")
+    return vcr_config
+
 
 CallType = Literal[
     "sync",
@@ -75,13 +90,19 @@ def vcr_cassette_name(
     provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
-) -> str:
+) -> str | None:
     """Generate VCR cassette name based on test name, provider, model, and formatting_mode.
 
     Structure:
     - Without formatting_mode: {scenario}/{provider}_{model_id}/{call_type}
     - With formatting_mode: {scenario}/{formatting_mode}/{provider}_{model_id}/{call_type}
+
+    Returns None for xAI provider to skip VCR (xAI tests run with --use-real-grok flag).
     """
+    # xAI uses gRPC, so skip VCR cassettes (requires --use-real-grok to run)
+    if provider == "xai":
+        return None
+
     test_name = request.node.name
     scenario, call_type = _parse_test_name(test_name)
 
@@ -92,9 +113,9 @@ def vcr_cassette_name(
     cassette_call_type = call_type.replace("_context", "")
 
     if formatting_mode is None:
-        return f"{scenario}/{provider_str}_{model_id_str}/{cassette_call_type}"
+        return f"{scenario}/{provider_str}_{model_id_str}/{cassette_call_type}.yaml"
     else:
-        return f"{scenario}/{formatting_mode}/{provider_str}_{model_id_str}/{cassette_call_type}"
+        return f"{scenario}/{formatting_mode}/{provider_str}_{model_id_str}/{cassette_call_type}.yaml"
 
 
 @pytest.fixture
@@ -155,3 +176,30 @@ def snapshot(
     module = importlib.import_module(module_path)
     snapshot_variable = call_type.removesuffix("_context") + "_snapshot"
     return getattr(module, snapshot_variable)
+
+
+@pytest.fixture
+def vcr_cassette(
+    request: FixtureRequest, vcr_cassette_name: str | None, vcr_config: dict[str, Any]
+) -> Generator[Any, None, None]:
+    """Override pytest-vcr's vcr_cassette to handle None cassette_name for xAI.
+
+    When vcr_cassette_name is None (e.g., for xAI provider which uses gRPC and
+    cannot be recorded with VCR), this fixture returns a no-op context manager.
+
+    Args:
+        request: Pytest fixture request.
+        vcr_cassette_name: Cassette name or None to skip VCR.
+        vcr_config: VCR configuration dict.
+
+    Yields:
+        VCR cassette or None if skipped.
+    """
+    if vcr_cassette_name is None:
+        # xAI uses gRPC and cannot be recorded with VCR, skip VCR
+        with nullcontext() as cassette:
+            yield cassette
+    else:
+        # Use normal VCR for HTTP-based providers
+        with vcr.VCR(**vcr_config).use_cassette(vcr_cassette_name) as cassette:
+            yield cassette

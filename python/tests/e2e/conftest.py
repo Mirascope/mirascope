@@ -13,7 +13,7 @@ import json
 import re
 from collections.abc import Awaitable, Callable, Generator
 from copy import deepcopy
-from typing import Any, ParamSpec, TypedDict, get_args
+from typing import TYPE_CHECKING, Any, ParamSpec, TypedDict, get_args
 from typing_extensions import TypeIs
 from urllib.parse import parse_qs, urlencode
 
@@ -33,6 +33,38 @@ from vcr.stubs import httpx_stubs
 from mirascope import llm
 from mirascope.llm.clients import clear_all_client_caches
 
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Add custom command line options."""
+    parser.addoption(
+        "--use-real-grok",
+        action="store_true",
+        default=False,
+        help="Run xAI/Grok tests with real API (requires XAI_API_KEY). "
+        "Without this flag, xAI tests are skipped since gRPC cannot be recorded with VCR.",
+    )
+
+
+def pytest_collection_modifyitems(
+    config: pytest.Config, items: list[pytest.Item]
+) -> None:
+    """Modify test collection to skip xAI tests unless --use-real-grok is set."""
+    if config.getoption("--use-real-grok"):
+        return  # Run all tests including xAI
+
+    skip_grok = pytest.mark.skip(
+        reason="xAI tests require --use-real-grok flag (gRPC cannot be recorded with VCR)"
+    )
+    for item in items:
+        # Skip tests that have "xai" in their test ID (parametrized tests)
+        if "xai" in item.nodeid.lower():
+            item.add_marker(skip_grok)
+
+
+if TYPE_CHECKING:
+    from typing import Any
+
+
 P = ParamSpec("P")
 
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
@@ -44,6 +76,7 @@ PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("google", "gemini-2.5-flash"),
     ("openai:completions", "gpt-4o"),
     ("openai:responses", "gpt-4o"),
+    ("xai", "grok-3"),
 ]
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (
@@ -156,6 +189,9 @@ class VCRConfig(TypedDict, total=False):
     check endpoints that should not be recorded.
     """
 
+    cassette_library_dir: str | None
+    """Directory to store cassettes in. Defaults to 'tests/e2e/cassettes'."""
+
 
 def _normalize_vertex_uri(uri: str) -> str:
     """Normalize Anthropic Vertex AI URIs by replacing project ID and region with dummy values."""
@@ -196,6 +232,15 @@ def sanitize_request(request: VCRRequest) -> VCRRequest:
             request.uri,
         )
 
+    if (
+        "aiplatform.googleapis.com" in request.uri
+        and "/publishers/anthropic/" in request.uri
+    ):
+        request.uri = re.sub(
+            r"https://[\w-]+-aiplatform\.googleapis\.com/v1/projects/[\w-]+/locations/[\w-]+/publishers/anthropic/",
+            "https://us-central1-aiplatform.googleapis.com/v1/projects/dummy-gcp-project/locations/us-central1/publishers/anthropic/",
+            request.uri,
+        )
     request.uri = _normalize_vertex_uri(request.uri)
 
     headers_to_filter = {header.lower() for header in SENSITIVE_HEADERS}

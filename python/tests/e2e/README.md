@@ -19,6 +19,43 @@ Note that when you update the implementation or tests in a way that changes what
 You can regenerate snapshots en masse by deleting the `cassettes/` subdirectory, but this
 should be done sparingly because it takes time and API token usage.
 
+### xAI/Grok Special Case
+
+**xAI uses gRPC instead of HTTP**, so VCR.py cannot intercept its traffic. Therefore, xAI tests are handled differently:
+
+- **In CI**: xAI tests are **automatically skipped** (no API key required)
+- **Locally**: xAI tests run with **real API calls** when the `--use-real-grok` flag is provided
+
+#### Running xAI tests locally
+
+```bash
+# Set your API key
+export XAI_API_KEY=your-api-key
+
+# Run all E2E tests including xAI
+cd python
+uv run pytest tests/e2e/ --use-real-grok --inline-snapshot=fix
+
+# Run only xAI tests
+uv run pytest tests/e2e/ -k xai --use-real-grok
+```
+
+#### When to run xAI tests
+
+Run xAI tests manually when:
+
+1. **Making changes to xAI client**: `mirascope/llm/clients/xai/grok.py`
+2. **Changing core abstractions**: Changes to base classes or protocols that affect all providers
+3. **Before releases**: Verify xAI compatibility before publishing a new version
+
+#### Why this approach?
+
+Since gRPC traffic cannot be recorded with VCR.py, we have two options:
+1. Build a custom cassette system (complex, fragile, hard to maintain)
+2. Run tests with real API calls when needed (simple, accurate, pragmatic)
+
+We chose option 2 for simplicity and maintainability.
+
 ## Snapshots
 
 Tests use [inline-snapshot](https://15r10nk.github.io/inline-snapshot/) to validate test outputs. Snapshots are stored in `snapshots/` subdirectories.
