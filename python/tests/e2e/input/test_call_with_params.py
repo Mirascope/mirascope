@@ -37,9 +37,11 @@ def test_all_params_includes_every_param() -> None:
 def get_test_params(model_id: llm.ModelId) -> llm.Params:
     """Get appropriate test parameters for the given provider and model."""
 
-    # This specific Bedrock model doesn't support temperature + top_p simultaneously
-    # https://docs.claude.com/en/docs/about-claude/models/migrating-to-claude-4
-    if model_id == "us.anthropic.claude-haiku-4-5-20251001-v1:0":
+    # Anthropic Bedrock / Vertex variants do not allow configuring temperature and top_p together.
+    if model_id in {
+        "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+        "claude-haiku-4-5@20251001",
+    }:
         params = ALL_PARAMS.copy()
         params.pop("top_p", None)
         return params

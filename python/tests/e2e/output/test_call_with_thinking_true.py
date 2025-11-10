@@ -12,6 +12,7 @@ PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
     ("openai:responses", "gpt-5"),
     ("anthropic", "claude-sonnet-4-0"),
     ("anthropic-bedrock", "us.anthropic.claude-sonnet-4-20250514-v1:0"),
+    ("anthropic-vertex", "claude-haiku-4-5@20251001"),
     ("google", "gemini-2.5-flash"),
 ]
 

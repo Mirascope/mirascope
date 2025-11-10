@@ -411,8 +411,7 @@ def client(
             aws_session_token=kwargs.get("aws_session_token"),
             aws_profile=kwargs.get("aws_profile"),
         )
-    elif normalized_provider == "anthropic-vertex":  # pragma: no cover
-        # TODO: Add unittest for anthropic-vertex in another PR.
+    elif normalized_provider == "anthropic-vertex":
         return anthropic_vertex_client(
             project_id=kwargs.get("project_id"),
             region=kwargs.get("region"),
