@@ -89,7 +89,7 @@ class AsyncTool(
 
 class ContextTool(
     ToolSchema[ContextToolFn[DepsT, AnyP, JsonableCovariantT]],
-    Generic[DepsT, AnyP, JsonableCovariantT],
+    Generic[DepsT, JsonableCovariantT, AnyP],
 ):
     """Protocol defining a tool that can be used by LLMs.
 
@@ -130,7 +130,7 @@ class ContextTool(
 
 class AsyncContextTool(
     ToolSchema[AsyncContextToolFn[DepsT, AnyP, JsonableCovariantT]],
-    Generic[DepsT, AnyP, JsonableCovariantT],
+    Generic[DepsT, JsonableCovariantT, AnyP],
 ):
     """Protocol defining an async tool that can be used by LLMs with context.
 
