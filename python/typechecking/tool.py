@@ -57,7 +57,7 @@ def decorate_context_tool_fn(
     fn: llm.tools.protocols.ContextToolFn[
         llm.context.DepsT, llm.types.P, llm.types.JsonableCovariantT
     ],
-) -> llm.ContextTool[llm.context.DepsT, llm.types.P, llm.types.JsonableCovariantT]:
+) -> llm.ContextTool[llm.context.DepsT, llm.types.JsonableCovariantT, llm.types.P]:
     """Decorating a ContextToolFn returns a Tool"""
     return llm.tool(fn)
 
@@ -66,6 +66,6 @@ def decorate_async_context_tool_fn(
     fn: llm.tools.protocols.AsyncContextToolFn[
         llm.context.DepsT, llm.types.P, llm.types.JsonableCovariantT
     ],
-) -> llm.AsyncContextTool[llm.context.DepsT, llm.types.P, llm.types.JsonableCovariantT]:
+) -> llm.AsyncContextTool[llm.context.DepsT, llm.types.JsonableCovariantT, llm.types.P]:
     """Decorating an AsyncToolFn returns an AsyncTool"""
     return llm.tool(fn)
