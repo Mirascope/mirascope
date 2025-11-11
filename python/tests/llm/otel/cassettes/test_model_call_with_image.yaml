@@ -1,0 +1,107 @@
+interactions:
+- request:
+    body: '{"input":[{"content":[{"text":"What''s in this image?","type":"input_text"},{"image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg","detail":"auto","type":"input_image"}],"role":"user","type":"message"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '343'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dFTbbuM4DH3vVxB+TgqncdK43zFvg4VBW7StrSwKEpU2GPTfF5ITJ95p
+        32we8og8vPx5Aii0Kt6g8BRcUx7ql/pUH3evZV2Vx11ZHutdVZ063Pd1d9rVh/Zw6kn1uKPDXimk
+        YpMouP2XOrnRsA1Xe+cJhVSDCdu9Hl/q/Wu5rzIWBCWGFNPx5AwJqTmoxe598BxtyqtHE2g2a2O0
+        HYo3+PMEAFA4vJBP8YrOZNiRL54AvrIzec8Js9GYbND29kqjSFCbsEaD+NiJZruyT/jZcBQXpRF+
+        p79BYTZNh2ZNN7EikzIbnGwr3k7a6u1L+VJty9ft7nTVLPMWb/A7lzMXtbRjCsPP3aBD1VapG4iq
+        Vh1V+5dDfaj6WcDMIhdHmYdCwIHuwE+yZ7BjK2TvST0mtqK9iUKfskRnB7SWBW9C/v5nBRoenOf2
+        GyQTvUHxayTQEw4EipzuJABCIE+WwKBVoUNH0BNK9NoOgPDBrMiCQxk/8AKGUCVARs9xGAHBxDDC
+        4IksTOjDCOyh12TUM6TH0BOCDhCizyNHCtoLCBoDg8cQAK2CMPrYhg18aBlBPFEAbUFGgvusznTh
+        /QLY8pkSZ+v1MMocFbgX6AxHFTaQ12LO3xF21EcDKBMHN5KnxJQyIsk+IQ4DhayETXWjAbJn7dlO
+        ZGUDWhEa6NnDB5r3FMEe6NMZzhLlGHouFrW/rl9LAwrPJjcVQ9BB0MrsnByzU+HQozFk1uMuPs6b
+        6TydNcfQ3Ja/yTO8rIPzPDlpOuxGat7p8iPmKU2fZvvo4QkD29XmU9+zlwenNNdxmtDfuJdDELAn
+        uTRaJeJe0+ooBPJn3VEj+nZIeoxmnugiCHt6LFNocuSznOmaPZdXa57ca2Y9+wnv/w8bk/1mXa8Z
+        n8m3HLRc5j1VOk73AzYrPbLu5tZE4WIB7gtUCLvmYa3Kxegec/TRdngVtlA6YGtu1zbm87AUoO3q
+        2O2Pp+p18zf0cESXSnMP1T22XFX7/zN6rL4DvuNdBuAnamFB85hzvdstQsaw7vlEggoF0wtfT1//
+        AQAA//8DAKlqHMwCBwAA
+    headers:
+      CF-RAY:
+      - 99d4be8f5afa688a-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 12 Nov 2025 08:44:00 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '6515'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '6522'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999235'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 11ms
+      x-request-id:
+      - req_5d4ec723a8814816a27c467d4581b31f
+    status:
+      code: 200
+      message: OK
+version: 1
