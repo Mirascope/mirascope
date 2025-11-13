@@ -29,7 +29,7 @@ try {
   }
 
   // Run pyright on the whole project (doesn't work well with individual files)
-  await $`uv run pyright`.cwd("./python");
+  await $`uv run pyright .`.cwd("./python");
 
   await $`bun run codespell`;
 
