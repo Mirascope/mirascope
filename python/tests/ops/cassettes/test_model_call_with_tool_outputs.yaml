@@ -1,0 +1,219 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"What''s the weather in Tokyo?","role":"user"}],"model":"gpt-4o-mini","tools":[{"type":"function","name":"get_weather","description":"Get
+      the current weather for a location.","parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"type":"object"},"strict":false}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '359'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3xU227bMAx9z1cIem4GO3Wcy+seBgwbMGAbhmEtDEaiE62ypUlU16DIvw+SE1/S
+        dm82D3nEyyGfZ4xxJfmWcYfeVtlqLcWiKIvNMitLKbOs3OTLTVkUxWoj1vkmWy9uC8hX62WW1WUO
+        G34TKczuNwq60JjWY2cXDoFQVhCxfFXeZotFkRUJ8wQUfIwRprEaCWUXtAPxsHcmtDGvGrTHzqy0
+        Vu2eb9nzjDHGuIUjuhgv8RG1sej4jLFTckbnTMTaoHUyqPbySiWRQGk/RT25IEiZdmJv4KkygWyg
+        iswDvgTJGF0J0FO6xkjUMbO9pXlh5o1q1XyRLYp5tprn63PPEi/fsl+pnK6ofhy1eHsYy1yWWRrG
+        WqwXcleWotwU9WqViBMJHS0mmtCmqlKOA/xW7xMIbh8abCnhz3dcGwGR445v7/g383A0d/w0uEfm
+        qks6ff4oNH46fMavq49mAwf/9/uXn2bxfvRAC01Kbo9U/UWgQzc5xk4zxu5Tcyw40Br1tMHkQqcF
+        6/BRmeCri9y6BPoBWGcaS5UAccDqAY9vYg4J21jc2MMheNNOtIZ1bRyNnGITQ9OAu3D30vNQIx0r
+        JSNxrXAiQ4/uUQmsSF2kW0PQxM8bYRyOyyRsLDqgkMz5u+xsfaIhs9q4Bob/0eyTX9fXc8aP6HbG
+        K4o58walCs2wMl2nD0aJFA2BDO8B/1Kn1xIb5ivRC6fsua38AxKjAzIRnMOW2HnkrDaOAbuo693/
+        9dGDURkNEjo/qrkbq0VHCqd2xnr9XtljCYp0eunTxeXmyuFcoycX5TACT/33aYjhDv8E5VD23bpO
+        oTfej6JAShVR0F/GRfSn7yqZ87GdXT2fkkxHOAVeLRQZW2mzt87sInfWG+1YWS60fa+4VB52+nKV
+        g4c9DrJT7eQoFuubl/bRpX0eroU4oBwCs4lAr29tvnwNeI2339m3qMkQ6AEsb3vhBz/d0QYJJBBE
+        +tPs9A8AAP//AwBpgN7XJAcAAA==
+    headers:
+      CF-RAY:
+      - 99dce2c6fb554b7a-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 13 Nov 2025 08:26:45 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=TEVDDem3OiPUVWO5I54uK59_a.aJwqEFuf.NlKUTng8-1763022405-1.0.1.1-5JuYxhj5SNgGhlIktKqyxIdo..Zv.dGcgVQlXM5ZbsQIOV97aspxP1_Uc_iqCj389JLSoI3kADhcvJRh_4nVKglGL6pMdyc9lBfI5t50lKo;
+        path=/; expires=Thu, 13-Nov-25 08:56:45 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=DBr6CanlzU4.Yt20bPzGYszNan4C0NG3ALnYXj7_.V0-1763022405393-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1054'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1059'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999735'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 3ms
+      x-request-id:
+      - req_ce24a6fb2041499b89bc6a8a21d54e02
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "{\"input\":[{\"content\":\"What's the weather in Tokyo?\",\"role\":\"user\"},{\"arguments\":\"{\\\"location\\\":\\\"Tokyo\\\"}\",\"call_id\":\"call_W4leLhMeS7Jo9ahswUPYo2Cd\",\"name\":\"get_weather\",\"type\":\"function_call\",\"id\":\"fc_078dc246495066dd00691596451d60819088c82db66c694f77\",\"status\":\"completed\"},{\"call_id\":\"call_W4leLhMeS7Jo9ahswUPYo2Cd\",\"output\":\"Weather
+      in Tokyo: 72\xB0F, sunny\",\"type\":\"function_call_output\"}],\"model\":\"gpt-4o-mini\",\"tools\":[{\"type\":\"function\",\"name\":\"get_weather\",\"description\":\"Get
+      the current weather for a location.\",\"parameters\":{\"properties\":{\"location\":{\"title\":\"Location\",\"type\":\"string\"}},\"required\":[\"location\"],\"additionalProperties\":false,\"type\":\"object\"},\"strict\":false}]}"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '684'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAwAAAP//dFXLcuM2ELzrK1A4Wy5IlkjRH5Bccshhb5sUawQMJaxBgAEG3lVt6d9T
+        AN+yfZOmB415dIO/N4xxrfgr4x5DV4vypOT+UByqoygKpYQoqt2xKg5H1YA47SpxPu4bWZ4ORXM6
+        l5VQ/ClRuPMPlDTSOBuwj0uPQKhqSNiuLF7Efn8Qx4wFAoohnZGu7QwSDmRnkG8X76JNdTVgAvZh
+        bYy2F/7Kfm8YY4x3cEOfzit8R+M69HzD2D0no/cuYTYakwPajrfUCgm0CWs0kI+StLOreAu/ahep
+        i1STe8OPIDlnaglmTdc6hSZVduloe3DbVlu93Yv9YSvK7e40zCzz8lf2PbfTNzWtow2Xr7dRvJyU
+        TNuoqlNVllUBEhqQp5fMnFno1mHmwRDggjPw1dgzKJ0ltHNRy8JWtONQ8BdNp3MCWOsIxkF+/3cF
+        GnfpvDt/gmSiV8a/XZH9RKAreqYt++bebo7pwGT0Hi2ZGwvR2hv7qenKgBG2HXqg6JG5hpX7f6IQ
+        Z/HHM5/I78Ov6T7unck9QAg6EFjqk1NiTuIdeDAGzXq75GMvxM7ju3Yx1KPW67yyafudd21HtQR5
+        xfoNb19iHtOwtbPLDI8QnF0JHZvGeVokpTXGtgU/ck+6D9Ag3WqtEnGjceWBgP5dS6xJj75pIJp+
+        gTyQ87hsczHbZN5nMUTzoobKGudbmP8vBJLz+rkOFb+jP7ug6dbLUunYzn7tJ311WvarieT4BISP
+        JhmvaaLNrp0lrDBIr7thrPxPJEZXHAU0iatxngEzTmatPs/nLbSZ+YJUD8kzmJTRIqEPi577tXbo
+        SeM6niXf3/AQTy1o6nX415jy9JAw9BjIJzkswPus7vkM9/hf1B7Vyr3LEqbgwnsclNIJBfP3sonp
+        3X00fv/Sbx6uz0XmL0A++GAocl298L6Ygt1SWT7aaVZc6QBnM34SYn7DJtlpu3qRT+LpY3zxzE+q
+        ybZT80GxEujjQ78rPwM+4508+xU1OQIzg1U5CT+GtUdbJFBAkOjvm/v/AAAA//8DAIlcOX2hBwAA
+    headers:
+      CF-RAY:
+      - 99dce2d218764b7a-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 13 Nov 2025 08:26:46 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '701'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '704'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999703'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_63fb1505258b435b822d6e4cf4a23a32
+    status:
+      code: 200
+      message: OK
+version: 1

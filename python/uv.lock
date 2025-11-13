@@ -720,7 +720,6 @@ all = [
     { name = "opentelemetry-propagator-jaeger" },
     { name = "opentelemetry-sdk" },
     { name = "orjson" },
-    { name = "opentelemetry-semantic-conventions" },
     { name = "pillow" },
     { name = "proto-plus" },
     { name = "pydantic-settings" },
@@ -748,7 +747,6 @@ ops = [
     { name = "opentelemetry-instrumentation" },
     { name = "opentelemetry-propagator-b3" },
     { name = "opentelemetry-propagator-jaeger" },
-    { name = "opentelemetry-semantic-conventions" },
     { name = "opentelemetry-sdk" },
     { name = "orjson" },
 ]
@@ -783,7 +781,6 @@ requires-dist = [
     { name = "opentelemetry-propagator-b3", marker = "extra == 'ops'", specifier = ">=1.38.0" },
     { name = "opentelemetry-propagator-b3", marker = "extra == 'ops'", specifier = ">=1.38.0,<2" },
     { name = "opentelemetry-propagator-jaeger", marker = "extra == 'ops'", specifier = ">=1.38.0" },
-    { name = "opentelemetry-semantic-conventions", marker = "extra == 'ops'", specifier = ">=0.59b0,<1" },
     { name = "opentelemetry-sdk", marker = "extra == 'ops'", specifier = ">=1.38.0,<2" },
     { name = "orjson", marker = "extra == 'ops'", specifier = ">=3.11.4" },
     { name = "pillow", marker = "extra == 'google'", specifier = ">=10.4.0,<11" },

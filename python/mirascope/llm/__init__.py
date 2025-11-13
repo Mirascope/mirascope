@@ -18,7 +18,6 @@ from . import (
     formatting,
     messages,
     models,
-    otel,
     prompts,
     responses,
     tools,
@@ -80,7 +79,6 @@ from .messages import (
     UserMessage,
 )
 from .models import Model, model, use_model
-from .otel import instrument_opentelemetry, is_instrumented, uninstrument_opentelemetry
 from .prompts import prompt
 from .responses import (
     AsyncChunkIterator,
@@ -204,19 +202,15 @@ __all__ = [
     "format",
     "formatting",
     "get_client",
-    "instrument_opentelemetry",
-    "is_instrumented",
     "mcp",
     "messages",
     "model",
     "models",
-    "otel",
     "prompt",
     "prompts",
     "responses",
     "tool",
     "tools",
     "types",
-    "uninstrument_opentelemetry",
     "use_model",
 ]

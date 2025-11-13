@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import json
+from collections.abc import Mapping
 from contextlib import suppress
 from typing import TypedDict
 
@@ -68,4 +71,26 @@ def extract_span_data(span: ReadableSpan) -> SpanData:
             }
             for event in span.events
         ],
+    }
+
+
+class SpanSnapshot(TypedDict):
+    name: str
+    kind: str
+    status: str
+    attributes: Mapping[str, object]
+
+
+def span_snapshot(span: ReadableSpan) -> SpanSnapshot:
+    """Return snapshot-ready span metadata extracted from a ReadableSpan."""
+    attrs = span.attributes or {}
+    serializable_attrs: dict[str, object] = {
+        key: list(value) if isinstance(value, tuple) else value
+        for key, value in attrs.items()
+    }
+    return {
+        "name": span.name,
+        "kind": span.kind.name,
+        "status": span.status.status_code.name,
+        "attributes": serializable_attrs,
     }

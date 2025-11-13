@@ -6,16 +6,16 @@ from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
 
-from mirascope import llm
+from mirascope import llm, ops
 
 # Configure an SDK tracer provider with a simple console exporter.
 provider = TracerProvider()
 provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
 trace.set_tracer_provider(provider)
 
-# Enable GenAI 1.38 instrumentation. Set OTEL_SEMCONV_STABILITY_OPT_IN=
-# "gen_ai_latest_experimental" before running to opt into the spec.
-llm.instrument_opentelemetry(tracer_provider=provider)
+# Enable GenAI 1.38 instrumentation.
+ops.configure(tracer_provider=provider)
+ops.instrument_llm()
 
 
 @llm.call(provider="openai", model_id="gpt-5")

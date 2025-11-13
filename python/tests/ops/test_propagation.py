@@ -101,20 +101,6 @@ def _configure_propagator(format_name: str) -> None:
     reset_propagator()
 
 
-@pytest.fixture
-def tracer_provider() -> TracerProvider:
-    """Create and set a TracerProvider for tests."""
-    provider = TracerProvider()
-    trace.set_tracer_provider(provider)
-    return provider
-
-
-@pytest.fixture
-def tracer(tracer_provider: TracerProvider) -> trace.Tracer:
-    """Get a tracer from the test provider."""
-    return trace.get_tracer(__name__)
-
-
 @pytest.mark.parametrize(
     ("propagator_format", "expected_headers"),
     PROPAGATOR_FORMAT_CONFIGS,
