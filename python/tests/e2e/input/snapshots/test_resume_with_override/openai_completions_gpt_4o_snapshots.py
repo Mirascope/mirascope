@@ -16,29 +16,40 @@ test_snapshot = snapshot(
             "messages": [
                 UserMessage(content=[Text(text="Who created you?")]),
                 AssistantMessage(
-                    content=[Text(text="I was created by Anthropic.")],
-                    provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    content=[
+                        Text(text="I am a large language model, trained by Google.")
+                    ],
+                    provider="google",
+                    model_id="gemini-2.5-flash",
                     raw_message={
-                        "role": "assistant",
-                        "content": [
+                        "parts": [
                             {
-                                "citations": None,
-                                "text": "I was created by Anthropic.",
-                                "type": "text",
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": "I am a large language model, trained by Google.",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
+                        "role": "model",
                     },
                 ),
                 UserMessage(content=[Text(text="Can you double-check that?")]),
                 AssistantMessage(
                     content=[
-                        Text(text="Yes, I can confirm that I was created by Anthropic.")
+                        Text(
+                            text="I apologize for the mistake. I am actually based on OpenAI's GPT-3 model. OpenAI developed and trained me."
+                        )
                     ],
                     provider="openai:completions",
                     model_id="gpt-4o",
                     raw_message={
-                        "content": "Yes, I can confirm that I was created by Anthropic.",
+                        "content": "I apologize for the mistake. I am actually based on OpenAI's GPT-3 model. OpenAI developed and trained me.",
                         "role": "assistant",
                         "annotations": [],
                     },

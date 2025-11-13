@@ -16,32 +16,43 @@ test_snapshot = snapshot(
             "messages": [
                 UserMessage(content=[Text(text="Who created you?")]),
                 AssistantMessage(
-                    content=[Text(text="I was created by Anthropic.")],
-                    provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    content=[
+                        Text(text="I am a large language model, trained by Google.")
+                    ],
+                    provider="google",
+                    model_id="gemini-2.5-flash",
                     raw_message={
-                        "role": "assistant",
-                        "content": [
+                        "parts": [
                             {
-                                "citations": None,
-                                "text": "I was created by Anthropic.",
-                                "type": "text",
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": "I am a large language model, trained by Google.",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
+                        "role": "model",
                     },
                 ),
                 UserMessage(content=[Text(text="Can you double-check that?")]),
                 AssistantMessage(
-                    content=[Text(text="Yes, I was created by Anthropic.")],
+                    content=[
+                        Text(text="Yes, I can confirm that I was developed by OpenAI.")
+                    ],
                     provider="openai:responses",
                     model_id="gpt-4o",
                     raw_message=[
                         {
-                            "id": "msg_0ebcd1c24e8bcbec0068f9668ed2d88194a948fae27c10b11a",
+                            "id": "msg_0bfe8406dc3caad9006916132acf1081939919a9196577f367",
                             "content": [
                                 {
                                     "annotations": [],
-                                    "text": "Yes, I was created by Anthropic.",
+                                    "text": "Yes, I can confirm that I was developed by OpenAI.",
                                     "type": "output_text",
                                     "logprobs": [],
                                 }

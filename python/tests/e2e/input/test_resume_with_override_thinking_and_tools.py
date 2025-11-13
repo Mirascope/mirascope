@@ -22,10 +22,10 @@ def default_provider_and_model(
     Used to ensure that we can test having the provider under test resume
     from a response that was created by a different provider.
     """
-    if provider == "anthropic":
-        return {"provider": "google", "model_id": "gemini-2.5-flash"}
-    else:
+    if provider == "google":
         return {"provider": "anthropic", "model_id": "claude-sonnet-4-0"}
+    else:
+        return {"provider": "google", "model_id": "gemini-2.5-flash"}
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)

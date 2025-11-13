@@ -1,112 +1,66 @@
 interactions:
 - request:
-    body: '{"max_tokens":16000,"messages":[{"role":"user","content":"Who created you?"}],"model":"claude-sonnet-4-0"}'
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
     headers:
       accept:
-      - application/json
+      - '*/*'
       accept-encoding:
       - gzip, deflate
-      anthropic-version:
-      - '2023-06-01'
       connection:
       - keep-alive
       content-length:
-      - '106'
+      - '73'
       content-type:
       - application/json
       host:
-      - api.anthropic.com
+      - generativelanguage.googleapis.com
       user-agent:
-      - Anthropic/Python 0.64.0
-      x-stainless-arch:
-      - arm64
-      x-stainless-async:
-      - 'false'
-      x-stainless-lang:
-      - python
-      x-stainless-os:
-      - MacOS
-      x-stainless-package-version:
-      - 0.64.0
-      x-stainless-read-timeout:
-      - '600'
-      x-stainless-retry-count:
-      - '0'
-      x-stainless-runtime:
-      - CPython
-      x-stainless-runtime-version:
-      - 3.10.16
-      x-stainless-timeout:
-      - '600'
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
     method: POST
-    uri: https://api.anthropic.com/v1/messages
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAA3SQTUvEMBCG/0p5z1lpl62H3Pbm12EvIiISYjJug+2kJhN1WfrfpYVFXPE0MM8z
-        My9zxBA99dBwvS2eVjkyk6w2q3W9buu22UAheGgMeW/q5u623Y7t7nVzc3XFO/+wvj88XjIU5DDS
-        bFHOdk9QSLGfGzbnkMWyQMFFFmKBfjqefKGvmSxF47r6tLlyiayQr14O1ZalS3EM7gLTs0KWOJpE
-        NkeGBrE3UtJ8fQGZ3guxI2gufa9QliT6iMBjESPxjThDN42Cs64jsxwKkc1voT7xRNb/x06z834a
-        Oxoo2d60w1//hzbdOZ0UYpHzdJnSR3BkJFCCxvw+b5PHNH0DAAD//wMA7GbXz68BAAA=
+        H4sIAAAAAAAC/2WRTU/DMAyG7/0VUc7bxAZDG1e+tMNgQAWbEEKGem1EGleJK3Wa9t9J23XLIIfI
+        8uu8tp9sIyHkN5hEJcDo5JV49xkhts1da2QYDXuhS/lkAZaPte3ZBrEvYazqR3ImIBcgNNgU/W3S
+        EnyQU4K6J9iCMpiIr424J0o1DmTgsjvEH71jb0saa+PGoivfdQVyrYxy2TOCI1OXvcSPC3lQlUmw
+        8umzqGvQWMvS+anmyOApwGFXWVjKC47pB801lQ2FcesVMDuRh8O9zsSg/0ij3j9bd+ObKh3CDDj7
+        HUEr3tSLxLfLWAYc+GSqjkMU4JKcUZlmfDrh9DLa82oRvqJ1qmWVYu7p9UeDcX+twWVNO2nRFWQc
+        zpLmP6v5G6yW6m5qV9XDZHFOm8/J04WMdtEvUaBif0wCAAA=
     headers:
-      CF-RAY:
-      - 990242b6f8c0c3a1-SEA
-      Connection:
-      - keep-alive
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
       Content-Encoding:
       - gzip
       Content-Type:
-      - application/json
+      - application/json; charset=UTF-8
       Date:
-      - Fri, 17 Oct 2025 19:39:14 GMT
+      - Thu, 13 Nov 2025 17:19:31 GMT
       Server:
-      - cloudflare
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=1140
       Transfer-Encoding:
       - chunked
-      X-Robots-Tag:
-      - none
-      anthropic-organization-id:
-      - 217a607f-ed5e-40af-8a7d-f83ed52d59d6
-      anthropic-ratelimit-input-tokens-limit:
-      - '2000000'
-      anthropic-ratelimit-input-tokens-remaining:
-      - '2000000'
-      anthropic-ratelimit-input-tokens-reset:
-      - '2025-10-17T19:39:13Z'
-      anthropic-ratelimit-output-tokens-limit:
-      - '400000'
-      anthropic-ratelimit-output-tokens-remaining:
-      - '400000'
-      anthropic-ratelimit-output-tokens-reset:
-      - '2025-10-17T19:39:13Z'
-      anthropic-ratelimit-requests-limit:
-      - '4000'
-      anthropic-ratelimit-requests-remaining:
-      - '3999'
-      anthropic-ratelimit-requests-reset:
-      - '2025-10-17T19:39:12Z'
-      anthropic-ratelimit-tokens-limit:
-      - '2400000'
-      anthropic-ratelimit-tokens-remaining:
-      - '2400000'
-      anthropic-ratelimit-tokens-reset:
-      - '2025-10-17T19:39:13Z'
-      cf-cache-status:
-      - DYNAMIC
-      request-id:
-      - req_011CUDLVyyzmVkB4TL8i8TWm
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      via:
-      - 1.1 google
-      x-envoy-upstream-service-time:
-      - '2127'
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
     status:
       code: 200
       message: OK
 - request:
     body: '{"messages":[{"role":"user","content":"Who created you?"},{"role":"assistant","content":"I
-      was created by Anthropic."},{"role":"user","content":"Can you double-check that?"}],"model":"gpt-4o"}'
+      am a large language model, trained by Google."},{"role":"user","content":"Can
+      you double-check that?"}],"model":"gpt-4o"}'
     headers:
       accept:
       - application/json
@@ -115,16 +69,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '192'
+      - '212'
       content-type:
       - application/json
-      cookie:
-      - __cf_bm=bqAuKHQq_WDoddjc_8n4ZVETbcYhyNCTv6mLZp6hopY-1760729941-1.0.1.1-RLGJrXs96ZY4dJMtqAfrv.hqBx36iattz6ZmbRDi2GSgIeUjf7W73fme4aMKCNhVTf7Ql5Kr6DhrTAdt1gY20p3yrJuUEqWGP9Od4Q58C5Q;
-        _cfuvid=mdcfYnlzNel6gz4BdSZjRIMc0.ltGGjbt3mn9dSlDeI-1760727600979-0.0.1.1-604800000
       host:
       - api.openai.com
       user-agent:
-      - OpenAI/Python 1.100.2
+      - OpenAI/Python 2.7.1
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -134,7 +85,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 1.100.2
+      - 2.7.1
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -148,17 +99,18 @@ interactions:
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAAwAAAP//jFLBTtwwEL3nK0Y+JygkAZa9IQ4VlyL2RisUOfYkMTi2ZU9atmj/vXKy
-        bEJLpV58mDfv+b2ZeUsAmJJsC0z0nMTgdHa7e+E38suuLYZ9n3/d3f8qvz08b3jY3wbN0siwzTMK
-        emedCTs4jaSsmWHhkRNG1fOry/yquL6+qCZgsBJ1pHWOsspmRV5UWb7J8ssjsbdKYGBb+J4AALxN
-        b7RoJL6yLeTpe2XAEHiHbHtqAmDe6lhhPAQViBti6QIKawjN5PoRQwp3ILgBYU2r/ADUc4I7+MkD
-        HO1Ds4cbQ723TomztZLHdgw8BjGj1iuAG2OJx0FMGZ6OyOHkWtvOeduEP6isVUaFvvbIgzXRYSDr
-        2IQeEoCnaTrjh8DMeTs4qsm+4PRdWcxybFnHAp6XR5Ascb3Uq4v0E7VaInGlw2q6THDRo1yYyyr4
-        KJVdAckq899mPtOecyvT/Y/8AgiBjlDWzqNU4mPgpc1jPNZ/tZ1mPBlmAf0PJbAmhT7uQWLLRz3f
-        EQv7QDjUrTIdeufVfEytq7EpRSmaTSVZckh+AwAA//8DAM1GZN1VAwAA
+        H4sIAAAAAAAAA4xSy27bMBC86ysWvPRiGfI78C0oisRAgfZQtIciEFbkSmZCcRmScpsE/veC8kNO
+        mgK98LCzM5zZ3ZcMQGgl1iDkFqNsnck/Vt9v7PU03OvwSHj760exeuyk3E1uP396FqPE4OqeZDyx
+        xpJbZyhqtgdYesJISXWyWs6KxXy2mvVAy4pMojUu5nPOp8V0nhdXebE8EresJQWxhp8ZAMBL/yaL
+        VtFvsYZidKq0FAI2JNbnJgDh2aSKwBB0iGijGA2gZBvJ9q43gI4NN/qZoGYPcUvQJsYDjWED2ALK
+        2KExT1BhIAVs4Ysje735EODm67d8Bn2U8bEKinZk2JECtAqiR21JQUvjSwOe6i5gym87Yy4AtJYj
+        pvn10e+OyP4c1nDjPFfhDVXU2uqwLT1hYJuChchO9Og+A7jrh9q9mpNwnlsXy8gP1H83Wx7kxLDF
+        AZyewMgRzVBfTkfvqJWKImoTLpYiJMotqYE5bBA7pfkCyC4y/23mPe1Dbm2b/5EfACnJRVKl86S0
+        fB14aPOUbvxfbecZ94ZFIL/Tksqoyac9KKqxM4fzE+EpRGrLWtuGvPP6cIO1K2VVT1ZXi8VyJbJ9
+        9gcAAP//AwD0RZuujAMAAA==
     headers:
       CF-RAY:
-      - 990242c5d903af49-SEA
+      - 99dfef3ed855eb46-CPH
       Connection:
       - keep-alive
       Content-Encoding:
@@ -166,9 +118,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 17 Oct 2025 19:39:14 GMT
+      - Thu, 13 Nov 2025 17:19:34 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=V.j2n2.Efs.WJWDUcckP1oFo_YB3JagtJau.2tp5eNs-1763054374-1.0.1.1-Yp.qaC8nckYdRJmYO5z64zoFoqxN73QUczLwhebhfz49qqaKabq4AKu3tIQTR9NGO6rVhv6nb9TozOGjCAPHv9ztrF4UBTr_uN0MVIK2kEI;
+        path=/; expires=Thu, 13-Nov-25 17:49:34 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=D3eo_bKWTApiKdN7ZVDHMsICGTLxD5HgKXpTkTH5.hE-1763054374031-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
       Transfer-Encoding:
@@ -184,13 +142,13 @@ interactions:
       openai-organization:
       - sotai-i3ryiz
       openai-processing-ms:
-      - '619'
+      - '878'
       openai-project:
       - proj_2kPLXdwNOjkHt3ifb0aZ4FwU
       openai-version:
       - '2020-10-01'
       x-envoy-upstream-service-time:
-      - '639'
+      - '1140'
       x-openai-proxy-wasm:
       - v0.1
       x-ratelimit-limit-requests:
@@ -200,13 +158,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '4999'
       x-ratelimit-remaining-tokens:
-      - '799978'
+      - '799973'
       x-ratelimit-reset-requests:
       - 12ms
       x-ratelimit-reset-tokens:
-      - 1ms
+      - 2ms
       x-request-id:
-      - req_7d702f19bc5d44d4b0bd3cfba5a27199
+      - req_2682e45949f54774abd47f42473db9b6
     status:
       code: 200
       message: OK
