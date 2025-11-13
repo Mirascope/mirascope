@@ -91,6 +91,8 @@ function generateApiDocs(): void {
       pythonSourcePath,
       "--package",
       "mirascope.llm",
+      "--api-root",
+      "/docs/mirascope/v2/api",
       "--output",
       apiDocsOutput,
     ],
