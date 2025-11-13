@@ -21,43 +21,62 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[
                         Thought(
-                            thought="The user is asking for the 100th Fibonacci number. I have a function available called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call."
+                            thought="""\
+**Let's Calculate That Fibonacci Number!**
+
+Okay, so the user wants the 100th Fibonacci number, which is pretty straightforward. I immediately recognize that `default_api.compute_fib` is the tool for the job.  No need to reinvent the wheel, I can just leverage that existing functionality. The solution is simply to call that function with the input parameter `n` set to 100.  Efficient and direct - that should do the trick.
+"""
                         ),
-                        Text(text="I'll compute the 100th Fibonacci number for you."),
                         ToolCall(
-                            id="toolu_01UvLhE2u2ZGcdihNhXUm1wp",
+                            id="google_unknown_tool_id",
                             name="compute_fib",
                             args='{"n": 100}',
                         ),
                     ],
-                    provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    provider="google",
+                    model_id="gemini-2.5-flash",
                     raw_message={
-                        "role": "assistant",
-                        "content": [
+                        "parts": [
                             {
-                                "signature": "ErQDCkYICBgCKkAvaj6zwlcCXh989DjfcJKxhnEl5NQA4aOMRq/nZzCYnhPFXVcF6OMlhlPU/gK+hzNjWeY/3Q7HLQvMtqr3wym/Egy6b14LOeSQ1wVvF24aDN+G5tLY1buyBhc4gSIwmOXjvuWtJb+x3LV1DMpXkb1R97E3wRyIs+LTxLJ7p9LAebDnW4dIFtJt5vTUqK40KpsCz+4VXHewhrDmLzXOo858J2FHSzuQprqwULAPba1kasCHTEt1Z5eSc3thRuGJReZNpCU82BFeESHvrKj45BSrHxKUsrb9eU9JBGdSgdz/cgKdj3LvkRIhrAq6NIG83hgG2cK6lF2Ae361w+KeBIenHj589Dw9ufmd6Nj6mTNvN2WBcDbRZnn+X4tAl8xIelZ0sBG7bvuzBxV7iPv7+N2qWbiLm68PH3UaBjD2/SKcPUbHB5sv5N6laxwSM6RIZy/hg33l0eXQMT0jHjHHK4vI0Flum4eJwN/7rOM4DAnJCHux297HwheEVzARd4L5qQfTr1q9kdFDlrE7B+FVhD0NURmBKDpkcQ2cYCgnK+uRz2+LW/IZqPWurdiVPBgB",
-                                "thinking": "The user is asking for the 100th Fibonacci number. I have a function available called `compute_fib` that can compute the nth Fibonacci number (1-indexed). The user has provided the specific value n=100, so I have all the required parameters to make the function call.",
-                                "type": "thinking",
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+**Let's Calculate That Fibonacci Number!**
+
+Okay, so the user wants the 100th Fibonacci number, which is pretty straightforward. I immediately recognize that `default_api.compute_fib` is the tool for the job.  No need to reinvent the wheel, I can just leverage that existing functionality. The solution is simply to call that function with the input parameter `n` set to 100.  Efficient and direct - that should do the trick.
+""",
+                                "thought": True,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                             {
-                                "citations": None,
-                                "text": "I'll compute the 100th Fibonacci number for you.",
-                                "type": "text",
-                            },
-                            {
-                                "id": "toolu_01UvLhE2u2ZGcdihNhXUm1wp",
-                                "input": {"n": 100},
-                                "name": "compute_fib",
-                                "type": "tool_use",
+                                "function_call": {
+                                    "id": None,
+                                    "args": {"n": 100},
+                                    "name": "compute_fib",
+                                },
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": None,
+                                "thought": None,
+                                "thought_signature": b"\n\xe2\x01\x01\xd1\xed\x8ao\x03Q\xf9\xda\xec1'-oCu\n\xbc\x9f\x87[\x12\x88t\x15\xbf\x81\x13\\\xf4Q\xde\x10\xa2\xf5\x1dE\xe3\x8e\\0>a\xfauT\x15\xe6T\ra:\x05\x94u\x84\x0c:~\x08\xd2\xcb\xd9)\xe1w\xcc\x8d\xd7\x1d* \x97k\x8c\xe2\x18\x81\xa0\xd7\xd3-><\xbb\xb4\xa0\xe6\xe3|\xacH\xfaL\xc0\r\x96 \xc5\x1d%\xd0\x19\xac\xd7\xb3\xce\xf94\xb5\xc4\xe3%\xea\x8c\x85\x96O[dNaU{\xc3\xd1\xe8\xc1\x92\xf6\xa0\xecYF\x8f\xf4\xa2\x96A\x87\x0e,\xcb<\xa1\xf9:\x10^\x16|\x1c\x02uML\xe3\x86%{4\x1a\xdb\xe5r\xd1\xd0`\x9es\xa7\xf5\xe6\xb3\x01\n7\x07g\x92\x06+\xa5\x9d\xa5s\x18O~n\x175\xeb\x1c\xc4m\x8d\x0bpG\x15*\xf6/\xe5\xe3=\x1dhz\x96\xff?\xb9\x93B\xcf\xf3g\xd4Xr\x81w\xa6F",
+                                "video_metadata": None,
                             },
                         ],
+                        "role": "model",
                     },
                 ),
                 UserMessage(
                     content=[
                         ToolOutput(
-                            id="toolu_01UvLhE2u2ZGcdihNhXUm1wp",
+                            id="google_unknown_tool_id",
                             name="compute_fib",
                             value="218922995834555169026",
                         )
