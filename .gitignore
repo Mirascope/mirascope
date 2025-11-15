@@ -176,7 +176,11 @@ cython_debug/
 #sqlite
 database.db
 
-# Cloudflare
+# Cloud / Cloudflare
 .wrangler
+.tanstack
+.dev.vars
+.env.local
+!cloud/src/lib
 
 node_modules

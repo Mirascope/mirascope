@@ -53,6 +53,11 @@ You can run `bun run ci` in the root directory to run all CI checks locally. If 
 
 Mirascope uses [Semantic Versioning](https://semver.org/).
 
-## Licence
+## License
 
-This project is licensed under the terms of the [MIT License](https://github.com/Mirascope/mirascope/tree/main/LICENSE).
+This repository uses a multi-license structure:
+
+- **Default**: All code is licensed under the [MIT License](https://github.com/Mirascope/mirascope/tree/main/LICENSE) unless otherwise specified.
+- **Cloud Directory**: The `cloud/` directory is licensed under a proprietary license. See [`cloud/LICENSE`](cloud/LICENSE) for details.
+
+Subdirectories may contain their own LICENSE files that take precedence for files within those directories.

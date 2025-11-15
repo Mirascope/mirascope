@@ -1,0 +1,51 @@
+{
+  "name": "mirascope",
+  "compatibility_date": "2025-06-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "worker/index.ts",
+  "assets": {
+    "directory": "dist/client",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/auth/*", "/openapi.json"]
+  },
+  "observability": {
+    "enabled": true
+  }
+  //   "triggers": {
+  //     "crons": ["0 0 * * 7"]
+  //   }
+  //   "env": {
+  //     "production": {
+  //       "name": "mirascope",
+  //       "route": {
+  //         "pattern": "mirascope.com",
+  //         "zone_name": "mirascope.com",
+  //         "custom_domain": true
+  //       },
+  //       "vars": {
+  //         "ENVIRONMENT": "production",
+  //         "SITE_URL": "https://mirascope.com",
+  //         "GITHUB_CLIENT_ID": "Ov23liUXN3zH9UbkKZqr",
+  //         "GITHUB_CALLBACK_URL": "https://mirascope.com/auth/github/callback",
+  //         "GOOGLE_CLIENT_ID": "852098976648-g76gospfvmsdo3g7ri8p7ocfnefcfrhj.apps.googleusercontent.com",
+  //         "GOOGLE_CALLBACK_URL": "https://mirascope.com/auth/google/callback"
+  //       }
+  //     },
+  //     "staging": {
+  //       "name": "mirascope-staging",
+  //       "route": {
+  //         "pattern": "staging.mirascope.com",
+  //         "zone_name": "mirascope.com",
+  //         "custom_domain": true
+  //       },
+  //       "vars": {
+  //         "ENVIRONMENT": "staging",
+  //         "SITE_URL": "https://staging.mirascope.com",
+  //         "GITHUB_CLIENT_ID": "Ov23lim6U7I6fihGO7Ys",
+  //         "GITHUB_CALLBACK_URL": "https://staging.mirascope.com/auth/github/proxy-callback",
+  //         "GOOGLE_CLIENT_ID": "852098976648-nvi9po6sgebbn50ekha2h25lnf56ko40.apps.googleusercontent.com",
+  //         "GOOGLE_CALLBACK_URL": "https://staging.mirascope.com/auth/google/proxy-callback"
+  //       }
+  //     }
+  //   }
+}
