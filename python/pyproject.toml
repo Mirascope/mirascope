@@ -1,6 +1,6 @@
 [project]
 name = "mirascope"
-version = "2.0.0-alpha.1"
+version = "2.0.0-alpha.2"
 description = "LLM abstractions that aren't obstructions"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -30,6 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: File Formats :: JSON",
     "Topic :: File Formats :: JSON :: JSON Schema",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
