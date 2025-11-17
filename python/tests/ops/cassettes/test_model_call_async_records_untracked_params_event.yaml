@@ -1,0 +1,105 @@
+interactions:
+- request:
+    body: '{"input":[{"role":"developer","content":"You are a concise assistant."},{"content":"Say
+      hello to the user named Kai.","role":"user"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '156'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RUwW7bMAy95ys0nZtBjtM4yWXXDvuEYjBomU61yqIhUVmDIv8+WI4de21vNh/5
+        RPI96X0lhDS1PArpMXSlyooKNlghNtVeVzuldocMMN82Wmdqnx12UB9wmysFW3XYNvlOPvQUVP1B
+        zSMNuYBDXHsExrqEHsuKXZ7vDntVJCwwcAx9jaa2s8hYD0UV6NeTp+j6vhqwAYewsda4kzyK95UQ
+        QsgOLuj7+hrPaKlDL1dCXFMyek895qK1KWDceEpZI4OxYYkG9lGzIbeIt/BWUuQucsn0ih9BJrKl
+        Bruka6lG23d26ni9pXVrnFlv1Ga7VsU62992lnjlUTyncYahJjnacPpSjUdV5Vr3ahyyrNhVqspV
+        c8ixKBJzYuFLh4kHQ4AT3oGv1p5ATY7R3ZuaN7agHZeCbzxVpwRwjhjGRT7/XoCWTp2n6hMkER2F
+        fEJr6UH8AvNNPNFfocGJnwJCMIHFhaJgquHyQ06119vXRCc92dTiUASOh+Q+MSXJDjxYi3YpHvs4
+        +KzzeDYUQzlauUyKTOJ2ntqOSw36BctXvHyJeex3acjNMzxCILfwMTYNeZ4l9SrFtgU/ck+2DtAg
+        X0pT98SNwYXFA/qz0ViyGa9FA9EO+sjA5HE+JmPboQeOKZx9V7do0uHWWUO+hfv/TP+UN+z11vEZ
+        fUXB8GVwXW1ie7+Ow6ZfyOhBmsgkJ+BuB8nUlTOTqCnYzXv00Wm4LVbWJkBlx7cjJrNPAxi3uLqb
+        x4eP8dl7MI2ZBKzvhWox6v8vQrb5DPiMd1L/K2omBnsH82JaYQxLtVtkqIGhp7+urv8AAAD//wMA
+        /WUw28oFAAA=
+    headers:
+      CF-RAY:
+      - 99fe04510aff2644-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 17 Nov 2025 08:56:49 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1340'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1344'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999956'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_dfc02b7df9ad460b8f8dc5463cda9e8b
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -25,11 +25,16 @@ from .....llm.formatting import Format, FormattableT
 from .....llm.formatting._utils import create_tool_schema
 from .....llm.messages import Message
 from .....llm.models import Model
-from .....llm.responses import Response, StreamResponse, StreamResponseChunk
+from .....llm.responses import (
+    AsyncResponse,
+    Response,
+    StreamResponse,
+    StreamResponseChunk,
+)
 from .....llm.responses.root_response import RootResponse
-from .....llm.tools import AnyToolFn, AnyToolSchema, Tool, Toolkit
+from .....llm.tools import AnyToolFn, AnyToolSchema, AsyncTool, Tool, Toolkit
 from .....llm.tools.tool_schema import ToolSchema
-from .....llm.tools.toolkit import BaseToolkit, ToolkitT
+from .....llm.tools.toolkit import AsyncToolkit, BaseToolkit, ToolkitT
 from .....llm.types import Jsonable
 from ...configuration import (
     get_tracer,
@@ -312,6 +317,8 @@ def _attach_response(
 
 _ORIGINAL_MODEL_CALL = Model.call
 _MODEL_CALL_WRAPPED = False
+_ORIGINAL_MODEL_CALL_ASYNC = Model.call_async
+_MODEL_CALL_ASYNC_WRAPPED = False
 _ORIGINAL_MODEL_STREAM = Model.stream
 _MODEL_STREAM_WRAPPED = False
 
@@ -518,6 +525,86 @@ def _unwrap_model_call() -> None:
 
 
 @overload
+async def _instrumented_model_call_async(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    format: None = None,
+) -> AsyncResponse: ...
+
+
+@overload
+async def _instrumented_model_call_async(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    format: type[FormattableT] | Format[FormattableT],
+) -> AsyncResponse[FormattableT]: ...
+
+
+@overload
+async def _instrumented_model_call_async(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+) -> AsyncResponse | AsyncResponse[FormattableT]: ...
+
+
+@wraps(_ORIGINAL_MODEL_CALL_ASYNC)
+async def _instrumented_model_call_async(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
+    format: FormatParam = None,
+) -> AsyncResponse | AsyncResponse[FormattableT]:
+    """Returns a GenAI-instrumented result of `Model.call_async`."""
+    with _start_model_span(
+        self,
+        messages=messages,
+        tools=tools,
+        format=format,
+        activate=True,
+    ) as span_ctx:
+        response = await _ORIGINAL_MODEL_CALL_ASYNC(
+            self,
+            messages=messages,
+            tools=tools,
+            format=format,
+        )
+        if span_ctx.span is not None:
+            _attach_response(
+                span_ctx.span,
+                response,
+                request_messages=messages,
+            )
+            _record_dropped_params(span_ctx.span, span_ctx.dropped_params)
+        return response
+
+
+def _wrap_model_call_async() -> None:
+    """Returns None. Replaces `Model.call_async` with the instrumented wrapper."""
+    global _MODEL_CALL_ASYNC_WRAPPED
+    if _MODEL_CALL_ASYNC_WRAPPED:
+        return
+    Model.call_async = _instrumented_model_call_async
+    _MODEL_CALL_ASYNC_WRAPPED = True
+
+
+def _unwrap_model_call_async() -> None:
+    """Returns None. Restores the original `Model.call_async` implementation."""
+    global _MODEL_CALL_ASYNC_WRAPPED
+    if not _MODEL_CALL_ASYNC_WRAPPED:
+        return
+    Model.call_async = _ORIGINAL_MODEL_CALL_ASYNC
+    _MODEL_CALL_ASYNC_WRAPPED = False
+
+
+@overload
 def _instrumented_model_stream(
     self: Model,
     *,
@@ -699,10 +786,12 @@ def instrument_llm() -> None:
         )
 
     _wrap_model_call()
+    _wrap_model_call_async()
     _wrap_model_stream()
 
 
 def uninstrument_llm() -> None:
     """Disable previously configured instrumentation."""
     _unwrap_model_call()
+    _unwrap_model_call_async()
     _unwrap_model_stream()
