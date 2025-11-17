@@ -21,20 +21,31 @@ from opentelemetry.semconv.attributes import (
 
 from .....llm.clients import Params
 from .....llm.clients.providers import ModelId, Provider
+from .....llm.context import Context, DepsT
 from .....llm.formatting import Format, FormattableT
 from .....llm.formatting._utils import create_tool_schema
 from .....llm.messages import Message
 from .....llm.models import Model
 from .....llm.responses import (
     AsyncResponse,
+    ContextResponse,
     Response,
     StreamResponse,
     StreamResponseChunk,
 )
 from .....llm.responses.root_response import RootResponse
-from .....llm.tools import AnyToolFn, AnyToolSchema, AsyncTool, Tool, Toolkit
+from .....llm.tools import (
+    AnyToolFn,
+    AnyToolSchema,
+    AsyncTool,
+    AsyncToolkit,
+    ContextTool,
+    ContextToolkit,
+    Tool,
+    Toolkit,
+)
 from .....llm.tools.tool_schema import ToolSchema
-from .....llm.tools.toolkit import AsyncToolkit, BaseToolkit, ToolkitT
+from .....llm.tools.toolkit import BaseToolkit, ToolkitT
 from .....llm.types import Jsonable
 from ...configuration import (
     get_tracer,
@@ -319,6 +330,8 @@ _ORIGINAL_MODEL_CALL = Model.call
 _MODEL_CALL_WRAPPED = False
 _ORIGINAL_MODEL_CALL_ASYNC = Model.call_async
 _MODEL_CALL_ASYNC_WRAPPED = False
+_ORIGINAL_MODEL_CONTEXT_CALL = Model.context_call
+_MODEL_CONTEXT_CALL_WRAPPED = False
 _ORIGINAL_MODEL_STREAM = Model.stream
 _MODEL_STREAM_WRAPPED = False
 
@@ -605,6 +618,91 @@ def _unwrap_model_call_async() -> None:
 
 
 @overload
+def _instrumented_model_context_call(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    format: None = None,
+) -> ContextResponse[DepsT, None]: ...
+
+
+@overload
+def _instrumented_model_context_call(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    format: type[FormattableT] | Format[FormattableT],
+) -> ContextResponse[DepsT, FormattableT]: ...
+
+
+@overload
+def _instrumented_model_context_call(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]: ...
+
+
+@wraps(_ORIGINAL_MODEL_CONTEXT_CALL)
+def _instrumented_model_context_call(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    format: FormatParam = None,
+) -> ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]:
+    """Returns a GenAI-instrumented result of `Model.context_call`."""
+    with _start_model_span(
+        self,
+        messages=messages,
+        tools=tools,
+        format=format,
+        activate=True,
+    ) as span_ctx:
+        response = _ORIGINAL_MODEL_CONTEXT_CALL(
+            self,
+            ctx=ctx,
+            messages=messages,
+            tools=tools,
+            format=format,
+        )
+        if span_ctx.span is not None:
+            _attach_response(
+                span_ctx.span,
+                response,
+                request_messages=messages,
+            )
+            _record_dropped_params(span_ctx.span, span_ctx.dropped_params)
+        return response
+
+
+def _wrap_model_context_call() -> None:
+    """Returns None. Replaces `Model.context_call` with the instrumented wrapper."""
+    global _MODEL_CONTEXT_CALL_WRAPPED
+    if _MODEL_CONTEXT_CALL_WRAPPED:
+        return
+    Model.context_call = _instrumented_model_context_call
+    _MODEL_CONTEXT_CALL_WRAPPED = True
+
+
+def _unwrap_model_context_call() -> None:
+    """Returns None. Restores the original `Model.context_call` implementation."""
+    global _MODEL_CONTEXT_CALL_WRAPPED
+    if not _MODEL_CONTEXT_CALL_WRAPPED:
+        return
+    Model.context_call = _ORIGINAL_MODEL_CONTEXT_CALL
+    _MODEL_CONTEXT_CALL_WRAPPED = False
+
+
+@overload
 def _instrumented_model_stream(
     self: Model,
     *,
@@ -787,6 +885,7 @@ def instrument_llm() -> None:
 
     _wrap_model_call()
     _wrap_model_call_async()
+    _wrap_model_context_call()
     _wrap_model_stream()
 
 
@@ -794,4 +893,5 @@ def uninstrument_llm() -> None:
     """Disable previously configured instrumentation."""
     _unwrap_model_call()
     _unwrap_model_call_async()
+    _unwrap_model_context_call()
     _unwrap_model_stream()
