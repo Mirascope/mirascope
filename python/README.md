@@ -43,6 +43,32 @@ This directory contains the Python implementation of Mirascope.
    attached to every span, and additional tools like `ops.trace`/`ops.version`
    (planned) can build on the same context.
 
+## `ops.trace` Decorator
+
+`@ops.trace` adds span instrumentation to any Python callable (including
+`llm.Model` helpers) so you can capture argument/return metadata alongside the
+GenAI spans emitted by `llm.instrument_opentelemetry`.
+
+```python
+from mirascope import ops
+
+@ops.trace(tags=["ingest"])
+def normalize(record: dict[str, str]) -> dict[str, str]:
+    return {k: v.strip() for k, v in record.items()}
+
+result = normalize({"foo": " bar "})
+wrapped = normalize.wrapped({"foo": " bar "})
+print(wrapped.span_id, wrapped.trace_id)
+```
+
+- The decorator automatically handles sync/async functions and reuses `ops.span`
+  serialization logic for arguments/results.
+- Combine with `ops.session` to tag spans with contextual metadata, and with
+  `ops.instrument_opentelemetry` to obtain both model-level GenAI spans
+  and method-level spans like `recommend_book.__call__`.
+- For now we focus on Mirascope-layer entry points (e.g., decorated functions or
+  `llm.Model` wrappers) and do not auto-instrument underlying provider SDK calls.
+
 ## Testing
 
 ### VCR Cassettes
