@@ -1,0 +1,1602 @@
+interactions:
+  1bf8ab5616c0bc28bbe29be9b6fdc350b0aedb75f6753f0c8d8d94842d951568:
+  - finish_reason: null
+    text: <think>
+    token: 151667
+  - finish_reason: null
+    text: '
+
+      '
+    token: 198
+  - finish_reason: null
+    text: Okay
+    token: 32313
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' asking'
+    token: 10161
+  - finish_reason: null
+    text: ' about'
+    token: 911
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' difference'
+    token: 6672
+  - finish_reason: null
+    text: ' between'
+    token: 1948
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' two'
+    token: 1378
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ' of'
+    token: 315
+  - finish_reason: null
+    text: ' data'
+    token: 821
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' programming'
+    token: 15473
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Let'
+    token: 6771
+  - finish_reason: null
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    text: ' start'
+    token: 1191
+  - finish_reason: null
+    text: ' by'
+    token: 553
+  - finish_reason: null
+    text: ' recalling'
+    token: 88646
+  - finish_reason: null
+    text: ' what'
+    token: 1128
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' know'
+    token: 1414
+  - finish_reason: null
+    text: ' about'
+    token: 911
+  - finish_reason: null
+    text: ' data'
+    token: 821
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' programming'
+    token: 15473
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' There'
+    token: 2619
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' two'
+    token: 1378
+  - finish_reason: null
+    text: ' primary'
+    token: 6028
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ':'
+    token: 25
+  - finish_reason: null
+    text: ' integers'
+    token: 25780
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' floats'
+    token: 47902
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Int'
+    token: 1333
+  - finish_reason: null
+    text: egers
+    token: 67592
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' whole'
+    token: 4361
+  - finish_reason: null
+    text: ' numbers'
+    token: 5109
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' like'
+    token: 1075
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: ' 1'
+    token: 16
+  - finish_reason: null
+    text: '0'
+    token: 15
+  - finish_reason: null
+    text: ' or'
+    token: 476
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: ' 2'
+    token: 17
+  - finish_reason: null
+    text: '3'
+    token: 18
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' they'
+    token: 807
+  - finish_reason: null
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' positive'
+    token: 6785
+  - finish_reason: null
+    text: ' or'
+    token: 476
+  - finish_reason: null
+    text: ' negative'
+    token: 8225
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Float'
+    token: 13001
+  - finish_reason: null
+    text: s
+    token: 82
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' decimal'
+    token: 12122
+  - finish_reason: null
+    text: ' numbers'
+    token: 5109
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' like'
+    token: 1075
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: ' 3'
+    token: 18
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: '1'
+    token: 16
+  - finish_reason: null
+    text: '4'
+    token: 19
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' which'
+    token: 892
+  - finish_reason: null
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' either'
+    token: 2987
+  - finish_reason: null
+    text: ' positive'
+    token: 6785
+  - finish_reason: null
+    text: ' or'
+    token: 476
+  - finish_reason: null
+    text: ' negative'
+    token: 8225
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    text: Wait
+    token: 14190
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' but'
+    token: 714
+  - finish_reason: null
+    text: ' maybe'
+    token: 7196
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' thinking'
+    token: 7274
+  - finish_reason: null
+    text: ' of'
+    token: 315
+  - finish_reason: null
+    text: ' other'
+    token: 1008
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: '?'
+    token: 30
+  - finish_reason: null
+    text: ' For'
+    token: 1752
+  - finish_reason: null
+    text: ' example'
+    token: 3110
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' some'
+    token: 1045
+  - finish_reason: null
+    text: ' languages'
+    token: 15459
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' there'
+    token: 1052
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' other'
+    token: 1008
+  - finish_reason: null
+    text: ' data'
+    token: 821
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ' like'
+    token: 1075
+  - finish_reason: null
+    text: ' strings'
+    token: 9069
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' bo'
+    token: 708
+  - finish_reason: null
+    text: oleans
+    token: 96999
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' arrays'
+    token: 18386
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' But'
+    token: 1988
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' question'
+    token: 3405
+  - finish_reason: null
+    text: ' specifically'
+    token: 11689
+  - finish_reason: null
+    text: ' mentions'
+    token: 33845
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' two'
+    token: 1378
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' so'
+    token: 773
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    text: ' focus'
+    token: 5244
+  - finish_reason: null
+    text: ' on'
+    token: 389
+  - finish_reason: null
+    text: ' integers'
+    token: 25780
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' floats'
+    token: 47902
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    text: I
+    token: 40
+  - finish_reason: null
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    text: ' also'
+    token: 1083
+  - finish_reason: null
+    text: ' consider'
+    token: 2908
+  - finish_reason: null
+    text: ' if'
+    token: 421
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' referring'
+    token: 22023
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' different'
+    token: 2155
+  - finish_reason: null
+    text: ' programming'
+    token: 15473
+  - finish_reason: null
+    text: ' languages'
+    token: 15459
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' For'
+    token: 1752
+  - finish_reason: null
+    text: ' example'
+    token: 3110
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' Python'
+    token: 13027
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' integers'
+    token: 25780
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' floats'
+    token: 47902
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' same'
+    token: 1852
+  - finish_reason: null
+    text: ' as'
+    token: 438
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' other'
+    token: 1008
+  - finish_reason: null
+    text: ' languages'
+    token: 15459
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' But'
+    token: 1988
+  - finish_reason: null
+    text: ' maybe'
+    token: 7196
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' confused'
+    token: 21815
+  - finish_reason: null
+    text: ' between'
+    token: 1948
+  - finish_reason: null
+    text: ' different'
+    token: 2155
+  - finish_reason: null
+    text: ' languages'
+    token: 15459
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' However'
+    token: 4354
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' question'
+    token: 3405
+  - finish_reason: null
+    text: ' doesn'
+    token: 3171
+  - finish_reason: null
+    text: '''t'
+    token: 944
+  - finish_reason: null
+    text: ' specify'
+    token: 13837
+  - finish_reason: null
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    text: ' particular'
+    token: 3953
+  - finish_reason: null
+    text: ' language'
+    token: 4128
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' so'
+    token: 773
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: '''ll'
+    token: 3278
+  - finish_reason: null
+    text: ' stick'
+    token: 9214
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' general'
+    token: 4586
+  - finish_reason: null
+    text: ' case'
+    token: 1142
+  - finish_reason: null
+    text: '.
+
+
+      '
+    token: 382
+  - finish_reason: null
+    text: Another
+    token: 14037
+  - finish_reason: null
+    text: ' point'
+    token: 1459
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' mention'
+    token: 6286
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: ' integers'
+    token: 25780
+  - finish_reason: null
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' of'
+    token: 315
+  - finish_reason: null
+    text: ' different'
+    token: 2155
+  - finish_reason: null
+    text: ' sizes'
+    token: 12282
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' like'
+    token: 1075
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: ' 3'
+    token: 18
+  - finish_reason: null
+    text: '2'
+    token: 17
+  - finish_reason: null
+    text: -bit
+    token: 15257
+  - finish_reason: null
+    text: ' or'
+    token: 476
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: ' 6'
+    token: 21
+  - finish_reason: null
+    text: '4'
+    token: 19
+  - finish_reason: null
+    text: -bit
+    token: 15257
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' which'
+    token: 892
+  - finish_reason: null
+    text: ' affects'
+    token: 21501
+  - finish_reason: null
+    text: ' their'
+    token: 862
+  - finish_reason: null
+    text: ' storage'
+    token: 5819
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' But'
+    token: 1988
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' difference'
+    token: 6672
+  - finish_reason: null
+    text: ' is'
+    token: 374
+  - finish_reason: null
+    text: ' between'
+    token: 1948
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' two'
+    token: 1378
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    text: I
+    token: 40
+  - finish_reason: null
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    text: ' also'
+    token: 1083
+  - finish_reason: null
+    text: ' check'
+    token: 1779
+  - finish_reason: null
+    text: ' if'
+    token: 421
+  - finish_reason: null
+    text: ' there'
+    token: 1052
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' any'
+    token: 894
+  - finish_reason: null
+    text: ' other'
+    token: 1008
+  - finish_reason: null
+    text: ' data'
+    token: 821
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: ' might'
+    token: 2578
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' relevant'
+    token: 9760
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' For'
+    token: 1752
+  - finish_reason: null
+    text: ' example'
+    token: 3110
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' some'
+    token: 1045
+  - finish_reason: null
+    text: ' contexts'
+    token: 37597
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' arrays'
+    token: 18386
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' another'
+    token: 2441
+  - finish_reason: null
+    text: ' type'
+    token: 943
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' but'
+    token: 714
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: '''s'
+    token: 594
+  - finish_reason: null
+    text: ' more'
+    token: 803
+  - finish_reason: null
+    text: ' about'
+    token: 911
+  - finish_reason: null
+    text: ' data'
+    token: 821
+  - finish_reason: null
+    text: ' structures'
+    token: 14389
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' So'
+    token: 2055
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' answer'
+    token: 4226
+  - finish_reason: null
+    text: ' should'
+    token: 1265
+  - finish_reason: null
+    text: ' focus'
+    token: 5244
+  - finish_reason: null
+    text: ' on'
+    token: 389
+  - finish_reason: null
+    text: ' integers'
+    token: 25780
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' floats'
+    token: 47902
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    text: Let
+    token: 10061
+  - finish_reason: null
+    text: ' me'
+    token: 752
+  - finish_reason: null
+    text: ' make'
+    token: 1281
+  - finish_reason: null
+    text: ' sure'
+    token: 2704
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: '''m'
+    token: 2776
+  - finish_reason: null
+    text: ' not'
+    token: 537
+  - finish_reason: null
+    text: ' missing'
+    token: 7402
+  - finish_reason: null
+    text: ' anything'
+    token: 4113
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' The'
+    token: 576
+  - finish_reason: null
+    text: ' user'
+    token: 1196
+  - finish_reason: null
+    text: ' might'
+    token: 2578
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' trying'
+    token: 4460
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' understand'
+    token: 3535
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' distinction'
+    token: 29196
+  - finish_reason: null
+    text: ' between'
+    token: 1948
+  - finish_reason: null
+    text: ' these'
+    token: 1493
+  - finish_reason: null
+    text: ' two'
+    token: 1378
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' so'
+    token: 773
+  - finish_reason: null
+    text: ' providing'
+    token: 8241
+  - finish_reason: null
+    text: ' a'
+    token: 264
+  - finish_reason: null
+    text: ' clear'
+    token: 2797
+  - finish_reason: null
+    text: ' explanation'
+    token: 16148
+  - finish_reason: null
+    text: ' with'
+    token: 448
+  - finish_reason: null
+    text: ' examples'
+    token: 10295
+  - finish_reason: null
+    text: ' would'
+    token: 1035
+  - finish_reason: null
+    text: ' be'
+    token: 387
+  - finish_reason: null
+    text: ' helpful'
+    token: 10950
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Also'
+    token: 7281
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' maybe'
+    token: 7196
+  - finish_reason: null
+    text: ' mention'
+    token: 6286
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: ' integers'
+    token: 25780
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' used'
+    token: 1483
+  - finish_reason: null
+    text: ' for'
+    token: 369
+  - finish_reason: null
+    text: ' whole'
+    token: 4361
+  - finish_reason: null
+    text: ' numbers'
+    token: 5109
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' while'
+    token: 1393
+  - finish_reason: null
+    text: ' floats'
+    token: 47902
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' used'
+    token: 1483
+  - finish_reason: null
+    text: ' for'
+    token: 369
+  - finish_reason: null
+    text: ' decimal'
+    token: 12122
+  - finish_reason: null
+    text: ' numbers'
+    token: 5109
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: " \n\n"
+    token: 4710
+  - finish_reason: null
+    text: I
+    token: 40
+  - finish_reason: null
+    text: ' think'
+    token: 1744
+  - finish_reason: null
+    text: ' that'
+    token: 429
+  - finish_reason: null
+    text: '''s'
+    token: 594
+  - finish_reason: null
+    text: ' all'
+    token: 678
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Now'
+    token: 4695
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' I'
+    token: 358
+  - finish_reason: null
+    text: ' can'
+    token: 646
+  - finish_reason: null
+    text: ' structure'
+    token: 5944
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' answer'
+    token: 4226
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' explain'
+    token: 10339
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' two'
+    token: 1378
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' their'
+    token: 862
+  - finish_reason: null
+    text: ' characteristics'
+    token: 17452
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' examples'
+    token: 10295
+  - finish_reason: null
+    text: '.
+
+      '
+    token: 624
+  - finish_reason: null
+    text: </think>
+    token: 151668
+  - finish_reason: null
+    text: '
+
+
+      '
+    token: 271
+  - finish_reason: null
+    text: In
+    token: 641
+  - finish_reason: null
+    text: ' programming'
+    token: 15473
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' two'
+    token: 1378
+  - finish_reason: null
+    text: ' main'
+    token: 1887
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ' of'
+    token: 315
+  - finish_reason: null
+    text: ' data'
+    token: 821
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' **'
+    token: 3070
+  - finish_reason: null
+    text: int
+    token: 396
+  - finish_reason: null
+    text: egers
+    token: 67592
+  - finish_reason: null
+    text: '**'
+    token: 334
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' **'
+    token: 3070
+  - finish_reason: null
+    text: float
+    token: 3649
+  - finish_reason: null
+    text: s
+    token: 82
+  - finish_reason: null
+    text: '**'
+    token: 334
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: ' Here'
+    token: 5692
+  - finish_reason: null
+    text: '''s'
+    token: 594
+  - finish_reason: null
+    text: ' the'
+    token: 279
+  - finish_reason: null
+    text: ' key'
+    token: 1376
+  - finish_reason: null
+    text: ' difference'
+    token: 6672
+  - finish_reason: null
+    text: ':
+
+
+      '
+    token: 1447
+  - finish_reason: null
+    text: '-'
+    token: 12
+  - finish_reason: null
+    text: ' **'
+    token: 3070
+  - finish_reason: null
+    text: Int
+    token: 1072
+  - finish_reason: null
+    text: egers
+    token: 67592
+  - finish_reason: null
+    text: '**:'
+    token: 95518
+  - finish_reason: null
+    text: "  \n"
+    token: 2303
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: '  -'
+    token: 481
+  - finish_reason: null
+    text: ' Represent'
+    token: 21950
+  - finish_reason: null
+    text: ' whole'
+    token: 4361
+  - finish_reason: null
+    text: ' numbers'
+    token: 5109
+  - finish_reason: null
+    text: ' ('
+    token: 320
+  - finish_reason: null
+    text: positive
+    token: 30487
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' negative'
+    token: 8225
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' or'
+    token: 476
+  - finish_reason: null
+    text: ' zero'
+    token: 7168
+  - finish_reason: null
+    text: ).
+    token: 568
+  - finish_reason: null
+    text: "  \n"
+    token: 2303
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: '  -'
+    token: 481
+  - finish_reason: null
+    text: ' Example'
+    token: 13383
+  - finish_reason: null
+    text: ':'
+    token: 25
+  - finish_reason: null
+    text: ' `'
+    token: 1565
+  - finish_reason: null
+    text: '1'
+    token: 16
+  - finish_reason: null
+    text: '0'
+    token: 15
+  - finish_reason: null
+    text: '`,'
+    token: 7808
+  - finish_reason: null
+    text: ' `'
+    token: 1565
+  - finish_reason: null
+    text: '2'
+    token: 17
+  - finish_reason: null
+    text: '3'
+    token: 18
+  - finish_reason: null
+    text: '`,'
+    token: 7808
+  - finish_reason: null
+    text: ' `'
+    token: 1565
+  - finish_reason: null
+    text: '0'
+    token: 15
+  - finish_reason: null
+    text: '`.'
+    token: 28587
+  - finish_reason: null
+    text: "  \n"
+    token: 2303
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: '  -'
+    token: 481
+  - finish_reason: null
+    text: ' Int'
+    token: 1333
+  - finish_reason: null
+    text: egers
+    token: 67592
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' precise'
+    token: 23560
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' used'
+    token: 1483
+  - finish_reason: null
+    text: ' for'
+    token: 369
+  - finish_reason: null
+    text: ' counting'
+    token: 25009
+  - finish_reason: null
+    text: ' or'
+    token: 476
+  - finish_reason: null
+    text: ' basic'
+    token: 6770
+  - finish_reason: null
+    text: ' arithmetic'
+    token: 34784
+  - finish_reason: null
+    text: ' operations'
+    token: 7525
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: "  \n\n"
+    token: 18611
+  - finish_reason: null
+    text: '-'
+    token: 12
+  - finish_reason: null
+    text: ' **'
+    token: 3070
+  - finish_reason: null
+    text: Float
+    token: 5442
+  - finish_reason: null
+    text: s
+    token: 82
+  - finish_reason: null
+    text: '**:'
+    token: 95518
+  - finish_reason: null
+    text: "  \n"
+    token: 2303
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: '  -'
+    token: 481
+  - finish_reason: null
+    text: ' Represent'
+    token: 21950
+  - finish_reason: null
+    text: ' decimal'
+    token: 12122
+  - finish_reason: null
+    text: ' numbers'
+    token: 5109
+  - finish_reason: null
+    text: ' ('
+    token: 320
+  - finish_reason: null
+    text: positive
+    token: 30487
+  - finish_reason: null
+    text: ' or'
+    token: 476
+  - finish_reason: null
+    text: ' negative'
+    token: 8225
+  - finish_reason: null
+    text: ).
+    token: 568
+  - finish_reason: null
+    text: "  \n"
+    token: 2303
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: '  -'
+    token: 481
+  - finish_reason: null
+    text: ' Example'
+    token: 13383
+  - finish_reason: null
+    text: ':'
+    token: 25
+  - finish_reason: null
+    text: ' `'
+    token: 1565
+  - finish_reason: null
+    text: '3'
+    token: 18
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: '1'
+    token: 16
+  - finish_reason: null
+    text: '4'
+    token: 19
+  - finish_reason: null
+    text: '`,'
+    token: 7808
+  - finish_reason: null
+    text: ' `'
+    token: 1565
+  - finish_reason: null
+    text: '2'
+    token: 17
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: '5'
+    token: 20
+  - finish_reason: null
+    text: '`.'
+    token: 28587
+  - finish_reason: null
+    text: "  \n"
+    token: 2303
+  - finish_reason: null
+    text: ''
+    token: 220
+  - finish_reason: null
+    text: '  -'
+    token: 481
+  - finish_reason: null
+    text: ' Float'
+    token: 13001
+  - finish_reason: null
+    text: s
+    token: 82
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' used'
+    token: 1483
+  - finish_reason: null
+    text: ' for'
+    token: 369
+  - finish_reason: null
+    text: ' more'
+    token: 803
+  - finish_reason: null
+    text: ' precise'
+    token: 23560
+  - finish_reason: null
+    text: ' calculations'
+    token: 28117
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' commonly'
+    token: 16626
+  - finish_reason: null
+    text: ' used'
+    token: 1483
+  - finish_reason: null
+    text: ' in'
+    token: 304
+  - finish_reason: null
+    text: ' scientific'
+    token: 12344
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' engineering'
+    token: 14667
+  - finish_reason: null
+    text: ' contexts'
+    token: 37597
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: null
+    text: "  \n\n"
+    token: 18611
+  - finish_reason: null
+    text: Both
+    token: 20629
+  - finish_reason: null
+    text: ' types'
+    token: 4494
+  - finish_reason: null
+    text: ' are'
+    token: 525
+  - finish_reason: null
+    text: ' fundamental'
+    token: 15811
+  - finish_reason: null
+    text: ' to'
+    token: 311
+  - finish_reason: null
+    text: ' programming'
+    token: 15473
+  - finish_reason: null
+    text: ','
+    token: 11
+  - finish_reason: null
+    text: ' with'
+    token: 448
+  - finish_reason: null
+    text: ' integers'
+    token: 25780
+  - finish_reason: null
+    text: ' typically'
+    token: 11136
+  - finish_reason: null
+    text: ' used'
+    token: 1483
+  - finish_reason: null
+    text: ' for'
+    token: 369
+  - finish_reason: null
+    text: ' whole'
+    token: 4361
+  - finish_reason: null
+    text: ' numbers'
+    token: 5109
+  - finish_reason: null
+    text: ' and'
+    token: 323
+  - finish_reason: null
+    text: ' floats'
+    token: 47902
+  - finish_reason: null
+    text: ' for'
+    token: 369
+  - finish_reason: null
+    text: ' decimal'
+    token: 12122
+  - finish_reason: null
+    text: ' values'
+    token: 2750
+  - finish_reason: null
+    text: .
+    token: 13
+  - finish_reason: stop
+    text: ''
+    token: 151645

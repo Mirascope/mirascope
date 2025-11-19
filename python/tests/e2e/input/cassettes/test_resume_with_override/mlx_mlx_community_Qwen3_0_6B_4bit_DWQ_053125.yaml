@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": "Who created you?"}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '73'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.31.0 gl-python/3.12.8
+      x-goog-api-client:
+      - google-genai-sdk/1.31.0 gl-python/3.12.8
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2WQT2/CMAzF7/0UUc6AgIqx7bo/qNLQ2FZNTNMOhpo2Ik26xEUgxHdf2lJItR4i
+        y+/12f4dA8b4GlQiEiC0/J59uw5jx/qtNK0IFTmhbblmAYau3uY7erWzEO6rn3jEIGfAJJgU3avS
+        ElyR6wRlj5EBoTBhqwObaZ1KHHAv5XSpf3rX2UZLrILriNZ+ag18I5Sw2TuC1aqyfcSvC35RhUpw
+        79rDoB1QR/PSuq3mSOAowOVWXhidFxTrLaoHXdYUJk2Wx6wjj0ZnnTSB7Ejh9K73L9Y+uqFC+jA9
+        zu5GkIIO1SHx0zLmHgfqbNVyCDxcnDJdphl1NwxvwuAMrGH4icaKBlaKucPXHw8m/Y0Em9XzuEFb
+        aGUxSirPLHJLrV9+n1dmO53fLoar3W789sWDU/AHvV8BGk0CAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Wed, 19 Nov 2025 09:12:56 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=2709
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
