@@ -20,14 +20,16 @@
 
 This branch contains Mirascope v2, which is under active development.
 
-
 ## Monorepo Structure
 
-This project is structured as a monorepo, that conceptually divides into three parts:
+This project is structured as a monorepo, that conceptually divides into four parts:
 
 - `python/` contains the Python implementation, and examples (in `python/examples`)
 - `typescript/` contains the Typescript implementation, and examples (in `typescript/examples`)
-- `docs/` contains the unified cross-language documentation (in `docs/content`), as well as configuration needed to build the docs.
+- `cloud/` contains the full-stack cloud application (React frontend + Cloudflare Workers backend)
+- `docs/` contains the unified cross-language documentation (in `docs/content`), as well as configuration needed to build the docs
+
+For detailed information about the codebase structure, architecture, and design decisions, see [`STRUCTURE.md`](STRUCTURE.md).
 
 ## Viewing & Building Documentation
 

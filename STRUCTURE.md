@@ -2,6 +2,8 @@
 
 This document outlines the codebase structure for the Mirascope monorepo, which contains the Python and TypeScript SDKs, cloud application, and unified documentation.
 
+> **Note**: This document is intended to be a live, self-updating reference. When making structural changes to the codebase (adding/removing directories, changing organization, updating tooling), please update this file accordingly. This ensures it remains an accurate source of truth for the codebase structure.
+
 ## Overview
 
 ```text
@@ -290,4 +292,3 @@ docs/
 9. **Cloud Application**: Full-stack application in `cloud/` demonstrates real-world usage of the SDKs and provides cloud-based features.
 
 This structure enables independent development of each package while maintaining deployment simplicity and unified tooling through the monorepo setup.
-
