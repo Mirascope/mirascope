@@ -50,7 +50,7 @@ class TracesClient:
 
         Examples
         --------
-        from mirascope._generated import Mirascope, ResourceSpans, ScopeSpans, Span
+        from mirascope.api._generated import Mirascope, ResourceSpans, ScopeSpans, Span
 
         client = Mirascope()
         client.traces.create(
@@ -119,7 +119,12 @@ class AsyncTracesClient:
         --------
         import asyncio
 
-        from mirascope._generated import AsyncMirascope, ResourceSpans, ScopeSpans, Span
+        from mirascope.api._generated import (
+            AsyncMirascope,
+            ResourceSpans,
+            ScopeSpans,
+            Span,
+        )
 
         client = AsyncMirascope()
 

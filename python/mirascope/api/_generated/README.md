@@ -34,7 +34,7 @@ A full reference for this library is available [here](./reference.md).
 Instantiate and use the client with the following:
 
 ```python
-from mirascope._generated import Mirascope, ResourceSpans, ScopeSpans, Span
+from mirascope.api._generated import Mirascope, ResourceSpans, ScopeSpans, Span
 
 client = Mirascope()
 client.traces.create(
@@ -65,7 +65,12 @@ The SDK also exports an `async` client so that you can make non-blocking calls t
 ```python
 import asyncio
 
-from mirascope._generated import AsyncMirascope, ResourceSpans, ScopeSpans, Span
+from mirascope.api._generated import (
+    AsyncMirascope,
+    ResourceSpans,
+    ScopeSpans,
+    Span,
+)
 
 client = AsyncMirascope()
 
@@ -101,7 +106,7 @@ When the API returns a non-success status code (4xx or 5xx response), a subclass
 will be thrown.
 
 ```python
-from mirascope._generated.core.api_error import ApiError
+from mirascope.api._generated.core.api_error import ApiError
 
 try:
     client.traces.create(...)
@@ -118,7 +123,7 @@ The SDK provides access to raw response data, including headers, through the `.w
 The `.with_raw_response` property returns a "raw" client that can be used to access the `.headers` and `.data` attributes.
 
 ```python
-from mirascope._generated import Mirascope
+from mirascope.api._generated import Mirascope
 
 client = Mirascope(
     ...,
@@ -154,7 +159,7 @@ The SDK defaults to a 60 second timeout. You can configure this with a timeout o
 
 ```python
 
-from mirascope._generated import Mirascope
+from mirascope.api._generated import Mirascope
 
 client = Mirascope(
     ...,
@@ -175,7 +180,7 @@ and transports.
 
 ```python
 import httpx
-from mirascope._generated import Mirascope
+from mirascope.api._generated import Mirascope
 
 client = Mirascope(
     ...,

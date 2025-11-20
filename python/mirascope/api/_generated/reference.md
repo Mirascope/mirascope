@@ -27,7 +27,7 @@ Temporary endpoint to receive and log OpenTelemetry trace data for debugging pur
 <dd>
 
 ```python
-from mirascope._generated import Mirascope, ResourceSpans, ScopeSpans, Span
+from mirascope.api._generated import Mirascope, ResourceSpans, ScopeSpans, Span
 
 client = Mirascope()
 client.traces.create(
@@ -112,7 +112,7 @@ Returns the current health status of the application
 <dd>
 
 ```python
-from mirascope._generated import Mirascope
+from mirascope.api._generated import Mirascope
 
 client = Mirascope()
 client.health.check()

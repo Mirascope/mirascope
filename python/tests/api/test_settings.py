@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from mirascope.settings import CURRENT_SETTINGS, get_settings, settings
+from mirascope.api.settings import CURRENT_SETTINGS, get_settings, settings
 
 
 def test_settings_update_skips_none_values() -> None:

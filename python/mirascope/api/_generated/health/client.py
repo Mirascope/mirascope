@@ -41,7 +41,7 @@ class HealthClient:
 
         Examples
         --------
-        from mirascope._generated import Mirascope
+        from mirascope.api._generated import Mirascope
 
         client = Mirascope()
         client.health.check()
@@ -85,7 +85,7 @@ class AsyncHealthClient:
         --------
         import asyncio
 
-        from mirascope._generated import AsyncMirascope
+        from mirascope.api._generated import AsyncMirascope
 
         client = AsyncMirascope()
 
