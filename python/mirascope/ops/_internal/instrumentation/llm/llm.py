@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 import weakref
-from collections.abc import Callable, Iterator, Mapping, Sequence
+from collections.abc import AsyncIterator, Callable, Iterator, Mapping, Sequence
 from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass
 from functools import wraps
@@ -28,6 +28,7 @@ from .....llm.messages import Message
 from .....llm.models import Model
 from .....llm.responses import (
     AsyncContextResponse,
+    AsyncContextStreamResponse,
     AsyncResponse,
     ContextResponse,
     ContextStreamResponse,
@@ -342,6 +343,8 @@ _ORIGINAL_MODEL_STREAM = Model.stream
 _MODEL_STREAM_WRAPPED = False
 _ORIGINAL_MODEL_CONTEXT_STREAM = Model.context_stream
 _MODEL_CONTEXT_STREAM_WRAPPED = False
+_ORIGINAL_MODEL_CONTEXT_STREAM_ASYNC = Model.context_stream_async
+_MODEL_CONTEXT_STREAM_ASYNC_WRAPPED = False
 
 
 def _is_supported_param_value(value: object) -> TypeIs[ParamsValue]:
@@ -1064,6 +1067,175 @@ def _unwrap_model_context_stream() -> None:
     _MODEL_CONTEXT_STREAM_WRAPPED = False
 
 
+def _attach_async_stream_span_handlers(
+    *,
+    response: AsyncContextStreamResponse[DepsT, FormattableT | None],
+    span_cm: AbstractContextManager[SpanContext],
+    span: Span,
+    request_messages: Sequence[Message],
+) -> None:
+    """Returns None. Closes the span when async streaming completes."""
+    chunk_iterator: AsyncIterator[StreamResponseChunk] = response._chunk_iterator
+
+    response_ref = weakref.ref(response)
+    closed = False
+
+    def _close_span(
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        nonlocal closed
+        if closed:
+            return
+        closed = True
+        response_obj = response_ref()
+        if response_obj is not None:
+            _attach_response(
+                span,
+                response_obj,
+                request_messages=request_messages,
+            )
+        span_cm.__exit__(exc_type, exc, tb)
+
+    async def _wrapped_iterator() -> AsyncIterator[StreamResponseChunk]:
+        try:
+            async for chunk in chunk_iterator:
+                yield chunk
+        except Exception as exc:  # noqa: BLE001
+            _close_span(type(exc), exc, exc.__traceback__)
+            raise
+        else:
+            _close_span(None, None, None)
+        finally:
+            _close_span(None, None, None)
+
+    response._chunk_iterator = _wrapped_iterator()
+
+
+@overload
+async def _instrumented_model_context_stream_async(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+    | AsyncContextToolkit[DepsT]
+    | None = None,
+    format: None = None,
+) -> AsyncContextStreamResponse[DepsT, None]: ...
+
+
+@overload
+async def _instrumented_model_context_stream_async(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+    | AsyncContextToolkit[DepsT]
+    | None = None,
+    format: type[FormattableT] | Format[FormattableT],
+) -> AsyncContextStreamResponse[DepsT, FormattableT]: ...
+
+
+@overload
+async def _instrumented_model_context_stream_async(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+    | AsyncContextToolkit[DepsT]
+    | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+) -> (
+    AsyncContextStreamResponse[DepsT, None]
+    | AsyncContextStreamResponse[DepsT, FormattableT]
+): ...
+
+
+@wraps(_ORIGINAL_MODEL_CONTEXT_STREAM_ASYNC)
+async def _instrumented_model_context_stream_async(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
+    | AsyncContextToolkit[DepsT]
+    | None = None,
+    format: FormatParam = None,
+) -> (
+    AsyncContextStreamResponse[DepsT, None]
+    | AsyncContextStreamResponse[DepsT, FormattableT]
+):
+    """Returns a GenAI-instrumented result of `Model.context_stream_async`."""
+    span_cm = _start_model_span(
+        self,
+        messages=messages,
+        tools=tools,
+        format=format,
+        activate=False,
+    )
+    span_ctx = span_cm.__enter__()
+    if span_ctx.span is None:
+        response = await _ORIGINAL_MODEL_CONTEXT_STREAM_ASYNC(
+            self,
+            ctx=ctx,
+            messages=messages,
+            tools=tools,
+            format=format,
+        )
+        span_cm.__exit__(None, None, None)
+        return response
+
+    try:
+        with otel_trace.use_span(span_ctx.span, end_on_exit=False):
+            response = await _ORIGINAL_MODEL_CONTEXT_STREAM_ASYNC(
+                self,
+                ctx=ctx,
+                messages=messages,
+                tools=tools,
+                format=format,
+            )
+    except Exception as exc:
+        span_cm.__exit__(type(exc), exc, exc.__traceback__)
+        raise
+
+    _record_dropped_params(span_ctx.span, span_ctx.dropped_params)
+
+    try:
+        _attach_async_stream_span_handlers(
+            response=response,
+            span_cm=span_cm,
+            span=span_ctx.span,
+            request_messages=messages,
+        )
+    except Exception as exc:  # pragma: no cover
+        span_cm.__exit__(type(exc), exc, exc.__traceback__)
+        raise
+
+    return response
+
+
+def _wrap_model_context_stream_async() -> None:
+    """Returns None. Replaces `Model.context_stream_async` with the instrumented wrapper."""
+    global _MODEL_CONTEXT_STREAM_ASYNC_WRAPPED
+    if _MODEL_CONTEXT_STREAM_ASYNC_WRAPPED:
+        return
+    Model.context_stream_async = _instrumented_model_context_stream_async
+    _MODEL_CONTEXT_STREAM_ASYNC_WRAPPED = True
+
+
+def _unwrap_model_context_stream_async() -> None:
+    """Returns None. Restores the original `Model.context_stream_async` implementation."""
+    global _MODEL_CONTEXT_STREAM_ASYNC_WRAPPED
+    if not _MODEL_CONTEXT_STREAM_ASYNC_WRAPPED:
+        return
+    Model.context_stream_async = _ORIGINAL_MODEL_CONTEXT_STREAM_ASYNC
+    _MODEL_CONTEXT_STREAM_ASYNC_WRAPPED = False
+
+
 def instrument_llm() -> None:
     """Enable GenAI 1.38 span emission for future `llm.Model` calls and streams.
 
@@ -1102,6 +1274,7 @@ def instrument_llm() -> None:
     _wrap_model_context_call_async()
     _wrap_model_stream()
     _wrap_model_context_stream()
+    _wrap_model_context_stream_async()
 
 
 def uninstrument_llm() -> None:
@@ -1112,3 +1285,4 @@ def uninstrument_llm() -> None:
     _unwrap_model_context_call_async()
     _unwrap_model_stream()
     _unwrap_model_context_stream()
+    _unwrap_model_context_stream_async()
