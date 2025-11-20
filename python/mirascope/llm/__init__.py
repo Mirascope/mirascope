@@ -1,4 +1,4 @@
-"""The `llm` module for writing provider-agnostic LLM Generations.
+"""LLM abstractions that aren't obstructions.
 
 This module provides a unified interface for interacting with different LLM providers,
 including messages, tools, response formatting, and streaming. It allows you to write

@@ -4,8 +4,12 @@
 # Goal: When this exclude list is empty, we have 100% coverage across the entire codebase
 omit = 
     # LLM modules to exclude (remove as we add full test coverage)
+    mirascope/llm/mcp/__init__.py
     mirascope/llm/mcp/client.py
     mirascope/llm/formatting/partial.py
+
+    # Exclude Fern generated code
+    mirascope/_generated/*
 
     # Exclude other top-level modules for now
     mirascope/graphs/*

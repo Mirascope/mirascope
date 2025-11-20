@@ -1,29 +1,29 @@
-import path from 'path';
-import { coverageConfigDefaults, defineConfig } from 'vitest/config';
+import path from "path";
+import { coverageConfigDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     globals: false,
-    environment: 'node',
-    globalSetup: './tests/db/global.ts',
-    setupFiles: './tests/db/setup.ts',
-    pool: 'forks',
+    environment: "node",
+    globalSetup: "./tests/db/global.ts",
+    setupFiles: "./tests/db/setup.ts",
+    pool: "forks",
     poolOptions: {
       forks: {
         singleFork: true,
       },
     },
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      include: ['db', 'worker'],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      include: ["db", "worker"],
       exclude: [
-        '**/index.ts',
-        '**/schemas.ts',
-        'db/schema',
-        'worker/api/functions', // excluding until we implement functions beyond dummy endpoints
-        'worker/api/traces', // excluding until we implement traces beyond dummy endpoints
-        'worker/auth', // excluding while we work on migrating to OpenAPI + 100% coverage
+        "**/index.ts",
+        "**/schemas.ts",
+        "db/schema",
+        "worker/api/functions", // excluding until we implement functions beyond dummy endpoints
+        "worker/api/traces", // excluding until we implement traces beyond dummy endpoints
+        "worker/auth", // excluding while we work on migrating to OpenAPI + 100% coverage
         ...coverageConfigDefaults.exclude,
       ],
       thresholds: {
@@ -35,11 +35,11 @@ export default defineConfig({
         },
       },
     },
-    exclude: ['**/node_modules/**', 'dist', '.git', '.cache'],
+    exclude: ["**/node_modules/**", "dist", ".git", ".cache"],
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './'),
+      "@": path.resolve(__dirname, "./"),
     },
   },
 });
