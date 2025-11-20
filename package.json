@@ -2,25 +2,33 @@
   "name": "mirascope-monorepo",
   "private": true,
   "scripts": {
+    "cloud:dev": "cd cloud && bun i && bun run dev",
     "docs:dev": "cd docs && bun i && bun run dev",
     "docs:build": "cd docs && bun i && bun run build",
     "docs:preview": "bunx serve --single docs/dist",
-    "typecheck": "bun run typecheck:typescript && bun run typecheck:python",
+    "typecheck": "bun run typecheck:typescript && bun run typecheck:python && bun run typecheck:cloud",
     "typecheck:python": "cd python && uv run pyright .",
     "typecheck:typescript": "bun run --cwd typescript typecheck",
+    "typecheck:cloud": "bun run --cwd cloud typecheck",
     "test:python": "cd python && uv run pytest tests/",
+    "test:cloud": "cd cloud && bun run test",
     "coverage:python": "cd python && uv run pytest --cov --cov-config=.coveragerc --cov-report=term-missing",
     "codespell": "uvx codespell",
     "ci": "bun run lint && bun run coverage:python && bun run docs:build",
-    "lint": "bun run codespell && bun run lint:python && bun run lint:typescript",
+    "lint": "bun run codespell && bun run lint:python && bun run lint:typescript && bun run lint:cloud",
     "lint:python": "cd python && uv sync --all-extras --dev && uv run ruff check . && uv run pyright .",
     "lint:typescript": "cd typescript && bun i && bun run lint",
-    "fix": "bun run fix:python && bun run fix:typescript",
+    "lint:cloud": "cd cloud && bun i && bun run lint",
+    "fix": "bun run fix:python && bun run fix:typescript && bun run fix:cloud",
     "fix:python": "cd python && bun run scripts/regenerate_examples.ts && uv run ruff check --fix . && uv run ruff format .",
     "fix:typescript": "cd typescript && bun i && bun run fix",
+    "fix:cloud": "cd cloud && bun i && bun run fix",
     "prepare": "husky"
   },
   "lint-staged": {
+    "cloud/**/*.{ts,tsx}": [
+      "bun cloud/lint-staged.ts"
+    ],
     "typescript/**/*.{ts,tsx}": [
       "bun typescript/lint-staged.ts"
     ],
