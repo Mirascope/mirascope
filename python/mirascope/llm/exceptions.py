@@ -1,16 +1,12 @@
-"""Mirascope exception hierarchy for unified error handling across providers."""
+"""Mirascope llm exception hierarchy for unified error handling across providers."""
 
 from typing import TYPE_CHECKING
+
+from ..exceptions import MirascopeError
 
 if TYPE_CHECKING:
     from .clients import ModelId, Provider
     from .formatting import FormattingMode
-
-
-class MirascopeError(Exception):
-    """Base exception for all Mirascope errors."""
-
-    original_exception: Exception | None
 
 
 class APIError(MirascopeError):
