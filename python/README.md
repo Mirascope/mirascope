@@ -21,6 +21,28 @@ This directory contains the Python implementation of Mirascope.
    uv run pytest
    ```
 
+## `ops.span` and Session Tracing
+
+`mirascope.ops` provides tracing helpers to trace any Python function, not just
+`llm.Model` calls.
+
+1. Install the OTEL extra and set up a tracer provider exactly as shown above.
+   `ops.span` automatically reuses the active provider, so spans from manual
+   instrumentation and GenAI instrumentation end up in the same trace tree.
+2. Use `ops.session` to group related spans and attach metadata:
+   ```python
+   from mirascope import ops
+
+   with ops.session(id="req-42", attributes={"team": "core"}):
+       with ops.span("load-data") as span:
+           span.set(stage="ingest")
+           # expensive work here
+   ```
+3. The span exposes `span_id`/`trace_id`, logging helpers, and graceful no-op
+   behavior when OTEL is not configured. When OTEL is active, session metadata is
+   attached to every span, and additional tools like `ops.trace`/`ops.version`
+   (planned) can build on the same context.
+
 ## Testing
 
 ### VCR Cassettes
