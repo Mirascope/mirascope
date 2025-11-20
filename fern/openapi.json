@@ -1,0 +1,207 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mirascope Cloud API",
+    "version": "0.1.0",
+    "description": "Complete API documentation for Mirascope Cloud"
+  },
+  "servers": [
+    {
+      "url": "https://v2.mirascope.com",
+      "description": "Production server",
+      "x-fern-server-name": "production"
+    },
+    {
+      "url": "https://staging.mirascope.com",
+      "description": "Staging server",
+      "x-fern-server-name": "staging"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server",
+      "x-fern-server-name": "local"
+    }
+  ],
+  "tags": [{ "name": "API", "description": "Core API endpoints" }],
+  "components": {
+    "schemas": {
+      "TraceResponse": {
+        "type": "object",
+        "properties": {
+          "partialSuccess": {
+            "type": "object",
+            "properties": {
+              "rejectedSpans": { "type": "number" },
+              "errorMessage": { "type": "string" }
+            }
+          }
+        }
+      },
+      "KeyValue": {
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "value": {
+            "type": "object",
+            "properties": {
+              "stringValue": { "type": "string" },
+              "intValue": { "type": "string" },
+              "doubleValue": { "type": "number" },
+              "boolValue": { "type": "boolean" },
+              "arrayValue": { "nullable": true },
+              "kvlistValue": { "nullable": true }
+            }
+          }
+        },
+        "required": ["key", "value"]
+      },
+      "Resource": {
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/KeyValue" }
+          },
+          "droppedAttributesCount": { "type": "number" }
+        }
+      },
+      "InstrumentationScope": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "attributes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/KeyValue" }
+          },
+          "droppedAttributesCount": { "type": "number" }
+        },
+        "required": ["name"]
+      },
+      "SpanStatus": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "number" },
+          "message": { "type": "string" }
+        }
+      },
+      "Span": {
+        "type": "object",
+        "properties": {
+          "traceId": { "type": "string" },
+          "spanId": { "type": "string" },
+          "parentSpanId": { "type": "string" },
+          "name": { "type": "string" },
+          "kind": { "type": "number" },
+          "startTimeUnixNano": { "type": "string" },
+          "endTimeUnixNano": { "type": "string" },
+          "attributes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/KeyValue" }
+          },
+          "droppedAttributesCount": { "type": "number" },
+          "events": { "type": "array", "items": { "nullable": true } },
+          "droppedEventsCount": { "type": "number" },
+          "status": { "$ref": "#/components/schemas/SpanStatus" },
+          "links": { "type": "array", "items": { "nullable": true } },
+          "droppedLinksCount": { "type": "number" }
+        },
+        "required": [
+          "traceId",
+          "spanId",
+          "name",
+          "startTimeUnixNano",
+          "endTimeUnixNano"
+        ]
+      },
+      "ScopeSpans": {
+        "type": "object",
+        "properties": {
+          "scope": { "$ref": "#/components/schemas/InstrumentationScope" },
+          "spans": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Span" }
+          },
+          "schemaUrl": { "type": "string" }
+        },
+        "required": ["spans"]
+      },
+      "ResourceSpans": {
+        "type": "object",
+        "properties": {
+          "resource": { "$ref": "#/components/schemas/Resource" },
+          "scopeSpans": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ScopeSpans" }
+          },
+          "schemaUrl": { "type": "string" }
+        },
+        "required": ["scopeSpans"]
+      },
+      "TraceRequest": {
+        "type": "object",
+        "properties": {
+          "resourceSpans": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ResourceSpans" }
+          }
+        },
+        "required": ["resourceSpans"]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/api/v1/traces": {
+      "post": {
+        "tags": ["Telemetry"],
+        "summary": "Debug endpoint for OpenTelemetry traces",
+        "description": "Temporary endpoint to receive and log OpenTelemetry trace data for debugging purposes. This endpoint follows the OTLP/HTTP specification.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TraceRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trace export acknowledged",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TraceResponse" }
+              }
+            }
+          },
+          "400": { "description": "Invalid request format" },
+          "500": { "description": "Internal server error" }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check endpoint",
+        "description": "Returns the current health status of the application",
+        "responses": {
+          "200": {
+            "description": "Application health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "enum": ["ok"] },
+                    "timestamp": { "type": "string", "format": "date-time" },
+                    "environment": { "type": "string" }
+                  },
+                  "required": ["status", "timestamp", "environment"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

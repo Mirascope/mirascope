@@ -1,0 +1,9 @@
+paths:
+  /api/v1/traces:
+    post:
+      x-fern-sdk-group-name: traces
+      x-fern-sdk-method-name: create
+  /health:
+    get:
+      x-fern-sdk-group-name: health
+      x-fern-sdk-method-name: check

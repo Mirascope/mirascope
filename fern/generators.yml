@@ -1,0 +1,19 @@
+default-group: python-sdk
+api:
+  path: openapi.json
+  overrides: openapi-overrides.yml
+groups:
+  python-sdk:
+    generators:
+      - name: fernapi/fern-python-sdk
+        version: 4.21.2
+        output:
+          location: local-file-system
+          path: ../python/mirascope/_generated
+        smart-casing: true
+        config:
+          client:
+            class_name: Mirascope
+            filename: client.py
+          package_name: mirascope._generated
+          timeout_in_seconds: 180
