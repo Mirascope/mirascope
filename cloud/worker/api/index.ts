@@ -1,1 +1,0 @@
-export { apiRouter } from "./router";

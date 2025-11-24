@@ -1,13 +1,9 @@
 {
   "name": "mirascope-cloud",
   "compatibility_date": "2025-06-17",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": "worker/index.ts",
-  "assets": {
-    "directory": "dist/client",
-    "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*", "/auth/*", "/openapi-docs", "/openapi.json"],
-  },
+  "compatibility_flags": ["nodejs_compat", "enable_nodejs_http_modules"],
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": "@tanstack/react-start/server-entry",
   "observability": {
     "enabled": true,
   },
