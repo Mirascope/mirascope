@@ -3,5 +3,6 @@
 # isort: skip_file
 
 from .health_check_response import HealthCheckResponse
+from .health_check_response_status import HealthCheckResponseStatus
 
-__all__ = ["HealthCheckResponse"]
+__all__ = ["HealthCheckResponse", "HealthCheckResponseStatus"]

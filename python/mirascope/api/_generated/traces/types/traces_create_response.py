@@ -4,16 +4,15 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
+from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ...core.serialization import FieldMetadata
+from .traces_create_response_partial_success import TracesCreateResponsePartialSuccess
 
 
-class TraceResponsePartialSuccess(UniversalBaseModel):
-    rejected_spans: typing_extensions.Annotated[
-        typing.Optional[float], FieldMetadata(alias="rejectedSpans")
-    ] = None
-    error_message: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="errorMessage")
+class TracesCreateResponse(UniversalBaseModel):
+    partial_success: typing_extensions.Annotated[
+        typing.Optional[TracesCreateResponsePartialSuccess],
+        FieldMetadata(alias="partialSuccess"),
     ] = None
 
     if IS_PYDANTIC_V2:

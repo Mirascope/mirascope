@@ -1,7 +1,7 @@
 default-group: python-sdk
 api:
-  path: openapi.json
-  overrides: openapi-overrides.yml
+  specs:
+    - openapi: openapi.json
 groups:
   python-sdk:
     generators:

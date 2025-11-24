@@ -6,11 +6,11 @@
   "assets": {
     "directory": "dist/client",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*", "/auth/*", "/openapi-docs", "/openapi.json"]
+    "run_worker_first": ["/api/*", "/auth/*", "/openapi-docs", "/openapi.json"],
   },
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
   //   "triggers": {
   //     "crons": ["0 0 * * 7"]
   //   }

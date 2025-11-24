@@ -23,7 +23,7 @@
     "fix:python": "cd python && bun run scripts/regenerate_examples.ts && uv run ruff check --fix . && uv run ruff format .",
     "fix:typescript": "cd typescript && bun i && bun run fix",
     "fix:cloud": "cd cloud && bun i && bun run fix",
-    "cloud:python-sdk:generate": "cd fern && bash extract-openapi.sh && npx fern generate --group python-sdk --local --force && cd ../python && uv run ruff check --fix . && uv run ruff format .",
+    "cloud:python-sdk:generate": "cd cloud && bun run generate:openapi > ../fern/openapi.json && cd ../fern && npx fern generate --group python-sdk --local --force && bun run fix:python",
     "prepare": "husky"
   },
   "lint-staged": {

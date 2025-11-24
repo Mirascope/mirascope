@@ -27,8 +27,6 @@ class HealthClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HealthCheckResponse:
         """
-        Returns the current health status of the application
-
         Parameters
         ----------
         request_options : typing.Optional[RequestOptions]
@@ -37,7 +35,7 @@ class HealthClient:
         Returns
         -------
         HealthCheckResponse
-            Application health status
+            OK
 
         Examples
         --------
@@ -69,8 +67,6 @@ class AsyncHealthClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HealthCheckResponse:
         """
-        Returns the current health status of the application
-
         Parameters
         ----------
         request_options : typing.Optional[RequestOptions]
@@ -79,7 +75,7 @@ class AsyncHealthClient:
         Returns
         -------
         HealthCheckResponse
-            Application health status
+            OK
 
         Examples
         --------

@@ -4,9 +4,11 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.resource_spans import ResourceSpans
-from ..types.trace_response import TraceResponse
 from .raw_client import AsyncRawTracesClient, RawTracesClient
+from .types.traces_create_request_resource_spans_item import (
+    TracesCreateRequestResourceSpansItem,
+)
+from .types.traces_create_response import TracesCreateResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -30,36 +32,39 @@ class TracesClient:
     def create(
         self,
         *,
-        resource_spans: typing.Sequence[ResourceSpans],
+        resource_spans: typing.Sequence[TracesCreateRequestResourceSpansItem],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> TraceResponse:
+    ) -> TracesCreateResponse:
         """
-        Temporary endpoint to receive and log OpenTelemetry trace data for debugging purposes. This endpoint follows the OTLP/HTTP specification.
-
         Parameters
         ----------
-        resource_spans : typing.Sequence[ResourceSpans]
+        resource_spans : typing.Sequence[TracesCreateRequestResourceSpansItem]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        TraceResponse
-            Trace export acknowledged
+        TracesCreateResponse
+            OK
 
         Examples
         --------
-        from mirascope.api._generated import Mirascope, ResourceSpans, ScopeSpans, Span
+        from mirascope.api._generated import Mirascope
+        from mirascope.api._generated.traces import (
+            TracesCreateRequestResourceSpansItem,
+            TracesCreateRequestResourceSpansItemScopeSpansItem,
+            TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
+        )
 
         client = Mirascope()
         client.traces.create(
             resource_spans=[
-                ResourceSpans(
+                TracesCreateRequestResourceSpansItem(
                     scope_spans=[
-                        ScopeSpans(
+                        TracesCreateRequestResourceSpansItemScopeSpansItem(
                             spans=[
-                                Span(
+                                TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(
                                     trace_id="traceId",
                                     span_id="spanId",
                                     name="name",
@@ -97,33 +102,31 @@ class AsyncTracesClient:
     async def create(
         self,
         *,
-        resource_spans: typing.Sequence[ResourceSpans],
+        resource_spans: typing.Sequence[TracesCreateRequestResourceSpansItem],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> TraceResponse:
+    ) -> TracesCreateResponse:
         """
-        Temporary endpoint to receive and log OpenTelemetry trace data for debugging purposes. This endpoint follows the OTLP/HTTP specification.
-
         Parameters
         ----------
-        resource_spans : typing.Sequence[ResourceSpans]
+        resource_spans : typing.Sequence[TracesCreateRequestResourceSpansItem]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        TraceResponse
-            Trace export acknowledged
+        TracesCreateResponse
+            OK
 
         Examples
         --------
         import asyncio
 
-        from mirascope.api._generated import (
-            AsyncMirascope,
-            ResourceSpans,
-            ScopeSpans,
-            Span,
+        from mirascope.api._generated import AsyncMirascope
+        from mirascope.api._generated.traces import (
+            TracesCreateRequestResourceSpansItem,
+            TracesCreateRequestResourceSpansItemScopeSpansItem,
+            TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
         )
 
         client = AsyncMirascope()
@@ -132,11 +135,11 @@ class AsyncTracesClient:
         async def main() -> None:
             await client.traces.create(
                 resource_spans=[
-                    ResourceSpans(
+                    TracesCreateRequestResourceSpansItem(
                         scope_spans=[
-                            ScopeSpans(
+                            TracesCreateRequestResourceSpansItemScopeSpansItem(
                                 spans=[
-                                    Span(
+                                    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(
                                         trace_id="traceId",
                                         span_id="spanId",
                                         name="name",

@@ -4,13 +4,17 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
-from .key_value import KeyValue
-from .span_status import SpanStatus
+from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ...core.serialization import FieldMetadata
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_attributes_item import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
+)
+from .traces_create_request_resource_spans_item_scope_spans_item_spans_item_status import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
+)
 
 
-class Span(UniversalBaseModel):
+class TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(UniversalBaseModel):
     trace_id: typing_extensions.Annotated[str, FieldMetadata(alias="traceId")]
     span_id: typing_extensions.Annotated[str, FieldMetadata(alias="spanId")]
     parent_span_id: typing_extensions.Annotated[
@@ -24,7 +28,11 @@ class Span(UniversalBaseModel):
     end_time_unix_nano: typing_extensions.Annotated[
         str, FieldMetadata(alias="endTimeUnixNano")
     ]
-    attributes: typing.Optional[typing.List[KeyValue]] = None
+    attributes: typing.Optional[
+        typing.List[
+            TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem
+        ]
+    ] = None
     dropped_attributes_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedAttributesCount")
     ] = None
@@ -32,7 +40,9 @@ class Span(UniversalBaseModel):
     dropped_events_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedEventsCount")
     ] = None
-    status: typing.Optional[SpanStatus] = None
+    status: typing.Optional[
+        TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus
+    ] = None
     links: typing.Optional[typing.List[typing.Optional[typing.Any]]] = None
     dropped_links_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedLinksCount")

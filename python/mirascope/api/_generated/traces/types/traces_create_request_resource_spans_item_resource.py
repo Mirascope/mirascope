@@ -4,13 +4,17 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
-from .key_value import KeyValue
+from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ...core.serialization import FieldMetadata
+from .traces_create_request_resource_spans_item_resource_attributes_item import (
+    TracesCreateRequestResourceSpansItemResourceAttributesItem,
+)
 
 
-class Resource(UniversalBaseModel):
-    attributes: typing.Optional[typing.List[KeyValue]] = None
+class TracesCreateRequestResourceSpansItemResource(UniversalBaseModel):
+    attributes: typing.Optional[
+        typing.List[TracesCreateRequestResourceSpansItemResourceAttributesItem]
+    ] = None
     dropped_attributes_count: typing_extensions.Annotated[
         typing.Optional[float], FieldMetadata(alias="droppedAttributesCount")
     ] = None

@@ -2,3 +2,36 @@
 
 # isort: skip_file
 
+from .types import (
+    TracesCreateRequestResourceSpansItem,
+    TracesCreateRequestResourceSpansItemResource,
+    TracesCreateRequestResourceSpansItemResourceAttributesItem,
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItemScope,
+    TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
+    TracesCreateResponse,
+    TracesCreateResponsePartialSuccess,
+)
+
+__all__ = [
+    "TracesCreateRequestResourceSpansItem",
+    "TracesCreateRequestResourceSpansItemResource",
+    "TracesCreateRequestResourceSpansItemResourceAttributesItem",
+    "TracesCreateRequestResourceSpansItemResourceAttributesItemValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItem",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemScope",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItem",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus",
+    "TracesCreateResponse",
+    "TracesCreateResponsePartialSuccess",
+]

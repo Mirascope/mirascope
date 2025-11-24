@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000",
+    "generate:openapi": "bun run scripts/generate-openapi.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
@@ -17,6 +18,10 @@
   "dependencies": {
     "@hono/swagger-ui": "^0.5.2",
     "@hono/zod-openapi": "1.1.0",
+    "@orpc/client": "^1.11.3",
+    "@orpc/openapi": "^1.11.3",
+    "@orpc/server": "^1.11.3",
+    "@orpc/zod": "^1.11.3",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-router": "^1.121.2",
     "@tanstack/react-router-devtools": "^1.121.2",

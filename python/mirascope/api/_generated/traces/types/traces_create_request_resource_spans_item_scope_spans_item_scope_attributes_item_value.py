@@ -4,11 +4,13 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
+from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ...core.serialization import FieldMetadata
 
 
-class KeyValueValue(UniversalBaseModel):
+class TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue(
+    UniversalBaseModel
+):
     string_value: typing_extensions.Annotated[
         typing.Optional[str], FieldMetadata(alias="stringValue")
     ] = None
