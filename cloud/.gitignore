@@ -1,0 +1,8 @@
+# Cloud-specific Ignores
+.wrangler
+.tanstack
+.dev.vars
+.env.local
+!cloud/src/lib
+
+docker/data
