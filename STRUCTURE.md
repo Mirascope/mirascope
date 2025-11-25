@@ -200,6 +200,10 @@ cloud/
 │   ├── reportWebVitals.ts   # Performance monitoring
 │   └── routeTree.gen.ts     # Auto-generated route tree
 ├── worker/                # Backend Cloudflare Workers
+│   ├── api/                 # API route handlers
+│   ├── health/              # Health check endpoints
+│   ├── app.ts               # Hono app configuration
+│   ├── environment.ts       # Environment type definitions
 │   └── index.ts             # Worker entry point
 ├── public/                # Static assets
 │   ├── fonts/               # Custom fonts
