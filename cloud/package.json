@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "deploy": "bun run build && wrangler deploy",
     "cf-typegen": "wrangler types",
-    "generate:openapi": "bun run scripts/generate-openapi.ts",
+    "generate:openapi": "bun run api/generate-openapi.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",

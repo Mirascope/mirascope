@@ -73,11 +73,11 @@ const ResourceSpansSchema = z.object({
   schemaUrl: z.string().optional(),
 });
 
-const TraceRequestSchema = z.object({
+const CreateTraceRequestSchema = z.object({
   resourceSpans: z.array(ResourceSpansSchema),
 });
 
-const TraceResponseSchema = z.object({
+const CreateTraceResponseSchema = z.object({
   partialSuccess: z
     .object({
       rejectedSpans: z.number().optional(),
@@ -94,15 +94,19 @@ export type Span = z.infer<typeof SpanSchema>;
 export type InstrumentationScope = z.infer<typeof InstrumentationScopeSchema>;
 export type ScopeSpans = z.infer<typeof ScopeSpansSchema>;
 export type ResourceSpans = z.infer<typeof ResourceSpansSchema>;
-export type TraceRequest = z.infer<typeof TraceRequestSchema>;
-export type TraceResponse = z.infer<typeof TraceResponseSchema>;
+export type CreateTraceRequest = z.infer<typeof CreateTraceRequestSchema>;
+export type CreateTraceResponse = z.infer<typeof CreateTraceResponseSchema>;
 
 export const createTrace = os
-  .route({ method: "POST", path: "/api/v1/traces" })
-  .input(TraceRequestSchema)
-  .output(TraceResponseSchema)
+  .route({ method: "POST", path: "/traces" })
+  .input(CreateTraceRequestSchema)
+  .output(CreateTraceResponseSchema)
   .handler(
-    async ({ input }: { input: TraceRequest }): Promise<TraceResponse> => {
+    async ({
+      input,
+    }: {
+      input: CreateTraceRequest;
+    }): Promise<CreateTraceResponse> => {
       const serviceName =
         input.resourceSpans?.[0]?.resource?.attributes?.find(
           (attr) => attr.key === "service.name",
@@ -123,11 +127,7 @@ export const createTrace = os
         JSON.stringify(input, null, 2),
       );
 
-      const response: TraceResponse = {
-        partialSuccess: {},
-      };
-
-      return response;
+      return { partialSuccess: {} };
     },
   );
 
