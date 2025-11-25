@@ -9,7 +9,7 @@ omit =
     mirascope/llm/formatting/partial.py
 
     # Exclude Fern generated code
-    mirascope/_generated/*
+    mirascope/api/_generated/*
 
     # Exclude other top-level modules for now
     mirascope/graphs/*

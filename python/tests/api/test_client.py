@@ -7,7 +7,7 @@ from collections.abc import Generator
 import httpx
 import pytest
 
-from mirascope.client import (
+from mirascope.api.client import (
     AsyncMirascope,
     Mirascope,
     close_cached_clients,
@@ -15,7 +15,7 @@ from mirascope.client import (
     get_async_client,
     get_sync_client,
 )
-from mirascope.settings import settings
+from mirascope.api.settings import settings
 
 
 @pytest.fixture(autouse=True)

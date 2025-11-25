@@ -38,7 +38,7 @@ class Mirascope:
 
     Examples
     --------
-    from mirascope._generated import Mirascope
+    from mirascope.api._generated import Mirascope
 
     client = Mirascope()
     """
@@ -103,7 +103,7 @@ class AsyncMirascope:
 
     Examples
     --------
-    from mirascope._generated import AsyncMirascope
+    from mirascope.api._generated import AsyncMirascope
 
     client = AsyncMirascope()
     """
