@@ -18,6 +18,7 @@ from ..tools import (
     Tool,
     Toolkit,
 )
+from ..types import Jsonable
 from .base_response import BaseResponse
 from .finish_reason import FinishReason
 
@@ -55,7 +56,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
             finish_reason=finish_reason,
         )
 
-    def execute_tools(self) -> Sequence[ToolOutput]:
+    def execute_tools(self) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response.
 
         Returns:
@@ -126,7 +127,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
             finish_reason=finish_reason,
         )
 
-    async def execute_tools(self) -> Sequence[ToolOutput]:
+    async def execute_tools(self) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response.
 
         Returns:
@@ -206,7 +207,7 @@ class ContextResponse(
             finish_reason=finish_reason,
         )
 
-    def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput]:
+    def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response.
 
         Args:
@@ -294,7 +295,9 @@ class AsyncContextResponse(
             finish_reason=finish_reason,
         )
 
-    async def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput]:
+    async def execute_tools(
+        self, ctx: Context[DepsT]
+    ) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response.
 
         Args:
