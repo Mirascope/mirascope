@@ -3,6 +3,7 @@
 .tanstack
 .dev.vars
 .env.local
-!cloud/src/lib
+tsconfig.tsbuildinfo
+!src/lib
 
 docker/data
