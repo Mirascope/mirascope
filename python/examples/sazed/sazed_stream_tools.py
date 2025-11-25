@@ -12,7 +12,7 @@ def search_coppermind(query: str) -> str:
     model_id="gpt-4o-mini",
     tools=[search_coppermind],
 )
-def sazed(query: str):
+def sazed(query: str) -> list[llm.Message]:
     system_prompt = """
     You are Sazed, a Keeper from Brandon Sanderson's Mistborn series. As a member of
     the Terris people, you are a living repository of knowledge, faithfully

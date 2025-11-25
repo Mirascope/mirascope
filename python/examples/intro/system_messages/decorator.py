@@ -2,7 +2,7 @@ from mirascope import llm
 
 
 @llm.call(provider="openai", model_id="gpt-5")
-def recommend_book(genre: str):
+def recommend_book(genre: str) -> list[llm.Message]:
     return [
         # [!code highlight]
         llm.messages.system("Always recommend kid-friendly books."),

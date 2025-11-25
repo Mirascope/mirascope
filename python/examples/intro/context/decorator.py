@@ -14,13 +14,13 @@ def get_book_info(ctx: llm.Context[Library], book: str) -> str:
 
 @llm.call(provider="openai", model_id="gpt-5", tools=[get_book_info])
 # [!code highlight:2]
-def librarian(ctx: llm.Context[Library], query: str):
+def librarian(ctx: llm.Context[Library], query: str) -> list[llm.Message]:
     book_list = "\n".join(ctx.deps.available_books)
     return [
         llm.messages.system(
             f"You are a librarian, with access to these books: ${book_list}"
         ),
-        query,
+        llm.messages.user(query),
     ]
 
 

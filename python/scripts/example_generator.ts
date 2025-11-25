@@ -178,10 +178,14 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
 
   private get function_def(): string {
     if (this.agent) {
-      return `${this._async}def sazed(${this.ctx_argdef()}):
+      return `${
+        this._async
+      }def sazed(${this.ctx_argdef()}) -> list[llm.Message]:
     return ${this.system_prompt}`;
     } else {
-      return `${this._async}def sazed(${this.ctx_argdef(true)}query: str):
+      return `${this._async}def sazed(${this.ctx_argdef(
+        true
+      )}query: str) -> list[llm.Message]:
     system_prompt = ${this.system_prompt}
     return [llm.messages.system(system_prompt), llm.messages.user(query)]`;
     }
