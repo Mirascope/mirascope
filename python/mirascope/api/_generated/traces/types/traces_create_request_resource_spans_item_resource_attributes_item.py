@@ -3,13 +3,15 @@
 import typing
 
 import pydantic
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .key_value_value import KeyValueValue
+from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .traces_create_request_resource_spans_item_resource_attributes_item_value import (
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValue,
+)
 
 
-class KeyValue(UniversalBaseModel):
+class TracesCreateRequestResourceSpansItemResourceAttributesItem(UniversalBaseModel):
     key: str
-    value: KeyValueValue
+    value: TracesCreateRequestResourceSpansItemResourceAttributesItemValue
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(

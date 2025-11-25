@@ -34,16 +34,21 @@ A full reference for this library is available [here](./reference.md).
 Instantiate and use the client with the following:
 
 ```python
-from mirascope.api._generated import Mirascope, ResourceSpans, ScopeSpans, Span
+from mirascope.api._generated import Mirascope
+from mirascope.api._generated.traces import (
+    TracesCreateRequestResourceSpansItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
+)
 
 client = Mirascope()
 client.traces.create(
     resource_spans=[
-        ResourceSpans(
+        TracesCreateRequestResourceSpansItem(
             scope_spans=[
-                ScopeSpans(
+                TracesCreateRequestResourceSpansItemScopeSpansItem(
                     spans=[
-                        Span(
+                        TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(
                             trace_id="traceId",
                             span_id="spanId",
                             name="name",
@@ -65,11 +70,11 @@ The SDK also exports an `async` client so that you can make non-blocking calls t
 ```python
 import asyncio
 
-from mirascope.api._generated import (
-    AsyncMirascope,
-    ResourceSpans,
-    ScopeSpans,
-    Span,
+from mirascope.api._generated import AsyncMirascope
+from mirascope.api._generated.traces import (
+    TracesCreateRequestResourceSpansItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
 )
 
 client = AsyncMirascope()
@@ -78,11 +83,11 @@ client = AsyncMirascope()
 async def main() -> None:
     await client.traces.create(
         resource_spans=[
-            ResourceSpans(
+            TracesCreateRequestResourceSpansItem(
                 scope_spans=[
-                    ScopeSpans(
+                    TracesCreateRequestResourceSpansItemScopeSpansItem(
                         spans=[
-                            Span(
+                            TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(
                                 trace_id="traceId",
                                 span_id="spanId",
                                 name="name",

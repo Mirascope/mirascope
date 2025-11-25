@@ -4,17 +4,16 @@ import typing
 
 import pydantic
 import typing_extensions
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
-from .instrumentation_scope import InstrumentationScope
-from .span import Span
+from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ...core.serialization import FieldMetadata
 
 
-class ScopeSpans(UniversalBaseModel):
-    scope: typing.Optional[InstrumentationScope] = None
-    spans: typing.List[Span]
-    schema_url: typing_extensions.Annotated[
-        typing.Optional[str], FieldMetadata(alias="schemaUrl")
+class TracesCreateResponsePartialSuccess(UniversalBaseModel):
+    rejected_spans: typing_extensions.Annotated[
+        typing.Optional[float], FieldMetadata(alias="rejectedSpans")
+    ] = None
+    error_message: typing_extensions.Annotated[
+        typing.Optional[str], FieldMetadata(alias="errorMessage")
     ] = None
 
     if IS_PYDANTIC_V2:

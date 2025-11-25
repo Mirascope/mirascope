@@ -4,20 +4,6 @@
 <dl>
 <dd>
 
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Temporary endpoint to receive and log OpenTelemetry trace data for debugging purposes. This endpoint follows the OTLP/HTTP specification.
-</dd>
-</dl>
-</dd>
-</dl>
-
 #### 🔌 Usage
 
 <dl>
@@ -27,16 +13,21 @@ Temporary endpoint to receive and log OpenTelemetry trace data for debugging pur
 <dd>
 
 ```python
-from mirascope.api._generated import Mirascope, ResourceSpans, ScopeSpans, Span
+from mirascope.api._generated import Mirascope
+from mirascope.api._generated.traces import (
+    TracesCreateRequestResourceSpansItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItem,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
+)
 
 client = Mirascope()
 client.traces.create(
     resource_spans=[
-        ResourceSpans(
+        TracesCreateRequestResourceSpansItem(
             scope_spans=[
-                ScopeSpans(
+                TracesCreateRequestResourceSpansItemScopeSpansItem(
                     spans=[
-                        Span(
+                        TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem(
                             trace_id="traceId",
                             span_id="spanId",
                             name="name",
@@ -64,7 +55,7 @@ client.traces.create(
 <dl>
 <dd>
 
-**resource_spans:** `typing.Sequence[ResourceSpans]` 
+**resource_spans:** `typing.Sequence[TracesCreateRequestResourceSpansItem]` 
     
 </dd>
 </dl>
@@ -88,20 +79,6 @@ client.traces.create(
 <details><summary><code>client.health.<a href="src/mirascope/health/client.py">check</a>()</code></summary>
 <dl>
 <dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Returns the current health status of the application
-</dd>
-</dl>
-</dd>
-</dl>
 
 #### 🔌 Usage
 

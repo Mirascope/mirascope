@@ -9,10 +9,10 @@ from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
-from ..errors.bad_request_error import BadRequestError
-from ..errors.internal_server_error import InternalServerError
-from ..types.resource_spans import ResourceSpans
-from ..types.trace_response import TraceResponse
+from .types.traces_create_request_resource_spans_item import (
+    TracesCreateRequestResourceSpansItem,
+)
+from .types.traces_create_response import TracesCreateResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -25,23 +25,21 @@ class RawTracesClient:
     def create(
         self,
         *,
-        resource_spans: typing.Sequence[ResourceSpans],
+        resource_spans: typing.Sequence[TracesCreateRequestResourceSpansItem],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[TraceResponse]:
+    ) -> HttpResponse[TracesCreateResponse]:
         """
-        Temporary endpoint to receive and log OpenTelemetry trace data for debugging purposes. This endpoint follows the OTLP/HTTP specification.
-
         Parameters
         ----------
-        resource_spans : typing.Sequence[ResourceSpans]
+        resource_spans : typing.Sequence[TracesCreateRequestResourceSpansItem]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[TraceResponse]
-            Trace export acknowledged
+        HttpResponse[TracesCreateResponse]
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
             "api/v1/traces",
@@ -49,7 +47,7 @@ class RawTracesClient:
             json={
                 "resourceSpans": convert_and_respect_annotation_metadata(
                     object_=resource_spans,
-                    annotation=typing.Sequence[ResourceSpans],
+                    annotation=typing.Sequence[TracesCreateRequestResourceSpansItem],
                     direction="write",
                 ),
             },
@@ -62,35 +60,13 @@ class RawTracesClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    TraceResponse,
+                    TracesCreateResponse,
                     parse_obj_as(
-                        type_=TraceResponse,  # type: ignore
+                        type_=TracesCreateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(
@@ -112,23 +88,21 @@ class AsyncRawTracesClient:
     async def create(
         self,
         *,
-        resource_spans: typing.Sequence[ResourceSpans],
+        resource_spans: typing.Sequence[TracesCreateRequestResourceSpansItem],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[TraceResponse]:
+    ) -> AsyncHttpResponse[TracesCreateResponse]:
         """
-        Temporary endpoint to receive and log OpenTelemetry trace data for debugging purposes. This endpoint follows the OTLP/HTTP specification.
-
         Parameters
         ----------
-        resource_spans : typing.Sequence[ResourceSpans]
+        resource_spans : typing.Sequence[TracesCreateRequestResourceSpansItem]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[TraceResponse]
-            Trace export acknowledged
+        AsyncHttpResponse[TracesCreateResponse]
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
             "api/v1/traces",
@@ -136,7 +110,7 @@ class AsyncRawTracesClient:
             json={
                 "resourceSpans": convert_and_respect_annotation_metadata(
                     object_=resource_spans,
-                    annotation=typing.Sequence[ResourceSpans],
+                    annotation=typing.Sequence[TracesCreateRequestResourceSpansItem],
                     direction="write",
                 ),
             },
@@ -149,35 +123,13 @@ class AsyncRawTracesClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    TraceResponse,
+                    TracesCreateResponse,
                     parse_obj_as(
-                        type_=TraceResponse,  # type: ignore
+                        type_=TracesCreateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Optional[typing.Any],
-                        parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(

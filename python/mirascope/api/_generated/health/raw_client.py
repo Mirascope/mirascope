@@ -19,8 +19,6 @@ class RawHealthClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[HealthCheckResponse]:
         """
-        Returns the current health status of the application
-
         Parameters
         ----------
         request_options : typing.Optional[RequestOptions]
@@ -29,7 +27,7 @@ class RawHealthClient:
         Returns
         -------
         HttpResponse[HealthCheckResponse]
-            Application health status
+            OK
         """
         _response = self._client_wrapper.httpx_client.request(
             "health",
@@ -68,8 +66,6 @@ class AsyncRawHealthClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[HealthCheckResponse]:
         """
-        Returns the current health status of the application
-
         Parameters
         ----------
         request_options : typing.Optional[RequestOptions]
@@ -78,7 +74,7 @@ class AsyncRawHealthClient:
         Returns
         -------
         AsyncHttpResponse[HealthCheckResponse]
-            Application health status
+            OK
         """
         _response = await self._client_wrapper.httpx_client.request(
             "health",

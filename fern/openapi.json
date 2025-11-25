@@ -1,5 +1,4 @@
 {
-  "openapi": "3.1.0",
   "info": {
     "title": "Mirascope Cloud API",
     "version": "0.1.0",
@@ -22,180 +21,305 @@
       "x-fern-server-name": "local"
     }
   ],
-  "tags": [{ "name": "API", "description": "Core API endpoints" }],
-  "components": {
-    "schemas": {
-      "TraceResponse": {
-        "type": "object",
-        "properties": {
-          "partialSuccess": {
-            "type": "object",
-            "properties": {
-              "rejectedSpans": { "type": "number" },
-              "errorMessage": { "type": "string" }
-            }
-          }
-        }
-      },
-      "KeyValue": {
-        "type": "object",
-        "properties": {
-          "key": { "type": "string" },
-          "value": {
-            "type": "object",
-            "properties": {
-              "stringValue": { "type": "string" },
-              "intValue": { "type": "string" },
-              "doubleValue": { "type": "number" },
-              "boolValue": { "type": "boolean" },
-              "arrayValue": { "nullable": true },
-              "kvlistValue": { "nullable": true }
-            }
-          }
-        },
-        "required": ["key", "value"]
-      },
-      "Resource": {
-        "type": "object",
-        "properties": {
-          "attributes": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/KeyValue" }
-          },
-          "droppedAttributesCount": { "type": "number" }
-        }
-      },
-      "InstrumentationScope": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string" },
-          "version": { "type": "string" },
-          "attributes": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/KeyValue" }
-          },
-          "droppedAttributesCount": { "type": "number" }
-        },
-        "required": ["name"]
-      },
-      "SpanStatus": {
-        "type": "object",
-        "properties": {
-          "code": { "type": "number" },
-          "message": { "type": "string" }
-        }
-      },
-      "Span": {
-        "type": "object",
-        "properties": {
-          "traceId": { "type": "string" },
-          "spanId": { "type": "string" },
-          "parentSpanId": { "type": "string" },
-          "name": { "type": "string" },
-          "kind": { "type": "number" },
-          "startTimeUnixNano": { "type": "string" },
-          "endTimeUnixNano": { "type": "string" },
-          "attributes": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/KeyValue" }
-          },
-          "droppedAttributesCount": { "type": "number" },
-          "events": { "type": "array", "items": { "nullable": true } },
-          "droppedEventsCount": { "type": "number" },
-          "status": { "$ref": "#/components/schemas/SpanStatus" },
-          "links": { "type": "array", "items": { "nullable": true } },
-          "droppedLinksCount": { "type": "number" }
-        },
-        "required": [
-          "traceId",
-          "spanId",
-          "name",
-          "startTimeUnixNano",
-          "endTimeUnixNano"
-        ]
-      },
-      "ScopeSpans": {
-        "type": "object",
-        "properties": {
-          "scope": { "$ref": "#/components/schemas/InstrumentationScope" },
-          "spans": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/Span" }
-          },
-          "schemaUrl": { "type": "string" }
-        },
-        "required": ["spans"]
-      },
-      "ResourceSpans": {
-        "type": "object",
-        "properties": {
-          "resource": { "$ref": "#/components/schemas/Resource" },
-          "scopeSpans": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/ScopeSpans" }
-          },
-          "schemaUrl": { "type": "string" }
-        },
-        "required": ["scopeSpans"]
-      },
-      "TraceRequest": {
-        "type": "object",
-        "properties": {
-          "resourceSpans": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/ResourceSpans" }
-          }
-        },
-        "required": ["resourceSpans"]
-      }
-    },
-    "parameters": {}
-  },
+  "openapi": "3.1.1",
   "paths": {
     "/api/v1/traces": {
       "post": {
-        "tags": ["Telemetry"],
-        "summary": "Debug endpoint for OpenTelemetry traces",
-        "description": "Temporary endpoint to receive and log OpenTelemetry trace data for debugging purposes. This endpoint follows the OTLP/HTTP specification.",
+        "operationId": "traces.create",
+        "tags": [
+          "traces"
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/TraceRequest" }
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "resourceSpans": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "resource": {
+                          "type": "object",
+                          "properties": {
+                            "attributes": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "key": {
+                                    "type": "string"
+                                  },
+                                  "value": {
+                                    "type": "object",
+                                    "properties": {
+                                      "stringValue": {
+                                        "type": "string"
+                                      },
+                                      "intValue": {
+                                        "type": "string"
+                                      },
+                                      "doubleValue": {
+                                        "type": "number"
+                                      },
+                                      "boolValue": {
+                                        "type": "boolean"
+                                      },
+                                      "arrayValue": {},
+                                      "kvlistValue": {}
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "key",
+                                  "value"
+                                ]
+                              }
+                            },
+                            "droppedAttributesCount": {
+                              "type": "number"
+                            }
+                          }
+                        },
+                        "scopeSpans": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "scope": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "version": {
+                                    "type": "string"
+                                  },
+                                  "attributes": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "key": {
+                                          "type": "string"
+                                        },
+                                        "value": {
+                                          "type": "object",
+                                          "properties": {
+                                            "stringValue": {
+                                              "type": "string"
+                                            },
+                                            "intValue": {
+                                              "type": "string"
+                                            },
+                                            "doubleValue": {
+                                              "type": "number"
+                                            },
+                                            "boolValue": {
+                                              "type": "boolean"
+                                            },
+                                            "arrayValue": {},
+                                            "kvlistValue": {}
+                                          }
+                                        }
+                                      },
+                                      "required": [
+                                        "key",
+                                        "value"
+                                      ]
+                                    }
+                                  },
+                                  "droppedAttributesCount": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "name"
+                                ]
+                              },
+                              "spans": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "traceId": {
+                                      "type": "string"
+                                    },
+                                    "spanId": {
+                                      "type": "string"
+                                    },
+                                    "parentSpanId": {
+                                      "type": "string"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "kind": {
+                                      "type": "number"
+                                    },
+                                    "startTimeUnixNano": {
+                                      "type": "string"
+                                    },
+                                    "endTimeUnixNano": {
+                                      "type": "string"
+                                    },
+                                    "attributes": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "key": {
+                                            "type": "string"
+                                          },
+                                          "value": {
+                                            "type": "object",
+                                            "properties": {
+                                              "stringValue": {
+                                                "type": "string"
+                                              },
+                                              "intValue": {
+                                                "type": "string"
+                                              },
+                                              "doubleValue": {
+                                                "type": "number"
+                                              },
+                                              "boolValue": {
+                                                "type": "boolean"
+                                              },
+                                              "arrayValue": {},
+                                              "kvlistValue": {}
+                                            }
+                                          }
+                                        },
+                                        "required": [
+                                          "key",
+                                          "value"
+                                        ]
+                                      }
+                                    },
+                                    "droppedAttributesCount": {
+                                      "type": "number"
+                                    },
+                                    "events": {
+                                      "type": "array",
+                                      "items": {}
+                                    },
+                                    "droppedEventsCount": {
+                                      "type": "number"
+                                    },
+                                    "status": {
+                                      "type": "object",
+                                      "properties": {
+                                        "code": {
+                                          "type": "number"
+                                        },
+                                        "message": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    },
+                                    "links": {
+                                      "type": "array",
+                                      "items": {}
+                                    },
+                                    "droppedLinksCount": {
+                                      "type": "number"
+                                    }
+                                  },
+                                  "required": [
+                                    "traceId",
+                                    "spanId",
+                                    "name",
+                                    "startTimeUnixNano",
+                                    "endTimeUnixNano"
+                                  ]
+                                }
+                              },
+                              "schemaUrl": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "spans"
+                            ]
+                          }
+                        },
+                        "schemaUrl": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "scopeSpans"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "resourceSpans"
+                ]
+              }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Trace export acknowledged",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/TraceResponse" }
-              }
-            }
-          },
-          "400": { "description": "Invalid request format" },
-          "500": { "description": "Internal server error" }
-        }
-      }
-    },
-    "/health": {
-      "get": {
-        "tags": ["Health"],
-        "summary": "Health check endpoint",
-        "description": "Returns the current health status of the application",
-        "responses": {
-          "200": {
-            "description": "Application health status",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": { "type": "string", "enum": ["ok"] },
-                    "timestamp": { "type": "string", "format": "date-time" },
-                    "environment": { "type": "string" }
+                    "partialSuccess": {
+                      "type": "object",
+                      "properties": {
+                        "rejectedSpans": {
+                          "type": "number"
+                        },
+                        "errorMessage": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health.check",
+        "tags": [
+          "health"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "const": "ok"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "environment": {
+                      "type": "string"
+                    }
                   },
-                  "required": ["status", "timestamp", "environment"]
+                  "required": [
+                    "status",
+                    "timestamp",
+                    "environment"
+                  ]
                 }
               }
             }

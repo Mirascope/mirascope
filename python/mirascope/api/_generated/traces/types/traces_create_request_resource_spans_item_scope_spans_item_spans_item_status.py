@@ -3,10 +3,12 @@
 import typing
 
 import pydantic
-from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class SpanStatus(UniversalBaseModel):
+class TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus(
+    UniversalBaseModel
+):
     code: typing.Optional[float] = None
     message: typing.Optional[str] = None
 
