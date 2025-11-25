@@ -1,11 +1,11 @@
 import inspect
 from collections.abc import Callable
-from typing import get_origin
+from typing import Any, get_origin
 
 from .context import Context
 
 
-def first_param_is_context(fn: Callable) -> bool:
+def first_param_is_context(fn: Callable[..., Any]) -> bool:
     """Returns whether the first argument to a function is `ctx: Context`.
 
     Also returns true if the first argument is a subclass of `Context`.

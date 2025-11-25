@@ -1,5 +1,7 @@
 """Tests for toolkit classes."""
 
+from typing import Any
+
 import pytest
 
 from mirascope import llm
@@ -134,22 +136,22 @@ def context_tool_call() -> llm.ToolCall:
 
 
 @pytest.fixture
-def context_tool() -> llm.ContextTool:
+def context_tool() -> llm.ContextTool[Any]:
     """Create mock context tool for testing."""
 
     @llm.tool
-    def deps_tool(ctx: llm.Context) -> str:
+    def deps_tool(ctx: llm.Context[Any]) -> str:
         return f"deps: {ctx.deps}"
 
     return deps_tool
 
 
 @pytest.fixture
-def async_context_tool() -> llm.AsyncContextTool:
+def async_context_tool() -> llm.AsyncContextTool[Any]:
     """Create mock context tool for testing."""
 
     @llm.tool
-    async def deps_tool(ctx: llm.Context) -> str:
+    async def deps_tool(ctx: llm.Context[Any]) -> str:
         return f"deps: {ctx.deps}"
 
     return deps_tool
@@ -157,7 +159,7 @@ def async_context_tool() -> llm.AsyncContextTool:
 
 def test_context_toolkit_execute(
     tools: list[llm.Tool],
-    context_tool: llm.ContextTool,
+    context_tool: llm.ContextTool[Any],
     tool_call: llm.ToolCall,
     context_tool_call: llm.ToolCall,
 ) -> None:
@@ -175,7 +177,7 @@ def test_context_toolkit_execute(
 @pytest.mark.asyncio
 async def test_async_context_toolkit_execute(
     async_tools: list[llm.AsyncTool],
-    async_context_tool: llm.AsyncContextTool,
+    async_context_tool: llm.AsyncContextTool[Any],
     tool_call: llm.ToolCall,
     context_tool_call: llm.ToolCall,
 ) -> None:

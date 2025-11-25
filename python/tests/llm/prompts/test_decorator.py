@@ -6,7 +6,7 @@ from mirascope import llm
 
 
 @pytest.fixture
-def mixed_content() -> list:
+def mixed_content() -> list[llm.UserContent]:
     """Fixture for mixed user content."""
     return [
         "hi, can you help me interpret this?",
@@ -143,7 +143,7 @@ class TestSyncContextPromptDecorator:
     def test_context_decorator_call_patterns(self) -> None:
         """Test that context_prompt decorator can be called with and without parentheses."""
 
-        def context_prompt_fn(ctx: llm.Context, name: str) -> str:
+        def context_prompt_fn(ctx: llm.Context[None], name: str) -> str:
             return f"Hello {name}"
 
         called_on_fn = llm.prompt(context_prompt_fn)
@@ -156,7 +156,9 @@ class TestSyncContextPromptDecorator:
         """Test sync context prompt decorator with string return value."""
 
         @llm.prompt
-        def simple_context_prompt(ctx: llm.Context, name: str, *, title: str) -> str:
+        def simple_context_prompt(
+            ctx: llm.Context[None], name: str, *, title: str
+        ) -> str:
             return f"Hello {title} {name}, how are you?"
 
         context = llm.Context(deps=None)
@@ -169,7 +171,7 @@ class TestSyncContextPromptDecorator:
         """Test sync context prompt decorator with mixed return value."""
 
         @llm.prompt
-        def context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
+        def context_prompt(ctx: llm.Context[None]) -> llm.messages.UserContent:
             return mixed_content
 
         context = llm.Context(deps=None)
@@ -182,7 +184,7 @@ class TestSyncContextPromptDecorator:
         """Test sync context prompt decorator with messages return value."""
 
         @llm.prompt
-        def messages_context_prompt(ctx: llm.Context) -> list[llm.Message]:
+        def messages_context_prompt(ctx: llm.Context[None]) -> list[llm.Message]:
             return expected_messages
 
         context = llm.Context(deps=None)
@@ -192,7 +194,9 @@ class TestSyncContextPromptDecorator:
         """Test sync context prompt decorator with context dependencies."""
 
         @llm.prompt
-        def context_prompt_with_deps(ctx: llm.Context[dict], query: str) -> str:
+        def context_prompt_with_deps(
+            ctx: llm.Context[dict[str, str]], query: str
+        ) -> str:
             user_id = ctx.deps["user_id"]
             return f"User {user_id} asks: {query}"
 
@@ -208,7 +212,7 @@ class TestAsyncContextPromptDecorator:
 
         @llm.prompt
         async def simple_context_prompt(
-            ctx: llm.Context, name: str, *, title: str
+            ctx: llm.Context[None], name: str, *, title: str
         ) -> str:
             return f"Hello {title} {name}, how are you?"
 
@@ -222,7 +226,7 @@ class TestAsyncContextPromptDecorator:
         """Test async context prompt decorator with mixed return value."""
 
         @llm.prompt
-        async def context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
+        async def context_prompt(ctx: llm.Context[None]) -> llm.messages.UserContent:
             return mixed_content
 
         context = llm.Context(deps=None)
@@ -235,7 +239,7 @@ class TestAsyncContextPromptDecorator:
         """Test async context prompt decorator with messages return value."""
 
         @llm.prompt
-        async def messages_context_prompt(ctx: llm.Context) -> list[llm.Message]:
+        async def messages_context_prompt(ctx: llm.Context[None]) -> list[llm.Message]:
             return expected_messages
 
         context = llm.Context(deps=None)
@@ -245,7 +249,9 @@ class TestAsyncContextPromptDecorator:
         """Test async context prompt decorator with context dependencies."""
 
         @llm.prompt
-        async def context_prompt_with_deps(ctx: llm.Context[dict], query: str) -> str:
+        async def context_prompt_with_deps(
+            ctx: llm.Context[dict[str, str]], query: str
+        ) -> str:
             user_id = ctx.deps["user_id"]
             return f"User {user_id} asks: {query}"
 
@@ -262,7 +268,7 @@ class TestValueErrorOnEmptyContextPrompts:
         """Test sync context prompt decorator with empty return value."""
 
         @llm.prompt
-        def empty_context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
+        def empty_context_prompt(ctx: llm.Context[None]) -> llm.messages.UserContent:
             return empty_value
 
         context = llm.Context(deps=None)
@@ -277,7 +283,9 @@ class TestValueErrorOnEmptyContextPrompts:
         """Test async context prompt decorator with empty return value."""
 
         @llm.prompt
-        async def empty_context_prompt(ctx: llm.Context) -> llm.messages.UserContent:
+        async def empty_context_prompt(
+            ctx: llm.Context[None],
+        ) -> llm.messages.UserContent:
             return empty_value
 
         context = llm.Context(deps=None)

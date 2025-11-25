@@ -69,7 +69,7 @@ class TestImageDownload:
     def test_download_detects_mime_type_from_magic_bytes(
         self,
         httpserver: HTTPServer,
-        image_data: dict,
+        image_data: dict[str, bytes],
         format_name: str,
         expected_mime: str,
     ) -> None:
@@ -85,7 +85,7 @@ class TestImageDownload:
         assert len(image.source.data) > 0
 
     def test_download_follows_redirects(
-        self, httpserver: HTTPServer, image_data: dict
+        self, httpserver: HTTPServer, image_data: dict[str, bytes]
     ) -> None:
         """Test that download follows redirects."""
         httpserver.expect_request("/redirect").respond_with_data(
@@ -100,7 +100,7 @@ class TestImageDownload:
         assert image.source.mime_type == "image/png"
 
     def test_download_raises_on_unsupported_format(
-        self, httpserver: HTTPServer, image_data: dict
+        self, httpserver: HTTPServer, image_data: dict[str, bytes]
     ) -> None:
         """Test that download raises ValueError for unsupported image format."""
         httpserver.expect_request("/image").respond_with_data(image_data["unsupported"])
@@ -127,7 +127,7 @@ class TestImageDownload:
             Image.download(url)
 
     def test_download_respects_custom_size_limit(
-        self, httpserver: HTTPServer, image_data: dict
+        self, httpserver: HTTPServer, image_data: dict[str, bytes]
     ) -> None:
         """Test that download respects custom max_size parameter."""
         httpserver.expect_request("/image").respond_with_data(image_data["png"])
@@ -153,7 +153,7 @@ class TestImageDownloadAsync:
     async def test_download_async_detects_mime_type(
         self,
         httpserver: HTTPServer,
-        image_data: dict,
+        image_data: dict[str, bytes],
         format_name: str,
         expected_mime: str,
     ) -> None:
@@ -180,7 +180,7 @@ class TestImageDownloadAsync:
 
     @pytest.mark.asyncio
     async def test_download_async_raises_on_unsupported_format(
-        self, httpserver: HTTPServer, image_data: dict
+        self, httpserver: HTTPServer, image_data: dict[str, bytes]
     ) -> None:
         """Test that download_async raises ValueError for unsupported format."""
         httpserver.expect_request("/image").respond_with_data(image_data["unsupported"])
@@ -195,7 +195,7 @@ class TestImageFromFile:
 
     @pytest.mark.parametrize("data_key,expected_mime", IMAGE_FORMAT_TESTS)
     def test_from_file_detects_mime_type(
-        self, image_data: dict, data_key: str, expected_mime: str
+        self, image_data: dict[str, bytes], data_key: str, expected_mime: str
     ) -> None:
         """Test that from_file detects MIME type from magic bytes (not extension)."""
         with tempfile.NamedTemporaryFile(suffix=".unknown", delete=False) as f:
@@ -210,7 +210,9 @@ class TestImageFromFile:
         finally:
             Path(temp_path).unlink()
 
-    def test_from_file_raises_on_unsupported_format(self, image_data: dict) -> None:
+    def test_from_file_raises_on_unsupported_format(
+        self, image_data: dict[str, bytes]
+    ) -> None:
         """Test that from_file raises ValueError for unsupported format."""
         with tempfile.NamedTemporaryFile(suffix=".bin", delete=False) as f:
             f.write(image_data["unsupported"])
@@ -227,7 +229,7 @@ class TestImageFromFile:
         with pytest.raises(FileNotFoundError):
             Image.from_file("/nonexistent/path/to/file.png")
 
-    def test_from_file_enforces_size_limit(self, image_data: dict) -> None:
+    def test_from_file_enforces_size_limit(self, image_data: dict[str, bytes]) -> None:
         """Test that from_file enforces the size limit."""
         large_data = b"\xff\xd8\xff" + b"x" * (MAX_IMAGE_SIZE + 1)
         with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as f:
@@ -240,7 +242,9 @@ class TestImageFromFile:
         finally:
             Path(temp_path).unlink()
 
-    def test_from_file_respects_custom_size_limit(self, image_data: dict) -> None:
+    def test_from_file_respects_custom_size_limit(
+        self, image_data: dict[str, bytes]
+    ) -> None:
         """Test that from_file respects custom max_size parameter."""
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
             f.write(image_data["png"])
@@ -259,7 +263,7 @@ class TestImageFromBytes:
 
     @pytest.mark.parametrize("data_key,expected_mime", IMAGE_FORMAT_TESTS)
     def test_from_bytes_detects_mime_type(
-        self, image_data: dict, data_key: str, expected_mime: str
+        self, image_data: dict[str, bytes], data_key: str, expected_mime: str
     ) -> None:
         """Test that from_bytes detects MIME type from magic bytes."""
         image = Image.from_bytes(image_data[data_key])
@@ -267,7 +271,9 @@ class TestImageFromBytes:
         assert isinstance(image.source, Base64ImageSource)
         assert image.source.mime_type == expected_mime
 
-    def test_from_bytes_raises_on_unsupported_format(self, image_data: dict) -> None:
+    def test_from_bytes_raises_on_unsupported_format(
+        self, image_data: dict[str, bytes]
+    ) -> None:
         """Test that from_bytes raises ValueError for unsupported format."""
         with pytest.raises(ValueError, match="Unsupported image type"):
             Image.from_bytes(image_data["unsupported"])
@@ -284,7 +290,9 @@ class TestImageFromBytes:
         with pytest.raises(ValueError, match="exceeds maximum allowed size"):
             Image.from_bytes(large_data)
 
-    def test_from_bytes_respects_custom_size_limit(self, image_data: dict) -> None:
+    def test_from_bytes_respects_custom_size_limit(
+        self, image_data: dict[str, bytes]
+    ) -> None:
         """Test that from_bytes respects custom max_size parameter."""
         with pytest.raises(ValueError, match="exceeds maximum allowed size"):
             Image.from_bytes(image_data["png"], max_size=10)
