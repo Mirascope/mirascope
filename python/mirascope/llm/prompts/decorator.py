@@ -1,5 +1,6 @@
 """The `prompt` decorator for writing messages as string templates."""
 
+from collections.abc import Sequence
 from typing import overload
 
 from ..context import Context, DepsT
@@ -79,7 +80,7 @@ class PromptDecorator:
 
             async def async_context_prompt(
                 ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-            ) -> list[Message]:
+            ) -> Sequence[Message]:
                 result = await fn(ctx, *args, **kwargs)
                 return _utils.promote_to_messages(result)
 
@@ -89,7 +90,7 @@ class PromptDecorator:
 
             def context_prompt(
                 ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
-            ) -> list[Message]:
+            ) -> Sequence[Message]:
                 result = fn(ctx, *args, **kwargs)
                 return _utils.promote_to_messages(result)
 
@@ -97,7 +98,9 @@ class PromptDecorator:
         elif is_async:
             fn  # pyright: ignore[reportUnusedExpression]  # noqa: B018
 
-            async def async_prompt(*args: P.args, **kwargs: P.kwargs) -> list[Message]:
+            async def async_prompt(
+                *args: P.args, **kwargs: P.kwargs
+            ) -> Sequence[Message]:
                 result = await fn(*args, **kwargs)
                 return _utils.promote_to_messages(result)
 
@@ -105,7 +108,7 @@ class PromptDecorator:
         else:
             fn  # pyright: ignore[reportUnusedExpression]  # noqa: B018
 
-            def prompt(*args: P.args, **kwargs: P.kwargs) -> list[Message]:
+            def prompt(*args: P.args, **kwargs: P.kwargs) -> Sequence[Message]:
                 result = fn(*args, **kwargs)
                 return _utils.promote_to_messages(result)
 
@@ -231,7 +234,7 @@ def prompt(
     """Prompt decorator for turning functions (or "Prompts") into prompts.
 
     This decorator transforms a function into a Prompt, i.e. a function that
-    returns `list[llm.Message]`. Its behavior depends on whether it's called with a spec
+    returns `Sequence[llm.Message]`. Its behavior depends on whether it's called with a spec
     string.
 
     If the first parameter is named 'ctx' or typed as `llm.Context[T]`, it creates

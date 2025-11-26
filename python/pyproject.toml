@@ -166,6 +166,7 @@ reportUnnecessaryTypeIgnoreComment = "error"
 reportUnknownParameterType = "error"
 reportMissingParameterType = "error"
 reportMissingTypeArgument = "error"
+strictListInference = true
 
 executionEnvironments = [
     { root = "examples", reportUnknownParameterType = "none" },
