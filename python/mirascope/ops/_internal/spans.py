@@ -14,7 +14,7 @@ from opentelemetry.trace import (
     format_span_id,
     format_trace_id,
 )
-from opentelemetry.util.types import AttributeValue
+from opentelemetry.util.types import Attributes, AttributeValue
 
 from mirascope.ops import current_session
 from mirascope.ops._internal.utils import json_dumps
@@ -127,7 +127,7 @@ class Span:
             **attributes: Event attributes as key-value pairs.
         """
         if self._span and not self._finished:
-            serialized_attrs = {}
+            serialized_attrs: Attributes = {}
             for key, value in attributes.items():
                 if isinstance(value, list):
                     serialized_attrs[key] = json_dumps(value)

@@ -188,7 +188,7 @@ def _encode_assistant_message(
     elif text_params:
         content = text_params
 
-    message_params = {
+    message_params: openai_types.ChatCompletionAssistantMessageParam = {
         "role": "assistant",
         "content": content,
     }

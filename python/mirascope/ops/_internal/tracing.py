@@ -16,6 +16,8 @@ from typing import (
     overload,
 )
 
+from opentelemetry.util.types import AttributeValue
+
 from .protocols import AsyncFunction, SyncFunction, fn_is_async
 from .spans import Span
 from .types import Jsonable, P, R
@@ -169,7 +171,7 @@ class _BaseTracedFunction(Generic[P, R, FunctionT], ABC):
         """Returns a span context manager populated with call attributes."""
         arg_types, arg_values = self._extract_arguments(*args, **kwargs)
         with Span(self._qualified_name) as span:
-            attributes = {
+            attributes: dict[str, AttributeValue] = {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": self._qualified_name,
                 "mirascope.fn.module": self._module_name,
