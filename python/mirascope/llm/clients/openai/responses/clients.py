@@ -36,8 +36,8 @@ from ...base import BaseClient, Params
 from . import _utils
 from .model_ids import OpenAIResponsesModelId
 
-OPENAI_RESPONSES_CLIENT_CONTEXT: ContextVar["OpenAIResponsesClient | None"] = (
-    ContextVar("OPENAI_RESPONSES_CLIENT_CONTEXT", default=None)
+OPENAI_RESPONSES_CLIENT_CONTEXT: ContextVar["OpenAIResponsesClient"] = ContextVar(
+    "OPENAI_RESPONSES_CLIENT_CONTEXT"
 )
 
 
@@ -60,18 +60,20 @@ def client(
 
 def get_client() -> "OpenAIResponsesClient":
     """Get the current `OpenAIResponsesClient` from context."""
-    current_client = OPENAI_RESPONSES_CLIENT_CONTEXT.get()
+    current_client = OPENAI_RESPONSES_CLIENT_CONTEXT.get(None)
     if current_client is None:
         current_client = client()
         OPENAI_RESPONSES_CLIENT_CONTEXT.set(current_client)
     return current_client
 
 
-class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
+class OpenAIResponsesClient(
+    BaseClient[OpenAIResponsesModelId, OpenAI, "OpenAIResponsesClient"]
+):
     """The client for the OpenAI Responses API."""
 
     @property
-    def _context_var(self) -> ContextVar["OpenAIResponsesClient | None"]:
+    def _context_var(self) -> ContextVar["OpenAIResponsesClient"]:
         return OPENAI_RESPONSES_CLIENT_CONTEXT
 
     def __init__(

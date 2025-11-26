@@ -158,7 +158,7 @@ def agent(
     model_id: ModelId,
     tools: list[AgentToolT] | None = None,
     format: type[FormattableT] | None = None,
-    client: BaseClient | None = None,
+    client: BaseClient[str, Any, Any] | None = None,
     **params: Unpack[Params],
 ) -> AgentDecorator[..., AgentToolT, FormattableT]:
     """Decorator for creating an agent or structured agent.

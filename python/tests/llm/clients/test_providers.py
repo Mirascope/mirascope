@@ -50,4 +50,4 @@ def test_get_client_openai_responses() -> None:
 def test_get_client_unknown_provider() -> None:
     """Test that get_client raises ValueError for unknown providers."""
     with pytest.raises(ValueError, match="Unknown provider: unknown"):
-        llm.get_client("unknown")  # type: ignore
+        llm.get_client("unknown")  # pyright: ignore[reportArgumentType, reportCallIssue]

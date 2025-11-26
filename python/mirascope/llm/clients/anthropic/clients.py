@@ -36,8 +36,8 @@ from ..base import BaseClient, Params
 from . import _utils
 from .model_ids import AnthropicModelId
 
-ANTHROPIC_CLIENT_CONTEXT: ContextVar["AnthropicClient | None"] = ContextVar(
-    "ANTHROPIC_CLIENT_CONTEXT", default=None
+ANTHROPIC_CLIENT_CONTEXT: ContextVar["AnthropicClient"] = ContextVar(
+    "ANTHROPIC_CLIENT_CONTEXT"
 )
 
 
@@ -76,15 +76,15 @@ def get_client() -> "AnthropicClient":
         The current Anthropic client from context if available, otherwise
         a global default client based on environment variables.
     """
-    ctx_client = ANTHROPIC_CLIENT_CONTEXT.get()
+    ctx_client = ANTHROPIC_CLIENT_CONTEXT.get(None)
     return ctx_client or client()
 
 
-class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
+class AnthropicClient(BaseClient[AnthropicModelId, Anthropic, "AnthropicClient"]):
     """The client for the Anthropic LLM model."""
 
     @property
-    def _context_var(self) -> ContextVar["AnthropicClient | None"]:
+    def _context_var(self) -> ContextVar["AnthropicClient"]:
         return ANTHROPIC_CLIENT_CONTEXT
 
     def __init__(

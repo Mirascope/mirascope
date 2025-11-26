@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import Generic, overload
+from typing import Generic, cast, overload
 from typing_extensions import Self, TypeVar, Unpack
 
 from ...context import Context, DepsT
@@ -41,7 +41,7 @@ ClientT = TypeVar("ClientT", bound="BaseClient")
 """Type variable for an LLM client."""
 
 
-class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
+class BaseClient(Generic[ModelIdT, ProviderClientT, ClientT], ABC):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
@@ -49,17 +49,17 @@ class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     """
 
     client: ProviderClientT
-    _token: Token | None = None
+    _token: Token[ClientT] | None = None
 
     @property
     @abstractmethod
-    def _context_var(self) -> ContextVar:
+    def _context_var(self) -> ContextVar[ClientT]:
         """The ContextVar for this client type."""
         ...
 
     def __enter__(self) -> Self:
         """Sets the client context and stores the token."""
-        self._token = self._context_var.set(self)
+        self._token = self._context_var.set(cast(ClientT, self))
         return self
 
     def __exit__(
