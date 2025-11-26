@@ -121,7 +121,6 @@ target-version = "py310"
 "examples/*.{py}" = ["T201", "ANN"]
 "scripts/*.{py}" = ["T201"]
 "typechecking/*.{py}" = ["T201", "ANN"]
-"mirascope/graphs/*.{py}" = ["T201"]
 "mirascope/api/_generated/**" = ["ALL"]
 
 [tool.ruff.lint]
