@@ -36,8 +36,8 @@ from ...base import BaseClient, Params
 from . import _utils
 from .model_ids import OpenAICompletionsModelId
 
-OPENAI_COMPLETIONS_CLIENT_CONTEXT: ContextVar["OpenAICompletionsClient | None"] = (
-    ContextVar("OPENAI_COMPLETIONS_CLIENT_CONTEXT", default=None)
+OPENAI_COMPLETIONS_CLIENT_CONTEXT: ContextVar["OpenAICompletionsClient"] = ContextVar(
+    "OPENAI_COMPLETIONS_CLIENT_CONTEXT"
 )
 
 
@@ -76,15 +76,17 @@ def get_client() -> "OpenAICompletionsClient":
         The current OpenAI client from context if available, otherwise
         a global default client based on environment variables.
     """
-    ctx_client = OPENAI_COMPLETIONS_CLIENT_CONTEXT.get()
+    ctx_client = OPENAI_COMPLETIONS_CLIENT_CONTEXT.get(None)
     return ctx_client or client()
 
 
-class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
+class OpenAICompletionsClient(
+    BaseClient[OpenAICompletionsModelId, OpenAI, "OpenAICompletionsClient"]
+):
     """The client for the OpenAI LLM model."""
 
     @property
-    def _context_var(self) -> ContextVar["OpenAICompletionsClient | None"]:
+    def _context_var(self) -> ContextVar["OpenAICompletionsClient"]:
         return OPENAI_COMPLETIONS_CLIENT_CONTEXT
 
     def __init__(

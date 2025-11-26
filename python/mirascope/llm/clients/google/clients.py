@@ -37,9 +37,7 @@ from ..base import BaseClient, Params
 from . import _utils
 from .model_ids import GoogleModelId
 
-GOOGLE_CLIENT_CONTEXT: ContextVar["GoogleClient | None"] = ContextVar(
-    "GOOGLE_CLIENT_CONTEXT", default=None
-)
+GOOGLE_CLIENT_CONTEXT: ContextVar["GoogleClient"] = ContextVar("GOOGLE_CLIENT_CONTEXT")
 
 
 @lru_cache(maxsize=256)
@@ -75,15 +73,15 @@ def get_client() -> "GoogleClient":
         The current Google client from context if available, otherwise
         a global default client based on environment variables.
     """
-    ctx_client = GOOGLE_CLIENT_CONTEXT.get()
+    ctx_client = GOOGLE_CLIENT_CONTEXT.get(None)
     return ctx_client or client()
 
 
-class GoogleClient(BaseClient[GoogleModelId, Client]):
+class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
     """The client for the Google LLM model."""
 
     @property
-    def _context_var(self) -> ContextVar["GoogleClient | None"]:
+    def _context_var(self) -> ContextVar["GoogleClient"]:
         return GOOGLE_CLIENT_CONTEXT
 
     def __init__(
