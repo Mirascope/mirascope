@@ -17,7 +17,7 @@ from ....formatting import (
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
-from ....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
+from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ...base import Params, _utils as _base_utils
 from ..model_ids import AnthropicModelId
 
@@ -149,7 +149,7 @@ def _encode_message(
 
 
 @lru_cache(maxsize=128)
-def _convert_tool_to_tool_param(tool: ToolSchema) -> anthropic_types.ToolParam:
+def _convert_tool_to_tool_param(tool: AnyToolSchema) -> anthropic_types.ToolParam:
     """Convert a single Mirascope tool to Anthropic tool format with caching."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
@@ -164,7 +164,7 @@ def encode_request(
     *,
     model_id: AnthropicModelId,
     messages: Sequence[Message],
-    tools: Sequence[ToolSchema] | BaseToolkit | None,
+    tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:

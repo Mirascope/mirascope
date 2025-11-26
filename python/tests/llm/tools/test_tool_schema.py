@@ -393,14 +393,14 @@ def test_cannot_use_reserved_names() -> None:
 
 
 def test_context_tool_equivalence() -> None:
-    def make_non_context() -> llm.tools.ToolSchema:
+    def make_non_context() -> llm.tools.AnyToolSchema:
         @llm.tool
         def example(arg: str) -> str:
             return arg
 
         return example
 
-    def make_context() -> llm.tools.ToolSchema:
+    def make_context() -> llm.tools.AnyToolSchema:
         @llm.tool
         def example(ctx: llm.Context[None], arg: str) -> str:
             return arg
