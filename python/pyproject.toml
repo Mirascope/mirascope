@@ -162,10 +162,11 @@ include = ["mirascope", "tests", "examples"]
 exclude = [".venv", "mirascope/api/_generated", "mirascope/llm/mcp"]
 venvPath = "."
 venv = ".venv"
-reportUnnecessaryTypeIgnoreComment = "error"
-reportUnknownParameterType = "error"
 reportMissingParameterType = "error"
 reportMissingTypeArgument = "error"
+reportUnknownArgumentType = "error"
+reportUnknownParameterType = "error"
+reportUnnecessaryTypeIgnoreComment = "error"
 strictListInference = true
 
 [[tool.pyright.executionEnvironments]]
@@ -189,7 +190,11 @@ reportUnknownMemberType = "none"
 reportUnknownParameterType = "none"
 reportUnknownVariableType = "none"
 
-
+[[tool.pyright.executionEnvironments]]
+root = "mirascope/ops"
+reportUnknownArgumentType = "none"
+reportUnknownMemberType = "none"
+reportUnknownVariableType = "none"
 
 [tool.datamodel-codegen]
 input-file-type = "jsonschema"
