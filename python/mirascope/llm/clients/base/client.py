@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import Generic, cast, overload
+from typing import Any, Generic, cast, overload
 from typing_extensions import Self, TypeVar, Unpack
 
 from ...context import Context, DepsT
@@ -37,7 +37,7 @@ from .params import Params
 ModelIdT = TypeVar("ModelIdT", bound=str)
 ProviderClientT = TypeVar("ProviderClientT")
 
-ClientT = TypeVar("ClientT", bound="BaseClient")
+ClientT = TypeVar("ClientT", bound="BaseClient[str, Any, Any]")
 """Type variable for an LLM client."""
 
 

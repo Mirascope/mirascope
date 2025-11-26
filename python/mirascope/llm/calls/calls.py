@@ -32,7 +32,7 @@ from .base_call import BaseCall
 
 
 @dataclass
-class Call(BaseCall[P, Prompt, Toolkit, FormattableT], Generic[P, FormattableT]):
+class Call(BaseCall[P, Prompt[P], Toolkit, FormattableT], Generic[P, FormattableT]):
     """A class for generating responses using LLMs."""
 
     @overload
@@ -90,7 +90,7 @@ class Call(BaseCall[P, Prompt, Toolkit, FormattableT], Generic[P, FormattableT])
 
 @dataclass
 class AsyncCall(
-    BaseCall[P, AsyncPrompt, AsyncToolkit, FormattableT],
+    BaseCall[P, AsyncPrompt[P], AsyncToolkit, FormattableT],
     Generic[P, FormattableT],
 ):
     """A class for generating responses using LLMs asynchronously."""
@@ -152,7 +152,7 @@ class AsyncCall(
 
 @dataclass
 class ContextCall(
-    BaseCall[P, ContextPrompt, ContextToolkit[DepsT], FormattableT],
+    BaseCall[P, ContextPrompt[P, DepsT], ContextToolkit[DepsT], FormattableT],
     Generic[P, DepsT, FormattableT],
 ):
     """A class for generating responses using LLMs."""
@@ -234,7 +234,7 @@ class ContextCall(
 
 @dataclass
 class AsyncContextCall(
-    BaseCall[P, AsyncContextPrompt, AsyncContextToolkit[DepsT], FormattableT],
+    BaseCall[P, AsyncContextPrompt[P, DepsT], AsyncContextToolkit[DepsT], FormattableT],
     Generic[P, DepsT, FormattableT],
 ):
     """A class for generating responses using LLMs asynchronously."""
