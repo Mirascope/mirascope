@@ -232,7 +232,7 @@ def _convert_tool_to_tool_param(
     """Convert a single Mirascope `Tool` to OpenAI ChatCompletionToolParam with caching."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
-    _shared_utils._ensure_additional_properties_false(schema_dict)
+    _shared_utils.ensure_additional_properties_false(schema_dict)
     return openai_types.ChatCompletionToolParam(
         type="function",
         function={
@@ -257,7 +257,7 @@ def _create_strict_response_format(
     """
     schema = format.schema.copy()
 
-    _shared_utils._ensure_additional_properties_false(schema)
+    _shared_utils.ensure_additional_properties_false(schema)
 
     json_schema = JSONSchema(
         name=format.name,

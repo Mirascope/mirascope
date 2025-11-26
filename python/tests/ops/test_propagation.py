@@ -164,7 +164,7 @@ def test_propagator_sets_global_by_default() -> None:
     """Set the propagator as global textmap propagator by default."""
     os.environ[ENV_PROPAGATOR_FORMAT] = "tracecontext"
     propagator = ContextPropagator()
-    assert propagate.get_global_textmap() is propagator._propagator
+    assert propagate.get_global_textmap() is propagator._propagator  # pyright: ignore[reportPrivateUsage]
 
 
 def test_propagator_respects_set_global_false() -> None:

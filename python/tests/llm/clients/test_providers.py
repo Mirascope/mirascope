@@ -24,7 +24,7 @@ def test_get_client_google() -> None:
 
     assert isinstance(client1, llm.clients.GoogleClient)
     assert client1 is client2
-    assert client1.client._api_client.api_key == os.getenv("GOOGLE_API_KEY")
+    assert client1.client._api_client.api_key == os.getenv("GOOGLE_API_KEY")  # pyright: ignore[reportPrivateUsage]
 
 
 def test_get_client_openai() -> None:

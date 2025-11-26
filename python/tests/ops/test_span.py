@@ -54,12 +54,12 @@ class _StaticNoOpProvider:
 @pytest.fixture
 def noop_provider() -> Generator[None, None, None]:
     """Fixture that provides a no-op tracer provider for testing."""
-    original_provider = otel_trace._TRACER_PROVIDER
-    otel_trace._TRACER_PROVIDER = _StaticNoOpProvider()
+    original_provider = otel_trace._TRACER_PROVIDER  # pyright: ignore[reportPrivateUsage]
+    otel_trace._TRACER_PROVIDER = _StaticNoOpProvider()  # pyright: ignore[reportPrivateUsage]
     try:
         yield
     finally:
-        otel_trace._TRACER_PROVIDER = original_provider
+        otel_trace._TRACER_PROVIDER = original_provider  # pyright: ignore[reportPrivateUsage]
 
 
 def test_noop_span_basic(noop_provider: None) -> None:
@@ -301,7 +301,7 @@ def test_noop_span_logs_once(
     """Test that warning logs exactly once when spans operate in no-op mode."""
     from mirascope.ops._internal import spans as span_module
 
-    span_module._warned_noop = False
+    span_module._warned_noop = False  # pyright: ignore[reportPrivateUsage]
     with caplog.at_level(logging.WARNING, logger="mirascope"):
         with mirascope.ops.span("noop-log") as first:
             assert first.is_noop is True
