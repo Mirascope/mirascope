@@ -2,6 +2,7 @@
 
 from typing import TypeAlias
 
+from ..types import Jsonable
 from .audio import Audio, Base64AudioSource
 from .document import (
     Base64DocumentSource,
@@ -16,11 +17,11 @@ from .tool_call import ToolCall, ToolCallChunk, ToolCallEndChunk, ToolCallStartC
 from .tool_output import ToolOutput
 
 ContentPart: TypeAlias = (
-    Text | Image | Audio | Document | ToolOutput | ToolCall | Thought
+    Text | Image | Audio | Document | ToolOutput[Jsonable] | ToolCall | Thought
 )
 """Content parts that may be included in a Message."""
 
-UserContentPart: TypeAlias = Text | Image | Audio | Document | ToolOutput
+UserContentPart: TypeAlias = Text | Image | Audio | Document | ToolOutput[Jsonable]
 """Content parts that can be included in a UserMessage."""
 
 AssistantContentPart: TypeAlias = Text | ToolCall | Thought

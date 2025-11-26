@@ -18,6 +18,7 @@ from ..tools import (
     Tool,
     Toolkit,
 )
+from ..types import Jsonable
 from .base_stream_response import (
     AsyncChunkIterator,
     BaseAsyncStreamResponse,
@@ -113,7 +114,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
             chunk_iterator=chunk_iterator,
         )
 
-    def execute_tools(self) -> Sequence[ToolOutput]:
+    def execute_tools(self) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response.
 
         Returns:
@@ -240,7 +241,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
             chunk_iterator=chunk_iterator,
         )
 
-    async def execute_tools(self) -> Sequence[ToolOutput]:
+    async def execute_tools(self) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response.
 
         Returns:
@@ -285,7 +286,8 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
 
 
 class ContextStreamResponse(
-    BaseSyncStreamResponse[ContextToolkit, FormattableT], Generic[DepsT, FormattableT]
+    BaseSyncStreamResponse[ContextToolkit[DepsT], FormattableT],
+    Generic[DepsT, FormattableT],
 ):
     """A `ContextStreamResponse` wraps response content from the LLM with a streaming interface.
 
@@ -375,7 +377,7 @@ class ContextStreamResponse(
             chunk_iterator=chunk_iterator,
         )
 
-    def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput]:
+    def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response.
 
         Args:
@@ -426,7 +428,7 @@ class ContextStreamResponse(
 
 
 class AsyncContextStreamResponse(
-    BaseAsyncStreamResponse[AsyncContextToolkit, FormattableT],
+    BaseAsyncStreamResponse[AsyncContextToolkit[DepsT], FormattableT],
     Generic[DepsT, FormattableT],
 ):
     """An `AsyncContextStreamResponse` wraps response content from the LLM with a streaming interface.
@@ -519,7 +521,9 @@ class AsyncContextStreamResponse(
             chunk_iterator=chunk_iterator,
         )
 
-    async def execute_tools(self, ctx: Context[DepsT]) -> Sequence[ToolOutput]:
+    async def execute_tools(
+        self, ctx: Context[DepsT]
+    ) -> Sequence[ToolOutput[Jsonable]]:
         """Execute and return all of the tool calls in the response.
 
         Args:
