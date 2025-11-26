@@ -240,7 +240,7 @@ class ToolSchema(Generic[ToolFnT]):
             **field_definitions,  # pyright: ignore[reportArgumentType, reportCallIssue]
         )
 
-        schema = TempModel.model_json_schema()
+        schema = cast(dict[str, Any], TempModel.model_json_schema())
 
         parameters = ToolParameterSchema(
             properties=cast(dict[str, dict[str, Any]], schema.get("properties", {})),

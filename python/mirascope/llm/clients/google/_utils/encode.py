@@ -52,7 +52,7 @@ def _encode_content(
     content: Sequence[ContentPart], encode_thoughts: bool
 ) -> list[genai_types.PartDict]:
     """Returns a list of google `PartDicts` converted from a sequence of Mirascope `ContentPart`s"""
-    result = []
+    result: list[genai_types.PartDict] = []
 
     for part in content:
         if part.type == "text":

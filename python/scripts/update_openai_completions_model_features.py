@@ -62,7 +62,7 @@ def load_existing_model_features() -> dict[str, ModelStatus]:
 
 def get_all_openai_models() -> set[str]:
     """Get all supported model IDs from OpenAI's ChatModel type."""
-    all_models = set()
+    all_models: set[str] = set()
     for arg in get_args(ChatModel):
         if isinstance(arg, str):
             all_models.add(arg)

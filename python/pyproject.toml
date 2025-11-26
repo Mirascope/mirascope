@@ -165,6 +165,7 @@ reportMissingParameterType = "error"
 reportMissingTypeArgument = "error"
 reportUnknownArgumentType = "error"
 reportUnknownParameterType = "error"
+reportUnknownVariableType = "error"
 reportUnnecessaryTypeIgnoreComment = "error"
 strictListInference = true
 
