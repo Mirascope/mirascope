@@ -11,13 +11,13 @@ from ..context import Context, DepsT
 from ..types import AnyP, JsonableCovariantT
 from .protocols import (
     AsyncContextToolFn,
+    AsyncJsonKwargsCallable,
+    AsyncKwargsCallable,
     AsyncToolFn,
+    ContextKwargsCallable,
     ContextToolFn,
+    KwargsCallable,
     ToolFn,
-    _AsyncJsonKwargsCallable,
-    _AsyncKwargsCallable,
-    _ContextKwargsCallable,
-    _KwargsCallable,
 )
 from .tool_schema import ToolSchema
 
@@ -51,7 +51,7 @@ class Tool(
     def execute(self, tool_call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Execute the tool using an LLM-provided `ToolCall`."""
         kwargs_from_json = json.loads(tool_call.args)
-        kwargs_callable = cast(_KwargsCallable[JsonableCovariantT], self.fn)
+        kwargs_callable = cast(KwargsCallable[JsonableCovariantT], self.fn)
         result = kwargs_callable(**kwargs_from_json)
         return ToolOutput(id=tool_call.id, value=result, name=self.name)
 
@@ -82,7 +82,7 @@ class AsyncTool(
     async def execute(self, tool_call: ToolCall) -> ToolOutput[JsonableCovariantT]:
         """Execute the async tool using an LLM-provided `ToolCall`."""
         kwargs_from_json = json.loads(tool_call.args)
-        kwargs_callable = cast(_AsyncKwargsCallable[JsonableCovariantT], self.fn)
+        kwargs_callable = cast(AsyncKwargsCallable[JsonableCovariantT], self.fn)
         result = await kwargs_callable(**kwargs_from_json)
         return ToolOutput(id=tool_call.id, value=result, name=self.name)
 
@@ -122,7 +122,7 @@ class ContextTool(
         """Execute the context tool using an LLM-provided `ToolCall`."""
         kwargs_from_json = json.loads(tool_call.args)
         kwargs_callable = cast(
-            _ContextKwargsCallable[DepsT, JsonableCovariantT], self.fn
+            ContextKwargsCallable[DepsT, JsonableCovariantT], self.fn
         )
         result = kwargs_callable(ctx, **kwargs_from_json)
         return ToolOutput(id=tool_call.id, value=result, name=self.name)
@@ -163,7 +163,7 @@ class AsyncContextTool(
         """Execute the async context tool using an LLM-provided `ToolCall`."""
         kwargs_from_json = json.loads(tool_call.args)
         kwargs_callable = cast(
-            _AsyncJsonKwargsCallable[DepsT, JsonableCovariantT], self.fn
+            AsyncJsonKwargsCallable[DepsT, JsonableCovariantT], self.fn
         )
         result = await kwargs_callable(ctx, **kwargs_from_json)
         return ToolOutput(id=tool_call.id, value=result, name=self.name)

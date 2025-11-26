@@ -43,6 +43,5 @@ __all__ = [
     "ToolT",
     "Toolkit",
     "ToolkitT",
-    "protocols",
     "tool",
 ]

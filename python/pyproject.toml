@@ -173,6 +173,10 @@ reportUnnecessaryComparison = "error"
 reportUnnecessaryTypeIgnoreComment = "error"
 reportUntypedClassDecorator = "error"
 reportUntypedFunctionDecorator = "error"
+reportUnusedClass = "error"
+reportUnusedFunction = "error"
+reportUnusedImport = "error"
+reportUnusedVariable = "error"
 strictListInference = true
 
 [[tool.pyright.executionEnvironments]]
@@ -195,12 +199,14 @@ reportUnknownArgumentType = "none"
 reportUnknownMemberType = "none"
 reportUnknownParameterType = "none"
 reportUnknownVariableType = "none"
+reportUnusedVariable = "none"
 
 [[tool.pyright.executionEnvironments]]
 root = "mirascope/ops"
 reportUnknownArgumentType = "none"
 reportUnknownMemberType = "none"
 reportUnknownVariableType = "none"
+reportUnusedImport = "none"
 
 [tool.datamodel-codegen]
 input-file-type = "jsonschema"
