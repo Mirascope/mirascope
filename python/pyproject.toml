@@ -165,6 +165,7 @@ venv = ".venv"
 reportUnnecessaryTypeIgnoreComment = "error"
 reportUnknownParameterType = "error"
 reportMissingParameterType = "error"
+reportMissingTypeArgument = "error"
 
 executionEnvironments = [
     { root = "examples", reportUnknownParameterType = "none" },

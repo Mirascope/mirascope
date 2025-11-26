@@ -1,13 +1,14 @@
 """Types for prompt functions."""
 
-from typing import Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 
 from ..context import Context, DepsT
 from ..messages import Message, UserContent
 from ..types import P
 
 PromptT = TypeVar(
-    "PromptT", bound="Prompt | AsyncPrompt | ContextPrompt | AsyncContextPrompt"
+    "PromptT",
+    bound="Prompt[...] | AsyncPrompt[...] | ContextPrompt[..., Any] | AsyncContextPrompt[..., Any]",
 )
 """Type variable for prompt types.
 

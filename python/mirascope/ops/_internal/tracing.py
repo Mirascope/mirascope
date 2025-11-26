@@ -21,7 +21,11 @@ from .spans import Span
 from .types import Jsonable, P, R
 from .utils import get_qualified_name, json_dumps
 
-FunctionT = TypeVar("FunctionT", bound="SyncFunction | AsyncFunction", covariant=True)
+FunctionT = TypeVar(
+    "FunctionT",
+    bound="SyncFunction[..., Any] | AsyncFunction[..., Any]",
+    covariant=True,
+)
 
 PrimitiveType: TypeAlias = str | int | float | bool
 
