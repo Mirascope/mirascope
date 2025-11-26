@@ -3,7 +3,7 @@
 import inspect
 import json
 
-from ..tools import FORMAT_TOOL_NAME, ToolParameterSchema, ToolSchema
+from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
 from .types import Format, FormattableT, FormattingMode
 
 TOOL_MODE_INSTRUCTIONS = f"""Always respond to the user's query using the {FORMAT_TOOL_NAME} tool for structured output."""
@@ -27,7 +27,9 @@ def default_formatting_instructions(
         return inspect.cleandoc(instructions)
 
 
-def create_tool_schema(format: Format[FormattableT]) -> ToolSchema:
+def create_tool_schema(
+    format: Format[FormattableT],
+) -> ToolSchema[ToolFn[..., None]]:
     """Convert a `Format` to a `ToolSchema` for format parsing.
 
     Args:

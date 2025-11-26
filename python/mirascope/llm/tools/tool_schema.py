@@ -9,6 +9,7 @@ from typing import (
     Annotated,
     Any,
     Generic,
+    TypeAlias,
     TypeVar,
     get_args,
     get_origin,
@@ -20,14 +21,24 @@ from pydantic import BaseModel, Field, create_model
 from pydantic.fields import FieldInfo
 
 from ..content import ToolCall
+from ..types import Jsonable
 from .protocols import AsyncContextToolFn, AsyncToolFn, ContextToolFn, ToolFn
+
+AnyToolFn: TypeAlias = (
+    ToolFn[..., Jsonable]
+    | AsyncToolFn[..., Jsonable]
+    | ContextToolFn[Any, ..., Jsonable]
+    | AsyncContextToolFn[Any, ..., Jsonable]
+)
 
 ToolFnT = TypeVar(
     "ToolFnT",
-    bound=ToolFn | AsyncToolFn | ContextToolFn | AsyncContextToolFn,
+    bound=AnyToolFn,
     covariant=True,
 )
-ToolSchemaT = TypeVar("ToolSchemaT", bound="ToolSchema")
+
+AnyToolSchema: TypeAlias = "ToolSchema[AnyToolFn]"
+ToolSchemaT = TypeVar("ToolSchemaT", bound=AnyToolSchema, covariant=True)
 
 DocstringArg = namedtuple("DocstringArg", ["name", "description"])
 

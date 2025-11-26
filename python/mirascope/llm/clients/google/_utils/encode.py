@@ -17,7 +17,7 @@ from ....formatting import (
     resolve_format,
 )
 from ....messages import AssistantMessage, Message, UserMessage
-from ....tools import FORMAT_TOOL_NAME, BaseToolkit, ToolSchema
+from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ...base import BaseKwargs, Params, _utils as _base_utils
 from ..model_ids import GoogleModelId
 
@@ -144,7 +144,7 @@ def _encode_messages(
 
 @lru_cache(maxsize=128)
 def _convert_tool_to_function_declaration(
-    tool: ToolSchema,
+    tool: AnyToolSchema,
 ) -> genai_types.FunctionDeclarationDict:
     """Convert a single Mirascope tool to Google FunctionDeclaration format with caching."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
@@ -170,7 +170,7 @@ def encode_request(
     *,
     model_id: GoogleModelId,
     messages: Sequence[Message],
-    tools: Sequence[ToolSchema] | BaseToolkit | None,
+    tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
 ) -> tuple[

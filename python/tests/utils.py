@@ -28,7 +28,7 @@ def format_snapshot(
 
 
 def tool_snapshot(
-    tool: llm.tools.ToolSchema[Any],
+    tool: llm.tools.AnyToolSchema,
 ) -> dict[str, Any]:
     return {
         "name": tool.name,

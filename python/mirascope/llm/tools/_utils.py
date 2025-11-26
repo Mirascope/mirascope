@@ -9,7 +9,10 @@ from .protocols import AsyncContextToolFn, AsyncToolFn, ContextToolFn, ToolFn
 
 
 def is_context_tool_fn(
-    fn: ToolFn | AsyncToolFn | ContextToolFn | AsyncContextToolFn,
+    fn: ContextToolFn[DepsT, P, JsonableCovariantT]
+    | AsyncContextToolFn[DepsT, P, JsonableCovariantT]
+    | ToolFn[P, JsonableCovariantT]
+    | AsyncToolFn[P, JsonableCovariantT],
 ) -> TypeIs[
     ContextToolFn[DepsT, P, JsonableCovariantT]
     | AsyncContextToolFn[DepsT, P, JsonableCovariantT]
@@ -19,7 +22,13 @@ def is_context_tool_fn(
 
 
 def is_async_tool_fn(
-    fn: ToolFn | AsyncToolFn | ContextToolFn | AsyncContextToolFn,
-) -> TypeIs[AsyncToolFn | AsyncContextToolFn]:
+    fn: ContextToolFn[DepsT, P, JsonableCovariantT]
+    | AsyncContextToolFn[DepsT, P, JsonableCovariantT]
+    | ToolFn[P, JsonableCovariantT]
+    | AsyncToolFn[P, JsonableCovariantT],
+) -> TypeIs[
+    AsyncContextToolFn[DepsT, P, JsonableCovariantT]
+    | AsyncToolFn[P, JsonableCovariantT]
+]:
     """Type guard to check if a function is an async tool function."""
     return inspect.iscoroutinefunction(fn)
