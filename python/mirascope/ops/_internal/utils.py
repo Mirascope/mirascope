@@ -20,7 +20,7 @@ def json_dumps(obj: Any) -> str:  # noqa: ANN401
     return orjson.dumps(obj, option=ORJSON_OPTS).decode("utf-8")
 
 
-def get_qualified_name(fn: Callable) -> str:
+def get_qualified_name(fn: Callable[..., Any]) -> str:
     """Return the simplified qualified name of a function.
 
     If the function is defined locally, return the name after '<locals>.'; otherwise,

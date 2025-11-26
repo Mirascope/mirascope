@@ -14,7 +14,7 @@ Snapshot: TypeAlias = Any  # Alias to avoid Ruff lint errors
 
 def format_snapshot(
     format: llm.formatting.Format[llm.formatting.FormattableT] | None,
-) -> dict | None:
+) -> dict[str, Any] | None:
     if format is None:
         return None
 
@@ -27,7 +27,9 @@ def format_snapshot(
     }
 
 
-def tool_snapshot(tool: llm.tools.ToolSchema) -> dict:
+def tool_snapshot(
+    tool: llm.tools.ToolSchema[Any],
+) -> dict[str, Any]:
     return {
         "name": tool.name,
         "description": tool.description,
@@ -36,7 +38,9 @@ def tool_snapshot(tool: llm.tools.ToolSchema) -> dict:
     }
 
 
-def response_snapshot_dict(response: llm.responses.RootResponse[Any, Any]) -> dict:
+def response_snapshot_dict(
+    response: llm.responses.RootResponse[Any, Any],
+) -> dict[str, Any]:
     dict_copy = response.__dict__.copy()
 
     # Remove raw response because it is too noisy (test separately if needed)
@@ -63,7 +67,7 @@ def stream_response_snapshot_dict(
     | llm.AsyncStreamResponse[Any]
     | llm.ContextStreamResponse[Any, Any]
     | llm.AsyncContextStreamResponse[Any, Any],
-) -> dict:
+) -> dict[str, Any]:
     """Return a dictionary of public fields for snapshot testing.
 
     This excludes private fields like _chunk_iterator, _current_content, etc.
@@ -82,7 +86,7 @@ def stream_response_snapshot_dict(
     }
 
 
-def exception_snapshot_dict(exception: Exception) -> dict:
+def exception_snapshot_dict(exception: Exception) -> dict[str, Any]:
     """Convert an exception to a dictionary for snapshot testing.
 
     (inline-snapshot is not able to serialize and reproduce Exceptions.)"""

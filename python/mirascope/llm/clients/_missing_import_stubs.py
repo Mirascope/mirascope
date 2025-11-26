@@ -5,7 +5,7 @@ from collections.abc import Callable
 
 def create_import_error_stub(
     package_name: str, client_name: str
-) -> Callable:  # pragma: no cover
+) -> Callable[..., None]:  # pragma: no cover
     """Create a stub that raises ImportError when called.
 
     Args:

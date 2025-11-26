@@ -1,3 +1,5 @@
+from typing import Any
+
 from mirascope.llm import agents
 
 from .utils import (
@@ -25,8 +27,8 @@ def test_agent_prompt_deps():
 
 
 def test_sync_async_agent():
-    def expect_sync(x: agents.AgentTemplate): ...
-    def expect_async(x: agents.AsyncAgentTemplate): ...
+    def expect_sync(x: agents.AgentTemplate[Any]): ...
+    def expect_async(x: agents.AsyncAgentTemplate[Any]): ...
 
     expect_sync(
         agents.agent(

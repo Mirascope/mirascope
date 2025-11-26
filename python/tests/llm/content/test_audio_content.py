@@ -45,7 +45,7 @@ class TestAudioDownload:
     def test_download_detects_mime_type_from_magic_bytes(
         self,
         httpserver: HTTPServer,
-        audio_data: dict,
+        audio_data: dict[str, bytes],
         format_name: str,
         expected_mime: str,
     ) -> None:
@@ -61,7 +61,7 @@ class TestAudioDownload:
         assert len(audio.source.data) > 0
 
     def test_download_follows_redirects(
-        self, httpserver: HTTPServer, audio_data: dict
+        self, httpserver: HTTPServer, audio_data: dict[str, bytes]
     ) -> None:
         """Test that download follows redirects."""
         httpserver.expect_request("/redirect").respond_with_data(
@@ -76,7 +76,7 @@ class TestAudioDownload:
         assert audio.source.mime_type == "audio/wav"
 
     def test_download_raises_on_unsupported_format(
-        self, httpserver: HTTPServer, audio_data: dict
+        self, httpserver: HTTPServer, audio_data: dict[str, bytes]
     ) -> None:
         """Test that download raises ValueError for unsupported audio format."""
         httpserver.expect_request("/audio").respond_with_data(audio_data["unsupported"])
@@ -103,7 +103,7 @@ class TestAudioDownload:
             Audio.download(url)
 
     def test_download_respects_custom_size_limit(
-        self, httpserver: HTTPServer, audio_data: dict
+        self, httpserver: HTTPServer, audio_data: dict[str, bytes]
     ) -> None:
         """Test that download respects custom max_size parameter."""
         httpserver.expect_request("/audio").respond_with_data(audio_data["wav"])
@@ -129,7 +129,7 @@ class TestAudioDownloadAsync:
     async def test_download_async_detects_mime_type(
         self,
         httpserver: HTTPServer,
-        audio_data: dict,
+        audio_data: dict[str, bytes],
         format_name: str,
         expected_mime: str,
     ) -> None:
@@ -156,7 +156,7 @@ class TestAudioDownloadAsync:
 
     @pytest.mark.asyncio
     async def test_download_async_raises_on_unsupported_format(
-        self, httpserver: HTTPServer, audio_data: dict
+        self, httpserver: HTTPServer, audio_data: dict[str, bytes]
     ) -> None:
         """Test that download_async raises ValueError for unsupported format."""
         httpserver.expect_request("/audio").respond_with_data(audio_data["unsupported"])
@@ -171,7 +171,7 @@ class TestAudioFromFile:
 
     @pytest.mark.parametrize("data_key,expected_mime", AUDIO_FORMAT_TESTS)
     def test_from_file_detects_mime_type(
-        self, audio_data: dict, data_key: str, expected_mime: str
+        self, audio_data: dict[str, bytes], data_key: str, expected_mime: str
     ) -> None:
         """Test that from_file detects MIME type from magic bytes (not extension)."""
         with tempfile.NamedTemporaryFile(suffix=".unknown", delete=False) as f:
@@ -186,7 +186,9 @@ class TestAudioFromFile:
         finally:
             Path(temp_path).unlink()
 
-    def test_from_file_raises_on_unsupported_format(self, audio_data: dict) -> None:
+    def test_from_file_raises_on_unsupported_format(
+        self, audio_data: dict[str, bytes]
+    ) -> None:
         """Test that from_file raises ValueError for unsupported format."""
         with tempfile.NamedTemporaryFile(suffix=".bin", delete=False) as f:
             f.write(audio_data["unsupported"])
@@ -203,7 +205,7 @@ class TestAudioFromFile:
         with pytest.raises(FileNotFoundError):
             Audio.from_file("/nonexistent/path/to/file.mp3")
 
-    def test_from_file_enforces_size_limit(self, audio_data: dict) -> None:
+    def test_from_file_enforces_size_limit(self, audio_data: dict[str, bytes]) -> None:
         """Test that from_file enforces the size limit."""
         large_data = b"RIFF\x00\x00\x00\x00WAVE" + b"x" * (MAX_AUDIO_SIZE + 1)
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
@@ -216,7 +218,9 @@ class TestAudioFromFile:
         finally:
             Path(temp_path).unlink()
 
-    def test_from_file_respects_custom_size_limit(self, audio_data: dict) -> None:
+    def test_from_file_respects_custom_size_limit(
+        self, audio_data: dict[str, bytes]
+    ) -> None:
         """Test that from_file respects custom max_size parameter."""
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
             f.write(audio_data["wav"])
@@ -234,7 +238,7 @@ class TestAudioFromBytes:
 
     @pytest.mark.parametrize("data_key,expected_mime", AUDIO_FORMAT_TESTS)
     def test_from_bytes_detects_mime_type(
-        self, audio_data: dict, data_key: str, expected_mime: str
+        self, audio_data: dict[str, bytes], data_key: str, expected_mime: str
     ) -> None:
         """Test that from_bytes detects MIME type from magic bytes."""
         audio = Audio.from_bytes(audio_data[data_key])
@@ -242,7 +246,9 @@ class TestAudioFromBytes:
         assert isinstance(audio.source, Base64AudioSource)
         assert audio.source.mime_type == expected_mime
 
-    def test_from_bytes_raises_on_unsupported_format(self, audio_data: dict) -> None:
+    def test_from_bytes_raises_on_unsupported_format(
+        self, audio_data: dict[str, bytes]
+    ) -> None:
         """Test that from_bytes raises ValueError for unsupported format."""
         with pytest.raises(ValueError, match="Unsupported audio type"):
             Audio.from_bytes(audio_data["unsupported"])
@@ -259,7 +265,9 @@ class TestAudioFromBytes:
         with pytest.raises(ValueError, match="exceeds maximum allowed size"):
             Audio.from_bytes(large_data)
 
-    def test_from_bytes_respects_custom_size_limit(self, audio_data: dict) -> None:
+    def test_from_bytes_respects_custom_size_limit(
+        self, audio_data: dict[str, bytes]
+    ) -> None:
         """Test that from_bytes respects custom max_size parameter."""
         with pytest.raises(ValueError, match="exceeds maximum allowed size"):
             Audio.from_bytes(audio_data["wav"], max_size=10)
