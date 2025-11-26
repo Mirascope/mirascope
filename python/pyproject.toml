@@ -169,6 +169,8 @@ reportUnknownMemberType = "error"
 reportUnknownParameterType = "error"
 reportUnknownVariableType = "error"
 reportUnnecessaryTypeIgnoreComment = "error"
+reportUntypedClassDecorator = "error"
+reportUntypedFunctionDecorator = "error"
 strictListInference = true
 
 [[tool.pyright.executionEnvironments]]
