@@ -1,4 +1,5 @@
 import inspect
+from collections.abc import Sequence
 from typing_extensions import TypeIs
 
 from ..context import DepsT, _utils as _context_utils
@@ -20,8 +21,8 @@ from .protocols import (
 
 
 def is_messages(
-    messages_or_content: list[Message] | UserContent,
-) -> TypeIs[list[Message]]:
+    messages_or_content: Sequence[Message] | UserContent,
+) -> TypeIs[Sequence[Message]]:
     if not messages_or_content:
         raise ValueError("Prompt returned empty content")
     return isinstance(messages_or_content, list) and isinstance(
@@ -29,7 +30,7 @@ def is_messages(
     )
 
 
-def promote_to_messages(result: list[Message] | UserContent) -> list[Message]:
+def promote_to_messages(result: Sequence[Message] | UserContent) -> Sequence[Message]:
     """Promote a prompt result to a list of messages.
 
     If the result is already a list of Messages, returns it as-is.

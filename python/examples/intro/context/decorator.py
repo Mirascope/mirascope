@@ -20,7 +20,7 @@ def librarian(ctx: llm.Context[Library], query: str):
         llm.messages.system(
             f"You are a librarian, with access to these books: ${book_list}"
         ),
-        query,
+        llm.messages.user(query),
     ]
 
 

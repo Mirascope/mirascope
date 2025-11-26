@@ -293,7 +293,7 @@ class Model:
     async def stream_async(
         self,
         *,
-        messages: list[Message],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
     ) -> AsyncStreamResponse:
@@ -304,7 +304,7 @@ class Model:
     async def stream_async(
         self,
         *,
-        messages: list[Message],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
     ) -> AsyncStreamResponse[FormattableT]:
@@ -315,7 +315,7 @@ class Model:
     async def stream_async(
         self,
         *,
-        messages: list[Message],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
@@ -325,7 +325,7 @@ class Model:
     async def stream_async(
         self,
         *,
-        messages: list[Message],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
     ) -> AsyncStreamResponse | AsyncStreamResponse[FormattableT]:
@@ -572,7 +572,7 @@ class Model:
         self,
         *,
         ctx: Context[DepsT],
-        messages: list[Message],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -586,7 +586,7 @@ class Model:
         self,
         *,
         ctx: Context[DepsT],
-        messages: list[Message],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -600,7 +600,7 @@ class Model:
         self,
         *,
         ctx: Context[DepsT],
-        messages: list[Message],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
@@ -616,7 +616,7 @@ class Model:
         self,
         *,
         ctx: Context[DepsT],
-        messages: list[Message],
+        messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
         | None = None,
