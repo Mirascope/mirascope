@@ -33,7 +33,7 @@ class Book(BaseModel):
 def test_structured_output_with_formatting_instructions(
     provider: llm.Provider,
     model_id: llm.ModelId,
-    formatting_mode: llm.FormattingMode,
+    formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
 ) -> None:
     """Test structured output without context."""
