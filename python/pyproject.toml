@@ -162,6 +162,7 @@ include = ["mirascope", "tests", "examples"]
 exclude = [".venv", "mirascope/api/_generated", "mirascope/llm/mcp"]
 venvPath = "."
 venv = ".venv"
+reportMatchNotExhaustive = "error"
 reportMissingParameterType = "error"
 reportMissingTypeArgument = "error"
 reportUnknownArgumentType = "error"
@@ -181,6 +182,7 @@ strictListInference = true
 
 [[tool.pyright.executionEnvironments]]
 root = "examples"
+reportMatchNotExhaustive = "none"
 reportUnknownArgumentType = "none"
 reportUnknownMemberType = "none"
 reportUnknownParameterType = "none"
