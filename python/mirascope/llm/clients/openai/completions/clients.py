@@ -778,7 +778,10 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None,
         **params: Unpack[Params],
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]:
+    ) -> (
+        AsyncContextStreamResponse[DepsT]
+        | AsyncContextStreamResponse[DepsT, FormattableT]
+    ):
         """Stream an `llm.AsyncContextStreamResponse` with an optional response format."""
         ...
 
@@ -793,7 +796,10 @@ class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
         | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
         **params: Unpack[Params],
-    ) -> AsyncContextStreamResponse | AsyncContextStreamResponse[DepsT, FormattableT]:
+    ) -> (
+        AsyncContextStreamResponse[DepsT]
+        | AsyncContextStreamResponse[DepsT, FormattableT]
+    ):
         """Generate an `llm.AsyncContextStreamResponse` by asynchronously streaming from the OpenAI ChatCompletions API.
 
         Args:
