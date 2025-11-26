@@ -163,6 +163,12 @@ exclude = [".venv", "mirascope/api/_generated", "mirascope/llm/mcp"]
 venvPath = "."
 venv = ".venv"
 reportUnnecessaryTypeIgnoreComment = "error"
+reportUnknownParameterType = "error"
+
+executionEnvironments = [
+    { root = "examples", reportUnknownParameterType = "none" },
+]
+
 
 [tool.codespell]
 skip = [".git", "*.lock"]

@@ -320,7 +320,7 @@ class TestContextCall:
         """Test that missing type annotations are not treated as context prompts."""
 
         @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
-        def missing_annotation_prompt(ctx) -> str:  # noqa: ANN001
+        def missing_annotation_prompt(ctx) -> str:  # pyright: ignore[reportUnknownParameterType] # noqa: ANN001
             return "hi"
 
         assert isinstance(missing_annotation_prompt, llm.calls.Call)
@@ -329,7 +329,7 @@ class TestContextCall:
         """Test that missing type annotations are not treated as async context prompts."""
 
         @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
-        async def missing_annotation_prompt(ctx) -> str:  # noqa: ANN001
+        async def missing_annotation_prompt(ctx) -> str:  # pyright: ignore[reportUnknownParameterType] # noqa: ANN001
             return "hi"
 
         assert isinstance(missing_annotation_prompt, llm.calls.AsyncCall)
