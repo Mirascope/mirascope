@@ -304,7 +304,7 @@ class TestContextTool:
         """Test that untyped ctx parameters don't become context tools."""
 
         @llm.tool
-        def non_context_tool(ctx) -> str:  # pyright: ignore[reportMissingParameterType, reportUnknownParameterType] # noqa: ANN001
+        def non_context_tool(ctx) -> str:  # pyright: ignore[reportMissingParameterType]  # noqa: ANN001
             return f"{ctx}"
 
         assert isinstance(non_context_tool, llm.Tool)
@@ -314,7 +314,7 @@ class TestContextTool:
         """Test that untyped ctx parameters don't become context tools."""
 
         @llm.tool
-        async def non_context_tool(ctx) -> str:  # pyright: ignore[reportMissingParameterType, reportUnknownParameterType] # noqa: ANN001
+        async def non_context_tool(ctx) -> str:  # pyright: ignore[reportMissingParameterType]  # noqa: ANN001
             return f"{ctx}"
 
         assert isinstance(non_context_tool, llm.AsyncTool)

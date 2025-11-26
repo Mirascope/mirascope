@@ -167,9 +167,27 @@ reportMissingParameterType = "error"
 reportMissingTypeArgument = "error"
 strictListInference = true
 
-executionEnvironments = [
-    { root = "examples", reportUnknownParameterType = "none" },
-]
+[[tool.pyright.executionEnvironments]]
+root = "examples"
+reportUnknownArgumentType = "none"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
+
+[[tool.pyright.executionEnvironments]]
+root = "tests"
+reportUnknownArgumentType = "none"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
+
+[[tool.pyright.executionEnvironments]]
+root = "typechecking"
+reportUnknownArgumentType = "none"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
+
 
 
 [tool.codespell]
