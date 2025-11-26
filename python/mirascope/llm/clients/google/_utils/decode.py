@@ -88,7 +88,7 @@ def _decode_candidate_content(
     candidate: genai_types.Candidate,
 ) -> Sequence[AssistantContentPart]:
     """Returns a sequence of `AssistantContentPart` decoded from a google `Candidate`"""
-    content_parts = []
+    content_parts: list[AssistantContentPart] = []
     if candidate.content and candidate.content.parts:
         for part in candidate.content.parts:
             decoded_part = _decode_content_part(part)

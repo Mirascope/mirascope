@@ -32,7 +32,7 @@ load_dotenv()
 
 def get_all_openai_models() -> set[str]:
     """Get all supported model IDs from OpenAI's ResponsesModel type."""
-    all_models = set()
+    all_models: set[str] = set()
     for arg in get_args(ResponsesModel):
         # Skip the `str` type itself
         if arg is str:
