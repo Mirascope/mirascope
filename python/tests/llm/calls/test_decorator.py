@@ -145,9 +145,9 @@ class TestCall:
             return "What company created you? Answer in just one word."
 
         assert call().pretty() == snapshot("OpenAI.")
-        with llm.model(model_id="google/gemini-2.0-flash"):
+        with llm.model("google/gemini-2.0-flash"):
             assert call().pretty() == snapshot("Google.\n")
-            with llm.model(model_id="anthropic/claude-sonnet-4-0"):
+            with llm.model("anthropic/claude-sonnet-4-0"):
                 assert call().pretty() == snapshot("Anthropic")
 
     def test_value_error_invalid_models(self) -> None:
@@ -271,9 +271,9 @@ class TestContextCall:
             return f"Answer the question in just one word: {ctx.deps}."
 
         assert call(ctx).pretty() == snapshot("OpenAI.")
-        with llm.model(model_id="google/gemini-2.0-flash"):
+        with llm.model("google/gemini-2.0-flash"):
             assert call(ctx).pretty() == snapshot("Google.\n")
-            with llm.model(model_id="anthropic/claude-sonnet-4-0"):
+            with llm.model("anthropic/claude-sonnet-4-0"):
                 assert call(ctx).pretty() == snapshot("Anthropic.")
 
     def test_context_parameter_name_independence(self) -> None:

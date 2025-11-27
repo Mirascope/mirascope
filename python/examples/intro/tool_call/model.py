@@ -12,7 +12,7 @@ def available_library_books() -> list[str]:  # [!code highlight]
 
 
 def librarian(query: str) -> llm.Response:
-    model = llm.use_model(model_id="openai/gpt-5")
+    model = llm.use_model("openai/gpt-5")
     message = llm.messages.user(query)
     return model.call(
         messages=[message],

@@ -8,7 +8,7 @@ def recommend_book(genre: str):
 
 def main():
     # [!code highlight:2]
-    with llm.model(model_id="anthropic/claude-sonnet-4-0", temperature=1):
+    with llm.model("anthropic/claude-sonnet-4-0", temperature=1):
         response: llm.Response = recommend_book("fantasy")
         print(response.pretty())
 

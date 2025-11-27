@@ -1149,7 +1149,6 @@ class Model:
 
 @contextmanager
 def model(
-    *,
     model_id: ModelId,
     **params: Unpack[Params],
 ) -> Iterator[None]:
@@ -1189,7 +1188,6 @@ def model(
 
 
 def use_model(
-    *,
     model_id: ModelId,
     **params: Unpack[Params],
 ) -> Model:
