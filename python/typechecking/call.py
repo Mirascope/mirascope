@@ -23,21 +23,18 @@ def test_call():
     # Verify that regular prompts become regular calls,
     expect_call(
         llm.call(
-            provider="openai",
             model_id="openai/gpt-5-mini",
         )(prompt)
     )
 
     # Verify that async prompts become async calls,
     async_call = llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
     )(async_prompt)
     expect_async_call(async_call)
 
     # If there is a context prompt, it will become a context call
     context_call = llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
     )(context_prompt)
     expect_context_call(context_call)
@@ -46,61 +43,51 @@ def test_call():
 async def test_tool_sync_or_async_must_match_prompt():
     """Test only sync tools can be used with a sync prompt"""
 
-    llm.call(provider="openai", model_id="openai/gpt-5-mini")(prompt)
-    llm.call(provider="openai", model_id="openai/gpt-5-mini", tools=[tool])(prompt)
+    llm.call(model_id="openai/gpt-5-mini")(prompt)
+    llm.call(model_id="openai/gpt-5-mini", tools=[tool])(prompt)
 
     # Error: Async tool with sync prompt
-    llm.call(provider="openai", model_id="openai/gpt-5-mini", tools=[async_tool])(
+    llm.call(model_id="openai/gpt-5-mini", tools=[async_tool])(
         prompt  # pyright: ignore[reportArgumentType, reportCallIssue]
     )
     # Error: Sync tool and async tool mixed with sync prompt
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[tool, async_tool],
     )(prompt)  # pyright: ignore[reportCallIssue]
 
-    llm.call(provider="openai", model_id="openai/gpt-5-mini")(async_prompt)
-    llm.call(provider="openai", model_id="openai/gpt-5-mini", tools=[async_tool])(
-        async_prompt
-    )
+    llm.call(model_id="openai/gpt-5-mini")(async_prompt)
+    llm.call(model_id="openai/gpt-5-mini", tools=[async_tool])(async_prompt)
     # Error: Sync tool with async prompt
-    llm.call(provider="openai", model_id="openai/gpt-5-mini", tools=[tool])(
+    llm.call(model_id="openai/gpt-5-mini", tools=[tool])(
         async_prompt  # pyright: ignore[reportArgumentType,reportCallIssue]
     )
     # Error: Mixed tools with async prompt
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[tool, async_tool],
     )(async_prompt)  # pyright: ignore[reportCallIssue]
 
-    llm.call(provider="openai", model_id="openai/gpt-5-mini")(context_prompt)
-    llm.call(provider="openai", model_id="openai/gpt-5-mini", tools=[tool])(
-        context_prompt
-    )
+    llm.call(model_id="openai/gpt-5-mini")(context_prompt)
+    llm.call(model_id="openai/gpt-5-mini", tools=[tool])(context_prompt)
     # Error: Async tool with sync prompt
-    llm.call(provider="openai", model_id="openai/gpt-5-mini", tools=[async_tool])(
+    llm.call(model_id="openai/gpt-5-mini", tools=[async_tool])(
         context_prompt  # pyright: ignore[reportCallIssue,reportArgumentType]
     )
     # Error: Mixed tools with sync prompt
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[tool, async_tool],
     )(context_prompt)  # pyright: ignore[reportCallIssue]
 
-    llm.call(provider="openai", model_id="openai/gpt-5-mini")(async_context_prompt)
-    llm.call(provider="openai", model_id="openai/gpt-5-mini", tools=[async_tool])(
-        async_context_prompt
-    )
+    llm.call(model_id="openai/gpt-5-mini")(async_context_prompt)
+    llm.call(model_id="openai/gpt-5-mini", tools=[async_tool])(async_context_prompt)
     # Error: Sync tool with async prompt
-    llm.call(provider="openai", model_id="openai/gpt-5-mini", tools=[tool])(
+    llm.call(model_id="openai/gpt-5-mini", tools=[tool])(
         async_context_prompt  # pyright: ignore[reportCallIssue,reportArgumentType]
     )
     # Error: Mixed tools with async prompt
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[tool, async_tool],
     )(async_context_prompt)  # pyright: ignore[reportCallIssue]
@@ -112,21 +99,18 @@ def test_context_call_deps_matches_prompt_deps():
     # Good: Context call and prompt match deps type
     expect_context_call(
         llm.call(
-            provider="openai",
             model_id="openai/gpt-5-mini",
         )(context_prompt)
     )
 
     # Fail: When the tool expects different deps
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[context_tool_other_deps],
     )(context_prompt)  # pyright: ignore[reportArgumentType]
 
     # Fail: When the tool deps are mismatched
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[context_tool, context_tool_other_deps],
     )(context_prompt)  # pyright: ignore[reportCallIssue]
@@ -137,40 +121,34 @@ def test_async_context_call_deps():
 
     expect_async_context_call(
         llm.call(
-            provider="openai",
             model_id="openai/gpt-5-mini",
         )(async_context_prompt)
     )
 
     expect_async_context_call(
         llm.call(
-            provider="openai",
             model_id="openai/gpt-5-mini",
         )(async_context_prompt)
     )
 
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[async_context_tool],
     )(async_context_prompt)
     # Fail: When the tool has deps but the prompt does not
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[async_context_tool],
     )(async_context_prompt)
 
     # Fail: When the prompt has deps but the tool does not
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[async_context_tool],
     )(async_context_prompt)
 
     # Fail: When the tool expects different context deps entirely
     llm.call(
-        provider="openai",
         model_id="openai/gpt-5-mini",
         tools=[async_context_tool_other_deps],
     )(async_context_prompt)  # pyright: ignore[reportArgumentType]

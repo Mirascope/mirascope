@@ -2,7 +2,6 @@ from mirascope import llm
 
 
 @llm.call(
-    provider="openai",
     model_id="openai/gpt-5",
     temperature=1,  # [!code highlight]
 )

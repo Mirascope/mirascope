@@ -1,7 +1,5 @@
 """End-to-end tests for resuming with override while using thinking and tools."""
 
-from typing import TypedDict
-
 import pytest
 
 from mirascope import llm
@@ -9,23 +7,18 @@ from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
 from tests.utils import Snapshot, snapshot_test
 
 
-class ProviderAndModelId(TypedDict, total=True):
-    provider: llm.Provider
-    model_id: llm.ModelId
-
-
-def default_provider_and_model(
+def default_model(
     provider: llm.Provider,
-) -> ProviderAndModelId:
+) -> llm.ModelId:
     """Default provider and model that are distinct from the provider being tested.
 
     Used to ensure that we can test having the provider under test resume
     from a response that was created by a different provider.
     """
     if provider == "google":
-        return {"provider": "anthropic", "model_id": "anthropic/claude-sonnet-4-0"}
+        return "anthropic/claude-sonnet-4-0"
     else:
-        return {"provider": "google", "model_id": "google/gemini-2.5-flash"}
+        return "google/gemini-2.5-flash"
 
 
 @pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
@@ -43,7 +36,7 @@ def test_resume_with_override_thinking_and_tools(
         return "Not implemented for other values"
 
     @llm.call(
-        **default_provider_and_model(provider),
+        model_id=default_model(provider),
         thinking=True,
         tools=[compute_fib],
     )

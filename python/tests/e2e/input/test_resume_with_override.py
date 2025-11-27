@@ -16,18 +16,18 @@ class ProviderAndModelId(TypedDict, total=True):
     model_id: llm.ModelId
 
 
-def default_provider_and_model(
+def default_model(
     provider: llm.Provider,
-) -> ProviderAndModelId:
+) -> llm.ModelId:
     """Default provider and model that are distinct from the provider being tested.
 
     Used to ensure that we can test having the provider under test resume
     from a response that was created by a different provider.
     """
     if provider == "google":
-        return {"provider": "anthropic", "model_id": "anthropic/claude-sonnet-4-0"}
+        return "anthropic/claude-sonnet-4-0"
     else:
-        return {"provider": "google", "model_id": "google/gemini-2.5-flash"}
+        return "google/gemini-2.5-flash"
 
 
 @pytest.mark.parametrize(
@@ -40,7 +40,7 @@ def test_resume_with_override(
 ) -> None:
     """Test call without context."""
 
-    @llm.call(**default_provider_and_model(provider))
+    @llm.call(model_id=default_model(provider))
     def who_made_you() -> str:
         return "Who created you?"
 

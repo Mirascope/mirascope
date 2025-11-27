@@ -13,7 +13,7 @@ from .openai import (
     OpenAIResponsesClient,
     OpenAIResponsesModelId,
 )
-from .providers import PROVIDERS, ModelId, Provider
+from .providers import PROVIDERS, ModelId, Provider, model_id_to_provider
 
 __all__ = [
     "PROVIDERS",
@@ -32,4 +32,5 @@ __all__ = [
     "Provider",
     "client",
     "get_client",
+    "model_id_to_provider",
 ]

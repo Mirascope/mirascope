@@ -5,7 +5,7 @@ from mirascope import llm
 load_dotenv()
 
 
-@llm.call(provider="openai:responses", model_id="openai/gpt-5", thinking=True)
+@llm.call(model_id="openai/gpt-5", thinking=True)
 def count_primes() -> str:
     return "How many primes below 200 have 79 as a substring? Answer ONLY with the number of primes, not the primes themselves."
 

@@ -3,7 +3,7 @@ import asyncio
 from mirascope import llm
 
 
-@llm.call(provider="openai", model_id="openai/gpt-5")
+@llm.call(model_id="openai/gpt-5")
 async def recommend_book(genre: str):
     return f"Please recommend a book in {genre}."
 

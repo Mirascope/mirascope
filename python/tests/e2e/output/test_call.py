@@ -22,7 +22,7 @@ def test_call_sync(
 ) -> None:
     """Test synchronous call without context."""
 
-    @llm.call(provider=provider, model_id=model_id)
+    @llm.call(model_id=model_id)
     def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
@@ -41,7 +41,7 @@ def test_call_sync_context(
 ) -> None:
     """Test synchronous call with context."""
 
-    @llm.call(provider=provider, model_id=model_id)
+    @llm.call(model_id=model_id)
     def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
@@ -65,7 +65,7 @@ async def test_call_async(
 ) -> None:
     """Test asynchronous call without context."""
 
-    @llm.call(provider=provider, model_id=model_id)
+    @llm.call(model_id=model_id)
     async def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
@@ -85,7 +85,7 @@ async def test_call_async_context(
 ) -> None:
     """Test asynchronous call with context."""
 
-    @llm.call(provider=provider, model_id=model_id)
+    @llm.call(model_id=model_id)
     async def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
@@ -108,7 +108,7 @@ def test_call_stream(
 ) -> None:
     """Test streaming call without context."""
 
-    @llm.call(provider=provider, model_id=model_id)
+    @llm.call(model_id=model_id)
     def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
@@ -128,7 +128,7 @@ def test_call_stream_context(
 ) -> None:
     """Test streaming call with context."""
 
-    @llm.call(provider=provider, model_id=model_id)
+    @llm.call(model_id=model_id)
     def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
@@ -153,7 +153,7 @@ async def test_call_async_stream(
 ) -> None:
     """Test async streaming call without context."""
 
-    @llm.call(provider=provider, model_id=model_id)
+    @llm.call(model_id=model_id)
     async def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
@@ -174,7 +174,7 @@ async def test_call_async_stream_context(
 ) -> None:
     """Test async streaming call with context."""
 
-    @llm.call(provider=provider, model_id=model_id)
+    @llm.call(model_id=model_id)
     async def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 

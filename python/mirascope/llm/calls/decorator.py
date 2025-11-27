@@ -4,18 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Generic, Literal, cast, overload
+from typing import Generic, cast, overload
 from typing_extensions import Unpack
 
-from ..clients import (
-    AnthropicModelId,
-    GoogleModelId,
-    ModelId,
-    OpenAICompletionsModelId,
-    OpenAIResponsesModelId,
-    Params,
-    Provider,
-)
+from ..clients import ModelId, Params, model_id_to_provider
 from ..context import DepsT
 from ..formatting import Format, FormattableT
 from ..models import Model
@@ -132,74 +124,8 @@ class CallDecorator(Generic[ToolT, FormattableT]):
             )
 
 
-@overload
 def call(
     *,
-    provider: Literal["anthropic"],
-    model_id: AnthropicModelId,
-    tools: list[ToolT] | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
-    **params: Unpack[Params],
-) -> CallDecorator[ToolT, FormattableT]:
-    """Decorate a prompt into a Call using Anthropic models."""
-    ...
-
-
-@overload
-def call(
-    *,
-    provider: Literal["google"],
-    model_id: GoogleModelId,
-    tools: list[ToolT] | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
-    **params: Unpack[Params],
-) -> CallDecorator[ToolT, FormattableT]:
-    """Decorate a prompt into a Call using Google models."""
-    ...
-
-
-@overload
-def call(
-    *,
-    provider: Literal["openai"],
-    model_id: OpenAICompletionsModelId,
-    tools: list[ToolT] | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
-    **params: Unpack[Params],
-) -> CallDecorator[ToolT, FormattableT]:
-    """Decorate a prompt into a Call using OpenAI models."""
-    ...
-
-
-@overload
-def call(
-    *,
-    provider: Literal["openai:responses", "openai"],
-    model_id: OpenAIResponsesModelId,
-    tools: list[ToolT] | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
-    **params: Unpack[Params],
-) -> CallDecorator[ToolT, FormattableT]:
-    """Decorate a prompt into a Call using OpenAI models (Responses API)."""
-    ...
-
-
-@overload
-def call(
-    *,
-    provider: Provider,
-    model_id: ModelId,
-    tools: list[ToolT] | None = None,
-    format: type[FormattableT] | Format[FormattableT] | None = None,
-    **params: Unpack[Params],
-) -> CallDecorator[ToolT, FormattableT]:
-    """Decorate a prompt into a Call using a generic provider and model."""
-    ...
-
-
-def call(
-    *,
-    provider: Provider,
     model_id: ModelId,
     tools: list[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -218,7 +144,6 @@ def call(
         from mirascope import llm
 
         @llm.call(
-            provider="openai",
             model_id="openai/gpt-5-mini",
         )
         def answer_question(question: str) -> str:
@@ -251,5 +176,6 @@ def call(
         print(response)
         ```
     """
+    provider = model_id_to_provider(model_id)
     model = Model(provider=provider, model_id=model_id, **params)
     return CallDecorator(model=model, tools=tools, format=format)
