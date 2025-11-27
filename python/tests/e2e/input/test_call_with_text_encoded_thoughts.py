@@ -60,7 +60,6 @@ def messages(provider: llm.Provider, model_id: llm.ModelId) -> list[llm.Message]
                 ),
                 llm.Text(text="Yes."),
             ],
-            provider=provider,
             model_id=model_id,
             raw_message={"is_dummy_for_testing_purposes": True},
         ),
