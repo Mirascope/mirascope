@@ -44,7 +44,7 @@ def test_model_stream_exports_genai_span(
 ) -> None:
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.instrument_llm()
-    model = llm.Model(provider="openai:responses", model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai:responses/gpt-4o")
 
     response = model.stream(messages=_math_messages())
     response.finish()
@@ -64,7 +64,7 @@ def test_model_stream_with_tools(span_exporter: InMemorySpanExporter) -> None:
 
         return f"Retrieved secret for {password}"
 
-    model = llm.Model(provider="openai:responses", model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai:responses/gpt-4o")
     messages = [
         llm.messages.system("Use parallel tool calling."),
         llm.messages.user(
@@ -119,7 +119,7 @@ def test_model_stream_with_json_format(
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
     ops.instrument_llm()
-    model = llm.Model(provider="openai:responses", model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai:responses/gpt-4o")
     messages = [
         llm.messages.system(
             "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
@@ -200,7 +200,6 @@ def test_model_stream_records_untracked_params_event(
         "bad_str": _BadStr(),
     }
     model = llm.Model(
-        provider="openai:responses",
         model_id="openai:responses/gpt-4o",
         **extra_params,
     )
@@ -244,7 +243,6 @@ def test_model_stream_with_none_parameters(
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.instrument_llm()
     model = llm.Model(
-        provider="openai:responses",
         model_id="openai:responses/gpt-4o",
         temperature=None,  # type: ignore[arg-type]
         max_tokens=64,
@@ -283,7 +281,7 @@ def test_model_stream_records_response_id(
 ) -> None:
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.instrument_llm()
-    model = llm.Model(provider="openai:responses", model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai:responses/gpt-4o")
 
     response = model.stream(messages=_math_messages())
     response.finish()
@@ -319,7 +317,7 @@ def test_model_stream_without_instrumentation(
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.uninstrument_llm()
 
-    model = llm.Model(provider="openai:responses", model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai:responses/gpt-4o")
     response = model.stream(messages=_math_messages())
     response.finish()
 
@@ -334,7 +332,7 @@ def test_model_stream_with_tracer_set_to_none(
     ops.instrument_llm()
     set_tracer(None)
 
-    model = llm.Model(provider="openai:responses", model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai:responses/gpt-4o")
     response = model.stream(messages=_math_messages())
     response.finish()
 
@@ -354,9 +352,7 @@ def test_model_stream_with_error(span_exporter: InMemorySpanExporter) -> None:
     )
 
     with patch("mirascope.llm.models.models.get_client", return_value=mock_client):
-        model = llm.Model(
-            provider="openai:responses", model_id="openai:responses/gpt-4o"
-        )
+        model = llm.Model(model_id="openai:responses/gpt-4o")
         with pytest.raises(openai.APIError):
             model.stream(messages=_math_messages())
 
@@ -405,9 +401,7 @@ def test_model_stream_iterator_error_records_exception(
     )
 
     with patch("mirascope.llm.models.models.get_client", return_value=mock_client):
-        model = llm.Model(
-            provider="openai:responses", model_id="openai:responses/gpt-4o"
-        )
+        model = llm.Model(model_id="openai:responses/gpt-4o")
         response = model.stream(messages=_math_messages())
         with pytest.raises(RuntimeError):
             response.finish()

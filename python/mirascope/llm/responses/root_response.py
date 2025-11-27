@@ -173,7 +173,6 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
             return context_model
 
         return Model(
-            provider=self.provider,
             model_id=self.model_id,
             **self.params,
         )

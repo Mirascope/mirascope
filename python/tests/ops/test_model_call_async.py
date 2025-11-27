@@ -30,9 +30,7 @@ async def test_model_call_async_exports_genai_span(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test that streaming a model call exports the correct OpenTelemetry span."""
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     messages = [
         llm.messages.system("You are a concise assistant."),
         llm.messages.user("Say hello to the user named Kai."),
@@ -94,7 +92,6 @@ async def test_model_call_async_records_untracked_params_event(
         },
     )
     model = llm.Model(
-        provider="openai:responses",
         model_id="openai:responses/gpt-4o-mini",
         **cast(Any, extra_params),
     )

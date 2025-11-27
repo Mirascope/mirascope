@@ -8,7 +8,7 @@ from contextvars import ContextVar
 from typing import TYPE_CHECKING, overload
 from typing_extensions import Unpack
 
-from ..clients import PROVIDERS, get_client
+from ..clients import get_client, model_id_to_provider
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent
@@ -104,14 +104,11 @@ class Model:
 
     def __init__(
         self,
-        provider: Provider,
         model_id: ModelId,
         **params: Unpack[Params],
     ) -> None:
         """Initialize the Model with provider, model_id, and optional params."""
-        if provider not in PROVIDERS:  # pragma: no cover
-            raise ValueError(f"Unknown provider: {provider}")
-        self.provider = provider
+        self.provider = model_id_to_provider(model_id)
         self.model_id = model_id
         self.params = params
 
@@ -1153,7 +1150,6 @@ class Model:
 @contextmanager
 def model(
     *,
-    provider: Provider,
     model_id: ModelId,
     **params: Unpack[Params],
 ) -> Iterator[None]:
@@ -1185,7 +1181,7 @@ def model(
             response = recommend_book("fantasy")  # Uses Claude instead of GPT
         ```
     """
-    token = MODEL_CONTEXT.set(Model(provider, model_id, **params))
+    token = MODEL_CONTEXT.set(Model(model_id, **params))
     try:
         yield
     finally:
@@ -1194,7 +1190,6 @@ def model(
 
 def use_model(
     *,
-    provider: Provider,
     model_id: ModelId,
     **params: Unpack[Params],
 ) -> Model:
@@ -1240,4 +1235,4 @@ def use_model(
     context_model = get_model_from_context()
     if context_model is not None:
         return context_model
-    return Model(provider, model_id, **params)
+    return Model(model_id, **params)

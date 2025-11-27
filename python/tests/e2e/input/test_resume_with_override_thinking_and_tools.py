@@ -50,7 +50,7 @@ def test_resume_with_override_thinking_and_tools(
         )
 
         tool_outputs = primer_response.execute_tools()
-        with llm.model(provider=provider, model_id=model_id, thinking=False):
+        with llm.model(model_id=model_id, thinking=False):
             response = primer_response.resume(tool_outputs)
 
         snap.set_response(response)
