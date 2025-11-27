@@ -173,7 +173,7 @@ ${this._async}def search_coppermind(${this.ctx_argdef(true)}query: str) -> str:
     const format_param = this.structured ? " format=KeeperEntry," : "";
     const args = tools_param + format_param;
     const decorator = this.agent ? "agent" : "call";
-    return `@llm.${decorator}(model_id="openai/gpt-5-mini",${args})`;
+    return `@llm.${decorator}("openai/gpt-5-mini",${args})`;
   }
 
   private get function_def(): string {

@@ -28,7 +28,7 @@ def default_model(
 def test_resume_with_override(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test call without context."""
 
-    @llm.call(model_id=default_model(model_id))
+    @llm.call(default_model(model_id))
     def who_made_you() -> str:
         return "Who created you?"
 

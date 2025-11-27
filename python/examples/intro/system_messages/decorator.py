@@ -1,7 +1,7 @@
 from mirascope import llm
 
 
-@llm.call(model_id="openai/gpt-5")
+@llm.call("openai/gpt-5")
 def recommend_book(genre: str):
     return [
         # [!code highlight]

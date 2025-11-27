@@ -41,7 +41,7 @@ def test_structured_output_with_formatting_instructions(
         llm.format(Book, mode=formatting_mode) if formatting_mode is not None else Book
     )
 
-    @llm.call(model_id=model_id, format=format)
+    @llm.call(model_id, format=format)
     def recommend_book(book: str) -> list[llm.Message]:
         return [
             llm.messages.system(f"Always recommend {book}."),

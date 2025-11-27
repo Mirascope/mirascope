@@ -17,7 +17,7 @@ from tests.utils import (
 def test_call_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test synchronous call without context."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
@@ -34,7 +34,7 @@ def test_call_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
 def test_call_sync_context(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test synchronous call with context."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
@@ -56,7 +56,7 @@ def test_call_sync_context(model_id: llm.ModelId, snapshot: Snapshot) -> None:
 async def test_call_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test asynchronous call without context."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     async def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
@@ -74,7 +74,7 @@ async def test_call_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
 async def test_call_async_context(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test asynchronous call with context."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     async def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
@@ -95,7 +95,7 @@ async def test_call_async_context(model_id: llm.ModelId, snapshot: Snapshot) -> 
 def test_call_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test streaming call without context."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
@@ -113,7 +113,7 @@ def test_call_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
 def test_call_stream_context(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test streaming call with context."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
@@ -136,7 +136,7 @@ def test_call_stream_context(model_id: llm.ModelId, snapshot: Snapshot) -> None:
 async def test_call_async_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test async streaming call without context."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     async def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 
@@ -157,7 +157,7 @@ async def test_call_async_stream_context(
 ) -> None:
     """Test async streaming call with context."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     async def add_numbers(ctx: llm.Context[int], b: int) -> str:
         return f"What is {ctx.deps} + {b}?"
 
