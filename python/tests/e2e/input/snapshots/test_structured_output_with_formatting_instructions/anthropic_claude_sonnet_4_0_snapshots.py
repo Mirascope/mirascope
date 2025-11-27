@@ -11,7 +11,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -33,7 +33,7 @@ lucky number 7.\
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [

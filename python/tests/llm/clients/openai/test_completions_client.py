@@ -18,7 +18,7 @@ def test_prepare_message_multiple_user_text_parts() -> None:
         llm.messages.user(["Hello there", "fellow humans"]),
     ]
     assert encode_request(
-        model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
+        model_id="openai/gpt-4o", messages=messages, format=None, tools=None, params={}
     ) == snapshot(
         (
             [
@@ -55,11 +55,13 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
     messages = [
         llm.messages.user("Hello there"),
         llm.messages.assistant(
-            ["General ", "Kenobi"], provider="openai:completions", model_id="gpt-4o"
+            ["General ", "Kenobi"],
+            provider="openai:completions",
+            model_id="openai/gpt-4o",
         ),
     ]
     assert encode_request(
-        model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
+        model_id="openai/gpt-4o", messages=messages, format=None, tools=None, params={}
     ) == snapshot(
         (
             [
@@ -67,7 +69,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
                 llm.AssistantMessage(
                     content=[llm.Text(text="General "), llm.Text(text="Kenobi")],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
             ],
@@ -104,7 +106,11 @@ def test_strict_unsupported_legacy_model() -> None:
 
     with pytest.raises(llm.FormattingModeNotSupportedError):
         encode_request(
-            model_id="gpt-4", messages=messages, format=format, tools=None, params={}
+            model_id="openai/gpt-4",
+            messages=messages,
+            format=format,
+            tools=None,
+            params={},
         )
 
 

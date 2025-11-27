@@ -11,7 +11,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -34,7 +34,7 @@ sync_snapshot = snapshot(
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -87,7 +87,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -110,7 +110,7 @@ async_snapshot = snapshot(
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -165,7 +165,7 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
                 SystemMessage(
@@ -187,7 +187,7 @@ stream_snapshot = snapshot(
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -246,7 +246,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
                 SystemMessage(
@@ -268,7 +268,7 @@ async_stream_snapshot = snapshot(
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [

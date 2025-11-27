@@ -11,7 +11,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -39,7 +39,7 @@ lucky number 7.\
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "id": "msg_0f6326fa476362700068f9669a304c8194917270010a1507c6",

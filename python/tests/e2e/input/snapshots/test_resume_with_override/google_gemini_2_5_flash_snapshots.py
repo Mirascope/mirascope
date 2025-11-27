@@ -10,7 +10,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "google",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "google/gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -18,7 +18,7 @@ test_snapshot = snapshot(
                 AssistantMessage(
                     content=[Text(text="I was created by Anthropic.")],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -42,7 +42,7 @@ I am a large language model, trained by **Google**.\
                         )
                     ],
                     provider="google",
-                    model_id="gemini-2.5-flash",
+                    model_id="google/gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {

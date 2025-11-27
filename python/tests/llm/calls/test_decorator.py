@@ -72,7 +72,7 @@ class TestCall:
 
         decorator = llm.call(
             provider="openai:completions",
-            model_id="gpt-4o-mini",
+            model_id="openai/gpt-5-mini",
             tools=tools,
             format=Format,
             **params,
@@ -81,7 +81,7 @@ class TestCall:
         assert decorator.tools is tools
         assert decorator.format is Format
         assert decorator.model.provider == "openai:completions"
-        assert decorator.model.model_id == "gpt-4o-mini"
+        assert decorator.model.model_id == "openai/gpt-5-mini"
         assert decorator.model.params == params
 
     def test_creating_sync_call(
@@ -94,7 +94,7 @@ class TestCall:
 
         call = llm.call(
             provider="openai:completions",
-            model_id="gpt-4o-mini",
+            model_id="openai/gpt-5-mini",
             tools=tools,
             format=Format,
             **params,
@@ -103,7 +103,7 @@ class TestCall:
         assert isinstance(call, llm.calls.Call)
 
         assert call.model.provider == "openai:completions"
-        assert call.model.model_id == "gpt-4o-mini"
+        assert call.model.model_id == "openai/gpt-5-mini"
         assert call.model.params == params
 
         assert call.toolkit == llm.Toolkit(tools=tools)
@@ -121,7 +121,7 @@ class TestCall:
 
         call = llm.call(
             provider="openai:completions",
-            model_id="gpt-4o-mini",
+            model_id="openai/gpt-5-mini",
             tools=async_tools,
             format=Format,
             **params,
@@ -130,7 +130,7 @@ class TestCall:
         assert isinstance(call, llm.calls.AsyncCall)
 
         assert call.model.provider == "openai:completions"
-        assert call.model.model_id == "gpt-4o-mini"
+        assert call.model.model_id == "openai/gpt-5-mini"
         assert call.model.params == params
 
         assert call.toolkit == llm.AsyncToolkit(tools=async_tools)
@@ -143,19 +143,21 @@ class TestCall:
     def test_call_decorator_e2e_model_override(self) -> None:
         # TODO: Remove e2e tests from non-e2e test directory; either add model
         # override test coverage to e2e, or refactor this to use mocking etc.
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         def call() -> str:
             return "What company created you? Answer in just one word."
 
         assert call().pretty() == snapshot("OpenAI.")
-        with llm.model(provider="google", model_id="gemini-2.0-flash"):
+        with llm.model(provider="google", model_id="google/gemini-2.0-flash"):
             assert call().pretty() == snapshot("Google.\n")
-            with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+            with llm.model(
+                provider="anthropic", model_id="anthropic/claude-sonnet-4-0"
+            ):
                 assert call().pretty() == snapshot("Anthropic")
 
     def test_value_error_invalid_provider(self) -> None:
         with pytest.raises(ValueError, match="Unknown provider: nonexistent"):
-            llm.call(provider="nonexistent", model_id="gpt-4o-mini")  # pyright: ignore[reportCallIssue, reportArgumentType]
+            llm.call(provider="nonexistent", model_id="openai/gpt-5-mini")  # pyright: ignore[reportCallIssue, reportArgumentType]
 
 
 class TestContextCall:
@@ -168,7 +170,7 @@ class TestContextCall:
 
         decorator = llm.call(
             provider="openai:completions",
-            model_id="gpt-4o-mini",
+            model_id="openai/gpt-5-mini",
             tools=context_tools,
             format=Format,
             **params,
@@ -177,7 +179,7 @@ class TestContextCall:
         assert decorator.tools is context_tools
         assert decorator.format is Format
         assert decorator.model.provider == "openai:completions"
-        assert decorator.model.model_id == "gpt-4o-mini"
+        assert decorator.model.model_id == "openai/gpt-5-mini"
         assert decorator.model.params == params
 
     def test_creating_sync_context_call(
@@ -190,7 +192,7 @@ class TestContextCall:
 
         call = llm.call(
             provider="openai:completions",
-            model_id="gpt-4o-mini",
+            model_id="openai/gpt-5-mini",
             tools=context_tools,
             format=Format,
             **params,
@@ -199,7 +201,7 @@ class TestContextCall:
         assert isinstance(call, llm.calls.ContextCall)
 
         assert call.model.provider == "openai:completions"
-        assert call.model.model_id == "gpt-4o-mini"
+        assert call.model.model_id == "openai/gpt-5-mini"
         assert call.model.params == params
 
         assert call.toolkit == llm.ContextToolkit(tools=context_tools)
@@ -224,7 +226,7 @@ class TestContextCall:
 
         call = llm.call(
             provider="openai:completions",
-            model_id="gpt-4o-mini",
+            model_id="openai/gpt-5-mini",
             tools=async_context_tools,
             format=Format,
             **params,
@@ -233,7 +235,7 @@ class TestContextCall:
         assert isinstance(call, llm.calls.AsyncContextCall)
 
         assert call.model.provider == "openai:completions"
-        assert call.model.model_id == "gpt-4o-mini"
+        assert call.model.model_id == "openai/gpt-5-mini"
         assert call.model.params == params
 
         assert call.toolkit == llm.AsyncContextToolkit(tools=async_context_tools)
@@ -255,7 +257,7 @@ class TestContextCall:
 
         call = llm.call(
             provider="openai:completions",
-            model_id="gpt-4o-mini",
+            model_id="openai/gpt-5-mini",
             tools=tools,
             format=Format,
             **params,
@@ -270,20 +272,22 @@ class TestContextCall:
         # override test coverage to e2e, or refactor this to use mocking etc.
         ctx = llm.Context(deps="Who created you?")
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         def call(ctx: llm.Context[str]) -> str:
             return f"Answer the question in just one word: {ctx.deps}."
 
         assert call(ctx).pretty() == snapshot("OpenAI.")
-        with llm.model(provider="google", model_id="gemini-2.0-flash"):
+        with llm.model(provider="google", model_id="google/gemini-2.0-flash"):
             assert call(ctx).pretty() == snapshot("Google.\n")
-            with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+            with llm.model(
+                provider="anthropic", model_id="anthropic/claude-sonnet-4-0"
+            ):
                 assert call(ctx).pretty() == snapshot("Anthropic.")
 
     def test_context_parameter_name_independence(self) -> None:
         """Test that context prompts require the first parameter be named ctx."""
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         def context_weird_name(special_context: llm.Context[str]) -> str:
             return f"Value: {special_context.deps}"
 
@@ -292,7 +296,7 @@ class TestContextCall:
     def test_async_context_parameter_name_independence(self) -> None:
         """Test that async context prompts require the first parameter be named ctx."""
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         async def context_weird_name(special_context: llm.Context[str]) -> str:
             return f"Value: {special_context.deps}"
 
@@ -301,7 +305,7 @@ class TestContextCall:
     def test_non_context_typed_parameter(self) -> None:
         """Test that non-Context typed parameters are not treated as context prompts."""
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         def non_context_prompt(ctx: int) -> str:
             return f"Value: {ctx}"
 
@@ -310,7 +314,7 @@ class TestContextCall:
     def test_async_non_context_typed_parameter(self) -> None:
         """Test that non-Context typed async parameters are not treated as context prompts."""
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         async def non_context_prompt(ctx: int) -> str:
             return f"Value: {ctx}"
 
@@ -319,7 +323,7 @@ class TestContextCall:
     def test_missing_type_annotation(self) -> None:
         """Test that missing type annotations are not treated as context prompts."""
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         def missing_annotation_prompt(ctx) -> str:  # pyright: ignore[reportMissingParameterType] # noqa: ANN001
             return "hi"
 
@@ -328,7 +332,7 @@ class TestContextCall:
     def test_async_missing_type_annotation(self) -> None:
         """Test that missing type annotations are not treated as async context prompts."""
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         async def missing_annotation_prompt(ctx) -> str:  # pyright: ignore[reportMissingParameterType] # noqa: ANN001
             return "hi"
 
@@ -338,7 +342,7 @@ class TestContextCall:
         """Test that methods with self as first arg and Context as second arg are context prompts."""
 
         class TestClass:
-            @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+            @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
             def method_with_context(self, ctx: llm.Context[str]) -> str:
                 return f"Value: {ctx.deps}"
 
@@ -348,7 +352,7 @@ class TestContextCall:
         """Test that async methods with self as first arg and Context as second arg are context prompts."""
 
         class TestClass:
-            @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+            @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
             async def method_with_context(self, ctx: llm.Context[str]) -> str:
                 return f"Value: {ctx.deps}"
 
@@ -357,7 +361,7 @@ class TestContextCall:
     def test_context_not_first_parameter(self) -> None:
         """Test that Context as second parameter (after non-self) is not treated as context prompt."""
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         def second_arg_context(regular_param: int, ctx: llm.Context[str]) -> str:
             return f"Value: {regular_param}-{ctx.deps}"
 
@@ -366,7 +370,7 @@ class TestContextCall:
     def test_async_context_not_first_parameter(self) -> None:
         """Test that Context as second parameter (after non-self) is not treated as async context prompt."""
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         async def second_arg_context(regular_param: int, ctx: llm.Context[str]) -> str:
             return f"Value: {regular_param}-{ctx.deps}"
 
@@ -377,7 +381,7 @@ class TestContextCall:
 
         class CustomContext(llm.Context[str]): ...
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         def with_custom_context(ctx: CustomContext) -> str:
             return str(ctx.deps)
 
@@ -388,7 +392,7 @@ class TestContextCall:
 
         class CustomContext(llm.Context[str]): ...
 
-        @llm.call(provider="openai:completions", model_id="gpt-4o-mini")
+        @llm.call(provider="openai:completions", model_id="openai/gpt-5-mini")
         async def with_custom_context(ctx: CustomContext) -> str:
             return str(ctx.deps)
 

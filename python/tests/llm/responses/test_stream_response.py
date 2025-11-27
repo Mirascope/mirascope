@@ -21,8 +21,8 @@ def create_sync_stream_response(
     iterator = sync_chunk_iter()
 
     response = llm.StreamResponse(
-        provider="openai:responses",
-        model_id="gpt-4o-mini",
+        provider="openai",
+        model_id="openai/gpt-5-mini",
         params={},
         input_messages=[llm.messages.user("Test")],
         chunk_iterator=iterator,
@@ -42,8 +42,8 @@ def create_async_stream_response(
     iterator = async_chunk_iter()
 
     response = llm.AsyncStreamResponse(
-        provider="openai:responses",
-        model_id="gpt-4o-mini",
+        provider="openai",
+        model_id="openai/gpt-5-mini",
         params={},
         input_messages=[llm.messages.user("Test")],
         chunk_iterator=iterator,
@@ -135,8 +135,8 @@ def test_sync_initialization(
     """Test llm.StreamResponse initialization with sync iterator."""
     stream_response = create_sync_stream_response(example_text_chunks)
 
-    assert stream_response.provider == "openai:responses"
-    assert stream_response.model_id == "gpt-4o-mini"
+    assert stream_response.provider == "openai"
+    assert stream_response.model_id == "openai/gpt-5-mini"
     assert stream_response.toolkit == llm.Toolkit(tools=[])
     assert stream_response.finish_reason is None
     assert not stream_response.consumed
@@ -150,8 +150,8 @@ async def test_async_initialization(
     """Test llm.StreamResponse initialization with async iterator."""
     stream_response = create_async_stream_response(example_text_chunks)
 
-    assert stream_response.provider == "openai:responses"
-    assert stream_response.model_id == "gpt-4o-mini"
+    assert stream_response.provider == "openai"
+    assert stream_response.model_id == "openai/gpt-5-mini"
     assert stream_response.toolkit == llm.AsyncToolkit(tools=[])
     assert stream_response.finish_reason is None
     assert not stream_response.consumed
@@ -948,8 +948,8 @@ class TestRawChunkTracking:
             yield chunk3
 
         stream_response = llm.StreamResponse(
-            provider="openai:responses",
-            model_id="gpt-4o-mini",
+            provider="openai",
+            model_id="openai/gpt-5-mini",
             params={},
             input_messages=[llm.messages.user("Test")],
             chunk_iterator=chunk_iterator(),
@@ -978,8 +978,8 @@ class TestRawChunkTracking:
             yield chunk3
 
         stream_response = llm.AsyncStreamResponse(
-            provider="openai:responses",
-            model_id="gpt-4o-mini",
+            provider="openai",
+            model_id="openai/gpt-5-mini",
             params={},
             input_messages=[llm.messages.user("Test")],
             chunk_iterator=chunk_iterator(),
@@ -1318,8 +1318,8 @@ def test_stream_response_execute_tools() -> None:
     ]
 
     stream_response = llm.StreamResponse(
-        provider="openai:responses",
-        model_id="gpt-4o-mini",
+        provider="openai",
+        model_id="openai/gpt-5-mini",
         params={},
         tools=[tool_one, tool_two],
         input_messages=[],
@@ -1360,8 +1360,8 @@ async def test_async_stream_response_execute_tools() -> None:
             yield chunk
 
     stream_response = llm.AsyncStreamResponse(
-        provider="openai:responses",
-        model_id="gpt-4o-mini",
+        provider="openai",
+        model_id="openai/gpt-5-mini",
         params={},
         tools=[tool_one, tool_two],
         input_messages=[],
@@ -1382,8 +1382,8 @@ def test_response_toolkit_initialization() -> None:
     def async_chunk_iter() -> llm.AsyncChunkIterator: ...
 
     response = llm.StreamResponse(
-        provider="openai:responses",
-        model_id="gpt-4o-mini",
+        provider="openai",
+        model_id="openai/gpt-5-mini",
         params={},
         input_messages=[],
         chunk_iterator=chunk_iter(),
@@ -1391,8 +1391,8 @@ def test_response_toolkit_initialization() -> None:
     assert isinstance(response.toolkit, llm.Toolkit)
 
     response = llm.AsyncStreamResponse(
-        provider="openai:responses",
-        model_id="gpt-4o-mini",
+        provider="openai",
+        model_id="openai/gpt-5-mini",
         params={},
         input_messages=[],
         chunk_iterator=async_chunk_iter(),
@@ -1400,8 +1400,8 @@ def test_response_toolkit_initialization() -> None:
     assert isinstance(response.toolkit, llm.AsyncToolkit)
 
     response = llm.ContextStreamResponse(
-        provider="openai:responses",
-        model_id="gpt-4o-mini",
+        provider="openai",
+        model_id="openai/gpt-5-mini",
         params={},
         input_messages=[],
         chunk_iterator=chunk_iter(),
@@ -1409,8 +1409,8 @@ def test_response_toolkit_initialization() -> None:
     assert isinstance(response.toolkit, llm.ContextToolkit)
 
     response = llm.AsyncContextStreamResponse(
-        provider="openai:responses",
-        model_id="gpt-4o-mini",
+        provider="openai",
+        model_id="openai/gpt-5-mini",
         params={},
         input_messages=[],
         chunk_iterator=async_chunk_iter(),

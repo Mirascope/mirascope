@@ -15,11 +15,17 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
     messages = [
         llm.messages.user("Hello there"),
         llm.messages.assistant(
-            ["General ", "Kenobi"], provider="openai:responses", model_id="gpt-4o"
+            ["General ", "Kenobi"],
+            provider="openai:responses",
+            model_id="openai:responses/gpt-4o",
         ),
     ]
     _, _, kwargs = encode_request(
-        model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
+        model_id="openai:responses/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=None,
+        params={},
     )
     assert kwargs == snapshot(
         {
@@ -42,7 +48,11 @@ def test_prepare_message_multiple_system_messages() -> None:
         llm.messages.system("On second thought, be verbose."),
     ]
     _, _, kwargs = encode_request(
-        model_id="gpt-4o", messages=messages, format=None, tools=None, params={}
+        model_id="openai:responses/gpt-4o",
+        messages=messages,
+        format=None,
+        tools=None,
+        params={},
     )
     assert kwargs == snapshot(
         {

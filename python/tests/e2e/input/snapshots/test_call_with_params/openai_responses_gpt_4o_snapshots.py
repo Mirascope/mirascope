@@ -11,7 +11,7 @@ test_snapshot = snapshot(
         "response": (
             {
                 "provider": "openai:responses",
-                "model_id": "gpt-4o",
+                "model_id": "openai:responses/gpt-4o",
                 "params": {
                     "temperature": 0.7,
                     "max_tokens": 500,
@@ -28,7 +28,7 @@ test_snapshot = snapshot(
                     AssistantMessage(
                         content=[Text(text="4200 + 42 equals 4242.")],
                         provider="openai:responses",
-                        model_id="gpt-4o",
+                        model_id="openai:responses/gpt-4o",
                         raw_message=[
                             {
                                 "id": "msg_0d902d0e83de5d560068f96689f0b8819698f9c3a097db17f1",
@@ -55,7 +55,7 @@ test_snapshot = snapshot(
             "Skipping unsupported parameter: top_k=50 (provider: openai:responses)",
             "Skipping unsupported parameter: seed=42 (provider: openai:responses)",
             "Skipping unsupported parameter: stop_sequences=['4242'] (provider: openai:responses)",
-            "Skipping unsupported parameter: thinking=False (provider: openai:responses with model_id: gpt-4o)",
+            "Skipping unsupported parameter: thinking=False (provider: openai:responses with model_id: openai:responses/gpt-4o)",
         ],
     }
 )

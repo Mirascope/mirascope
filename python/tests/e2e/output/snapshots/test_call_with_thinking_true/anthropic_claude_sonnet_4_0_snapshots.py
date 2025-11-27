@@ -11,7 +11,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -97,7 +97,7 @@ Now checking which are prime:
                         ),
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -189,7 +189,7 @@ Now checking which are prime:
                 AssistantMessage(
                     content=[Text(text="I remember them: 79, 179, and 379.")],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -211,7 +211,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -277,7 +277,7 @@ Compiling the results, I identify three primes containing "79": 79, 179, and 379
                         Text(text="3"),
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -347,7 +347,7 @@ Compiling the results, I identify three primes containing "79": 79, 179, and 379
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -369,7 +369,7 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
                 UserMessage(
@@ -437,7 +437,7 @@ The primes below 400 containing "79" are 79, 179, and 379 - totaling 3 such prim
                         Text(text="3"),
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -510,7 +510,7 @@ The primes below 400 containing "79" are 79, 179, and 379 - totaling 3 such prim
                 AssistantMessage(
                     content=[Text(text="I remember them: 79, 179, and 379.")],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -532,7 +532,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
                 UserMessage(
@@ -608,7 +608,7 @@ I've identified 179 and 379 as prime numbers containing "79".\
                         Text(text="3"),
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -689,7 +689,7 @@ I've identified 179 and 379 as prime numbers containing "79".\
                 AssistantMessage(
                     content=[Text(text="I don't remember.")],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [{"type": "text", "text": "I don't remember."}],

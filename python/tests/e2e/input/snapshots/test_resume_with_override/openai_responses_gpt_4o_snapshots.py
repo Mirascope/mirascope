@@ -10,7 +10,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -20,7 +20,7 @@ test_snapshot = snapshot(
                         Text(text="I am a large language model, trained by Google.")
                     ],
                     provider="google",
-                    model_id="gemini-2.5-flash",
+                    model_id="google/gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -45,7 +45,7 @@ test_snapshot = snapshot(
                         Text(text="Yes, I can confirm that I was developed by OpenAI.")
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "id": "msg_0bfe8406dc3caad9006916132acf1081939919a9196577f367",

@@ -12,7 +12,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -34,7 +34,7 @@ test_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "content": "The image shows the Wikipedia logo, which is a globe constructed from puzzle pieces featuring various characters from different writing systems.",
                         "role": "assistant",

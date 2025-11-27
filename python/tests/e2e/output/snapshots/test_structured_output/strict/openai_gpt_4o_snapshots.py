@@ -2,7 +2,6 @@ from inline_snapshot import snapshot
 
 from mirascope.llm import (
     AssistantMessage,
-    SystemMessage,
     Text,
     UserMessage,
 )
@@ -11,15 +10,10 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
-                SystemMessage(
-                    content=Text(
-                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                    )
-                ),
                 UserMessage(
                     content=[
                         Text(
@@ -34,20 +28,11 @@ sync_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
+                        "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
                         "role": "assistant",
                         "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_gL32pUfi9WV2cLNb6MIJS7w0",
-                                "function": {
-                                    "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                                    "name": "__mirascope_formatted_output_tool__",
-                                },
-                                "type": "function",
-                            }
-                        ],
                     },
                 ),
             ],
@@ -65,6 +50,7 @@ sync_snapshot = snapshot(
                             "required": ["first_name", "last_name"],
                             "title": "Author",
                             "type": "object",
+                            "additionalProperties": False,
                         }
                     },
                     "description": "A book with a rating. The title should be in all caps!",
@@ -81,8 +67,8 @@ sync_snapshot = snapshot(
                     "title": "Book",
                     "type": "object",
                 },
-                "mode": "tool",
-                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
             "tools": [],
         }
@@ -92,15 +78,10 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
-                SystemMessage(
-                    content=Text(
-                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                    )
-                ),
                 UserMessage(
                     content=[
                         Text(
@@ -115,20 +96,11 @@ async_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
+                        "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
                         "role": "assistant",
                         "annotations": [],
-                        "tool_calls": [
-                            {
-                                "id": "call_50ZrcDphsvPd2eRO4UhZLDpj",
-                                "function": {
-                                    "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
-                                    "name": "__mirascope_formatted_output_tool__",
-                                },
-                                "type": "function",
-                            }
-                        ],
                     },
                 ),
             ],
@@ -146,6 +118,7 @@ async_snapshot = snapshot(
                             "required": ["first_name", "last_name"],
                             "title": "Author",
                             "type": "object",
+                            "additionalProperties": False,
                         }
                     },
                     "description": "A book with a rating. The title should be in all caps!",
@@ -162,8 +135,8 @@ async_snapshot = snapshot(
                     "title": "Book",
                     "type": "object",
                 },
-                "mode": "tool",
-                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
             "tools": [],
         }
@@ -173,14 +146,9 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
-                SystemMessage(
-                    content=Text(
-                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                    )
-                ),
                 UserMessage(
                     content=[
                         Text(
@@ -195,7 +163,7 @@ stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
             ],
@@ -213,6 +181,7 @@ stream_snapshot = snapshot(
                             "required": ["first_name", "last_name"],
                             "title": "Author",
                             "type": "object",
+                            "additionalProperties": False,
                         }
                     },
                     "description": "A book with a rating. The title should be in all caps!",
@@ -229,8 +198,8 @@ stream_snapshot = snapshot(
                     "title": "Book",
                     "type": "object",
                 },
-                "mode": "tool",
-                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
             "tools": [],
             "n_chunks": 31,
@@ -241,14 +210,9 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
-                SystemMessage(
-                    content=Text(
-                        text="Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
-                    )
-                ),
                 UserMessage(
                     content=[
                         Text(
@@ -263,7 +227,7 @@ async_stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
             ],
@@ -281,6 +245,7 @@ async_stream_snapshot = snapshot(
                             "required": ["first_name", "last_name"],
                             "title": "Author",
                             "type": "object",
+                            "additionalProperties": False,
                         }
                     },
                     "description": "A book with a rating. The title should be in all caps!",
@@ -297,8 +262,8 @@ async_stream_snapshot = snapshot(
                     "title": "Book",
                     "type": "object",
                 },
-                "mode": "tool",
-                "formatting_instructions": "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output.",
+                "mode": "strict",
+                "formatting_instructions": None,
             },
             "tools": [],
             "n_chunks": 31,
