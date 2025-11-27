@@ -12,7 +12,7 @@ from opentelemetry.context import Context
 from opentelemetry.propagators.b3 import B3MultiFormat, B3SingleFormat
 from opentelemetry.propagators.composite import CompositePropagator
 from opentelemetry.propagators.jaeger import JaegerPropagator
-from opentelemetry.propagators.textmap import TextMapPropagator
+from opentelemetry.propagators.textmap import Setter, TextMapPropagator
 from opentelemetry.trace.propagation.tracecontext import TraceContextTextMapPropagator
 
 from ..exceptions import ConfigurationError
@@ -32,8 +32,21 @@ ENV_PROPAGATOR_SET_GLOBAL = "_MIRASCOPE_PROPAGATOR_SET_GLOBAL"
 _PROPAGATOR: ContextPropagator | None = None
 
 
+class _StrSetter(Setter[MutableMapping[str, str]]):
+    """Setter that writes string header values into the carrier."""
+
+    def set(self, carrier: MutableMapping[str, str], key: str, value: str) -> None:
+        """Set a single header value on the carrier."""
+        carrier[key] = value
+
+
+_STR_SETTER = _StrSetter()
+
+
 class ContextPropagator:
     """Manages OpenTelemetry context propagation across service boundaries."""
+
+    _propagator: TextMapPropagator
 
     def __init__(self, *, set_global: bool = True) -> None:
         """Initialize propagator and optionally set as global.
@@ -118,7 +131,9 @@ class ContextPropagator:
             context: Optional specific context to inject. If None, uses current context.
         """
         try:
-            self._propagator.inject(carrier=carrier, context=context)
+            self._propagator.inject(
+                carrier=carrier, context=context, setter=_STR_SETTER
+            )
             logger.debug("Successfully injected context into carrier")
         except Exception as exception:
             logger.debug(
