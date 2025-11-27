@@ -9,7 +9,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
@@ -27,7 +27,7 @@ sync_snapshot = snapshot(
                             text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
@@ -77,7 +77,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
@@ -95,7 +95,7 @@ async_snapshot = snapshot(
                             text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
@@ -145,7 +145,7 @@ async_snapshot = snapshot(
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
@@ -162,7 +162,7 @@ stream_snapshot = snapshot(
                             text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
@@ -209,7 +209,7 @@ stream_snapshot = snapshot(
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
@@ -226,7 +226,7 @@ async_stream_snapshot = snapshot(
                             text='{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}'
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),

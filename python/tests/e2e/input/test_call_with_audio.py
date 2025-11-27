@@ -17,7 +17,7 @@ HELLO_AUDIO_PATH = str(
 
 PROVIDER_MODEL_ID_PAIRS = [
     *PROVIDER_MODEL_ID_PAIRS,
-    ("openai:completions", "openai/gpt-audio"),
+    ("openai", "openai/gpt-audio"),
 ]
 
 

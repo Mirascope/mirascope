@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
@@ -89,7 +89,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "content": """\
@@ -194,7 +194,7 @@ Respond only with valid JSON that matches this exact schema:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
@@ -273,7 +273,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "content": """\
@@ -378,7 +378,7 @@ Respond only with valid JSON that matches this exact schema:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
@@ -456,7 +456,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
@@ -549,7 +549,7 @@ Respond only with valid JSON that matches this exact schema:
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
@@ -627,7 +627,7 @@ Respond only with valid JSON that matches this exact schema:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),

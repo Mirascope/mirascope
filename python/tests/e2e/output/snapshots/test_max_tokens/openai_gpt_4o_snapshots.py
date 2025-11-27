@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
@@ -34,7 +34,7 @@ Certainly! Here is a list of all 50 U.S. states:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "content": """\
@@ -63,7 +63,7 @@ Certainly! Here is a list of all 50 U.S. states:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
@@ -87,7 +87,7 @@ Sure! Here is a list of all 50 U.S. states:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "content": """\
@@ -116,7 +116,7 @@ Sure! Here is a list of all 50 U.S. states:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -139,7 +139,7 @@ Certainly! Here is a list of all 50 U.S. states:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
@@ -153,7 +153,7 @@ Certainly! Here is a list of all 50 U.S. states:
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -176,7 +176,7 @@ Sure! Here is a list of all 50 U.S. states:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),

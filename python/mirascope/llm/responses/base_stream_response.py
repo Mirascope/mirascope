@@ -168,7 +168,7 @@ class BaseStreamResponse(
         """Initialize the BaseStreamResponse.
 
         Args:
-            provider: The provider name (e.g. "anthropic", "openai:completions").
+            provider: The provider name (e.g. "anthropic", "openai").
             model_id: The model identifier that generated the response.
             params: The params used to generate the response (or None).
             toolkit: Toolkit containing all the tools used to generate the response.

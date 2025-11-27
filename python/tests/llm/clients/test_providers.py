@@ -29,8 +29,8 @@ def test_get_client_google() -> None:
 
 def test_get_client_openai() -> None:
     """Test that get_client('openai') returns same instance on multiple calls."""
-    client1 = llm.get_client("openai:completions")
-    client2 = llm.get_client("openai:completions")
+    client1 = llm.get_client("openai")
+    client2 = llm.get_client("openai")
 
     assert isinstance(client1, llm.clients.OpenAICompletionsClient)
     assert client1 is client2

@@ -55,7 +55,7 @@ def format(
       format = llm.format(Book, mode="strict")
 
       @llm.call(
-          provider="openai:completions",
+          provider="openai",
           model_id="openai/gpt-5-mini",
           format=format,
       )

@@ -9,7 +9,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "gpt-4o",
             "params": {},
             "finish_reason": None,
@@ -37,7 +37,7 @@ test_snapshot = snapshot(
                             text="Yes, I can confirm that I was created by Anthropic, an AI safety and research company."
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="gpt-4o",
                     raw_message={
                         "content": "Yes, I can confirm that I was created by Anthropic, an AI safety and research company.",

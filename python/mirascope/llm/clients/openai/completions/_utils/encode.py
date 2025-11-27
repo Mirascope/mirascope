@@ -102,7 +102,7 @@ def _encode_user_message(
             if model_status == "no_audio_support":
                 raise FeatureNotSupportedError(
                     feature="Audio inputs",
-                    provider="openai:completions",
+                    provider="openai",
                     message=f"Model '{model_id}' does not support audio inputs.",
                 )
 
@@ -111,7 +111,7 @@ def _encode_user_message(
                 if audio_format not in ("wav", "mp3"):
                     raise FeatureNotSupportedError(
                         feature=f"Audio format: {audio_format}",
-                        provider="openai:completions",
+                        provider="openai",
                         message="OpenAI only supports 'wav' and 'mp3' audio formats.",
                     )  # pragma: no cover
                 audio_content = openai_types.ChatCompletionContentPartInputAudioParam(
@@ -146,7 +146,7 @@ def _encode_assistant_message(
     """Convert Mirascope `AssistantMessage` to OpenAI `ChatCompletionAssistantMessageParam`."""
 
     if (
-        message.provider == "openai:completions"
+        message.provider == "openai"
         and message.model_id == model_id
         and message.raw_message
         and not encode_thoughts
@@ -294,7 +294,7 @@ def encode_request(
 
     with _base_utils.ensure_all_params_accessed(
         params=params,
-        provider="openai:completions",
+        provider="openai",
         unsupported_params=["top_k", "thinking"],
     ) as param_accessor:
         if param_accessor.temperature is not None:
@@ -325,7 +325,7 @@ def encode_request(
             if not model_supports_strict:
                 raise FormattingModeNotSupportedError(
                     formatting_mode="strict",
-                    provider="openai:completions",
+                    provider="openai",
                     model_id=model_id,
                 )
             kwargs["response_format"] = _create_strict_response_format(format)

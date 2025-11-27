@@ -1163,7 +1163,7 @@ def model(
     within the context. This allows you to override the default model at runtime.
 
     Args:
-        provider: The LLM provider to use (e.g., "openai:completions", "anthropic", "google").
+        provider: The LLM provider to use (e.g., "openai", "anthropic", "google").
         model_id: The specific model identifier for the chosen provider.
         **params: Additional parameters to configure the model (e.g. temperature). See `llm.Params`.
 
@@ -1209,7 +1209,7 @@ def use_model(
     overridden at runtime using the `llm.model()` context manager.
 
     Args:
-        provider: The LLM provider to use (e.g., "openai:completions", "anthropic", "google").
+        provider: The LLM provider to use (e.g., "openai", "anthropic", "google").
         model_id: The specific model identifier for the chosen provider.
         **params: Additional parameters to configure the model (e.g. temperature). See `llm.Params`.
 

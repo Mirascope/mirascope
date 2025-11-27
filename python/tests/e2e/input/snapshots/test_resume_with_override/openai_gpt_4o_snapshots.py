@@ -9,7 +9,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
@@ -46,7 +46,7 @@ test_snapshot = snapshot(
                             text="I apologize for the mistake. I am actually based on OpenAI's GPT-3 model. OpenAI developed and trained me."
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "content": "I apologize for the mistake. I am actually based on OpenAI's GPT-3 model. OpenAI developed and trained me.",

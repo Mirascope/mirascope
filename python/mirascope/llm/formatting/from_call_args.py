@@ -20,7 +20,7 @@ class FromCallArgs:
 
 
     @llm.call(
-        provider="openai:completions",
+        provider="openai",
         model_id="openai/gpt-5-mini",
         format=Book,
     )

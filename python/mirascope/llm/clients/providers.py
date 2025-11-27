@@ -12,11 +12,10 @@ from .openai import (
 )
 
 Provider: TypeAlias = Literal[
-    "anthropic",
-    "google",
-    "openai:completions",  # OpenAICompletionsClient
+    "anthropic",  # AnthropicClient
+    "google",  # GoogleClient
     "openai:responses",  # OpenAIResponsesClient
-    "openai",  # Alias for "openai:responses"
+    "openai",  # OpenAICompletionsClient
 ]
 PROVIDERS = get_args(Provider)
 
