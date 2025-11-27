@@ -6,7 +6,7 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope import llm
-from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS
+from tests.e2e.conftest import E2E_MODEL_IDS, FORMATTING_MODES
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -27,11 +27,10 @@ class Book(BaseModel):
         """)
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_with_formatting_instructions(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,

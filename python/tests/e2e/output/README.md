@@ -37,7 +37,7 @@ Context variants share the same VCR cassettes as non-context variants.
 
 Tests should be parametrized with:
 ```python
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 ```
 
 This ensures all providers and models are tested for each scenario.

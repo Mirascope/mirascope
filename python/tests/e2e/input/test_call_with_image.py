@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
+from tests.e2e.conftest import E2E_MODEL_IDS
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -17,10 +17,9 @@ WIKIPEDIA_ICON_PATH = str(
 )
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_image_content(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
@@ -39,10 +38,9 @@ def test_call_with_image_content(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_image_url(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,

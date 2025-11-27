@@ -11,11 +11,11 @@ import pytest
 
 from mirascope import llm
 
-PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
-    ("anthropic", "anthropic/claude-sonnet-4-0"),
-    ("google", "google/gemini-2.5-flash"),
-    ("openai", "openai/gpt-4o"),
-    ("openai:responses", "openai:responses/gpt-4o"),
+E2E_MODEL_IDS: list[llm.ModelId] = [
+    "anthropic/claude-sonnet-4-0",
+    "google/gemini-2.5-flash",
+    "openai/gpt-4o",
+    "openai:responses/gpt-4o",
 ]
 
 

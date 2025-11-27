@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
+from tests.e2e.conftest import E2E_MODEL_IDS
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -15,16 +15,12 @@ HELLO_AUDIO_PATH = str(
     Path(__file__).parent.parent / "assets" / "audio" / "tagline.mp3"
 )
 
-PROVIDER_MODEL_ID_PAIRS = [
-    *PROVIDER_MODEL_ID_PAIRS,
-    ("openai", "openai/gpt-audio"),
-]
+E2E_MODEL_IDS = [*E2E_MODEL_IDS, "openai/gpt-audio"]
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_audio(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,

@@ -4,7 +4,7 @@ import pytest
 from pydantic import BaseModel, Field
 
 from mirascope import llm
-from tests.e2e.conftest import FORMATTING_MODES, PROVIDER_MODEL_ID_PAIRS
+from tests.e2e.conftest import E2E_MODEL_IDS, FORMATTING_MODES
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -29,11 +29,10 @@ class Book(BaseModel):
 # ============= SYNC TESTS =============
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_sync(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
@@ -62,11 +61,10 @@ def test_structured_output_sync(
         assert book.rating == 7
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_sync_context(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
@@ -99,12 +97,11 @@ def test_structured_output_sync_context(
 # ============= ASYNC TESTS =============
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_async(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
@@ -133,12 +130,11 @@ async def test_structured_output_async(
         assert book.rating == 7
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_async_context(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
@@ -171,11 +167,10 @@ async def test_structured_output_async_context(
 # ============= STREAM TESTS =============
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_stream(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
@@ -206,11 +201,10 @@ def test_structured_output_stream(
         assert book.rating == 7
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 def test_structured_output_stream_context(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
@@ -245,12 +239,11 @@ def test_structured_output_stream_context(
 # ============= ASYNC STREAM TESTS =============
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_async_stream(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,
@@ -281,12 +274,11 @@ async def test_structured_output_async_stream(
         assert book.rating == 7
 
 
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.parametrize("formatting_mode", FORMATTING_MODES)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_structured_output_async_stream_context(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
     snapshot: Snapshot,

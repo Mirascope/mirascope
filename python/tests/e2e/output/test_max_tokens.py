@@ -3,21 +3,16 @@
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
+from tests.e2e.conftest import E2E_MODEL_IDS
 from tests.utils import (
     Snapshot,
     snapshot_test,
 )
 
 
-@pytest.mark.parametrize(
-    "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS,
-)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
-def test_max_tokens_sync(
-    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
-) -> None:
+def test_max_tokens_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test synchronous call with token limits."""
 
     @llm.call(model_id=model_id, max_tokens=50)
@@ -30,15 +25,10 @@ def test_max_tokens_sync(
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
 
 
-@pytest.mark.parametrize(
-    "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS,
-)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
-async def test_max_tokens_async(
-    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
-) -> None:
+async def test_max_tokens_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test asynchronous call with token limits."""
 
     @llm.call(model_id=model_id, max_tokens=50)
@@ -51,14 +41,9 @@ async def test_max_tokens_async(
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
 
 
-@pytest.mark.parametrize(
-    "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS,
-)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
-def test_max_tokens_stream(
-    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
-) -> None:
+def test_max_tokens_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test streaming call with token limits."""
 
     @llm.call(model_id=model_id, max_tokens=50)
@@ -72,14 +57,11 @@ def test_max_tokens_stream(
         assert response.finish_reason == llm.FinishReason.MAX_TOKENS
 
 
-@pytest.mark.parametrize(
-    "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS,
-)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_max_tokens_async_stream(
-    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
+    model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test async streaming call with token limits."""
 
