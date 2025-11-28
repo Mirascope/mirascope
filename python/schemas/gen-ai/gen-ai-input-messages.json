@@ -1,0 +1,383 @@
+{
+    "$defs": {
+        "BlobPart": {
+            "description": "Represents blob binary data sent inline to the model",
+            "properties": {
+                "type": {
+                    "const": "blob",
+                    "description": "The type of the content captured in this part.",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "mime_type": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The IANA MIME type of the attached data.",
+                    "title": "Mime Type"
+                },
+                "modality": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Modality"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "description": "The general modality of the data if it is known. Instrumentations SHOULD also set the mimeType field if the specific type is known.",
+                    "title": "Modality"
+                },
+                "content": {
+                    "description": "Raw bytes of the attached data. This field SHOULD be encoded as a base64 string when transmitted as JSON.",
+                    "format": "binary",
+                    "title": "Content",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "modality",
+                "content"
+            ],
+            "title": "BlobPart",
+            "type": "object"
+        },
+        "ChatMessage": {
+            "additionalProperties": true,
+            "properties": {
+                "role": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Role"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "description": "Role of the entity that created the message.",
+                    "title": "Role"
+                },
+                "parts": {
+                    "description": "List of message parts that make up the message content.",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/TextPart"
+                            },
+                            {
+                                "$ref": "#/$defs/ToolCallRequestPart"
+                            },
+                            {
+                                "$ref": "#/$defs/ToolCallResponsePart"
+                            },
+                            {
+                                "$ref": "#/$defs/BlobPart"
+                            },
+                            {
+                                "$ref": "#/$defs/FilePart"
+                            },
+                            {
+                                "$ref": "#/$defs/UriPart"
+                            },
+                            {
+                                "$ref": "#/$defs/ReasoningPart"
+                            },
+                            {
+                                "$ref": "#/$defs/GenericPart"
+                            }
+                        ]
+                    },
+                    "title": "Parts",
+                    "type": "array"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the participant.",
+                    "title": "Name"
+                }
+            },
+            "required": [
+                "role",
+                "parts"
+            ],
+            "title": "ChatMessage",
+            "type": "object"
+        },
+        "FilePart": {
+            "additionalProperties": true,
+            "description": "Represents an external referenced file sent to the model by file id",
+            "properties": {
+                "type": {
+                    "const": "file",
+                    "description": "The type of the content captured in this part.",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "mime_type": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The IANA MIME type of the attached data.",
+                    "title": "Mime Type"
+                },
+                "modality": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Modality"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "description": "The general modality of the data if it is known. Instrumentations SHOULD also set the mimeType field if the specific type is known.",
+                    "title": "Modality"
+                },
+                "file_id": {
+                    "description": "An identifier referencing a file that was pre-uploaded to the provider.",
+                    "title": "File Id",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "modality",
+                "file_id"
+            ],
+            "title": "FilePart",
+            "type": "object"
+        },
+        "GenericPart": {
+            "additionalProperties": true,
+            "description": "Represents an arbitrary message part with any type and properties.\nThis allows for extensibility with custom message part types.",
+            "properties": {
+                "type": {
+                    "description": "The type of the content captured in this part.",
+                    "title": "Type",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "title": "GenericPart",
+            "type": "object"
+        },
+        "Modality": {
+            "enum": [
+                "image",
+                "video",
+                "audio"
+            ],
+            "title": "Modality",
+            "type": "string"
+        },
+        "ReasoningPart": {
+            "additionalProperties": true,
+            "description": "Represents reasoning/thinking content received from the model.",
+            "properties": {
+                "type": {
+                    "const": "reasoning",
+                    "description": "The type of the content captured in this part.",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "content": {
+                    "description": "Reasoning/thinking content received from the model.",
+                    "title": "Content",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "content"
+            ],
+            "title": "ReasoningPart",
+            "type": "object"
+        },
+        "Role": {
+            "enum": [
+                "system",
+                "user",
+                "assistant",
+                "tool"
+            ],
+            "title": "Role",
+            "type": "string"
+        },
+        "TextPart": {
+            "additionalProperties": true,
+            "description": "Represents text content sent to or received from the model.",
+            "properties": {
+                "type": {
+                    "const": "text",
+                    "description": "The type of the content captured in this part.",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "content": {
+                    "description": "Text content sent to or received from the model.",
+                    "title": "Content",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "content"
+            ],
+            "title": "TextPart",
+            "type": "object"
+        },
+        "ToolCallRequestPart": {
+            "additionalProperties": true,
+            "description": "Represents a tool call requested by the model.",
+            "properties": {
+                "type": {
+                    "const": "tool_call",
+                    "description": "The type of the content captured in this part.",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "id": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Unique identifier for the tool call.",
+                    "title": "Id"
+                },
+                "name": {
+                    "description": "Name of the tool.",
+                    "title": "Name",
+                    "type": "string"
+                },
+                "arguments": {
+                    "default": null,
+                    "description": "Arguments for the tool call.",
+                    "title": "Arguments"
+                }
+            },
+            "required": [
+                "type",
+                "name"
+            ],
+            "title": "ToolCallRequestPart",
+            "type": "object"
+        },
+        "ToolCallResponsePart": {
+            "additionalProperties": true,
+            "description": "Represents a tool call result sent to the model or a built-in tool call outcome and details.",
+            "properties": {
+                "type": {
+                    "const": "tool_call_response",
+                    "description": "The type of the content captured in this part.",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "id": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Unique tool call identifier.",
+                    "title": "Id"
+                },
+                "response": {
+                    "description": "Tool call response.",
+                    "title": "Response"
+                }
+            },
+            "required": [
+                "type",
+                "response"
+            ],
+            "title": "ToolCallResponsePart",
+            "type": "object"
+        },
+        "UriPart": {
+            "additionalProperties": true,
+            "description": "Represents an external referenced file sent to the model by URI",
+            "properties": {
+                "type": {
+                    "const": "uri",
+                    "description": "The type of the content captured in this part.",
+                    "title": "Type",
+                    "type": "string"
+                },
+                "mime_type": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The IANA MIME type of the attached data.",
+                    "title": "Mime Type"
+                },
+                "modality": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Modality"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ],
+                    "description": "The general modality of the data if it is known. Instrumentations SHOULD also set the mimeType field if the specific type is known.",
+                    "title": "Modality"
+                },
+                "uri": {
+                    "description": "A URI referencing attached data. It should not be a base64 data URL, which should use the `blob` part instead. The URI may use a scheme known to the provider api (e.g. `gs://bucket/object.png`), or be a publicly accessible location.",
+                    "title": "Uri",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "modality",
+                "uri"
+            ],
+            "title": "UriPart",
+            "type": "object"
+        }
+    },
+    "description": "Represents the list of input messages sent to the model.",
+    "items": {
+        "$ref": "#/$defs/ChatMessage"
+    },
+    "title": "InputMessages",
+    "type": "array"
+}

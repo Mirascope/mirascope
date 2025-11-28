@@ -81,6 +81,7 @@ dev = [
     "inline-snapshot>=0.26.0",
     "pytest-vcr>=1.0.2",
     "pytest-httpserver>=1.1.0",
+    "datamodel-code-generator>=0.39.0",
 ]
 
 
@@ -171,6 +172,24 @@ executionEnvironments = [
     { root = "examples", reportUnknownParameterType = "none" },
 ]
 
+
+[tool.datamodel-codegen]
+input-file-type = "jsonschema"
+output-model-type = "typing.TypedDict"
+use-standard-collections = true
+use-union-operator = true
+use-inline-field-description = true
+use-type-alias = true
+disable-timestamp = true
+keep-model-order = true
+reuse-model = true
+reuse-scope = "tree"
+all-exports-scope = "recursive"
+all-exports-collision-strategy = "error"
+custom-file-header = "\"\"\"OpenTelemetry Gen AI Semantic Conventions types.\"\"\""
+formatters = ["ruff-check", "ruff-format"]
+target-python-version = "3.10"
+type-mappings = ["binary=string"]
 
 [tool.codespell]
 skip = [".git", "*.lock"]
