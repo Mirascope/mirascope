@@ -1,283 +1,34 @@
-"""Tracing decorators for `mirascope.ops`."""
-
 from __future__ import annotations
 
-import inspect
-from abc import ABC, abstractmethod
-from collections.abc import Generator
-from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import (
-    Any,
-    Generic,
-    Literal,
-    TypeAlias,
-    TypeVar,
+    TYPE_CHECKING,
     overload,
 )
 
-from opentelemetry.util.types import AttributeValue
-
-from .protocols import AsyncFunction, SyncFunction, fn_is_async
-from .spans import Span
-from .types import Jsonable, P, R
-from .utils import get_qualified_name, json_dumps
-
-FunctionT = TypeVar(
-    "FunctionT",
-    bound="SyncFunction[..., Any] | AsyncFunction[..., Any]",
-    covariant=True,
+from ...llm.calls import AsyncCall, AsyncContextCall, Call, ContextCall
+from ...llm.context import DepsT
+from .protocols import (
+    AsyncFunction,
+    SyncFunction,
+    fn_is_async,
 )
+from .traced_call import (
+    TracedAsyncCall,
+    TracedAsyncContextCall,
+    TracedCall,
+    TracedContextCall,
+    is_call_type,
+    wrap_call,
+)
+from .traced_functions import (
+    AsyncTracedFunction,
+    TracedFunction,
+)
+from .types import P, R
 
-PrimitiveType: TypeAlias = str | int | float | bool
-
-
-@dataclass(kw_only=True, frozen=True)
-class _BaseTracedResult(Generic[R]):
-    """Base class for traced results with shared functionality."""
-
-    result: R
-    """Return value produced by the traced call."""
-
-    span: Span
-    """Span associated with the traced call."""
-
-    @property
-    def span_id(self) -> str | None:
-        """Returns the ID of the span for the traced result."""
-        return self.span.span_id
-
-    @property
-    def trace_id(self) -> str | None:
-        """Returns the ID of the trace for the traced result."""
-        return self.span.trace_id
-
-
-@dataclass(kw_only=True, frozen=True)
-class TracedResult(_BaseTracedResult[R]):
-    """Per-call handle returned by sync `.wrapped()` methods.
-
-    Provides access to the result and per-call operations for annotation,
-    tagging, and assignment within a specific trace span context.
-    """
-
-    def annotate(
-        self,
-        *,
-        label: Literal["pass", "fail"],
-        reasoning: str | None = None,
-        metadata: dict[str, Jsonable] | None = None,
-    ) -> None:
-        """Annotates the current trace span."""
-        raise NotImplementedError("TraceResult.annotate not yet implemented")
-
-    def tag(self, *tags: str) -> None:
-        """Adds given tags to the current trace span."""
-        raise NotImplementedError("TraceResult.tag not yet implemented")
-
-    def assign(self, *emails: str) -> None:
-        """Assigns the trace to users with the given emails."""
-        raise NotImplementedError("TraceResult.assign not yet implemented")
-
-
-@dataclass(kw_only=True, frozen=True)
-class AsyncTracedResult(_BaseTracedResult[R]):
-    """Per-call handle returned by async `.wrapped()` methods.
-
-    Provides access to the result and per-call operations for annotation,
-    tagging, and assignment within a specific trace span context.
-    """
-
-    async def annotate(
-        self,
-        *,
-        label: str | None = None,
-        data: dict[str, Jsonable] | None = None,
-        reasoning: str | None = None,
-    ) -> None:
-        """Annotates the current trace span."""
-        raise NotImplementedError("AsyncTraceResult.annotate not yet implemented")
-
-    async def tag(self, *tags: str) -> None:
-        """Adds given tags to the current trace span."""
-        raise NotImplementedError("AsyncTraceResult.tag not yet implemented")
-
-    async def assign(self, *emails: str) -> None:
-        """Assigns the trace to users with the given emails."""
-        raise NotImplementedError("AsyncTraceResult.assign not yet implemented")
-
-
-@dataclass(kw_only=True)
-class _BaseTracedFunction(Generic[P, R, FunctionT], ABC):
-    """Abstract base class for traced function wrappers."""
-
-    fn: FunctionT
-    """The function being traced."""
-
-    tags: tuple[str, ...]
-    """Tags to be associated with the trace span."""
-
-    _qualified_name: str = field(init=False)
-    """Fully qualified name of the wrapped function."""
-
-    _module_name: str = field(init=False)
-    """Module name of the wrapped function."""
-
-    _is_async: bool = field(init=False)
-    """Whether the wrapped function is asynchronous."""
-
-    def __post_init__(self) -> None:
-        """Initialize additional attributes after dataclass init."""
-        self._qualified_name = get_qualified_name(self.fn)
-        self._module_name = getattr(self.fn, "__module__", "")
-
-    def _extract_arguments(
-        self,
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> tuple[dict[str, str], dict[str, Any]]:
-        """Returns a tuple of (arg_types, arg_values) dictionaries from function call."""
-        signature = inspect.signature(self.fn)
-        bound_arguments = signature.bind(*args, **kwargs)
-        bound_arguments.apply_defaults()
-
-        arg_types: dict[str, str] = {}
-        arg_values: dict[str, Any] = {}
-
-        for param_name, param_value in bound_arguments.arguments.items():
-            parameter = signature.parameters[param_name]
-            if parameter.annotation != inspect.Parameter.empty:
-                if hasattr(parameter.annotation, "__name__"):
-                    type_str = parameter.annotation.__name__
-                else:
-                    type_str = str(parameter.annotation)
-                arg_types[param_name] = type_str
-            else:
-                arg_types[param_name] = type(param_value).__name__
-
-            if isinstance(param_value, PrimitiveType) or param_value is None:
-                arg_values[param_name] = param_value
-            else:
-                try:
-                    json_dumps(param_value)
-                    arg_values[param_name] = param_value
-                except (TypeError, ValueError):
-                    arg_values[param_name] = repr(param_value)
-
-        return arg_types, arg_values
-
-    @contextmanager
-    def _span(self, *args: P.args, **kwargs: P.kwargs) -> Generator[Span, None, None]:
-        """Returns a span context manager populated with call attributes."""
-        arg_types, arg_values = self._extract_arguments(*args, **kwargs)
-        with Span(self._qualified_name) as span:
-            attributes: dict[str, AttributeValue] = {
-                "mirascope.type": "trace",
-                "mirascope.fn.qualname": self._qualified_name,
-                "mirascope.fn.module": self._module_name,
-                "mirascope.fn.is_async": self._is_async,
-                "mirascope.trace.arg_types": json_dumps(arg_types),
-                "mirascope.trace.arg_values": json_dumps(arg_values),
-            }
-            if self.tags:
-                attributes["mirascope.trace.tags"] = self.tags
-            span.set(**attributes)
-            yield span
-
-    def _record_result(self, span: Span, result: R) -> None:
-        """Records the function result in the given span."""
-        if result is None:
-            return  # NOTE: we treat `None` valued results as such through omission.
-        elif isinstance(result, PrimitiveType):
-            output = result
-        else:
-            try:
-                output = json_dumps(result)
-            except (TypeError, ValueError):
-                output = repr(result)
-        span.set(**{"mirascope.trace.output": output})
-
-
-@dataclass(kw_only=True)
-class BaseSyncTracedFunction(_BaseTracedFunction[P, R, SyncFunction[P, R]]):
-    """Abstract base class for synchronous traced function wrappers."""
-
-    _is_async: bool = field(default=False, init=False)
-    """Whether the wrapped function is asynchronous."""
-
-    @abstractmethod
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        """Returns the result of the traced function."""
-        ...
-
-    @abstractmethod
-    def wrapped(self, *args: P.args, **kwargs: P.kwargs) -> TracedResult[R]:
-        """Returns a wrapper around the traced function's result for trace utilities."""
-        ...
-
-
-@dataclass(kw_only=True)
-class TracedFunction(BaseSyncTracedFunction[P, R]):
-    """Wrapper for synchronous functions with tracing capabilities.
-
-    Provides both direct call and wrapped call methods for traced execution
-    of synchronous functions.
-    """
-
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        """Returns the result of the traced function."""
-        with self._span(*args, **kwargs) as span:
-            result = self.fn(*args, **kwargs)
-            self._record_result(span, result)
-            return result
-
-    def wrapped(self, *args: P.args, **kwargs: P.kwargs) -> TracedResult[R]:
-        """Returns a wrapper around the traced function's result for trace utilities."""
-        with self._span(*args, **kwargs) as span:
-            result = self.fn(*args, **kwargs)
-            self._record_result(span, result)
-            return TracedResult(result=result, span=span)
-
-
-@dataclass(kw_only=True)
-class BaseAsyncTracedFunction(_BaseTracedFunction[P, R, AsyncFunction[P, R]]):
-    """Abstract base class for asynchronous traced function wrappers."""
-
-    _is_async: bool = field(default=True, init=False)
-    """Whether the wrapped function is asynchronous."""
-
-    @abstractmethod
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        """Returns the result of the traced function."""
-        ...
-
-    @abstractmethod
-    async def wrapped(self, *args: P.args, **kwargs: P.kwargs) -> AsyncTracedResult[R]:
-        """Returns a wrapper around the traced function's result for trace utilities."""
-        ...
-
-
-@dataclass(kw_only=True)
-class AsyncTracedFunction(BaseAsyncTracedFunction[P, R]):
-    """Wrapper for asynchronous functions with tracing capabilities.
-
-    Provides both direct call and wrapped call methods for traced execution
-    of asynchronous functions.
-    """
-
-    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        """Returns the result of the traced function."""
-        with self._span(*args, **kwargs) as span:
-            result = await self.fn(*args, **kwargs)
-            self._record_result(span, result)
-            return result
-
-    async def wrapped(self, *args: P.args, **kwargs: P.kwargs) -> AsyncTracedResult[R]:
-        """Returns a wrapper around the traced function's result for trace utilities."""
-        with self._span(*args, **kwargs) as span:
-            result = await self.fn(*args, **kwargs)
-            self._record_result(span, result)
-            return AsyncTracedResult(result=result, span=span)
+if TYPE_CHECKING:
+    from ...llm.formatting import FormattableT
 
 
 @dataclass(kw_only=True)
@@ -287,12 +38,42 @@ class TraceDecorator:
     tags: tuple[str, ...] = ()
     """Tags to be associated with traced function calls."""
 
-    # IMPORTANT: The order of these overloads must be preserved.
-    # Pyright requires the async overload to be declared first for proper type inference.
-    # If the sync overload is placed before the async overload, pyright will fail to
-    # correctly recognize async functions when using the @overload decorator.
+    # IMPORTANT: The order of these overloads matters for type inference.
+    # Call type overloads come first, then function overloads.
     @overload
     def __call__(  # pyright: ignore[reportOverlappingOverload]
+        self,
+        fn: AsyncContextCall[P, DepsT, FormattableT],
+    ) -> TracedAsyncContextCall[P, DepsT, FormattableT]:
+        """Overload for applying decorator to an AsyncContextCall."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: ContextCall[P, DepsT, FormattableT],
+    ) -> TracedContextCall[P, DepsT, FormattableT]:
+        """Overload for applying decorator to a ContextCall."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: AsyncCall[P, FormattableT],
+    ) -> TracedAsyncCall[P, FormattableT]:
+        """Overload for applying decorator to an AsyncCall."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: Call[P, FormattableT],
+    ) -> TracedCall[P, FormattableT]:
+        """Overload for applying decorator to a Call."""
+        ...
+
+    @overload
+    def __call__(
         self,
         fn: AsyncFunction[P, R],
     ) -> AsyncTracedFunction[P, R]:
@@ -307,12 +88,28 @@ class TraceDecorator:
         """Overload for applying decorator to a sync function."""
         ...
 
-    def __call__(
+    def __call__(  # pyright: ignore[reportGeneralTypeIssues]
         self,
-        fn: SyncFunction[P, R] | AsyncFunction[P, R],
-    ) -> TracedFunction[P, R] | AsyncTracedFunction[P, R]:
-        """Applies the decorator to the given function."""
-        if fn_is_async(fn):
+        fn: (
+            AsyncContextCall[P, DepsT, FormattableT]
+            | ContextCall[P, DepsT, FormattableT]
+            | AsyncCall[P, FormattableT]
+            | Call[P, FormattableT]
+            | AsyncFunction[P, R]
+            | SyncFunction[P, R]
+        ),
+    ) -> (
+        TracedAsyncContextCall[P, DepsT, FormattableT]
+        | TracedContextCall[P, DepsT, FormattableT]
+        | TracedAsyncCall[P, FormattableT]
+        | TracedCall[P, FormattableT]
+        | AsyncTracedFunction[P, R]
+        | TracedFunction[P, R]
+    ):
+        """Applies the decorator to the given function or Call object."""
+        if is_call_type(fn):
+            return wrap_call(fn=fn, tags=self.tags)
+        elif fn_is_async(fn):
             return AsyncTracedFunction(fn=fn, tags=self.tags)
         else:
             return TracedFunction(fn=fn, tags=self.tags)
@@ -325,7 +122,39 @@ def trace(__fn: None = None, *, tags: list[str] | None = None) -> TraceDecorator
 
 
 @overload
-def trace(__fn: AsyncFunction[P, R], *, tags: None = None) -> AsyncTracedFunction[P, R]:  # pyright: ignore[reportOverlappingOverload]
+def trace(  # pyright: ignore[reportOverlappingOverload]
+    __fn: AsyncContextCall[P, DepsT, FormattableT], *, tags: None = None
+) -> TracedAsyncContextCall[P, DepsT, FormattableT]:
+    """Overload for directly decorating an AsyncContextCall."""
+    ...
+
+
+@overload
+def trace(
+    __fn: ContextCall[P, DepsT, FormattableT], *, tags: None = None
+) -> TracedContextCall[P, DepsT, FormattableT]:
+    """Overload for directly decorating a ContextCall."""
+    ...
+
+
+@overload
+def trace(
+    __fn: AsyncCall[P, FormattableT], *, tags: None = None
+) -> TracedAsyncCall[P, FormattableT]:
+    """Overload for directly decorating an AsyncCall."""
+    ...
+
+
+@overload
+def trace(
+    __fn: Call[P, FormattableT], *, tags: None = None
+) -> TracedCall[P, FormattableT]:
+    """Overload for directly decorating a Call."""
+    ...
+
+
+@overload
+def trace(__fn: AsyncFunction[P, R], *, tags: None = None) -> AsyncTracedFunction[P, R]:
     """Overload for directly (no argument) decorating an asynchronous function"""
     ...
 
@@ -336,18 +165,38 @@ def trace(__fn: SyncFunction[P, R], *, tags: None = None) -> TracedFunction[P, R
     ...
 
 
-def trace(
-    __fn: SyncFunction[P, R] | AsyncFunction[P, R] | None = None,
+def trace(  # pyright: ignore[reportGeneralTypeIssues]
+    __fn: (
+        AsyncContextCall[P, DepsT, FormattableT]
+        | ContextCall[P, DepsT, FormattableT]
+        | AsyncCall[P, FormattableT]
+        | Call[P, FormattableT]
+        | AsyncFunction[P, R]
+        | SyncFunction[P, R]
+        | None
+    ) = None,
     *,
     tags: list[str] | None = None,
-) -> TraceDecorator | TracedFunction[P, R] | AsyncTracedFunction[P, R]:
-    """Decorator for adding tracing capabilities to functions.
+) -> (
+    TracedAsyncContextCall[P, DepsT, FormattableT]
+    | TracedContextCall[P, DepsT, FormattableT]
+    | TracedAsyncCall[P, FormattableT]
+    | TracedCall[P, FormattableT]
+    | AsyncTracedFunction[P, R]
+    | TracedFunction[P, R]
+    | TraceDecorator
+):
+    """Decorator for adding tracing capabilities to functions and LLM calls.
 
     Creates a wrapper that enables distributed tracing, performance monitoring,
-    and execution tracking for decorated functions.
+    and execution tracking for decorated functions. When called, the decorated
+    function returns a Trace containing both the result and span info.
+
+    When decorating an @llm.call function, returns a TracedCall that wraps both
+    the call and stream methods with tracing capabilities.
 
     Args:
-        __fn: The function to decorate.
+        __fn: The function or Call object to decorate.
         tags: Optional list of string tags to associate with traced executions.
 
     Returns:
@@ -355,23 +204,39 @@ def trace(
 
     Example:
         ```python
-        @ops.trace()
+        @ops.trace
         def process_data(data: dict) -> dict:
             return {"processed": data}
+
+        traced_result = process_data({"key": "value"})
+        print(traced_result.result)    # {"processed": {"key": "value"}}
+        print(traced_result.span_id)   # Access span ID
         ```
 
     Example:
         ```python
-        @ops.trace(tags=["production", "critical"])
-        async def fetch_user(user_id: int) -> User:
-            return await get_user(user_id)
+        @ops.trace
+        @llm.call(provider="openai", model_id="gpt-4o-mini")
+        def recommend_book(genre: str):
+            return f"Recommend a {genre} book"
+
+        # Returns Response directly (execution is still traced)
+        response = recommend_book("fantasy")
+        print(response.content)
+
+        # Use .wrapped() to get Trace[Response] with span info
+        trace = recommend_book.wrapped("fantasy")
+        print(trace.result.content)
+        print(trace.span_id)
         ```
     """
     normalized_tags = tuple(sorted(set(tags or [])))
-    if __fn:
-        if fn_is_async(__fn):
-            return AsyncTracedFunction(fn=__fn, tags=normalized_tags)
-        else:
-            return TracedFunction(fn=__fn, tags=normalized_tags)
-    else:
+    if __fn is None:
         return TraceDecorator(tags=normalized_tags)
+
+    if is_call_type(__fn):
+        return wrap_call(fn=__fn, tags=normalized_tags)
+    elif fn_is_async(__fn):
+        return AsyncTracedFunction(fn=__fn, tags=normalized_tags)
+    else:
+        return TracedFunction(fn=__fn, tags=normalized_tags)

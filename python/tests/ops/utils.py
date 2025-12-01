@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Mapping
 from contextlib import suppress
 from typing import TypedDict
 
 from opentelemetry.sdk.trace import ReadableSpan
 from opentelemetry.util.types import AttributeValue
+
+_OBJECT_ADDRESS_PATTERN = re.compile(r" at 0x[0-9a-fA-F]+")
 
 
 class SpanStatus(TypedDict):
