@@ -2,20 +2,24 @@
 
 from typing import TYPE_CHECKING
 
-from ..exceptions import MirascopeError
-
 if TYPE_CHECKING:
     from .clients import ModelId, Provider
     from .formatting import FormattingMode
 
 
-class APIError(MirascopeError):
+class MirascopeLLMError(Exception):
+    """Base exception for all Mirascope LLM errors."""
+
+    original_exception: Exception | None
+
+
+class APIError(MirascopeLLMError):
     """Base class for API-related errors."""
 
     status_code: int | None
 
 
-class ConnectionError(MirascopeError):
+class ConnectionError(MirascopeLLMError):
     """Raised when unable to connect to the API (network issues, timeouts)."""
 
 
@@ -35,11 +39,11 @@ class NotFoundError(APIError):
     """Raised when requested resource is not found (404)."""
 
 
-class ToolNotFoundError(MirascopeError):
+class ToolNotFoundError(MirascopeLLMError):
     """Raised if a tool_call cannot be converted to any corresponding tool."""
 
 
-class FeatureNotSupportedError(MirascopeError):
+class FeatureNotSupportedError(MirascopeLLMError):
     """Raised if a Mirascope feature is unsupported by chosen provider.
 
     If compatibility is model-specific, then `model_id` should be specified.
@@ -97,5 +101,5 @@ class ServerError(APIError):
     """Raised for server-side errors (500+)."""
 
 
-class TimeoutError(MirascopeError):
+class TimeoutError(MirascopeLLMError):
     """Raised when requests timeout or deadline exceeded."""
