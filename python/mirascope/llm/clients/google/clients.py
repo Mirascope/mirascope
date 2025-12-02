@@ -154,7 +154,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.encode_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -162,11 +162,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             params=params,
         )
 
-        google_response = self.client.models.generate_content(
-            model=model_id.removeprefix("google/"),
-            contents=contents,
-            config=config,
-        )
+        google_response = self.client.models.generate_content(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
             google_response, model_id
@@ -257,7 +253,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.encode_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -265,11 +261,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             params=params,
         )
 
-        google_response = self.client.models.generate_content(
-            model=model_id.removeprefix("google/"),
-            contents=contents,
-            config=config,
-        )
+        google_response = self.client.models.generate_content(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
             google_response, model_id
@@ -347,7 +339,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.encode_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -355,11 +347,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             params=params,
         )
 
-        google_response = await self.client.aio.models.generate_content(
-            model=model_id.removeprefix("google/"),
-            contents=contents,
-            config=config,
-        )
+        google_response = await self.client.aio.models.generate_content(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
             google_response, model_id
@@ -450,7 +438,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.encode_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -458,11 +446,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             params=params,
         )
 
-        google_response = await self.client.aio.models.generate_content(
-            model=model_id.removeprefix("google/"),
-            contents=contents,
-            config=config,
-        )
+        google_response = await self.client.aio.models.generate_content(**kwargs)
 
         assistant_message, finish_reason = _utils.decode_response(
             google_response, model_id
@@ -540,7 +524,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.encode_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -548,11 +532,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             params=params,
         )
 
-        google_stream = self.client.models.generate_content_stream(
-            model=model_id.removeprefix("google/"),
-            contents=contents,
-            config=config,
-        )
+        google_stream = self.client.models.generate_content_stream(**kwargs)
 
         chunk_iterator = _utils.decode_stream(google_stream)
 
@@ -639,7 +619,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.encode_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -647,11 +627,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             params=params,
         )
 
-        google_stream = self.client.models.generate_content_stream(
-            model=model_id.removeprefix("google/"),
-            contents=contents,
-            config=config,
-        )
+        google_stream = self.client.models.generate_content_stream(**kwargs)
 
         chunk_iterator = _utils.decode_stream(google_stream)
 
@@ -725,7 +701,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.encode_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -733,11 +709,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             params=params,
         )
 
-        google_stream = await self.client.aio.models.generate_content_stream(
-            model=model_id.removeprefix("google/"),
-            contents=contents,
-            config=config,
-        )
+        google_stream = await self.client.aio.models.generate_content_stream(**kwargs)
 
         chunk_iterator = _utils.decode_async_stream(google_stream)
 
@@ -830,7 +802,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        input_messages, format, contents, config = _utils.encode_request(
+        input_messages, format, kwargs = _utils.encode_request(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -838,11 +810,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
             params=params,
         )
 
-        google_stream = await self.client.aio.models.generate_content_stream(
-            model=model_id.removeprefix("google/"),
-            contents=contents,
-            config=config,
-        )
+        google_stream = await self.client.aio.models.generate_content_stream(**kwargs)
 
         chunk_iterator = _utils.decode_async_stream(google_stream)
 
