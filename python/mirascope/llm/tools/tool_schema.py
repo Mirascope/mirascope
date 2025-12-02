@@ -188,7 +188,7 @@ class ToolSchema(Generic[ToolFnT]):
 
         param_descriptions = _parse_docstring_params(fn.__doc__)
 
-        field_definitions: dict[str, tuple[Any, Any]] = {}
+        field_definitions: dict[str, tuple[str, Any]] = {}
         hints = get_type_hints(fn, include_extras=True)
 
         context_param_skipped = False
@@ -218,7 +218,7 @@ class ToolSchema(Generic[ToolFnT]):
             if field_info is not None:
                 field_value = Field(
                     default=default,
-                    description=cast(str | None, field_info.description),
+                    description=field_info.description,
                 )
             else:
                 docstring_description: str | None = None
@@ -235,15 +235,7 @@ class ToolSchema(Generic[ToolFnT]):
 
             field_definitions[param.name] = (param_type, field_value)
 
-        TempModel = cast(
-            BaseModel,
-            create_model(
-                "TempModel",
-                **field_definitions,  # pyright: ignore[reportArgumentType, reportCallIssue]
-            ),
-        )
-
-        TempModel = create_model("TempModel", field_definitions=field_definitions)
+        TempModel = create_model("TempModel", **cast(dict[str, Any], field_definitions))
         schema = TempModel.model_json_schema()
 
         parameters = ToolParameterSchema(
