@@ -1147,67 +1147,142 @@ class Model:
         )
 
 
+@overload
 @contextmanager
 def model(
-    model_id: ModelId,
+    model: ModelId,
     **params: Unpack[Params],
-) -> Iterator[None]:
+) -> Iterator[Model]:
     """Set a model in context for the duration of the context manager.
 
-    This context manager sets a model that will be used by `llm.use_model()` calls
-    within the context. This allows you to override the default model at runtime.
+    This overload accepts a model ID string and allows additional params.
+    """
+    ...
+
+
+@overload
+@contextmanager
+def model(
+    model: Model,
+) -> Iterator[Model]:
+    """Set a model in context for the duration of the context manager.
+
+    This overload accepts a `Model` instance and does not allow additional params.
+    """
+    ...
+
+
+@contextmanager
+def model(
+    model: Model | ModelId,
+    **params: Unpack[Params],
+) -> Iterator[Model]:
+    """Set a model in context for the duration of the context manager.
+
+    This context manager sets a model that will be used by both `llm.use_model()` and
+    `llm.call()` within the context. This allows you to override the default model at
+    runtime without modifying function definitions.
+
+    When a model is set in context, it completely overrides any model ID or parameters
+    specified in `llm.use_model()` or `llm.call()`. The context model's parameters take
+    precedence, and any unset parameters use default values.
 
     Args:
-        provider: The LLM provider to use (e.g., "openai", "anthropic", "google").
-        model_id: The specific model identifier for the chosen provider.
+        model: A model ID string (e.g., "openai/gpt-4") or a `Model` instance
         **params: Additional parameters to configure the model (e.g. temperature). See `llm.Params`.
+                  Only available when passing a model ID string
+
+    Yields:
+        The Model instance that was set in context.
 
     Raises:
         ValueError: If the specified provider is not supported.
 
     Example:
+        With `llm.use_model()`
 
         ```python
         import mirascope.llm as llm
 
         def recommend_book(genre: str) -> llm.Response:
-            model = llm.use_model(provider="openai", model_id="openai/gpt-5-mini")
+            model = llm.use_model("openai/gpt-5-mini")
             message = llm.messages.user(f"Please recommend a book in {genre}.")
             return model.call(messages=[message])
 
         # Override the default model at runtime
         with llm.model(provider="anthropic", model_id="anthropic/claude-sonnet-4-5"):
+           response = recommend_book("fantasy")  # Uses Claude instead of GPT
+        ```
+
+    Example:
+        With `llm.call()`
+
+        ```python
+        import mirascope.llm as llm
+
+        @llm.call("openai/gpt-5-mini")
+        def recommend_book(genre: str):
+            return f"Please recommend a {genre} book."
+
+        # Override the decorated model at runtime
+        with llm.model("anthropic/claude-sonnet-4-0"):
             response = recommend_book("fantasy")  # Uses Claude instead of GPT
         ```
     """
-    token = MODEL_CONTEXT.set(Model(model_id, **params))
+    if isinstance(model, str):
+        model = Model(model, **params)
+
+    token = MODEL_CONTEXT.set(model)
     try:
-        yield
+        yield model
     finally:
         MODEL_CONTEXT.reset(token)
 
 
+@overload
 def use_model(
-    model_id: ModelId,
+    model: ModelId,
     **params: Unpack[Params],
 ) -> Model:
-    """Get the model from context if available, otherwise create a new Model.
+    """Get the model from context if available, otherwise create a new `Model`.
+
+    This overload accepts a model ID string and allows additional params.
+    """
+    ...
+
+
+@overload
+def use_model(
+    model: Model,
+) -> Model:
+    """Get the model from context if available, otherwise use the provided `Model`.
+
+    This overload accepts a `Model` instance and does not allow additional params.
+    """
+    ...
+
+
+def use_model(
+    model: Model | ModelId,
+    **params: Unpack[Params],
+) -> Model:
+    """Get the model from context if available, otherwise create a new `Model`.
 
     This function checks if a model has been set in the context (via `llm.model()`
-    context manager). If a model is found in the context, it returns that model.
-    Otherwise, it creates and returns a new `llm.Model` instance with the provided
-    arguments as defaults.
+    context manager). If a model is found in the context, it returns that model,
+    ignoring any model ID or parameters passed to this function. Otherwise, it creates
+    and returns a new `llm.Model` instance with the provided arguments.
 
     This allows you to write functions that work with a default model but can be
     overridden at runtime using the `llm.model()` context manager.
 
     Args:
-        provider: The LLM provider to use (e.g., "openai", "anthropic", "google").
-        model_id: The specific model identifier for the chosen provider.
+        model: A model ID string (e.g., "openai/gpt-4") or a Model instance
         **params: Additional parameters to configure the model (e.g. temperature). See `llm.Params`.
+            Only available when passing a model ID string
 
     Returns:
-        An `llm.Model` instance from context or a new instance with the specified settings.
+        An `llm.Model` instance from context (if set) or a new instance with the specified settings.
 
     Raises:
         ValueError: If the specified provider is not supported.
@@ -1218,11 +1293,11 @@ def use_model(
         import mirascope.llm as llm
 
         def recommend_book(genre: str) -> llm.Response:
-            model = llm.use_model(provider="openai", model_id="openai/gpt-5-mini")
+            model = llm.use_model("openai/gpt-5-mini")
             message = llm.messages.user(f"Please recommend a book in {genre}.")
             return model.call(messages=[message])
 
-        # Uses the default model (gpt-4o-mini)
+        # Uses the default model (gpt-5-mini)
         response = recommend_book("fantasy")
 
         # Override with a different model
@@ -1233,4 +1308,6 @@ def use_model(
     context_model = get_model_from_context()
     if context_model is not None:
         return context_model
-    return Model(model_id, **params)
+    if isinstance(model, str):
+        return Model(model, **params)
+    return model

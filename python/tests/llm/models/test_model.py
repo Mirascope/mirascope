@@ -55,3 +55,23 @@ def test_value_error_invalid_models() -> None:
 
     with pytest.raises(ValueError, match="Invalid model_id format"):
         llm.call("really-cool-model-i-heard-about")
+
+
+def test_use_model_accepts_model_instance() -> None:
+    """Test that use_model accepts a Model instance."""
+    model_instance = llm.Model("anthropic/claude-sonnet-4-0", temperature=0.7)
+    model = llm.use_model(model_instance)
+
+    assert model.provider == "anthropic"
+    assert model.model_id == "anthropic/claude-sonnet-4-0"
+    assert model.params.get("temperature") == 0.7
+
+
+def test_model_context_accepts_model_instance() -> None:
+    """Test that llm.model() accepts a Model instance."""
+    model_instance = llm.Model("anthropic/claude-sonnet-4-0", temperature=0.8)
+
+    with llm.model(model_instance) as model:
+        assert model.provider == "anthropic"
+        assert model.model_id == "anthropic/claude-sonnet-4-0"
+        assert model.params.get("temperature") == 0.8

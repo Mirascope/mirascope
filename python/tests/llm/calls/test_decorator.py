@@ -157,6 +157,18 @@ class TestCall:
         with pytest.raises(ValueError, match="Invalid model_id format"):
             llm.call("really-cool-model-i-heard-about")
 
+    def test_call_decorator_accepts_model_instance(self) -> None:
+        """Test that llm.call() accepts a Model instance."""
+        model = llm.Model("openai/gpt-4o", max_tokens=100)
+
+        @llm.call(model)
+        def test_fn() -> str:
+            return "test"
+
+        assert test_fn.default_model.provider == "openai"
+        assert test_fn.default_model.model_id == "openai/gpt-4o"
+        assert test_fn.default_model.params.get("max_tokens") == 100
+
 
 class TestContextCall:
     """Tests for context call decorator (with context dependency)."""
