@@ -116,7 +116,9 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
             return None
 
         formattable = self.format.formattable
-        if formattable is None or formattable is NoneType:
+        if formattable is None or formattable is NoneType:  # pyright: ignore[reportUnnecessaryComparison]
+            # note: pyright claims the None comparison is unnecessary, but removing it
+            # introduces type errors.
             return None  # pragma: no cover
 
         if partial:
