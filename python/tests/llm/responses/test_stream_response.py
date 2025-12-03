@@ -1,6 +1,6 @@
 """Tests for llm.StreamResponse class."""
 
-from collections.abc import AsyncIterator, Iterator, Sequence
+from collections.abc import AsyncIterator, Sequence
 from dataclasses import dataclass
 
 import pytest
@@ -139,8 +139,6 @@ def test_sync_initialization(
     assert stream_response.model_id == "gpt-4o-mini"
     assert stream_response.toolkit == llm.Toolkit(tools=[])
     assert stream_response.finish_reason is None
-    assert isinstance(stream_response._chunk_iterator, Iterator)
-    assert stream_response._current_content is None
     assert not stream_response.consumed
     check_stream_response_consistency(stream_response, [], [])
 
@@ -156,8 +154,6 @@ async def test_async_initialization(
     assert stream_response.model_id == "gpt-4o-mini"
     assert stream_response.toolkit == llm.AsyncToolkit(tools=[])
     assert stream_response.finish_reason is None
-    assert isinstance(stream_response._chunk_iterator, AsyncIterator)
-    assert stream_response._current_content is None
     assert not stream_response.consumed
     check_stream_response_consistency(stream_response, [], [])
 

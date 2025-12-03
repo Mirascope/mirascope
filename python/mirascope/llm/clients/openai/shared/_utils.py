@@ -45,15 +45,15 @@ MODELS_WITHOUT_JSON_OBJECT_SUPPORT = {
 }
 
 
-def _ensure_additional_properties_false(obj: object) -> None:
+def ensure_additional_properties_false(obj: object) -> None:
     """Recursively adds additionalProperties = False to a schema, required by OpenAI API."""
     if isinstance(obj, dict):
         obj = cast(dict[str, object], obj)
         if obj.get("type") == "object" and "additionalProperties" not in obj:
             obj["additionalProperties"] = False
         for value in obj.values():
-            _ensure_additional_properties_false(value)
+            ensure_additional_properties_false(value)
     elif isinstance(obj, list):
         obj = cast(list[object], obj)
         for item in obj:
-            _ensure_additional_properties_false(item)
+            ensure_additional_properties_false(item)

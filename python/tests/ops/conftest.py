@@ -60,16 +60,16 @@ def reset_propagator_singleton() -> Generator[None, None, None]:
 
 def reset_configuration() -> None:
     """Reset configuration module state to defaults."""
-    configuration._tracer_provider = None
-    configuration._tracer_name = configuration.DEFAULT_TRACER_NAME
-    configuration._tracer_version = None
-    configuration._tracer = None
+    configuration._tracer_provider = None  # pyright: ignore[reportPrivateUsage]
+    configuration._tracer_name = configuration.DEFAULT_TRACER_NAME  # pyright: ignore[reportPrivateUsage]
+    configuration._tracer_version = None  # pyright: ignore[reportPrivateUsage]
+    configuration._tracer = None  # pyright: ignore[reportPrivateUsage]
 
 
 def reset_llm_instrumentation() -> None:
     """Reset llm instrumentation module state."""
     configuration.set_tracer(None)
-    llm.llm._unwrap_model_call()
+    llm.llm._unwrap_model_call()  # pyright: ignore[reportPrivateUsage]
 
 
 @pytest.fixture(autouse=True)

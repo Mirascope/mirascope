@@ -196,7 +196,7 @@ def _convert_tool_to_function_tool_param(tool: AnyToolSchema) -> FunctionToolPar
     """Convert a Mirascope ToolSchema to OpenAI Responses FunctionToolParam."""
     schema_dict = tool.parameters.model_dump(by_alias=True, exclude_none=True)
     schema_dict["type"] = "object"
-    _shared_utils._ensure_additional_properties_false(schema_dict)
+    _shared_utils.ensure_additional_properties_false(schema_dict)
 
     return FunctionToolParam(
         type="function",
@@ -219,7 +219,7 @@ def _create_strict_response_format(
         ResponseFormatTextJSONSchemaConfigParam for strict structured outputs
     """
     schema = format.schema.copy()
-    _shared_utils._ensure_additional_properties_false(schema)
+    _shared_utils.ensure_additional_properties_false(schema)
 
     response_format: ResponseFormatTextJSONSchemaConfigParam = {
         "type": "json_schema",

@@ -227,7 +227,7 @@ def decode_stream(
     """Returns a ChunkIterator converted from an Anthropic MessageStreamManager"""
     processor = _AnthropicChunkProcessor()
     with anthropic_stream_manager as stream:
-        for event in stream._raw_stream:
+        for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
             yield from processor.process_event(event)
     yield processor.raw_message_chunk()
 
@@ -238,7 +238,7 @@ async def decode_async_stream(
     """Returns an AsyncChunkIterator converted from an Anthropic MessageStreamManager"""
     processor = _AnthropicChunkProcessor()
     async with anthropic_stream_manager as stream:
-        async for event in stream._raw_stream:
+        async for event in stream._raw_stream:  # pyright: ignore[reportPrivateUsage]
             for item in processor.process_event(event):
                 yield item
     yield processor.raw_message_chunk()
