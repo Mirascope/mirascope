@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import os
+import weakref
 from collections.abc import Callable, Iterator, Mapping, Sequence
-from contextlib import contextmanager
+from contextlib import AbstractContextManager, contextmanager
 from dataclasses import dataclass
 from functools import wraps
+from types import TracebackType
 from typing import TYPE_CHECKING, Protocol, TypeAlias, overload, runtime_checkable
 from typing_extensions import TypeIs
 
@@ -23,7 +25,7 @@ from .....llm.formatting import Format, FormattableT
 from .....llm.formatting._utils import create_tool_schema
 from .....llm.messages import Message
 from .....llm.models import Model
-from .....llm.responses import Response
+from .....llm.responses import Response, StreamResponse, StreamResponseChunk
 from .....llm.responses.root_response import RootResponse
 from .....llm.tools import AnyToolFn, AnyToolSchema, Tool, Toolkit
 from .....llm.tools.tool_schema import ToolSchema
@@ -272,7 +274,7 @@ def _extract_response_id(
 
 def _attach_response(
     span: Span,
-    response: RootResponse[ToolkitT, FormattableT],
+    response: RootResponse[ToolkitT, FormattableT | None],
     *,
     request_messages: Sequence[Message],
 ) -> None:
@@ -282,7 +284,7 @@ def _attach_response(
         GenAIAttributes.GEN_AI_RESPONSE_FINISH_REASONS,
         [map_finish_reason(response.finish_reason)],
     )
-    response_id = _extract_response_id(response.raw)
+    response_id = _extract_response_id(getattr(response, "raw", None))
     if response_id:
         span.set_attribute(GenAIAttributes.GEN_AI_RESPONSE_ID, response_id)
 
@@ -310,6 +312,8 @@ def _attach_response(
 
 _ORIGINAL_MODEL_CALL = Model.call
 _MODEL_CALL_WRAPPED = False
+_ORIGINAL_MODEL_STREAM = Model.stream
+_MODEL_STREAM_WRAPPED = False
 
 
 def _is_supported_param_value(value: object) -> TypeIs[ParamsValue]:
@@ -383,6 +387,7 @@ def _start_model_span(
     messages: Sequence[Message],
     tools: ToolsParam,
     format: FormatParam,
+    activate: bool = True,
 ) -> Iterator[SpanContext]:
     """Context manager that yields a SpanContext for a model call."""
     params, dropped_params = _params_as_mapping(model.params)
@@ -404,17 +409,33 @@ def _start_model_span(
     )
     span_name = f"{operation} {model.model_id}"
 
-    with tracer.start_as_current_span(
+    if activate:
+        with tracer.start_as_current_span(
+            name=span_name,
+            kind=SpanKind.CLIENT,
+        ) as active_span:
+            for key, value in attrs.items():
+                active_span.set_attribute(key, value)
+            try:
+                yield SpanContext(active_span, dropped_params)
+            except Exception as exc:
+                _record_exception(active_span, exc)
+                raise
+        return
+
+    span = tracer.start_span(
         name=span_name,
         kind=SpanKind.CLIENT,
-    ) as active_span:
-        for key, value in attrs.items():
-            active_span.set_attribute(key, value)
-        try:
-            yield SpanContext(active_span, dropped_params)
-        except Exception as exc:
-            _record_exception(active_span, exc)
-            raise
+    )
+    for key, value in attrs.items():
+        span.set_attribute(key, value)
+    try:
+        yield SpanContext(span, dropped_params)
+    except Exception as exc:
+        _record_exception(span, exc)
+        raise
+    finally:
+        span.end()
 
 
 @overload
@@ -496,8 +517,157 @@ def _unwrap_model_call() -> None:
     _MODEL_CALL_WRAPPED = False
 
 
+@overload
+def _instrumented_model_stream(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[Tool] | Toolkit | None = None,
+    format: None = None,
+) -> StreamResponse: ...
+
+
+@overload
+def _instrumented_model_stream(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[Tool] | Toolkit | None = None,
+    format: type[FormattableT] | Format[FormattableT],
+) -> StreamResponse[FormattableT]: ...
+
+
+@overload
+def _instrumented_model_stream(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[Tool] | Toolkit | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+) -> StreamResponse | StreamResponse[FormattableT]: ...
+
+
+@wraps(_ORIGINAL_MODEL_STREAM)
+def _instrumented_model_stream(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[Tool] | Toolkit | None = None,
+    format: FormatParam = None,
+) -> StreamResponse | StreamResponse[FormattableT]:
+    """Returns a GenAI-instrumented result of `Model.stream`."""
+    span_cm = _start_model_span(
+        self,
+        messages=messages,
+        tools=tools,
+        format=format,
+        activate=False,
+    )
+    span_ctx = span_cm.__enter__()
+    if span_ctx.span is None:
+        response = _ORIGINAL_MODEL_STREAM(
+            self,
+            messages=messages,
+            tools=tools,
+            format=format,
+        )
+        span_cm.__exit__(None, None, None)
+        return response
+
+    try:
+        with otel_trace.use_span(span_ctx.span, end_on_exit=False):
+            response = _ORIGINAL_MODEL_STREAM(
+                self,
+                messages=messages,
+                tools=tools,
+                format=format,
+            )
+    except Exception as exc:
+        span_cm.__exit__(type(exc), exc, exc.__traceback__)
+        raise
+
+    _record_dropped_params(span_ctx.span, span_ctx.dropped_params)
+
+    try:
+        _attach_stream_span_handlers(
+            response=response,
+            span_cm=span_cm,
+            span=span_ctx.span,
+            request_messages=messages,
+        )
+    except Exception as exc:  # pragma: no cover
+        span_cm.__exit__(type(exc), exc, exc.__traceback__)
+        raise
+
+    return response
+
+
+def _attach_stream_span_handlers(
+    *,
+    response: StreamResponse[FormattableT | None],
+    span_cm: AbstractContextManager[SpanContext],
+    span: Span,
+    request_messages: Sequence[Message],
+) -> None:
+    """Returns None. Closes the span when streaming completes."""
+    chunk_iterator: Iterator[StreamResponseChunk] = response._chunk_iterator
+
+    response_ref = weakref.ref(response)
+    closed = False
+
+    def _close_span(
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        nonlocal closed
+        if closed:
+            return
+        closed = True
+        response_obj = response_ref()
+        if response_obj is not None:
+            _attach_response(
+                span,
+                response_obj,
+                request_messages=request_messages,
+            )
+        span_cm.__exit__(exc_type, exc, tb)
+
+    def _wrapped_iterator() -> Iterator[StreamResponseChunk]:
+        with otel_trace.use_span(span, end_on_exit=False):
+            try:
+                yield from chunk_iterator
+            except Exception as exc:  # noqa: BLE001
+                _close_span(type(exc), exc, exc.__traceback__)
+                raise
+            else:
+                _close_span(None, None, None)
+            finally:
+                _close_span(None, None, None)
+
+    response._chunk_iterator = _wrapped_iterator()
+
+
+def _wrap_model_stream() -> None:
+    """Returns None. Replaces `Model.stream` with the instrumented wrapper."""
+    global _MODEL_STREAM_WRAPPED
+    if _MODEL_STREAM_WRAPPED:
+        return
+    Model.stream = _instrumented_model_stream
+    _MODEL_STREAM_WRAPPED = True
+
+
+def _unwrap_model_stream() -> None:
+    """Returns None. Restores the original `Model.stream` implementation."""
+    global _MODEL_STREAM_WRAPPED
+    if not _MODEL_STREAM_WRAPPED:
+        return
+    Model.stream = _ORIGINAL_MODEL_STREAM
+    _MODEL_STREAM_WRAPPED = False
+
+
 def instrument_llm() -> None:
-    """Enable GenAI 1.38 span emission for future `llm.Model` calls.
+    """Enable GenAI 1.38 span emission for future `llm.Model` calls and streams.
 
     Uses the tracer provider configured via `ops.configure()`. If no provider
     was configured, uses the global OpenTelemetry tracer provider.
@@ -529,8 +699,10 @@ def instrument_llm() -> None:
         )
 
     _wrap_model_call()
+    _wrap_model_stream()
 
 
 def uninstrument_llm() -> None:
     """Disable previously configured instrumentation."""
     _unwrap_model_call()
+    _unwrap_model_stream()
