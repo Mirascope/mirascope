@@ -10,6 +10,7 @@ from typing import (
     Generic,
     NamedTuple,
     TypeAlias,
+    TypedDict,
     TypeVar,
     cast,
     get_args,
@@ -40,6 +41,22 @@ ToolFnT = TypeVar(
 
 AnyToolSchema: TypeAlias = "ToolSchema[AnyToolFn]"
 ToolSchemaT = TypeVar("ToolSchemaT", bound=AnyToolSchema, covariant=True)
+
+
+ModelJsonSchema = TypedDict(
+    "ModelJsonSchema",
+    {
+        "properties": dict[str, dict[str, Any]],
+        "required": list[str],
+        "$defs": dict[str, dict[str, Any]],
+    },
+    total=False,
+)
+"""Type for Pydantic's model_json_schema() output.
+
+This TypedDict defines the structure of JSON schemas returned by Pydantic models,
+allowing us to avoid type casts when extracting schema components.
+"""
 
 
 class DocstringArg(NamedTuple):
@@ -237,14 +254,15 @@ class ToolSchema(Generic[ToolFnT]):
 
         TempModel = create_model("TempModel", **cast(dict[str, Any], field_definitions))
 
-        schema = TempModel.model_json_schema()
+        schema = cast(ModelJsonSchema, TempModel.model_json_schema())
+
         parameters = ToolParameterSchema(
-            properties=cast(dict[str, dict[str, Any]], schema.get("properties", {})),
-            required=cast(list[str], schema.get("required", [])),
+            properties=schema.get("properties", {}),
+            required=schema.get("required", []),
             additionalProperties=False,
         )
         if "$defs" in schema:
-            parameters.defs = cast(dict[str, dict[str, Any]], schema["$defs"])
+            parameters.defs = schema["$defs"]
 
         self.fn = fn
         self.name = name
