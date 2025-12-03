@@ -5,6 +5,7 @@ from .anthropic import (
     AnthropicModelId,
 )
 from .base import BaseClient, ClientT, Params
+from .get_client import client, get_client
 from .google import GoogleClient, GoogleModelId
 from .openai import (
     OpenAICompletionsClient,
@@ -12,7 +13,7 @@ from .openai import (
     OpenAIResponsesClient,
     OpenAIResponsesModelId,
 )
-from .providers import PROVIDERS, ModelId, Provider, client, get_client
+from .providers import PROVIDERS, ModelId, Provider
 
 __all__ = [
     "PROVIDERS",
