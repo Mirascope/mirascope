@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 import inspect
-from collections import namedtuple
 from dataclasses import dataclass
 from typing import (
     Annotated,
     Any,
     Generic,
+    NamedTuple,
     TypeAlias,
     TypeVar,
+    cast,
     get_args,
     get_origin,
     get_type_hints,
@@ -40,7 +41,13 @@ ToolFnT = TypeVar(
 AnyToolSchema: TypeAlias = "ToolSchema[AnyToolFn]"
 ToolSchemaT = TypeVar("ToolSchemaT", bound=AnyToolSchema, covariant=True)
 
-DocstringArg = namedtuple("DocstringArg", ["name", "description"])
+
+class DocstringArg(NamedTuple):
+    """A parameter from a docstring."""
+
+    name: str
+    description: str
+
 
 FORMAT_TOOL_NAME = "__mirascope_formatted_output_tool__"
 """Reserved name of the formatted output tool. 
@@ -74,7 +81,7 @@ def _parse_docstring_params(docstring: str | None) -> ParsedDocstring:
         return ParsedDocstring(args=[])
 
     parsed = parse(docstring)
-    args = []
+    args: list[DocstringArg] = []
 
     for param in parsed.params:
         if param.description:
@@ -181,7 +188,7 @@ class ToolSchema(Generic[ToolFnT]):
 
         param_descriptions = _parse_docstring_params(fn.__doc__)
 
-        field_definitions = {}
+        field_definitions: dict[str, tuple[Any, Any]] = {}
         hints = get_type_hints(fn, include_extras=True)
 
         context_param_skipped = False
@@ -214,7 +221,7 @@ class ToolSchema(Generic[ToolFnT]):
                     description=field_info.description,
                 )
             else:
-                docstring_description = None
+                docstring_description: str | None = None
                 for arg in param_descriptions.args:
                     if arg.name == param.name:
                         docstring_description = arg.description
@@ -228,17 +235,20 @@ class ToolSchema(Generic[ToolFnT]):
 
             field_definitions[param.name] = (param_type, field_value)
 
-        TempModel = create_model("TempModel", **field_definitions)
+        TempModel = create_model(
+            "TempModel",
+            **field_definitions,  # pyright: ignore[reportArgumentType, reportCallIssue]
+        )
 
         schema = TempModel.model_json_schema()
 
         parameters = ToolParameterSchema(
-            properties=schema.get("properties", {}),
-            required=schema.get("required", []),
+            properties=cast(dict[str, dict[str, Any]], schema.get("properties", {})),
+            required=cast(list[str], schema.get("required", [])),
             additionalProperties=False,
         )
         if "$defs" in schema:
-            parameters.defs = schema["$defs"]
+            parameters.defs = cast(dict[str, dict[str, Any]], schema["$defs"])
 
         self.fn = fn
         self.name = name

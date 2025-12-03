@@ -2,6 +2,7 @@
 
 import inspect
 import json
+from typing import Any
 
 from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
 from .types import Format, FormattableT, FormattingMode
@@ -39,13 +40,15 @@ def create_tool_schema(
         `ToolSchema` for the format tool
     """
 
-    schema_dict = format.schema.copy()
+    schema_dict: dict[str, Any] = format.schema.copy()
     schema_dict["type"] = "object"
 
-    properties = schema_dict.get("properties")
-    if not properties or not isinstance(properties, dict):
-        properties = {}  # pragma: no cover
-    required = list(properties.keys())
+    properties_value = schema_dict.get("properties")
+    if not properties_value or not isinstance(properties_value, dict):
+        properties: dict[str, Any] = {}  # pragma: no cover
+    else:
+        properties = properties_value
+    required: list[str] = list(properties.keys())
 
     description = (
         f"Use this tool to extract data in {format.name} format for a final response."
