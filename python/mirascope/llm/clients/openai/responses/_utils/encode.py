@@ -108,7 +108,7 @@ def _encode_user_message(
             raise FeatureNotSupportedError(
                 "audio input",
                 "openai:responses",
-                message='provider "openai:responses" does not support audio inputs. Try using "openai:completions" instead',
+                message='provider "openai:responses" does not support audio inputs. Try using "openai" instead',
             )
         else:
             raise NotImplementedError(

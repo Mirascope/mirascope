@@ -10,7 +10,7 @@ test_snapshot = snapshot(
     {
         "response": (
             {
-                "provider": "openai:completions",
+                "provider": "openai",
                 "model_id": "openai/gpt-4o",
                 "params": {
                     "temperature": 0.7,
@@ -27,7 +27,7 @@ test_snapshot = snapshot(
                     UserMessage(content=[Text(text="What is 4200 + 42?")]),
                     AssistantMessage(
                         content=[Text(text="4200 + 42 equals ")],
-                        provider="openai:completions",
+                        provider="openai",
                         model_id="openai/gpt-4o",
                         raw_message={
                             "content": "4200 + 42 equals ",
@@ -41,8 +41,8 @@ test_snapshot = snapshot(
             },
         ),
         "logs": [
-            "Skipping unsupported parameter: top_k=50 (provider: openai:completions)",
-            "Skipping unsupported parameter: thinking=False (provider: openai:completions)",
+            "Skipping unsupported parameter: top_k=50 (provider: openai)",
+            "Skipping unsupported parameter: thinking=False (provider: openai)",
         ],
     }
 )

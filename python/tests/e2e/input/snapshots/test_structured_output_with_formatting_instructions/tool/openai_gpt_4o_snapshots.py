@@ -10,7 +10,7 @@ from mirascope.llm import (
 test_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
@@ -32,7 +32,7 @@ lucky number 7.\
                             text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "role": "assistant",

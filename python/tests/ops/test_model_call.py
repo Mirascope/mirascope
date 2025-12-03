@@ -599,7 +599,7 @@ def test_model_call_with_stop_string(
 ) -> None:
     """Test OpenTelemetry instrumentation with stop as a string (not list)."""
     model = llm.Model(
-        provider="openai:completions",
+        provider="openai",
         model_id="openai/gpt-4o-mini",
         stop="END",  # pyright: ignore [reportCallIssue]
     )
@@ -617,7 +617,7 @@ def test_model_call_with_stop_string(
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:completions",
+                "gen_ai.provider.name": "openai",
                 "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
                 "gen_ai.request.stop_sequences": ["END"],

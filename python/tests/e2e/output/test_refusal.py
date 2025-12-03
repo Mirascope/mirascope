@@ -15,7 +15,7 @@ from tests.utils import (
 )
 
 # These providers will have an API-level refusal (finish_reason == "refusal")
-PROVIDERS_WITH_FORMAL_REFUSAL = {"openai:completions", "openai:responses"}
+PROVIDERS_WITH_FORMAL_REFUSAL = {"openai", "openai:responses"}
 
 
 class FentanylHandbook(BaseModel):

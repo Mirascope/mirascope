@@ -34,14 +34,14 @@ def get_client(provider: Literal["google"]) -> GoogleClient:
 
 
 @overload
-def get_client(provider: Literal["openai:completions"]) -> OpenAICompletionsClient:
+def get_client(provider: Literal["openai"]) -> OpenAICompletionsClient:
     """Get an OpenAI client instance."""
     ...
 
 
 @overload
 def get_client(
-    provider: Literal["openai:responses", "openai"],
+    provider: Literal["openai:responses"],
 ) -> OpenAIResponsesClient:
     """Get an OpenAI responses client instance."""
     ...
@@ -53,12 +53,12 @@ def get_client(
     """Get a client instance for the specified provider.
 
     Args:
-        provider: The provider name ("openai:completions", "anthropic", or "google").
+        provider: The provider name ("openai", "anthropic", or "google").
 
     Returns:
         A client instance for the specified provider. The specific client type
         depends on the provider:
-        - "openai:completions" returns `OpenAICompletionsClient` (ChatCompletion API)
+        - "openai" returns `OpenAICompletionsClient` (ChatCompletion API)
         - "openai:responses" returns `OpenAIResponsesClient` (Responses API)
         - "anthropic" returns `AnthropicClient`
         - "google" returns `GoogleClient`
@@ -74,9 +74,9 @@ def get_client(
             return get_anthropic_client()
         case "google":
             return get_google_client()
-        case "openai:completions":
+        case "openai":
             return get_openai_completions_client()
-        case "openai:responses" | "openai":
+        case "openai:responses":
             return get_openai_responses_client()
         case _:
             raise ValueError(f"Unknown provider: {provider}")
@@ -84,7 +84,7 @@ def get_client(
 
 @overload
 def client(
-    provider: Literal["openai:completions"],
+    provider: Literal["openai"],
     *,
     api_key: str | None = None,
     base_url: str | None = None,
@@ -95,7 +95,7 @@ def client(
 
 @overload
 def client(
-    provider: Literal["openai:responses", "openai"],
+    provider: Literal["openai:responses"],
     *,
     api_key: str | None = None,
     base_url: str | None = None,
@@ -132,7 +132,7 @@ def client(
     """Create a cached client instance for the specified provider.
 
     Args:
-        provider: The provider name ("openai:completions", "anthropic", or "google").
+        provider: The provider name ("openai", "anthropic", or "google").
         api_key: API key for authentication. If None, uses provider-specific env var.
         base_url: Base URL for the API. If None, uses provider-specific env var.
 
@@ -147,9 +147,9 @@ def client(
             return anthropic_client(api_key=api_key, base_url=base_url)
         case "google":
             return google_client(api_key=api_key, base_url=base_url)
-        case "openai:completions":
+        case "openai":
             return openai_completions_client(api_key=api_key, base_url=base_url)
-        case "openai:responses" | "openai":
+        case "openai:responses":
             return openai_responses_client(api_key=api_key, base_url=base_url)
         case _:  # pragma: no cover
             raise ValueError(f"Unknown provider: {provider}")

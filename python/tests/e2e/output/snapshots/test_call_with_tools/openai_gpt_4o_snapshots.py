@@ -12,7 +12,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
@@ -38,7 +38,7 @@ sync_snapshot = snapshot(
                             args='{"password": "radiance"}',
                         ),
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "role": "assistant",
@@ -87,7 +87,7 @@ The secrets associated with the passwords are as follows:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "content": """\
@@ -129,7 +129,7 @@ The secrets associated with the passwords are as follows:
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
@@ -155,7 +155,7 @@ async_snapshot = snapshot(
                             args='{"password": "radiance"}',
                         ),
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "role": "assistant",
@@ -205,7 +205,7 @@ Here are the secrets associated with the passwords:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "content": """\
@@ -248,7 +248,7 @@ Here are the secrets associated with the passwords:
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
@@ -273,7 +273,7 @@ stream_snapshot = snapshot(
                             args='{"password": "radiance"}',
                         ),
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
@@ -300,7 +300,7 @@ The secret for the password "radiance" is: "Life before Death"\
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
@@ -335,7 +335,7 @@ The secret for the password "radiance" is: "Life before Death"\
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
@@ -360,7 +360,7 @@ async_stream_snapshot = snapshot(
                             args='{"password": "radiance"}',
                         ),
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
@@ -389,7 +389,7 @@ Here are the secrets associated with the provided passwords:
 """
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),

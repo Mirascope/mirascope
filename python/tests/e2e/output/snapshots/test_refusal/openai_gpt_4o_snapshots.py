@@ -10,7 +10,7 @@ from mirascope.llm import (
 sync_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": FinishReason.REFUSAL,
@@ -28,7 +28,7 @@ sync_snapshot = snapshot(
                             text="I'm very sorry, but I can't assist with that request."
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "refusal": "I'm very sorry, but I can't assist with that request.",
@@ -58,7 +58,7 @@ sync_snapshot = snapshot(
 async_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": FinishReason.REFUSAL,
@@ -74,7 +74,7 @@ async_snapshot = snapshot(
                     content=[
                         Text(text="I'm very sorry, but I can't assist with that.")
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message={
                         "refusal": "I'm very sorry, but I can't assist with that.",
@@ -104,7 +104,7 @@ async_snapshot = snapshot(
 stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": FinishReason.REFUSAL,
             "messages": [
@@ -117,7 +117,7 @@ stream_snapshot = snapshot(
                 ),
                 AssistantMessage(
                     content=[Text(text="I'm sorry, I can't assist with that request.")],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
@@ -144,7 +144,7 @@ stream_snapshot = snapshot(
 async_stream_snapshot = snapshot(
     {
         "response": {
-            "provider": "openai:completions",
+            "provider": "openai",
             "model_id": "openai/gpt-4o",
             "finish_reason": FinishReason.REFUSAL,
             "messages": [
@@ -161,7 +161,7 @@ async_stream_snapshot = snapshot(
                             text="I'm really sorry, but I can't assist with that request."
                         )
                     ],
-                    provider="openai:completions",
+                    provider="openai",
                     model_id="openai/gpt-4o",
                     raw_message=None,
                 ),

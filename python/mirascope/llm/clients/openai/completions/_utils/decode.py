@@ -69,7 +69,7 @@ def decode_response(
 
     assistant_message = AssistantMessage(
         content=parts,
-        provider="openai:completions",
+        provider="openai",
         model_id=model_id,
         raw_message=message.model_dump(exclude_none=True),
     )

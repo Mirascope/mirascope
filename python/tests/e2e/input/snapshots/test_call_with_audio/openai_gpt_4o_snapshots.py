@@ -7,7 +7,7 @@ test_snapshot = snapshot(
             "args": "(\"Model 'openai/gpt-4o' does not support audio inputs.\",)",
             "feature": "Audio inputs",
             "model_id": "None",
-            "provider": "openai:completions",
+            "provider": "openai",
         }
     }
 )
