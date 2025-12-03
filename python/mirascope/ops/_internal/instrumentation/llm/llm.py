@@ -1,0 +1,536 @@
+"""OpenTelemetry GenAI instrumentation for `mirascope.llm`."""
+
+from __future__ import annotations
+
+import os
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from contextlib import contextmanager
+from dataclasses import dataclass
+from functools import wraps
+from typing import TYPE_CHECKING, Protocol, TypeAlias, overload, runtime_checkable
+from typing_extensions import TypeIs
+
+from opentelemetry.semconv._incubating.attributes import (
+    gen_ai_attributes as GenAIAttributes,
+)
+from opentelemetry.semconv.attributes import (
+    error_attributes as ErrorAttributes,
+)
+
+from .....llm.clients import Params
+from .....llm.clients.providers import ModelId, Provider
+from .....llm.formatting import Format, FormattableT
+from .....llm.formatting._utils import create_tool_schema
+from .....llm.messages import Message
+from .....llm.models import Model
+from .....llm.responses import Response
+from .....llm.responses.root_response import RootResponse
+from .....llm.tools import AnyToolFn, AnyToolSchema, Tool, Toolkit
+from .....llm.tools.tool_schema import ToolSchema
+from .....llm.tools.toolkit import BaseToolkit, ToolkitT
+from .....llm.types import Jsonable
+from ...configuration import (
+    get_tracer,
+)
+from ...utils import json_dumps
+from .encode import (
+    map_finish_reason,
+    snapshot_from_root_response,
+    split_request_messages,
+)
+
+# TODO: refactor alongside all other import error handling to provide nice error messages
+try:
+    from opentelemetry import trace as otel_trace
+    from opentelemetry.trace import SpanKind, Status, StatusCode
+except ImportError:  # pragma: no cover
+    if not TYPE_CHECKING:
+        otel_trace = None
+        SpanKind = None
+        StatusCode = None
+        Status = None
+
+if TYPE_CHECKING:
+    from opentelemetry import trace as otel_trace
+    from opentelemetry.trace import (
+        Span,
+        SpanKind,
+        Status,
+        StatusCode,
+        Tracer,
+    )
+    from opentelemetry.util.types import AttributeValue
+
+    from . import gen_ai_types
+else:
+    AttributeValue = None
+    Span = None
+    Tracer = None
+
+
+ToolsParam: TypeAlias = (
+    Sequence[ToolSchema[AnyToolFn]] | BaseToolkit[AnyToolSchema] | None
+)
+FormatParam: TypeAlias = Format[FormattableT] | None
+ParamsDict: TypeAlias = Mapping[str, str | int | float | bool | Sequence[str] | None]
+SpanAttributes: TypeAlias = Mapping[str, AttributeValue]
+AttributeSetter: TypeAlias = Callable[[str, AttributeValue], None]
+ParamsValue = str | int | float | bool | Sequence[str] | None
+
+
+@dataclass(slots=True)
+class SpanContext:
+    """Container for a GenAI span and its associated dropped parameters."""
+
+    span: Span | None
+    """The active span, if any."""
+
+    dropped_params: dict[str, Jsonable]
+    """Parameters that could not be recorded as span attributes."""
+
+
+@runtime_checkable
+class Identifiable(Protocol):
+    """Protocol for objects with an optional ID attribute."""
+
+    id: str | None
+    """Optional ID attribute."""
+
+
+_PARAM_ATTRIBUTE_MAP: Mapping[str, str] = {
+    "temperature": GenAIAttributes.GEN_AI_REQUEST_TEMPERATURE,
+    "max_tokens": GenAIAttributes.GEN_AI_REQUEST_MAX_TOKENS,
+    "max_output_tokens": GenAIAttributes.GEN_AI_REQUEST_MAX_TOKENS,
+    "max_completion_tokens": GenAIAttributes.GEN_AI_REQUEST_MAX_TOKENS,
+    "top_p": GenAIAttributes.GEN_AI_REQUEST_TOP_P,
+    "top_k": GenAIAttributes.GEN_AI_REQUEST_TOP_K,
+    "frequency_penalty": GenAIAttributes.GEN_AI_REQUEST_FREQUENCY_PENALTY,
+    "presence_penalty": GenAIAttributes.GEN_AI_REQUEST_PRESENCE_PENALTY,
+    "seed": GenAIAttributes.GEN_AI_REQUEST_SEED,
+    "stop_sequences": GenAIAttributes.GEN_AI_REQUEST_STOP_SEQUENCES,
+    "stop": GenAIAttributes.GEN_AI_REQUEST_STOP_SEQUENCES,
+    "n": GenAIAttributes.GEN_AI_REQUEST_CHOICE_COUNT,
+    "choice_count": GenAIAttributes.GEN_AI_REQUEST_CHOICE_COUNT,
+}
+
+
+def _record_exception(span: Span, exc: Exception) -> None:
+    """Record exception details on span following OpenTelemetry semantic conventions."""
+    span.record_exception(exc)
+    span.set_attribute(ErrorAttributes.ERROR_TYPE, exc.__class__.__name__)
+    error_message = str(exc)
+    if error_message:
+        span.set_attribute("error.message", error_message)
+    span.set_status(Status(StatusCode.ERROR, error_message))
+
+
+def _infer_output_type(format_obj: FormatParam) -> str:
+    """Infer the GenAI output type from the format parameter."""
+    if format_obj is None:
+        return GenAIAttributes.GenAiOutputTypeValues.TEXT.value
+    return GenAIAttributes.GenAiOutputTypeValues.JSON.value
+
+
+def _apply_param_attributes(
+    attrs: dict[str, AttributeValue], params: ParamsDict
+) -> None:
+    """Apply model parameters as span attributes."""
+    if not params:
+        return
+
+    for key, attr_key in _PARAM_ATTRIBUTE_MAP.items():
+        if key not in params:
+            continue
+        value = params[key]
+        if value is None:
+            continue
+        if key in {"stop", "stop_sequences"} and isinstance(value, str):
+            value = [value]
+        attrs[attr_key] = value
+
+
+def _set_json_attribute(
+    setter: AttributeSetter,
+    *,
+    key: str,
+    payload: (
+        gen_ai_types.SystemInstructions
+        | gen_ai_types.InputMessages
+        | gen_ai_types.OutputMessages
+    ),
+) -> None:
+    """Assign a JSON-serialized attribute to a span."""
+    if not payload:
+        return
+    setter(key, json_dumps(payload))
+
+
+def _assign_request_message_attributes(
+    setter: AttributeSetter,
+    *,
+    messages: Sequence[Message],
+) -> None:
+    """Assign request message attributes to a span."""
+    system_payload, input_payload = split_request_messages(messages)
+    _set_json_attribute(
+        setter,
+        key=GenAIAttributes.GEN_AI_SYSTEM_INSTRUCTIONS,
+        payload=system_payload,
+    )
+    _set_json_attribute(
+        setter,
+        key=GenAIAttributes.GEN_AI_INPUT_MESSAGES,
+        payload=input_payload,
+    )
+
+
+def _collect_tool_schemas(
+    tools: Sequence[ToolSchema[AnyToolFn]] | BaseToolkit[AnyToolSchema],
+) -> list[ToolSchema[AnyToolFn]]:
+    """Collect ToolSchema instances from a tools parameter."""
+    iterable = list(tools.tools) if isinstance(tools, BaseToolkit) else list(tools)
+    schemas: list[ToolSchema[AnyToolFn]] = []
+    for tool in iterable:
+        if isinstance(tool, ToolSchema):
+            schemas.append(tool)
+    return schemas
+
+
+def _serialize_tool_definitions(
+    tools: ToolsParam,
+    format: FormatParam = None,
+) -> str | None:
+    """Serialize tool definitions to JSON for span attributes."""
+    if tools is None:
+        tool_schemas: list[ToolSchema[AnyToolFn]] = []
+    else:
+        tool_schemas = _collect_tool_schemas(tools)
+
+    if isinstance(format, Format) and format.mode == "tool":
+        tool_schemas.append(create_tool_schema(format))
+
+    if not tool_schemas:
+        return None
+    definitions: list[dict[str, str | int | bool | dict[str, str | int | bool]]] = []
+    for tool in tool_schemas:
+        definitions.append(
+            {
+                "name": tool.name,
+                "description": tool.description,
+                "strict": tool.strict,
+                "parameters": tool.parameters.model_dump(by_alias=True, mode="json"),
+            }
+        )
+    return json_dumps(definitions)
+
+
+def _build_request_attributes(
+    *,
+    operation: str,
+    provider: Provider,
+    model_id: ModelId,
+    messages: Sequence[Message],
+    tools: ToolsParam,
+    format: FormatParam,
+    params: ParamsDict,
+) -> dict[str, AttributeValue]:
+    """Build GenAI request attributes for a span."""
+    attrs: dict[str, AttributeValue] = {
+        GenAIAttributes.GEN_AI_OPERATION_NAME: operation,
+        GenAIAttributes.GEN_AI_PROVIDER_NAME: provider,
+        GenAIAttributes.GEN_AI_REQUEST_MODEL: model_id,
+        GenAIAttributes.GEN_AI_OUTPUT_TYPE: _infer_output_type(format),
+    }
+    _apply_param_attributes(attrs, params)
+
+    _assign_request_message_attributes(
+        attrs.__setitem__,
+        messages=messages,
+    )
+
+    tool_payload = _serialize_tool_definitions(tools, format=format)
+    if tool_payload:
+        # The incubating semconv module does not yet expose a constant for this key.
+        attrs["gen_ai.tool.definitions"] = tool_payload
+
+    return attrs
+
+
+def _extract_response_id(
+    raw: dict[str, str | int] | str | Identifiable | None,
+) -> str | None:
+    """Extract response ID from raw response data."""
+    if isinstance(raw, dict):
+        for key in ("id", "response_id", "responseId"):
+            value = raw.get(key)
+            if isinstance(value, str):
+                return value
+    elif isinstance(raw, Identifiable):
+        return raw.id
+    return None
+
+
+def _attach_response(
+    span: Span,
+    response: RootResponse[ToolkitT, FormattableT],
+    *,
+    request_messages: Sequence[Message],
+) -> None:
+    """Attach response attributes to a GenAI span."""
+    span.set_attribute(GenAIAttributes.GEN_AI_RESPONSE_MODEL, response.model_id)
+    span.set_attribute(
+        GenAIAttributes.GEN_AI_RESPONSE_FINISH_REASONS,
+        [map_finish_reason(response.finish_reason)],
+    )
+    response_id = _extract_response_id(response.raw)
+    if response_id:
+        span.set_attribute(GenAIAttributes.GEN_AI_RESPONSE_ID, response_id)
+
+    snapshot = snapshot_from_root_response(
+        response,
+        request_messages=request_messages,
+    )
+    _set_json_attribute(
+        span.set_attribute,
+        key=GenAIAttributes.GEN_AI_SYSTEM_INSTRUCTIONS,
+        payload=snapshot.system_instructions,
+    )
+    _set_json_attribute(
+        span.set_attribute,
+        key=GenAIAttributes.GEN_AI_INPUT_MESSAGES,
+        payload=snapshot.inputs,
+    )
+    _set_json_attribute(
+        span.set_attribute,
+        key=GenAIAttributes.GEN_AI_OUTPUT_MESSAGES,
+        payload=snapshot.outputs,
+    )
+    # TODO: Emit gen_ai.usage metrics once Response exposes provider-agnostic usage fields.
+
+
+_ORIGINAL_MODEL_CALL = Model.call
+_MODEL_CALL_WRAPPED = False
+
+
+def _is_supported_param_value(value: object) -> TypeIs[ParamsValue]:
+    """Returns True if the value can be exported as an OTEL attribute."""
+    if isinstance(value, str | int | float | bool) or value is None:
+        return True
+    if isinstance(value, Sequence) and not isinstance(value, str | bytes):
+        return all(isinstance(item, str) for item in value)
+    return False
+
+
+def _normalize_dropped_value(value: object) -> Jsonable:
+    """Returns a JSON-safe representation for unsupported param values."""
+    if isinstance(value, str | int | float | bool) or value is None:
+        return value
+    if isinstance(value, Mapping):
+        normalized: dict[str, Jsonable] = {}
+        for key, item in value.items():
+            normalized[str(key)] = _normalize_dropped_value(item)
+        return normalized
+    if isinstance(value, Sequence) and not isinstance(value, str | bytes | bytearray):
+        return [_normalize_dropped_value(item) for item in value]
+    try:
+        return str(value)
+    except Exception:  # pragma: no cover
+        return f"<{type(value).__name__}>"
+
+
+def _params_as_mapping(params: Params) -> tuple[ParamsDict, dict[str, Jsonable]]:
+    """Returns supported params and a mapping of dropped params."""
+    filtered: dict[str, ParamsValue] = {}
+    dropped: dict[str, Jsonable] = {}
+    for key, value in params.items():
+        if _is_supported_param_value(value):
+            filtered[key] = value
+        else:
+            dropped[key] = _normalize_dropped_value(value)
+    return filtered, dropped
+
+
+def _record_dropped_params(
+    span: Span,
+    dropped_params: Mapping[str, Jsonable],
+) -> None:
+    """Emit an event with JSON-encoded params that cannot become attributes.
+
+    See https://opentelemetry.io/docs/specs/otel/common/ for the attribute type limits,
+    https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-events/ for the GenAI
+    guidance on recording richer payloads via events, and
+    https://opentelemetry.io/blog/2025/complex-attribute-types/ for the recommendation
+    to serialize unsupported complex types instead of dropping them outright.
+    """
+    if not dropped_params:
+        return None
+    payload = json_dumps(dropped_params)
+    span.add_event(
+        "gen_ai.request.params.untracked",
+        attributes={
+            "gen_ai.untracked_params.count": len(dropped_params),
+            "gen_ai.untracked_params.keys": list(dropped_params.keys()),
+            "gen_ai.untracked_params.json": payload,
+        },
+    )
+    return None
+
+
+@contextmanager
+def _start_model_span(
+    model: Model,
+    *,
+    messages: Sequence[Message],
+    tools: ToolsParam,
+    format: FormatParam,
+) -> Iterator[SpanContext]:
+    """Context manager that yields a SpanContext for a model call."""
+    params, dropped_params = _params_as_mapping(model.params)
+    tracer = get_tracer()
+
+    if tracer is None or otel_trace is None:
+        yield SpanContext(None, dropped_params)
+        return
+
+    operation = GenAIAttributes.GenAiOperationNameValues.CHAT.value
+    attrs = _build_request_attributes(
+        operation=operation,
+        provider=model.provider,
+        model_id=model.model_id,
+        messages=messages,
+        tools=tools,
+        format=format,
+        params=params,
+    )
+    span_name = f"{operation} {model.model_id}"
+
+    with tracer.start_as_current_span(
+        name=span_name,
+        kind=SpanKind.CLIENT,
+    ) as active_span:
+        for key, value in attrs.items():
+            active_span.set_attribute(key, value)
+        try:
+            yield SpanContext(active_span, dropped_params)
+        except Exception as exc:
+            _record_exception(active_span, exc)
+            raise
+
+
+@overload
+def _instrumented_model_call(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[Tool] | Toolkit | None = None,
+    format: None = None,
+) -> Response: ...
+
+
+@overload
+def _instrumented_model_call(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[Tool] | Toolkit | None = None,
+    format: type[FormattableT] | Format[FormattableT],
+) -> Response[FormattableT]: ...
+
+
+@overload
+def _instrumented_model_call(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[Tool] | Toolkit | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+) -> Response | Response[FormattableT]: ...
+
+
+@wraps(_ORIGINAL_MODEL_CALL)
+def _instrumented_model_call(
+    self: Model,
+    *,
+    messages: Sequence[Message],
+    tools: Sequence[Tool] | Toolkit | None = None,
+    format: FormatParam = None,
+) -> Response | Response[FormattableT]:
+    """Returns a GenAI-instrumented result of `Model.call`."""
+    with _start_model_span(
+        self,
+        messages=messages,
+        tools=tools,
+        format=format,
+    ) as span_ctx:
+        response = _ORIGINAL_MODEL_CALL(
+            self,
+            messages=messages,
+            tools=tools,
+            format=format,
+        )
+        if span_ctx.span is not None:
+            _attach_response(
+                span_ctx.span,
+                response,
+                request_messages=messages,
+            )
+            _record_dropped_params(span_ctx.span, span_ctx.dropped_params)
+        return response
+
+
+def _wrap_model_call() -> None:
+    """Returns None. Replaces `Model.call` with the instrumented wrapper."""
+    global _MODEL_CALL_WRAPPED
+    if _MODEL_CALL_WRAPPED:
+        return
+    Model.call = _instrumented_model_call
+    _MODEL_CALL_WRAPPED = True
+
+
+def _unwrap_model_call() -> None:
+    """Returns None. Restores the original `Model.call` implementation."""
+    global _MODEL_CALL_WRAPPED
+    if not _MODEL_CALL_WRAPPED:
+        return
+    Model.call = _ORIGINAL_MODEL_CALL
+    _MODEL_CALL_WRAPPED = False
+
+
+def instrument_llm() -> None:
+    """Enable GenAI 1.38 span emission for future `llm.Model` calls.
+
+    Uses the tracer provider configured via `ops.configure()`. If no provider
+    was configured, uses the global OpenTelemetry tracer provider.
+
+    Example:
+
+        Enable instrumentation with a custom provider:
+        ```python
+        from mirascope import ops
+        from opentelemetry.sdk.trace import TracerProvider
+
+        provider = TracerProvider()
+        ops.configure(tracer_provider=provider)
+        ops.instrument_llm()
+        ```
+    """
+    if otel_trace is None:  # pragma: no cover
+        raise ImportError(
+            "OpenTelemetry is not installed. Run `pip install mirascope[otel]` "
+            "and ensure `opentelemetry-api` is available before calling "
+            "`instrument_llm`."
+        )
+
+    os.environ.setdefault("OTEL_SEMCONV_STABILITY_OPT_IN", "gen_ai_latest_experimental")
+
+    if get_tracer() is None:  # pragma: no cover
+        raise RuntimeError(
+            "You must call `configure()` before calling `instrument_llm()`."
+        )
+
+    _wrap_model_call()
+
+
+def uninstrument_llm() -> None:
+    """Disable previously configured instrumentation."""
+    _unwrap_model_call()

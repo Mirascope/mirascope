@@ -1,0 +1,87 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"Write a long story about a dragon","role":"user"}],"max_output_tokens":5,"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '117'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'max_output_tokens':
+        integer below minimum value. Expected a value >= 16, but got 5 instead.\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"max_output_tokens\",\n
+        \   \"code\": \"integer_below_min_value\"\n  }\n}"
+    headers:
+      CF-RAY:
+      - 99ddb7bccfdd6837-NRT
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '248'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 13 Nov 2025 10:52:07 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=Brf7C2WQYAVBivGvSHu1YyhqTJYwEGHmDcE5as1X7qE-1763031127-1.0.1.1-_XFYHsaiIuLH7QrntChrrwnDPty_O5rTw0U2aOa4vP2V.n6_YLxt39nPDpRYZvAmr5nSCQz.IdCPm_oG5njDC1T2PatGeji1ZFQUe8j0bnc;
+        path=/; expires=Thu, 13-Nov-25 11:22:07 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=CEUdjyrJo8vMZtoo3qEDfMMFHxLbYVyHZ6e5gp.TwlY-1763031127217-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '16'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '22'
+      x-request-id:
+      - req_98ddbc3aa7054f82a11d2d44c144981b
+    status:
+      code: 400
+      message: Bad Request
+version: 1

@@ -1,0 +1,110 @@
+interactions:
+- request:
+    body: '{"input":[{"content":[{"text":"What color is this pixel?","type":"input_text"},{"image_url":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==","detail":"auto","type":"input_image"}],"role":"user","type":"message"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '307'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RUy27jMAy85ysEnZvCztv5jr0VC4OW6ERbWRQkKmhQ5N8XlhPH3m1uNoccDTmU
+        vhdCSKPlUciA0ddFe9iv2+2u3FXNTrWrothV5faw3quV3qlDWW2qdtsUWqHetIcKt5V86ymo+YOK
+        HzTkIg5xFRAYdQ09Vu5366Lcb6tdxiIDp9jXKOq8RUY9FDWgPk+Bkut1tWAjDmFjrXEneRTfCyGE
+        kB6uGPp6jRe05DHIhRC3nIwhUI+5ZG0OGPc4pdbIYGyco5FDUmzIzeIdfNWU2CeumT7xf5CJbK3A
+        zuk60mh7ZSfPyw0tO+PMclWsNstivywP95llXnkUH7mdoanRji6eXruh91gUvRvNqixa2GtVVdsS
+        1SYzZxa+esw8GCOc8Am8GnsGFTlG9xQ1FTajfQwFv3iszgngHDE8BvnxewZaOvlAzQ9IJjoK+euM
+        QpGlIKgVfDZRePOFVpgommBOZxYB9bscS2/3r5FNBrJZIcRoIoPjIblPzEnSQwBr0c6945CGNfMB
+        L4ZSrB+bXGdDRm99oM5zrUCdsf7E60ssYD9KQ26aERAiudkaY9tS4ElSb1LqOggP7nGrI7TI19ro
+        nrg1ONvwiOFiFNZsHreihWQHe2RkCjhtk7HzGIBTDpfvxT2abbgrayl08Pyf2J/zhrneFV8wNBQN
+        X4el0yZ1z9s4TPpMRg3WJCY5As9tkEy+nuxIMQb9VGNITsF9sFKbCI19PB0p7/rYgHGzm3vYluu3
+        /5HJgzA2mi3Uz9Ji1uy/T0JZ/AT8xDv6/4qaicFOJa/W4xhTnDveIYMGhv6A2+L2FwAA//8DABf0
+        kpHNBQAA
+    headers:
+      CF-RAY:
+      - 99dc6d63190b7368-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 13 Nov 2025 07:06:37 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=0r2Xi51lKZJimjqlz2vUwV6stbZfSkCoh9h.g.QhXZQ-1763017597-1.0.1.1-DCY8xBd791gFn.d_1wztn4rhnjltkAyOgYJ8nTlp37VWtwCgcVusONf4EV16kOyPp10yH3EzeI1Z8QHXOeRIevp7AEDNn0.b5.82FJM4pfs;
+        path=/; expires=Thu, 13-Nov-25 07:36:37 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=K7ESgD33pIotz2yh5qaidNHbZrQ6iIB.sw6JjqK4v2E-1763017597944-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '1709'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '1715'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999235'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 11ms
+      x-request-id:
+      - req_54903b307d1342f1a233cc0ec0c60713
+    status:
+      code: 200
+      message: OK
+version: 1
