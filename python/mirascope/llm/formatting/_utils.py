@@ -2,7 +2,7 @@
 
 import inspect
 import json
-from typing import Any
+from typing import Any, cast
 
 from ..tools import FORMAT_TOOL_NAME, ToolFn, ToolParameterSchema, ToolSchema
 from .types import Format, FormattableT, FormattingMode
@@ -43,11 +43,10 @@ def create_tool_schema(
     schema_dict: dict[str, Any] = format.schema.copy()
     schema_dict["type"] = "object"
 
-    properties_value = schema_dict.get("properties")
-    if not properties_value or not isinstance(properties_value, dict):
-        properties: dict[str, Any] = {}  # pragma: no cover
-    else:
-        properties = properties_value
+    properties = schema_dict.get("properties")
+    if not properties or not isinstance(properties, dict):
+        properties = {}  # pragma: no cover
+    properties = cast(dict[str, Any], properties)
     required: list[str] = list(properties.keys())
 
     description = (
@@ -69,7 +68,7 @@ def create_tool_schema(
             "Format tool function should not be called."
         )  # pragma: no cover
 
-    tool_schema = ToolSchema.__new__(ToolSchema)
+    tool_schema = cast(ToolSchema[ToolFn[..., None]], ToolSchema.__new__(ToolSchema))
     tool_schema.fn = _unused_format_fn
     tool_schema.name = FORMAT_TOOL_NAME
     tool_schema.description = description

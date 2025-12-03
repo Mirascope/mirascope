@@ -141,8 +141,8 @@ class _BaseTracedFunction(Generic[P, R, FunctionT], ABC):
         bound_arguments = signature.bind(*args, **kwargs)
         bound_arguments.apply_defaults()
 
-        arg_types = {}
-        arg_values = {}
+        arg_types: dict[str, str] = {}
+        arg_values: dict[str, Any] = {}
 
         for param_name, param_value in bound_arguments.arguments.items():
             parameter = signature.parameters[param_name]

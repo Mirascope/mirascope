@@ -235,10 +235,7 @@ class ToolSchema(Generic[ToolFnT]):
 
             field_definitions[param.name] = (param_type, field_value)
 
-        TempModel = create_model(
-            "TempModel",
-            **field_definitions,  # pyright: ignore[reportArgumentType, reportCallIssue]
-        )
+        TempModel = create_model("TempModel", **cast(dict[str, Any], field_definitions))
 
         schema = TempModel.model_json_schema()
 

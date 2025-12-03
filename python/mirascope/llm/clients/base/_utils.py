@@ -61,8 +61,8 @@ def extract_system_message(
     This is intended for use in clients where the system message is not included in the
     input messages, but passed as an additional argument or metadata.
     """
-    system_message_content = None
-    remaining_messages = []
+    system_message_content: SystemMessageContent = None
+    remaining_messages: list[UserMessage | AssistantMessage] = []
 
     for i, message in enumerate(messages):
         if message.role == "system":
