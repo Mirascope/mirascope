@@ -4,7 +4,8 @@ import base64
 import json
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import Any, cast
+from typing import Any, TypedDict, cast
+from typing_extensions import Required
 
 from google.genai import types as genai_types
 
@@ -18,14 +19,18 @@ from ....formatting import (
 )
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
-from ...base import BaseKwargs, Params, _utils as _base_utils
+from ...base import Params, _utils as _base_utils
 from ..model_ids import GoogleModelId
 
 UNKNOWN_TOOL_ID = "google_unknown_tool_id"
 
 
-class GoogleKwargs(BaseKwargs, genai_types.GenerateContentConfigDict):
-    """Google's `GenerateContentConfigDict` typed dict, subclassing BaseKwargs for type safety."""
+class GoogleKwargs(TypedDict, total=False):
+    """Kwargs for Google's generate_content method."""
+
+    model: Required[str]
+    contents: Required[genai_types.ContentListUnionDict]
+    config: genai_types.GenerateContentConfigDict
 
 
 def _resolve_refs(
@@ -173,17 +178,14 @@ def encode_request(
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
     format: type[FormattableT] | Format[FormattableT] | None,
     params: Params,
-) -> tuple[
-    Sequence[Message],
-    Format[FormattableT] | None,
-    genai_types.ContentListUnionDict,
-    GoogleKwargs,
-]:
+) -> tuple[Sequence[Message], Format[FormattableT] | None, GoogleKwargs]:
     """Prepares a request for the genai `Client.models.generate_content` method."""
     if not model_id.startswith("google/"):  # pragma: no cover
         raise ValueError(f"Model ID must start with 'google/' prefix, got: {model_id}")
 
-    google_config: GoogleKwargs = GoogleKwargs()
+    google_config: genai_types.GenerateContentConfigDict = (
+        genai_types.GenerateContentConfigDict()
+    )
     encode_thoughts = False
 
     with _base_utils.ensure_all_params_accessed(
@@ -274,9 +276,10 @@ def encode_request(
     if system_message_content:
         google_config["system_instruction"] = system_message_content
 
-    return (
-        messages,
-        format,
-        _encode_messages(remaining_messages, model_id, encode_thoughts),
-        google_config,
+    kwargs = GoogleKwargs(
+        model=model_id.removeprefix("google/"),
+        contents=_encode_messages(remaining_messages, model_id, encode_thoughts),
+        config=google_config,
     )
+
+    return messages, format, kwargs
