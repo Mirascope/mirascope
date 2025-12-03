@@ -38,17 +38,6 @@ class Book(BaseModel):
     author: str
 
 
-class _DummyResponse:
-    def __init__(
-        self,
-        *,
-        messages: Sequence[Any],
-        finish_reason: FinishReason | None,
-    ) -> None:
-        self.messages = list(messages)
-        self.finish_reason = finish_reason
-
-
 @pytest.fixture(autouse=True, scope="function")
 def initialize() -> Generator[None, None, None]:
     """Initialize ops configuration and LLM instrumentation for each test."""
