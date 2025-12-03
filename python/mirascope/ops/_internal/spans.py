@@ -16,8 +16,8 @@ from opentelemetry.trace import (
 )
 from opentelemetry.util.types import AttributeValue
 
-from mirascope.ops import current_session
-from mirascope.ops._internal.utils import json_dumps
+from .session import current_session
+from .utils import json_dumps
 
 if TYPE_CHECKING:
     from opentelemetry.context import Context
@@ -114,10 +114,7 @@ class Span:
         """
         if self._span and not self._finished:
             for key, value in attributes.items():
-                if isinstance(value, list):
-                    self._span.set_attribute(key, json_dumps(value))
-                else:
-                    self._span.set_attribute(key, value)
+                self._span.set_attribute(key, value)
 
     def event(self, name: str, **attributes: AttributeValue) -> None:
         """Record an event within the span.
@@ -127,13 +124,7 @@ class Span:
             **attributes: Event attributes as key-value pairs.
         """
         if self._span and not self._finished:
-            serialized_attrs = {}
-            for key, value in attributes.items():
-                if isinstance(value, list):
-                    serialized_attrs[key] = json_dumps(value)
-                else:
-                    serialized_attrs[key] = value
-            self._span.add_event(name, attributes=serialized_attrs)
+            self._span.add_event(name, attributes=attributes)
 
     def debug(self, message: str, **additional_attributes: AttributeValue) -> None:
         """Log a debug message within the span.

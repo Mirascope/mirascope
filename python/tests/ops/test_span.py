@@ -322,10 +322,10 @@ def test_noop_span_logs_once(
     assert len(warnings) == 1
 
 
-def test_span_serializes_complex_attributes(
+def test_span_preserves_complex_attributes(
     span_exporter: InMemorySpanExporter,
 ) -> None:
-    """Test that complex attributes and events are serialized as JSON strings."""
+    """Test that complex attributes and events are preserved as sequences/strings."""
     with mirascope.ops.span("complex") as span:
         span.set(numbers=[1, 2, 3], payload='{"ok": true}')
         span.event("details", points=[1, 2], info='{"nested": "yes"}')
@@ -339,7 +339,7 @@ def test_span_serializes_complex_attributes(
             "name": "complex",
             "attributes": {
                 "mirascope.type": "trace",
-                "numbers": "[1,2,3]",
+                "numbers": (1, 2, 3),
                 "payload": '{"ok": true}',
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -347,7 +347,7 @@ def test_span_serializes_complex_attributes(
                 {
                     "name": "details",
                     "attributes": {
-                        "points": "[1,2]",
+                        "points": (1, 2),
                         "info": '{"nested": "yes"}',
                     },
                 }
@@ -526,7 +526,7 @@ def test_span_with_initial_attributes(span_exporter: InMemorySpanExporter) -> No
 def test_span_with_initial_complex_attributes(
     span_exporter: InMemorySpanExporter,
 ) -> None:
-    """Test that span serializes complex initial attributes as JSON."""
+    """Test that span accepts complex initial attributes without serialization."""
     with mirascope.ops.span("complex-init", tags=["a", "b"], config='{"key":"val"}'):
         pass
 
@@ -539,7 +539,7 @@ def test_span_with_initial_complex_attributes(
             "name": "complex-init",
             "attributes": {
                 "mirascope.type": "trace",
-                "tags": '["a","b"]',
+                "tags": ("a", "b"),
                 "config": '{"key":"val"}',
             },
             "status": {"status_code": "UNSET", "description": None},
