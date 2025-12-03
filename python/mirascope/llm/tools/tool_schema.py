@@ -238,7 +238,6 @@ class ToolSchema(Generic[ToolFnT]):
         TempModel = create_model("TempModel", **cast(dict[str, Any], field_definitions))
 
         schema = TempModel.model_json_schema()
-
         parameters = ToolParameterSchema(
             properties=cast(dict[str, dict[str, Any]], schema.get("properties", {})),
             required=cast(list[str], schema.get("required", [])),
