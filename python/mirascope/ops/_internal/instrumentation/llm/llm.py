@@ -30,6 +30,7 @@ from .....llm.responses import (
     AsyncContextResponse,
     AsyncResponse,
     ContextResponse,
+    ContextStreamResponse,
     Response,
     StreamResponse,
     StreamResponseChunk,
@@ -339,6 +340,8 @@ _ORIGINAL_MODEL_CONTEXT_CALL_ASYNC = Model.context_call_async
 _MODEL_CONTEXT_CALL_ASYNC_WRAPPED = False
 _ORIGINAL_MODEL_STREAM = Model.stream
 _MODEL_STREAM_WRAPPED = False
+_ORIGINAL_MODEL_CONTEXT_STREAM = Model.context_stream
+_MODEL_CONTEXT_STREAM_WRAPPED = False
 
 
 def _is_supported_param_value(value: object) -> TypeIs[ParamsValue]:
@@ -887,7 +890,8 @@ def _instrumented_model_stream(
 
 def _attach_stream_span_handlers(
     *,
-    response: StreamResponse[FormattableT | None],
+    response: ContextStreamResponse[DepsT, FormattableT | None]
+    | StreamResponse[FormattableT | None],
     span_cm: AbstractContextManager[SpanContext],
     span: Span,
     request_messages: Sequence[Message],
@@ -949,6 +953,117 @@ def _unwrap_model_stream() -> None:
     _MODEL_STREAM_WRAPPED = False
 
 
+@overload
+def _instrumented_model_context_stream(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    format: None = None,
+) -> ContextStreamResponse[DepsT, None]: ...
+
+
+@overload
+def _instrumented_model_context_stream(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    format: type[FormattableT] | Format[FormattableT],
+) -> ContextStreamResponse[DepsT, FormattableT]: ...
+
+
+@overload
+def _instrumented_model_context_stream(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+) -> (
+    ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]
+): ...
+
+
+@wraps(_ORIGINAL_MODEL_CONTEXT_STREAM)
+def _instrumented_model_context_stream(
+    self: Model,
+    *,
+    ctx: Context[DepsT],
+    messages: Sequence[Message],
+    tools: Sequence[Tool | ContextTool[DepsT]] | ContextToolkit[DepsT] | None = None,
+    format: FormatParam = None,
+) -> ContextStreamResponse[DepsT, None] | ContextStreamResponse[DepsT, FormattableT]:
+    """Returns a GenAI-instrumented result of `Model.context_stream`."""
+    span_cm = _start_model_span(
+        self,
+        messages=messages,
+        tools=tools,
+        format=format,
+        activate=False,
+    )
+    span_ctx = span_cm.__enter__()
+    if span_ctx.span is None:
+        response = _ORIGINAL_MODEL_CONTEXT_STREAM(
+            self,
+            ctx=ctx,
+            messages=messages,
+            tools=tools,
+            format=format,
+        )
+        span_cm.__exit__(None, None, None)
+        return response
+
+    try:
+        with otel_trace.use_span(span_ctx.span, end_on_exit=False):
+            response = _ORIGINAL_MODEL_CONTEXT_STREAM(
+                self,
+                ctx=ctx,
+                messages=messages,
+                tools=tools,
+                format=format,
+            )
+    except Exception as exc:
+        span_cm.__exit__(type(exc), exc, exc.__traceback__)
+        raise
+
+    _record_dropped_params(span_ctx.span, span_ctx.dropped_params)
+
+    try:
+        _attach_stream_span_handlers(
+            response=response,
+            span_cm=span_cm,
+            span=span_ctx.span,
+            request_messages=messages,
+        )
+    except Exception as exc:  # pragma: no cover
+        span_cm.__exit__(type(exc), exc, exc.__traceback__)
+        raise
+
+    return response
+
+
+def _wrap_model_context_stream() -> None:
+    """Returns None. Replaces `Model.context_stream` with the instrumented wrapper."""
+    global _MODEL_CONTEXT_STREAM_WRAPPED
+    if _MODEL_CONTEXT_STREAM_WRAPPED:
+        return
+    Model.context_stream = _instrumented_model_context_stream
+    _MODEL_CONTEXT_STREAM_WRAPPED = True
+
+
+def _unwrap_model_context_stream() -> None:
+    """Returns None. Restores the original `Model.context_stream` implementation."""
+    global _MODEL_CONTEXT_STREAM_WRAPPED
+    if not _MODEL_CONTEXT_STREAM_WRAPPED:
+        return
+    Model.context_stream = _ORIGINAL_MODEL_CONTEXT_STREAM
+    _MODEL_CONTEXT_STREAM_WRAPPED = False
+
+
 def instrument_llm() -> None:
     """Enable GenAI 1.38 span emission for future `llm.Model` calls and streams.
 
@@ -986,6 +1101,7 @@ def instrument_llm() -> None:
     _wrap_model_context_call()
     _wrap_model_context_call_async()
     _wrap_model_stream()
+    _wrap_model_context_stream()
 
 
 def uninstrument_llm() -> None:
@@ -995,3 +1111,4 @@ def uninstrument_llm() -> None:
     _unwrap_model_context_call()
     _unwrap_model_context_call_async()
     _unwrap_model_stream()
+    _unwrap_model_context_stream()
