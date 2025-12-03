@@ -55,6 +55,11 @@ jobs:
           bun run scripts/regenerate_examples.ts
           git diff --exit-code examples/
 
+      - name: Verify gen_ai_types modules is up-to-date
+        run: |
+          uv run datamodel-codegen --input schemas/gen-ai --output mirascope/ops/_internal/instrumentation/gen_ai_types
+          git diff --exit-code mirascope/ops/_internal/instrumentation/gen_ai_types
+
       - name: Run `ruff`
         run: uv run ruff check . && uv run ruff format --check .
 

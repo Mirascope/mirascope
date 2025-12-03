@@ -21,6 +21,7 @@
     "lint:cloud": "cd cloud && bun i && bun run lint",
     "fix": "bun run fix:python && bun run fix:typescript && bun run fix:cloud",
     "fix:python": "cd python && bun run scripts/regenerate_examples.ts && uv run ruff check --fix . && uv run ruff format .",
+    "generate:python-sdk:gen-ai-types": "cd python && uv run datamodel-codegen --input schemas/gen-ai --output mirascope/ops/_internal/instrumentation/llm/gen_ai_types",
     "fix:typescript": "cd typescript && bun i && bun run fix",
     "fix:cloud": "cd cloud && bun i && bun run fix",
     "cloud:python-sdk:generate": "cd cloud && bun run generate:openapi > ../fern/openapi.json && cd ../fern && npx fern generate --group python-sdk --local --force && bun run fix:python",

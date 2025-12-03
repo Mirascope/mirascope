@@ -143,7 +143,9 @@ def _serialize_message(message: Message) -> gen_ai_types.ChatMessage:
     return serialized
 
 
-def map_finish_reason(reason: FinishReason | None) -> gen_ai_types.FinishReason:
+def map_finish_reason(
+    reason: FinishReason | None,
+) -> gen_ai_types.FinishReason:
     """Map a finish reason to a GenAI finish reason."""
     if reason is None:
         return "stop"
