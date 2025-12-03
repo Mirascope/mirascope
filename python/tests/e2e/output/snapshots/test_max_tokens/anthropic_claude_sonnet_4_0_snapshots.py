@@ -11,7 +11,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -35,7 +35,7 @@ Here are all 50 U.S. states listed alphabetically:
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -69,7 +69,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -93,7 +93,7 @@ Here are all 50 U.S. states in alphabetical order:
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -127,7 +127,7 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -150,7 +150,7 @@ Here are all 50 U.S. states in alphabetical order:
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -184,7 +184,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -207,7 +207,7 @@ Here are all 50 U.S. states in alphabetical order:
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [

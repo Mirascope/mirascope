@@ -219,7 +219,7 @@ def call(
 
         @llm.call(
             provider="openai:completions",
-            model_id="gpt-4o-mini",
+            model_id="openai/gpt-5-mini",
         )
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
@@ -241,7 +241,7 @@ def call(
 
         @llm.call(
             provider="openai:completions",
-            model_id="gpt-4o-mini",
+            model_id="openai/gpt-5-mini",
         )
         def answer_question(ctx: llm.Context[Personality], question: str) -> str:
             return f"Your vibe is {ctx.deps.vibe}. Answer this question: {question}"

@@ -163,7 +163,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         )
 
         google_response = self.client.models.generate_content(
-            model=model_id,
+            model=model_id.removeprefix("google/"),
             contents=contents,
             config=config,
         )
@@ -266,7 +266,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         )
 
         google_response = self.client.models.generate_content(
-            model=model_id,
+            model=model_id.removeprefix("google/"),
             contents=contents,
             config=config,
         )
@@ -356,7 +356,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         )
 
         google_response = await self.client.aio.models.generate_content(
-            model=model_id,
+            model=model_id.removeprefix("google/"),
             contents=contents,
             config=config,
         )
@@ -459,7 +459,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         )
 
         google_response = await self.client.aio.models.generate_content(
-            model=model_id,
+            model=model_id.removeprefix("google/"),
             contents=contents,
             config=config,
         )
@@ -549,7 +549,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         )
 
         google_stream = self.client.models.generate_content_stream(
-            model=model_id,
+            model=model_id.removeprefix("google/"),
             contents=contents,
             config=config,
         )
@@ -648,7 +648,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         )
 
         google_stream = self.client.models.generate_content_stream(
-            model=model_id,
+            model=model_id.removeprefix("google/"),
             contents=contents,
             config=config,
         )
@@ -734,7 +734,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         )
 
         google_stream = await self.client.aio.models.generate_content_stream(
-            model=model_id,
+            model=model_id.removeprefix("google/"),
             contents=contents,
             config=config,
         )
@@ -839,7 +839,7 @@ class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
         )
 
         google_stream = await self.client.aio.models.generate_content_stream(
-            model=model_id,
+            model=model_id.removeprefix("google/"),
             contents=contents,
             config=config,
         )

@@ -13,7 +13,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -38,7 +38,7 @@ sync_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -70,7 +70,7 @@ sync_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -136,7 +136,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -161,7 +161,7 @@ async_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -193,7 +193,7 @@ async_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -259,7 +259,7 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
                 SystemMessage(
@@ -283,7 +283,7 @@ stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
                 UserMessage(
@@ -302,7 +302,7 @@ stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
             ],
@@ -356,7 +356,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
                 SystemMessage(
@@ -380,7 +380,7 @@ async_stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
                 UserMessage(
@@ -399,7 +399,7 @@ async_stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
             ],

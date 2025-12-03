@@ -13,7 +13,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -39,7 +39,7 @@ sync_snapshot = snapshot(
                         ),
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -88,7 +88,7 @@ The secrets associated with the passwords are as follows:
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "content": """\
 The secrets associated with the passwords are as follows:
@@ -130,7 +130,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -156,7 +156,7 @@ async_snapshot = snapshot(
                         ),
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -206,7 +206,7 @@ Here are the secrets associated with the passwords:
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "content": """\
 Here are the secrets associated with the passwords:
@@ -249,7 +249,7 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -274,7 +274,7 @@ stream_snapshot = snapshot(
                         ),
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
                 UserMessage(
@@ -301,7 +301,7 @@ The secret for the password "radiance" is: "Life before Death"\
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
             ],
@@ -336,7 +336,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
                 SystemMessage(content=Text(text="Use parallel tool calling.")),
@@ -361,7 +361,7 @@ async_stream_snapshot = snapshot(
                         ),
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
                 UserMessage(
@@ -390,7 +390,7 @@ Here are the secrets associated with the provided passwords:
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
             ],

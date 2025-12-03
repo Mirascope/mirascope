@@ -169,9 +169,14 @@ def encode_request(
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, MessageCreateKwargs]:
     """Prepares a request for the `Anthropic.messages.create` method."""
+    if not model_id.startswith("anthropic/"):  # pragma: no cover
+        raise ValueError(
+            f"Model ID must start with 'anthropic/' prefix, got: {model_id}"
+        )
+
     kwargs: MessageCreateKwargs = MessageCreateKwargs(
         {
-            "model": model_id,
+            "model": model_id.removeprefix("anthropic/"),
             "max_tokens": DEFAULT_MAX_TOKENS,
         }
     )

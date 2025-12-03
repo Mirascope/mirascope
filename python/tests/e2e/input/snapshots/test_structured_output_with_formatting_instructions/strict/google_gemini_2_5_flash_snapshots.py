@@ -11,7 +11,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "google",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "google/gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -33,7 +33,7 @@ lucky number 7.\
                         )
                     ],
                     provider="google",
-                    model_id="gemini-2.5-flash",
+                    model_id="google/gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {

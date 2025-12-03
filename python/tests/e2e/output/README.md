@@ -45,7 +45,7 @@ This ensures all providers and models are tested for each scenario.
 ## Fixtures
 
 - **`provider`** - The LLM provider (e.g., "anthropic", "openai:completions")
-- **`model_id`** - The model ID (e.g., "claude-sonnet-4-0", "gpt-4o")
+- **`model_id`** - The model ID (e.g., "anthropic/claude-sonnet-4-0", "openai/gpt-4o")
 - **`snapshot`** - Auto-generated snapshot for the current test configuration
 - **`vcr_cassette_name`** - Auto-generated cassette path
 

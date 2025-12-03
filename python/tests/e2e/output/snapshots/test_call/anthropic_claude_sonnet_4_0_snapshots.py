@@ -10,7 +10,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -18,7 +18,7 @@ sync_snapshot = snapshot(
                 AssistantMessage(
                     content=[Text(text="4200 + 42 = 4242")],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -40,7 +40,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -48,7 +48,7 @@ async_snapshot = snapshot(
                 AssistantMessage(
                     content=[Text(text="4200 + 42 = 4242")],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [
@@ -70,14 +70,14 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
                     content=[Text(text="4200 + 42 = 4242")],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [{"type": "text", "text": "4200 + 42 = 4242"}],
@@ -94,14 +94,14 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "finish_reason": None,
             "messages": [
                 UserMessage(content=[Text(text="What is 4200 + 42?")]),
                 AssistantMessage(
                     content=[Text(text="4200 + 42 = 4242")],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [{"type": "text", "text": "4200 + 42 = 4242"}],

@@ -1,8 +1,72 @@
 """OpenAI ChatCompletions registered LLM models."""
 
-from typing import TypeAlias
+from typing import Literal, TypeAlias
 
-from openai.types import ChatModel
-
-OpenAICompletionsModelId: TypeAlias = ChatModel | str
+OpenAICompletionsModelId: TypeAlias = (
+    Literal[
+        "openai/gpt-5",
+        "openai/gpt-5-mini",
+        "openai/gpt-5-nano",
+        "openai/gpt-5-2025-08-07",
+        "openai/gpt-5-mini-2025-08-07",
+        "openai/gpt-5-nano-2025-08-07",
+        "openai/gpt-5-chat-latest",
+        "openai/gpt-4.1",
+        "openai/gpt-4.1-mini",
+        "openai/gpt-4.1-nano",
+        "openai/gpt-4.1-2025-04-14",
+        "openai/gpt-4.1-mini-2025-04-14",
+        "openai/gpt-4.1-nano-2025-04-14",
+        "openai/o4-mini",
+        "openai/o4-mini-2025-04-16",
+        "openai/o3",
+        "openai/o3-2025-04-16",
+        "openai/o3-mini",
+        "openai/o3-mini-2025-01-31",
+        "openai/o1",
+        "openai/o1-2024-12-17",
+        "openai/o1-preview",
+        "openai/o1-preview-2024-09-12",
+        "openai/o1-mini",
+        "openai/o1-mini-2024-09-12",
+        "openai/gpt-4o",
+        "openai/gpt-4o-2024-11-20",
+        "openai/gpt-4o-2024-08-06",
+        "openai/gpt-4o-2024-05-13",
+        "openai/gpt-4o-audio-preview",
+        "openai/gpt-4o-audio-preview-2024-10-01",
+        "openai/gpt-4o-audio-preview-2024-12-17",
+        "openai/gpt-4o-audio-preview-2025-06-03",
+        "openai/gpt-4o-mini-audio-preview",
+        "openai/gpt-4o-mini-audio-preview-2024-12-17",
+        "openai/gpt-4o-search-preview",
+        "openai/gpt-4o-mini-search-preview",
+        "openai/gpt-4o-search-preview-2025-03-11",
+        "openai/gpt-4o-mini-search-preview-2025-03-11",
+        "openai/chatgpt-4o-latest",
+        "openai/codex-mini-latest",
+        "openai/gpt-4o-mini",
+        "openai/gpt-4o-mini-2024-07-18",
+        "openai/gpt-4-turbo",
+        "openai/gpt-4-turbo-2024-04-09",
+        "openai/gpt-4-0125-preview",
+        "openai/gpt-4-turbo-preview",
+        "openai/gpt-4-1106-preview",
+        "openai/gpt-4-vision-preview",
+        "openai/gpt-4",
+        "openai/gpt-4-0314",
+        "openai/gpt-4-0613",
+        "openai/gpt-4-32k",
+        "openai/gpt-4-32k-0314",
+        "openai/gpt-4-32k-0613",
+        "openai/gpt-3.5-turbo",
+        "openai/gpt-3.5-turbo-16k",
+        "openai/gpt-3.5-turbo-0301",
+        "openai/gpt-3.5-turbo-0613",
+        "openai/gpt-3.5-turbo-1106",
+        "openai/gpt-3.5-turbo-0125",
+        "openai/gpt-3.5-turbo-16k-0613",
+    ]
+    | str
+)
 """The OpenAI ChatCompletions model ids registered with Mirascope."""

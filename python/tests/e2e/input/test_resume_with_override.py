@@ -25,9 +25,9 @@ def default_provider_and_model(
     from a response that was created by a different provider.
     """
     if provider == "google":
-        return {"provider": "anthropic", "model_id": "claude-sonnet-4-0"}
+        return {"provider": "anthropic", "model_id": "anthropic/claude-sonnet-4-0"}
     else:
-        return {"provider": "google", "model_id": "gemini-2.5-flash"}
+        return {"provider": "google", "model_id": "google/gemini-2.5-flash"}
 
 
 @pytest.mark.parametrize(

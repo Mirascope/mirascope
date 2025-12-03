@@ -97,7 +97,7 @@ class TestAssistantMessage:
     def test_assistant_with_string(self) -> None:
         """Test creating an assistant message with a string."""
         msg = llm.messages.assistant(
-            "Hello! How can I help you?", provider="openai", model_id="gpt-4"
+            "Hello! How can I help you?", provider="openai", model_id="openai/gpt-5"
         )
 
         assert isinstance(msg, llm.AssistantMessage)
@@ -113,7 +113,7 @@ class TestAssistantMessage:
             "Hello! How can I help you?",
             name="Claude",
             provider="openai",
-            model_id="gpt-4",
+            model_id="openai/gpt-5",
         )
 
         assert isinstance(msg, llm.AssistantMessage)
@@ -126,7 +126,9 @@ class TestAssistantMessage:
     def test_assistant_with_content_part(self) -> None:
         """Test creating an assistant message with a single content part."""
         text_obj = llm.Text(text="Hello! How can I help you?")
-        msg = llm.messages.assistant(text_obj, provider="openai", model_id="gpt-4")
+        msg = llm.messages.assistant(
+            text_obj, provider="openai", model_id="openai/gpt-5"
+        )
 
         assert isinstance(msg, llm.AssistantMessage)
         assert msg.role == "assistant"
@@ -138,7 +140,9 @@ class TestAssistantMessage:
         """Test creating an assistant message with a sequence of mixed content."""
         text_obj = llm.Text(text="Here's my response:")
         content_list = ["Hello", text_obj, "World"]
-        msg = llm.messages.assistant(content_list, provider="openai", model_id="gpt-4")
+        msg = llm.messages.assistant(
+            content_list, provider="openai", model_id="openai/gpt-5"
+        )
 
         assert isinstance(msg, llm.AssistantMessage)
         assert msg.role == "assistant"
@@ -155,7 +159,7 @@ class TestAssistantMessage:
 
     def test_assistant_with_empty_sequence(self) -> None:
         """Test creating an assistant message with an empty sequence."""
-        msg = llm.messages.assistant([], provider="openai", model_id="gpt-4")
+        msg = llm.messages.assistant([], provider="openai", model_id="openai/gpt-5")
 
         assert isinstance(msg, llm.AssistantMessage)
         assert msg.role == "assistant"

@@ -10,7 +10,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -20,7 +20,7 @@ test_snapshot = snapshot(
                         Text(text="I am a large language model, trained by Google.")
                     ],
                     provider="google",
-                    model_id="gemini-2.5-flash",
+                    model_id="google/gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -47,7 +47,7 @@ test_snapshot = snapshot(
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [

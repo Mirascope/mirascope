@@ -68,7 +68,7 @@ class Model:
 
         def recommend_book(genre: str) -> llm.Response:
             # Uses context model if available, otherwise creates default
-            model = llm.use_model(provider="openai", model_id="gpt-4o-mini")
+            model = llm.use_model(provider="openai", model_id="openai/gpt-5-mini")
             message = llm.messages.user(f"Please recommend a book in {genre}.")
             return model.call(messages=[message])
 
@@ -76,7 +76,7 @@ class Model:
         response = recommend_book("fantasy")
 
         # Override with different model
-        with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+        with llm.model(provider="anthropic", model_id="anthropic/claude-sonnet-4-5"):
             response = recommend_book("fantasy")  # Uses Claude
         ```
 
@@ -87,7 +87,7 @@ class Model:
 
         def recommend_book(genre: str) -> llm.Response:
             # Hardcoded model, cannot be overridden by context
-            model = llm.Model(provider="openai", model_id="gpt-4o-mini")
+            model = llm.Model(provider="openai", model_id="openai/gpt-5-mini")
             message = llm.messages.user(f"Please recommend a book in {genre}.")
             return model.call(messages=[message])
         ```
@@ -1176,12 +1176,12 @@ def model(
         import mirascope.llm as llm
 
         def recommend_book(genre: str) -> llm.Response:
-            model = llm.use_model(provider="openai", model_id="gpt-4o-mini")
+            model = llm.use_model(provider="openai", model_id="openai/gpt-5-mini")
             message = llm.messages.user(f"Please recommend a book in {genre}.")
             return model.call(messages=[message])
 
         # Override the default model at runtime
-        with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+        with llm.model(provider="anthropic", model_id="anthropic/claude-sonnet-4-5"):
             response = recommend_book("fantasy")  # Uses Claude instead of GPT
         ```
     """
@@ -1225,7 +1225,7 @@ def use_model(
         import mirascope.llm as llm
 
         def recommend_book(genre: str) -> llm.Response:
-            model = llm.use_model(provider="openai", model_id="gpt-4o-mini")
+            model = llm.use_model(provider="openai", model_id="openai/gpt-5-mini")
             message = llm.messages.user(f"Please recommend a book in {genre}.")
             return model.call(messages=[message])
 
@@ -1233,7 +1233,7 @@ def use_model(
         response = recommend_book("fantasy")
 
         # Override with a different model
-        with llm.model(provider="anthropic", model_id="claude-sonnet-4-0"):
+        with llm.model(provider="anthropic", model_id="anthropic/claude-sonnet-4-5"):
             response = recommend_book("fantasy")  # Uses Claude instead
         ```
     """

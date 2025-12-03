@@ -11,7 +11,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -34,7 +34,7 @@ sync_snapshot = snapshot(
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
@@ -88,7 +88,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -111,7 +111,7 @@ async_snapshot = snapshot(
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
@@ -165,7 +165,7 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "finish_reason": None,
             "messages": [
                 SystemMessage(
@@ -187,7 +187,7 @@ stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
@@ -242,7 +242,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "finish_reason": None,
             "messages": [
                 SystemMessage(
@@ -264,7 +264,7 @@ async_stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',

@@ -98,7 +98,7 @@ def _encode_user_message(
             )
             current_content.append(content)
         elif part.type == "audio":
-            model_status = MODEL_FEATURES.get(model_id)
+            model_status = MODEL_FEATURES.get(model_id.removeprefix("openai/"))
             if model_status == "no_audio_support":
                 raise FeatureNotSupportedError(
                     feature="Audio inputs",
@@ -281,9 +281,13 @@ def encode_request(
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ChatCompletionCreateKwargs]:
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
+    if not model_id.startswith("openai/"):  # pragma: no cover
+        raise ValueError(f"Model ID must start with 'openai/' prefix, got: {model_id}")
+    model_name = model_id.removeprefix("openai/")
+
     kwargs: ChatCompletionCreateKwargs = ChatCompletionCreateKwargs(
         {
-            "model": model_id,
+            "model": model_name,
         }
     )
     encode_thoughts = False
@@ -312,7 +316,7 @@ def encode_request(
     openai_tools = [_convert_tool_to_tool_param(tool) for tool in tools]
 
     model_supports_strict = (
-        model_id not in _shared_utils.MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
+        model_name not in _shared_utils.MODELS_WITHOUT_JSON_SCHEMA_SUPPORT
     )
     default_mode = "strict" if model_supports_strict else "tool"
     format = resolve_format(format, default_mode=default_mode)
@@ -338,7 +342,7 @@ def encode_request(
             openai_tools.append(_convert_tool_to_tool_param(format_tool_schema))
         elif (
             format.mode == "json"
-            and model_id not in _shared_utils.MODELS_WITHOUT_JSON_OBJECT_SUPPORT
+            and model_name not in _shared_utils.MODELS_WITHOUT_JSON_OBJECT_SUPPORT
         ):
             kwargs["response_format"] = {"type": "json_object"}
 

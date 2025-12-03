@@ -72,35 +72,34 @@ def _parse_test_name(test_name: str) -> tuple[str, CallType]:
 @pytest.fixture
 def vcr_cassette_name(
     request: FixtureRequest,
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
 ) -> str:
-    """Generate VCR cassette name based on test name, provider, model, and formatting_mode.
+    """Generate VCR cassette name based on test name, model, and formatting_mode.
 
     Structure:
-    - Without formatting_mode: {scenario}/{provider}_{model_id}/{call_type}
-    - With formatting_mode: {scenario}/{formatting_mode}/{provider}_{model_id}/{call_type}
+    - Without formatting_mode: {scenario}/{model_id}/{call_type}
+    - With formatting_mode: {scenario}/{formatting_mode}/{model_id}/{call_type}
     """
     test_name = request.node.name
     scenario, call_type = _parse_test_name(test_name)
 
-    provider_str = provider.replace(":", "_")
-    model_id_str = model_id.replace("-", "_").replace(".", "_")
+    model_id_str = (
+        model_id.replace("-", "_").replace(".", "_").replace(":", "_").replace("/", "_")
+    )
 
     # Context and non-context calls share the same cassettes.
     cassette_call_type = call_type.replace("_context", "")
 
     if formatting_mode is None:
-        return f"{scenario}/{provider_str}_{model_id_str}/{cassette_call_type}"
+        return f"{scenario}/{model_id_str}/{cassette_call_type}"
     else:
-        return f"{scenario}/{formatting_mode}/{provider_str}_{model_id_str}/{cassette_call_type}"
+        return f"{scenario}/{formatting_mode}/{model_id_str}/{cassette_call_type}"
 
 
 @pytest.fixture
 def snapshot(
     request: FixtureRequest,
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
 ) -> Snapshot:
@@ -113,15 +112,16 @@ def snapshot(
     - async_stream_snapshot
 
     Structure:
-    - Without formatting_mode: snapshots/{scenario}/{provider}_{model_id}_snapshots.py
-    - With formatting_mode: snapshots/{scenario}/{formatting_mode}/{provider}_{model_id}_snapshots.py
+    - Without formatting_mode: snapshots/{scenario}/{model_id}_snapshots.py
+    - With formatting_mode: snapshots/{scenario}/{formatting_mode}/{model_id}_snapshots.py
     """
     test_name = request.node.name
     scenario, call_type = _parse_test_name(test_name)
-    provider_str = provider.replace(":", "_")
-    model_id_str = model_id.replace("-", "_").replace(".", "_")
+    model_id_str = (
+        model_id.replace("-", "_").replace(".", "_").replace(":", "_").replace("/", "_")
+    )
 
-    file_name = f"{provider_str}_{model_id_str}_snapshots"
+    file_name = f"{model_id_str}_snapshots"
 
     if formatting_mode is None:
         module_path = f"e2e.output.snapshots.{scenario}.{file_name}"

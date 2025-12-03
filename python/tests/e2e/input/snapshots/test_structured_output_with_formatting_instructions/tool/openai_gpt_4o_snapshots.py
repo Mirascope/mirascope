@@ -11,7 +11,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -29,27 +29,24 @@ lucky number 7.\
                 AssistantMessage(
                     content=[
                         Text(
-                            text="""\
-{
-  "title": "THE NAME OF THE WIND",
-  "author": "Patrick Rothfuss",
-  "rating": 7
-}\
-"""
+                            text='{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}'
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
-                        "content": """\
-{
-  "title": "THE NAME OF THE WIND",
-  "author": "Patrick Rothfuss",
-  "rating": 7
-}\
-""",
                         "role": "assistant",
                         "annotations": [],
+                        "tool_calls": [
+                            {
+                                "id": "call_IVj6CSk0DvGckVkrwwJfYL6T",
+                                "function": {
+                                    "arguments": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',
+                                    "name": "__mirascope_formatted_output_tool__",
+                                },
+                                "type": "function",
+                            }
+                        ],
                     },
                 ),
             ],
@@ -66,7 +63,7 @@ lucky number 7.\
                     "title": "Book",
                     "type": "object",
                 },
-                "mode": "json",
+                "mode": "tool",
                 "formatting_instructions": """\
 Output a structured book as JSON in the format {title: str, author: str, rating: int}.
 The title should be in all caps, and the rating should always be the

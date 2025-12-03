@@ -11,7 +11,7 @@ test_snapshot = snapshot(
         "response": (
             {
                 "provider": "openai:completions",
-                "model_id": "gpt-4o",
+                "model_id": "openai/gpt-4o",
                 "params": {
                     "temperature": 0.7,
                     "max_tokens": 500,
@@ -28,7 +28,7 @@ test_snapshot = snapshot(
                     AssistantMessage(
                         content=[Text(text="4200 + 42 equals ")],
                         provider="openai:completions",
-                        model_id="gpt-4o",
+                        model_id="openai/gpt-4o",
                         raw_message={
                             "content": "4200 + 42 equals ",
                             "role": "assistant",

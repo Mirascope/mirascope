@@ -10,7 +10,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -28,7 +28,7 @@ sync_snapshot = snapshot(
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "id": "msg_005e0ab32c3df1050068f966cedb648190a1769c7ec5dea7e9",
@@ -89,7 +89,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -107,7 +107,7 @@ async_snapshot = snapshot(
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "id": "msg_0e2af4b9d9313f560068f966d8ede48197886f72c0b5c845a2",
@@ -168,7 +168,7 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "finish_reason": None,
             "messages": [
                 UserMessage(
@@ -185,7 +185,7 @@ stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "id": "msg_089d7482d1faaec10068f966e1afec8196ada045413e3b10a2",
@@ -247,7 +247,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "finish_reason": None,
             "messages": [
                 UserMessage(
@@ -264,7 +264,7 @@ async_stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "id": "msg_09e0316a14ecf6580068f966e900988193835e59c7f4b80e25",

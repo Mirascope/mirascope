@@ -11,7 +11,7 @@ class KeeperEntry(BaseModel):
 
 @llm.call(
     provider="openai",
-    model_id="gpt-4o-mini",
+    model_id="openai/gpt-5-mini",
     format=KeeperEntry,
 )
 def sazed(query: str):

@@ -12,10 +12,10 @@ import pytest
 from mirascope import llm
 
 PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
-    ("anthropic", "claude-sonnet-4-0"),
-    ("google", "gemini-2.5-flash"),
-    ("openai:completions", "gpt-4o"),
-    ("openai:responses", "gpt-4o"),
+    ("anthropic", "anthropic/claude-sonnet-4-0"),
+    ("google", "google/gemini-2.5-flash"),
+    ("openai:completions", "openai/gpt-4o"),
+    ("openai:responses", "openai:responses/gpt-4o"),
 ]
 
 

@@ -11,7 +11,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:responses",
-            "model_id": "gpt-4o",
+            "model_id": "openai:responses/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -33,7 +33,7 @@ lucky number 7.\
                         )
                     ],
                     provider="openai:responses",
-                    model_id="gpt-4o",
+                    model_id="openai:responses/gpt-4o",
                     raw_message=[
                         {
                             "arguments": '{"title":"THE NAME OF THE WIND","author":"Patrick Rothfuss","rating":7}',

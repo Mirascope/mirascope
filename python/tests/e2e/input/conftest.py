@@ -40,7 +40,6 @@ def _extract_scenario_from_test_name(test_name: str) -> str:
 @pytest.fixture
 def vcr_cassette_name(
     request: FixtureRequest,
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
 ) -> str:
@@ -55,19 +54,19 @@ def vcr_cassette_name(
     test_name = request.node.name
     scenario = _extract_scenario_from_test_name(test_name)
 
-    provider_str = provider.replace(":", "_")
-    model_id_str = model_id.replace("-", "_").replace(".", "_")
+    model_id_str = (
+        model_id.replace("-", "_").replace(".", "_").replace(":", "_").replace("/", "_")
+    )
 
     if formatting_mode is None:
-        return f"{scenario}/{provider_str}_{model_id_str}"
+        return f"{scenario}/{model_id_str}"
     else:
-        return f"{scenario}/{formatting_mode}/{provider_str}_{model_id_str}"
+        return f"{scenario}/{formatting_mode}/{model_id_str}"
 
 
 @pytest.fixture
 def snapshot(
     request: FixtureRequest,
-    provider: llm.Provider,
     model_id: llm.ModelId,
     formatting_mode: llm.FormattingMode | None,
 ) -> Snapshot:
@@ -76,15 +75,15 @@ def snapshot(
     Creates snapshot files with a single 'test_snapshot' variable.
 
     Structure:
-    - Without formatting_mode: snapshots/{scenario}/{provider}_{model_id}_snapshots.py
-    - With formatting_mode: snapshots/{scenario}/{formatting_mode}/{provider}_{model_id}_snapshots.py
+    - Without formatting_mode: snapshots/{scenario}/{model_id}_snapshots.py
+    - With formatting_mode: snapshots/{scenario}/{formatting_mode}/{model_id}_snapshots.py
     """
     test_name = request.node.name
     scenario = _extract_scenario_from_test_name(test_name)
-    provider_str = provider.replace(":", "_")
-    model_id_str = model_id.replace("-", "_").replace(".", "_")
-
-    file_name = f"{provider_str}_{model_id_str}_snapshots"
+    model_id_str = (
+        model_id.replace("-", "_").replace(".", "_").replace(":", "_").replace("/", "_")
+    )
+    file_name = f"{model_id_str}_snapshots"
 
     if formatting_mode is None:
         module_path = f"e2e.input.snapshots.{scenario}.{file_name}"

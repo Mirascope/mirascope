@@ -10,7 +10,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -28,7 +28,7 @@ sync_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
                         "role": "assistant",
@@ -78,7 +78,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -96,7 +96,7 @@ async_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message={
                         "content": '{"title":"THE NAME OF THE WIND","author":{"first_name":"Patrick","last_name":"Rothfuss"},"rating":7}',
                         "role": "assistant",
@@ -146,7 +146,7 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
                 UserMessage(
@@ -163,7 +163,7 @@ stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
             ],
@@ -210,7 +210,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "openai:completions",
-            "model_id": "gpt-4o",
+            "model_id": "openai/gpt-4o",
             "finish_reason": None,
             "messages": [
                 UserMessage(
@@ -227,7 +227,7 @@ async_stream_snapshot = snapshot(
                         )
                     ],
                     provider="openai:completions",
-                    model_id="gpt-4o",
+                    model_id="openai/gpt-4o",
                     raw_message=None,
                 ),
             ],

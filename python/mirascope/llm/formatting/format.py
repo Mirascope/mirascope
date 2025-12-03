@@ -56,7 +56,7 @@ def format(
 
       @llm.call(
           provider="openai:completions",
-          model_id="gpt-4o-mini",
+          model_id="openai/gpt-5-mini",
           format=format,
       )
       def recommend_book(genre: str):

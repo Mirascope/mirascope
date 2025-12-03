@@ -180,6 +180,9 @@ def encode_request(
     GoogleKwargs,
 ]:
     """Prepares a request for the genai `Client.models.generate_content` method."""
+    if not model_id.startswith("google/"):  # pragma: no cover
+        raise ValueError(f"Model ID must start with 'google/' prefix, got: {model_id}")
+
     google_config: GoogleKwargs = GoogleKwargs()
     encode_thoughts = False
 

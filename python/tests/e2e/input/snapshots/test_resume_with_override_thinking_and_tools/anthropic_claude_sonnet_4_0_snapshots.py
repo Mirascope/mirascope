@@ -13,7 +13,7 @@ test_snapshot = snapshot(
     {
         "response": {
             "provider": "anthropic",
-            "model_id": "claude-sonnet-4-0",
+            "model_id": "anthropic/claude-sonnet-4-0",
             "params": {"thinking": False},
             "finish_reason": None,
             "messages": [
@@ -34,7 +34,7 @@ Okay, so I see the user wants the 100th Fibonacci number.  No problem. I immedia
                         ),
                     ],
                     provider="google",
-                    model_id="gemini-2.5-flash",
+                    model_id="google/gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -93,7 +93,7 @@ This is quite a large number! The Fibonacci sequence grows exponentially, so by 
                         )
                     ],
                     provider="anthropic",
-                    model_id="claude-sonnet-4-0",
+                    model_id="anthropic/claude-sonnet-4-0",
                     raw_message={
                         "role": "assistant",
                         "content": [

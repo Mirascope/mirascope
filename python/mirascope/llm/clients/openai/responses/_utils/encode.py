@@ -250,9 +250,15 @@ def encode_request(
     params: Params,
 ) -> tuple[Sequence[Message], Format[FormattableT] | None, ResponseCreateKwargs]:
     """Prepares a request for the `OpenAI.responses.create` method."""
+    if not model_id.startswith("openai:responses/"):  # pragma: no cover
+        raise ValueError(
+            f"Model ID must start with 'openai:responses/' prefix, got: {model_id}"
+        )
+    model_name = model_id.removeprefix("openai:responses/")
+
     kwargs: ResponseCreateKwargs = ResponseCreateKwargs(
         {
-            "model": model_id,
+            "model": model_name,
         }
     )
     encode_thoughts = False
@@ -269,7 +275,7 @@ def encode_request(
         if param_accessor.top_p is not None:
             kwargs["top_p"] = param_accessor.top_p
         if param_accessor.thinking is not None:
-            if model_id in NON_REASONING_MODELS:
+            if model_name in NON_REASONING_MODELS:
                 param_accessor.emit_warning_for_unused_param(
                     "thinking", param_accessor.thinking, "openai:responses", model_id
                 )

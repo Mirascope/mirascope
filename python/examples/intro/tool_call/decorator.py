@@ -13,7 +13,7 @@ def available_library_books() -> list[str]:  # [!code highlight]
 
 @llm.call(
     provider="openai",
-    model_id="gpt-5",
+    model_id="openai/gpt-5",
     tools=[available_library_books],
 )
 def librarian(query: str):

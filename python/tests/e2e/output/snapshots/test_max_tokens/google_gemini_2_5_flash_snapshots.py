@@ -11,7 +11,7 @@ sync_snapshot = snapshot(
     {
         "response": {
             "provider": "google",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "google/gemini-2.5-flash",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -19,7 +19,7 @@ sync_snapshot = snapshot(
                 AssistantMessage(
                     content=[Text(text="Here is a list of all 50 U")],
                     provider="google",
-                    model_id="gemini-2.5-flash",
+                    model_id="google/gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -48,7 +48,7 @@ async_snapshot = snapshot(
     {
         "response": {
             "provider": "google",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "google/gemini-2.5-flash",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -64,7 +64,7 @@ Here are all U.S. states, listed alphabetically:
                         )
                     ],
                     provider="google",
-                    model_id="gemini-2.5-flash",
+                    model_id="google/gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -97,14 +97,14 @@ stream_snapshot = snapshot(
     {
         "response": {
             "provider": "google",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "google/gemini-2.5-flash",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
                 AssistantMessage(
                     content=[Text(text="Here are all 50 U.S.")],
                     provider="google",
-                    model_id="gemini-2.5-flash",
+                    model_id="google/gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -134,7 +134,7 @@ async_stream_snapshot = snapshot(
     {
         "response": {
             "provider": "google",
-            "model_id": "gemini-2.5-flash",
+            "model_id": "google/gemini-2.5-flash",
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
                 UserMessage(content=[Text(text="List all U.S. states.")]),
@@ -148,7 +148,7 @@ Here are all 50 U.S. states, listed alphabetically:
                         )
                     ],
                     provider="google",
-                    model_id="gemini-2.5-flash",
+                    model_id="google/gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {

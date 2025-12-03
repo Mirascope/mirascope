@@ -11,7 +11,7 @@ test_snapshot = snapshot(
         "response": (
             {
                 "provider": "google",
-                "model_id": "gemini-2.5-flash",
+                "model_id": "google/gemini-2.5-flash",
                 "params": {
                     "temperature": 0.7,
                     "max_tokens": 500,
@@ -38,7 +38,7 @@ To calculate 4200 + 42, you can add the numbers together:
                             )
                         ],
                         provider="google",
-                        model_id="gemini-2.5-flash",
+                        model_id="google/gemini-2.5-flash",
                         raw_message={
                             "parts": [
                                 {

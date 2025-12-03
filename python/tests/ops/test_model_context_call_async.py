@@ -29,7 +29,9 @@ async def test_model_context_call_async_exports_genai_span(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test OpenTelemetry instrumentation with context."""
-    model = llm.Model(provider="openai:responses", model_id="gpt-4o-mini")
+    model = llm.Model(
+        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
+    )
     ctx = llm.Context(deps={"tenant": "kai"})
     messages = [
         llm.messages.system("You are a concise assistant."),
@@ -44,15 +46,15 @@ async def test_model_context_call_async_exports_genai_span(
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat gpt-4o-mini",
+            "name": "chat openai:responses/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
                 "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "gpt-4o-mini",
+                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
                 "gen_ai.output.type": "text",
-                "gen_ai.response.model": "gpt-4o-mini",
+                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_03b58d3d78b0728c00691ae8bae894819787eb587c899f106d",
                 "gen_ai.system_instructions": '[{"type":"text","content":"You are a concise assistant."}]',
