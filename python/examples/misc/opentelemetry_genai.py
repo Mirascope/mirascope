@@ -18,7 +18,7 @@ ops.configure(tracer_provider=provider)
 ops.instrument_llm()
 
 
-@llm.call(provider="openai", model_id="gpt-5")
+@llm.call(model_id="openai/gpt-5")
 def recommend_book(genre: str):
     return [
         llm.messages.system("Always recommend kid-friendly books."),

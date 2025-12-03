@@ -32,7 +32,7 @@ def test_call_with_thinking_true_sync(
 ) -> None:
     """Test synchronous call with thinking=True to verify reasoning content."""
 
-    @llm.call(provider=provider, model_id=model_id, thinking=True)
+    @llm.call(model_id=model_id, thinking=True)
     def call(query: str) -> str:
         return query
 
@@ -53,7 +53,7 @@ def test_call_with_thinking_true_stream(
 ) -> None:
     """Test streaming call with thinking=True to verify reasoning content."""
 
-    @llm.call(provider=provider, model_id=model_id, thinking=True)
+    @llm.call(model_id=model_id, thinking=True)
     def call(query: str) -> str:
         return query
 
@@ -77,7 +77,7 @@ async def test_call_with_thinking_true_async(
 ) -> None:
     """Test asynchronous call with thinking=True to verify reasoning content."""
 
-    @llm.call(provider=provider, model_id=model_id, thinking=True)
+    @llm.call(model_id=model_id, thinking=True)
     async def call(query: str) -> str:
         return query
 
@@ -99,7 +99,7 @@ async def test_call_with_thinking_true_async_stream(
 ) -> None:
     """Test async streaming call with thinking=True to verify reasoning content."""
 
-    @llm.call(provider=provider, model_id=model_id, thinking=True)
+    @llm.call(model_id=model_id, thinking=True)
     async def call(query: str) -> str:
         return query
 

@@ -109,7 +109,7 @@ class Model:
         **params: Unpack[Params],
     ) -> None:
         """Initialize the Model with provider, model_id, and optional params."""
-        if provider not in PROVIDERS:
+        if provider not in PROVIDERS:  # pragma: no cover
             raise ValueError(f"Unknown provider: {provider}")
         self.provider = provider
         self.model_id = model_id

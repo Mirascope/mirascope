@@ -31,7 +31,7 @@ def test_call_with_audio(
 ) -> None:
     """Test a call using an audio file loaded from disk."""
 
-    @llm.call(provider=provider, model_id=model_id)
+    @llm.call(model_id=model_id)
     def transcribe_audio(audio_path: str) -> llm.UserContent:
         return [
             "Repeat exactly what you hear:",

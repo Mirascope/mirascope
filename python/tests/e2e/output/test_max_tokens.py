@@ -20,7 +20,7 @@ def test_max_tokens_sync(
 ) -> None:
     """Test synchronous call with token limits."""
 
-    @llm.call(provider=provider, model_id=model_id, max_tokens=50)
+    @llm.call(model_id=model_id, max_tokens=50)
     def list_states() -> str:
         return "List all U.S. states."
 
@@ -41,7 +41,7 @@ async def test_max_tokens_async(
 ) -> None:
     """Test asynchronous call with token limits."""
 
-    @llm.call(provider=provider, model_id=model_id, max_tokens=50)
+    @llm.call(model_id=model_id, max_tokens=50)
     async def list_states() -> str:
         return "List all U.S. states."
 
@@ -61,7 +61,7 @@ def test_max_tokens_stream(
 ) -> None:
     """Test streaming call with token limits."""
 
-    @llm.call(provider=provider, model_id=model_id, max_tokens=50)
+    @llm.call(model_id=model_id, max_tokens=50)
     def list_states() -> str:
         return "List all U.S. states."
 
@@ -83,7 +83,7 @@ async def test_max_tokens_async_stream(
 ) -> None:
     """Test async streaming call with token limits."""
 
-    @llm.call(provider=provider, model_id=model_id, max_tokens=50)
+    @llm.call(model_id=model_id, max_tokens=50)
     async def list_states() -> str:
         return "List all U.S. states."
 

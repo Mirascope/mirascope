@@ -8,7 +8,7 @@ class Book(BaseModel):
     author: str
 
 
-@llm.call(provider="openai", model_id="openai/gpt-5", format=Book)
+@llm.call(model_id="openai/gpt-5", format=Book)
 def recommend_book(genre: str):
     return f"Please recommend a book in {genre}."
 

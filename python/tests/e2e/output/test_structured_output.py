@@ -45,7 +45,6 @@ def test_structured_output_sync(
     )
 
     @llm.call(
-        provider=provider,
         model_id=model_id,
         format=format,
     )
@@ -79,7 +78,6 @@ def test_structured_output_sync_context(
     )
 
     @llm.call(
-        provider=provider,
         model_id=model_id,
         format=format,
     )
@@ -118,7 +116,6 @@ async def test_structured_output_async(
     )
 
     @llm.call(
-        provider=provider,
         model_id=model_id,
         format=format,
     )
@@ -153,7 +150,6 @@ async def test_structured_output_async_context(
     )
 
     @llm.call(
-        provider=provider,
         model_id=model_id,
         format=format,
     )
@@ -191,7 +187,6 @@ def test_structured_output_stream(
     )
 
     @llm.call(
-        provider=provider,
         model_id=model_id,
         format=format,
     )
@@ -227,7 +222,6 @@ def test_structured_output_stream_context(
     )
 
     @llm.call(
-        provider=provider,
         model_id=model_id,
         format=format,
     )
@@ -268,7 +262,6 @@ async def test_structured_output_async_stream(
     )
 
     @llm.call(
-        provider=provider,
         model_id=model_id,
         format=format,
     )
@@ -305,7 +298,6 @@ async def test_structured_output_async_stream_context(
     )
 
     @llm.call(
-        provider=provider,
         model_id=model_id,
         format=format,
     )
