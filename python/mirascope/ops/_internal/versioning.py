@@ -1,0 +1,331 @@
+"""Versioning implementation for Mirascope ops."""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import Generator
+from contextlib import contextmanager
+from dataclasses import dataclass, field
+from typing import Any, NewType, overload
+
+from ..exceptions import ClosureComputationError
+from .closure import Closure
+from .protocols import AsyncFunction, SyncFunction, fn_is_async
+from .spans import Span
+from .traced_functions import (
+    AsyncTrace,
+    BaseAsyncTracedFunction,
+    BaseSyncTracedFunction,
+    Trace,
+    _BaseTracedFunction,
+    record_result_to_span,
+)
+from .types import P, R
+
+logger = logging.getLogger(__name__)
+
+
+VersionId = NewType("VersionId", str)
+"""Unique identifier for a specific version."""
+
+VersionRef = NewType("VersionRef", str)
+"""Reference to a version (can be tag, hash, or semantic version)."""
+
+
+# NOTE: the `.get_version` methods will need to do some type-hint magic to get the
+# correct type-hints for the desired version (i.e. the input args and return type) since
+# those are not necessarily the same as the current version. This is what we did in v0,
+# so we'll just need to replicate that functionality here when we get there.
+
+
+@dataclass(kw_only=True, frozen=True)
+class VersionedResult(Trace[R]):
+    """Per-call handle returned by `.wrapped()` methods for versioned functions.
+
+    Provides access to the result and per-call operations for annotation,
+    tagging, and assignment within a specific trace span context.
+    """
+
+    function_uuid: str | None = None
+
+
+@dataclass(kw_only=True, frozen=True)
+class AsyncVersionedResult(AsyncTrace[R]):
+    """Per-call handle returned by async `.wrapped()` methods for versioned functions.
+
+    Provides access to the result and per-call operations for annotation,
+    tagging, and assignment within a specific trace span context.
+    """
+
+    function_uuid: str | None = None
+
+
+@dataclass(kw_only=True)
+class _BaseVersionedFunction(_BaseTracedFunction[P, R, Any]):
+    """Base class for versioned functions."""
+
+    closure: Closure | None = field(init=False, default=None)
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        try:
+            self.closure = Closure.from_fn(self.fn)
+        except ClosureComputationError as e:
+            logger.warning(
+                "Failed to build closure for %s; continuing without version registration: %s",
+                e.qualified_name,
+                e,
+            )
+
+    @contextmanager
+    def _versioned_span(
+        self, function_uuid: str | None, *args: P.args, **kwargs: P.kwargs
+    ) -> Generator[Span, None, None]:
+        with super()._span(*args, **kwargs) as span:
+            if self.closure is not None:
+                span.set(function_hash=self.closure.hash)
+            if function_uuid:
+                span.set(function_uuid=function_uuid)
+            yield span
+
+
+@dataclass(kw_only=True)
+class VersionedFunction(_BaseVersionedFunction[P, R], BaseSyncTracedFunction[P, R]):
+    """Wrapper for synchronous functions with versioning capabilities."""
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+        """Returns the result of the versioned function directly.
+
+        A new version will be created if none yet exists for the specific version of
+        this function that's being run.
+        """
+        function_uuid = self._ensure_registration()
+        with self._versioned_span(function_uuid, *args, **kwargs) as span:
+            result = self.fn(*args, **kwargs)
+            record_result_to_span(span, result)
+            return result
+
+    def wrapped(self, *args: P.args, **kwargs: P.kwargs) -> VersionedResult[R]:
+        """Return a wrapper around the executed function's result for trace utilities.
+
+        Args:
+            *args: Positional arguments for the wrapped function.
+            **kwargs: Keyword arguments including 'version' for version reference.
+
+        Returns:
+            A VersionedResult containing the function result and trace context.
+        """
+        function_uuid = self._ensure_registration()
+        with self._versioned_span(function_uuid, *args, **kwargs) as span:
+            result = self.fn(*args, **kwargs)
+            record_result_to_span(span, result)
+            return VersionedResult(
+                result=result,
+                span=span,
+                function_uuid=function_uuid,
+            )
+
+    def get_version(self, version: VersionId) -> VersionedFunction[P, R]:
+        """Returns the specific version of this function requested."""
+        raise NotImplementedError("VersionedFunction.get_version not yet implemented")
+
+    def _ensure_registration(self) -> str | None:
+        """Returns function UUID after ensuring registration with API.
+
+        TODO: Implement API client integration to:
+        1. Get sync client via `get_sync_client()`
+        2. Check if function exists by hash: `client.functions.get_function_by_hash(self.closure.hash)`
+        3. If not found, create new version: `client.functions.create_a_new_function_version(...)`
+        4. Return the function UUID
+
+        Example implementation (from lilypad):
+        ```python
+        if self.closure is None:
+            return None
+        try:
+            client = get_sync_client()
+        except Exception as e:
+            logger.warning(f"Failed to get client for function registration: {e}")
+            return None
+
+        try:
+            existing = client.functions.get_function_by_hash(self.closure.hash)
+            return existing.uuid_
+        except NotFoundError:
+            response = client.functions.create_a_new_function_version(
+                code=self.closure.code,
+                hash=self.closure.hash,
+                name=self.closure.name,
+                signature=self.closure.signature,
+                dependencies=self.closure.dependencies,
+            )
+            return response.uuid_
+        ```
+        """
+        # TODO: Implement when API client is available
+        return None
+
+
+@dataclass(kw_only=True)
+class AsyncVersionedFunction(
+    _BaseVersionedFunction[P, R], BaseAsyncTracedFunction[P, R]
+):
+    """Wrapper for asynchronous functions with versioning capabilities."""
+
+    async def __call__(self, *args: P.args, **kwargs: P.kwargs) -> R:
+        """Returns the result of the versioned function directly."""
+        function_uuid = await self._ensure_registration()
+        with self._versioned_span(function_uuid, *args, **kwargs) as span:
+            result = await self.fn(*args, **kwargs)
+            record_result_to_span(span, result)
+            return result
+
+    async def wrapped(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> AsyncVersionedResult[R]:
+        """Returns a wrapper around the traced function's result for trace utilities."""
+        function_uuid = await self._ensure_registration()
+        with self._versioned_span(function_uuid, *args, **kwargs) as span:
+            result = await self.fn(*args, **kwargs)
+            record_result_to_span(span, result)
+            return AsyncVersionedResult(
+                result=result,
+                span=span,
+                function_uuid=function_uuid,
+            )
+
+    async def get_version(self, version: VersionId) -> VersionedFunction[P, R]:
+        """Returns the specific version of this function using an `AsyncLilypad` client."""
+        raise NotImplementedError(
+            "AsyncVersionedFunction.get_version not yet implemented"
+        )
+
+    async def _ensure_registration(self) -> str | None:
+        """Returns function UUID after ensuring registration with API.
+
+        TODO: Implement API client integration to:
+        1. Get async client via `get_async_client()`
+        2. Check if function exists by hash: `await client.functions.get_function_by_hash(self.closure.hash)`
+        3. If not found, create new version: `await client.functions.create_a_new_function_version(...)`
+        4. Return the function UUID
+
+        Example implementation (from lilypad):
+        ```python
+        if self.closure is None:
+            return None
+        try:
+            client = get_async_client()
+        except Exception as e:
+            logger.warning(f"Failed to get client for function registration: {e}")
+            return None
+
+        try:
+            existing = await client.functions.get_function_by_hash(self.closure.hash)
+            return existing.uuid_
+        except NotFoundError:
+            response = await client.functions.create_a_new_function_version(
+                code=self.closure.code,
+                hash=self.closure.hash,
+                name=self.closure.name,
+                signature=self.closure.signature,
+                dependencies=self.closure.dependencies,
+            )
+            return response.uuid_
+        ```
+        """
+        # TODO: Implement when API client is available
+        return None
+
+
+@dataclass(kw_only=True)
+class VersionDecorator:
+    """Decorator implementation for adding versioning capabilities to functions."""
+
+    tags: tuple[str, ...] = ()
+    """Tags to be associated with versioned function calls."""
+
+    @overload
+    def __call__(  # pyright: ignore[reportOverlappingOverload]
+        self,
+        fn: AsyncFunction[P, R],
+    ) -> AsyncVersionedFunction[P, R]:
+        """Overload for applying decorator to an async function."""
+        ...
+
+    @overload
+    def __call__(
+        self,
+        fn: SyncFunction[P, R],
+    ) -> VersionedFunction[P, R]:
+        """Overload for applying decorator to an async function."""
+        ...
+
+    def __call__(
+        self,
+        fn: SyncFunction[P, R] | AsyncFunction[P, R],
+    ) -> VersionedFunction[P, R] | AsyncVersionedFunction[P, R]:
+        """Applies the decorator to the given function."""
+        if fn_is_async(fn):
+            return AsyncVersionedFunction(fn=fn, tags=self.tags)
+        else:
+            return VersionedFunction(fn=fn, tags=self.tags)
+
+
+@overload
+def version(__fn: None = None, *, tags: list[str] | None = None) -> VersionDecorator:
+    """Overload for providing kwargs before decorating (e.g. tags)."""
+    ...
+
+
+@overload
+def version(  # pyright: ignore[reportOverlappingOverload]
+    __fn: AsyncFunction[P, R], *, tags: None = None
+) -> AsyncVersionedFunction[P, R]:
+    """Overload for directly (no argument) decorating an asynchronous function"""
+    ...
+
+
+@overload
+def version(__fn: SyncFunction[P, R], *, tags: None = None) -> VersionedFunction[P, R]:
+    """Overload for directly (no argument) decorating a synchronous function"""
+    ...
+
+
+def version(
+    __fn: SyncFunction[P, R] | AsyncFunction[P, R] | None = None,
+    *,
+    tags: list[str] | None = None,
+) -> VersionDecorator | VersionedFunction[P, R] | AsyncVersionedFunction[P, R]:
+    """Add versioning capability to a callable function.
+
+    Enables version management for functions, allowing execution of specific
+    versions and version introspection. Can be composed with @trace and @remote.
+
+    Args:
+        __fn: The function to version (when used without parentheses).
+        tags: Optional version tags for this function.
+
+    Returns:
+        A versioned callable or a decorator function.
+
+    Examples:
+        ```python
+        @version()
+        def compute(x: int) -> int:
+            return x * 2
+        ```
+
+        ```python
+        @version(tags=["v1.0"])
+        async def process() -> str:
+            return "processed"
+        ```
+    """
+    normalized_tags = tuple(sorted(set(tags or [])))
+    if __fn:
+        if fn_is_async(__fn):
+            return AsyncVersionedFunction(fn=__fn, tags=normalized_tags)
+        else:
+            return VersionedFunction(fn=__fn, tags=normalized_tags)
+    else:
+        return VersionDecorator(tags=normalized_tags)

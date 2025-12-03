@@ -34,7 +34,7 @@ FunctionT = TypeVar(
 )
 
 
-def _record_result_to_span(span: Span, result: object) -> None:
+def record_result_to_span(span: Span, result: object) -> None:
     """Records the function result in the given span.
 
     This is a shared helper function used by all traced function classes
@@ -207,14 +207,14 @@ class TracedFunction(BaseSyncTracedFunction[P, R]):
         """Returns the result of the traced function directly."""
         with self._span(*args, **kwargs) as span:
             result = self.fn(*args, **kwargs)
-            _record_result_to_span(span, result)
+            record_result_to_span(span, result)
             return result
 
     def wrapped(self, *args: P.args, **kwargs: P.kwargs) -> Trace[R]:
         """Returns the trace containing the function result and span info."""
         with self._span(*args, **kwargs) as span:
             result = self.fn(*args, **kwargs)
-            _record_result_to_span(span, result)
+            record_result_to_span(span, result)
             return Trace(result=result, span=span)
 
 
@@ -248,14 +248,14 @@ class AsyncTracedFunction(BaseAsyncTracedFunction[P, R]):
         """Returns the result of the traced function directly."""
         with self._span(*args, **kwargs) as span:
             result = await self.fn(*args, **kwargs)
-            _record_result_to_span(span, result)
+            record_result_to_span(span, result)
             return result
 
     async def wrapped(self, *args: P.args, **kwargs: P.kwargs) -> AsyncTrace[R]:
         """Returns the trace containing the function result and span info."""
         with self._span(*args, **kwargs) as span:
             result = await self.fn(*args, **kwargs)
-            _record_result_to_span(span, result)
+            record_result_to_span(span, result)
             return AsyncTrace(result=result, span=span)
 
 
@@ -323,7 +323,7 @@ class TracedContextFunction(BaseTracedSyncContextFunction[P, DepsT, R]):
         """Returns the result of the traced function directly."""
         with self._span(ctx, *args, **kwargs) as span:
             result = self.fn(ctx, *args, **kwargs)
-            _record_result_to_span(span, result)
+            record_result_to_span(span, result)
             return result
 
     def wrapped(
@@ -332,7 +332,7 @@ class TracedContextFunction(BaseTracedSyncContextFunction[P, DepsT, R]):
         """Returns the trace containing the function result and span info."""
         with self._span(ctx, *args, **kwargs) as span:
             result = self.fn(ctx, *args, **kwargs)
-            _record_result_to_span(span, result)
+            record_result_to_span(span, result)
             return Trace(result=result, span=span)
 
 
@@ -374,7 +374,7 @@ class AsyncTracedContextFunction(BaseTracedAsyncContextFunction[P, DepsT, R]):
         """Returns the result of the traced function directly."""
         with self._span(ctx, *args, **kwargs) as span:
             result = await self.fn(ctx, *args, **kwargs)
-            _record_result_to_span(span, result)
+            record_result_to_span(span, result)
             return result
 
     async def wrapped(
@@ -383,5 +383,5 @@ class AsyncTracedContextFunction(BaseTracedAsyncContextFunction[P, DepsT, R]):
         """Returns the trace containing the function result and span info."""
         with self._span(ctx, *args, **kwargs) as span:
             result = await self.fn(ctx, *args, **kwargs)
-            _record_result_to_span(span, result)
+            record_result_to_span(span, result)
             return AsyncTrace(result=result, span=span)
