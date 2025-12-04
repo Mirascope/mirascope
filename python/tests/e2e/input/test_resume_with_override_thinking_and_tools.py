@@ -3,28 +3,28 @@
 import pytest
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
+from tests.e2e.conftest import E2E_MODEL_IDS
 from tests.utils import Snapshot, snapshot_test
 
 
 def default_model(
-    provider: llm.Provider,
+    model_id: llm.ModelId,
 ) -> llm.ModelId:
-    """Default provider and model that are distinct from the provider being tested.
+    """Default model from a different provider than the one being tested.
 
     Used to ensure that we can test having the provider under test resume
     from a response that was created by a different provider.
     """
-    if provider == "google":
+    if llm.clients.model_id_to_provider(model_id) == "google":
         return "anthropic/claude-sonnet-4-0"
     else:
         return "google/gemini-2.5-flash"
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 def test_resume_with_override_thinking_and_tools(
-    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
+    model_id: llm.ModelId, snapshot: Snapshot
 ) -> None:
     """Test call with thinking and tools, resuming with a different model."""
 
@@ -36,7 +36,7 @@ def test_resume_with_override_thinking_and_tools(
         return "Not implemented for other values"
 
     @llm.call(
-        model_id=default_model(provider),
+        model_id=default_model(model_id),
         thinking=True,
         tools=[compute_fib],
     )

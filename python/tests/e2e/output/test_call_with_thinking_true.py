@@ -8,10 +8,10 @@ from tests.utils import (
     snapshot_test,
 )
 
-PROVIDER_MODEL_ID_PAIRS: list[tuple[llm.Provider, llm.ModelId]] = [
-    ("openai:responses", "openai:responses/gpt-5"),
-    ("anthropic", "anthropic/claude-sonnet-4-0"),
-    ("google", "google/gemini-2.5-flash"),
+E2E_MODEL_IDS: list[llm.ModelId] = [
+    "openai:responses/gpt-5",
+    "anthropic/claude-sonnet-4-0",
+    "google/gemini-2.5-flash",
 ]
 
 # This can't be easily answered without thinking
@@ -22,10 +22,9 @@ RESUME_PROMPT = (
 )
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_thinking_true_sync(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
@@ -43,10 +42,9 @@ def test_call_with_thinking_true_sync(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_thinking_true_stream(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
@@ -66,11 +64,10 @@ def test_call_with_thinking_true_stream(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_thinking_true_async(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
@@ -88,11 +85,10 @@ async def test_call_with_thinking_true_async(
         snap.set_response(response)
 
 
-@pytest.mark.parametrize("provider,model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
 async def test_call_with_thinking_true_async_stream(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,

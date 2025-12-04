@@ -6,12 +6,12 @@ import pytest
 
 from mirascope import llm
 from tests.e2e.conftest import (
-    PROVIDER_MODEL_ID_PAIRS,
+    E2E_MODEL_IDS,
 )
 from tests.utils import Snapshot, snapshot_test
 
 
-def messages(provider: llm.Provider, model_id: llm.ModelId) -> list[llm.Message]:
+def messages(model_id: llm.ModelId) -> list[llm.Message]:
     return [
         llm.messages.system(
             "Always answer with extreme concision, giving the answer and no added context."
@@ -67,13 +67,9 @@ def messages(provider: llm.Provider, model_id: llm.ModelId) -> list[llm.Message]
     ]
 
 
-@pytest.mark.parametrize(
-    "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS,
-)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 def test_call_with_text_encoded_thoughts(
-    provider: llm.Provider,
     model_id: llm.ModelId,
     snapshot: Snapshot,
     caplog: pytest.LogCaptureFixture,
@@ -82,7 +78,7 @@ def test_call_with_text_encoded_thoughts(
 
     @llm.call(model_id=model_id, encode_thoughts_as_text=True)
     def call() -> list[llm.Message]:
-        return messages(provider, model_id)
+        return messages(model_id)
 
     with snapshot_test(snapshot, caplog) as snap:
         response = call()

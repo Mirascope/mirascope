@@ -8,7 +8,7 @@ import pytest
 from pydantic import BaseModel
 
 from mirascope import llm
-from tests.e2e.conftest import PROVIDER_MODEL_ID_PAIRS
+from tests.e2e.conftest import E2E_MODEL_IDS
 from tests.utils import (
     Snapshot,
     snapshot_test,
@@ -22,14 +22,9 @@ class FentanylHandbook(BaseModel):
     instructions: str
 
 
-@pytest.mark.parametrize(
-    "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS,
-)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
-def test_refusal_sync(
-    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
-) -> None:
+def test_refusal_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test synchronous call with refusal."""
 
     @llm.call(model_id=model_id, format=FentanylHandbook)
@@ -39,21 +34,16 @@ def test_refusal_sync(
     with snapshot_test(snapshot) as snap:
         response = fentanyl_request()
         snap.set_response(response)
-        if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
+        if llm.clients.model_id_to_provider(model_id) in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
 
 
-@pytest.mark.parametrize(
-    "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS,
-)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
-async def test_refusal_async(
-    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
-) -> None:
+async def test_refusal_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test asynchronous call with refusal."""
 
     @llm.call(model_id=model_id, format=FentanylHandbook)
@@ -63,20 +53,15 @@ async def test_refusal_async(
     with snapshot_test(snapshot) as snap:
         response = await fentanyl_request()
         snap.set_response(response)
-        if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
+        if llm.clients.model_id_to_provider(model_id) in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
 
 
-@pytest.mark.parametrize(
-    "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS,
-)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
-def test_refusal_stream(
-    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
-) -> None:
+def test_refusal_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test streaming call with refusal."""
 
     @llm.call(model_id=model_id, format=FentanylHandbook)
@@ -87,21 +72,16 @@ def test_refusal_stream(
         response = fentanyl_request.stream()
         response.finish()
         snap.set_response(response)
-        if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
+        if llm.clients.model_id_to_provider(model_id) in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None
 
 
-@pytest.mark.parametrize(
-    "provider,model_id",
-    PROVIDER_MODEL_ID_PAIRS,
-)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 @pytest.mark.vcr
 @pytest.mark.asyncio
-async def test_refusal_async_stream(
-    provider: llm.Provider, model_id: llm.ModelId, snapshot: Snapshot
-) -> None:
+async def test_refusal_async_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test async streaming call with refusal."""
 
     @llm.call(model_id=model_id, format=FentanylHandbook)
@@ -112,7 +92,7 @@ async def test_refusal_async_stream(
         response = await fentanyl_request.stream()
         await response.finish()
         snap.set_response(response)
-        if provider in PROVIDERS_WITH_FORMAL_REFUSAL:
+        if llm.clients.model_id_to_provider(model_id) in PROVIDERS_WITH_FORMAL_REFUSAL:
             assert response.finish_reason == llm.FinishReason.REFUSAL
         else:
             assert response.finish_reason is None

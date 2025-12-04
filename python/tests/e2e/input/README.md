@@ -17,7 +17,7 @@ def test_temperature_validation(provider, model_id): ...
 
 Tests should be parametrized with:
 ```python
-@pytest.mark.parametrize("provider, model_id", PROVIDER_MODEL_ID_PAIRS)
+@pytest.mark.parametrize("model_id", E2E_MODEL_IDS)
 ```
 
 This ensures all providers and models are tested.
