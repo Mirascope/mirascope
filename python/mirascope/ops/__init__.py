@@ -45,6 +45,7 @@ try:
         AsyncVersionedFunction,
         VersionDecorator,
         VersionedFunction,
+        VersionInfo,
         version,
     )
     from .exceptions import ClosureComputationError
@@ -95,6 +96,7 @@ except ImportError:  # pragma: no cover
     AsyncVersionedFunction = _create_otel_import_error_stub("AsyncVersionedFunction")
     VersionDecorator = _create_otel_import_error_stub("VersionDecorator")
     VersionedFunction = _create_otel_import_error_stub("VersionedFunction")
+    VersionInfo = _create_otel_import_error_stub("VersionInfo")
     version = _create_otel_import_error_stub("version")
 
 
@@ -116,6 +118,7 @@ __all__ = [
     "TracedContextCall",
     "TracedFunction",
     "VersionDecorator",
+    "VersionInfo",
     "VersionedFunction",
     "configure",
     "current_session",
