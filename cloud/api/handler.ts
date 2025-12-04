@@ -1,5 +1,6 @@
-import { HttpApiBuilder } from "@effect/platform";
+import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Layer } from "effect";
+import type { Context } from "effect/Context";
 import { ApiLive } from "./router";
 import { EnvironmentService } from "./environment";
 
@@ -11,7 +12,10 @@ import { EnvironmentService } from "./environment";
  * Web handler instance returned by HttpApiBuilder.toWebHandler
  */
 interface WebHandlerInstance {
-  handler: (request: Request, context?: unknown) => Promise<Response>;
+  handler: (
+    request: Request<unknown, CfProperties<unknown>>,
+    context?: Context<never> | undefined,
+  ) => Promise<Response>;
   dispose: () => Promise<void>;
 }
 
@@ -31,11 +35,12 @@ export function createWebHandler(
     environment: options.environment || "unknown",
   });
 
-  // Build the API layer with environment
-  const ApiWithEnv = ApiLive.pipe(Layer.provide(EnvironmentLive));
+  const ApiWithEnv = Layer.mergeAll(
+    HttpServer.layerContext,
+    ApiLive.pipe(Layer.provide(EnvironmentLive)),
+  );
 
-  // Create the web handler directly from the API layer
-  // @ts-expect-error - Effect Platform types are complex, cast to our interface
+  // Create the web handler directly from the API layer with services
   const webHandler: WebHandlerInstance =
     HttpApiBuilder.toWebHandler(ApiWithEnv);
   return webHandler;
