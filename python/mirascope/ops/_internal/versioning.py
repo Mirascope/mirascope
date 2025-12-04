@@ -6,6 +6,7 @@ import logging
 from collections.abc import Generator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from functools import cached_property, lru_cache
 from typing import Any, NewType, overload
 
 from ..exceptions import ClosureComputationError
@@ -92,8 +93,7 @@ class VersionInfo:
     metadata: Mapping[str, str]
     """Arbitrary key-value pairs for additional metadata."""
 
-    # This will be covered in the next PR in this stack...
-    def __post_init__(self) -> None:  # pragma: no cover
+    def __post_init__(self) -> None:
         """Clean up tags and initialize frozen metadata after dataclass init."""
         object.__setattr__(self, "tags", tuple(sorted(set(self.tags or []))))
         object.__setattr__(self, "metadata", dict(self.metadata))
@@ -120,13 +120,58 @@ class _BaseVersionedFunction(_BaseTracedFunction[P, R, Any]):
                 e,
             )
 
+    @classmethod
+    @lru_cache(maxsize=128)
+    def _compute_version(cls, hash: str) -> str:
+        """Computes the version string from the closure hash.
+
+        For new functions without server history, returns "1.0" as the initial version.
+
+        TODO: When API client is available, query the server for existing versions:
+        1. Check if a function with matching hash exists -> use its version
+        2. If no matches, return "1.0" as initial version
+
+        Args:
+            hash: SHA256 hash of the complete closure code.
+
+        Returns:
+            A version string.
+        """
+        return "1.0"
+
+    @cached_property
+    def version_info(self) -> VersionInfo | None:
+        """Returns static version metadata for this versioned function.
+
+        Lazily constructs and caches the VersionInfo from the closure and
+        decorator arguments. Returns None if the closure could not be computed.
+
+        Returns:
+            VersionInfo containing hashes, version string, and metadata,
+            or None if closure computation failed.
+        """
+        if self.closure is None:
+            return None
+
+        return VersionInfo(
+            uuid=None,
+            hash=self.closure.hash,
+            signature_hash=self.closure.signature_hash,
+            name=self.name or self.closure.name,
+            description=self.closure.docstring,
+            version=self._compute_version(self.closure.hash),
+            tags=self.tags,
+            metadata=self.metadata,
+        )
+
     @contextmanager
     def _versioned_span(
         self, function_uuid: str | None, *args: P.args, **kwargs: P.kwargs
     ) -> Generator[Span, None, None]:
         with super()._span(*args, **kwargs) as span:
             if self.closure is not None:
-                span.set(function_hash=self.closure.hash)
+                span.set(**{"mirascope.fn.hash": self.closure.hash})
+                span.set(**{"mirascope.fn.signature_hash": self.closure.signature_hash})
                 if self.closure.docstring:
                     span.set(
                         **{"mirascope.version.description": self.closure.docstring}
