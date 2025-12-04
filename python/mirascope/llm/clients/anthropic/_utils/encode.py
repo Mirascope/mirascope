@@ -58,8 +58,6 @@ def _encode_content(
 ) -> str | Sequence[anthropic_types.ContentBlockParam]:
     """Convert mirascope content to Anthropic content format."""
 
-    non_empty = False
-
     if len(content) == 1 and content[0].type == "text":
         if not content[0].text:
             raise FeatureNotSupportedError(
@@ -74,8 +72,9 @@ def _encode_content(
     for part in content:
         if part.type == "text":
             if part.text:
-                non_empty = True
-            blocks.append(anthropic_types.TextBlockParam(type="text", text=part.text))
+                blocks.append(
+                    anthropic_types.TextBlockParam(type="text", text=part.text)
+                )
         elif part.type == "image":
             source: (
                 anthropic_types.Base64ImageSourceParam
@@ -92,7 +91,6 @@ def _encode_content(
                     type="url",
                     url=part.source.url,
                 )
-                non_empty = True
             blocks.append(anthropic_types.ImageBlockParam(type="image", source=source))
         elif part.type == "audio":
             raise FeatureNotSupportedError(
@@ -101,7 +99,6 @@ def _encode_content(
                 message="Anthropic does not support audio inputs.",
             )
         elif part.type == "tool_output":
-            non_empty = True
             blocks.append(
                 anthropic_types.ToolResultBlockParam(
                     type="tool_result",
@@ -110,7 +107,6 @@ def _encode_content(
                 )
             )
         elif part.type == "tool_call":
-            non_empty = True
             blocks.append(
                 anthropic_types.ToolUseBlockParam(
                     type="tool_use",
@@ -121,7 +117,6 @@ def _encode_content(
             )
         elif part.type == "thought":
             if encode_thoughts:
-                non_empty = True
                 blocks.append(
                     anthropic_types.TextBlockParam(
                         type="text", text="**Thinking:** " + part.thought
@@ -130,7 +125,7 @@ def _encode_content(
         else:
             raise NotImplementedError(f"Unsupported content type: {part.type}")
 
-    if not non_empty:
+    if not blocks:
         raise FeatureNotSupportedError(
             "empty message content",
             "anthropic",
