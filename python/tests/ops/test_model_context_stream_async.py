@@ -34,9 +34,7 @@ async def test_model_context_stream_async_exports_genai_span(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test that streaming a model call exports the correct OpenTelemetry span."""
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     ctx = llm.Context(deps={"tenant": "kai"})
     messages: list[Message] = [
         llm.messages.system("You are a concise assistant."),
@@ -93,9 +91,7 @@ async def test_model_context_stream_async_without_tracer_returns_response(
         _fake_context_stream_async,
     )
 
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     ctx = llm.Context(deps={})
     messages: list[Message] = [llm.messages.user("hi")]
 
@@ -127,9 +123,7 @@ async def test_model_context_stream_async_records_error_on_exception(
         _failing_context_stream_async,
     )
 
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     ctx = llm.Context(deps={})
     messages: list[Message] = [llm.messages.user("hi")]
 
@@ -191,9 +185,7 @@ async def test_model_context_stream_async_records_error_on_chunk_failure(
         _chunk_failure_context_stream_async,
     )
 
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     ctx = llm.Context(deps={})
     messages: list[Message] = [llm.messages.user("hi")]
 

@@ -38,7 +38,7 @@ def test_call_with_thinking_true_sync(
 
     with snapshot_test(snapshot, caplog) as snap:
         response = call(PROMPT)
-        with llm.model(provider=provider, model_id=model_id, thinking=False):
+        with llm.model(model_id=model_id, thinking=False):
             response = response.resume(RESUME_PROMPT)
         snap.set_response(response)
 
@@ -60,7 +60,7 @@ def test_call_with_thinking_true_stream(
     with snapshot_test(snapshot, caplog) as snap:
         response = call.stream(PROMPT)
         response.finish()
-        with llm.model(provider=provider, model_id=model_id, thinking=False):
+        with llm.model(model_id=model_id, thinking=False):
             response = response.resume(RESUME_PROMPT)
         response.finish()
         snap.set_response(response)
@@ -83,7 +83,7 @@ async def test_call_with_thinking_true_async(
 
     with snapshot_test(snapshot, caplog) as snap:
         response = await call(PROMPT)
-        with llm.model(provider=provider, model_id=model_id, thinking=False):
+        with llm.model(model_id=model_id, thinking=False):
             response = await response.resume(RESUME_PROMPT)
         snap.set_response(response)
 
@@ -106,7 +106,7 @@ async def test_call_with_thinking_true_async_stream(
     with snapshot_test(snapshot, caplog) as snap:
         response = await call.stream(PROMPT)
         await response.finish()
-        with llm.model(provider=provider, model_id=model_id, thinking=False):
+        with llm.model(model_id=model_id, thinking=False):
             response = await response.resume(RESUME_PROMPT)
         await response.finish()
         snap.set_response(response)

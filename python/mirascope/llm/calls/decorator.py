@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Generic, cast, overload
 from typing_extensions import Unpack
 
-from ..clients import ModelId, Params, model_id_to_provider
+from ..clients import ModelId, Params
 from ..context import DepsT
 from ..formatting import Format, FormattableT
 from ..models import Model
@@ -176,6 +176,5 @@ def call(
         print(response)
         ```
     """
-    provider = model_id_to_provider(model_id)
-    model = Model(provider=provider, model_id=model_id, **params)
+    model = Model(model_id=model_id, **params)
     return CallDecorator(model=model, tools=tools, format=format)

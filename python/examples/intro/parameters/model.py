@@ -3,7 +3,6 @@ from mirascope import llm
 
 def recommend_book(genre: str) -> llm.Response:
     model = llm.use_model(
-        provider="openai",
         model_id="openai/gpt-5",
         temperature=1,  # [!code highlight]
     )

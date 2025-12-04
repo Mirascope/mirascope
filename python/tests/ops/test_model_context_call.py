@@ -28,9 +28,7 @@ def test_model_context_call_exports_genai_span(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Ensure context_call emits a GenAI span with expected attributes."""
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     ctx = llm.Context(deps={"tenant": "kai"})
     messages = [
         llm.messages.system("You are a concise assistant."),

@@ -50,9 +50,7 @@ def initialize() -> Generator[None, None, None]:
 @pytest.mark.vcr()
 def test_model_call_exports_genai_span(span_exporter: InMemorySpanExporter) -> None:
     """Test OpenTelemetry instrumentation with basic model call."""
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     messages = [
         llm.messages.system("You are a concise assistant."),
         llm.messages.user("Say hello to the user named Kai."),
@@ -94,9 +92,7 @@ def test_model_call_with_tools(span_exporter: InMemorySpanExporter) -> None:
         """Get the current weather in a given location."""
         return f"Weather in {location}: 72°{unit[0].upper()}, sunny"
 
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     messages = [llm.messages.user("What's the weather like in San Francisco?")]
 
     model.call(messages=messages, tools=[get_current_weather])
@@ -136,7 +132,6 @@ def test_model_call_with_parameters(span_exporter: InMemorySpanExporter) -> None
         "presence_penalty": 0.1,
     }
     model = llm.Model(
-        provider="openai:responses",
         model_id="openai:responses/gpt-4o-mini",
         **model_params,
     )
@@ -182,9 +177,7 @@ def test_model_call_with_json_format(span_exporter: InMemorySpanExporter) -> Non
         age: int
 
     ops.instrument_llm()
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     messages = [
         llm.messages.user("Return a person named Alice who is 30 years old as JSON")
     ]
@@ -217,9 +210,7 @@ def test_model_call_with_json_format(span_exporter: InMemorySpanExporter) -> Non
 @pytest.mark.vcr()
 def test_model_call_with_image(span_exporter: InMemorySpanExporter) -> None:
     """Test OpenTelemetry instrumentation with image content."""
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
     messages = [
         llm.messages.user(
@@ -265,9 +256,7 @@ def test_model_call_with_error(span_exporter: InMemorySpanExporter) -> None:
     )
 
     with patch("mirascope.llm.models.models.get_client", return_value=mock_client):
-        model = llm.Model(
-            provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-        )
+        model = llm.Model(model_id="openai:responses/gpt-4o-mini")
         messages = [llm.messages.user("Hello")]
 
         with pytest.raises(openai.APIError):
@@ -318,7 +307,6 @@ def test_model_call_records_untracked_params_event(
         },
     )
     model = llm.Model(
-        provider="openai:responses",
         model_id="openai:responses/gpt-4o-mini",
         **cast(Any, extra_params),
     )
@@ -366,7 +354,6 @@ def test_model_call_with_none_parameters(
 ) -> None:
     """Test that None parameter values are skipped in span attributes."""
     model = llm.Model(
-        provider="openai:responses",
         model_id="openai:responses/gpt-4o-mini",
         temperature=None,  # type: ignore
         max_tokens=50,
@@ -406,9 +393,7 @@ def test_model_call_with_base64_image(
 ) -> None:
     """Test OpenTelemetry instrumentation with base64-encoded image content."""
     ops.instrument_llm()
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     # 1x1 red pixel PNG
     base64_image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg=="
     messages = [
@@ -475,9 +460,7 @@ def test_model_call_with_tool_outputs(
         """Get the current weather for a location."""
         return f"Weather in {location}: 72°F, sunny"
 
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     messages = [llm.messages.user("What's the weather in Tokyo?")]
     response1 = model.call(messages=messages, tools=[get_weather])
     tool_outputs = response1.execute_tools()
@@ -513,7 +496,7 @@ def test_model_call_with_audio_content(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test OpenTelemetry instrumentation with audio input."""
-    model = llm.Model(provider="google", model_id="google/gemini-2.5-flash")
+    model = llm.Model(model_id="google/gemini-2.5-flash")
 
     audio_path = str(
         Path(__file__).parent.parent / "e2e" / "assets" / "audio" / "tagline.mp3"
@@ -562,7 +545,6 @@ def test_model_call_with_reasoning_model(
 ) -> None:
     """Test OpenTelemetry instrumentation with reasoning model (Thought content)."""
     model = llm.Model(
-        provider="anthropic",
         model_id="anthropic/claude-sonnet-4-20250514",
         thinking=True,
     )
@@ -599,7 +581,6 @@ def test_model_call_with_stop_string(
 ) -> None:
     """Test OpenTelemetry instrumentation with stop as a string (not list)."""
     model = llm.Model(
-        provider="openai",
         model_id="openai/gpt-4o-mini",
         stop="END",  # pyright: ignore [reportCallIssue]
     )
@@ -638,9 +619,7 @@ def test_model_call_without_instrumentation(
     """Test that model.call works without instrumentation (no spans created)."""
     ops.uninstrument_llm()
 
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     messages = [llm.messages.user("Hello")]
 
     response = model.call(messages=messages)
@@ -657,9 +636,7 @@ def test_model_call_with_tracer_set_to_none(
     """Test that span() returns None when tracer is explicitly set to None."""
     set_tracer(None)
 
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     messages = [llm.messages.user("Test with None tracer")]
 
     response = model.call(messages=messages)
@@ -674,9 +651,7 @@ def test_model_call_records_response_id(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test that response_id is extracted and recorded in span attributes."""
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     messages = [llm.messages.user("Say hello")]
 
     response = model.call(messages=messages)
@@ -711,9 +686,7 @@ def test_model_call_with_message_name(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test that message name field is serialized in GenAI span attributes."""
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
 
     user_msg = llm.messages.UserMessage(
         content=[Text(text="What is 1+1?")], name="calculator_user"
@@ -787,7 +760,6 @@ def test_model_call_with_format_tool_finish_reason(
         "mirascope.llm.models.models.get_client", return_value=_FormatToolClient()
     ):
         model = llm.Model(
-            provider="openai:responses",
             model_id="openai:responses/gpt-4o-mini",
             max_tokens=5,
         )
@@ -843,9 +815,7 @@ def test_tracer_context_with_model_call(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test that tracer_context works with model calls."""
-    model = llm.Model(
-        provider="openai:responses", model_id="openai:responses/gpt-4o-mini"
-    )
+    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
     messages = [llm.messages.user("Say hello")]
 
     with ops.tracer_context(None):
