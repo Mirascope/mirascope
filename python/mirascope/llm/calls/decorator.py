@@ -176,5 +176,5 @@ def call(
         ```
     """
     if isinstance(model, str):
-        model = Model(model_id=model, **params)
+        model = Model(model, **params)
     return CallDecorator(model=model, tools=tools, format=format)

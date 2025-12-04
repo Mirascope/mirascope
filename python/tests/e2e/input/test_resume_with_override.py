@@ -35,7 +35,7 @@ def test_resume_with_override(model_id: llm.ModelId, snapshot: Snapshot) -> None
     with snapshot_test(snapshot) as snap:
         response = who_made_you()
 
-        with llm.model(model_id=model_id):
+        with llm.model(model_id):
             response = response.resume("Can you double-check that?")
 
         snap.set_response(response)

@@ -13,7 +13,7 @@ def count_primes() -> str:
 response = count_primes()
 print(response.pretty())
 
-with llm.model(model_id="openai/gpt-5", thinking=False):
+with llm.model("openai/gpt-5", thinking=False):
     response = response.resume(
         "If you remember the primes, list them. Or say 'I dont remember'"
     )
