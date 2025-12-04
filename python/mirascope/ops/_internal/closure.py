@@ -1061,6 +1061,9 @@ class Closure:
     hash: str
     """The hash of the closure."""
 
+    signature_hash: str
+    """The hash of the function signature (determines major version X)."""
+
     dependencies: dict[str, DependencyInfo]
     """The dependencies of the closure."""
 
@@ -1092,12 +1095,16 @@ class Closure:
             raise ClosureComputationError(qualified_name=qualified_name)
         hash_value = hashlib.sha256(formatted_code.encode("utf-8")).hexdigest()
 
+        signature = _run_ruff(_clean_source_code(fn, exclude_fn_body=True)).strip()
+        signature_hash = hashlib.sha256(signature.encode("utf-8")).hexdigest()
+
         return cls(
             name=qualified_name,
-            signature=_run_ruff(_clean_source_code(fn, exclude_fn_body=True)).strip(),
             docstring=inspect.getdoc(fn),
+            signature=signature,
             code=formatted_code,
             hash=hash_value,
+            signature_hash=signature_hash,
             dependencies={
                 name: DependencyInfo(
                     version=dep_info["version"],
