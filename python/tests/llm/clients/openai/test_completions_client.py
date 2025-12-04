@@ -56,7 +56,6 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         llm.messages.user("Hello there"),
         llm.messages.assistant(
             ["General ", "Kenobi"],
-            provider="openai",
             model_id="openai/gpt-4o",
         ),
     ]

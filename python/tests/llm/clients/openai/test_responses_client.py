@@ -16,8 +16,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
         llm.messages.user("Hello there"),
         llm.messages.assistant(
             ["General ", "Kenobi"],
-            provider="openai:responses",
-            model_id="openai:responses/gpt-4o",
+            model_id="openai/gpt-4o",
         ),
     ]
     _, _, kwargs = encode_request(

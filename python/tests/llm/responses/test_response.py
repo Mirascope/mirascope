@@ -18,7 +18,7 @@ def test_response_initialization_with_text_content() -> None:
 
     text_content = [llm.Text(text="Hello! How can I help you today?")]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -61,7 +61,7 @@ def test_response_initialization_with_mixed_content() -> None:
         llm.Text(text="Here's the result."),
     ]
     assistant_message = llm.messages.assistant(
-        mixed_content, provider="openai", model_id="test_model"
+        mixed_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -93,7 +93,7 @@ def test_response_initialization_with_empty_input_messages() -> None:
     """Test Response initialization with empty input messages."""
     text_content = [llm.Text(text="Hello!")]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -115,7 +115,7 @@ def test_response_with_different_finish_reasons() -> None:
     """Test Response with different finish reasons."""
     text_content = [llm.Text(text="Response")]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     finish_reasons = [llm.FinishReason.MAX_TOKENS, llm.FinishReason.REFUSAL, None]
@@ -136,9 +136,7 @@ def test_response_with_different_finish_reasons() -> None:
 
 def test_empty_response_pretty() -> None:
     """Test pretty representation of an empty response."""
-    assistant_message = llm.messages.assistant(
-        content=[], provider="openai", model_id="test_model"
-    )
+    assistant_message = llm.messages.assistant(content=[], model_id="openai/gpt-5-mini")
 
     response = llm.Response(
         raw=None,
@@ -158,8 +156,7 @@ def test_text_only_response_pretty() -> None:
     """Test pretty representation of a text-only response."""
     assistant_message = llm.messages.assistant(
         content=[llm.Text(text="Hello! How can I help you today?")],
-        provider="openai",
-        model_id="test_model",
+        model_id="openai/gpt-5-mini",
     )
 
     response = llm.Response(
@@ -186,8 +183,7 @@ def test_mixed_content_response_pretty() -> None:
                 id="call_abc123", name="multiply_numbers", args='{"a": 1337, "b": 4242}'
             ),
         ],
-        provider="openai",
-        model_id="test_model",
+        model_id="openai/gpt-5-mini",
     )
 
     response = llm.Response(
@@ -221,8 +217,7 @@ def test_multiple_text_response_pretty() -> None:
             llm.Text(text="And here's the second part."),
             llm.Text(text="Finally, the third part."),
         ],
-        provider="openai",
-        model_id="test_model",
+        model_id="openai/gpt-5-mini",
     )
 
     response = llm.Response(
@@ -258,7 +253,7 @@ def test_response_format_success() -> None:
     valid_json = '{"title": "The Hobbit", "author": "J.R.R. Tolkien", "pages": 310}'
     text_content = [llm.Text(text=valid_json)]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -292,7 +287,7 @@ def test_response_format_invalid_json() -> None:
     )
     text_content = [llm.Text(text=invalid_json)]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -324,7 +319,7 @@ def test_response_format_validation_error() -> None:
     )
     text_content = [llm.Text(text=incomplete_json)]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -348,7 +343,7 @@ def test_response_format_no_format_type() -> None:
 
     text_content = [llm.Text(text='{"title": "The Hobbit"}')]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     # Create response without format type (defaults to NoneType)
@@ -378,7 +373,7 @@ def test_response_format_with_text_before_and_after_json() -> None:
     text_wrapped = 'Let me provide the book details:\n\n{"title": "The Hobbit", "author": "J.R.R. Tolkien", "pages": 310}\n\nHope this helps!'
     text_content = [llm.Text(text=text_wrapped)]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -418,7 +413,7 @@ def test_response_format_with_json_code_block() -> None:
 Let me know if you need anything else!"""
     text_content = [llm.Text(text=code_block_text)]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -460,7 +455,7 @@ def test_response_format_with_nested_json() -> None:
 This includes the author information as a nested object."""
     text_content = [llm.Text(text=nested_json_text)]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -496,7 +491,7 @@ def test_response_format_with_multiple_json_objects() -> None:
     text_3 = '{"title": "The Lord of the Rings", "author": "J.R.R. Tolkien"}'
     text_content = [llm.Text(text=text_1), llm.Text(text=text_2), llm.Text(text=text_3)]
     assistant_message = llm.messages.assistant(
-        text_content, provider="openai", model_id="test_model"
+        text_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -530,7 +525,7 @@ def test_response_format_tool_handling() -> None:
         ),
     ]
     assistant_message = llm.messages.assistant(
-        mixed_content, provider="openai", model_id="test_model"
+        mixed_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -578,7 +573,7 @@ def test_response_mixed_regular_and_format_tool() -> None:
         llm.Text(text="Done!"),
     ]
     assistant_message = llm.messages.assistant(
-        mixed_content, provider="openai", model_id="test_model"
+        mixed_content, model_id="openai/gpt-5-mini"
     )
 
     response = llm.Response(
@@ -621,9 +616,7 @@ def test_response_format_tool_no_finish_reason_change() -> None:
             args='{"data": "formatted"}',
         ),
     ]
-    assistant_message = llm.messages.assistant(
-        content, provider="openai", model_id="test_model"
-    )
+    assistant_message = llm.messages.assistant(content, model_id="openai/gpt-5-mini")
 
     response = llm.Response(
         raw={"test": "response"},
@@ -658,9 +651,7 @@ def test_response_execute_tools() -> None:
         llm.ToolCall(name="tool_one", id="call_1", args='{"x": 5}'),
         llm.ToolCall(name="tool_two", id="call_2", args='{"y": "hello"}'),
     ]
-    assistant_message = llm.messages.assistant(
-        tool_calls, provider="openai", model_id="test_model"
-    )
+    assistant_message = llm.messages.assistant(tool_calls, model_id="openai/gpt-5-mini")
 
     response = llm.Response(
         raw={"test": "response"},
@@ -694,9 +685,7 @@ async def test_async_response_execute_tools() -> None:
         llm.ToolCall(name="tool_one", id="call_1", args='{"x": 5}'),
         llm.ToolCall(name="tool_two", id="call_2", args='{"y": "hello"}'),
     ]
-    assistant_message = llm.messages.assistant(
-        tool_calls, provider="openai", model_id="test_model"
-    )
+    assistant_message = llm.messages.assistant(tool_calls, model_id="openai/gpt-5-mini")
 
     response = llm.AsyncResponse(
         raw={"test": "response"},
@@ -716,9 +705,7 @@ async def test_async_response_execute_tools() -> None:
 
 
 def test_response_tools_initialization() -> None:
-    assistant_message = llm.messages.assistant(
-        "oh hi", provider="openai", model_id="test_model"
-    )
+    assistant_message = llm.messages.assistant("oh hi", model_id="openai/gpt-5-mini")
 
     response = llm.Response(
         raw={},

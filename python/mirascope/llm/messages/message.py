@@ -149,7 +149,6 @@ def user(
 def assistant(
     content: AssistantContent,
     *,
-    provider: Provider | None,
     model_id: ModelId | None,
     raw_message: Jsonable | None = None,
     name: str | None = None,
@@ -168,11 +167,14 @@ def assistant(
     Returns:
         An `AssistantMessage`.
     """
+    from ..clients import model_id_to_provider  # avoid circular import issues
+
     if isinstance(content, str) or not isinstance(content, Sequence):
         content = [content]
     promoted_content = [
         Text(text=part) if isinstance(part, str) else part for part in content
     ]
+    provider = model_id_to_provider(model_id) if model_id else None
     return AssistantMessage(
         content=promoted_content,
         provider=provider,

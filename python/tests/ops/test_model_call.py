@@ -740,7 +740,6 @@ def test_model_call_with_format_tool_finish_reason(
         ) -> llm.Response:
             assistant_message = llm.messages.assistant(
                 "Here is your book.",
-                provider=self.provider,  # pyright: ignore[reportArgumentType]
                 model_id=model_id,
                 name="assistant-1",
             )
