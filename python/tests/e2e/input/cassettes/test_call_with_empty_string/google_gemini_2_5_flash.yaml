@@ -1,0 +1,94 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": ""}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '57'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 04 Dec 2025 19:21:17 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=27271
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1
