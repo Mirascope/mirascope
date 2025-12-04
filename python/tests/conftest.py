@@ -15,7 +15,7 @@ def load_api_keys() -> None:
     This is necessary for e2e tests, but also may be necessary for any tests that
     instantiate a client, as clients may test API key presence at `__init__` time.
     """
-    load_dotenv()
+    load_dotenv(override=True)
     # Set dummy keys if not present so that tests pass in CI.
     os.environ.setdefault("ANTHROPIC_API_KEY", "dummy-anthropic-key")
     os.environ.setdefault("GOOGLE_API_KEY", "dummy-google-key")

@@ -1,4 +1,5 @@
 import inspect
+import typing
 from collections.abc import Callable
 from typing import Any, get_origin
 
@@ -21,8 +22,20 @@ def first_param_is_context(fn: Callable[..., Any]) -> bool:
     else:
         first_param = params[0]
 
-    type_is_context = get_origin(first_param.annotation) is Context
-    subclass_of_context = isinstance(first_param.annotation, type) and issubclass(
-        first_param.annotation, Context
+    if first_param.name != "ctx":
+        return False
+
+    try:
+        hints = typing.get_type_hints(fn)
+        annotation = hints.get(first_param.name)
+    except (NameError, AttributeError, TypeError):
+        annotation = first_param.annotation
+
+    if annotation is None or annotation is inspect.Parameter.empty:
+        return False
+
+    type_is_context = get_origin(annotation) is Context
+    subclass_of_context = isinstance(annotation, type) and issubclass(
+        annotation, Context
     )
-    return first_param.name == "ctx" and (type_is_context or subclass_of_context)
+    return type_is_context or subclass_of_context

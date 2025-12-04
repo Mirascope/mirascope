@@ -1,5 +1,8 @@
 """Tests for the call decorator function."""
 
+from collections.abc import Callable
+from typing import Any
+
 import pytest
 from inline_snapshot import snapshot
 from pydantic import BaseModel
@@ -401,3 +404,28 @@ class TestContextCall:
             return str(ctx.deps)
 
         assert isinstance(with_custom_context, llm.calls.AsyncContextCall)
+
+    def test_unresolvable_forward_reference_fallback(self) -> None:
+        """Test that unresolvable forward references fall back to raw annotation."""
+        code = compile(
+            "def fn(ctx: 'UndefinedType') -> str: return 'hi'",
+            "<string>",
+            "exec",
+        )
+        namespace: dict[str, Callable[..., Any]] = {}
+        exec(code, namespace)  # noqa: S102
+        fn = namespace["fn"]
+
+        decorated = llm.call("openai/gpt-4o-mini")(fn)
+        assert isinstance(decorated, llm.calls.Call)
+
+    def test_invalid_annotation_type_fallback(self) -> None:
+        """Test that invalid annotation types fall back to raw annotation."""
+
+        def fn(ctx: llm.Context[str]) -> str:
+            return "hi"
+
+        fn.__annotations__ = {"ctx": 123, "return": str}
+
+        decorated = llm.call("openai/gpt-4o-mini")(fn)
+        assert isinstance(decorated, llm.calls.Call)

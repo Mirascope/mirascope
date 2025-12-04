@@ -25,12 +25,20 @@ try:
         session,
     )
     from ._internal.spans import Span, span
-    from ._internal.tracing import (
+    from ._internal.traced_call import (
+        TracedAsyncCall,
+        TracedAsyncContextCall,
+        TracedCall,
+        TracedContextCall,
+    )
+    from ._internal.traced_functions import (
+        AsyncTrace,
         AsyncTracedFunction,
-        AsyncTracedResult,
-        TraceDecorator,
+        Trace,
         TracedFunction,
-        TracedResult,
+    )
+    from ._internal.tracing import (
+        TraceDecorator,
         trace,
     )
 except ImportError:  # pragma: no cover
@@ -64,26 +72,35 @@ except ImportError:  # pragma: no cover
     session = _create_otel_import_error_stub("session")
     Span = _create_otel_import_error_stub("Span")
     span = _create_otel_import_error_stub("span")
+    AsyncTrace = _create_otel_import_error_stub("AsyncTrace")
     AsyncTracedFunction = _create_otel_import_error_stub("AsyncTracedFunction")
-    AsyncTracedResult = _create_otel_import_error_stub("AsyncTracedResult")
+    Trace = _create_otel_import_error_stub("Trace")
     TraceDecorator = _create_otel_import_error_stub("TraceDecorator")
+    TracedAsyncCall = _create_otel_import_error_stub("TracedAsyncCall")
+    TracedAsyncContextCall = _create_otel_import_error_stub("TracedAsyncContextCall")
+    TracedCall = _create_otel_import_error_stub("TracedCall")
+    TracedContextCall = _create_otel_import_error_stub("TracedContextCall")
     TracedFunction = _create_otel_import_error_stub("TracedFunction")
-    TracedResult = _create_otel_import_error_stub("TracedResult")
     trace = _create_otel_import_error_stub("trace")
     configure = _create_otel_import_error_stub("configure")
     tracer_context = _create_otel_import_error_stub("tracer_context")
 
+
 __all__ = [
     "SESSION_HEADER_NAME",
+    "AsyncTrace",
     "AsyncTracedFunction",
-    "AsyncTracedResult",
     "ContextPropagator",
     "PropagatorFormat",
     "SessionContext",
     "Span",
+    "Trace",
     "TraceDecorator",
+    "TracedAsyncCall",
+    "TracedAsyncContextCall",
+    "TracedCall",
+    "TracedContextCall",
     "TracedFunction",
-    "TracedResult",
     "configure",
     "current_session",
     "extract_context",
