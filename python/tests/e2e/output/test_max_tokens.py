@@ -15,7 +15,7 @@ from tests.utils import (
 def test_max_tokens_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test synchronous call with token limits."""
 
-    @llm.call(model_id=model_id, max_tokens=50)
+    @llm.call(model_id, max_tokens=50)
     def list_states() -> str:
         return "List all U.S. states."
 
@@ -31,7 +31,7 @@ def test_max_tokens_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None:
 async def test_max_tokens_async(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test asynchronous call with token limits."""
 
-    @llm.call(model_id=model_id, max_tokens=50)
+    @llm.call(model_id, max_tokens=50)
     async def list_states() -> str:
         return "List all U.S. states."
 
@@ -46,7 +46,7 @@ async def test_max_tokens_async(model_id: llm.ModelId, snapshot: Snapshot) -> No
 def test_max_tokens_stream(model_id: llm.ModelId, snapshot: Snapshot) -> None:
     """Test streaming call with token limits."""
 
-    @llm.call(model_id=model_id, max_tokens=50)
+    @llm.call(model_id, max_tokens=50)
     def list_states() -> str:
         return "List all U.S. states."
 
@@ -65,7 +65,7 @@ async def test_max_tokens_async_stream(
 ) -> None:
     """Test async streaming call with token limits."""
 
-    @llm.call(model_id=model_id, max_tokens=50)
+    @llm.call(model_id, max_tokens=50)
     async def list_states() -> str:
         return "List all U.S. states."
 

@@ -2,7 +2,7 @@ from mirascope import llm
 
 
 @llm.call(
-    model_id="openai/gpt-5",
+    "openai/gpt-5",
     temperature=1,  # [!code highlight]
 )
 def recommend_book(genre: str):

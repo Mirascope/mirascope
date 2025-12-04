@@ -47,7 +47,7 @@ def test_structured_output_with_tools_sync(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[get_book_info],
         format=format,
     )
@@ -93,7 +93,7 @@ def test_structured_output_with_tools_sync_context(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[get_book_info],
         format=format,
     )
@@ -144,7 +144,7 @@ async def test_structured_output_with_tools_async(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[get_book_info],
         format=format,
     )
@@ -191,7 +191,7 @@ async def test_structured_output_with_tools_async_context(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[get_book_info],
         format=format,
     )
@@ -241,7 +241,7 @@ def test_structured_output_with_tools_stream(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[get_book_info],
         format=format,
     )
@@ -289,7 +289,7 @@ def test_structured_output_with_tools_stream_context(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[get_book_info],
         format=format,
     )
@@ -342,7 +342,7 @@ async def test_structured_output_with_tools_async_stream(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[get_book_info],
         format=format,
     )
@@ -391,7 +391,7 @@ async def test_structured_output_with_tools_async_stream_context(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[get_book_info],
         format=format,
     )

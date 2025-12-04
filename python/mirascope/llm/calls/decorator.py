@@ -125,8 +125,8 @@ class CallDecorator(Generic[ToolT, FormattableT]):
 
 
 def call(
+    model: ModelId | Model,
     *,
-    model_id: ModelId,
     tools: list[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
     **params: Unpack[Params],
@@ -143,8 +143,7 @@ def call(
         ```python
         from mirascope import llm
 
-        @llm.call(
-            model_id="openai/gpt-5-mini",
+        @llm.call(openai/gpt-5-mini",
         )
         def answer_question(question: str) -> str:
             return f"Answer this question: {question}"
@@ -176,5 +175,6 @@ def call(
         print(response)
         ```
     """
-    model = Model(model_id=model_id, **params)
+    if isinstance(model, str):
+        model = Model(model_id=model, **params)
     return CallDecorator(model=model, tools=tools, format=format)

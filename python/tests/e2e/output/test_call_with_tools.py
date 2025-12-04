@@ -25,7 +25,7 @@ def test_call_with_tools_sync(model_id: llm.ModelId, snapshot: Snapshot) -> None
         return PASSWORD_MAP.get(password, "Invalid password!")
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[secret_retrieval_tool],
     )
     def call(passwords: list[str]) -> list[llm.Message]:
@@ -66,7 +66,7 @@ def test_call_with_tools_sync_context(
         return ctx.deps.get(password, "Invalid password!")
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[secret_retrieval_tool],
     )
     def call(
@@ -114,7 +114,7 @@ async def test_call_with_tools_async(model_id: llm.ModelId, snapshot: Snapshot) 
         return PASSWORD_MAP.get(password, "Invalid password!")
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[secret_retrieval_tool],
     )
     async def call(passwords: list[str]) -> list[llm.Message]:
@@ -158,7 +158,7 @@ async def test_call_with_tools_async_context(
         return ctx.deps.get(password, "Invalid password!")
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[secret_retrieval_tool],
     )
     async def call(
@@ -203,7 +203,7 @@ def test_call_with_tools_stream(model_id: llm.ModelId, snapshot: Snapshot) -> No
         return PASSWORD_MAP.get(password, "Invalid password!")
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[secret_retrieval_tool],
     )
     def call(passwords: list[str]) -> list[llm.Message]:
@@ -247,7 +247,7 @@ def test_call_with_tools_stream_context(
         return ctx.deps.get(password, "Invalid password!")
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[secret_retrieval_tool],
     )
     def call(
@@ -298,7 +298,7 @@ async def test_call_with_tools_async_stream(
         return PASSWORD_MAP.get(password, "Invalid password!")
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[secret_retrieval_tool],
     )
     async def call(passwords: list[str]) -> list[llm.Message]:
@@ -345,7 +345,7 @@ async def test_call_with_tools_async_stream_context(
         return ctx.deps.get(password, "Invalid password!")
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         tools=[secret_retrieval_tool],
     )
     async def call(

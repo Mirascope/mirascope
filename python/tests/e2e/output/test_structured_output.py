@@ -44,7 +44,7 @@ def test_structured_output_sync(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         format=format,
     )
     def recommend_book(author: str) -> str:
@@ -76,7 +76,7 @@ def test_structured_output_sync_context(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         format=format,
     )
     def recommend_book(ctx: llm.Context[str]) -> str:
@@ -113,7 +113,7 @@ async def test_structured_output_async(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         format=format,
     )
     async def recommend_book(author: str) -> str:
@@ -146,7 +146,7 @@ async def test_structured_output_async_context(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         format=format,
     )
     async def recommend_book(ctx: llm.Context[str]) -> str:
@@ -182,7 +182,7 @@ def test_structured_output_stream(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         format=format,
     )
     def recommend_book(author: str) -> str:
@@ -216,7 +216,7 @@ def test_structured_output_stream_context(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         format=format,
     )
     def recommend_book(ctx: llm.Context[str]) -> str:
@@ -255,7 +255,7 @@ async def test_structured_output_async_stream(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         format=format,
     )
     async def recommend_book(author: str) -> str:
@@ -290,7 +290,7 @@ async def test_structured_output_async_stream_context(
     )
 
     @llm.call(
-        model_id=model_id,
+        model_id,
         format=format,
     )
     async def recommend_book(ctx: llm.Context[str]) -> str:

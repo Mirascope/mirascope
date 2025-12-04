@@ -43,7 +43,7 @@ def test_call_with_params(
 ) -> None:
     """Test synchronous call with all parameters to verify param handling and logging."""
 
-    @llm.call(model_id=model_id, **ALL_PARAMS)
+    @llm.call(model_id, **ALL_PARAMS)
     def add_numbers(a: int, b: int) -> str:
         return f"What is {a} + {b}?"
 

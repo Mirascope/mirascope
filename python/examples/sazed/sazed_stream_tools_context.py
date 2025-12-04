@@ -17,7 +17,7 @@ def search_coppermind(ctx: llm.Context[Coppermind], query: str) -> str:
 
 
 @llm.call(
-    model_id="openai/gpt-5-mini",
+    "openai/gpt-5-mini",
     tools=[search_coppermind],
 )
 def sazed(ctx: llm.Context[Coppermind], query: str):

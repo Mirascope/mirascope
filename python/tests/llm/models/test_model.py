@@ -51,7 +51,7 @@ def test_direct_model_instantiation_ignores_context() -> None:
 def test_value_error_invalid_models() -> None:
     """Test that invalid model_ids raise appropriate ValueErrors."""
     with pytest.raises(ValueError, match="Unknown provider: 'nonexistent'"):
-        llm.call(model_id="nonexistent/gpt-5-mini")
+        llm.call("nonexistent/gpt-5-mini")
 
     with pytest.raises(ValueError, match="Invalid model_id format"):
-        llm.call(model_id="really-cool-model-i-heard-about")
+        llm.call("really-cool-model-i-heard-about")

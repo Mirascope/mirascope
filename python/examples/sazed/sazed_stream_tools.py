@@ -8,7 +8,7 @@ def search_coppermind(query: str) -> str:
 
 
 @llm.call(
-    model_id="openai/gpt-5-mini",
+    "openai/gpt-5-mini",
     tools=[search_coppermind],
 )
 def sazed(query: str):

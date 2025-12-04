@@ -36,7 +36,7 @@ def test_resume_with_override_thinking_and_tools(
         return "Not implemented for other values"
 
     @llm.call(
-        model_id=default_model(model_id),
+        default_model(model_id),
         thinking=True,
         tools=[compute_fib],
     )

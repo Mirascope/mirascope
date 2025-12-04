@@ -18,7 +18,7 @@ class Coppermind:
 
 
 @llm.call(
-    model_id="openai/gpt-5-mini",
+    "openai/gpt-5-mini",
     format=KeeperEntry,
 )
 async def sazed(ctx: llm.Context[Coppermind], query: str):

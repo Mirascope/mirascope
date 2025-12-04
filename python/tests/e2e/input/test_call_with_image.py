@@ -26,7 +26,7 @@ def test_call_with_image_content(
 ) -> None:
     """Test a call using an image loaded from file."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     def analyze_image(image_path: str) -> llm.UserContent:
         return [
             "Describe the following image in one sentence",
@@ -47,7 +47,7 @@ def test_call_with_image_url(
 ) -> None:
     """Test a call using an image referenced by url."""
 
-    @llm.call(model_id=model_id)
+    @llm.call(model_id)
     def analyze_image(image_url: str) -> llm.UserContent:
         return [
             "Describe the following image in one sentence",
