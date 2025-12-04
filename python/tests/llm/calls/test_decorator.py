@@ -4,7 +4,6 @@ from collections.abc import Callable
 from typing import Any
 
 import pytest
-from inline_snapshot import snapshot
 from pydantic import BaseModel
 
 from mirascope import llm
@@ -139,20 +138,6 @@ class TestCall:
             llm.messages.user("Please recommend a fantasy book.")
         ]
 
-    @pytest.mark.vcr()
-    def test_call_decorator_e2e_model_override(self) -> None:
-        # TODO: Remove e2e tests from non-e2e test directory; either add model
-        # override test coverage to e2e, or refactor this to use mocking etc.
-        @llm.call("openai/gpt-5-mini")
-        def call() -> str:
-            return "What company created you? Answer in just one word."
-
-        assert call().pretty() == snapshot("OpenAI.")
-        with llm.model("google/gemini-2.0-flash"):
-            assert call().pretty() == snapshot("Google.\n")
-            with llm.model("anthropic/claude-sonnet-4-0"):
-                assert call().pretty() == snapshot("Anthropic")
-
     def test_value_error_invalid_models(self) -> None:
         with pytest.raises(ValueError, match="Unknown provider: 'nonexistent'"):
             llm.call("nonexistent/gpt-5-mini")
@@ -274,22 +259,6 @@ class TestContextCall:
 
         assert isinstance(call, llm.calls.ContextCall)
         assert call.toolkit == llm.ContextToolkit(tools=tools)
-
-    @pytest.mark.vcr()
-    def test_context_call_decorator_e2e_model_override(self) -> None:
-        # TODO: Remove e2e tests from non-e2e test directory; either add model
-        # override test coverage to e2e, or refactor this to use mocking etc.
-        ctx = llm.Context(deps="Who created you?")
-
-        @llm.call("openai/gpt-5-mini")
-        def call(ctx: llm.Context[str]) -> str:
-            return f"Answer the question in just one word: {ctx.deps}."
-
-        assert call(ctx).pretty() == snapshot("OpenAI.")
-        with llm.model("google/gemini-2.0-flash"):
-            assert call(ctx).pretty() == snapshot("Google.\n")
-            with llm.model("anthropic/claude-sonnet-4-0"):
-                assert call(ctx).pretty() == snapshot("Anthropic.")
 
     def test_context_parameter_name_independence(self) -> None:
         """Test that context prompts require the first parameter be named ctx."""
