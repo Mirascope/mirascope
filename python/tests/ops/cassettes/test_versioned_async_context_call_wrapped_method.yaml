@@ -1,0 +1,108 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"As a librarian, Recommend a fantasy book.","role":"user"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '103'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3xUS2/jNhC+51dMdSkQJIEUx69cewoWKIqiQA+bQhiRI5kxxRHIoXeFRf57QcqW
+        7W7Sk+V5fPPi9/24ASiMLp6h8BSGuqzaRbNdKaRFpcsFleVqu6g2ywU96nW5qbbL7Wq5XLcL3ayX
+        T/i4roq7BMHNGyk5wbALNNmVJxTSNSZftV49bZaLcvmUfUFQYkg5ivvBkpCekhpU+85zdKmvFm2g
+        yWysNa4rnuHHDQBAMeBIPuVrOpDlgXxxA/Ceg8l7Tj4Xrc0G405Vak2CxoZrbxAflRh2V/Yev9cc
+        ZYhSC+/pZ6cw21qhvYbrWZNNnXWD3D/xfW+cuX8sH5/uy/V9tTnuLOMWz/A1jzMNNZ+jD93/XGNb
+        Nfkam6dNWS42ullU27Wqlhk5o8g4UMahELCjs+OztWenYifkzk1dNnYFe1oKfZc5Owegcyx4WuTX
+        f66clrvBc/OBJwM9Q/ECnhT3PTkNt7evxV87gt+xJ+AWZEfwt3H6tYBmhD9QvFF7+JNl18YQbm8f
+        4EV+DTmsNT4INMx7MA4mmC/GdXtjLXn4befZGWXptYBA3lAAdBpatpa/TQhvHL2jMdX9cmDZ0R0g
+        dKYV0jBydB306ODbjqHzKcc4YUCw1JHT6EdoTRc9PUAqHYT9CIr7xjgK4I3awTf2Vt830VhtXHcH
+        PXZG3UEfQ/pJ7SAE8ew6cOg9ijkQHNgoephnfo2PZbUNYEdvFFoYPAfKuZpoALVDj0rIw5EhPTmB
+        HvcERjI8Os1R0o7Sk/UOWnSCYXyAlzaNCeTeeEzDpQJCMFiWaVnp9VBm5LlOuAPZmXBcfEgbSwIA
+        apf6/qWYL/5+/JofQeHZ5oeFIZjUl0zBKTAHFQN6tJbsNeXEx0kdBk8HwzHUJwGqM49mSg6e+0Fq
+        hWpH9Z7GT32eEgMMu8sITxjYXakPtS17uQhK3Ip9j/6EPYtRwJZkrI1OwK2hK2EK5A9GUS3mJGYt
+        RjuxqkgPhy7HFOoH8igxm6uH8mjN7Dl21rLv8fz/grU5btrrseMD+YaDkXHSCm1ifxbRadP5dvk0
+        UbiYHWcSF8JDfUHtcjYOlz366BQeF1toE7CxJ8WPWaLmAYy7Etxqdfez/ULF5zHzAfU5sbwa9b86
+        XpXlR56PgOfzf4YtLGgvoKvVvMQYru/dk6BGwYT/fvP+LwAAAP//AwBFTAPhggcAAA==
+    headers:
+      CF-RAY:
+      - 9a8b7863fbd095ad-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 04 Dec 2025 12:57:38 GMT
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '4599'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '4602'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999965'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_c8ce5223fde9469da6f90ff1131169ad
+    status:
+      code: 200
+      message: OK
+version: 1

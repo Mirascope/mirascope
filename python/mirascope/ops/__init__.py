@@ -25,7 +25,7 @@ try:
         session,
     )
     from ._internal.spans import Span, span
-    from ._internal.traced_call import (
+    from ._internal.traced_calls import (
         TracedAsyncCall,
         TracedAsyncContextCall,
         TracedCall,
@@ -41,11 +41,19 @@ try:
         TraceDecorator,
         trace,
     )
-    from ._internal.versioning import (
+    from ._internal.versioned_calls import (
+        VersionedAsyncCall,
+        VersionedAsyncContextCall,
+        VersionedCall,
+        VersionedContextCall,
+    )
+    from ._internal.versioned_functions import (
         AsyncVersionedFunction,
-        VersionDecorator,
         VersionedFunction,
         VersionInfo,
+    )
+    from ._internal.versioning import (
+        VersionDecorator,
         version,
     )
     from .exceptions import ClosureComputationError
@@ -95,6 +103,12 @@ except ImportError:  # pragma: no cover
     tracer_context = _create_otel_import_error_stub("tracer_context")
     AsyncVersionedFunction = _create_otel_import_error_stub("AsyncVersionedFunction")
     VersionDecorator = _create_otel_import_error_stub("VersionDecorator")
+    VersionedAsyncCall = _create_otel_import_error_stub("VersionedAsyncCall")
+    VersionedAsyncContextCall = _create_otel_import_error_stub(
+        "VersionedAsyncContextCall"
+    )
+    VersionedCall = _create_otel_import_error_stub("VersionedCall")
+    VersionedContextCall = _create_otel_import_error_stub("VersionedContextCall")
     VersionedFunction = _create_otel_import_error_stub("VersionedFunction")
     VersionInfo = _create_otel_import_error_stub("VersionInfo")
     version = _create_otel_import_error_stub("version")
@@ -119,6 +133,10 @@ __all__ = [
     "TracedFunction",
     "VersionDecorator",
     "VersionInfo",
+    "VersionedAsyncCall",
+    "VersionedAsyncContextCall",
+    "VersionedCall",
+    "VersionedContextCall",
     "VersionedFunction",
     "configure",
     "current_session",
