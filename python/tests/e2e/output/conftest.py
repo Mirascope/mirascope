@@ -43,6 +43,10 @@ def _parse_test_name(test_name: str) -> tuple[str, CallType]:
     if not name.startswith("test_"):
         raise ValueError(f"Test name must start with 'test_': {test_name}")
 
+    # Special case for the test_prompt tests: they use the same snapshots and cassettes
+    # as test_call.
+    name = name.replace("test_prompt", "test_call")
+
     # Known call_types to look for at the end (order matters - check longer overlaps first)
     call_suffixes: list[CallType] = [
         "async_stream_context",
