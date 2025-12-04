@@ -158,6 +158,9 @@ class _BaseFunction(Generic[P, R, FunctionT], ABC):
 class _BaseTracedFunction(_BaseFunction[P, R, FunctionT]):
     """Abstract base class for traced function wrappers."""
 
+    metadata: dict[str, str] = field(default_factory=dict)
+    """Arbitrary key-value pairs for additional metadata."""
+
     @contextmanager
     def _span(self, *args: P.args, **kwargs: P.kwargs) -> Generator[Span, None, None]:
         """Returns a span context manager populated with call attributes."""
@@ -173,6 +176,8 @@ class _BaseTracedFunction(_BaseFunction[P, R, FunctionT]):
             }
             if self.tags:
                 attributes["mirascope.trace.tags"] = self.tags
+            if self.metadata:
+                attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
             span.set(**attributes)
             yield span
 
@@ -265,6 +270,9 @@ class _BaseTracedContextFunction(
 ):
     """Abstract base class for traced function wrappers."""
 
+    metadata: dict[str, str] = field(default_factory=dict)
+    """Arbitrary key-value pairs for additional metadata."""
+
     _is_async: bool = field(default=False, init=False)
     """Whether the wrapped function is asynchronous."""
 
@@ -275,7 +283,7 @@ class _BaseTracedContextFunction(
         """Returns a span context manager populated with call attributes."""
         arg_types, arg_values = extract_arguments(self.fn, ctx, *args, **kwargs)
         with Span(name=self._qualified_name) as span:
-            attributes = {
+            attributes: dict[str, AttributeValue] = {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": self._qualified_name,
                 "mirascope.fn.module": self.fn.__module__,
@@ -285,6 +293,8 @@ class _BaseTracedContextFunction(
             }
             if self.tags:
                 attributes["mirascope.trace.tags"] = self.tags
+            if self.metadata:
+                attributes["mirascope.trace.metadata"] = json_dumps(self.metadata)
             span.set(**attributes)
             yield span
 
