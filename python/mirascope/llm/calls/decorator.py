@@ -124,6 +124,35 @@ class CallDecorator(Generic[ToolT, FormattableT]):
             )
 
 
+@overload
+def call(
+    model: ModelId,
+    *,
+    tools: list[ToolT] | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+    **params: Unpack[Params],
+) -> CallDecorator[ToolT, FormattableT]:
+    """Decorator for converting prompt functions into LLM calls.
+
+    This overload accepts a model ID string and allows additional params.
+    """
+    ...
+
+
+@overload
+def call(
+    model: Model,
+    *,
+    tools: list[ToolT] | None = None,
+    format: type[FormattableT] | Format[FormattableT] | None = None,
+) -> CallDecorator[ToolT, FormattableT]:
+    """Decorator for converting prompt functions into LLM calls.
+
+    This overload accepts a Model instance and does not allow additional params.
+    """
+    ...
+
+
 def call(
     model: ModelId | Model,
     *,
@@ -131,11 +160,28 @@ def call(
     format: type[FormattableT] | Format[FormattableT] | None = None,
     **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
-    """Returns a decorator for turning prompt template functions into generations.
+    """Decorator for converting prompt functions into LLM calls.
 
-    This decorator creates a `Call` or `ContextCall` that can be used with prompt functions.
-    If the first parameter is typed as `llm.Context[T]`, it creates a ContextCall.
-    Otherwise, it creates a regular Call.
+    The `llm.call` decorator is the most convenient way to use Mirascope. It decorates
+    a "prompt function" that returns the content provided to the LLM. The decorator
+    creates a `Call` or `ContextCall` that can be invoked to call the chosen LLM.
+
+    If the first parameter is typed as `llm.Context[T]`, it creates a `ContextCall`.
+    Otherwise, it creates a regular `Call`.
+
+    The model specified in the decorator can be overridden at runtime using the
+    `llm.model()` context manager. When overridden, the context model completely
+    replaces the decorated model, including all parameters.
+
+    Args:
+        model: A model ID string (e.g., "openai/gpt-4") or a `Model` instance
+        tools: Optional list of tools to make available to the LLM
+        format: Optional response format class (`BaseModel`) or Format instance
+        **params: Additional call parameters (temperature, max_tokens, etc.)
+            Only available when passing a model ID string
+
+    Returns:
+        A `CallDecorator` that converts prompt functions into `Call` or `ContextCall` instances
 
     Example:
 
@@ -143,13 +189,12 @@ def call(
         ```python
         from mirascope import llm
 
-        @llm.call(openai/gpt-5-mini",
-        )
-        def answer_question(question: str) -> str:
-            return f"Answer this question: {question}"
+        @llm.call("openai/gpt-4")
+        def recommend_book(genre: str):
+            return f"Please recommend a book in {genre}."
 
-        response: llm.Response = answer_question("What is the capital of France?")
-        print(response)
+        response: llm.Response = recommend_book("fantasy")
+        print(response.pretty())
         ```
 
     Example:
@@ -160,19 +205,17 @@ def call(
         from mirascope import llm
 
         @dataclass
-        class Personality:
-            vibe: str
+        class User:
+            name: str
+            age: int
 
-        @llm.call(
-            provider="openai",
-            model_id="openai/gpt-5-mini",
-        )
-        def answer_question(ctx: llm.Context[Personality], question: str) -> str:
-            return f"Your vibe is {ctx.deps.vibe}. Answer this question: {question}"
+        @llm.call("openai/gpt-4")
+        def recommend_book(ctx: llm.Context[User], genre: str):
+            return f"Recommend a {genre} book for {ctx.deps.name}, age {ctx.deps.age}."
 
-        ctx = llm.Context(deps=Personality(vibe="snarky"))
-        response = answer_question(ctx, "What is the capital of France?")
-        print(response)
+        ctx = llm.Context(deps=User(name="Alice", age=15))
+        response = recommend_book(ctx, "fantasy")
+        print(response.pretty())
         ```
     """
     if isinstance(model, str):
