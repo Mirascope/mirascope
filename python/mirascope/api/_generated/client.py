@@ -70,8 +70,8 @@ class Mirascope:
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.traces = TracesClient(client_wrapper=self._client_wrapper)
         self.health = HealthClient(client_wrapper=self._client_wrapper)
+        self.traces = TracesClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncMirascope:
@@ -135,8 +135,8 @@ class AsyncMirascope:
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.traces = AsyncTracesClient(client_wrapper=self._client_wrapper)
         self.health = AsyncHealthClient(client_wrapper=self._client_wrapper)
+        self.traces = AsyncTracesClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(

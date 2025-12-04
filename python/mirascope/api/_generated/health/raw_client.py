@@ -8,6 +8,8 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
+from ..errors.bad_request_error import BadRequestError
+from ..types.http_api_decode_error import HttpApiDecodeError
 from .types.health_check_response import HealthCheckResponse
 
 
@@ -27,7 +29,7 @@ class RawHealthClient:
         Returns
         -------
         HttpResponse[HealthCheckResponse]
-            OK
+            Success
         """
         _response = self._client_wrapper.httpx_client.request(
             "health",
@@ -44,6 +46,17 @@ class RawHealthClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(
@@ -74,7 +87,7 @@ class AsyncRawHealthClient:
         Returns
         -------
         AsyncHttpResponse[HealthCheckResponse]
-            OK
+            Success
         """
         _response = await self._client_wrapper.httpx_client.request(
             "health",
@@ -91,6 +104,17 @@ class AsyncRawHealthClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(

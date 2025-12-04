@@ -9,6 +9,8 @@ from ..core.http_response import AsyncHttpResponse, HttpResponse
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
+from ..errors.bad_request_error import BadRequestError
+from ..types.http_api_decode_error import HttpApiDecodeError
 from .types.traces_create_request_resource_spans_item import (
     TracesCreateRequestResourceSpansItem,
 )
@@ -39,10 +41,10 @@ class RawTracesClient:
         Returns
         -------
         HttpResponse[TracesCreateResponse]
-            OK
+            Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            "api/v1/traces",
+            "traces",
             method="POST",
             json={
                 "resourceSpans": convert_and_respect_annotation_metadata(
@@ -67,6 +69,17 @@ class RawTracesClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(
@@ -102,10 +115,10 @@ class AsyncRawTracesClient:
         Returns
         -------
         AsyncHttpResponse[TracesCreateResponse]
-            OK
+            Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "api/v1/traces",
+            "traces",
             method="POST",
             json={
                 "resourceSpans": convert_and_respect_annotation_metadata(
@@ -130,6 +143,17 @@ class AsyncRawTracesClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        HttpApiDecodeError,
+                        parse_obj_as(
+                            type_=HttpApiDecodeError,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(

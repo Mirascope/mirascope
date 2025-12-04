@@ -3,14 +3,19 @@
 import typing
 
 import pydantic
-from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .health_check_response_status import HealthCheckResponseStatus
+import typing_extensions
+from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from ..core.serialization import FieldMetadata
+from .property_key_tag_tag import PropertyKeyTagTag
 
 
-class HealthCheckResponse(UniversalBaseModel):
-    status: HealthCheckResponseStatus
-    timestamp: str
-    environment: str
+class PropertyKeyTag(UniversalBaseModel):
+    """
+    an object to be decoded into a globally shared symbol
+    """
+
+    tag: typing_extensions.Annotated[PropertyKeyTagTag, FieldMetadata(alias="_tag")]
+    key: str
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(

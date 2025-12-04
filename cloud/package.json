@@ -20,12 +20,8 @@
     "lint:eslint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@hono/swagger-ui": "^0.5.2",
-    "@hono/zod-openapi": "1.1.0",
-    "@orpc/client": "^1.11.3",
-    "@orpc/openapi": "^1.11.3",
-    "@orpc/server": "^1.11.3",
-    "@orpc/zod": "^1.11.3",
+    "@effect/platform": "^0.93.3",
+    "effect": "^3.19.6",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-router": "^1.139.3",
     "@tanstack/react-router-devtools": "^1.139.3",
@@ -37,8 +33,7 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
     "tw-animate-css": "^1.3.5",
-    "vite-tsconfig-paths": "^5.1.4",
-    "zod": "^4.1.12"
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.9.0",

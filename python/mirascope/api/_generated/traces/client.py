@@ -46,7 +46,7 @@ class TracesClient:
         Returns
         -------
         TracesCreateResponse
-            OK
+            Success
 
         Examples
         --------
@@ -116,7 +116,7 @@ class AsyncTracesClient:
         Returns
         -------
         TracesCreateResponse
-            OK
+            Success
 
         Examples
         --------

@@ -1,26 +1,40 @@
-import { os } from "@orpc/server";
-import { z } from "zod";
+import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
+import { Schema, Effect } from "effect";
+import { EnvironmentService } from "./environment";
 
-const CheckHealthResponseSchema = z.object({
-  status: z.literal("ok"),
-  timestamp: z.iso.datetime(),
-  environment: z.string(),
+// ============================================================================
+// Schemas
+// ============================================================================
+
+export const CheckHealthResponseSchema = Schema.Struct({
+  status: Schema.Literal("ok"),
+  timestamp: Schema.String,
+  environment: Schema.String,
 });
 
-export type CheckHealthResponse = z.infer<typeof CheckHealthResponseSchema>;
+export type CheckHealthResponse = typeof CheckHealthResponseSchema.Type;
 
-export const checkHealth = os
-  .$context<{ environment?: string }>()
-  .route({ method: "GET", path: "/health" })
-  .output(CheckHealthResponseSchema)
-  .handler(
-    async ({ context }): Promise<CheckHealthResponse> => ({
-      status: "ok",
-      timestamp: new Date().toISOString(),
-      environment: context.environment || "unknown",
-    }),
-  );
+// ============================================================================
+// API Group
+// ============================================================================
 
-export const router = os.tag("health").router({
-  check: checkHealth,
+export class HealthApi extends HttpApiGroup.make("health").add(
+  HttpApiEndpoint.get("check", "/health").addSuccess(CheckHealthResponseSchema),
+) {}
+
+// ============================================================================
+// Handler Effect
+// ============================================================================
+
+export const checkHealthHandler = Effect.gen(function* () {
+  const envService = yield* Effect.serviceOption(EnvironmentService);
+  const environment =
+    envService._tag === "Some" ? envService.value.environment : "unknown";
+
+  const response: CheckHealthResponse = {
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    environment,
+  };
+  return response;
 });
