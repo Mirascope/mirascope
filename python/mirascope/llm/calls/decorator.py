@@ -12,12 +12,15 @@ from ..context import DepsT
 from ..formatting import Format, FormattableT
 from ..models import Model
 from ..prompts import (
-    AsyncContextPromptable,
-    AsyncPromptable,
-    ContextPromptable,
-    Promptable,
-    _utils as _prompt_utils,
-    prompt,
+    AsyncContextMessageTemplate,
+    AsyncContextPrompt,
+    AsyncMessageTemplate,
+    AsyncPrompt,
+    ContextMessageTemplate,
+    ContextPrompt,
+    MessageTemplate,
+    Prompt,
+    _utils,
 )
 from ..tools import (
     AsyncContextTool,
@@ -36,16 +39,32 @@ from .calls import AsyncCall, AsyncContextCall, Call, ContextCall
 
 @dataclass(kw_only=True)
 class CallDecorator(Generic[ToolT, FormattableT]):
-    """A decorator for converting prompts to calls."""
+    """Decorator for converting a `MessageTemplate` into a `Call`.
+
+    Takes a raw prompt function that returns message content and wraps it with tools,
+    format, and a model to create a `Call` that can be invoked directly without needing
+    to pass a model argument.
+
+    The decorator automatically detects whether the function is async or context-aware
+    and creates the appropriate `Call` variant (`Call`, `AsyncCall`, `ContextCall`, or `AsyncContextCall`).
+
+    Conceptually: `CallDecorator` = `PromptDecorator` + `Model`
+    Result: `Call` = `MessageTemplate` + tools + format + `Model`
+    """
 
     model: Model
+    """The default model to use with this call. May be overridden."""
+
     tools: Sequence[ToolT] | None
+    """The tools that are included in the prompt, if any."""
+
     format: type[FormattableT] | Format[FormattableT] | None
+    """The structured output format off the prompt, if any."""
 
     @overload
     def __call__(
         self: CallDecorator[AsyncTool | AsyncContextTool[DepsT], FormattableT],
-        fn: AsyncContextPromptable[P, DepsT],
+        fn: AsyncContextMessageTemplate[P, DepsT],
     ) -> AsyncContextCall[P, DepsT, FormattableT]:
         """Decorate an async context prompt into an AsyncContextCall."""
         ...
@@ -53,31 +72,31 @@ class CallDecorator(Generic[ToolT, FormattableT]):
     @overload
     def __call__(
         self: CallDecorator[Tool | ContextTool[DepsT], FormattableT],
-        fn: ContextPromptable[P, DepsT],
+        fn: ContextMessageTemplate[P, DepsT],
     ) -> ContextCall[P, DepsT, FormattableT]:
         """Decorate a context prompt into a ContextCall."""
         ...
 
     @overload
     def __call__(
-        self: CallDecorator[AsyncTool, FormattableT], fn: AsyncPromptable[P]
+        self: CallDecorator[AsyncTool, FormattableT], fn: AsyncMessageTemplate[P]
     ) -> AsyncCall[P, FormattableT]:
         """Decorate an async prompt into an AsyncCall."""
         ...
 
     @overload
     def __call__(
-        self: CallDecorator[Tool, FormattableT], fn: Promptable[P]
+        self: CallDecorator[Tool, FormattableT], fn: MessageTemplate[P]
     ) -> Call[P, FormattableT]:
         """Decorate a prompt into a Call."""
         ...
 
     def __call__(
         self,
-        fn: ContextPromptable[P, DepsT]
-        | AsyncContextPromptable[P, DepsT]
-        | Promptable[P]
-        | AsyncPromptable[P],
+        fn: ContextMessageTemplate[P, DepsT]
+        | AsyncContextMessageTemplate[P, DepsT]
+        | MessageTemplate[P]
+        | AsyncMessageTemplate[P],
     ) -> (
         ContextCall[P, DepsT, FormattableT]
         | AsyncContextCall[P, DepsT, FormattableT]
@@ -85,42 +104,48 @@ class CallDecorator(Generic[ToolT, FormattableT]):
         | AsyncCall[P, FormattableT]
     ):
         """Decorates a prompt into a Call or ContextCall."""
-        is_context = _prompt_utils.is_context_promptable(fn)
-        is_async = _prompt_utils.is_async_promptable(fn)
+        is_context = _utils.is_context_promptable(fn)
+        is_async = _utils.is_async_promptable(fn)
 
         if is_context and is_async:
             tools = cast(
                 Sequence[AsyncTool | AsyncContextTool[DepsT]] | None, self.tools
             )
-            return AsyncContextCall(
-                fn=prompt(fn),
-                default_model=self.model,
-                format=self.format,
+            prompt = AsyncContextPrompt(
+                fn=fn,
                 toolkit=AsyncContextToolkit(tools=tools),
+                format=self.format,
+            )
+            return AsyncContextCall(
+                prompt=prompt,
+                default_model=self.model,
             )
         elif is_context:
             tools = cast(Sequence[Tool | ContextTool[DepsT]] | None, self.tools)
-            return ContextCall(
-                fn=prompt(fn),
-                default_model=self.model,
-                format=self.format,
+            prompt = ContextPrompt(
+                fn=fn,
                 toolkit=ContextToolkit(tools=tools),
+                format=self.format,
+            )
+            return ContextCall(
+                prompt=prompt,
+                default_model=self.model,
             )
         elif is_async:
             tools = cast(Sequence[AsyncTool] | None, self.tools)
+            prompt = AsyncPrompt(
+                fn=fn, toolkit=AsyncToolkit(tools=tools), format=self.format
+            )
             return AsyncCall(
-                fn=prompt(fn),
+                prompt=prompt,
                 default_model=self.model,
-                format=self.format,
-                toolkit=AsyncToolkit(tools=tools),
             )
         else:
             tools = cast(Sequence[Tool] | None, self.tools)
+            prompt = Prompt(fn=fn, toolkit=Toolkit(tools=tools), format=self.format)
             return Call(
-                fn=prompt(fn),
+                prompt=prompt,
                 default_model=self.model,
-                format=self.format,
-                toolkit=Toolkit(tools=tools),
             )
 
 
@@ -128,7 +153,7 @@ class CallDecorator(Generic[ToolT, FormattableT]):
 def call(
     model: ModelId,
     *,
-    tools: list[ToolT] | None = None,
+    tools: Sequence[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
     **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
@@ -143,7 +168,7 @@ def call(
 def call(
     model: Model,
     *,
-    tools: list[ToolT] | None = None,
+    tools: Sequence[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
 ) -> CallDecorator[ToolT, FormattableT]:
     """Decorator for converting prompt functions into LLM calls.
@@ -156,32 +181,45 @@ def call(
 def call(
     model: ModelId | Model,
     *,
-    tools: list[ToolT] | None = None,
+    tools: Sequence[ToolT] | None = None,
     format: type[FormattableT] | Format[FormattableT] | None = None,
     **params: Unpack[Params],
 ) -> CallDecorator[ToolT, FormattableT]:
-    """Decorator for converting prompt functions into LLM calls.
+    """Decorates a `MessageTemplate` to create a `Call` that can be invoked directly.
 
-    The `llm.call` decorator is the most convenient way to use Mirascope. It decorates
-    a "prompt function" that returns the content provided to the LLM. The decorator
-    creates a `Call` or `ContextCall` that can be invoked to call the chosen LLM.
+    The `llm.call` decorator is the most convenient way to use Mirascope. It transforms
+    a raw prompt function (that returns message content) into a `Call` object that bundles
+    the function with tools, format, and a model. The resulting `Call` can be invoked
+    directly to generate LLM responses without needing to pass a model argument.
 
-    If the first parameter is typed as `llm.Context[T]`, it creates a `ContextCall`.
-    Otherwise, it creates a regular `Call`.
+    The decorator automatically detects the function type:
+    - If the first parameter is named `'ctx'` with type `llm.Context[T]` (or a subclass thereof),
+      creates a `ContextCall`
+    - If the function is async, creates an `AsyncCall` or `AsyncContextCall`
+    - Otherwise, creates a regular `Call`
 
     The model specified in the decorator can be overridden at runtime using the
     `llm.model()` context manager. When overridden, the context model completely
     replaces the decorated model, including all parameters.
 
+    Conceptual flow:
+    - `MessageTemplate`: raw function returning content
+    - `@llm.prompt`: `MessageTemplate` → `Prompt`
+      Includes tools and format, if applicable. Can be called by providing a `Model`.
+    - `@llm.call`: `MessageTemplate` → `Call`. Includes a model, tools, and format. The
+      model may be created on the fly from a model identifier and optional params, or
+      provided outright.
+
     Args:
         model: A model ID string (e.g., "openai/gpt-4") or a `Model` instance
-        tools: Optional list of tools to make available to the LLM
+        tools: Optional `Sequence` of tools to make available to the LLM
         format: Optional response format class (`BaseModel`) or Format instance
         **params: Additional call parameters (temperature, max_tokens, etc.)
             Only available when passing a model ID string
 
     Returns:
-        A `CallDecorator` that converts prompt functions into `Call` or `ContextCall` instances
+        A `CallDecorator` that converts prompt functions into `Call` variants
+        (`Call`, `AsyncCall`, `ContextCall`, or `AsyncContextCall`)
 
     Example:
 

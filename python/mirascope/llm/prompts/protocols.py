@@ -1,32 +1,19 @@
 """Types for prompt functions."""
 
 from collections.abc import Sequence
-from typing import Any, Protocol, TypeVar
+from typing import Protocol
 
 from ..context import Context, DepsT
 from ..messages import Message, UserContent
 from ..types import P
 
-PromptT = TypeVar(
-    "PromptT",
-    bound="Prompt[...] | AsyncPrompt[...] | ContextPrompt[..., Any] | AsyncContextPrompt[..., Any]",
-)
-"""Type variable for prompt types.
 
-This type var represents a resolved prompt, i.e. one that returns a Sequence of messages.
-"""
+class MessageTemplate(Protocol[P]):
+    """Protocol for a prompt function that returns `UserContent` or `Sequence[Message]`.
 
-
-class Prompt(Protocol[P]):
-    """Protocol for a `Prompt`, which returns `Sequence[Message]`."""
-
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Sequence[Message]: ...
-
-
-class Promptable(Protocol[P]):
-    """Protocol for a `Promptable` that returns `UserContent` or `Sequence[Message]`.
-
-    May be be converted by the `prompt` decorator into a `Prompt`.
+    A `MessageTemplate` is a raw function that returns prompt content. It can be
+    converted by the `llm.prompt` decorator into a `Prompt` (callable with a `Model`),
+    or by the `llm.call` decorator into a `Call` (`Prompt` + `Model`).
     """
 
     def __call__(
@@ -34,18 +21,11 @@ class Promptable(Protocol[P]):
     ) -> UserContent | Sequence[Message]: ...
 
 
-class AsyncPrompt(Protocol[P]):
-    """Protocol for an `AsyncPrompt`, which returns `Sequence[Message]`."""
+class AsyncMessageTemplate(Protocol[P]):
+    """Protocol for an async prompt function that returns `UserContent` or `Sequence[Message]`.
 
-    async def __call__(
-        self, *args: P.args, **kwargs: P.kwargs
-    ) -> Sequence[Message]: ...
-
-
-class AsyncPromptable(Protocol[P]):
-    """Protocol for an `AsyncPromptable` that returns `UserContent` or `Sequence[Message]`.
-
-    May be converted by the `prompt` decorator into an `AsyncPrompt`.
+    An async `MessageTemplate` that can be converted by the `llm.prompt` decorator
+    into an `AsyncPrompt`, or by the `llm.call` decorator into an `AsyncCall`.
     """
 
     async def __call__(
@@ -53,21 +33,12 @@ class AsyncPromptable(Protocol[P]):
     ) -> UserContent | Sequence[Message]: ...
 
 
-class ContextPrompt(Protocol[P, DepsT]):
-    """Protocol for a `ContextPrompt`, which returns `Sequence[Message]`."""
+class ContextMessageTemplate(Protocol[P, DepsT]):
+    """Protocol for a context-aware prompt function that returns `UserContent` or `Sequence[Message]`.
 
-    def __call__(
-        self,
-        ctx: Context[DepsT],
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> Sequence[Message]: ...
-
-
-class ContextPromptable(Protocol[P, DepsT]):
-    """Protocol for a `ContextPromptable` that returns `UserContent` or `Sequence[Message]`.
-
-    May be converted by the `prompt` decorator into a `ContextPrompt`.
+    A `MessageTemplate` with a first parameter named `'ctx'` of type `Context[DepsT]`.
+    Can be converted by the `llm.prompt` decorator into a `ContextPrompt`, or by
+    the `llm.call` decorator into a `ContextCall`.
     """
 
     def __call__(
@@ -78,21 +49,12 @@ class ContextPromptable(Protocol[P, DepsT]):
     ) -> UserContent | Sequence[Message]: ...
 
 
-class AsyncContextPrompt(Protocol[P, DepsT]):
-    """Protocol for an `AsyncContextPrompt`, which returns `Sequence[Message]`."""
+class AsyncContextMessageTemplate(Protocol[P, DepsT]):
+    """Protocol for an async context-aware prompt function that returns `UserContent` or `Sequence[Message]`.
 
-    async def __call__(
-        self,
-        ctx: Context[DepsT],
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> Sequence[Message]: ...
-
-
-class AsyncContextPromptable(Protocol[P, DepsT]):
-    """Protocol for an `AsyncContextPromptable` that returns `UserContent` or `Sequence[Message]`.
-
-    May be converted by the `prompt` decorator into an `AsyncContextPrompt`.
+    An async `MessageTemplate` with a first parameter named `'ctx'` of type `Context[DepsT]`.
+    Can be converted by the `llm.prompt` decorator into an `AsyncContextPrompt`, or by
+    the `llm.call` decorator into an `AsyncContextCall`.
     """
 
     async def __call__(

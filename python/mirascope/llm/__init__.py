@@ -26,7 +26,7 @@ from . import (
 
 with suppress(ImportError):
     from . import mcp
-from .calls import call
+from .calls import AsyncCall, AsyncContextCall, Call, CallDecorator, ContextCall, call
 from .clients import ModelId, Params, Provider, client, get_client
 from .content import (
     AssistantContentChunk,
@@ -79,7 +79,14 @@ from .messages import (
     UserMessage,
 )
 from .models import Model, model, use_model
-from .prompts import prompt
+from .prompts import (
+    AsyncContextPrompt,
+    AsyncPrompt,
+    ContextPrompt,
+    Prompt,
+    PromptDecorator,
+    prompt,
+)
 from .responses import (
     AsyncChunkIterator,
     AsyncContextResponse,
@@ -121,11 +128,15 @@ __all__ = [
     "AssistantContentChunk",
     "AssistantContentPart",
     "AssistantMessage",
+    "AsyncCall",
     "AsyncChunkIterator",
+    "AsyncContextCall",
+    "AsyncContextPrompt",
     "AsyncContextResponse",
     "AsyncContextStreamResponse",
     "AsyncContextTool",
     "AsyncContextToolkit",
+    "AsyncPrompt",
     "AsyncResponse",
     "AsyncStream",
     "AsyncStreamResponse",
@@ -139,9 +150,13 @@ __all__ = [
     "BadRequestError",
     "Base64AudioSource",
     "Base64ImageSource",
+    "Call",
+    "CallDecorator",
     "ChunkIterator",
     "ConnectionError",
     "Context",
+    "ContextCall",
+    "ContextPrompt",
     "ContextResponse",
     "ContextStreamResponse",
     "ContextTool",
@@ -161,6 +176,8 @@ __all__ = [
     "Params",
     "Partial",
     "PermissionError",
+    "Prompt",
+    "PromptDecorator",
     "Provider",
     "RateLimitError",
     "RawMessageChunk",
