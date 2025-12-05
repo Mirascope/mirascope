@@ -1,2 +1,2 @@
 [codespell]
-skip = .git,*.lock,bun.lockb,node_modules,*/node_modules/*,*/dist/*,*/cassettes/*.yaml,*/snapshots/*,*/htmlcov/*
+skip = .git,*.lock,bun.lockb,node_modules,*/node_modules/*,*/dist/*,*/cassettes/*.yaml,*/snapshots/*,*/htmlcov/*,*/mlx_lm_cassettes/*
