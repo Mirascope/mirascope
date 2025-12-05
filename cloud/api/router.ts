@@ -2,6 +2,7 @@ import { HttpApi, HttpApiBuilder } from "@effect/platform";
 import { Layer } from "effect";
 import { HealthApi, checkHealthHandler } from "./health";
 import { TracesApi, createTraceHandler } from "./traces";
+import { DocsApi, getOpenApiSpecHandler } from "./docs";
 
 // ============================================================================
 // Combined API Definition
@@ -9,7 +10,8 @@ import { TracesApi, createTraceHandler } from "./traces";
 
 export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
   .add(HealthApi)
-  .add(TracesApi) {}
+  .add(TracesApi)
+  .add(DocsApi) {}
 
 // ============================================================================
 // Handlers Layer
@@ -28,6 +30,12 @@ const TracesHandlersLive = HttpApiBuilder.group(
     handlers.handle("create", ({ payload }) => createTraceHandler(payload)),
 );
 
+const DocsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "docs",
+  (handlers) => handlers.handle("openapi", () => getOpenApiSpecHandler),
+);
+
 // ============================================================================
 // Combined API Layer
 // ============================================================================
@@ -35,4 +43,5 @@ const TracesHandlersLive = HttpApiBuilder.group(
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
+  Layer.provide(DocsHandlersLive),
 );
