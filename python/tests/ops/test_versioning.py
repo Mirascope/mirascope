@@ -9,7 +9,7 @@ import pytest
 from inline_snapshot import snapshot
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
-from mirascope.ops import ClosureComputationError, session, version
+from mirascope.ops import ClosureComputationError, VersionInfo, session, version
 from mirascope.ops._internal.closure import Closure
 
 from .utils import extract_span_data
@@ -79,7 +79,10 @@ def test_version_with_all_decorator_arguments(
                 "mirascope.fn.qualname": "recommend_book",
                 "mirascope.fn.is_async": False,
                 "mirascope.fn.module": "ops.test_versioning",
-                "function_hash": span_data["attributes"]["function_hash"],
+                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
+                "mirascope.fn.signature_hash": span_data["attributes"][
+                    "mirascope.fn.signature_hash"
+                ],
                 "mirascope.trace.tags": ("ml", "production"),
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.metadata": '{"owner":"team-ml","ticket":"ENG-1234"}',
@@ -130,7 +133,10 @@ async def test_async_version_with_all_decorator_arguments(
                 "mirascope.fn.qualname": "recommend_async",
                 "mirascope.fn.is_async": True,
                 "mirascope.fn.module": "ops.test_versioning",
-                "function_hash": span_data["attributes"]["function_hash"],
+                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
+                "mirascope.fn.signature_hash": span_data["attributes"][
+                    "mirascope.fn.signature_hash"
+                ],
                 "mirascope.trace.tags": ("staging",),
                 "mirascope.trace.arg_types": '{"genre":"str"}',
                 "mirascope.trace.metadata": '{"env":"staging"}',
@@ -175,7 +181,10 @@ def test_version_with_default_arguments(
                 "mirascope.fn.qualname": "compute",
                 "mirascope.fn.is_async": False,
                 "mirascope.fn.module": "ops.test_versioning",
-                "function_hash": span_data["attributes"]["function_hash"],
+                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
+                "mirascope.fn.signature_hash": span_data["attributes"][
+                    "mirascope.fn.signature_hash"
+                ],
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":5}',
                 "mirascope.trace.output": 10,
@@ -216,7 +225,10 @@ def test_version_with_empty_parens(
                 "mirascope.fn.qualname": "compute",
                 "mirascope.fn.is_async": False,
                 "mirascope.fn.module": "ops.test_versioning",
-                "function_hash": span_data["attributes"]["function_hash"],
+                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
+                "mirascope.fn.signature_hash": span_data["attributes"][
+                    "mirascope.fn.signature_hash"
+                ],
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":4}',
                 "mirascope.trace.output": 12,
@@ -254,9 +266,12 @@ def test_version_sync(
                 "mirascope.fn.qualname": "multiply",
                 "mirascope.fn.is_async": False,
                 "mirascope.fn.module": "ops.test_versioning",
-                "function_hash": extract_span_data(spans[0])["attributes"][
-                    "function_hash"
+                "mirascope.fn.hash": extract_span_data(spans[0])["attributes"][
+                    "mirascope.fn.hash"
                 ],
+                "mirascope.fn.signature_hash": extract_span_data(spans[0])[
+                    "attributes"
+                ]["mirascope.fn.signature_hash"],
                 "mirascope.trace.arg_types": '{"x":"int","y":"int"}',
                 "mirascope.trace.arg_values": '{"x":5,"y":7}',
                 "mirascope.trace.output": 35,
@@ -301,9 +316,12 @@ async def test_version_async(
                 "mirascope.fn.qualname": "process_data",
                 "mirascope.fn.is_async": True,
                 "mirascope.fn.module": "ops.test_versioning",
-                "function_hash": extract_span_data(spans[0])["attributes"][
-                    "function_hash"
+                "mirascope.fn.hash": extract_span_data(spans[0])["attributes"][
+                    "mirascope.fn.hash"
                 ],
+                "mirascope.fn.signature_hash": extract_span_data(spans[0])[
+                    "attributes"
+                ]["mirascope.fn.signature_hash"],
                 "mirascope.trace.arg_types": '{"data":"dict[str, int]"}',
                 "mirascope.trace.arg_values": '{"data":{"a":1,"b":2}}',
                 "mirascope.trace.output": '{"a":2.0,"b":4.0}',
@@ -342,12 +360,15 @@ def test_version_with_session(
                 "mirascope.ops.session.id": "version-session-789",
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": False,
+                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
+                "mirascope.fn.signature_hash": span_data["attributes"][
+                    "mirascope.fn.signature_hash"
+                ],
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":3}',
                 "mirascope.trace.output": 30,
-                "function_hash": span_data["attributes"]["function_hash"],
             },
             "status": {"status_code": "UNSET", "description": None},
             "events": [],
@@ -381,12 +402,15 @@ async def test_async_version_with_session(
                 "mirascope.ops.session.id": "async-version-session-999",
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.module": "ops.test_versioning",
                 "mirascope.fn.is_async": True,
+                "mirascope.fn.module": "ops.test_versioning",
+                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
+                "mirascope.fn.signature_hash": span_data["attributes"][
+                    "mirascope.fn.signature_hash"
+                ],
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":4}',
                 "mirascope.trace.output": 80,
-                "function_hash": span_data["attributes"]["function_hash"],
             },
             "status": {"status_code": "UNSET", "description": None},
             "events": [],
@@ -481,3 +505,173 @@ async def test_async_version_with_function_uuid(
 
     span_data = extract_span_data(spans[0])
     assert span_data["attributes"]["function_uuid"] == "async-test-uuid-456"
+
+
+def test_version_info_property() -> None:
+    """Test version_info property returns correct VersionInfo with all fields."""
+
+    @version(
+        name="book_recommender",
+        tags=["production", "ml"],
+        metadata={"owner": "team-ml", "ticket": "ENG-1234"},
+    )
+    def recommend_book(genre: str) -> str:
+        """Recommends books based on genre"""
+        return f"Recommend a {genre} book"
+
+    info = recommend_book.version_info
+
+    assert info is not None
+    assert isinstance(info, VersionInfo)
+
+    assert info == snapshot(
+        VersionInfo(
+            uuid=None,
+            hash="5237bac10a23a22dc44349a360ea92e1fb8afc019f8003be6fa387e0a60395d7",
+            signature_hash="6c72d21b0b804df8f8d9c29c4a48ef20aa33659c088afd6c3396fdb48ee7f261",
+            name="book_recommender",
+            description="Recommends books based on genre",
+            version="1.0",
+            tags=("ml", "production"),
+            metadata={"owner": "team-ml", "ticket": "ENG-1234"},
+        )
+    )
+
+
+def test_version_info_uses_function_name_when_no_custom_name() -> None:
+    """Test version_info uses closure name when no custom name is provided."""
+
+    @version
+    def compute(x: int) -> int:
+        return x * 2
+
+    info = compute.version_info
+
+    assert isinstance(info, VersionInfo)
+
+    assert info == snapshot(
+        VersionInfo(
+            uuid=None,
+            hash="c170404d149195e46de41dbfead33d1b2da0a6981a83d7af77db042dff5a021b",
+            signature_hash="557b953f8c5541781e42f0b46f5c901b0411b0c172cc83a075e5a18c8866593b",
+            name="compute",
+            description=None,
+            version="1.0",
+            tags=(),
+            metadata={},
+        )
+    )
+
+
+@pytest.mark.asyncio
+async def test_async_version_info_property() -> None:
+    """Test version_info property works correctly on async versioned functions."""
+
+    @version(
+        name="async_recommender",
+        tags=["staging"],
+        metadata={"env": "staging"},
+    )
+    async def recommend_async(genre: str) -> str:
+        """Async book recommender"""
+        return f"Async recommend a {genre} book"
+
+    info = recommend_async.version_info
+
+    assert info is not None
+    assert isinstance(info, VersionInfo)
+
+    assert info == snapshot(
+        VersionInfo(
+            uuid=None,
+            hash="31a4179fa785e06d3eeb722d526a89097cd3765fd520f008cb829873082f098c",
+            signature_hash="dd9d176b5fcd78819422d7c50745741f737f50874d3a4c2bee6866da2dcc339f",
+            name="async_recommender",
+            description="Async book recommender",
+            version="1.0",
+            tags=("staging",),
+            metadata={"env": "staging"},
+        )
+    )
+
+
+def test_version_info_returns_none_when_closure_fails() -> None:
+    """Test version_info returns None when closure computation fails."""
+    with patch(
+        "mirascope.ops._internal.closure.Closure.from_fn",
+        side_effect=ClosureComputationError(qualified_name="fn"),
+    ):
+
+        @version
+        def fn() -> str:
+            return "ok"
+
+        assert fn.closure is None
+        assert fn.version_info is None
+
+
+def test_version_info_is_cached() -> None:
+    """Test version_info property is cached and returns same instance."""
+
+    @version
+    def compute(x: int) -> int:
+        return x * 2
+
+    info1 = compute.version_info
+    info2 = compute.version_info
+
+    assert info1 is info2
+
+
+def test_version_info_instantiation() -> None:
+    """Test VersionInfo dataclass can be instantiated and fields accessed."""
+    info = VersionInfo(
+        uuid="test-uuid-123",
+        hash="abc123def456",
+        signature_hash="",
+        name="my_function",
+        description="A test function",
+        version="1.0",
+        tags=("production", "v1"),
+        metadata={"owner": "team-ml", "ticket": "ENG-1234"},
+    )
+
+    assert info == snapshot(
+        VersionInfo(
+            uuid="test-uuid-123",
+            hash="abc123def456",
+            signature_hash="",
+            name="my_function",
+            description="A test function",
+            version="1.0",
+            tags=("production", "v1"),
+            metadata={"owner": "team-ml", "ticket": "ENG-1234"},
+        )
+    )
+
+
+def test_version_info_with_none_values() -> None:
+    """Test VersionInfo with None uuid and description (before server registration)."""
+    info = VersionInfo(
+        uuid=None,
+        hash="abc123",
+        signature_hash="",
+        name="unregistered_fn",
+        description=None,
+        version="0.1",
+        tags=(),
+        metadata={},
+    )
+
+    assert info == snapshot(
+        VersionInfo(
+            uuid=None,
+            hash="abc123",
+            signature_hash="",
+            name="unregistered_fn",
+            description=None,
+            version="0.1",
+            tags=(),
+            metadata={},
+        )
+    )
