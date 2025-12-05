@@ -605,17 +605,17 @@
   ],
   "servers": [
     {
-      "url": "https://v2.mirascope.com",
+      "url": "https://v2.mirascope.com/api/v0",
       "description": "Production server",
       "x-fern-server-name": "production"
     },
     {
-      "url": "https://staging.mirascope.com",
+      "url": "https://staging.mirascope.com/api/v0",
       "description": "Staging server",
       "x-fern-server-name": "staging"
     },
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:3000/api/v0",
       "description": "Local development server",
       "x-fern-server-name": "local"
     }

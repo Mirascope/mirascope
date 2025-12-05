@@ -1,10 +1,6 @@
 import { Context } from "effect";
 
-// ============================================================================
-// Context
-// ============================================================================
-
-export class EnvironmentService extends Context.Tag("EnvironmentService")<
-  EnvironmentService,
-  { readonly environment: string }
+export class Environment extends Context.Tag("EnvironmentService")<
+  Environment,
+  { readonly env: string }
 >() {}
