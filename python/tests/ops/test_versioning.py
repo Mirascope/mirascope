@@ -90,18 +90,20 @@ def test_version_with_all_decorator_arguments(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend_book",
-                "mirascope.fn.is_async": False,
                 "mirascope.fn.module": "ops.test_versioning",
-                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
-                "mirascope.fn.signature_hash": span_data["attributes"][
-                    "mirascope.fn.signature_hash"
-                ],
-                "mirascope.trace.tags": ("ml", "production"),
+                "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
-                "mirascope.trace.metadata": '{"owner":"team-ml","ticket":"ENG-1234"}',
                 "mirascope.trace.arg_values": '{"genre":"fantasy"}',
+                "mirascope.trace.tags": ("ml", "production"),
+                "mirascope.trace.metadata": '{"owner":"team-ml","ticket":"ENG-1234"}',
+                "mirascope.version.hash": "5237bac10a23a22dc44349a360ea92e1fb8afc019f8003be6fa387e0a60395d7",
+                "mirascope.version.signature_hash": "6c72d21b0b804df8f8d9c29c4a48ef20aa33659c088afd6c3396fdb48ee7f261",
+                "mirascope.version.version": "1.0",
                 "mirascope.version.name": "book_recommender",
+                "mirascope.version.tags": ("ml", "production"),
                 "mirascope.version.description": "Recommends books based on genre",
+                "mirascope.version.meta.owner": "team-ml",
+                "mirascope.version.meta.ticket": "ENG-1234",
                 "mirascope.trace.output": "Recommend a fantasy book",
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -144,18 +146,19 @@ async def test_async_version_with_all_decorator_arguments(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "recommend_async",
-                "mirascope.fn.is_async": True,
                 "mirascope.fn.module": "ops.test_versioning",
-                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
-                "mirascope.fn.signature_hash": span_data["attributes"][
-                    "mirascope.fn.signature_hash"
-                ],
-                "mirascope.trace.tags": ("staging",),
+                "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"genre":"str"}',
-                "mirascope.trace.metadata": '{"env":"staging"}',
                 "mirascope.trace.arg_values": '{"genre":"mystery"}',
+                "mirascope.trace.tags": ("staging",),
+                "mirascope.trace.metadata": '{"env":"staging"}',
+                "mirascope.version.hash": "31a4179fa785e06d3eeb722d526a89097cd3765fd520f008cb829873082f098c",
+                "mirascope.version.signature_hash": "dd9d176b5fcd78819422d7c50745741f737f50874d3a4c2bee6866da2dcc339f",
+                "mirascope.version.version": "1.0",
                 "mirascope.version.name": "async_recommender",
+                "mirascope.version.tags": ("staging",),
                 "mirascope.version.description": "Async book recommender",
+                "mirascope.version.meta.env": "staging",
                 "mirascope.trace.output": "Async recommend a mystery book",
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -192,14 +195,13 @@ def test_version_with_default_arguments(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.is_async": False,
                 "mirascope.fn.module": "ops.test_versioning",
-                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
-                "mirascope.fn.signature_hash": span_data["attributes"][
-                    "mirascope.fn.signature_hash"
-                ],
+                "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":5}',
+                "mirascope.version.hash": "c170404d149195e46de41dbfead33d1b2da0a6981a83d7af77db042dff5a021b",
+                "mirascope.version.signature_hash": "557b953f8c5541781e42f0b46f5c901b0411b0c172cc83a075e5a18c8866593b",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 10,
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -236,14 +238,13 @@ def test_version_with_empty_parens(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.is_async": False,
                 "mirascope.fn.module": "ops.test_versioning",
-                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
-                "mirascope.fn.signature_hash": span_data["attributes"][
-                    "mirascope.fn.signature_hash"
-                ],
+                "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":4}',
+                "mirascope.version.hash": "394a50b0a209c7063a82069a95cda071eada3a97fc3656e2b898d28b49fd95f2",
+                "mirascope.version.signature_hash": "d2006ef36ed7ecb416bb6d1487cfbe5e8c9eafbf4ee865b88d875f4fe4bcc158",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 12,
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -277,16 +278,13 @@ def test_version_sync(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "multiply",
-                "mirascope.fn.is_async": False,
                 "mirascope.fn.module": "ops.test_versioning",
-                "mirascope.fn.hash": extract_span_data(spans[0])["attributes"][
-                    "mirascope.fn.hash"
-                ],
-                "mirascope.fn.signature_hash": extract_span_data(spans[0])[
-                    "attributes"
-                ]["mirascope.fn.signature_hash"],
+                "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int","y":"int"}',
                 "mirascope.trace.arg_values": '{"x":5,"y":7}',
+                "mirascope.version.hash": "04fe91ab23242c63bb8a2013f17df9fbe5378ec20c0cc35467f06c8fa8a14373",
+                "mirascope.version.signature_hash": "0c457fa03ae6f618e1c3b063d863881997103c9f17e7b3b59a86ceb0f0d74085",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 35,
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -327,16 +325,13 @@ async def test_version_async(
             "attributes": {
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "process_data",
-                "mirascope.fn.is_async": True,
                 "mirascope.fn.module": "ops.test_versioning",
-                "mirascope.fn.hash": extract_span_data(spans[0])["attributes"][
-                    "mirascope.fn.hash"
-                ],
-                "mirascope.fn.signature_hash": extract_span_data(spans[0])[
-                    "attributes"
-                ]["mirascope.fn.signature_hash"],
+                "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"data":"dict[str, int]"}',
                 "mirascope.trace.arg_values": '{"data":{"a":1,"b":2}}',
+                "mirascope.version.hash": "88e96c471ead265f7c48a24bc48910d595d637bfa323c545e4745ffbdfd81cd7",
+                "mirascope.version.signature_hash": "d18d86a9986299ae93164d8d886eba4a32bc9e213134dc92113ae3cac6170408",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": '{"a":2.0,"b":4.0}',
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -373,14 +368,13 @@ def test_version_with_session(
                 "mirascope.ops.session.id": "version-session-789",
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.is_async": False,
                 "mirascope.fn.module": "ops.test_versioning",
-                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
-                "mirascope.fn.signature_hash": span_data["attributes"][
-                    "mirascope.fn.signature_hash"
-                ],
+                "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":3}',
+                "mirascope.version.hash": "9149426872615a93b816bf0dc4aab6e745c0c6e8143cb314a266944c9f7cc0f0",
+                "mirascope.version.signature_hash": "557b953f8c5541781e42f0b46f5c901b0411b0c172cc83a075e5a18c8866593b",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 30,
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -415,14 +409,13 @@ async def test_async_version_with_session(
                 "mirascope.ops.session.id": "async-version-session-999",
                 "mirascope.type": "trace",
                 "mirascope.fn.qualname": "compute",
-                "mirascope.fn.is_async": True,
                 "mirascope.fn.module": "ops.test_versioning",
-                "mirascope.fn.hash": span_data["attributes"]["mirascope.fn.hash"],
-                "mirascope.fn.signature_hash": span_data["attributes"][
-                    "mirascope.fn.signature_hash"
-                ],
+                "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"x":"int"}',
                 "mirascope.trace.arg_values": '{"x":4}',
+                "mirascope.version.hash": "a50e892e8a96846305b48320c2b3d708ba02bb170412aec0e5e17c31437e0ecd",
+                "mirascope.version.signature_hash": "4c1cec07ce867f76ef0e07158f45f79a11125129b6b5eb5d42ad8be08a9c0dd0",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 80,
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -492,7 +485,7 @@ def test_version_with_function_uuid(
     assert len(spans) == 1
 
     span_data = extract_span_data(spans[0])
-    assert span_data["attributes"]["function_uuid"] == "test-uuid-123"
+    assert span_data["attributes"]["mirascope.version.uuid"] == "test-uuid-123"
 
 
 @pytest.mark.asyncio
@@ -517,7 +510,7 @@ async def test_async_version_with_function_uuid(
     assert len(spans) == 1
 
     span_data = extract_span_data(spans[0])
-    assert span_data["attributes"]["function_uuid"] == "async-test-uuid-456"
+    assert span_data["attributes"]["mirascope.version.uuid"] == "async-test-uuid-456"
 
 
 def test_version_info_property() -> None:
@@ -767,8 +760,9 @@ def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["fantasy"],"kwargs":{}}',
-                "mirascope.fn.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
-                "mirascope.fn.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
+                "mirascope.version.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": "I highly recommend **\"The Name of the Wind\" by Patrick Rothfuss**. It's the first book in the Kingkiller Chronicle series and follows the story of Kvothe, a gifted young man who becomes a legendary figure. The narrative weaves together magic, music, and adventure, all told in Kvothe's own voice as he recounts his life's journey. The writing is beautiful, and the world-building is rich and immersive. Enjoy your reading!",
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -809,8 +803,9 @@ def test_versioned_call_wrapped_method(span_exporter: InMemorySpanExporter) -> N
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["mystery"],"kwargs":{}}',
-                "mirascope.fn.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
-                "mirascope.fn.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
+                "mirascope.version.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": "I recommend **\"The No. 1 Ladies' Detective Agency\"** by Alexander McCall Smith. It's a charming mystery set in Botswana, featuring the clever and resourceful Precious Ramotswe as she solves various cases with a unique blend of humor and insight. The book combines an engaging storyline with rich cultural details, making it both an enjoyable read and a delightful introduction to the series.",
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -850,8 +845,9 @@ def test_versioned_call_call_method(span_exporter: InMemorySpanExporter) -> None
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["fantasy"],"kwargs":{}}',
-                "mirascope.fn.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
-                "mirascope.fn.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
+                "mirascope.version.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I recommend **"The Name of the Wind" by Patrick Rothfuss**. It’s the first book in the *The Kingkiller Chronicle* series and follows the story of Kvothe, a gifted young man who grows to become a legendary figure. The narrative weaves magic, music, and adventure in a richly detailed world. Its lyrical prose and deep character development make it a captivating read for fantasy lovers. Enjoy!',
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -907,8 +903,9 @@ def test_versioned_call_wrapped_stream(span_exporter: InMemorySpanExporter) -> N
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["adventure"],"kwargs":{}}',
-                "mirascope.fn.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
-                "mirascope.fn.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
+                "mirascope.version.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": "**[No Content]**",
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -951,8 +948,9 @@ async def test_versioned_async_call(span_exporter: InMemorySpanExporter) -> None
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["horror"],"kwargs":{}}',
-                "mirascope.fn.hash": "877be74e6c1e96bad72247c09c06adc1d029dbab276d4898f54b85e6854804b1",
-                "mirascope.fn.signature_hash": "a4c2e83f886b409631d5a84a91ae8dfbe015862f824b867d684f5f30975310cf",
+                "mirascope.version.hash": "877be74e6c1e96bad72247c09c06adc1d029dbab276d4898f54b85e6854804b1",
+                "mirascope.version.signature_hash": "a4c2e83f886b409631d5a84a91ae8dfbe015862f824b867d684f5f30975310cf",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I recommend **"The Haunting of Hill House" by Shirley Jackson**. This classic novel explores the eerie and unsettling experiences of a group of people staying in a supposedly haunted mansion. Jackson\'s atmospheric writing and psychological tension create a chilling experience, making it a must-read for horror fans. If you\'re looking for something more contemporary, consider **"Mexican Gothic" by Silvia Moreno-Garcia**, which combines elements of gothic horror with a rich cultural backdrop. Both books offer unique and compelling takes on the genre!',
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -995,8 +993,9 @@ async def test_versioned_async_call_call_method(
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["horror"],"kwargs":{}}',
-                "mirascope.fn.hash": "877be74e6c1e96bad72247c09c06adc1d029dbab276d4898f54b85e6854804b1",
-                "mirascope.fn.signature_hash": "a4c2e83f886b409631d5a84a91ae8dfbe015862f824b867d684f5f30975310cf",
+                "mirascope.version.hash": "877be74e6c1e96bad72247c09c06adc1d029dbab276d4898f54b85e6854804b1",
+                "mirascope.version.signature_hash": "a4c2e83f886b409631d5a84a91ae8dfbe015862f824b867d684f5f30975310cf",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I recommend "The Haunting of Hill House" by Shirley Jackson. It\'s a classic in the horror genre, exploring themes of fear, isolation, and psychological disturbance. The story follows a group of people who gather at a supposedly haunted mansion, and the eerie atmosphere and character dynamics make it both chilling and thought-provoking. Enjoy!',
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -1056,8 +1055,9 @@ def test_versioned_context_call(span_exporter: InMemorySpanExporter) -> None:
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"ctx":"Context","args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"args":["fantasy"],"kwargs":{}}',
-                "mirascope.fn.hash": "8e98056ad87b75ae8554b3a1883f0ffbe00402e97abf57e5d6131c3b72e4ccda",
-                "mirascope.fn.signature_hash": "7b86c8c72d035c510c504f0078ee874178156efe81827c251300ce3cfe36ebcc",
+                "mirascope.version.hash": "8e98056ad87b75ae8554b3a1883f0ffbe00402e97abf57e5d6131c3b72e4ccda",
+                "mirascope.version.signature_hash": "7b86c8c72d035c510c504f0078ee874178156efe81827c251300ce3cfe36ebcc",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I highly recommend **"The Name of the Wind" by Patrick Rothfuss**. This novel is the first book in the *Kingkiller Chronicle* series and follows the story of Kvothe, a gifted young man who grows up to become a legendary figure. The narrative combines rich world-building, a unique magic system, and its protagonist\'s journey through love, loss, and the pursuit of knowledge. The prose is lyrical, making it a joy to read while exploring themes of storytelling and identity. Perfect for fans of intricate plots and character-driven tales!',
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -1136,8 +1136,9 @@ async def test_versioned_async_context_call(
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"ctx":"Context","args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"args":["mystery"],"kwargs":{}}',
-                "mirascope.fn.hash": "8d8785a934ce3621350788d6feb001669beb09443631797bacee2b88a510b965",
-                "mirascope.fn.signature_hash": "a8c6d85888f29277558d3deea2d3acdf36ee8801ab5398d0df3d44f7a20a0770",
+                "mirascope.version.hash": "8d8785a934ce3621350788d6feb001669beb09443631797bacee2b88a510b965",
+                "mirascope.version.signature_hash": "a8c6d85888f29277558d3deea2d3acdf36ee8801ab5398d0df3d44f7a20a0770",
+                "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I recommend **"The Guest List" by Lucy Foley**. This gripping mystery unfolds during a lavish wedding celebration on a remote Irish island. As the guests gather, tensions rise, and secrets begin to surface, culminating in a shocking murder. The narrative shifts between multiple perspectives, keeping you guessing until the very end. It\'s a fantastic blend of suspense, rich character development, and atmospheric setting—perfect for fans of psychological thrillers!',
             },
             "status": {"status_code": "UNSET", "description": None},
@@ -1213,8 +1214,10 @@ def test_versioned_call_with_tags(span_exporter: InMemorySpanExporter) -> None:
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["romance"],"kwargs":{}}',
                 "mirascope.trace.tags": ("production", "recommendations"),
-                "mirascope.fn.hash": "bc24237317563e580054a46c60be691fad1b2983e23dc7ec435d6773d628fa29",
-                "mirascope.fn.signature_hash": "13ab92f4821a17b58b435ac860306b3103bd7aecd820265b13db85c7bc8f7ef3",
+                "mirascope.version.hash": "bc24237317563e580054a46c60be691fad1b2983e23dc7ec435d6773d628fa29",
+                "mirascope.version.signature_hash": "13ab92f4821a17b58b435ac860306b3103bd7aecd820265b13db85c7bc8f7ef3",
+                "mirascope.version.version": "1.0",
+                "mirascope.version.tags": ("production", "recommendations"),
                 "mirascope.trace.output": "I recommend **\"The Kiss Quotient\" by Helen Hoang**. It’s a refreshing story about Stella Lane, a successful woman with Asperger's, who decides to hire an escort to help her gain more experience in relationships. The book beautifully explores themes of love, acceptance, and self-discovery, with a charming romance that unfolds between Stella and the escort, Michael. It's both sweet and steamy, making it a wonderful read for romance lovers!",
             },
             "status": {"status_code": "UNSET", "description": None},
