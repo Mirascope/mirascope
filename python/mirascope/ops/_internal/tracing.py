@@ -14,7 +14,7 @@ from .protocols import (
     SyncFunction,
     fn_is_async,
 )
-from .traced_call import (
+from .traced_calls import (
     TracedAsyncCall,
     TracedAsyncContextCall,
     TracedCall,

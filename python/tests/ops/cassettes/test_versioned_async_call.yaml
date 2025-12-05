@@ -1,0 +1,115 @@
+interactions:
+- request:
+    body: '{"input":[{"content":"Recommend a horror book.","role":"user"}],"model":"gpt-4o-mini"}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '86'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 2.7.1
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 2.7.1
+      x-stainless-read-timeout:
+      - '600'
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.10.15
+    method: POST
+    uri: https://api.openai.com/v1/responses
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3RVS2/bOBC+51fM6lLAiANZcWI7x700XaCn7a1dCGNqZHFNcbjk0IlQ5L8vSNmy
+        3SY3ch4f5/nx5w1AoZviCQpPwdXlw4aq6vFxtWmVapdVWT5u7hfre9o0KyrXi83DelMtyrJtqbrf
+        Ns12WdwmCN7+S0pOMGwDjXLlCYWaGpNusXpcrh+q1eI+64KgxJB8FPfOkFAzOm1R7Xeeo01xtWgC
+        jWJtjLa74gl+3gAAFA4H8sm/oQMZduSLG4C3bEzec9LZaEwWaHt6pW5IUJtwrQ3ioxLN9kre42vN
+        UVyUWnhPvyuF2dQKzTVczw2ZFNnOyXzJ815bPa/KajkvV/PF+lizjFs8wfeczpjU1I4+7D7uBq6r
+        SqVubJotLTdqVVHTLhfqPiNnFBkcZRwKAXd0VnxU9qxUbIXsOajLwK5gT0WhV5m8swFay4KnQn7/
+        50ppeOc8b9/RZKAnKL6AJ8V9T7aB2exH8a0jeMZoRdsdcAvP2hh45hjoRwHbAf7utDc0wF+o9oHt
+        bHYH3zodQBkMQSuwfCAD9OoMewogHQGR1wRoG4g2kEgaqmSRxFZRSM8gpAF06eiInSEIgkMy1BYQ
+        QnSOAzVmgC4FRw30aINme3eK5FMAlJ6D68hrBS9e5xTSsy4MqmPDO63QgFB2hHFVAEF146BfxHQL
+        Pe7z6wIIfQwy94QNtOyh4zTq0KINd/ClhYHjJ09gmLNHMgnck3Tp1rMnyE3uHXv0w226Bd2Qz+X+
+        Sq9aoYXPLJ1WxxJrc9AIX9mT5fln9ErjbHYLL51WHSjut9pSADLUk5Vcvl12P4X2oqUDBJ/No5Ho
+        0UBa8sazu4M/WTrYMu+Ta0seotX/xbFDaURprIbgPvXG5h7uyHr6o5gm6O14moaq8GzyoKYxCIJW
+        RuNkmI0Khx6NIXO9wuLjyDbO00FzDPWJ0Oq8l9OKO8+9k1qh6qje0/ChzlPaKM320sITBrZXbEZt
+        y14ujNKuxr5Hf8KeyC1gSzLUuknAraYrogvkD1pRLfpEji1GM25pEYQ9XaaZBoE8SszixV15lOZt
+        PEbWsu/xfL9ggWw31vUY8YH8loOWYeSeRsf+TMpjpTvWamxNFC4mxZkUCmFXX1BFOQndZYw+WoXH
+        whaNDrg1px8kZsqbEtD2isAX1e3v8otfYUozN7A5O5ZXqf76LyzK5Xua94Cn9n+ELSxoLqAXj1MR
+        Y7jud0+CDQom/Lebt/8BAAD//wMA3uAootIHAAA=
+    headers:
+      CF-RAY:
+      - 9a8b7014d894736d-NRT
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 04 Dec 2025 12:51:58 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=BIIXO8Z3NJRQIxJSJ5SPsOBgGgocdevSMJzflNsFb2c-1764852718-1.0.1.1-vtmyTHEh2N4P7b0ah0xRbk8IEhhodC0MdYPk0DScmaICS6B7PMFJbWlKsSulX32XFF0Qg6zFJs3i8xQCkqmE7wB_wXblF63SIeFQ2.vjGTg;
+        path=/; expires=Thu, 04-Dec-25 13:21:58 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=seDeOxLm5rNIV9eWKpg0yNe4_KDzXKVJg9DghwLqSJo-1764852718994-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - sotai-i3ryiz
+      openai-processing-ms:
+      - '4955'
+      openai-project:
+      - proj_BrdCBgI2MYOVf6LqjZtIUDev
+      openai-version:
+      - '2020-10-01'
+      x-envoy-upstream-service-time:
+      - '4957'
+      x-ratelimit-limit-requests:
+      - '5000'
+      x-ratelimit-limit-tokens:
+      - '4000000'
+      x-ratelimit-remaining-requests:
+      - '4999'
+      x-ratelimit-remaining-tokens:
+      - '3999969'
+      x-ratelimit-reset-requests:
+      - 12ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_ef605889a56042a1a2a5c6921b8e036b
+    status:
+      code: 200
+      message: OK
+version: 1

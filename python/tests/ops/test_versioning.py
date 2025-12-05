@@ -9,10 +9,23 @@ import pytest
 from inline_snapshot import snapshot
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
+from mirascope import llm, ops
 from mirascope.ops import ClosureComputationError, VersionInfo, session, version
 from mirascope.ops._internal.closure import Closure
+from mirascope.ops._internal.versioned_calls import (
+    _compute_closure_from_call,  # pyright: ignore[reportPrivateUsage]
+)
 
 from .utils import extract_span_data
+
+
+@pytest.fixture(autouse=True, scope="function")
+def initialize() -> Generator[None, None, None]:
+    """Initialize ops configuration and LLM instrumentation for each test."""
+    ops.configure()
+    ops.instrument_llm()
+    yield
+    ops.uninstrument_llm()
 
 
 @pytest.fixture(autouse=True)
@@ -675,3 +688,723 @@ def test_version_info_with_none_values() -> None:
             metadata={},
         )
     )
+
+
+def test_versioned_call_closure_and_version_info() -> None:
+    """Test VersionedCall.version_info returns correct VersionInfo."""
+
+    @ops.version(
+        name="book_recommender",
+        tags=["production"],
+        metadata={"team": "ml"},
+    )
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(genre: str) -> str:
+        """Recommends books based on genre"""
+        return f"Recommend a {genre} book."
+
+    assert recommend.closure is not None
+    assert recommend.closure.code == snapshot("""\
+from mirascope import llm, ops
+
+
+@ops.version(
+    name="book_recommender",
+    tags=["production"],
+    metadata={"team": "ml"},
+)
+@llm.call("openai:responses/gpt-4o-mini")
+def recommend(genre: str) -> str:
+    return f"Recommend a {genre} book."
+""")
+
+    info = recommend.version_info
+    assert info is not None and isinstance(info, VersionInfo)
+    assert info == snapshot(
+        VersionInfo(
+            uuid=None,
+            hash="3ba35acfae95c3a990d742cc453e5268812341b6370755c0f35a78cc5a3a09ec",
+            signature_hash="6fd5080b5db72599be6c032dd7ce7da4d300a91b2306630ecb50acc499aa7490",
+            name="book_recommender",
+            description="Recommends books based on genre",
+            version="1.0",
+            tags=("production",),
+            metadata={"team": "ml"},
+        )
+    )
+
+
+@pytest.mark.vcr()
+def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
+    """Test @ops.version on @llm.call creates VersionedCall and returns Response directly."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    assert isinstance(recommend, ops.VersionedCall)
+
+    response = recommend("fantasy")
+    assert response.content
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "call",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "call",
+                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.is_async": False,
+                "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
+                "mirascope.trace.arg_values": '{"args":["fantasy"],"kwargs":{}}',
+                "mirascope.fn.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
+                "mirascope.fn.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.trace.output": "I highly recommend **\"The Name of the Wind\" by Patrick Rothfuss**. It's the first book in the Kingkiller Chronicle series and follows the story of Kvothe, a gifted young man who becomes a legendary figure. The narrative weaves together magic, music, and adventure, all told in Kvothe's own voice as he recounts his life's journey. The writing is beautiful, and the world-building is rich and immersive. Enjoy your reading!",
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_versioned_call_wrapped_method(span_exporter: InMemorySpanExporter) -> None:
+    """Test VersionedCall.wrapped() returns VersionedResult."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    result = recommend.wrapped("mystery")
+    assert result.result.content
+    assert result.span_id is not None
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "call",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "call",
+                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.is_async": False,
+                "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
+                "mirascope.trace.arg_values": '{"args":["mystery"],"kwargs":{}}',
+                "mirascope.fn.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
+                "mirascope.fn.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.trace.output": "I recommend **\"The No. 1 Ladies' Detective Agency\"** by Alexander McCall Smith. It's a charming mystery set in Botswana, featuring the clever and resourceful Precious Ramotswe as she solves various cases with a unique blend of humor and insight. The book combines an engaging storyline with rich cultural details, making it both an enjoyable read and a delightful introduction to the series.",
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_versioned_call_call_method(span_exporter: InMemorySpanExporter) -> None:
+    """Test VersionedCall.call() returns Response directly and creates span."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    response = recommend.call("fantasy")
+    assert response.content
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "call",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "call",
+                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.is_async": False,
+                "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
+                "mirascope.trace.arg_values": '{"args":["fantasy"],"kwargs":{}}',
+                "mirascope.fn.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
+                "mirascope.fn.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.trace.output": 'I recommend **"The Name of the Wind" by Patrick Rothfuss**. It’s the first book in the *The Kingkiller Chronicle* series and follows the story of Kvothe, a gifted young man who grows to become a legendary figure. The narrative weaves magic, music, and adventure in a richly detailed world. Its lyrical prose and deep character development make it a captivating read for fantasy lovers. Enjoy!',
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_versioned_call_stream_method(span_exporter: InMemorySpanExporter) -> None:
+    """Test VersionedCall.stream() returns StreamResponse directly."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    stream_response = recommend.stream("adventure")
+    stream_response.finish()
+    assert stream_response.content
+
+
+@pytest.mark.vcr()
+def test_versioned_call_wrapped_stream(span_exporter: InMemorySpanExporter) -> None:
+    """Test VersionedCall.wrapped_stream() returns VersionedResult[StreamResponse]."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    result = recommend.wrapped_stream("adventure")
+    assert result.span_id is not None
+    result.result.finish()
+    assert result.result.content
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "stream",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "stream",
+                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.is_async": False,
+                "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
+                "mirascope.trace.arg_values": '{"args":["adventure"],"kwargs":{}}',
+                "mirascope.fn.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
+                "mirascope.fn.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.trace.output": "**[No Content]**",
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_call(span_exporter: InMemorySpanExporter) -> None:
+    """Test @ops.version on async @llm.call creates VersionedAsyncCall."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    assert isinstance(recommend, ops.VersionedAsyncCall)
+
+    response = await recommend("horror")
+    assert response.content
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "call",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "call",
+                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.is_async": True,
+                "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
+                "mirascope.trace.arg_values": '{"args":["horror"],"kwargs":{}}',
+                "mirascope.fn.hash": "877be74e6c1e96bad72247c09c06adc1d029dbab276d4898f54b85e6854804b1",
+                "mirascope.fn.signature_hash": "a4c2e83f886b409631d5a84a91ae8dfbe015862f824b867d684f5f30975310cf",
+                "mirascope.trace.output": 'I recommend **"The Haunting of Hill House" by Shirley Jackson**. This classic novel explores the eerie and unsettling experiences of a group of people staying in a supposedly haunted mansion. Jackson\'s atmospheric writing and psychological tension create a chilling experience, making it a must-read for horror fans. If you\'re looking for something more contemporary, consider **"Mexican Gothic" by Silvia Moreno-Garcia**, which combines elements of gothic horror with a rich cultural backdrop. Both books offer unique and compelling takes on the genre!',
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_call_call_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedAsyncCall.call() returns AsyncResponse directly."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    response = await recommend.call("horror")
+    assert response.content
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "call",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "call",
+                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.is_async": True,
+                "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
+                "mirascope.trace.arg_values": '{"args":["horror"],"kwargs":{}}',
+                "mirascope.fn.hash": "877be74e6c1e96bad72247c09c06adc1d029dbab276d4898f54b85e6854804b1",
+                "mirascope.fn.signature_hash": "a4c2e83f886b409631d5a84a91ae8dfbe015862f824b867d684f5f30975310cf",
+                "mirascope.trace.output": 'I recommend "The Haunting of Hill House" by Shirley Jackson. It\'s a classic in the horror genre, exploring themes of fear, isolation, and psychological disturbance. The story follows a group of people who gather at a supposedly haunted mansion, and the eerie atmosphere and character dynamics make it both chilling and thought-provoking. Enjoy!',
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_call_stream_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedAsyncCall.stream() returns AsyncStreamResponse directly."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    stream_response = await recommend.stream("adventure")
+    await stream_response.finish()
+    assert stream_response.content
+
+
+@pytest.mark.vcr()
+def test_versioned_context_call(span_exporter: InMemorySpanExporter) -> None:
+    """Test @ops.version on @llm.call with context creates VersionedContextCall."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    assert isinstance(recommend, ops.VersionedContextCall)
+
+    ctx = llm.Context(deps="As a librarian,")
+    response = recommend(ctx, "fantasy")
+    assert response.content
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "call",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "call",
+                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.is_async": False,
+                "mirascope.trace.arg_types": '{"ctx":"Context","args":"P.args","kwargs":"P.kwargs"}',
+                "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"args":["fantasy"],"kwargs":{}}',
+                "mirascope.fn.hash": "8e98056ad87b75ae8554b3a1883f0ffbe00402e97abf57e5d6131c3b72e4ccda",
+                "mirascope.fn.signature_hash": "7b86c8c72d035c510c504f0078ee874178156efe81827c251300ce3cfe36ebcc",
+                "mirascope.trace.output": 'I highly recommend **"The Name of the Wind" by Patrick Rothfuss**. This novel is the first book in the *Kingkiller Chronicle* series and follows the story of Kvothe, a gifted young man who grows up to become a legendary figure. The narrative combines rich world-building, a unique magic system, and its protagonist\'s journey through love, loss, and the pursuit of knowledge. The prose is lyrical, making it a joy to read while exploring themes of storytelling and identity. Perfect for fans of intricate plots and character-driven tales!',
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+def test_versioned_context_call_call_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedContextCall.call() returns ContextResponse directly."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    ctx = llm.Context(deps="As a librarian,")
+    response = recommend.call(ctx, "fantasy")
+    assert response.content
+
+
+@pytest.mark.vcr()
+def test_versioned_context_call_stream_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedContextCall.stream() returns ContextStreamResponse."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    ctx = llm.Context(deps="As a librarian,")
+    stream_response = recommend.stream(ctx, "adventure")
+    stream_response.finish()
+    assert stream_response.content
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_context_call(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @ops.version on async @llm.call with context creates VersionedAsyncContextCall."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    assert isinstance(recommend, ops.VersionedAsyncContextCall)
+
+    ctx = llm.Context(deps="As a librarian,")
+    response = await recommend(ctx, "mystery")
+    assert response.content
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "call",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "call",
+                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.is_async": True,
+                "mirascope.trace.arg_types": '{"ctx":"Context","args":"P.args","kwargs":"P.kwargs"}',
+                "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"args":["mystery"],"kwargs":{}}',
+                "mirascope.fn.hash": "8d8785a934ce3621350788d6feb001669beb09443631797bacee2b88a510b965",
+                "mirascope.fn.signature_hash": "a8c6d85888f29277558d3deea2d3acdf36ee8801ab5398d0df3d44f7a20a0770",
+                "mirascope.trace.output": 'I recommend **"The Guest List" by Lucy Foley**. This gripping mystery unfolds during a lavish wedding celebration on a remote Irish island. As the guests gather, tensions rise, and secrets begin to surface, culminating in a shocking murder. The narrative shifts between multiple perspectives, keeping you guessing until the very end. It\'s a fantastic blend of suspense, rich character development, and atmospheric setting—perfect for fans of psychological thrillers!',
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_context_call_call_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedAsyncContextCall.call() returns AsyncContextResponse."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    ctx = llm.Context(deps="As a librarian,")
+    response = await recommend.call(ctx, "mystery")
+    assert response.content
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_context_call_stream_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedAsyncContextCall.stream() returns AsyncContextStreamResponse."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    ctx = llm.Context(deps="As a librarian,")
+    stream_response = await recommend.stream(ctx, "adventure")
+    await stream_response.finish()
+    assert stream_response.content
+
+
+@pytest.mark.vcr()
+def test_versioned_call_with_tags(span_exporter: InMemorySpanExporter) -> None:
+    """Test @ops.version(tags=[...]) passes tags to VersionedCall."""
+
+    @ops.version(tags=["production", "recommendations"])
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    response = recommend("romance")
+    assert response.content
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "call",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "call",
+                "mirascope.fn.module": "mirascope.llm.calls.calls",
+                "mirascope.fn.is_async": False,
+                "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
+                "mirascope.trace.arg_values": '{"args":["romance"],"kwargs":{}}',
+                "mirascope.trace.tags": ("production", "recommendations"),
+                "mirascope.fn.hash": "bc24237317563e580054a46c60be691fad1b2983e23dc7ec435d6773d628fa29",
+                "mirascope.fn.signature_hash": "13ab92f4821a17b58b435ac860306b3103bd7aecd820265b13db85c7bc8f7ef3",
+                "mirascope.trace.output": "I recommend **\"The Kiss Quotient\" by Helen Hoang**. It’s a refreshing story about Stella Lane, a successful woman with Asperger's, who decides to hire an escort to help her gain more experience in relationships. The book beautifully explores themes of love, acceptance, and self-discovery, with a charming romance that unfolds between Stella and the escort, Michael. It's both sweet and steamy, making it a wonderful read for romance lovers!",
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+def test_versioned_call_closure_extraction_failure() -> None:
+    """Test VersionedCall handles closure extraction failure gracefully."""
+    with patch(
+        "mirascope.ops._internal.versioned_calls.Closure.from_fn",
+        side_effect=ClosureComputationError(qualified_name="recommend"),
+    ):
+
+        @ops.version
+        @llm.call("openai:responses/gpt-4o-mini")
+        def recommend(genre: str) -> str:
+            return f"Recommend a {genre} book."
+
+        assert recommend.closure is None
+        assert recommend.version_info is None
+
+
+def test_versioned_async_call_closure_extraction_failure() -> None:
+    """Test VersionedAsyncCall handles closure extraction failure gracefully."""
+    with patch(
+        "mirascope.ops._internal.versioned_calls.Closure.from_fn",
+        side_effect=ClosureComputationError(qualified_name="recommend"),
+    ):
+
+        @ops.version
+        @llm.call("openai:responses/gpt-4o-mini")
+        async def recommend(genre: str) -> str:
+            return f"Recommend a {genre} book."
+
+        assert recommend.closure is None
+        assert recommend.version_info is None
+
+
+def test_versioned_context_call_closure_extraction_failure() -> None:
+    """Test VersionedContextCall handles closure extraction failure gracefully."""
+    with patch(
+        "mirascope.ops._internal.versioned_calls.Closure.from_fn",
+        side_effect=ClosureComputationError(qualified_name="recommend"),
+    ):
+
+        @ops.version
+        @llm.call("openai:responses/gpt-4o-mini")
+        def recommend(ctx: llm.Context[str], genre: str) -> str:
+            return f"{ctx.deps} Recommend a {genre} book."
+
+        assert recommend.closure is None
+        assert recommend.version_info is None
+
+
+def test_versioned_async_context_call_closure_extraction_failure() -> None:
+    """Test VersionedAsyncContextCall handles closure extraction failure gracefully."""
+    with patch(
+        "mirascope.ops._internal.versioned_calls.Closure.from_fn",
+        side_effect=ClosureComputationError(qualified_name="recommend"),
+    ):
+
+        @ops.version
+        @llm.call("openai:responses/gpt-4o-mini")
+        async def recommend(ctx: llm.Context[str], genre: str) -> str:
+            return f"{ctx.deps} Recommend a {genre} book."
+
+        assert recommend.closure is None
+        assert recommend.version_info is None
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_call_wrapped_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedAsyncCall.wrapped() returns AsyncVersionedResult."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    result = await recommend.wrapped("fantasy")
+    assert result.result.content
+    assert result.span_id is not None
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_call_wrapped_stream_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedAsyncCall.wrapped_stream() returns AsyncVersionedResult."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(genre: str) -> str:
+        return f"Recommend a {genre} book."
+
+    result = await recommend.wrapped_stream("adventure")
+    assert result.span_id is not None
+    await result.result.finish()
+    assert result.result.content
+
+
+@pytest.mark.vcr()
+def test_versioned_context_call_wrapped_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedContextCall.wrapped() returns VersionedResult."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    ctx = llm.Context(deps="As a librarian,")
+    result = recommend.wrapped(ctx, "fantasy")
+    assert result.result.content
+    assert result.span_id is not None
+
+
+@pytest.mark.vcr()
+def test_versioned_context_call_wrapped_stream_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedContextCall.wrapped_stream() returns VersionedResult."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    ctx = llm.Context(deps="As a librarian,")
+    result = recommend.wrapped_stream(ctx, "adventure")
+    assert result.span_id is not None
+    result.result.finish()
+    assert result.result.content
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_context_call_wrapped_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedAsyncContextCall.wrapped() returns AsyncVersionedResult."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    ctx = llm.Context(deps="As a librarian,")
+    result = await recommend.wrapped(ctx, "fantasy")
+    assert result.result.content
+    assert result.span_id is not None
+
+
+@pytest.mark.vcr()
+@pytest.mark.asyncio
+async def test_versioned_async_context_call_wrapped_stream_method(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test VersionedAsyncContextCall.wrapped_stream() returns AsyncVersionedResult."""
+
+    @ops.version
+    @llm.call("openai:responses/gpt-4o-mini")
+    async def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    ctx = llm.Context(deps="As a librarian,")
+    result = await recommend.wrapped_stream(ctx, "adventure")
+    assert result.span_id is not None
+    await result.result.finish()
+    assert result.result.content
+
+
+def test_compute_closure_from_call_fallback() -> None:
+    """Test _compute_closure_from_call uses fn directly when no closure exists."""
+
+    class MockPrompt:
+        def fn(self) -> str:
+            return "test"
+
+    class MockCall:
+        prompt = MockPrompt()
+
+    mock_call = MockCall()
+    result = _compute_closure_from_call(mock_call)  # pyright: ignore[reportArgumentType]
+    assert result is not None
+    assert isinstance(result, Closure)

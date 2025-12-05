@@ -139,6 +139,9 @@ class _BaseFunction(Generic[P, R, FunctionT], ABC):
     tags: tuple[str, ...]
     """Tags to be associated with the trace span."""
 
+    metadata: dict[str, str] = field(default_factory=dict)
+    """Arbitrary key-value pairs for additional metadata."""
+
     _qualified_name: str = field(init=False)
     """Fully qualified name of the wrapped function."""
 
@@ -157,9 +160,6 @@ class _BaseFunction(Generic[P, R, FunctionT], ABC):
 @dataclass(kw_only=True)
 class _BaseTracedFunction(_BaseFunction[P, R, FunctionT]):
     """Abstract base class for traced function wrappers."""
-
-    metadata: dict[str, str] = field(default_factory=dict)
-    """Arbitrary key-value pairs for additional metadata."""
 
     @contextmanager
     def _span(self, *args: P.args, **kwargs: P.kwargs) -> Generator[Span, None, None]:
@@ -269,9 +269,6 @@ class _BaseTracedContextFunction(
     _BaseFunction[P, R, FunctionT], Generic[P, DepsT, R, FunctionT]
 ):
     """Abstract base class for traced function wrappers."""
-
-    metadata: dict[str, str] = field(default_factory=dict)
-    """Arbitrary key-value pairs for additional metadata."""
 
     _is_async: bool = field(default=False, init=False)
     """Whether the wrapped function is asynchronous."""
