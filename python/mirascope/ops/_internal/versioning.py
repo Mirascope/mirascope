@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Generator, Sequence
+from collections.abc import Generator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, NewType, overload
@@ -58,6 +58,45 @@ class AsyncVersionedResult(AsyncTrace[R]):
     """
 
     function_uuid: str | None = None
+
+
+@dataclass(kw_only=True, frozen=True)
+class VersionInfo:
+    """Static version metadata for a versioned function.
+
+    Contains all information needed to identify and describe a specific version
+    of a function, including its computed version number and hashes.
+    """
+
+    uuid: str | None
+    """Server-assigned unique identifier for this version (None if not registered)."""
+
+    hash: str
+    """SHA256 hash of the complete closure code."""
+
+    signature_hash: str
+    """SHA256 hash of the function signature."""
+
+    name: str
+    """Display name for the versioned function."""
+
+    description: str | None
+    """Human-readable description of the versioned function."""
+
+    version: str
+    """Auto-computed semantic version in X.Y format."""
+
+    tags: tuple[str, ...]
+    """Tags associated with this version for filtering/classification."""
+
+    metadata: Mapping[str, str]
+    """Arbitrary key-value pairs for additional metadata."""
+
+    # This will be covered in the next PR in this stack...
+    def __post_init__(self) -> None:  # pragma: no cover
+        """Clean up tags and initialize frozen metadata after dataclass init."""
+        object.__setattr__(self, "tags", tuple(sorted(set(self.tags or []))))
+        object.__setattr__(self, "metadata", dict(self.metadata))
 
 
 @dataclass(kw_only=True)
