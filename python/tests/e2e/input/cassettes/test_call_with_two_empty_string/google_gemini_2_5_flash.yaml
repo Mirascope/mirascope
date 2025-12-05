@@ -1,0 +1,65 @@
+interactions:
+- request:
+    body: '{"contents": [{"parts": [{"text": ""}, {"text": ""}], "role": "user"}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '71'
+      content-type:
+      - application/json
+      host:
+      - generativelanguage.googleapis.com
+      user-agent:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+      x-goog-api-client:
+      - google-genai-sdk/1.48.0 gl-python/3.10.16
+    method: POST
+    uri: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/2VTTW8aQQy98yvcPTVoSULSkDSXiqZRmqq0qNC0UunBgGGnzI43M94mKMp/r2f4
+        CKhIizz287P9PPPUAMgm6KZmikIhu4Rf6gF4Sv8xxk7IiQY2LnVW6OUFu/o97dgKEXqMSVkP3RKk
+        MG4eQOvAmCAQOTBOvWovloACzswLeQUfyROgfoFLAp4lSMlBYMJlyQ7QhQfy4XLkRq59CNBsDgR9
+        aDZH7iQde8wunk7TqW/RkWgYXluzILgjV4ccepqSw6e6MkI+hwFK7d3ByL1JSVeW62miPFud2QUh
+        a1GMWpGrQtFEF2KHIdbX3M6qPAmxT6BQMIuOvUWcr/rFyKWFE0h1NDMzMWhzSB3GgW9dZE/l0MKg
+        wgmBjhnPwB5YMR5CdE88zkSpLxJ11/jkOEpjJ/4HI0XkNF7pVeLYx9v1VOVGGQphrW8O41o2a/pr
+        ghlb0oz28WGkrz17hPfsCa0JR906iI9WJPnCPrbljgZcJwM+p3p5XHTFFj14mkcBD+LufhS69Ie4
+        7SXX6XosolQ8e5ftXKPnrf07f7l8ni3Fm1XylOwG/rwBZDPjTCi+EQZ2ETYYfu1n26hxU3pU93Fj
+        UyBRZ3XAOen2UJ8Bbi97VnkuKxnygtwV1+kZtFdcO49mP9w5XwOEBe1e7Oy0k//HGz5oVWN3n9PO
+        S9MhVWJZxkmG1z+H2Y4Qsld3I0RjR69MCq7jGvbaOO1cNNaKrUS80ydlVmrNqVT9WieHZ62ZxVCk
+        epmnUOnq6HYaMdjqPuL4pn9z3/r+pzfpt31/fNy9zhrPjX+7mTS8TwQAAA==
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 04 Dec 2025 19:26:35 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Server-Timing:
+      - gfet4t7; dur=3312
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

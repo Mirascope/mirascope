@@ -1,0 +1,79 @@
+from inline_snapshot import snapshot
+
+from mirascope.llm import (
+    AssistantMessage,
+    Text,
+    UserMessage,
+)
+
+test_snapshot = snapshot(
+    {
+        "response": {
+            "provider": "google",
+            "model_id": "google/gemini-2.5-flash",
+            "params": {},
+            "finish_reason": None,
+            "messages": [
+                UserMessage(content=[Text(text=""), Text(text="")]),
+                AssistantMessage(
+                    content=[
+                        Text(
+                            text="""\
+Many things can be seen in the sky at night! Here are some of the most common answers:
+
+1.  **Stars**
+2.  **Moon**
+3.  **Planets** (like Venus, Mars, Jupiter, Saturn)
+4.  **Clouds**
+5.  **Constellations** (patterns of stars)
+6.  **Meteors** (shooting stars)
+7.  **Satellites** (artificial, like the International Space Station or other spacecraft)
+8.  **Aircraft/Planes** (with their lights)
+9.  **Comets** (less common, but can be visible)
+10. **Aurora Borealis/Australis** (Northern/Southern Lights, in polar regions)
+
+What were you thinking of?\
+"""
+                        )
+                    ],
+                    provider="google",
+                    model_id="google/gemini-2.5-flash",
+                    raw_message={
+                        "parts": [
+                            {
+                                "function_call": None,
+                                "code_execution_result": None,
+                                "executable_code": None,
+                                "file_data": None,
+                                "function_response": None,
+                                "inline_data": None,
+                                "text": """\
+Many things can be seen in the sky at night! Here are some of the most common answers:
+
+1.  **Stars**
+2.  **Moon**
+3.  **Planets** (like Venus, Mars, Jupiter, Saturn)
+4.  **Clouds**
+5.  **Constellations** (patterns of stars)
+6.  **Meteors** (shooting stars)
+7.  **Satellites** (artificial, like the International Space Station or other spacecraft)
+8.  **Aircraft/Planes** (with their lights)
+9.  **Comets** (less common, but can be visible)
+10. **Aurora Borealis/Australis** (Northern/Southern Lights, in polar regions)
+
+What were you thinking of?\
+""",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
+                            }
+                        ],
+                        "role": "model",
+                    },
+                ),
+            ],
+            "format": None,
+            "tools": [],
+        }
+    }
+)

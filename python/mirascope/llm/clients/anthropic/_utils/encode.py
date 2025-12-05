@@ -59,13 +59,22 @@ def _encode_content(
     """Convert mirascope content to Anthropic content format."""
 
     if len(content) == 1 and content[0].type == "text":
+        if not content[0].text:
+            raise FeatureNotSupportedError(
+                "empty message content",
+                "anthropic",
+                message="Anthropic does not support empty message content.",
+            )
         return content[0].text
 
     blocks: list[anthropic_types.ContentBlockParam] = []
 
     for part in content:
         if part.type == "text":
-            blocks.append(anthropic_types.TextBlockParam(type="text", text=part.text))
+            if part.text:
+                blocks.append(
+                    anthropic_types.TextBlockParam(type="text", text=part.text)
+                )
         elif part.type == "image":
             source: (
                 anthropic_types.Base64ImageSourceParam
@@ -115,6 +124,13 @@ def _encode_content(
                 )
         else:
             raise NotImplementedError(f"Unsupported content type: {part.type}")
+
+    if not blocks:
+        raise FeatureNotSupportedError(
+            "empty message content",
+            "anthropic",
+            message="Anthropic does not support empty message content.",
+        )
 
     return blocks
 

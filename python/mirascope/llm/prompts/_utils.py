@@ -23,9 +23,13 @@ from .protocols import (
 def is_messages(
     messages_or_content: Sequence[Message] | UserContent,
 ) -> TypeIs[Sequence[Message]]:
-    return isinstance(messages_or_content, list) and isinstance(
-        messages_or_content[0], SystemMessage | UserMessage | AssistantMessage
-    )
+    if isinstance(messages_or_content, list):
+        if not messages_or_content:
+            raise ValueError("Empty array may not be used as message content")
+        return isinstance(
+            messages_or_content[0], SystemMessage | UserMessage | AssistantMessage
+        )
+    return False
 
 
 def promote_to_messages(result: Sequence[Message] | UserContent) -> Sequence[Message]:
