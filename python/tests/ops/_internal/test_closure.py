@@ -1372,3 +1372,11 @@ def fn_using_random_module():
     )
     assert "random" in closure.code
     assert closure.dependencies == snapshot({})
+
+
+def test_signature_hash() -> None:
+    """Test that signature_hash is computed correctly."""
+    closure = Closure.from_fn(single_fn)
+    assert closure.signature_hash == snapshot(
+        "cee81f38b242e7d58dd61512d4b387197d67087aebf592403d53b9df76790db2"
+    )
