@@ -173,18 +173,28 @@ class _BaseVersionedFunction(_BaseTracedFunction[P, R, Any]):
             if self.closure is not None:
                 span.set(
                     **{
-                        "mirascope.fn.hash": self.closure.hash,
-                        "mirascope.fn.signature_hash": self.closure.signature_hash,
+                        "mirascope.version.hash": self.closure.hash,
+                        "mirascope.version.signature_hash": self.closure.signature_hash,
                     }
                 )
                 if self.closure.docstring:
                     span.set(
                         **{"mirascope.version.description": self.closure.docstring}
                     )
+
             if function_uuid:
-                span.set(function_uuid=function_uuid)
+                span.set(**{"mirascope.version.uuid": function_uuid})
+
+            version_info = self.version_info
+            if version_info is not None:
+                span.set(**{"mirascope.version.version": version_info.version})
             if self.name:
                 span.set(**{"mirascope.version.name": self.name})
+            if self.tags:
+                span.set(**{"mirascope.version.tags": self.tags})
+            if self.metadata:
+                for key, value in self.metadata.items():
+                    span.set(**{f"mirascope.version.meta.{key}": value})
             yield span
 
 
