@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Generator
+from collections.abc import Generator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, NewType, overload
@@ -64,7 +64,11 @@ class AsyncVersionedResult(AsyncTrace[R]):
 class _BaseVersionedFunction(_BaseTracedFunction[P, R, Any]):
     """Base class for versioned functions."""
 
+    name: str | None = None
+    """Optional custom name for the versioned function (overrides function name)."""
+
     closure: Closure | None = field(init=False, default=None)
+    """The closure of the versioned function."""
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -84,8 +88,14 @@ class _BaseVersionedFunction(_BaseTracedFunction[P, R, Any]):
         with super()._span(*args, **kwargs) as span:
             if self.closure is not None:
                 span.set(function_hash=self.closure.hash)
+                if self.closure.docstring:
+                    span.set(
+                        **{"mirascope.version.description": self.closure.docstring}
+                    )
             if function_uuid:
                 span.set(function_uuid=function_uuid)
+            if self.name:
+                span.set(**{"mirascope.version.name": self.name})
             yield span
 
 
@@ -244,6 +254,15 @@ class VersionDecorator:
     tags: tuple[str, ...] = ()
     """Tags to be associated with versioned function calls."""
 
+    name: str | None = None
+    """Optional custom name for the versioned function."""
+
+    description: str | None = None
+    """Human-readable description of the versioned function."""
+
+    metadata: dict[str, str] = field(default_factory=dict)
+    """Arbitrary key-value pairs for additional metadata."""
+
     @overload
     def __call__(  # pyright: ignore[reportOverlappingOverload]
         self,
@@ -266,27 +285,53 @@ class VersionDecorator:
     ) -> VersionedFunction[P, R] | AsyncVersionedFunction[P, R]:
         """Applies the decorator to the given function."""
         if fn_is_async(fn):
-            return AsyncVersionedFunction(fn=fn, tags=self.tags)
+            return AsyncVersionedFunction(
+                fn=fn,
+                tags=self.tags,
+                name=self.name,
+                metadata=self.metadata,
+            )
         else:
-            return VersionedFunction(fn=fn, tags=self.tags)
+            return VersionedFunction(
+                fn=fn,
+                tags=self.tags,
+                name=self.name,
+                metadata=self.metadata,
+            )
 
 
 @overload
-def version(__fn: None = None, *, tags: list[str] | None = None) -> VersionDecorator:
+def version(
+    __fn: None = None,
+    *,
+    tags: Sequence[str] | None = None,
+    name: str | None = None,
+    metadata: dict[str, str] | None = None,
+) -> VersionDecorator:
     """Overload for providing kwargs before decorating (e.g. tags)."""
     ...
 
 
 @overload
 def version(  # pyright: ignore[reportOverlappingOverload]
-    __fn: AsyncFunction[P, R], *, tags: None = None
+    __fn: AsyncFunction[P, R],
+    *,
+    tags: None = None,
+    name: None = None,
+    metadata: None = None,
 ) -> AsyncVersionedFunction[P, R]:
     """Overload for directly (no argument) decorating an asynchronous function"""
     ...
 
 
 @overload
-def version(__fn: SyncFunction[P, R], *, tags: None = None) -> VersionedFunction[P, R]:
+def version(
+    __fn: SyncFunction[P, R],
+    *,
+    tags: None = None,
+    name: None = None,
+    metadata: None = None,
+) -> VersionedFunction[P, R]:
     """Overload for directly (no argument) decorating a synchronous function"""
     ...
 
@@ -294,7 +339,9 @@ def version(__fn: SyncFunction[P, R], *, tags: None = None) -> VersionedFunction
 def version(
     __fn: SyncFunction[P, R] | AsyncFunction[P, R] | None = None,
     *,
-    tags: list[str] | None = None,
+    tags: Sequence[str] | None = None,
+    name: str | None = None,
+    metadata: dict[str, str] | None = None,
 ) -> VersionDecorator | VersionedFunction[P, R] | AsyncVersionedFunction[P, R]:
     """Add versioning capability to a callable function.
 
@@ -304,6 +351,8 @@ def version(
     Args:
         __fn: The function to version (when used without parentheses).
         tags: Optional version tags for this function.
+        name: Optional custom name for display (overrides function name).
+        metadata: Arbitrary key-value pairs for additional metadata.
 
     Returns:
         A versioned callable or a decorator function.
@@ -320,12 +369,37 @@ def version(
         async def process() -> str:
             return "processed"
         ```
+
+        ```python
+        @version(
+            name="book_recommender",
+            tags=["production"],
+            metadata={"owner": "team-ml", "ticket": "ENG-1234"},
+        )
+        def recommend_book(genre: str) -> str:
+            return f"Recommend a {genre} book"
+        ```
     """
-    normalized_tags = tuple(sorted(set(tags or [])))
+    tags = tuple(sorted(set(tags or [])))
+    metadata = metadata or {}
     if __fn:
         if fn_is_async(__fn):
-            return AsyncVersionedFunction(fn=__fn, tags=normalized_tags)
+            return AsyncVersionedFunction(
+                fn=__fn,
+                tags=tags,
+                name=name,
+                metadata=metadata,
+            )
         else:
-            return VersionedFunction(fn=__fn, tags=normalized_tags)
+            return VersionedFunction(
+                fn=__fn,
+                tags=tags,
+                name=name,
+                metadata=metadata,
+            )
     else:
-        return VersionDecorator(tags=normalized_tags)
+        return VersionDecorator(
+            tags=tags,
+            name=name,
+            metadata=metadata,
+        )

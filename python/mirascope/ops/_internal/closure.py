@@ -1052,6 +1052,9 @@ class Closure:
     signature: str
     """The signature of the function."""
 
+    docstring: str | None
+    """The docstring of the function."""
+
     code: str
     """The code of the function."""
 
@@ -1092,6 +1095,7 @@ class Closure:
         return cls(
             name=qualified_name,
             signature=_run_ruff(_clean_source_code(fn, exclude_fn_body=True)).strip(),
+            docstring=inspect.getdoc(fn),
             code=formatted_code,
             hash=hash_value,
             dependencies={

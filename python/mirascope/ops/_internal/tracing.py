@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections.abc import Sequence
+from dataclasses import dataclass, field
 from typing import (
     TYPE_CHECKING,
     overload,
@@ -37,6 +38,9 @@ class TraceDecorator:
 
     tags: tuple[str, ...] = ()
     """Tags to be associated with traced function calls."""
+
+    metadata: dict[str, str] = field(default_factory=dict)
+    """Arbitrary key-value pairs for additional metadata."""
 
     # IMPORTANT: The order of these overloads matters for type inference.
     # Call type overloads come first, then function overloads.
@@ -108,22 +112,30 @@ class TraceDecorator:
     ):
         """Applies the decorator to the given function or Call object."""
         if is_call_type(fn):
-            return wrap_call(fn=fn, tags=self.tags)
+            return wrap_call(fn=fn, tags=self.tags, metadata=self.metadata)
         elif fn_is_async(fn):
-            return AsyncTracedFunction(fn=fn, tags=self.tags)
+            return AsyncTracedFunction(fn=fn, tags=self.tags, metadata=self.metadata)
         else:
-            return TracedFunction(fn=fn, tags=self.tags)
+            return TracedFunction(fn=fn, tags=self.tags, metadata=self.metadata)
 
 
 @overload
-def trace(__fn: None = None, *, tags: list[str] | None = None) -> TraceDecorator:
+def trace(
+    __fn: None = None,
+    *,
+    tags: list[str] | None = None,
+    metadata: dict[str, str] | None = None,
+) -> TraceDecorator:
     """Overload for providing kwargs before decorating (e.g. tags)."""
     ...
 
 
 @overload
 def trace(  # pyright: ignore[reportOverlappingOverload]
-    __fn: AsyncContextCall[P, DepsT, FormattableT], *, tags: None = None
+    __fn: AsyncContextCall[P, DepsT, FormattableT],
+    *,
+    tags: None = None,
+    metadata: None = None,
 ) -> TracedAsyncContextCall[P, DepsT, FormattableT]:
     """Overload for directly decorating an AsyncContextCall."""
     ...
@@ -131,7 +143,10 @@ def trace(  # pyright: ignore[reportOverlappingOverload]
 
 @overload
 def trace(
-    __fn: ContextCall[P, DepsT, FormattableT], *, tags: None = None
+    __fn: ContextCall[P, DepsT, FormattableT],
+    *,
+    tags: None = None,
+    metadata: None = None,
 ) -> TracedContextCall[P, DepsT, FormattableT]:
     """Overload for directly decorating a ContextCall."""
     ...
@@ -139,7 +154,10 @@ def trace(
 
 @overload
 def trace(
-    __fn: AsyncCall[P, FormattableT], *, tags: None = None
+    __fn: AsyncCall[P, FormattableT],
+    *,
+    tags: None = None,
+    metadata: None = None,
 ) -> TracedAsyncCall[P, FormattableT]:
     """Overload for directly decorating an AsyncCall."""
     ...
@@ -147,20 +165,33 @@ def trace(
 
 @overload
 def trace(
-    __fn: Call[P, FormattableT], *, tags: None = None
+    __fn: Call[P, FormattableT],
+    *,
+    tags: None = None,
+    metadata: None = None,
 ) -> TracedCall[P, FormattableT]:
     """Overload for directly decorating a Call."""
     ...
 
 
 @overload
-def trace(__fn: AsyncFunction[P, R], *, tags: None = None) -> AsyncTracedFunction[P, R]:
+def trace(
+    __fn: AsyncFunction[P, R],
+    *,
+    tags: None = None,
+    metadata: None = None,
+) -> AsyncTracedFunction[P, R]:
     """Overload for directly (no argument) decorating an asynchronous function"""
     ...
 
 
 @overload
-def trace(__fn: SyncFunction[P, R], *, tags: None = None) -> TracedFunction[P, R]:
+def trace(
+    __fn: SyncFunction[P, R],
+    *,
+    tags: None = None,
+    metadata: None = None,
+) -> TracedFunction[P, R]:
     """Overload for directly (no argument) decorating a synchronous function"""
     ...
 
@@ -176,7 +207,8 @@ def trace(  # pyright: ignore[reportGeneralTypeIssues]
         | None
     ) = None,
     *,
-    tags: list[str] | None = None,
+    tags: Sequence[str] | None = None,
+    metadata: dict[str, str] | None = None,
 ) -> (
     TracedAsyncContextCall[P, DepsT, FormattableT]
     | TracedContextCall[P, DepsT, FormattableT]
@@ -198,6 +230,7 @@ def trace(  # pyright: ignore[reportGeneralTypeIssues]
     Args:
         __fn: The function or Call object to decorate.
         tags: Optional list of string tags to associate with traced executions.
+        metadata: Arbitrary key-value pairs for additional metadata.
 
     Returns:
         A decorator that wraps functions with tracing capabilities.
@@ -230,13 +263,14 @@ def trace(  # pyright: ignore[reportGeneralTypeIssues]
         print(trace.span_id)
         ```
     """
-    normalized_tags = tuple(sorted(set(tags or [])))
+    tags = tuple(sorted(set(tags or [])))
+    metadata = metadata or {}
     if __fn is None:
-        return TraceDecorator(tags=normalized_tags)
+        return TraceDecorator(tags=tags, metadata=metadata)
 
     if is_call_type(__fn):
-        return wrap_call(fn=__fn, tags=normalized_tags)
+        return wrap_call(fn=__fn, tags=tags, metadata=metadata)
     elif fn_is_async(__fn):
-        return AsyncTracedFunction(fn=__fn, tags=normalized_tags)
+        return AsyncTracedFunction(fn=__fn, tags=tags, metadata=metadata)
     else:
-        return TracedFunction(fn=__fn, tags=normalized_tags)
+        return TracedFunction(fn=__fn, tags=tags, metadata=metadata)

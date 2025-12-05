@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Generic
+from typing import Any, Generic, TypeVar
 from typing_extensions import TypeIs
 
 from ...llm.calls import AsyncCall, AsyncContextCall, Call, ContextCall
@@ -34,6 +34,14 @@ from .traced_functions import (
     TracedFunction,
 )
 
+CallT = TypeVar(
+    "CallT",
+    bound=Call[..., Any]
+    | AsyncCall[..., Any]
+    | ContextCall[..., Any, Any]
+    | AsyncContextCall[..., Any, Any],
+)
+
 
 def is_call_type(
     fn: (
@@ -62,6 +70,7 @@ def wrap_call(
         | AsyncCall[P, FormattableT]
     ),
     tags: tuple[str, ...],
+    metadata: dict[str, str] | None = None,
 ) -> (
     TracedContextCall[P, DepsT, FormattableT]
     | TracedAsyncContextCall[P, DepsT, FormattableT]
@@ -69,19 +78,34 @@ def wrap_call(
     | TracedAsyncCall[P, FormattableT]
 ):
     """Wrap a Call object with the appropriate TracedCall type."""
+    metadata = metadata or {}
     if isinstance(fn, AsyncContextCall):
-        return TracedAsyncContextCall(_call=fn, tags=tags)
+        return TracedAsyncContextCall(_call=fn, tags=tags, metadata=metadata)
     elif isinstance(fn, ContextCall):
-        return TracedContextCall(_call=fn, tags=tags)
+        return TracedContextCall(_call=fn, tags=tags, metadata=metadata)
     elif isinstance(fn, AsyncCall):
-        return TracedAsyncCall(_call=fn, tags=tags)
+        return TracedAsyncCall(_call=fn, tags=tags, metadata=metadata)
     else:
-        return TracedCall(_call=fn, tags=tags)
+        return TracedCall(_call=fn, tags=tags, metadata=metadata)
 
 
 @dataclass(kw_only=True)
-class TracedCall(Generic[P, FormattableT]):
-    """Traced wrapper for synchronous Call objects.
+class _BaseTracedCall(Generic[CallT]):
+    """Wrapper for traced Call objects."""
+
+    _call: CallT
+    """The original unwrapped Call object."""
+
+    tags: tuple[str, ...]
+    """Tags to be associated with traced calls."""
+
+    metadata: dict[str, str] = field(default_factory=dict)
+    """Arbitrary key-value pairs for additional metadata."""
+
+
+@dataclass(kw_only=True)
+class TracedCall(_BaseTracedCall[Call[P, FormattableT]]):
+    """Traced wrapper for traced synchronous Call objects.
 
     When @ops.trace decorates an @llm.call, it returns a TracedCall that wraps
     the call and stream methods with tracing capabilities.
@@ -115,12 +139,6 @@ class TracedCall(Generic[P, FormattableT]):
         ```
     """
 
-    _call: Call[P, FormattableT]
-    """The wrapped Call object."""
-
-    tags: tuple[str, ...]
-    """Tags to be associated with traced calls."""
-
     call: TracedFunction[P, Response | Response[FormattableT]] = field(init=False)
     """TracedFunction wrapping the call method."""
 
@@ -131,8 +149,12 @@ class TracedCall(Generic[P, FormattableT]):
 
     def __post_init__(self) -> None:
         """Initialize TracedFunction wrappers for call and stream methods."""
-        self.call = TracedFunction(fn=self._call.call, tags=self.tags)
-        self.stream = TracedFunction(fn=self._call.stream, tags=self.tags)
+        self.call = TracedFunction(
+            fn=self._call.call, tags=self.tags, metadata=self.metadata
+        )
+        self.stream = TracedFunction(
+            fn=self._call.stream, tags=self.tags, metadata=self.metadata
+        )
 
     def __call__(
         self, *args: P.args, **kwargs: P.kwargs
@@ -154,8 +176,8 @@ class TracedCall(Generic[P, FormattableT]):
 
 
 @dataclass(kw_only=True)
-class TracedAsyncCall(Generic[P, FormattableT]):
-    """Traced wrapper for asynchronous AsyncCall objects.
+class TracedAsyncCall(_BaseTracedCall[AsyncCall[P, FormattableT]]):
+    """Traced wrapper for traced asynchronous AsyncCall objects.
 
     Example:
         ```python
@@ -175,12 +197,6 @@ class TracedAsyncCall(Generic[P, FormattableT]):
         ```
     """
 
-    _call: AsyncCall[P, FormattableT]
-    """The wrapped AsyncCall object."""
-
-    tags: tuple[str, ...]
-    """Tags to be associated with traced calls."""
-
     call: AsyncTracedFunction[P, AsyncResponse | AsyncResponse[FormattableT]] = field(
         init=False
     )
@@ -193,8 +209,12 @@ class TracedAsyncCall(Generic[P, FormattableT]):
 
     def __post_init__(self) -> None:
         """Initialize AsyncTracedFunction wrappers for call and stream methods."""
-        self.call = AsyncTracedFunction(fn=self._call.call, tags=self.tags)
-        self.stream = AsyncTracedFunction(fn=self._call.stream, tags=self.tags)
+        self.call = AsyncTracedFunction(
+            fn=self._call.call, tags=self.tags, metadata=self.metadata
+        )
+        self.stream = AsyncTracedFunction(
+            fn=self._call.stream, tags=self.tags, metadata=self.metadata
+        )
 
     async def __call__(
         self, *args: P.args, **kwargs: P.kwargs
@@ -216,8 +236,8 @@ class TracedAsyncCall(Generic[P, FormattableT]):
 
 
 @dataclass(kw_only=True)
-class TracedContextCall(Generic[P, DepsT, FormattableT]):
-    """Traced wrapper for synchronous ContextCall objects.
+class TracedContextCall(_BaseTracedCall[ContextCall[P, DepsT, FormattableT]]):
+    """Traced wrapper for traced synchronous ContextCall objects.
 
     Example:
         ```python
@@ -238,12 +258,6 @@ class TracedContextCall(Generic[P, DepsT, FormattableT]):
         ```
     """
 
-    _call: ContextCall[P, DepsT, FormattableT]
-    """The wrapped ContextCall object."""
-
-    tags: tuple[str, ...]
-    """Tags to be associated with traced calls."""
-
     call: TracedContextFunction[
         P, DepsT, ContextResponse[DepsT, None] | ContextResponse[DepsT, FormattableT]
     ] = field(init=False)
@@ -258,8 +272,12 @@ class TracedContextCall(Generic[P, DepsT, FormattableT]):
 
     def __post_init__(self) -> None:
         """Initialize TracedContextFunction wrappers for call and stream methods."""
-        self.call = TracedContextFunction(fn=self._call.call, tags=self.tags)
-        self.stream = TracedContextFunction(fn=self._call.stream, tags=self.tags)
+        self.call = TracedContextFunction(
+            fn=self._call.call, tags=self.tags, metadata=self.metadata
+        )
+        self.stream = TracedContextFunction(
+            fn=self._call.stream, tags=self.tags, metadata=self.metadata
+        )
 
     def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs
@@ -283,8 +301,8 @@ class TracedContextCall(Generic[P, DepsT, FormattableT]):
 
 
 @dataclass(kw_only=True)
-class TracedAsyncContextCall(Generic[P, DepsT, FormattableT]):
-    """Traced wrapper for asynchronous AsyncContextCall objects.
+class TracedAsyncContextCall(_BaseTracedCall[AsyncContextCall[P, DepsT, FormattableT]]):
+    """Traced wrapper for traced asynchronous AsyncContextCall objects.
 
     Example:
         ```python
@@ -305,12 +323,6 @@ class TracedAsyncContextCall(Generic[P, DepsT, FormattableT]):
         ```
     """
 
-    _call: AsyncContextCall[P, DepsT, FormattableT]
-    """The wrapped AsyncContextCall object."""
-
-    tags: tuple[str, ...]
-    """Tags to be associated with traced calls."""
-
     call: AsyncTracedContextFunction[
         P,
         DepsT,
@@ -328,8 +340,12 @@ class TracedAsyncContextCall(Generic[P, DepsT, FormattableT]):
 
     def __post_init__(self) -> None:
         """Initialize AsyncTracedContextFunction wrappers for call and stream methods."""
-        self.call = AsyncTracedContextFunction(fn=self._call.call, tags=self.tags)
-        self.stream = AsyncTracedContextFunction(fn=self._call.stream, tags=self.tags)
+        self.call = AsyncTracedContextFunction(
+            fn=self._call.call, tags=self.tags, metadata=self.metadata
+        )
+        self.stream = AsyncTracedContextFunction(
+            fn=self._call.stream, tags=self.tags, metadata=self.metadata
+        )
 
     async def __call__(
         self, ctx: Context[DepsT], *args: P.args, **kwargs: P.kwargs

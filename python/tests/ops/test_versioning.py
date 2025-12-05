@@ -44,18 +44,187 @@ def test_closure_computation_failure() -> None:
         assert async_fn.closure is None
 
 
-def test_tags_properly_set() -> None:
-    """Tests that `tags` are set properly on the versioned function."""
+def test_version_with_all_decorator_arguments(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @version decorator with all arguments (name, tags, description, metadata)."""
 
-    @version(tags=["proper"])
-    def fn() -> None: ...
+    @version(
+        name="book_recommender",
+        tags=["production", "ml"],
+        metadata={"owner": "team-ml", "ticket": "ENG-1234"},
+    )
+    def recommend_book(genre: str) -> str:
+        """Recommends books based on genre"""
+        return f"Recommend a {genre} book"
 
-    assert fn.tags == ("proper",)
+    assert recommend_book.name == "book_recommender"
+    assert recommend_book.tags == ("ml", "production")
+    assert recommend_book.closure is not None
+    assert recommend_book.closure.docstring == "Recommends books based on genre"
+    assert recommend_book.metadata == {"owner": "team-ml", "ticket": "ENG-1234"}
 
-    @version(tags=["async"])
-    async def async_fn() -> None: ...
+    result = recommend_book("fantasy")
+    assert result == "Recommend a fantasy book"
 
-    assert async_fn.tags == ("async",)
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "recommend_book",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "recommend_book",
+                "mirascope.fn.is_async": False,
+                "mirascope.fn.module": "ops.test_versioning",
+                "function_hash": span_data["attributes"]["function_hash"],
+                "mirascope.trace.tags": ("ml", "production"),
+                "mirascope.trace.arg_types": '{"genre":"str"}',
+                "mirascope.trace.metadata": '{"owner":"team-ml","ticket":"ENG-1234"}',
+                "mirascope.trace.arg_values": '{"genre":"fantasy"}',
+                "mirascope.version.name": "book_recommender",
+                "mirascope.version.description": "Recommends books based on genre",
+                "mirascope.trace.output": "Recommend a fantasy book",
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+@pytest.mark.asyncio
+async def test_async_version_with_all_decorator_arguments(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test async @version decorator with all arguments (name, tags, description, metadata)."""
+
+    @version(
+        name="async_recommender",
+        tags=["staging"],
+        metadata={"env": "staging"},
+    )
+    async def recommend_async(genre: str) -> str:
+        """Async book recommender"""
+        return f"Async recommend a {genre} book"
+
+    assert recommend_async.name == "async_recommender"
+    assert recommend_async.tags == ("staging",)
+    assert recommend_async.closure is not None
+    assert recommend_async.closure.docstring == "Async book recommender"
+    assert recommend_async.metadata == {"env": "staging"}
+
+    result = await recommend_async("mystery")
+    assert result == "Async recommend a mystery book"
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "recommend_async",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "recommend_async",
+                "mirascope.fn.is_async": True,
+                "mirascope.fn.module": "ops.test_versioning",
+                "function_hash": span_data["attributes"]["function_hash"],
+                "mirascope.trace.tags": ("staging",),
+                "mirascope.trace.arg_types": '{"genre":"str"}',
+                "mirascope.trace.metadata": '{"env":"staging"}',
+                "mirascope.trace.arg_values": '{"genre":"mystery"}',
+                "mirascope.version.name": "async_recommender",
+                "mirascope.version.description": "Async book recommender",
+                "mirascope.trace.output": "Async recommend a mystery book",
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+def test_version_with_default_arguments(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @version decorator with default argument values."""
+
+    @version
+    def compute(x: int) -> int:
+        return x * 2
+
+    assert compute.name is None
+    assert compute.tags == ()
+    assert compute.closure is not None
+    assert compute.closure.docstring is None
+    assert compute.metadata == {}
+
+    result = compute(5)
+    assert result == 10
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "compute",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "compute",
+                "mirascope.fn.is_async": False,
+                "mirascope.fn.module": "ops.test_versioning",
+                "function_hash": span_data["attributes"]["function_hash"],
+                "mirascope.trace.arg_types": '{"x":"int"}',
+                "mirascope.trace.arg_values": '{"x":5}',
+                "mirascope.trace.output": 10,
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
+
+
+def test_version_with_empty_parens(
+    span_exporter: InMemorySpanExporter,
+) -> None:
+    """Test @version() decorator with empty parentheses."""
+
+    @version()
+    def compute(x: int) -> int:
+        return x * 3
+
+    assert compute.name is None
+    assert compute.tags == ()
+    assert compute.closure is not None
+    assert compute.closure.docstring is None
+    assert compute.metadata == {}
+
+    result = compute(4)
+    assert result == 12
+
+    spans = span_exporter.get_finished_spans()
+    assert len(spans) == 1
+
+    span_data = extract_span_data(spans[0])
+    assert span_data == snapshot(
+        {
+            "name": "compute",
+            "attributes": {
+                "mirascope.type": "trace",
+                "mirascope.fn.qualname": "compute",
+                "mirascope.fn.is_async": False,
+                "mirascope.fn.module": "ops.test_versioning",
+                "function_hash": span_data["attributes"]["function_hash"],
+                "mirascope.trace.arg_types": '{"x":"int"}',
+                "mirascope.trace.arg_values": '{"x":4}',
+                "mirascope.trace.output": 12,
+            },
+            "status": {"status_code": "UNSET", "description": None},
+            "events": [],
+        }
+    )
 
 
 def test_version_sync(

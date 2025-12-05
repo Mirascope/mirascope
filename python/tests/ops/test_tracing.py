@@ -1262,3 +1262,32 @@ async def test_traced_async_context_call_with_tags(
             "events": [],
         }
     )
+
+
+@pytest.mark.vcr()
+def test_traced_context_call_with_metadata(span_exporter: InMemorySpanExporter) -> None:
+    """Test @ops.trace(metadata={...}) on @llm.call with context exports metadata."""
+
+    @ops.trace(metadata={"env": "test", "version": "1.0"})
+    @llm.call("openai:responses/gpt-4o-mini")
+    def recommend(ctx: llm.Context[str], genre: str) -> str:
+        return f"{ctx.deps} Recommend a {genre} book."
+
+    assert isinstance(recommend, ops.TracedContextCall)
+
+    ctx = llm.Context(deps="As a librarian,")
+    response = recommend(ctx, "mystery")
+    assert response.content
+
+    spans = span_exporter.get_finished_spans()
+    trace_spans = [
+        span
+        for span in spans
+        if (span.attributes or {}).get("mirascope.type") == "trace"
+    ]
+    assert len(trace_spans) == 1
+
+    span_data = extract_span_data(trace_spans[0])
+    assert span_data["attributes"]["mirascope.trace.metadata"] == snapshot(
+        '{"env":"test","version":"1.0"}'
+    )
