@@ -39,6 +39,7 @@ classifiers = [
 dependencies = [
     "docstring-parser>=0.17.0",
     "httpx>=0.27.0",
+    "msgspec>=0.20.0",
     "pydantic>=2.0.0",
     "typing-extensions>=4.10.0",
 ]
@@ -84,7 +85,7 @@ dev = [
     "inline-snapshot>=0.26.0",
     "pytest-vcr>=1.0.2",
     "pytest-httpserver>=1.1.0",
-    "datamodel-code-generator>=0.39.0",
+    "datamodel-code-generator>=0.43.1",
 ]
 
 
@@ -126,6 +127,7 @@ target-version = "py310"
 "scripts/*.{py}" = ["T201"]
 "typechecking/*.{py}" = ["T201", "ANN"]
 "mirascope/api/_generated/**" = ["ALL"]
+"mirascope/llm/serialization/_generated/**" = ["ALL"]
 "tests/ops/_internal/closure_test_functions/**" = ["ANN"]
 "tests/ops/_internal/test_closure.py" = ["ANN"]
 
@@ -164,7 +166,7 @@ combine-as-imports = true
 
 [tool.pyright]
 include = ["mirascope", "tests", "examples"]
-exclude = [".venv", "mirascope/api/_generated", "mirascope/llm/mcp"]
+exclude = [".venv", "mirascope/api/_generated", "mirascope/llm/mcp", "mirascope/llm/serialization/_generated"]
 venvPath = "."
 venv = ".venv"
 stubPath = "typings"
@@ -235,6 +237,17 @@ custom-file-header = "\"\"\"OpenTelemetry Gen AI Semantic Conventions types.\"\"
 formatters = ["ruff-check", "ruff-format"]
 target-python-version = "3.10"
 type-mappings = ["binary=string"]
+
+[tool.datamodel-codegen.profiles.serialization]
+input = "schemas/serialization/response.json"
+output = "mirascope/llm/serialization/_generated/response.py"
+output-model-type = "msgspec.Struct"
+custom-file-header = "\"\"\"Serialization models generated from JSON Schema.\"\"\""
+formatters = ["ruff-check", "ruff-format"]
+
+[tool.datamodel-codegen.profiles.gen-ai]
+input = "schemas/gen-ai"
+output = "mirascope/ops/_internal/instrumentation/gen_ai_types"
 
 [tool.codespell]
 skip = [".git", "*.lock"]

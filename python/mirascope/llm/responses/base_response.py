@@ -1,17 +1,20 @@
 """Shared base of Response and AsyncResponse."""
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, overload
 
+from .. import serialization
 from ..content import Text, Thought, ToolCall
 from ..formatting import Format, FormattableT
 from ..messages import AssistantMessage, Message
-from ..tools import FORMAT_TOOL_NAME, ToolkitT
+from ..serialization._generated.response import SerializedResponse
+from ..tools import FORMAT_TOOL_NAME, Tool, Toolkit, ToolkitT
 from .finish_reason import FinishReason
 from .root_response import RootResponse
 
 if TYPE_CHECKING:
     from ..providers import ModelId, Params, ProviderId
+    from .response import Response
 
 
 class BaseResponse(RootResponse[ToolkitT, FormattableT]):
@@ -94,3 +97,57 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
                 raw_message=assistant_message.raw_message,
             )
         self.messages = list(input_messages) + [assistant_message]
+
+    @overload
+    @classmethod
+    def decode(cls, data: str | bytes | SerializedResponse) -> "Response[None]": ...
+
+    @overload
+    @classmethod
+    def decode(
+        cls,
+        data: str | bytes | SerializedResponse,
+        *,
+        tools: Sequence[Tool] | Toolkit | None = None,
+        format: Format[FormattableT] | None = None,
+    ) -> "Response[FormattableT]": ...
+
+    @classmethod
+    def decode(
+        cls,
+        data: str | bytes | SerializedResponse,
+        *,
+        tools: Sequence[Tool] | Toolkit | None = None,
+        format: Format[FormattableT] | None = None,
+    ) -> "Response[FormattableT] | Response[None]":
+        """Deserialize a Response from serialized data.
+
+        Args:
+            data: Data to decode. Can be JSON bytes, JSON string, or a SerializedResponse.
+            tools: Optional tools to attach to the decoded response. If provided,
+                validates that tools are a superset of the serialized tools.
+            format: Optional format to attach to the decoded response. If provided,
+                validates that the format schema matches the serialized format.
+
+        Returns:
+            A Response instance reconstructed from the serialized data.
+
+        Raises:
+            IncompatibleVersionError: If the serialized data uses an incompatible version.
+            InvalidSerializedDataError: If the data is malformed.
+            SchemaMismatchError: If provided tools/format don't match serialized schemas.
+
+        Example:
+            ```python
+            with open("response.json", "rb") as f:
+                response = llm.Response.decode(f.read())
+
+            # With tools and format for type-safe roundtrip
+            response = llm.Response.decode(
+                data,
+                tools=[get_weather],
+                format=llm.format(Book),
+            )
+            ```
+        """
+        return serialization.decode(data, tools=tools, format=format)

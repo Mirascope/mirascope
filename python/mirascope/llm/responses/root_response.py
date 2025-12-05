@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, overload
 from ..content import AssistantContentPart, Text, Thought, ToolCall
 from ..formatting import Format, FormattableT, Partial
 from ..messages import Message
+from ..serialization import encode as _encode
+from ..serialization.version import CURRENT_VERSION
 from ..tools import ToolkitT
 from . import _utils
 from .finish_reason import FinishReason
@@ -170,3 +172,50 @@ class RootResponse(Generic[ToolkitT, FormattableT], ABC):
         from ..models import use_model  # Dynamic import to avoid circular dependency
 
         return use_model(self.model_id, **self.params)
+
+    def encode(self, *, version: str | None = None) -> bytes:
+        """Serialize this response to JSON bytes.
+
+        Args:
+            version: The serialization format version. If not specified,
+                uses the current version.
+
+        Returns:
+            JSON-encoded bytes representation of this response.
+
+        Example:
+            ```python
+            response = client.call(model_id="claude-sonnet-4-20250514", messages=[...])
+            json_bytes = response.encode()
+            # Save to file
+            with open("response.json", "wb") as f:
+                f.write(json_bytes)
+            ```
+        """
+        return _encode(self, version=version or CURRENT_VERSION)
+
+    def encode_str(self, *, version: str | None = None) -> str:
+        """Serialize this response to a JSON string.
+
+        Args:
+            version: The serialization format version. If not specified,
+                uses the current version.
+
+        Returns:
+            JSON string representation of this response.
+
+        Example:
+            ```python
+            response = client.call(model_id="claude-sonnet-4-20250514", messages=[...])
+            json_str = response.encode_str()
+            ```
+        """
+        return self.encode(version=version).decode("utf-8")
+
+    def __str__(self) -> str:
+        """Return the serialized JSON representation of this response."""
+        return self.encode_str()
+
+    def __repr__(self) -> str:
+        """Return the serialized JSON representation of this response."""
+        return self.encode_str()

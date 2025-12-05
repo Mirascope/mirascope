@@ -25,6 +25,16 @@ def json_dumps(obj: Any) -> str:  # noqa: ANN401
     return orjson.dumps(obj, option=ORJSON_OPTS).decode("utf-8")
 
 
+def json_dumps_bytes(obj: Any) -> bytes:  # noqa: ANN401
+    """Serialize Python objects to JSON bytes."""
+    return orjson.dumps(obj, option=ORJSON_OPTS)
+
+
+def json_loads(data: bytes | str) -> Any:  # noqa: ANN401
+    """Deserialize JSON data to Python objects."""
+    return orjson.loads(data)
+
+
 def get_qualified_name(fn: Callable[..., Any]) -> str:
     """Return the simplified qualified name of a function.
 

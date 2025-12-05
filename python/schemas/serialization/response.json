@@ -1,0 +1,582 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "mirascope/response/v1",
+  "title": "SerializedResponse",
+  "description": "Serialized representation of a Mirascope LLM response",
+  "type": "object",
+  "required": ["$schema", "version", "type", "provider", "model_id", "messages", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Schema identifier (e.g., mirascope/response/v1)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "Serialization format version (MAJOR.MINOR)"
+    },
+    "type": {
+      "type": "string",
+      "const": "response",
+      "description": "Response type identifier"
+    },
+    "provider": {
+      "type": "string",
+      "description": "LLM provider name (e.g., anthropic, openai, google)"
+    },
+    "model_id": {
+      "type": "string",
+      "description": "Model identifier (e.g., claude-sonnet-4-20250514)"
+    },
+    "finish_reason": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/FinishReason" }
+      ],
+      "description": "Reason for response completion, if not normal"
+    },
+    "messages": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Message" },
+      "minItems": 1,
+      "description": "Message history including the assistant response"
+    },
+    "params": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "object" }
+      ],
+      "description": "Request parameters used for generation"
+    },
+    "tools": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SerializedToolSchema" }
+        }
+      ],
+      "description": "Tool schemas available for the response"
+    },
+    "format": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/SerializedFormat" }
+      ],
+      "description": "Structured output format specification"
+    },
+    "metadata": {
+      "$ref": "#/$defs/Metadata",
+      "description": "Serialization metadata"
+    }
+  },
+  "$defs": {
+    "FinishReason": {
+      "type": "string",
+      "enum": ["max_tokens", "refusal"],
+      "description": "Reason why the LLM finished generating"
+    },
+    "Message": {
+      "discriminator": {
+        "propertyName": "role",
+        "mapping": {
+          "system": "#/$defs/SystemMessage",
+          "user": "#/$defs/UserMessage",
+          "assistant": "#/$defs/AssistantMessage"
+        }
+      },
+      "oneOf": [
+        { "$ref": "#/$defs/SystemMessage" },
+        { "$ref": "#/$defs/UserMessage" },
+        { "$ref": "#/$defs/AssistantMessage" }
+      ],
+      "description": "A message in the conversation"
+    },
+    "SystemMessage": {
+      "type": "object",
+      "required": ["role", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string",
+          "const": "system",
+          "default": "system"
+        },
+        "content": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/TextContent" },
+          "minItems": 1,
+          "maxItems": 1,
+          "description": "System message content (single text)"
+        }
+      }
+    },
+    "UserMessage": {
+      "type": "object",
+      "required": ["role", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string",
+          "const": "user",
+          "default": "user"
+        },
+        "content": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UserContentPart" },
+          "description": "User message content parts"
+        },
+        "name": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string" }
+          ],
+          "description": "Optional user/session name"
+        }
+      }
+    },
+    "AssistantMessage": {
+      "type": "object",
+      "required": ["role", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string",
+          "const": "assistant",
+          "default": "assistant"
+        },
+        "content": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AssistantContentPart" },
+          "description": "Assistant message content parts"
+        },
+        "name": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string" }
+          ],
+          "description": "Optional assistant name"
+        },
+        "provider": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string" }
+          ],
+          "description": "Provider that generated this message"
+        },
+        "model_id": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string" }
+          ],
+          "description": "Model that generated this message"
+        },
+        "raw_message": {
+          "description": "Provider-specific raw message representation"
+        }
+      }
+    },
+    "UserContentPart": {
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "text": "#/$defs/TextContent",
+          "image": "#/$defs/ImageContent",
+          "audio": "#/$defs/AudioContent",
+          "document": "#/$defs/DocumentContent",
+          "tool_output": "#/$defs/ToolOutputContent"
+        }
+      },
+      "oneOf": [
+        { "$ref": "#/$defs/TextContent" },
+        { "$ref": "#/$defs/ImageContent" },
+        { "$ref": "#/$defs/AudioContent" },
+        { "$ref": "#/$defs/DocumentContent" },
+        { "$ref": "#/$defs/ToolOutputContent" }
+      ],
+      "description": "Content part in a user message"
+    },
+    "AssistantContentPart": {
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "text": "#/$defs/TextContent",
+          "tool_call": "#/$defs/ToolCallContent",
+          "thought": "#/$defs/ThoughtContent"
+        }
+      },
+      "oneOf": [
+        { "$ref": "#/$defs/TextContent" },
+        { "$ref": "#/$defs/ToolCallContent" },
+        { "$ref": "#/$defs/ThoughtContent" }
+      ],
+      "description": "Content part in an assistant message"
+    },
+    "TextContent": {
+      "type": "object",
+      "required": ["type", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "text",
+          "default": "text"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text content"
+        }
+      }
+    },
+    "ToolCallContent": {
+      "type": "object",
+      "required": ["type", "id", "name", "args"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "tool_call",
+          "default": "tool_call"
+        },
+        "id": {
+          "type": "string",
+          "description": "Tool call identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Tool name"
+        },
+        "args": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "object" }
+          ],
+          "description": "Tool arguments (JSON string or object)"
+        }
+      }
+    },
+    "ToolOutputContent": {
+      "type": "object",
+      "required": ["type", "id", "name", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "tool_output",
+          "default": "tool_output"
+        },
+        "id": {
+          "type": "string",
+          "description": "Tool call identifier this output responds to"
+        },
+        "name": {
+          "type": "string",
+          "description": "Tool name"
+        },
+        "value": {
+          "description": "Tool execution result"
+        }
+      }
+    },
+    "ThoughtContent": {
+      "type": "object",
+      "required": ["type", "thought"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "thought",
+          "default": "thought"
+        },
+        "thought": {
+          "type": "string",
+          "description": "Model's thinking/reasoning content"
+        }
+      }
+    },
+    "ImageContent": {
+      "type": "object",
+      "required": ["type", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "image",
+          "default": "image"
+        },
+        "source": {
+          "$ref": "#/$defs/ImageSource"
+        }
+      }
+    },
+    "AudioContent": {
+      "type": "object",
+      "required": ["type", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "audio",
+          "default": "audio"
+        },
+        "source": {
+          "$ref": "#/$defs/AudioSource"
+        }
+      }
+    },
+    "DocumentContent": {
+      "type": "object",
+      "required": ["type", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "document",
+          "default": "document"
+        },
+        "source": {
+          "$ref": "#/$defs/DocumentSource"
+        }
+      }
+    },
+    "ImageSource": {
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "base64_image_source": "#/$defs/Base64ImageSource",
+          "url_image_source": "#/$defs/URLImageSource"
+        }
+      },
+      "oneOf": [
+        { "$ref": "#/$defs/Base64ImageSource" },
+        { "$ref": "#/$defs/URLImageSource" }
+      ]
+    },
+    "Base64ImageSource": {
+      "type": "object",
+      "required": ["type", "data", "mime_type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "base64_image_source",
+          "default": "base64_image_source"
+        },
+        "data": {
+          "type": "string",
+          "description": "Base64-encoded image data"
+        },
+        "mime_type": {
+          "type": "string",
+          "description": "Image MIME type (e.g., image/png)"
+        }
+      }
+    },
+    "URLImageSource": {
+      "type": "object",
+      "required": ["type", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "url_image_source",
+          "default": "url_image_source"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Image URL"
+        }
+      }
+    },
+    "AudioSource": {
+      "$ref": "#/$defs/Base64AudioSource"
+    },
+    "Base64AudioSource": {
+      "type": "object",
+      "required": ["type", "data", "mime_type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "base64_audio_source",
+          "default": "base64_audio_source"
+        },
+        "data": {
+          "type": "string",
+          "description": "Base64-encoded audio data"
+        },
+        "mime_type": {
+          "type": "string",
+          "description": "Audio MIME type (e.g., audio/wav)"
+        }
+      }
+    },
+    "DocumentSource": {
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "base64_document_source": "#/$defs/Base64DocumentSource",
+          "text_document_source": "#/$defs/TextDocumentSource",
+          "url_document_source": "#/$defs/URLDocumentSource"
+        }
+      },
+      "oneOf": [
+        { "$ref": "#/$defs/Base64DocumentSource" },
+        { "$ref": "#/$defs/TextDocumentSource" },
+        { "$ref": "#/$defs/URLDocumentSource" }
+      ]
+    },
+    "Base64DocumentSource": {
+      "type": "object",
+      "required": ["type", "data", "media_type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "base64_document_source",
+          "default": "base64_document_source"
+        },
+        "data": {
+          "type": "string",
+          "description": "Base64-encoded document data"
+        },
+        "media_type": {
+          "type": "string",
+          "description": "Document MIME type (e.g., application/pdf)"
+        }
+      }
+    },
+    "TextDocumentSource": {
+      "type": "object",
+      "required": ["type", "data", "media_type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "text_document_source",
+          "default": "text_document_source"
+        },
+        "data": {
+          "type": "string",
+          "description": "Raw text content"
+        },
+        "media_type": {
+          "type": "string",
+          "description": "Document MIME type (e.g., text/plain)"
+        }
+      }
+    },
+    "URLDocumentSource": {
+      "type": "object",
+      "required": ["type", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "url_document_source",
+          "default": "url_document_source"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Document URL"
+        }
+      }
+    },
+    "SerializedToolSchema": {
+      "type": "object",
+      "required": ["name", "description", "parameters", "strict"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tool name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Tool description"
+        },
+        "parameters": {
+          "$ref": "#/$defs/ToolParameterSchema"
+        },
+        "strict": {
+          "type": "boolean",
+          "description": "Whether the tool uses strict mode"
+        }
+      }
+    },
+    "ToolParameterSchema": {
+      "type": "object",
+      "required": ["properties", "required", "additionalProperties"],
+      "properties": {
+        "properties": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Parameter definitions"
+        },
+        "required": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Required parameter names"
+        },
+        "additionalProperties": {
+          "type": "boolean"
+        },
+        "defs": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "JSON Schema definitions for $ref"
+        }
+      }
+    },
+    "SerializedFormat": {
+      "type": "object",
+      "required": ["name", "schema", "mode"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Format name"
+        },
+        "description": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string" }
+          ],
+          "description": "Format description"
+        },
+        "schema": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "JSON Schema for the format"
+        },
+        "mode": {
+          "$ref": "#/$defs/Mode",
+          "description": "Formatting mode"
+        }
+      }
+    },
+    "Mode": {
+      "type": "string",
+      "enum": ["strict", "json", "tool"]
+    },
+    "Metadata": {
+      "type": "object",
+      "required": ["serialized_at", "mirascope_version"],
+      "additionalProperties": false,
+      "properties": {
+        "serialized_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of serialization"
+        },
+        "mirascope_version": {
+          "type": "string",
+          "description": "Mirascope package version"
+        }
+      }
+    }
+  }
+}

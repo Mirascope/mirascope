@@ -20,6 +20,7 @@ from . import (
     prompts,
     providers,
     responses,
+    serialization,
     tools,
     types,
 )
@@ -118,6 +119,11 @@ from .responses import (
     ThoughtStream,
     ToolCallStream,
 )
+from .serialization import (
+    IncompatibleVersionError,
+    InvalidSerializedDataError,
+    SerializationError,
+)
 from .tools import (
     AsyncContextTool,
     AsyncContextToolkit,
@@ -176,6 +182,8 @@ __all__ = [
     "FormattingMode",
     "FormattingModeNotSupportedError",
     "Image",
+    "IncompatibleVersionError",
+    "InvalidSerializedDataError",
     "Message",
     "MirascopeLLMError",
     "Model",
@@ -192,6 +200,7 @@ __all__ = [
     "RateLimitError",
     "RawMessageChunk",
     "Response",
+    "SerializationError",
     "ServerError",
     "Stream",
     "StreamResponse",
@@ -239,6 +248,7 @@ __all__ = [
     "providers",
     "register_provider",
     "responses",
+    "serialization",
     "tool",
     "tools",
     "types",
