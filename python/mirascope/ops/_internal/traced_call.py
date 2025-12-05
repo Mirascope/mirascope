@@ -94,7 +94,7 @@ class _BaseTracedCall(Generic[CallT]):
     """Wrapper for traced Call objects."""
 
     _call: CallT
-    """The original unwrwapped Call object."""
+    """The original unwrapped Call object."""
 
     tags: tuple[str, ...]
     """Tags to be associated with traced calls."""
