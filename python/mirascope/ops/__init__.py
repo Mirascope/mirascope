@@ -41,6 +41,14 @@ try:
         TraceDecorator,
         trace,
     )
+    from ._internal.versioning import (
+        AsyncVersionedFunction,
+        VersionDecorator,
+        VersionedFunction,
+        version,
+    )
+    from .exceptions import ClosureComputationError
+
 except ImportError:  # pragma: no cover
     # TODO: refactor alongside other import error handling improvements
     from collections.abc import Callable
@@ -84,12 +92,18 @@ except ImportError:  # pragma: no cover
     trace = _create_otel_import_error_stub("trace")
     configure = _create_otel_import_error_stub("configure")
     tracer_context = _create_otel_import_error_stub("tracer_context")
+    AsyncVersionedFunction = _create_otel_import_error_stub("AsyncVersionedFunction")
+    VersionDecorator = _create_otel_import_error_stub("VersionDecorator")
+    VersionedFunction = _create_otel_import_error_stub("VersionedFunction")
+    version = _create_otel_import_error_stub("version")
 
 
 __all__ = [
     "SESSION_HEADER_NAME",
     "AsyncTrace",
     "AsyncTracedFunction",
+    "AsyncVersionedFunction",
+    "ClosureComputationError",
     "ContextPropagator",
     "PropagatorFormat",
     "SessionContext",
@@ -101,6 +115,8 @@ __all__ = [
     "TracedCall",
     "TracedContextCall",
     "TracedFunction",
+    "VersionDecorator",
+    "VersionedFunction",
     "configure",
     "current_session",
     "extract_context",
@@ -115,4 +131,5 @@ __all__ = [
     "trace",
     "tracer_context",
     "uninstrument_llm",
+    "version",
 ]

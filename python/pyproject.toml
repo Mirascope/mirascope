@@ -65,6 +65,8 @@ ops = [
     "orjson>=3.11.4",
     "opentelemetry-propagator-b3>=1.38.0",
     "opentelemetry-propagator-jaeger>=1.38.0",
+    "libcst>=1.8.6",
+    "packaging>=25.0",
 ]
 all = ["mirascope[anthropic,api,google,openai,mcp,ops]"]
 
@@ -123,6 +125,8 @@ target-version = "py310"
 "scripts/*.{py}" = ["T201"]
 "typechecking/*.{py}" = ["T201", "ANN"]
 "mirascope/api/_generated/**" = ["ALL"]
+"tests/ops/_internal/closure_test_functions/**" = ["ANN"]
+"tests/ops/_internal/test_closure.py" = ["ANN"]
 
 [tool.ruff.lint]
 select = [
