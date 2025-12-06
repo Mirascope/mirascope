@@ -6,5 +6,6 @@
 tsconfig.tsbuildinfo
 !src/lib
 coverage
+docker/data
 
 docker/data

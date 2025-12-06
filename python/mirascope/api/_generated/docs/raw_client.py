@@ -31,7 +31,7 @@ class RawDocsClient:
             Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            "api/v0/docs/openapi.json",
+            "docs/openapi.json",
             method="GET",
             request_options=request_options,
         )
@@ -91,7 +91,7 @@ class AsyncRawDocsClient:
             Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "api/v0/docs/openapi.json",
+            "docs/openapi.json",
             method="GET",
             request_options=request_options,
         )

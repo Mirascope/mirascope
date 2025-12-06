@@ -1,20 +1,35 @@
 import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Layer } from "effect";
-import { ApiLive } from "./router";
-import { Environment } from "./environment";
+import { ApiLive } from "@/api/router";
+import { EnvironmentService } from "@/api/environment";
+// import { DatabaseLive } from "@/db";
 
-export function createWebHandler(options: { environment?: string } = {}) {
+export function createWebHandler(
+  options: {
+    environment?: string;
+    databaseUrl?: string;
+  } = {},
+) {
   // Create environment layer
-  const EnvironmentLive = Layer.succeed(Environment, {
+  const EnvironmentLive = Layer.succeed(EnvironmentService, {
     env: options.environment || "unknown",
   });
 
-  const ApiWithEnv = Layer.mergeAll(
+  // Create database layer
+  // const connectionString =
+  //   options.databaseUrl || process.env.DATABASE_URL || "";
+  // const DatabaseLiveLayer = DatabaseLive(connectionString);
+
+  const ApiWithDependencies = Layer.mergeAll(
     HttpServer.layerContext,
-    ApiLive.pipe(Layer.provide(EnvironmentLive)),
+    ApiLive.pipe(
+      Layer.provide(EnvironmentLive),
+      // TODO: Add database as a dependency
+      // Layer.provide(DatabaseLiveLayer),
+    ),
   );
 
-  return HttpApiBuilder.toWebHandler(ApiWithEnv);
+  return HttpApiBuilder.toWebHandler(ApiWithDependencies);
 }
 
 let cachedHandler: ReturnType<typeof createWebHandler> | null = null;
