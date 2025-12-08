@@ -1,5 +1,6 @@
 import { Effect } from "effect";
-import { DatabaseService, DEFAULT_SESSION_DURATION, type Database } from "@/db";
+import { DatabaseService, DEFAULT_SESSION_DURATION } from "@/db";
+import { DatabaseError } from "@/db/errors";
 import { EnvironmentService } from "@/environment";
 import {
   OAuthError,
@@ -124,6 +125,146 @@ export const createGoogleProvider = Effect.gen(function* () {
   };
 });
 
+const validateOAuthParams = (
+  url: URL,
+  provider: OAuthProviderConfig,
+): Effect.Effect<
+  { code: string; encodedState: string },
+  OAuthError | InvalidStateError
+> => {
+  const error = url.searchParams.get("error");
+  const code = url.searchParams.get("code");
+  const encodedState = url.searchParams.get("state");
+
+  return Effect.gen(function* () {
+    if (error) {
+      yield* Effect.fail(
+        new OAuthError({
+          message: `OAuth Error: ${error}`,
+          provider: provider.name,
+        }),
+      );
+    }
+
+    const validCode = yield* code
+      ? Effect.succeed(code)
+      : Effect.fail(
+          new OAuthError({
+            message: "No authorization code received",
+            provider: provider.name,
+          }),
+        );
+
+    const validState = yield* encodedState
+      ? Effect.succeed(encodedState)
+      : Effect.fail(
+          new InvalidStateError({
+            message: "No state received",
+          }),
+        );
+
+    return { code: validCode, encodedState: validState };
+  });
+};
+
+const decodeState = (
+  encodedState: string,
+): Effect.Effect<
+  { randomState: string; returnUrl?: string },
+  InvalidStateError
+> => {
+  return Effect.try({
+    try: () =>
+      JSON.parse(atob(encodedState)) as {
+        randomState: string;
+        returnUrl?: string;
+      },
+    catch: (e) =>
+      new InvalidStateError({
+        message: `Failed to decode state: ${String(e)}`,
+      }),
+  });
+};
+
+const validateStateMatch = (
+  storedState: string | null,
+  randomState: string,
+): Effect.Effect<void, InvalidStateError> => {
+  if (storedState !== randomState) {
+    return Effect.fail(
+      new InvalidStateError({
+        message: "Invalid state parameter",
+      }),
+    );
+  }
+  return Effect.void;
+};
+
+const validateTokenResponse = (
+  tokenData: {
+    access_token?: string;
+    error?: string;
+  },
+  provider: OAuthProviderConfig,
+): Effect.Effect<string, OAuthError> => {
+  if (tokenData.error) {
+    return Effect.fail(
+      new OAuthError({
+        message: `Token exchange failed: ${tokenData.error}`,
+        provider: provider.name,
+      }),
+    );
+  }
+
+  if (!tokenData.access_token) {
+    return Effect.fail(
+      new OAuthError({
+        message: "No access token received",
+        provider: provider.name,
+      }),
+    );
+  }
+
+  return Effect.succeed(tokenData.access_token);
+};
+
+const exchangeCodeForToken = (
+  provider: OAuthProviderConfig,
+  code: string,
+): Effect.Effect<string, OAuthError> => {
+  return Effect.tryPromise({
+    try: async () => {
+      const response = await fetch(provider.tokenUrl, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          client_id: provider.clientId,
+          client_secret: provider.clientSecret,
+          code: code,
+          redirect_uri: provider.callbackUrl,
+        }),
+      });
+      const json = await response.json();
+      return json as {
+        access_token?: string;
+        error?: string;
+      };
+    },
+    catch: (e) =>
+      new OAuthError({
+        message: "Failed to exchange code for token",
+        provider: provider.name,
+        cause: e,
+      }),
+  }).pipe(
+    Effect.flatMap((tokenData) => validateTokenResponse(tokenData, provider)),
+  );
+};
+
 export function initiateOAuth(
   provider: OAuthProviderConfig,
   currentUrl: string,
@@ -158,130 +299,39 @@ export function handleOAuthCallback(
   request: Request,
   provider: OAuthProviderConfig,
 ) {
-  return Effect.gen(function* () {
-    const env = yield* EnvironmentService;
-    const db = yield* DatabaseService;
+  const url = new URL(request.url);
+  const storedState = getOAuthStateFromCookie(request);
 
-    const url = new URL(request.url);
-    const code = url.searchParams.get("code");
-    const encodedState = url.searchParams.get("state");
-    const error = url.searchParams.get("error");
-
-    if (error) {
-      return yield* Effect.fail(
-        new OAuthError({
-          message: `OAuth Error: ${error}`,
-          provider: provider.name,
-        }),
-      );
-    }
-
-    if (!code) {
-      return yield* Effect.fail(
-        new OAuthError({
-          message: "No authorization code received",
-          provider: provider.name,
-        }),
-      );
-    }
-
-    if (!encodedState) {
-      return yield* Effect.fail(
-        new InvalidStateError({
-          message: "No state received",
-        }),
-      );
-    }
-
-    const stateData = yield* Effect.try({
-      try: () =>
-        JSON.parse(atob(encodedState)) as {
-          randomState: string;
-          returnUrl?: string;
-        },
-      catch: (e) =>
-        new InvalidStateError({
-          message: `Failed to decode state: ${String(e)}`,
-        }),
-    });
-
-    const { randomState, returnUrl } = stateData;
-    const storedState = getOAuthStateFromCookie(request);
-
-    if (storedState !== randomState) {
-      return yield* Effect.fail(
-        new InvalidStateError({
-          message: "Invalid state parameter",
-        }),
-      );
-    }
-
-    const tokenData = yield* Effect.tryPromise({
-      try: async () => {
-        const response = await fetch(provider.tokenUrl, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: new URLSearchParams({
-            grant_type: "authorization_code",
-            client_id: provider.clientId,
-            client_secret: provider.clientSecret,
-            code: code,
-            redirect_uri: provider.callbackUrl,
+  return validateOAuthParams(url, provider).pipe(
+    Effect.flatMap(({ code, encodedState }) =>
+      decodeState(encodedState).pipe(
+        Effect.flatMap((stateData) =>
+          validateStateMatch(storedState, stateData.randomState).pipe(
+            Effect.map(() => ({ code, returnUrl: stateData.returnUrl })),
+          ),
+        ),
+      ),
+    ),
+    Effect.flatMap(({ code, returnUrl }) =>
+      exchangeCodeForToken(provider, code).pipe(
+        Effect.flatMap((accessToken) => fetchUserInfo(provider, accessToken)),
+        Effect.flatMap((userInfo) =>
+          Effect.gen(function* () {
+            const env = yield* EnvironmentService;
+            const response = yield* processAuthenticatedUser(
+              userInfo,
+              returnUrl,
+              env.SITE_URL || "http://localhost:3000",
+            );
+            response.headers.append("Set-Cookie", clearOAuthStateCookie());
+            return response;
           }),
-        });
-        const json = await response.json();
-        return json as {
-          access_token?: string;
-          error?: string;
-        };
-      },
-      catch: (e) =>
-        new OAuthError({
-          message: "Failed to exchange code for token",
-          provider: provider.name,
-          cause: e,
-        }),
-    });
-
-    if (tokenData.error) {
-      return yield* Effect.fail(
-        new OAuthError({
-          message: `Token exchange failed: ${tokenData.error}`,
-          provider: provider.name,
-        }),
-      );
-    }
-
-    if (!tokenData.access_token) {
-      return yield* Effect.fail(
-        new OAuthError({
-          message: "No access token received",
-          provider: provider.name,
-        }),
-      );
-    }
-
-    const userInfo = yield* fetchUserInfo(provider, tokenData.access_token);
-
-    const response = yield* processAuthenticatedUser(
-      db,
-      userInfo,
-      returnUrl,
-      env.SITE_URL || "http://localhost:3000",
-    );
-
-    response.headers.append("Set-Cookie", clearOAuthStateCookie());
-    return response;
-  });
+        ),
+      ),
+    ),
+  );
 }
 
-/**
- * Fetches JSON from a URL with proper error handling.
- * Returns the parsed JSON data or an OAuthError.
- */
 function fetchJson<T>(
   url: string,
   options: {
@@ -325,9 +375,6 @@ function fetchJson<T>(
   );
 }
 
-/**
- * Fetches GitHub user emails. Returns empty array if the request fails.
- */
 function fetchGitHubEmails(
   accessToken: string,
   provider: string,
@@ -344,9 +391,6 @@ function fetchGitHubEmails(
   }).pipe(Effect.catchAll(() => Effect.succeed([] as GitHubEmail[])));
 }
 
-/**
- * Fetches GitHub user information including emails.
- */
 function fetchGitHubUserInfo(
   provider: OAuthProviderConfig & { name: "github" },
   accessToken: string,
@@ -367,9 +411,6 @@ function fetchGitHubUserInfo(
   });
 }
 
-/**
- * Fetches Google user information.
- */
 function fetchGoogleUserInfo(
   provider: OAuthProviderConfig & { name: "google" },
   accessToken: string,
@@ -389,10 +430,6 @@ function fetchGoogleUserInfo(
   });
 }
 
-/**
- * Fetches user information from the OAuth provider.
- * Routes to provider-specific implementations based on provider type.
- */
 function fetchUserInfo(
   provider: OAuthProviderConfig,
   accessToken: string,
@@ -404,69 +441,102 @@ function fetchUserInfo(
 }
 
 function processAuthenticatedUser(
-  db: Database,
   userInfo: AuthenticatedUserInfo,
   returnUrl: string | undefined,
   siteUrl: string,
-) {
-  return Effect.gen(function* () {
-    if (!userInfo.email) {
-      return yield* Effect.fail(
+): Effect.Effect<
+  Response,
+  AuthenticationFailedError | DatabaseError,
+  DatabaseService
+> {
+  const validateEmail = (email: string | null) => {
+    return Effect.filterOrFail(
+      Effect.succeed(email),
+      (e): e is string => e !== null,
+      () =>
         new AuthenticationFailedError({
           message: "Email is required to process an authenticated user",
         }),
-      );
-    }
-
-    const user = yield* db.users.createOrUpdate({
-      email: userInfo.email,
-      name: userInfo.name,
-    });
-
-    const expiresAt = new Date(Date.now() + DEFAULT_SESSION_DURATION);
-    const session = yield* db.sessions.create({
-      userId: user.id,
-      expiresAt: expiresAt,
-    });
-
-    const redirectUrl = new URL(returnUrl || siteUrl);
-    redirectUrl.searchParams.set("success", "true");
-
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: redirectUrl.toString(),
-        "Set-Cookie": setSessionCookie(session.id),
-      },
-    });
-  });
-}
-
-function isValidPreviewUrl(url: string): boolean {
-  try {
-    const parsedUrl = new URL(url);
-    return (
-      !!parsedUrl.hostname.match(/^.*-pr-\d+\.mirascope\.workers\.dev$/) ||
-      parsedUrl.hostname === "staging.mirascope.com"
     );
-  } catch {
-    return false;
-  }
+  };
+
+  const createUserAndSession = (email: string) => {
+    return Effect.gen(function* () {
+      const db = yield* DatabaseService;
+
+      const user = yield* db.users.createOrUpdate({
+        email: email,
+        name: userInfo.name,
+      });
+
+      const expiresAt = new Date(Date.now() + DEFAULT_SESSION_DURATION);
+      const session = yield* db.sessions.create({
+        userId: user.id,
+        expiresAt: expiresAt,
+      });
+
+      return session.id;
+    });
+  };
+
+  const buildRedirectResponse = (sessionId: string) => {
+    return Effect.sync(() => {
+      const redirectUrl = new URL(returnUrl || siteUrl);
+      redirectUrl.searchParams.set("success", "true");
+
+      return new Response(null, {
+        status: 302,
+        headers: {
+          Location: redirectUrl.toString(),
+          "Set-Cookie": setSessionCookie(sessionId),
+        },
+      });
+    });
+  };
+
+  return validateEmail(userInfo.email).pipe(
+    Effect.flatMap(createUserAndSession),
+    Effect.flatMap(buildRedirectResponse),
+  );
 }
 
-export function handleOAuthProxyCallback(
-  request: Request,
-  providerName: string,
-) {
-  return Effect.gen(function* () {
-    const url = new URL(request.url);
-    const code = url.searchParams.get("code");
-    const encodedState = url.searchParams.get("state");
-    const error = url.searchParams.get("error");
-    const errorDescription = url.searchParams.get("error_description");
+const validatePreviewUrl = (
+  url: string,
+): Effect.Effect<string, InvalidStateError> => {
+  return Effect.try({
+    try: () => {
+      const parsedUrl = new URL(url);
+      const isValid =
+        !!parsedUrl.hostname.match(/^.*-pr-\d+\.mirascope\.workers\.dev$/) ||
+        parsedUrl.hostname === "staging.mirascope.com";
 
+      if (!isValid) {
+        throw new Error("Invalid preview URL");
+      }
+      return url;
+    },
+    catch: () =>
+      new InvalidStateError({
+        message: "Invalid return URL",
+      }),
+  });
+};
+
+const validateProxyParams = (
+  url: URL,
+  providerName: string,
+): Effect.Effect<
+  { code: string; encodedState: string },
+  OAuthError | InvalidStateError
+> => {
+  const error = url.searchParams.get("error");
+  const errorDescription = url.searchParams.get("error_description");
+  const code = url.searchParams.get("code");
+  const encodedState = url.searchParams.get("state");
+
+  return Effect.gen(function* () {
     if (error) {
-      return yield* Effect.fail(
+      yield* Effect.fail(
         new OAuthError({
           message: `OAuth Error: ${error} - ${errorDescription || ""}`,
           provider: providerName,
@@ -474,61 +544,61 @@ export function handleOAuthProxyCallback(
       );
     }
 
-    if (!encodedState) {
-      return yield* Effect.fail(
-        new InvalidStateError({
-          message: "No state parameter received",
-        }),
-      );
-    }
+    const validState = yield* encodedState
+      ? Effect.succeed(encodedState)
+      : Effect.fail(
+          new InvalidStateError({
+            message: "No state parameter received",
+          }),
+        );
 
-    const stateData = yield* Effect.try({
-      try: () =>
-        JSON.parse(atob(encodedState)) as {
-          randomState: string;
-          returnUrl?: string;
-        },
-      catch: () =>
-        new InvalidStateError({
-          message: "Invalid state parameter - unable to decode",
-        }),
-    });
+    const validCode = yield* code
+      ? Effect.succeed(code)
+      : Effect.fail(
+          new OAuthError({
+            message: "No authorization code received",
+            provider: providerName,
+          }),
+        );
 
-    const returnUrl = stateData.returnUrl;
-    if (!returnUrl) {
-      return yield* Effect.fail(
+    return { code: validCode, encodedState: validState };
+  });
+};
+
+const validateReturnUrl = (
+  returnUrl: string | undefined,
+): Effect.Effect<string, InvalidStateError> => {
+  return returnUrl
+    ? Effect.succeed(returnUrl)
+    : Effect.fail(
         new InvalidStateError({
           message: "No return URL found in state",
         }),
       );
-    }
+};
 
-    if (!isValidPreviewUrl(returnUrl)) {
-      return yield* Effect.fail(
-        new InvalidStateError({
-          message: "Invalid return URL",
-        }),
-      );
-    }
+const validateProxyStateMatch = (
+  storedState: string | null,
+  randomState: string,
+): Effect.Effect<void, InvalidStateError> => {
+  if (!storedState || storedState !== randomState) {
+    return Effect.fail(
+      new InvalidStateError({
+        message: "Invalid state parameter - does not match stored state",
+      }),
+    );
+  }
+  return Effect.void;
+};
 
-    const storedState = getOAuthStateFromCookie(request);
-    if (!storedState || storedState !== stateData.randomState) {
-      return yield* Effect.fail(
-        new InvalidStateError({
-          message: "Invalid state parameter - does not match stored state",
-        }),
-      );
-    }
-
-    if (!code) {
-      return yield* Effect.fail(
-        new OAuthError({
-          message: "No authorization code received",
-          provider: providerName,
-        }),
-      );
-    }
-
+const buildProxyRedirectResponse = (
+  returnUrl: string,
+  code: string,
+  encodedState: string,
+  randomState: string,
+  providerName: string,
+): Effect.Effect<Response> => {
+  return Effect.sync(() => {
     const callbackUrl = new URL(
       `/auth/${providerName.toLowerCase()}/callback`,
       returnUrl,
@@ -540,8 +610,53 @@ export function handleOAuthProxyCallback(
       status: 302,
       headers: {
         Location: callbackUrl.toString(),
-        "Set-Cookie": setOAuthStateCookie(stateData.randomState),
+        "Set-Cookie": setOAuthStateCookie(randomState),
       },
     });
   });
+};
+
+export function handleOAuthProxyCallback(
+  request: Request,
+  providerName: string,
+) {
+  const url = new URL(request.url);
+  const storedState = getOAuthStateFromCookie(request);
+
+  return validateProxyParams(url, providerName).pipe(
+    Effect.flatMap(({ code, encodedState }) =>
+      decodeState(encodedState).pipe(
+        Effect.flatMap((stateData) =>
+          validateReturnUrl(stateData.returnUrl).pipe(
+            Effect.flatMap((returnUrl) =>
+              validatePreviewUrl(returnUrl).pipe(
+                Effect.flatMap(() =>
+                  validateProxyStateMatch(
+                    storedState,
+                    stateData.randomState,
+                  ).pipe(
+                    Effect.map(() => ({
+                      code,
+                      encodedState,
+                      returnUrl,
+                      randomState: stateData.randomState,
+                    })),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+    Effect.flatMap(({ code, encodedState, returnUrl, randomState }) =>
+      buildProxyRedirectResponse(
+        returnUrl,
+        code,
+        encodedState,
+        randomState,
+        providerName,
+      ),
+    ),
+  );
 }

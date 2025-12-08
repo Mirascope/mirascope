@@ -1,6 +1,3 @@
-/**
- * Check if secure cookies should be used based on environment
- */
 function isSecure(): boolean {
   return (
     process.env.ENVIRONMENT === "production" ||
@@ -8,9 +5,6 @@ function isSecure(): boolean {
   );
 }
 
-/**
- * Extract a cookie value from a request by name
- */
 function getCookieValue(request: Request, name: string): string | null {
   const cookieHeader = request.headers.get("Cookie");
   if (!cookieHeader) return null;
@@ -25,23 +19,14 @@ function getCookieValue(request: Request, name: string): string | null {
   return null;
 }
 
-/**
- * Extract session ID from request cookie
- */
 export function getSessionIdFromCookie(request: Request): string | null {
   return getCookieValue(request, "session");
 }
 
-/**
- * Extract OAuth state from request cookie
- */
 export function getOAuthStateFromCookie(request: Request): string | null {
   return getCookieValue(request, "oauth_state");
 }
 
-/**
- * Generate cookie header value for setting a session
- */
 export function setSessionCookie(sessionId: string): string {
   const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
 
@@ -57,9 +42,6 @@ export function setSessionCookie(sessionId: string): string {
   return cookieParts.join("; ");
 }
 
-/**
- * Generate cookie header value for clearing a session
- */
 export function clearSessionCookie(): string {
   const cookieParts = [
     "session=;",
@@ -73,9 +55,6 @@ export function clearSessionCookie(): string {
   return cookieParts.join("; ");
 }
 
-/**
- * Generate cookie header value for OAuth state
- */
 export function setOAuthStateCookie(state: string): string {
   const cookieParts = [
     `oauth_state=${state}`,
@@ -89,9 +68,6 @@ export function setOAuthStateCookie(state: string): string {
   return cookieParts.join("; ");
 }
 
-/**
- * Generate cookie header value for clearing OAuth state
- */
 export function clearOAuthStateCookie(): string {
   const cookieParts = [
     "oauth_state=;",
