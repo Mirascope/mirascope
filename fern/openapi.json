@@ -493,6 +493,39 @@
           "required": true
         }
       }
+    },
+    "/api/v0/docs/openapi.json": {
+      "get": {
+        "tags": [
+          "docs"
+        ],
+        "operationId": "docs.openapi",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$id": "/schemas/any",
+                  "title": "any"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -601,6 +634,9 @@
     },
     {
       "name": "traces"
+    },
+    {
+      "name": "docs"
     }
   ],
   "servers": [

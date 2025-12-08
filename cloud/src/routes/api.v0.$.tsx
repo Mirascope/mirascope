@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { handleRequest } from "@/api/handler";
 
-// Effect Platform API route handler
 // TODO: discuss API versioning/naming strategy before release
 export const Route = createFileRoute("/api/v0/$")({
   server: {

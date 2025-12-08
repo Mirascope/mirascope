@@ -12,7 +12,7 @@ from .types import (
     PropertyKeyTagTag,
 )
 from .errors import BadRequestError
-from . import health, traces
+from . import docs, health, traces
 from .client import AsyncMirascope, Mirascope
 from .environment import MirascopeEnvironment
 from .health import HealthCheckResponse, HealthCheckResponseStatus
@@ -79,6 +79,7 @@ __all__ = [
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus",
     "TracesCreateResponse",
     "TracesCreateResponsePartialSuccess",
+    "docs",
     "health",
     "traces",
 ]

@@ -10,9 +10,8 @@
 
 import { Route as rootRouteImport } from "./routes/__root";
 import { Route as IndexRouteImport } from "./routes/index";
-import { Route as ApiV0DocsRouteImport } from "./routes/api/v0/docs";
-import { Route as ApiV0SplatRouteImport } from "./routes/api/v0/$";
-import { Route as ApiV0DocsOpenapiDotjsonRouteImport } from "./routes/api/v0/docs.openapi[.]json";
+import { Route as ApiV0DocsRouteImport } from "./routes/api.v0.docs";
+import { Route as ApiV0SplatRouteImport } from "./routes/api.v0.$";
 
 const IndexRoute = IndexRouteImport.update({
   id: "/",
@@ -29,48 +28,35 @@ const ApiV0SplatRoute = ApiV0SplatRouteImport.update({
   path: "/api/v0/$",
   getParentRoute: () => rootRouteImport,
 } as any);
-const ApiV0DocsOpenapiDotjsonRoute = ApiV0DocsOpenapiDotjsonRouteImport.update({
-  id: "/openapi.json",
-  path: "/openapi.json",
-  getParentRoute: () => ApiV0DocsRoute,
-} as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/api/v0/$": typeof ApiV0SplatRoute;
-  "/api/v0/docs": typeof ApiV0DocsRouteWithChildren;
-  "/api/v0/docs/openapi.json": typeof ApiV0DocsOpenapiDotjsonRoute;
+  "/api/v0/docs": typeof ApiV0DocsRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
   "/api/v0/$": typeof ApiV0SplatRoute;
-  "/api/v0/docs": typeof ApiV0DocsRouteWithChildren;
-  "/api/v0/docs/openapi.json": typeof ApiV0DocsOpenapiDotjsonRoute;
+  "/api/v0/docs": typeof ApiV0DocsRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
   "/api/v0/$": typeof ApiV0SplatRoute;
-  "/api/v0/docs": typeof ApiV0DocsRouteWithChildren;
-  "/api/v0/docs/openapi.json": typeof ApiV0DocsOpenapiDotjsonRoute;
+  "/api/v0/docs": typeof ApiV0DocsRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/api/v0/$" | "/api/v0/docs" | "/api/v0/docs/openapi.json";
+  fullPaths: "/" | "/api/v0/$" | "/api/v0/docs";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/api/v0/$" | "/api/v0/docs" | "/api/v0/docs/openapi.json";
-  id:
-    | "__root__"
-    | "/"
-    | "/api/v0/$"
-    | "/api/v0/docs"
-    | "/api/v0/docs/openapi.json";
+  to: "/" | "/api/v0/$" | "/api/v0/docs";
+  id: "__root__" | "/" | "/api/v0/$" | "/api/v0/docs";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
   ApiV0SplatRoute: typeof ApiV0SplatRoute;
-  ApiV0DocsRoute: typeof ApiV0DocsRouteWithChildren;
+  ApiV0DocsRoute: typeof ApiV0DocsRoute;
 }
 
 declare module "@tanstack/react-router" {
@@ -96,32 +82,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ApiV0SplatRouteImport;
       parentRoute: typeof rootRouteImport;
     };
-    "/api/v0/docs/openapi.json": {
-      id: "/api/v0/docs/openapi.json";
-      path: "/openapi.json";
-      fullPath: "/api/v0/docs/openapi.json";
-      preLoaderRoute: typeof ApiV0DocsOpenapiDotjsonRouteImport;
-      parentRoute: typeof ApiV0DocsRoute;
-    };
   }
 }
-
-interface ApiV0DocsRouteChildren {
-  ApiV0DocsOpenapiDotjsonRoute: typeof ApiV0DocsOpenapiDotjsonRoute;
-}
-
-const ApiV0DocsRouteChildren: ApiV0DocsRouteChildren = {
-  ApiV0DocsOpenapiDotjsonRoute: ApiV0DocsOpenapiDotjsonRoute,
-};
-
-const ApiV0DocsRouteWithChildren = ApiV0DocsRoute._addFileChildren(
-  ApiV0DocsRouteChildren,
-);
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
-  ApiV0DocsRoute: ApiV0DocsRouteWithChildren,
+  ApiV0DocsRoute: ApiV0DocsRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
