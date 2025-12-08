@@ -1,38 +1,12 @@
 import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Layer } from "effect";
-import type { Context } from "effect/Context";
 import { ApiLive } from "./router";
-import { EnvironmentService } from "./environment";
+import { Environment } from "./environment";
 
-// ============================================================================
-// Types
-// ============================================================================
-
-/**
- * Web handler instance returned by HttpApiBuilder.toWebHandler
- */
-interface WebHandlerInstance {
-  handler: (
-    request: Request<unknown, CfProperties<unknown>>,
-    context?: Context<never> | undefined,
-  ) => Promise<Response>;
-  dispose: () => Promise<void>;
-}
-
-// ============================================================================
-// Create Web Handler
-// ============================================================================
-
-/**
- * Creates a web handler for the Effect API.
- * This handler can be used with any fetch-compatible runtime (Cloudflare Workers, etc.)
- */
-export function createWebHandler(
-  options: { environment?: string } = {},
-): WebHandlerInstance {
+export function createWebHandler(options: { environment?: string } = {}) {
   // Create environment layer
-  const EnvironmentLive = Layer.succeed(EnvironmentService, {
-    environment: options.environment || "unknown",
+  const EnvironmentLive = Layer.succeed(Environment, {
+    env: options.environment || "unknown",
   });
 
   const ApiWithEnv = Layer.mergeAll(
@@ -40,25 +14,15 @@ export function createWebHandler(
     ApiLive.pipe(Layer.provide(EnvironmentLive)),
   );
 
-  // Create the web handler directly from the API layer with services
-  const webHandler: WebHandlerInstance =
-    HttpApiBuilder.toWebHandler(ApiWithEnv);
-  return webHandler;
+  return HttpApiBuilder.toWebHandler(ApiWithEnv);
 }
 
-// ============================================================================
-// Cached handler for reuse
-// ============================================================================
-
-let cachedHandler: WebHandlerInstance | null = null;
+let cachedHandler: ReturnType<typeof createWebHandler> | null = null;
 let cachedEnvironment: string | undefined = undefined;
 
-/**
- * Get or create the default handler instance
- */
 export function getWebHandler(
   options: { environment?: string } = {},
-): WebHandlerInstance {
+): ReturnType<typeof createWebHandler> {
   // Recreate handler if environment changes
   if (!cachedHandler || cachedEnvironment !== options.environment) {
     // Dispose old handler if exists
@@ -71,20 +35,17 @@ export function getWebHandler(
   return cachedHandler;
 }
 
-/**
- * Handle a request with URL prefix stripping support
- */
 export async function handleRequest(
   request: Request,
-  options: { environment?: string; prefix?: string } = {},
+  options: { environment?: string; prefix?: string },
 ): Promise<{ matched: boolean; response: Response }> {
   const webHandler = getWebHandler(options);
 
-  // If a prefix is specified, we need to rewrite the URL to strip it
-  let modifiedRequest = request;
-  if (options.prefix) {
+  try {
+    // Strip prefix if present
+    let modifiedRequest = request;
     const url = new URL(request.url);
-    if (url.pathname.startsWith(options.prefix)) {
+    if (options.prefix && url.pathname.startsWith(options.prefix)) {
       const pathWithoutPrefix =
         url.pathname.slice(options.prefix.length) || "/";
       const newUrl = new URL(pathWithoutPrefix + url.search, url.origin);
@@ -96,9 +57,7 @@ export async function handleRequest(
         signal: request.signal,
       });
     }
-  }
 
-  try {
     const response = await webHandler.handler(modifiedRequest);
     // Effect Platform returns 404 for unmatched routes
     const matched = response.status !== 404;

@@ -34,8 +34,11 @@ export function generateOpenApiSpec() {
   };
 }
 
-// When run as a script, output the JSON
+// NOTE: we test this, but it runs as a sub-process, so coverage doesn't catch it.
+/* v8 ignore start */
 if (import.meta.main) {
+  // When run as a script, output the JSON
   const spec = generateOpenApiSpec();
   console.log(JSON.stringify(spec, null, 2));
 }
+/* v8 ignore stop */

@@ -8,8 +8,8 @@ export const Route = createFileRoute("/api/v0/$")({
     handlers: {
       ANY: async ({ request }: { request: Request }) => {
         const { matched, response } = await handleRequest(request, {
-          prefix: "/api/v0",
           environment: process.env.ENVIRONMENT || "development",
+          prefix: "/api/v0",
         });
 
         if (matched) {
