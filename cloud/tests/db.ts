@@ -4,6 +4,7 @@ import { getDatabase, type Database } from "@/db/services";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "@/db/schema";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 
 dotenv.config({ path: ".env.local", override: true });
 
@@ -29,20 +30,76 @@ export const withTestDatabase = <A, E>(
     await db
       .transaction(async (tx) => {
         const txDb = getDatabase(tx);
-        try {
-          await Effect.runPromise(testFn(txDb));
-        } catch (err) {
-          // If testFn fails, do not try to throw for rollback, just rethrow for test failure
-          throw err;
-        }
+        await Effect.runPromise(testFn(txDb));
         // Always throw after test to cause rollback
         throw new Error("__ROLLBACK_TEST_DB__");
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         // Only suppress the rollback error; propagate all other errors
-        if (err?.message !== "__ROLLBACK_TEST_DB__") {
+        if (
+          err &&
+          typeof err === "object" &&
+          "message" in err &&
+          err.message !== "__ROLLBACK_TEST_DB__"
+        ) {
           throw err;
         }
       });
+  };
+};
+
+function createMockDatabase(error: Error): PostgresJsDatabase<typeof schema> {
+  const createRejectingPromise = () => Promise.reject(error);
+
+  return {
+    select: () => ({
+      from: () => {
+        const promise = createRejectingPromise();
+        return {
+          where: () => ({
+            limit: () => promise,
+          }),
+          innerJoin: () => ({
+            where: () => ({
+              limit: () => promise,
+            }),
+          }),
+          then: promise.then.bind(promise),
+          catch: promise.catch.bind(promise),
+        };
+      },
+    }),
+    delete: () => ({
+      where: () => ({
+        returning: () => createRejectingPromise(),
+      }),
+    }),
+    insert: () => ({
+      values: () => ({
+        onConflictDoUpdate: () => ({
+          returning: () => createRejectingPromise(),
+        }),
+        returning: () => createRejectingPromise(),
+      }),
+    }),
+    update: () => ({
+      set: () => ({
+        where: () => ({
+          returning: () => createRejectingPromise(),
+        }),
+      }),
+    }),
+  } as unknown as PostgresJsDatabase<typeof schema>;
+}
+
+export const withErroringService = <T, A, E>(
+  ServiceClass: new (db: PostgresJsDatabase<typeof schema>) => T,
+  testFn: (service: T) => Effect.Effect<A, E, never>,
+) => {
+  return async () => {
+    const service = new ServiceClass(
+      createMockDatabase(new Error("Database connection failed")),
+    );
+    await Effect.runPromise(testFn(service));
   };
 };

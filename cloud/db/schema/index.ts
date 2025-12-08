@@ -1,12 +1,12 @@
-export * from "./sessions";
-export * from "./users";
+export * from "@/db/schema/sessions";
+export * from "@/db/schema/users";
 
-export type { PublicSession } from "./sessions";
-export type { PublicUser } from "./users";
+export type { PublicSession } from "@/db/schema/sessions";
+export type { PublicUser } from "@/db/schema/users";
 
 // Export table types for use in service constraints
-import { users } from "./users";
-import { sessions } from "./sessions";
+import { users } from "@/db/schema/users";
+import { sessions } from "@/db/schema/sessions";
 
 /**
  * Union type of all database tables

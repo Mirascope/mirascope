@@ -53,7 +53,7 @@ function createTestClient() {
 export const withTestClient = (
   testFn: (
     client: Awaited<ReturnType<typeof createTestClient>>,
-  ) => Promise<void>,
+  ) => void | Promise<void>,
 ) => {
   return async () => {
     const client = createTestClient();

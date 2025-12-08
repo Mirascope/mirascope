@@ -1,7 +1,7 @@
 import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Layer } from "effect";
 import { ApiLive } from "@/api/router";
-import { EnvironmentService } from "@/api/environment";
+import { EnvironmentService } from "@/environment";
 // import { DatabaseLive } from "@/db";
 
 export function createWebHandler(

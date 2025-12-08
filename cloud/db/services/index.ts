@@ -1,13 +1,13 @@
-export * from "./users";
-export * from "./sessions";
+export * from "@/db/services/users";
+export * from "@/db/services/sessions";
 
 import { Context } from "effect";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import * as schema from "../schema";
-import { UserService } from "./users";
-import { SessionService } from "./sessions";
+import * as schema from "@/db/schema";
+import { UserService } from "@/db/services/users";
+import { SessionService } from "@/db/services/sessions";
 
 export type Database = {
   readonly users: UserService;

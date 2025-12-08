@@ -1,51 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { withTestDatabase } from "@/tests/db";
+import { withTestDatabase, withErroringService } from "@/tests/db";
 import { Effect } from "effect";
-import { NotFoundError, DatabaseError } from "../errors";
-import { UserService } from "./users";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import type * as schema from "../schema";
-
-// Helper to create a UserService with a mock database that throws errors
-function createUserServiceWithErroringDb(error: Error): UserService {
-  // Create a mock that properly rejects for all query types
-  const createRejectingPromise = () => Promise.reject(error);
-
-  const mockDb = {
-    select: () => ({
-      from: () => {
-        const promise = createRejectingPromise();
-        return {
-          where: () => ({
-            limit: () => promise,
-          }),
-          // For findAll, return the promise directly (it's awaitable)
-          then: promise.then.bind(promise),
-          catch: promise.catch.bind(promise),
-        };
-      },
-    }),
-    delete: () => ({
-      where: () => ({
-        returning: () => createRejectingPromise(),
-      }),
-    }),
-    insert: () => ({
-      values: () => ({
-        returning: () => createRejectingPromise(),
-      }),
-    }),
-    update: () => ({
-      set: () => ({
-        where: () => ({
-          returning: () => createRejectingPromise(),
-        }),
-      }),
-    }),
-  } as unknown as PostgresJsDatabase<typeof schema>;
-
-  return new UserService(mockDb);
-}
+import { NotFoundError, DatabaseError } from "@/db/errors";
+import { UserService } from "@/db/services/users";
 
 describe("BaseService error handling", () => {
   describe("NotFoundError", () => {
@@ -114,13 +71,11 @@ describe("BaseService error handling", () => {
       "create returns DatabaseError on unique constraint violation",
       withTestDatabase((db) =>
         Effect.gen(function* () {
-          // Create a user first
           yield* db.users.create({
             email: "duplicate@example.com",
             name: "First User",
           });
 
-          // Try to create another user with the same email (unique constraint violation)
           const result = yield* Effect.either(
             db.users.create({
               email: "duplicate@example.com",
@@ -136,29 +91,24 @@ describe("BaseService error handling", () => {
       ),
     );
 
-    it("findById returns DatabaseError on database query failure", () => {
-      return Effect.gen(function* () {
-        // Create a UserService with a database that throws errors
-        const erroringService = createUserServiceWithErroringDb(
-          new Error("Database connection failed"),
-        );
-
-        const result = yield* Effect.either(
-          erroringService.findById("test-id"),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain("Failed to find");
-        }
-      }).pipe(Effect.runPromise);
-    });
+    it(
+      "findById returns DatabaseError on database query failure",
+      withErroringService(UserService, (service) =>
+        Effect.gen(function* () {
+          const result = yield* Effect.either(service.findById("test-id"));
+          expect(result._tag).toBe("Left");
+          if (result._tag === "Left") {
+            expect(result.left).toBeInstanceOf(DatabaseError);
+            expect(result.left.message).toContain("Failed to find");
+          }
+        }),
+      ),
+    );
 
     it(
       "update returns DatabaseError on unique constraint violation",
       withTestDatabase((db) =>
         Effect.gen(function* () {
-          // Create two users with different emails
           const user1 = yield* db.users.create({
             email: "user1@example.com",
             name: "User 1",
@@ -168,7 +118,6 @@ describe("BaseService error handling", () => {
             name: "User 2",
           });
 
-          // Try to update user1's email to user2's email (unique constraint violation)
           const result = yield* Effect.either(
             db.users.update(user1.id, {
               email: "user2@example.com",
@@ -183,36 +132,32 @@ describe("BaseService error handling", () => {
       ),
     );
 
-    it("delete returns DatabaseError on database query failure", () => {
-      return Effect.gen(function* () {
-        // Create a UserService with a database that throws errors
-        const erroringService = createUserServiceWithErroringDb(
-          new Error("Database connection failed"),
-        );
+    it(
+      "delete returns DatabaseError on database query failure",
+      withErroringService(UserService, (service) =>
+        Effect.gen(function* () {
+          const result = yield* Effect.either(service.delete("test-id"));
+          expect(result._tag).toBe("Left");
+          if (result._tag === "Left") {
+            expect(result.left).toBeInstanceOf(DatabaseError);
+            expect(result.left.message).toContain("Failed to delete");
+          }
+        }),
+      ),
+    );
 
-        const result = yield* Effect.either(erroringService.delete("test-id"));
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain("Failed to delete");
-        }
-      }).pipe(Effect.runPromise);
-    });
-
-    it("findAll returns DatabaseError on database query failure", () => {
-      return Effect.gen(function* () {
-        // Create a UserService with a database that throws errors
-        const erroringService = createUserServiceWithErroringDb(
-          new Error("Database connection failed"),
-        );
-
-        const result = yield* Effect.either(erroringService.findAll());
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(DatabaseError);
-          expect(result.left.message).toContain("Failed to find all");
-        }
-      }).pipe(Effect.runPromise);
-    });
+    it(
+      "findAll returns DatabaseError on database query failure",
+      withErroringService(UserService, (service) =>
+        Effect.gen(function* () {
+          const result = yield* Effect.either(service.findAll());
+          expect(result._tag).toBe("Left");
+          if (result._tag === "Left") {
+            expect(result.left).toBeInstanceOf(DatabaseError);
+            expect(result.left.message).toContain("Failed to find all");
+          }
+        }),
+      ),
+    );
   });
 });

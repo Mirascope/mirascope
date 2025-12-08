@@ -1,10 +1,10 @@
 import { Effect } from "effect";
 import { eq } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
-import { DatabaseError, NotFoundError } from "../errors";
+import { DatabaseError, NotFoundError } from "@/db/errors";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import type * as schema from "../schema";
-import type { DatabaseTable } from "../schema";
+import type * as schema from "@/db/schema";
+import type { DatabaseTable } from "@/db/schema";
 
 /**
  * Base service class for CRUD operations on database entities.
@@ -15,7 +15,6 @@ import type { DatabaseTable } from "../schema";
  * @template TTable - The Drizzle table type (constrained to actual database tables)
  */
 export abstract class BaseService<
-  _TEntity,
   TPublic,
   TId,
   TTable extends DatabaseTable = DatabaseTable,
@@ -84,6 +83,7 @@ export abstract class BaseService<
         // can't narrow the type, but runtime behavior is correct
         const [result] = await this.db
           .insert(table)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
           .values(data as any)
           .returning(publicFields);
 
@@ -111,13 +111,14 @@ export abstract class BaseService<
         // Runtime behavior is correct - this is purely a TypeScript limitation.
         const [result] = await this.db
           .select(publicFields)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .from(table as any)
           .where(eq(idColumn, id))
           .limit(1);
 
         if (!result) {
           throw new NotFoundError({
-            message: `${this.getResourceName()} with id ${id} not found`,
+            message: `${this.getResourceName()} with id ${String(id)} not found`,
             resource: this.getResourceName(),
           });
         }
@@ -158,13 +159,14 @@ export abstract class BaseService<
         // can't narrow the type, but runtime behavior is correct
         const [result] = await this.db
           .update(table)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
           .set(updateData as any)
           .where(eq(idColumn, id))
           .returning(publicFields);
 
         if (!result) {
           throw new NotFoundError({
-            message: `${this.getResourceName()} with id ${id} not found`,
+            message: `${this.getResourceName()} with id ${String(id)} not found`,
             resource: this.getResourceName(),
           });
         }
@@ -198,7 +200,7 @@ export abstract class BaseService<
 
         if (!deleted) {
           throw new NotFoundError({
-            message: `${this.getResourceName()} with id ${id} not found`,
+            message: `${this.getResourceName()} with id ${String(id)} not found`,
             resource: this.getResourceName(),
           });
         }
@@ -226,6 +228,7 @@ export abstract class BaseService<
         // Type assertion needed: Drizzle's .from() has complex conditional types
         // (TableLikeHasEmptySelection) that don't work well with generic table types.
         // Runtime behavior is correct - this is purely a TypeScript limitation.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const results = await this.db.select(publicFields).from(table as any);
 
         return results as TPublic[];
