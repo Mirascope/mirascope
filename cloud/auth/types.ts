@@ -25,8 +25,7 @@ export interface OAuthProvider {
   ) => Promise<AuthenticatedUserInfo>;
 }
 
-export type OAuthProviderConfig = {
-  name: "github" | "google";
+type OAuthProviderBase = {
   authUrl: string;
   tokenUrl: string;
   userUrl: string;
@@ -35,3 +34,7 @@ export type OAuthProviderConfig = {
   clientSecret: string;
   callbackUrl: string;
 };
+
+export type OAuthProviderConfig =
+  | (OAuthProviderBase & { name: "github" })
+  | (OAuthProviderBase & { name: "google" });

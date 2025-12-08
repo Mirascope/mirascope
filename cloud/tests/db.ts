@@ -103,3 +103,60 @@ export const withErroringService = <T, A, E>(
     await Effect.runPromise(testFn(service));
   };
 };
+
+/**
+ * Creates a partial mock database for testing specific scenarios.
+ * Operations not specified will throw an error by default.
+ */
+export function createPartialMockDatabase(
+  overrides: Partial<{
+    select: () => unknown;
+    insert: () => unknown;
+    update: () => unknown;
+    delete: () => unknown;
+  }>,
+): PostgresJsDatabase<typeof schema> {
+  const defaultError = new Error("Database operation not mocked");
+  const createRejectingPromise = () => Promise.reject(defaultError);
+
+  return {
+    select:
+      overrides.select ??
+      (() => ({
+        from: () => ({
+          where: () => ({
+            limit: () => createRejectingPromise(),
+          }),
+          innerJoin: () => ({
+            where: () => ({
+              limit: () => createRejectingPromise(),
+            }),
+          }),
+        }),
+      })),
+    insert:
+      overrides.insert ??
+      (() => ({
+        values: () => ({
+          onConflictDoUpdate: () => createRejectingPromise(),
+          returning: () => createRejectingPromise(),
+        }),
+      })),
+    update:
+      overrides.update ??
+      (() => ({
+        set: () => ({
+          where: () => ({
+            returning: () => createRejectingPromise(),
+          }),
+        }),
+      })),
+    delete:
+      overrides.delete ??
+      (() => ({
+        where: () => ({
+          returning: () => createRejectingPromise(),
+        }),
+      })),
+  } as unknown as PostgresJsDatabase<typeof schema>;
+}
