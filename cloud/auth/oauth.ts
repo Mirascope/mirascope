@@ -278,62 +278,129 @@ export function handleOAuthCallback(
   });
 }
 
-function fetchUserInfo(provider: OAuthProviderConfig, accessToken: string) {
-  return Effect.gen(function* () {
-    const userData = yield* Effect.tryPromise({
-      try: async () => {
-        const response = await fetch(provider.userUrl, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "application/json",
-            "User-Agent": "Mirascope/0.1",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-
-        return response.json();
-      },
-      catch: (e) =>
-        new OAuthError({
-          message: "Failed to fetch user data",
-          provider: provider.name,
-          cause: e,
-        }),
-    });
-
-    if (provider.name === "github") {
-      const emails = yield* Effect.tryPromise({
-        try: async () => {
-          const response = await fetch("https://api.github.com/user/emails", {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              Accept: "application/vnd.github+json",
-              "X-GitHub-Api-Version": "2022-11-28",
-              "User-Agent": "Mirascope/0.1",
-            },
-          });
-
-          if (response.ok) {
-            const json = await response.json();
-            return json as GitHubEmail[];
-          }
-          return [] as GitHubEmail[];
-        },
-        catch: () =>
+/**
+ * Fetches JSON from a URL with proper error handling.
+ * Returns the parsed JSON data or an OAuthError.
+ */
+function fetchJson<T>(
+  url: string,
+  options: {
+    headers: Record<string, string>;
+    errorMessage: string;
+    provider: string;
+  },
+): Effect.Effect<T, OAuthError> {
+  return Effect.tryPromise({
+    try: async () => {
+      const response = await fetch(url, { headers: options.headers });
+      return response;
+    },
+    catch: (e) =>
+      new OAuthError({
+        message: options.errorMessage,
+        provider: options.provider,
+        cause: e,
+      }),
+  }).pipe(
+    Effect.flatMap((response) => {
+      if (!response.ok) {
+        return Effect.fail(
           new OAuthError({
-            message: "Failed to fetch GitHub emails",
-            provider: provider.name,
+            message: options.errorMessage,
+            provider: options.provider,
+          }),
+        );
+      }
+
+      return Effect.tryPromise({
+        try: async () => response.json(),
+        catch: (e) =>
+          new OAuthError({
+            message: `Failed to parse ${options.errorMessage.toLowerCase()}`,
+            provider: options.provider,
+            cause: e,
           }),
       });
+    }),
+  );
+}
 
-      return mapGitHubUserData(userData as GitHubUser, emails);
-    } else {
-      return mapGoogleUserData(userData as GoogleUser);
-    }
+/**
+ * Fetches GitHub user emails. Returns empty array if the request fails.
+ */
+function fetchGitHubEmails(
+  accessToken: string,
+  provider: string,
+): Effect.Effect<GitHubEmail[], OAuthError> {
+  return fetchJson<GitHubEmail[]>("https://api.github.com/user/emails", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "Mirascope/0.1",
+    },
+    errorMessage: "Failed to fetch GitHub emails",
+    provider,
+  }).pipe(Effect.catchAll(() => Effect.succeed([] as GitHubEmail[])));
+}
+
+/**
+ * Fetches GitHub user information including emails.
+ */
+function fetchGitHubUserInfo(
+  provider: OAuthProviderConfig & { name: "github" },
+  accessToken: string,
+): Effect.Effect<AuthenticatedUserInfo, OAuthError> {
+  return Effect.gen(function* () {
+    const userData = yield* fetchJson<GitHubUser>(provider.userUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json",
+        "User-Agent": "Mirascope/0.1",
+      },
+      errorMessage: "Failed to fetch GitHub user data",
+      provider: provider.name,
+    });
+
+    const emails = yield* fetchGitHubEmails(accessToken, provider.name);
+    return mapGitHubUserData(userData, emails);
   });
+}
+
+/**
+ * Fetches Google user information.
+ */
+function fetchGoogleUserInfo(
+  provider: OAuthProviderConfig & { name: "google" },
+  accessToken: string,
+): Effect.Effect<AuthenticatedUserInfo, OAuthError> {
+  return Effect.gen(function* () {
+    const userData = yield* fetchJson<GoogleUser>(provider.userUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/json",
+        "User-Agent": "Mirascope/0.1",
+      },
+      errorMessage: "Failed to fetch Google user data",
+      provider: provider.name,
+    });
+
+    return mapGoogleUserData(userData);
+  });
+}
+
+/**
+ * Fetches user information from the OAuth provider.
+ * Routes to provider-specific implementations based on provider type.
+ */
+function fetchUserInfo(
+  provider: OAuthProviderConfig,
+  accessToken: string,
+): Effect.Effect<AuthenticatedUserInfo, OAuthError> {
+  if (provider.name === "github") {
+    return fetchGitHubUserInfo(provider, accessToken);
+  }
+  return fetchGoogleUserInfo(provider, accessToken);
 }
 
 function processAuthenticatedUser(

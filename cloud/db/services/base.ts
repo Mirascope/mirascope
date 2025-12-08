@@ -25,26 +25,9 @@ export abstract class BaseService<
     this.db = db;
   }
 
-  /**
-   * Get the table for this service
-   */
   protected abstract getTable(): TTable;
-
-  /**
-   * Get the resource name for error messages (e.g., "user", "session")
-   */
   protected abstract getResourceName(): string;
-
-  /**
-   * Get the selector for public fields to return
-   * This should return a Drizzle select object that matches TPublic
-   */
   protected abstract getPublicFields(): Record<string, PgColumn>;
-
-  /**
-   * Get the ID column from the table
-   * With TTable constrained to DatabaseTable, we can access table.id directly
-   */
   protected getIdColumn(): PgColumn {
     const table = this.getTable();
     return table.id;
@@ -71,18 +54,15 @@ export abstract class BaseService<
   //   });
   // }
 
-  /**
-   * Create a new entity
-   */
   create(data: TTable["$inferInsert"]): Effect.Effect<TPublic, DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
         const table = this.getTable();
         const publicFields = this.getPublicFields();
-        // Type assertion needed: When TTable is a union type, Drizzle's .values()
-        // can't narrow the type, but runtime behavior is correct
         const [result] = await this.db
           .insert(table)
+          // Type assertion needed: When TTable is a union type, Drizzle's .values()
+          // can't narrow the type, but runtime behavior is correct
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
           .values(data as any)
           .returning(publicFields);
@@ -97,97 +77,83 @@ export abstract class BaseService<
     });
   }
 
-  /**
-   * Find an entity by its ID
-   */
   findById(id: TId): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
-        const table = this.getTable();
-        const idColumn = this.getIdColumn();
-        const publicFields = this.getPublicFields();
-        // Type assertion needed: Drizzle's .from() has complex conditional types
-        // (TableLikeHasEmptySelection) that don't work well with generic table types.
-        // Runtime behavior is correct - this is purely a TypeScript limitation.
         const [result] = await this.db
-          .select(publicFields)
+          .select(this.getPublicFields())
+          // Type assertion needed: Drizzle's .from() has complex conditional types
+          // (TableLikeHasEmptySelection) that don't work well with generic table types.
+          // Runtime behavior is correct - this is purely a TypeScript limitation.
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .from(table as any)
-          .where(eq(idColumn, id))
+          .from(this.getTable() as any)
+          .where(eq(this.getIdColumn(), id))
           .limit(1);
 
-        if (!result) {
-          throw new NotFoundError({
-            message: `${this.getResourceName()} with id ${String(id)} not found`,
-            resource: this.getResourceName(),
-          });
-        }
-
-        return result as TPublic;
+        return result as TPublic | undefined;
       },
-      catch: (error) => {
-        if (error instanceof NotFoundError) {
-          return error;
-        }
-        return new DatabaseError({
+      catch: (error) =>
+        new DatabaseError({
           message: `Failed to find ${this.getResourceName()}`,
           cause: error,
-        });
-      },
-    });
+        }),
+    }).pipe(
+      Effect.flatMap((result) => {
+        if (!result) {
+          return Effect.fail(
+            new NotFoundError({
+              message: `${this.getResourceName()} with id ${String(id)} not found`,
+              resource: this.getResourceName(),
+            }),
+          );
+        }
+        return Effect.succeed(result);
+      }),
+    );
   }
 
-  /**
-   * Update an entity by its ID
-   */
   update(
     id: TId,
     data: Partial<TTable["$inferInsert"]>,
   ): Effect.Effect<TPublic, NotFoundError | DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
-        const table = this.getTable();
-        const idColumn = this.getIdColumn();
-        const publicFields = this.getPublicFields();
-        // Construct update data with updatedAt timestamp
         // Type safety: TTable is constrained to DatabaseTable, so updatedAt is guaranteed to exist
         const updateData = {
           ...data,
           updatedAt: new Date(),
         };
-        // Type assertion needed: When TTable is a union type, Drizzle's .set()
-        // can't narrow the type, but runtime behavior is correct
         const [result] = await this.db
-          .update(table)
+          .update(this.getTable())
+          // Type assertion needed: When TTable is a union type, Drizzle's .set()
+          // can't narrow the type, but runtime behavior is correct
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
           .set(updateData as any)
-          .where(eq(idColumn, id))
-          .returning(publicFields);
+          .where(eq(this.getIdColumn(), id))
+          .returning(this.getPublicFields());
 
-        if (!result) {
-          throw new NotFoundError({
-            message: `${this.getResourceName()} with id ${String(id)} not found`,
-            resource: this.getResourceName(),
-          });
-        }
-
-        return result as TPublic;
+        return result as TPublic | undefined;
       },
-      catch: (error) => {
-        if (error instanceof NotFoundError) {
-          return error;
-        }
-        return new DatabaseError({
+      catch: (error) =>
+        new DatabaseError({
           message: `Failed to update ${this.getResourceName()}`,
           cause: error,
-        });
-      },
-    });
+        }),
+    }).pipe(
+      Effect.flatMap((result) => {
+        if (!result) {
+          return Effect.fail(
+            new NotFoundError({
+              message: `${this.getResourceName()} with id ${String(id)} not found`,
+              resource: this.getResourceName(),
+            }),
+          );
+        }
+        return Effect.succeed(result);
+      }),
+    );
   }
 
-  /**
-   * Delete an entity by its ID
-   */
   delete(id: TId): Effect.Effect<void, NotFoundError | DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
@@ -198,28 +164,28 @@ export abstract class BaseService<
           .where(eq(idColumn, id))
           .returning({ id: idColumn });
 
-        if (!deleted) {
-          throw new NotFoundError({
-            message: `${this.getResourceName()} with id ${String(id)} not found`,
-            resource: this.getResourceName(),
-          });
-        }
+        return deleted;
       },
-      catch: (error) => {
-        if (error instanceof NotFoundError) {
-          return error;
-        }
-        return new DatabaseError({
+      catch: (error) =>
+        new DatabaseError({
           message: `Failed to delete ${this.getResourceName()}`,
           cause: error,
-        });
-      },
-    });
+        }),
+    }).pipe(
+      Effect.flatMap((deleted) => {
+        if (!deleted) {
+          return Effect.fail(
+            new NotFoundError({
+              message: `${this.getResourceName()} with id ${String(id)} not found`,
+              resource: this.getResourceName(),
+            }),
+          );
+        }
+        return Effect.succeed(undefined);
+      }),
+    );
   }
 
-  /**
-   * Find all entities
-   */
   findAll(): Effect.Effect<TPublic[], DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
