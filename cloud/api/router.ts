@@ -1,21 +1,11 @@
-import { HttpApi, HttpApiBuilder } from "@effect/platform";
+import { HttpApiBuilder } from "@effect/platform";
 import { Layer } from "effect";
-import { HealthApi, checkHealthHandler } from "@/api/health";
-import { TracesApi, createTraceHandler } from "@/api/traces";
-import { DocsApi, getOpenApiSpecHandler } from "@/api/docs";
+import { checkHealthHandler } from "@/api/health.handlers";
+import { createTraceHandler } from "@/api/traces.handlers";
+import { getOpenApiSpecHandler } from "@/api/docs.handlers";
+import { MirascopeCloudApi } from "@/api/api";
 
-// ============================================================================
-// Combined API Definition
-// ============================================================================
-
-export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
-  .add(HealthApi)
-  .add(TracesApi)
-  .add(DocsApi) {}
-
-// ============================================================================
-// Handlers Layer
-// ============================================================================
+export { MirascopeCloudApi };
 
 const HealthHandlersLive = HttpApiBuilder.group(
   MirascopeCloudApi,
@@ -35,10 +25,6 @@ const DocsHandlersLive = HttpApiBuilder.group(
   "docs",
   (handlers) => handlers.handle("openapi", () => getOpenApiSpecHandler),
 );
-
-// ============================================================================
-// Combined API Layer
-// ============================================================================
 
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
