@@ -1,6 +1,6 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema, Effect } from "effect";
-import { Environment } from "@/api/environment";
+import { EnvironmentService } from "@/api/environment";
 
 // ============================================================================
 // Schemas
@@ -27,7 +27,7 @@ export class HealthApi extends HttpApiGroup.make("health").add(
 // ============================================================================
 
 export const checkHealthHandler = Effect.gen(function* () {
-  const environment = yield* Environment;
+  const environment = yield* EnvironmentService;
 
   const response: CheckHealthResponse = {
     status: "ok",

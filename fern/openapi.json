@@ -494,7 +494,7 @@
         }
       }
     },
-    "/api/v0/docs/openapi.json": {
+    "/docs/openapi.json": {
       "get": {
         "tags": [
           "docs"

@@ -18,9 +18,10 @@ describe("getWebHandler", () => {
 
 describe("handleRequest", () => {
   it("should return matched=false and 404 for a non-existing route", async () => {
-    const req = new Request("http://localhost/doesnotexist", { method: "GET" });
+    const req = new Request("http://localhost/api/v0", { method: "GET" });
     const { matched, response } = await handleRequest(req, {
       environment: "test",
+      prefix: "/api/v0",
     });
 
     expect(matched).toBe(false);
