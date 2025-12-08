@@ -1,26 +1,9 @@
-import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
-import { Schema, Effect } from "effect";
+import { Effect } from "effect";
 import { generateOpenApiSpec } from "@/api/generate-openapi";
+import { type OpenApiSpec } from "@/api/docs.schema";
 
-// ============================================================================
-// Schemas
-// ============================================================================
-
-// OpenAPI spec is a complex object, so we use Schema.Any for now
-// The actual structure is validated by generateOpenApiSpec
-export const OpenApiSpecSchema = Schema.Any;
-
-export type OpenApiSpec = typeof OpenApiSpecSchema.Type;
-
-// ============================================================================
-// API Group
-// ============================================================================
-
-export class DocsApi extends HttpApiGroup.make("docs").add(
-  HttpApiEndpoint.get("openapi", "/docs/openapi.json").addSuccess(
-    OpenApiSpecSchema,
-  ),
-) {}
+// Re-export schema types for convenience
+export * from "@/api/docs.schema";
 
 // ============================================================================
 // Handler Effects

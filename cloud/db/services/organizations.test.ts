@@ -388,7 +388,7 @@ describe("OrganizationService", () => {
 
   describe("Error handling", () => {
     it(
-      "create returns DatabaseError when check for existing fails",
+      "create returns DatabaseError when database operation fails",
       withErroringService(OrganizationService, (service) =>
         Effect.gen(function* () {
           const result = yield* Effect.either(
@@ -398,7 +398,7 @@ describe("OrganizationService", () => {
           if (result._tag === "Left") {
             expect(result.left).toBeInstanceOf(DatabaseError);
             expect(result.left.message).toContain(
-              "Failed to check for existing organization",
+              "Failed to create organization",
             );
           }
         }),

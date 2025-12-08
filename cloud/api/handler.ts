@@ -2,59 +2,49 @@ import { HttpApiBuilder, HttpServer } from "@effect/platform";
 import { Layer } from "effect";
 import { ApiLive } from "@/api/router";
 import { EnvironmentService } from "@/environment";
-// import { DatabaseLive } from "@/db";
+import { DatabaseService, getDatabase } from "@/db";
+import { AuthenticatedUser } from "@/auth/context";
+import type { PublicUser } from "@/db/schema";
 
-export function createWebHandler(
-  options: {
-    environment?: string;
-    databaseUrl?: string;
-  } = {},
-) {
-  // Create environment layer
-  const EnvironmentLive = Layer.succeed(EnvironmentService, {
-    env: options.environment || "unknown",
-  });
+export type HandleRequestOptions = {
+  environment?: string;
+  prefix?: string;
+  authenticatedUser: PublicUser;
+  databaseUrl?: string;
+};
 
-  // Create database layer
-  // const connectionString =
-  //   options.databaseUrl || process.env.DATABASE_URL || "";
-  // const DatabaseLiveLayer = DatabaseLive(connectionString);
+/**
+ * Create an authenticated web handler for a specific user.
+ * Each request gets its own handler since the user context is different.
+ */
+function createAuthenticatedWebHandler(options: HandleRequestOptions) {
+  const databaseUrl = options.databaseUrl || process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error("DATABASE_URL is required");
+  }
+
+  // Create all dependency layers
+  const DependenciesLive = Layer.mergeAll(
+    Layer.succeed(EnvironmentService, {
+      env: options.environment || "unknown",
+    }),
+    Layer.succeed(DatabaseService, getDatabase(databaseUrl)),
+    Layer.succeed(AuthenticatedUser, options.authenticatedUser),
+  );
 
   const ApiWithDependencies = Layer.mergeAll(
     HttpServer.layerContext,
-    ApiLive.pipe(
-      Layer.provide(EnvironmentLive),
-      // TODO: Add database as a dependency
-      // Layer.provide(DatabaseLiveLayer),
-    ),
+    ApiLive.pipe(Layer.provide(DependenciesLive)),
   );
 
   return HttpApiBuilder.toWebHandler(ApiWithDependencies);
 }
 
-let cachedHandler: ReturnType<typeof createWebHandler> | null = null;
-let cachedEnvironment: string | undefined = undefined;
-
-export function getWebHandler(
-  options: { environment?: string } = {},
-): ReturnType<typeof createWebHandler> {
-  // Recreate handler if environment changes
-  if (!cachedHandler || cachedEnvironment !== options.environment) {
-    // Dispose old handler if exists
-    if (cachedHandler) {
-      cachedHandler.dispose().catch(console.error);
-    }
-    cachedHandler = createWebHandler(options);
-    cachedEnvironment = options.environment;
-  }
-  return cachedHandler;
-}
-
 export async function handleRequest(
   request: Request,
-  options: { environment?: string; prefix?: string },
+  options: HandleRequestOptions,
 ): Promise<{ matched: boolean; response: Response }> {
-  const webHandler = getWebHandler(options);
+  const webHandler = createAuthenticatedWebHandler(options);
 
   try {
     // Strip prefix if present
@@ -74,11 +64,19 @@ export async function handleRequest(
     }
 
     const response = await webHandler.handler(modifiedRequest);
+
+    // Dispose handler after use
+    webHandler.dispose().catch(console.error);
+
     // Effect Platform returns 404 for unmatched routes
     const matched = response.status !== 404;
     return { matched, response };
   } catch (error) {
     console.error("[Effect API] Error handling request:", error);
+
+    // Dispose handler on error as well
+    webHandler.dispose().catch(console.error);
+
     return {
       matched: false,
       response: new Response("Internal Server Error", { status: 500 }),

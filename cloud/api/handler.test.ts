@@ -1,27 +1,36 @@
-import { describe, it, expect } from "vitest";
-import { getWebHandler } from "@/api/handler";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { handleRequest } from "@/api/handler";
+import type { PublicUser } from "@/db/schema";
 
-describe("getWebHandler", () => {
-  it("should cache the handler for the same environment", () => {
-    const handler1 = getWebHandler();
-    const handler2 = getWebHandler();
-    expect(handler1).toBe(handler2);
-  });
-
-  it("should create a new handler for a different environment", () => {
-    const handler1 = getWebHandler({ environment: "test" });
-    const handler2 = getWebHandler({ environment: "production" });
-    expect(handler1).not.toBe(handler2);
-  });
-});
+// Mock authenticated user for tests
+const mockUser: PublicUser = {
+  id: "test-user-id",
+  email: "test@example.com",
+  name: "Test User",
+};
 
 describe("handleRequest", () => {
+  const originalEnv = process.env.DATABASE_URL;
+
+  beforeEach(() => {
+    // Clear DATABASE_URL for tests that need it
+    delete process.env.DATABASE_URL;
+  });
+
+  afterEach(() => {
+    // Restore original env
+    if (originalEnv !== undefined) {
+      process.env.DATABASE_URL = originalEnv;
+    }
+  });
+
   it("should return matched=false and 404 for a non-existing route", async () => {
     const req = new Request("http://localhost/api/v0", { method: "GET" });
     const { matched, response } = await handleRequest(req, {
       environment: "test",
       prefix: "/api/v0",
+      authenticatedUser: mockUser,
+      databaseUrl: "postgresql://test:test@localhost:5432/test",
     });
 
     expect(matched).toBe(false);
@@ -40,11 +49,40 @@ describe("handleRequest", () => {
 
     const { matched, response } = await handleRequest(faultyRequest, {
       environment: "test",
+      authenticatedUser: mockUser,
+      databaseUrl: "postgresql://test:test@localhost:5432/test",
     });
 
     expect(matched).toBe(false);
     expect(response.status).toBe(500);
     const text = await response.text();
     expect(text).toMatch(/Internal Server Error/);
+  });
+
+  it("should throw error when DATABASE_URL is not provided", async () => {
+    const req = new Request("http://localhost/api/v0/health", {
+      method: "GET",
+    });
+
+    await expect(
+      handleRequest(req, {
+        environment: "test",
+        authenticatedUser: mockUser,
+        // No databaseUrl provided, and process.env.DATABASE_URL is cleared
+      }),
+    ).rejects.toThrow("DATABASE_URL is required");
+  });
+
+  it("should use 'unknown' environment when environment is not provided", async () => {
+    const req = new Request("http://localhost/api/v0", { method: "GET" });
+    const { matched, response } = await handleRequest(req, {
+      // environment not provided - should default to "unknown"
+      authenticatedUser: mockUser,
+      databaseUrl: "postgresql://test:test@localhost:5432/test",
+    });
+
+    // Route doesn't exist, but handler should work
+    expect(matched).toBe(false);
+    expect(response.status).toBe(404);
   });
 });

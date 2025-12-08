@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@effect/platform": "^0.93.3",
+    "@effect/platform-browser": "^0.73.0",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-query": "^5.90.12",
     "@tanstack/react-router": "^1.139.3",
@@ -36,6 +37,7 @@
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.0",
     "effect": "^3.19.6",
+    "effect-query": "^0.2.1",
     "postgres": "^3.4.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

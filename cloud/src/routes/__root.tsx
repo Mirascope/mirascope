@@ -7,6 +7,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { AuthProvider } from "@/src/contexts/auth";
+import { OrganizationProvider } from "@/src/contexts/organization";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/src/api/client";
 import globalsCss from "@/src/styles/globals.css?url";
@@ -60,9 +61,11 @@ function RootComponent() {
       <body>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <Outlet />
-            <TanStackRouterDevtools position="bottom-right" />
-            <Scripts />
+            <OrganizationProvider>
+              <Outlet />
+              <TanStackRouterDevtools position="bottom-right" />
+              <Scripts />
+            </OrganizationProvider>
           </AuthProvider>
         </QueryClientProvider>
       </body>

@@ -3,19 +3,43 @@
 # isort: skip_file
 
 from .types import (
+    ConflictErrorBody,
+    ConflictErrorBodyTag,
+    ForbiddenErrorBody,
+    ForbiddenErrorBodyTag,
     HttpApiDecodeError,
     HttpApiDecodeErrorTag,
+    InternalServerErrorBody,
+    InternalServerErrorBodyTag,
     Issue,
     IssueTag,
+    NotFoundErrorBody,
+    NotFoundErrorBodyTag,
     PropertyKey,
     PropertyKeyTag,
     PropertyKeyTagTag,
+    UnauthorizedErrorBody,
+    UnauthorizedErrorBodyTag,
 )
-from .errors import BadRequestError
-from . import docs, health, traces
+from .errors import (
+    BadRequestError,
+    ConflictError,
+    ForbiddenError,
+    InternalServerError,
+    NotFoundError,
+    UnauthorizedError,
+)
+from . import docs, health, organizations, traces
 from .client import AsyncMirascope, Mirascope
 from .environment import MirascopeEnvironment
 from .health import HealthCheckResponse, HealthCheckResponseStatus
+from .organizations import (
+    OrganizationsCreateResponse,
+    OrganizationsCreateResponseRole,
+    OrganizationsListResponse,
+    OrganizationsListResponseOrganizationsItem,
+    OrganizationsListResponseOrganizationsItemRole,
+)
 from .traces import (
     TracesCreateRequestResourceSpansItem,
     TracesCreateRequestResourceSpansItemResource,
@@ -45,14 +69,31 @@ from .traces import (
 __all__ = [
     "AsyncMirascope",
     "BadRequestError",
+    "ConflictError",
+    "ConflictErrorBody",
+    "ConflictErrorBodyTag",
+    "ForbiddenError",
+    "ForbiddenErrorBody",
+    "ForbiddenErrorBodyTag",
     "HealthCheckResponse",
     "HealthCheckResponseStatus",
     "HttpApiDecodeError",
     "HttpApiDecodeErrorTag",
+    "InternalServerError",
+    "InternalServerErrorBody",
+    "InternalServerErrorBodyTag",
     "Issue",
     "IssueTag",
     "Mirascope",
     "MirascopeEnvironment",
+    "NotFoundError",
+    "NotFoundErrorBody",
+    "NotFoundErrorBodyTag",
+    "OrganizationsCreateResponse",
+    "OrganizationsCreateResponseRole",
+    "OrganizationsListResponse",
+    "OrganizationsListResponseOrganizationsItem",
+    "OrganizationsListResponseOrganizationsItemRole",
     "PropertyKey",
     "PropertyKeyTag",
     "PropertyKeyTagTag",
@@ -79,7 +120,11 @@ __all__ = [
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus",
     "TracesCreateResponse",
     "TracesCreateResponsePartialSuccess",
+    "UnauthorizedError",
+    "UnauthorizedErrorBody",
+    "UnauthorizedErrorBodyTag",
     "docs",
     "health",
+    "organizations",
     "traces",
 ]

@@ -13,6 +13,7 @@ import {
   NotFoundError,
   PermissionDeniedError,
 } from "@/db/errors";
+import { isUniqueConstraintError } from "@/db/utils";
 import {
   organizations,
   organizationMemberships,
@@ -23,10 +24,7 @@ import {
 } from "@/db/schema";
 import type * as schema from "@/db/schema";
 
-/**
- * Minimum role required for each action.
- * Role hierarchy: OWNER > ADMIN > DEVELOPER > ANNOTATOR
- */
+// Role hierarchy: OWNER > ADMIN > DEVELOPER > ANNOTATOR
 const ROLE_HIERARCHY: Record<Role, number> = {
   OWNER: 4,
   ADMIN: 3,
@@ -137,37 +135,7 @@ export class OrganizationService extends BaseAuthenticatedService<
     PublicOrganizationWithMembership,
     AlreadyExistsError | DatabaseError
   > {
-    const fetchExistingOrganization = Effect.tryPromise({
-      try: async () => {
-        const [existing] = await this.db
-          .select({ name: organizations.name })
-          .from(organizations)
-          .where(eq(organizations.name, data.name))
-          .limit(1);
-        return existing;
-      },
-      catch: (error) =>
-        new DatabaseError({
-          message: "Failed to check for existing organization",
-          cause: error,
-        }),
-    });
-
-    const rejectIfExists = (
-      existing: { name: string } | undefined,
-    ): Effect.Effect<void, AlreadyExistsError> => {
-      if (existing) {
-        return Effect.fail(
-          new AlreadyExistsError({
-            message: "An organization with this name already exists",
-            resource: this.baseService.resourceName,
-          }),
-        );
-      }
-      return Effect.succeed(undefined);
-    };
-
-    const createOrganizationWithOwner = Effect.tryPromise({
+    return Effect.tryPromise({
       try: async () => {
         return await this.db.transaction(async (tx) => {
           const [organization] = await tx
@@ -188,23 +156,25 @@ export class OrganizationService extends BaseAuthenticatedService<
           };
         });
       },
-      catch: (error) =>
-        new DatabaseError({
+      catch: (error) => {
+        if (isUniqueConstraintError(error)) {
+          return new AlreadyExistsError({
+            message: "An organization with this name already exists",
+            resource: this.baseService.resourceName,
+          });
+        }
+        return new DatabaseError({
           message: "Failed to create organization",
           cause: error,
-        }),
+        });
+      },
     });
-
-    return fetchExistingOrganization.pipe(
-      Effect.flatMap(rejectIfExists),
-      Effect.andThen(createOrganizationWithOwner),
-    );
   }
 
   findAll(
     userId: string,
   ): Effect.Effect<PublicOrganizationWithMembership[], DatabaseError> {
-    const fetchUserOrganizationsWithRoles = Effect.tryPromise({
+    return Effect.tryPromise({
       try: async () => {
         return await this.db
           .select({
@@ -225,8 +195,6 @@ export class OrganizationService extends BaseAuthenticatedService<
           cause: error,
         }),
     });
-
-    return fetchUserOrganizationsWithRoles;
   }
 
   override delete(

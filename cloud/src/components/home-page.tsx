@@ -1,4 +1,5 @@
 import { Button } from "@/src/components/ui/button";
+import { OrganizationSelector } from "@/src/components/organization-selector";
 import { useAuth } from "@/src/contexts/auth";
 
 export function HomePage() {
@@ -29,6 +30,7 @@ export function HomePage() {
           </h1>
           <div className="text-muted-foreground">{user.email}</div>
         </div>
+        <OrganizationSelector />
         <Button variant="outline" onClick={() => void logout()}>
           Logout
         </Button>

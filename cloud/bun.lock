@@ -5,6 +5,7 @@
       "name": "@mirascope/cloud",
       "dependencies": {
         "@effect/platform": "^0.93.3",
+        "@effect/platform-browser": "^0.73.0",
         "@tailwindcss/vite": "^4.1.11",
         "@tanstack/react-query": "^5.90.12",
         "@tanstack/react-router": "^1.139.3",
@@ -15,6 +16,7 @@
         "dotenv": "^17.2.3",
         "drizzle-orm": "^0.45.0",
         "effect": "^3.19.6",
+        "effect-query": "^0.2.1",
         "postgres": "^3.4.7",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
@@ -152,6 +154,8 @@
     "@drizzle-team/brocli": ["@drizzle-team/brocli@0.10.2", "", {}, "sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w=="],
 
     "@effect/platform": ["@effect/platform@0.93.3", "", { "dependencies": { "find-my-way-ts": "^0.1.6", "msgpackr": "^1.11.4", "multipasta": "^0.2.7" }, "peerDependencies": { "effect": "^3.19.4" } }, "sha512-s88zctkeXba24Mjy7MEFMuam1p5sXmsG7uQjPIDE6EiC+2IFUQd8976TtangiU0e8qu0SALpjIH1P1QyC7/1og=="],
+
+    "@effect/platform-browser": ["@effect/platform-browser@0.73.0", "", { "dependencies": { "multipasta": "^0.2.7" }, "peerDependencies": { "@effect/platform": "^0.93.0", "effect": "^3.19.0" } }, "sha512-G/LWu+roBHtjb9JEpCYe47XG0oB2xlUIp7fBQznDPYYMksqtrusEdtVtAWfPhO21aNvVmv7+agonisxK2vGaCQ=="],
 
     "@emnapi/runtime": ["@emnapi/runtime@1.7.1", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-PVtJr5CmLwYAU9PZDMITZoR5iAOShYREoR45EyyLrbntV50mdePTgUn4AmOw90Ifcj+x2kRjdzr1HP3RrNiHGA=="],
 
@@ -654,6 +658,8 @@
     "eastasianwidth": ["eastasianwidth@0.2.0", "", {}, "sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA=="],
 
     "effect": ["effect@3.19.6", "", { "dependencies": { "@standard-schema/spec": "^1.0.0", "fast-check": "^3.23.1" } }, "sha512-Eh1E/CI+xCAcMSDC5DtyE29yWJINC0zwBbwHappQPorjKyS69rCA8qzpsHpfhKnPDYgxdg8zkknii8mZ+6YMQA=="],
+
+    "effect-query": ["effect-query@0.2.1", "", { "peerDependencies": { "@tanstack/react-query": "^5.90.5", "effect": "^3.18.4", "react": ">=18.2.0" } }, "sha512-liGFK5I9FgfaVLlGkax6tqsecuJQHuv9E4Fi5Ur+6y+AQf1SnZwmRZH6A/av9hWFNhLAGmwAIRX/f3ohtVfcEA=="],
 
     "electron-to-chromium": ["electron-to-chromium@1.5.252", "", {}, "sha512-53uTpjtRgS7gjIxZ4qCgFdNO2q+wJt/Z8+xAvxbCqXPJrY6h7ighUkadQmNMXH96crtpa6gPFNP7BF4UBGDuaA=="],
 

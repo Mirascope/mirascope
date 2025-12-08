@@ -1,26 +1,9 @@
-import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
-import { Schema, Effect } from "effect";
+import { Effect } from "effect";
 import { EnvironmentService } from "@/environment";
+import { type CheckHealthResponse } from "@/api/health.schema";
 
-// ============================================================================
-// Schemas
-// ============================================================================
-
-export const CheckHealthResponseSchema = Schema.Struct({
-  status: Schema.Literal("ok"),
-  timestamp: Schema.String,
-  environment: Schema.String,
-});
-
-export type CheckHealthResponse = typeof CheckHealthResponseSchema.Type;
-
-// ============================================================================
-// API Group
-// ============================================================================
-
-export class HealthApi extends HttpApiGroup.make("health").add(
-  HttpApiEndpoint.get("check", "/health").addSuccess(CheckHealthResponseSchema),
-) {}
+// Re-export schema types for convenience
+export * from "@/api/health.schema";
 
 // ============================================================================
 // Handler Effect

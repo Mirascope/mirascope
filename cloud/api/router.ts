@@ -1,17 +1,17 @@
-import { HttpApi, HttpApiBuilder } from "@effect/platform";
+import { HttpApiBuilder } from "@effect/platform";
 import { Layer } from "effect";
-import { HealthApi, checkHealthHandler } from "@/api/health";
-import { TracesApi, createTraceHandler } from "@/api/traces";
-import { DocsApi, getOpenApiSpecHandler } from "@/api/docs";
+import { checkHealthHandler } from "@/api/health";
+import { createTraceHandler } from "@/api/traces";
+import { getOpenApiSpecHandler } from "@/api/docs";
+import {
+  listOrganizationsHandler,
+  createOrganizationHandler,
+  deleteOrganizationHandler,
+} from "@/api/organizations";
+import { MirascopeCloudApi } from "@/api/api";
 
-// ============================================================================
-// Combined API Definition
-// ============================================================================
-
-export class MirascopeCloudApi extends HttpApi.make("MirascopeCloudApi")
-  .add(HealthApi)
-  .add(TracesApi)
-  .add(DocsApi) {}
+// Re-export the API definition for convenience
+export { MirascopeCloudApi };
 
 // ============================================================================
 // Handlers Layer
@@ -36,6 +36,16 @@ const DocsHandlersLive = HttpApiBuilder.group(
   (handlers) => handlers.handle("openapi", () => getOpenApiSpecHandler),
 );
 
+const OrganizationsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "organizations",
+  (handlers) =>
+    handlers
+      .handle("list", () => listOrganizationsHandler)
+      .handle("create", ({ payload }) => createOrganizationHandler(payload))
+      .handle("delete", ({ path }) => deleteOrganizationHandler(path)),
+);
+
 // ============================================================================
 // Combined API Layer
 // ============================================================================
@@ -44,4 +54,5 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
   Layer.provide(DocsHandlersLive),
+  Layer.provide(OrganizationsHandlersLive),
 );

@@ -526,6 +526,428 @@
           }
         }
       }
+    },
+    "/organizations": {
+      "get": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "organizations.list",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "organizations"
+                  ],
+                  "properties": {
+                    "organizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name",
+                          "role"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "role": {
+                            "type": "string",
+                            "enum": [
+                              "OWNER",
+                              "ADMIN",
+                              "DEVELOPER",
+                              "ANNOTATOR"
+                            ]
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "_tag",
+                    "message"
+                  ],
+                  "properties": {
+                    "_tag": {
+                      "type": "string",
+                      "enum": [
+                        "UnauthorizedError"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "_tag",
+                    "message"
+                  ],
+                  "properties": {
+                    "_tag": {
+                      "type": "string",
+                      "enum": [
+                        "DatabaseError"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "organizations.create",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "name",
+                    "role"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "OWNER",
+                        "ADMIN",
+                        "DEVELOPER",
+                        "ANNOTATOR"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "_tag",
+                    "message"
+                  ],
+                  "properties": {
+                    "_tag": {
+                      "type": "string",
+                      "enum": [
+                        "UnauthorizedError"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "_tag",
+                    "message"
+                  ],
+                  "properties": {
+                    "_tag": {
+                      "type": "string",
+                      "enum": [
+                        "AlreadyExistsError"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "resource": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "_tag",
+                    "message"
+                  ],
+                  "properties": {
+                    "_tag": {
+                      "type": "string",
+                      "enum": [
+                        "DatabaseError"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "a string at most 100 character(s) long",
+                    "title": "maxLength(100)",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/organizations/{id}": {
+      "delete": {
+        "tags": [
+          "organizations"
+        ],
+        "operationId": "organizations.delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string",
+              "description": "Organization ID"
+            },
+            "required": true,
+            "description": "Organization ID"
+          }
+        ],
+        "security": [],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "_tag",
+                    "message"
+                  ],
+                  "properties": {
+                    "_tag": {
+                      "type": "string",
+                      "enum": [
+                        "UnauthorizedError"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "_tag",
+                    "message"
+                  ],
+                  "properties": {
+                    "_tag": {
+                      "type": "string",
+                      "enum": [
+                        "PermissionDeniedError"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "resource": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "_tag",
+                    "message"
+                  ],
+                  "properties": {
+                    "_tag": {
+                      "type": "string",
+                      "enum": [
+                        "NotFoundError"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "resource": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "_tag",
+                    "message"
+                  ],
+                  "properties": {
+                    "_tag": {
+                      "type": "string",
+                      "enum": [
+                        "DatabaseError"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -637,6 +1059,9 @@
     },
     {
       "name": "docs"
+    },
+    {
+      "name": "organizations"
     }
   ],
   "servers": [
