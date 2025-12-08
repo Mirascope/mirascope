@@ -1,7 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { withTestDatabase, withErroringService } from "@/tests/db";
 import { Effect } from "effect";
-import { NotFoundError, DatabaseError } from "@/db/errors";
+import {
+  NotFoundError,
+  DatabaseError,
+  AlreadyExistsError,
+  PermissionDeniedError,
+} from "@/db/errors";
 import { UserService } from "@/db/services/users";
 
 describe("BaseService error handling", () => {
@@ -66,9 +71,9 @@ describe("BaseService error handling", () => {
     );
   });
 
-  describe("DatabaseError", () => {
+  describe("AlreadyExistsError", () => {
     it(
-      "create returns DatabaseError on unique constraint violation",
+      "create returns AlreadyExistsError on unique constraint violation",
       withTestDatabase((db) =>
         Effect.gen(function* () {
           yield* db.users.create({
@@ -81,6 +86,27 @@ describe("BaseService error handling", () => {
               email: "duplicate@example.com",
               name: "Second User",
             }),
+          );
+          expect(result._tag).toBe("Left");
+          if (result._tag === "Left") {
+            expect(result.left).toBeInstanceOf(AlreadyExistsError);
+            if (result.left instanceof AlreadyExistsError) {
+              expect(result.left.message).toContain("already exists");
+              expect(result.left.resource).toBe("user");
+            }
+          }
+        }),
+      ),
+    );
+  });
+
+  describe("DatabaseError", () => {
+    it(
+      "create returns DatabaseError on non-unique database failure",
+      withErroringService(UserService, (service) =>
+        Effect.gen(function* () {
+          const result = yield* Effect.either(
+            service.create({ email: "test@example.com", name: "Test" }),
           );
           expect(result._tag).toBe("Left");
           if (result._tag === "Left") {
@@ -155,6 +181,42 @@ describe("BaseService error handling", () => {
           if (result._tag === "Left") {
             expect(result.left).toBeInstanceOf(DatabaseError);
             expect(result.left.message).toContain("Failed to find all");
+          }
+        }),
+      ),
+    );
+  });
+});
+
+describe("BaseAuthenticatedService", () => {
+  describe("permission checks", () => {
+    it(
+      "should deny access to non-members",
+      withTestDatabase((db) =>
+        Effect.gen(function* () {
+          const user = yield* db.users.create({
+            email: "owner@example.com",
+            name: "Owner",
+          });
+
+          const otherUser = yield* db.users.create({
+            email: "other@example.com",
+            name: "Other User",
+          });
+
+          const org = yield* db.organizations.create(
+            { name: "Test Org" },
+            user.id,
+          );
+
+          // Other user tries to read - should fail
+          const result = yield* Effect.either(
+            db.organizations.findById(org.id, otherUser.id),
+          );
+
+          expect(result._tag).toBe("Left");
+          if (result._tag === "Left") {
+            expect(result.left).toBeInstanceOf(PermissionDeniedError);
           }
         }),
       ),

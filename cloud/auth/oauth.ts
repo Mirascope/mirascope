@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import { DatabaseService, DEFAULT_SESSION_DURATION } from "@/db";
-import { DatabaseError } from "@/db/errors";
+import { AlreadyExistsError, DatabaseError } from "@/db/errors";
 import { EnvironmentService } from "@/environment";
 import {
   OAuthError,
@@ -446,7 +446,7 @@ function processAuthenticatedUser(
   siteUrl: string,
 ): Effect.Effect<
   Response,
-  AuthenticationFailedError | DatabaseError,
+  AuthenticationFailedError | AlreadyExistsError | DatabaseError,
   DatabaseService
 > {
   const validateEmail = (email: string | null) => {
