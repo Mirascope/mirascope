@@ -18,6 +18,7 @@ import { Route as AuthGoogleProxyCallbackRouteImport } from './routes/auth/googl
 import { Route as AuthGoogleCallbackRouteImport } from './routes/auth/google.callback'
 import { Route as AuthGithubProxyCallbackRouteImport } from './routes/auth/github.proxy-callback'
 import { Route as AuthGithubCallbackRouteImport } from './routes/auth/github.callback'
+import { Route as ApiV0HealthRouteImport } from './routes/api.v0.health'
 import { Route as ApiV0DocsRouteImport } from './routes/api.v0.docs'
 import { Route as ApiV0SplatRouteImport } from './routes/api.v0.$'
 
@@ -66,6 +67,11 @@ const AuthGithubCallbackRoute = AuthGithubCallbackRouteImport.update({
   path: '/callback',
   getParentRoute: () => AuthGithubRoute,
 } as any)
+const ApiV0HealthRoute = ApiV0HealthRouteImport.update({
+  id: '/api/v0/health',
+  path: '/api/v0/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiV0DocsRoute = ApiV0DocsRouteImport.update({
   id: '/api/v0/docs',
   path: '/api/v0/docs',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/auth/me': typeof AuthMeRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
+  '/api/v0/health': typeof ApiV0HealthRoute
   '/auth/github/callback': typeof AuthGithubCallbackRoute
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/auth/me': typeof AuthMeRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
+  '/api/v0/health': typeof ApiV0HealthRoute
   '/auth/github/callback': typeof AuthGithubCallbackRoute
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/auth/me': typeof AuthMeRoute
   '/api/v0/$': typeof ApiV0SplatRoute
   '/api/v0/docs': typeof ApiV0DocsRoute
+  '/api/v0/health': typeof ApiV0HealthRoute
   '/auth/github/callback': typeof AuthGithubCallbackRoute
   '/auth/github/proxy-callback': typeof AuthGithubProxyCallbackRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/api/v0/$'
     | '/api/v0/docs'
+    | '/api/v0/health'
     | '/auth/github/callback'
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/api/v0/$'
     | '/api/v0/docs'
+    | '/api/v0/health'
     | '/auth/github/callback'
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/auth/me'
     | '/api/v0/$'
     | '/api/v0/docs'
+    | '/api/v0/health'
     | '/auth/github/callback'
     | '/auth/github/proxy-callback'
     | '/auth/google/callback'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   AuthMeRoute: typeof AuthMeRoute
   ApiV0SplatRoute: typeof ApiV0SplatRoute
   ApiV0DocsRoute: typeof ApiV0DocsRoute
+  ApiV0HealthRoute: typeof ApiV0HealthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -234,6 +247,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGithubCallbackRouteImport
       parentRoute: typeof AuthGithubRoute
     }
+    '/api/v0/health': {
+      id: '/api/v0/health'
+      path: '/api/v0/health'
+      fullPath: '/api/v0/health'
+      preLoaderRoute: typeof ApiV0HealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v0/docs': {
       id: '/api/v0/docs'
       path: '/api/v0/docs'
@@ -287,6 +307,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthMeRoute: AuthMeRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,
+  ApiV0HealthRoute: ApiV0HealthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

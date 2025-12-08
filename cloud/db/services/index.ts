@@ -5,7 +5,7 @@ export * from "@/db/services/organizations";
 
 import { Context } from "effect";
 import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import postgres, { type Sql } from "postgres";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import * as schema from "@/db/schema";
 import { UserService } from "@/db/services/users";
@@ -16,6 +16,7 @@ export type Database = {
   readonly users: UserService;
   readonly sessions: SessionService;
   readonly organizations: OrganizationService;
+  readonly close: () => Promise<void>;
 };
 
 export class DatabaseService extends Context.Tag("DatabaseService")<
@@ -26,15 +27,17 @@ export class DatabaseService extends Context.Tag("DatabaseService")<
 export function getDatabase(
   connection: string | PostgresJsDatabase<typeof schema>,
 ): Database {
+  let sql: Sql | null = null;
+
   const client =
     typeof connection === "string"
-      ? drizzle(
-          postgres(connection, {
-            max: 5, // Limit connections for Workers
-            fetch_types: false, // Disable if not using array types (reduces latency)
-          }),
-          { schema },
-        )
+      ? (() => {
+          sql = postgres(connection, {
+            max: 5,
+            fetch_types: false,
+          });
+          return drizzle(sql, { schema });
+        })()
       : connection;
 
   const users = new UserService(client);
@@ -45,5 +48,10 @@ export function getDatabase(
     users,
     sessions,
     organizations,
+    close: async () => {
+      if (sql) {
+        await sql.end();
+      }
+    },
   };
 }
