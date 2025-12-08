@@ -1,30 +1,55 @@
-import { Data } from "effect";
+import { Schema } from "effect";
 
-export class NotFoundError extends Data.TaggedError("NotFoundError")<{
-  readonly message: string;
-  readonly resource?: string;
-}> {}
+/**
+ * Domain errors using Schema.TaggedError.
+ * These work as both:
+ * - Effect errors: Effect.fail(new NotFoundError({...}))
+ * - API schemas: HttpApiEndpoint.addError(NotFoundError, { status: 404 })
+ */
 
-export class DatabaseError extends Data.TaggedError("DatabaseError")<{
-  readonly message: string;
-  readonly cause?: unknown;
-}> {}
+export class NotFoundError extends Schema.TaggedError<NotFoundError>()(
+  "NotFoundError",
+  {
+    message: Schema.String,
+    resource: Schema.optional(Schema.String),
+  },
+) {}
 
-export class InvalidSessionError extends Data.TaggedError(
+export class DatabaseError extends Schema.TaggedError<DatabaseError>()(
+  "DatabaseError",
+  {
+    message: Schema.String,
+    cause: Schema.optional(Schema.Unknown),
+  },
+) {}
+
+export class InvalidSessionError extends Schema.TaggedError<InvalidSessionError>()(
   "InvalidSessionError",
-)<{
-  readonly message: string;
-  readonly sessionId?: string;
-}> {}
+  {
+    message: Schema.String,
+    sessionId: Schema.optional(Schema.String),
+  },
+) {}
 
-export class AlreadyExistsError extends Data.TaggedError("AlreadyExistsError")<{
-  readonly message: string;
-  readonly resource?: string;
-}> {}
+export class AlreadyExistsError extends Schema.TaggedError<AlreadyExistsError>()(
+  "AlreadyExistsError",
+  {
+    message: Schema.String,
+    resource: Schema.optional(Schema.String),
+  },
+) {}
 
-export class PermissionDeniedError extends Data.TaggedError(
+export class PermissionDeniedError extends Schema.TaggedError<PermissionDeniedError>()(
   "PermissionDeniedError",
-)<{
-  readonly message: string;
-  readonly resource?: string;
-}> {}
+  {
+    message: Schema.String,
+    resource: Schema.optional(Schema.String),
+  },
+) {}
+
+export class UnauthorizedError extends Schema.TaggedError<UnauthorizedError>()(
+  "UnauthorizedError",
+  {
+    message: Schema.String,
+  },
+) {}
