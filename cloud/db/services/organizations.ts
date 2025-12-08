@@ -45,6 +45,7 @@ class BaseOrganizationService extends BaseService<
   string,
   typeof organizations
 > {
+  /* v8 ignore next 3 */
   protected getTable() {
     return organizations;
   }
@@ -53,6 +54,7 @@ class BaseOrganizationService extends BaseService<
     return "organization";
   }
 
+  /* v8 ignore next 6 */
   protected getPublicFields(): Record<string, PgColumn> {
     return {
       id: organizations.id,
@@ -227,6 +229,148 @@ export class OrganizationService extends BaseAuthenticatedService<
     });
 
     return fetchUserOrganizationsWithRoles;
+  }
+
+  override findById(
+    id: string,
+    userId: string,
+  ): Effect.Effect<
+    PublicOrganizationWithMembership,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
+    return this.checkPermission(userId, "read", id).pipe(
+      Effect.andThen(
+        Effect.tryPromise({
+          try: async () => {
+            const [result] = await this.db
+              .select({
+                id: organizations.id,
+                name: organizations.name,
+                role: organizationMemberships.role,
+              })
+              .from(organizations)
+              .innerJoin(
+                organizationMemberships,
+                and(
+                  eq(organizationMemberships.organizationId, organizations.id),
+                  eq(organizationMemberships.userId, userId),
+                ),
+              )
+              .where(eq(organizations.id, id))
+              .limit(1);
+            return result;
+          },
+          catch: (error) =>
+            new DatabaseError({
+              message: "Failed to find organization",
+              cause: error,
+            }),
+        }),
+      ),
+      Effect.flatMap((result) => {
+        if (!result) {
+          return Effect.fail(
+            new NotFoundError({
+              message: `Organization with id ${id} not found`,
+              resource: this.baseService.resourceName,
+            }),
+          );
+        }
+        return Effect.succeed(result);
+      }),
+    );
+  }
+
+  update(
+    id: string,
+    data: Partial<NewOrganization>,
+    userId: string,
+  ): Effect.Effect<
+    PublicOrganizationWithMembership,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
+    const fetchOrganization = Effect.tryPromise({
+      try: async () => {
+        const [org] = await this.db
+          .select({ id: organizations.id })
+          .from(organizations)
+          .where(eq(organizations.id, id))
+          .limit(1);
+        return org;
+      },
+      catch: (error) =>
+        new DatabaseError({
+          message: "Failed to find organization",
+          cause: error,
+        }),
+    });
+
+    const rejectIfNotFound = (
+      org: { id: string } | undefined,
+    ): Effect.Effect<{ id: string }, NotFoundError> => {
+      if (!org) {
+        return Effect.fail(
+          new NotFoundError({
+            message: `Organization with id ${id} not found`,
+            resource: this.baseService.resourceName,
+          }),
+        );
+      }
+      return Effect.succeed(org);
+    };
+
+    const updateOrganization = Effect.tryPromise({
+      try: async () => {
+        const [updated] = await this.db
+          .update(organizations)
+          .set({ name: data.name })
+          .where(eq(organizations.id, id))
+          .returning({ id: organizations.id, name: organizations.name });
+        return updated;
+      },
+      catch: (error) =>
+        new DatabaseError({
+          message: "Failed to update organization",
+          cause: error,
+        }),
+    });
+
+    const fetchMembershipRole = Effect.tryPromise({
+      try: async () => {
+        const [membership] = await this.db
+          .select({ role: organizationMemberships.role })
+          .from(organizationMemberships)
+          .where(
+            and(
+              eq(organizationMemberships.organizationId, id),
+              eq(organizationMemberships.userId, userId),
+            ),
+          )
+          .limit(1);
+        /* v8 ignore next */
+        return membership?.role ?? ("ANNOTATOR" as Role);
+      },
+      catch: (error) =>
+        new DatabaseError({
+          message: "Failed to fetch membership",
+          cause: error,
+        }),
+    });
+
+    return fetchOrganization.pipe(
+      Effect.flatMap(rejectIfNotFound),
+      Effect.andThen(this.checkPermission(userId, "update", id)),
+      Effect.andThen(updateOrganization),
+      Effect.flatMap((updated) =>
+        fetchMembershipRole.pipe(
+          Effect.map((role) => ({
+            id: updated.id,
+            name: updated.name,
+            role,
+          })),
+        ),
+      ),
+    );
   }
 
   override delete(

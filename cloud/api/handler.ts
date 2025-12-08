@@ -65,8 +65,7 @@ export async function handleRequest(
       matched: false,
       response: new Response("Internal Server Error", { status: 500 }),
     };
-  } finally {
-    /* v8 ignore next */
+  } /* v8 ignore next */ finally {
     webHandler.dispose().catch(console.error);
   }
 }
