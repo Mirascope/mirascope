@@ -16,3 +16,15 @@ export class InvalidSessionError extends Data.TaggedError(
   readonly message: string;
   readonly sessionId?: string;
 }> {}
+
+export class AlreadyExistsError extends Data.TaggedError("AlreadyExistsError")<{
+  readonly message: string;
+  readonly resource?: string;
+}> {}
+
+export class PermissionDeniedError extends Data.TaggedError(
+  "PermissionDeniedError",
+)<{
+  readonly message: string;
+  readonly resource?: string;
+}> {}

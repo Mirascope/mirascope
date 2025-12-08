@@ -1,7 +1,13 @@
 import { Effect } from "effect";
 import { eq } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
-import { DatabaseError, NotFoundError } from "@/db/errors";
+import {
+  AlreadyExistsError,
+  DatabaseError,
+  NotFoundError,
+  PermissionDeniedError,
+} from "@/db/errors";
+import { isUniqueConstraintError } from "@/db/utils";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type * as schema from "@/db/schema";
 import type { DatabaseTable } from "@/db/schema";
@@ -28,6 +34,10 @@ export abstract class BaseService<
   protected abstract getTable(): TTable;
   protected abstract getResourceName(): string;
   protected abstract getPublicFields(): Record<string, PgColumn>;
+
+  get resourceName(): string {
+    return this.getResourceName();
+  }
   protected getIdColumn(): PgColumn {
     const table = this.getTable();
     return table.id;
@@ -54,7 +64,9 @@ export abstract class BaseService<
   //   });
   // }
 
-  create(data: TTable["$inferInsert"]): Effect.Effect<TPublic, DatabaseError> {
+  create(
+    data: TTable["$inferInsert"],
+  ): Effect.Effect<TPublic, AlreadyExistsError | DatabaseError> {
     return Effect.tryPromise({
       try: async () => {
         const table = this.getTable();
@@ -69,11 +81,18 @@ export abstract class BaseService<
 
         return result as TPublic;
       },
-      catch: (error) =>
-        new DatabaseError({
+      catch: (error) => {
+        if (isUniqueConstraintError(error)) {
+          return new AlreadyExistsError({
+            message: `${this.getResourceName()} already exists`,
+            resource: this.getResourceName(),
+          });
+        }
+        return new DatabaseError({
           message: `Failed to create ${this.getResourceName()}`,
           cause: error,
-        }),
+        });
+      },
     });
   }
 
@@ -206,4 +225,91 @@ export abstract class BaseService<
         }),
     });
   }
+}
+
+/**
+ * Action types for permission checking
+ */
+export type PermissionAction = "read" | "update" | "delete";
+
+/**
+ * Abstract base class for services that require authentication.
+ * Uses composition with an internal base service for raw CRUD operations.
+ *
+ * @template TPublic - The public-facing type (what gets returned)
+ * @template TId - The type of the entity ID
+ * @template TTable - The Drizzle table type
+ * @template TInsert - The insert type for the table
+ */
+export abstract class BaseAuthenticatedService<
+  TPublic,
+  TId,
+  TTable extends DatabaseTable,
+  TInsert = TTable["$inferInsert"],
+> {
+  protected readonly db: PostgresJsDatabase<typeof schema>;
+  protected abstract readonly baseService: BaseService<TPublic, TId, TTable>;
+
+  constructor(db: PostgresJsDatabase<typeof schema>) {
+    this.db = db;
+  }
+
+  protected abstract checkPermission(
+    userId: string,
+    action: PermissionAction,
+    resourceId: TId,
+  ): Effect.Effect<void, PermissionDeniedError | DatabaseError>;
+
+  abstract create(
+    data: TInsert,
+    userId: string,
+  ): Effect.Effect<
+    TPublic,
+    AlreadyExistsError | PermissionDeniedError | DatabaseError
+  >;
+
+  abstract findAll(
+    userId: string,
+  ): Effect.Effect<TPublic[], PermissionDeniedError | DatabaseError>;
+
+  findById(
+    id: TId,
+    userId: string,
+  ): Effect.Effect<
+    TPublic,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
+    return this.checkPermission(userId, "read", id).pipe(
+      Effect.andThen(this.baseService.findById(id)),
+    );
+  }
+
+  update(
+    id: TId,
+    data: Partial<TInsert>,
+    userId: string,
+  ): Effect.Effect<
+    TPublic,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
+    return this.checkPermission(userId, "update", id).pipe(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      Effect.andThen(this.baseService.update(id, data as any)),
+    );
+  }
+
+  // TODO: include in coverage once we have a service that doesn't override this
+  /* v8 ignore start */
+  delete(
+    id: TId,
+    userId: string,
+  ): Effect.Effect<
+    void,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
+    return this.checkPermission(userId, "delete", id).pipe(
+      Effect.andThen(this.baseService.delete(id)),
+    );
+  }
+  /* v8 ignore end */
 }
