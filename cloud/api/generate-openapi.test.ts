@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateOpenApiSpec } from "./generate-openapi";
+import { generateOpenApiSpec } from "@/api/generate-openapi";
 import { execSync } from "child_process";
 
 describe("generateOpenApiSpec", () => {
@@ -20,7 +20,9 @@ describe("generateOpenApiSpec", () => {
     expect(spec).toHaveProperty("servers");
     expect(spec.servers).toHaveLength(3);
 
-    const serverNames = spec.servers.map((s: any) => s["x-fern-server-name"]);
+    const serverNames = spec.servers.map(
+      (s: { "x-fern-server-name"?: string }) => s["x-fern-server-name"],
+    );
     expect(serverNames).toContain("production");
     expect(serverNames).toContain("staging");
     expect(serverNames).toContain("local");
@@ -29,7 +31,8 @@ describe("generateOpenApiSpec", () => {
   it("should have production server with correct URL", () => {
     const spec = generateOpenApiSpec();
     const productionServer = spec.servers.find(
-      (s: any) => s["x-fern-server-name"] === "production",
+      (s: { "x-fern-server-name"?: string }) =>
+        s["x-fern-server-name"] === "production",
     );
 
     expect(productionServer).toMatchObject({
@@ -41,7 +44,8 @@ describe("generateOpenApiSpec", () => {
   it("should have staging server with correct URL", () => {
     const spec = generateOpenApiSpec();
     const stagingServer = spec.servers.find(
-      (s: any) => s["x-fern-server-name"] === "staging",
+      (s: { "x-fern-server-name"?: string }) =>
+        s["x-fern-server-name"] === "staging",
     );
 
     expect(stagingServer).toMatchObject({
@@ -53,7 +57,8 @@ describe("generateOpenApiSpec", () => {
   it("should have local server with correct URL", () => {
     const spec = generateOpenApiSpec();
     const localServer = spec.servers.find(
-      (s: any) => s["x-fern-server-name"] === "local",
+      (s: { "x-fern-server-name"?: string }) =>
+        s["x-fern-server-name"] === "local",
     );
 
     expect(localServer).toMatchObject({
@@ -72,13 +77,15 @@ describe("generateOpenApiSpec", () => {
 });
 
 describe("generate-openapi script execution", () => {
-  it("should output JSON when executed as a script", async () => {
+  it("should output JSON when executed as a script", () => {
     const output = execSync("bun generate-openapi.ts", {
       cwd: __dirname, // optional
       encoding: "utf-8",
     });
 
-    const parsed_stdout = JSON.parse(output);
+    const parsed_stdout = JSON.parse(output) as {
+      info?: { title?: string };
+    };
     expect(parsed_stdout).toHaveProperty("info");
     expect(parsed_stdout.info).toHaveProperty("title", "Mirascope Cloud API");
   });

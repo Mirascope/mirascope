@@ -1,5 +1,5 @@
 import { OpenApi } from "@effect/platform";
-import { MirascopeCloudApi } from "./router";
+import { MirascopeCloudApi } from "@/api/router";
 
 /**
  * Generates the OpenAPI specification for the Mirascope Cloud API

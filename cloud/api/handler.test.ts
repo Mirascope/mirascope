@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { getWebHandler } from "./handler";
-import { handleRequest } from "./handler";
+import { getWebHandler } from "@/api/handler";
+import { handleRequest } from "@/api/handler";
 
 describe("getWebHandler", () => {
   it("should cache the handler for the same environment", () => {

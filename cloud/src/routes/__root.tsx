@@ -4,8 +4,11 @@ import {
   Outlet,
   createRootRoute,
   HeadContent,
-  // Scripts,
+  Scripts,
 } from "@tanstack/react-router";
+import { AuthProvider } from "@/src/contexts/auth";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/src/api/client";
 import globalsCss from "@/src/styles/globals.css?url";
 
 export const Route = createRootRoute({
@@ -55,10 +58,13 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body>
-        <Outlet />
-        <TanStackRouterDevtools position="bottom-right" />
-        {/* TODO: figure out the hydration issue here */}
-        {/* <Scripts /> */}
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <Outlet />
+            <TanStackRouterDevtools position="bottom-right" />
+            <Scripts />
+          </AuthProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );

@@ -19,6 +19,6 @@ try {
   }
 
   process.exit(0);
-} catch (error) {
+} catch {
   process.exit(1);
 }

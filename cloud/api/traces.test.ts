@@ -4,7 +4,7 @@ import { withTestClient } from "@/tests/api";
 
 describe(
   "Traces API",
-  withTestClient(async (client) => {
+  withTestClient((client) => {
     it("POST /traces", async () => {
       const payload = {
         resourceSpans: [
@@ -42,7 +42,7 @@ describe(
 
       const result = await Effect.runPromise(client.traces.create({ payload }));
       expect(result).toMatchObject({
-        partialSuccess: expect.any(Object),
+        partialSuccess: expect.any(Object) as unknown,
       });
     });
 
@@ -74,7 +74,7 @@ describe(
 
       const result = await Effect.runPromise(client.traces.create({ payload }));
       expect(result).toMatchObject({
-        partialSuccess: expect.any(Object),
+        partialSuccess: expect.any(Object) as unknown,
       });
     });
   }),

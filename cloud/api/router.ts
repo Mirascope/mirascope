@@ -1,8 +1,8 @@
 import { HttpApi, HttpApiBuilder } from "@effect/platform";
 import { Layer } from "effect";
-import { HealthApi, checkHealthHandler } from "./health";
-import { TracesApi, createTraceHandler } from "./traces";
-import { DocsApi, getOpenApiSpecHandler } from "./docs";
+import { HealthApi, checkHealthHandler } from "@/api/health";
+import { TracesApi, createTraceHandler } from "@/api/traces";
+import { DocsApi, getOpenApiSpecHandler } from "@/api/docs";
 
 // ============================================================================
 // Combined API Definition

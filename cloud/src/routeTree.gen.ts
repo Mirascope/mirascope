@@ -9,14 +9,62 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./routes/__root";
+import { Route as LoginRouteImport } from "./routes/login";
 import { Route as IndexRouteImport } from "./routes/index";
+import { Route as AuthMeRouteImport } from "./routes/auth/me";
+import { Route as AuthGoogleRouteImport } from "./routes/auth/google";
+import { Route as AuthGithubRouteImport } from "./routes/auth/github";
+import { Route as AuthGoogleProxyCallbackRouteImport } from "./routes/auth/google.proxy-callback";
+import { Route as AuthGoogleCallbackRouteImport } from "./routes/auth/google.callback";
+import { Route as AuthGithubProxyCallbackRouteImport } from "./routes/auth/github.proxy-callback";
+import { Route as AuthGithubCallbackRouteImport } from "./routes/auth/github.callback";
 import { Route as ApiV0DocsRouteImport } from "./routes/api.v0.docs";
 import { Route as ApiV0SplatRouteImport } from "./routes/api.v0.$";
 
+const LoginRoute = LoginRouteImport.update({
+  id: "/login",
+  path: "/login",
+  getParentRoute: () => rootRouteImport,
+} as any);
 const IndexRoute = IndexRouteImport.update({
   id: "/",
   path: "/",
   getParentRoute: () => rootRouteImport,
+} as any);
+const AuthMeRoute = AuthMeRouteImport.update({
+  id: "/auth/me",
+  path: "/auth/me",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const AuthGoogleRoute = AuthGoogleRouteImport.update({
+  id: "/auth/google",
+  path: "/auth/google",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const AuthGithubRoute = AuthGithubRouteImport.update({
+  id: "/auth/github",
+  path: "/auth/github",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const AuthGoogleProxyCallbackRoute = AuthGoogleProxyCallbackRouteImport.update({
+  id: "/proxy-callback",
+  path: "/proxy-callback",
+  getParentRoute: () => AuthGoogleRoute,
+} as any);
+const AuthGoogleCallbackRoute = AuthGoogleCallbackRouteImport.update({
+  id: "/callback",
+  path: "/callback",
+  getParentRoute: () => AuthGoogleRoute,
+} as any);
+const AuthGithubProxyCallbackRoute = AuthGithubProxyCallbackRouteImport.update({
+  id: "/proxy-callback",
+  path: "/proxy-callback",
+  getParentRoute: () => AuthGithubRoute,
+} as any);
+const AuthGithubCallbackRoute = AuthGithubCallbackRouteImport.update({
+  id: "/callback",
+  path: "/callback",
+  getParentRoute: () => AuthGithubRoute,
 } as any);
 const ApiV0DocsRoute = ApiV0DocsRouteImport.update({
   id: "/api/v0/docs",
@@ -31,42 +79,160 @@ const ApiV0SplatRoute = ApiV0SplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
+  "/login": typeof LoginRoute;
+  "/auth/github": typeof AuthGithubRouteWithChildren;
+  "/auth/google": typeof AuthGoogleRouteWithChildren;
+  "/auth/me": typeof AuthMeRoute;
   "/api/v0/$": typeof ApiV0SplatRoute;
   "/api/v0/docs": typeof ApiV0DocsRoute;
+  "/auth/github/callback": typeof AuthGithubCallbackRoute;
+  "/auth/github/proxy-callback": typeof AuthGithubProxyCallbackRoute;
+  "/auth/google/callback": typeof AuthGoogleCallbackRoute;
+  "/auth/google/proxy-callback": typeof AuthGoogleProxyCallbackRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
+  "/login": typeof LoginRoute;
+  "/auth/github": typeof AuthGithubRouteWithChildren;
+  "/auth/google": typeof AuthGoogleRouteWithChildren;
+  "/auth/me": typeof AuthMeRoute;
   "/api/v0/$": typeof ApiV0SplatRoute;
   "/api/v0/docs": typeof ApiV0DocsRoute;
+  "/auth/github/callback": typeof AuthGithubCallbackRoute;
+  "/auth/github/proxy-callback": typeof AuthGithubProxyCallbackRoute;
+  "/auth/google/callback": typeof AuthGoogleCallbackRoute;
+  "/auth/google/proxy-callback": typeof AuthGoogleProxyCallbackRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
+  "/login": typeof LoginRoute;
+  "/auth/github": typeof AuthGithubRouteWithChildren;
+  "/auth/google": typeof AuthGoogleRouteWithChildren;
+  "/auth/me": typeof AuthMeRoute;
   "/api/v0/$": typeof ApiV0SplatRoute;
   "/api/v0/docs": typeof ApiV0DocsRoute;
+  "/auth/github/callback": typeof AuthGithubCallbackRoute;
+  "/auth/github/proxy-callback": typeof AuthGithubProxyCallbackRoute;
+  "/auth/google/callback": typeof AuthGoogleCallbackRoute;
+  "/auth/google/proxy-callback": typeof AuthGoogleProxyCallbackRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/api/v0/$" | "/api/v0/docs";
+  fullPaths:
+    | "/"
+    | "/login"
+    | "/auth/github"
+    | "/auth/google"
+    | "/auth/me"
+    | "/api/v0/$"
+    | "/api/v0/docs"
+    | "/auth/github/callback"
+    | "/auth/github/proxy-callback"
+    | "/auth/google/callback"
+    | "/auth/google/proxy-callback";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/api/v0/$" | "/api/v0/docs";
-  id: "__root__" | "/" | "/api/v0/$" | "/api/v0/docs";
+  to:
+    | "/"
+    | "/login"
+    | "/auth/github"
+    | "/auth/google"
+    | "/auth/me"
+    | "/api/v0/$"
+    | "/api/v0/docs"
+    | "/auth/github/callback"
+    | "/auth/github/proxy-callback"
+    | "/auth/google/callback"
+    | "/auth/google/proxy-callback";
+  id:
+    | "__root__"
+    | "/"
+    | "/login"
+    | "/auth/github"
+    | "/auth/google"
+    | "/auth/me"
+    | "/api/v0/$"
+    | "/api/v0/docs"
+    | "/auth/github/callback"
+    | "/auth/github/proxy-callback"
+    | "/auth/google/callback"
+    | "/auth/google/proxy-callback";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
+  LoginRoute: typeof LoginRoute;
+  AuthGithubRoute: typeof AuthGithubRouteWithChildren;
+  AuthGoogleRoute: typeof AuthGoogleRouteWithChildren;
+  AuthMeRoute: typeof AuthMeRoute;
   ApiV0SplatRoute: typeof ApiV0SplatRoute;
   ApiV0DocsRoute: typeof ApiV0DocsRoute;
 }
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
+    "/login": {
+      id: "/login";
+      path: "/login";
+      fullPath: "/login";
+      preLoaderRoute: typeof LoginRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/": {
       id: "/";
       path: "/";
       fullPath: "/";
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
+    };
+    "/auth/me": {
+      id: "/auth/me";
+      path: "/auth/me";
+      fullPath: "/auth/me";
+      preLoaderRoute: typeof AuthMeRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/auth/google": {
+      id: "/auth/google";
+      path: "/auth/google";
+      fullPath: "/auth/google";
+      preLoaderRoute: typeof AuthGoogleRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/auth/github": {
+      id: "/auth/github";
+      path: "/auth/github";
+      fullPath: "/auth/github";
+      preLoaderRoute: typeof AuthGithubRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/auth/google/proxy-callback": {
+      id: "/auth/google/proxy-callback";
+      path: "/proxy-callback";
+      fullPath: "/auth/google/proxy-callback";
+      preLoaderRoute: typeof AuthGoogleProxyCallbackRouteImport;
+      parentRoute: typeof AuthGoogleRoute;
+    };
+    "/auth/google/callback": {
+      id: "/auth/google/callback";
+      path: "/callback";
+      fullPath: "/auth/google/callback";
+      preLoaderRoute: typeof AuthGoogleCallbackRouteImport;
+      parentRoute: typeof AuthGoogleRoute;
+    };
+    "/auth/github/proxy-callback": {
+      id: "/auth/github/proxy-callback";
+      path: "/proxy-callback";
+      fullPath: "/auth/github/proxy-callback";
+      preLoaderRoute: typeof AuthGithubProxyCallbackRouteImport;
+      parentRoute: typeof AuthGithubRoute;
+    };
+    "/auth/github/callback": {
+      id: "/auth/github/callback";
+      path: "/callback";
+      fullPath: "/auth/github/callback";
+      preLoaderRoute: typeof AuthGithubCallbackRouteImport;
+      parentRoute: typeof AuthGithubRoute;
     };
     "/api/v0/docs": {
       id: "/api/v0/docs";
@@ -85,8 +251,40 @@ declare module "@tanstack/react-router" {
   }
 }
 
+interface AuthGithubRouteChildren {
+  AuthGithubCallbackRoute: typeof AuthGithubCallbackRoute;
+  AuthGithubProxyCallbackRoute: typeof AuthGithubProxyCallbackRoute;
+}
+
+const AuthGithubRouteChildren: AuthGithubRouteChildren = {
+  AuthGithubCallbackRoute: AuthGithubCallbackRoute,
+  AuthGithubProxyCallbackRoute: AuthGithubProxyCallbackRoute,
+};
+
+const AuthGithubRouteWithChildren = AuthGithubRoute._addFileChildren(
+  AuthGithubRouteChildren,
+);
+
+interface AuthGoogleRouteChildren {
+  AuthGoogleCallbackRoute: typeof AuthGoogleCallbackRoute;
+  AuthGoogleProxyCallbackRoute: typeof AuthGoogleProxyCallbackRoute;
+}
+
+const AuthGoogleRouteChildren: AuthGoogleRouteChildren = {
+  AuthGoogleCallbackRoute: AuthGoogleCallbackRoute,
+  AuthGoogleProxyCallbackRoute: AuthGoogleProxyCallbackRoute,
+};
+
+const AuthGoogleRouteWithChildren = AuthGoogleRoute._addFileChildren(
+  AuthGoogleRouteChildren,
+);
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
+  AuthGithubRoute: AuthGithubRouteWithChildren,
+  AuthGoogleRoute: AuthGoogleRouteWithChildren,
+  AuthMeRoute: AuthMeRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,
 };

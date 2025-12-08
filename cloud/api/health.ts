@@ -1,6 +1,6 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema, Effect } from "effect";
-import { EnvironmentService } from "@/api/environment";
+import { EnvironmentService } from "@/environment";
 
 // ============================================================================
 // Schemas

@@ -1,9 +1,9 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { users } from "./users";
+import { pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import { users } from "@/db/schema/users";
 
 export const sessions = pgTable("sessions", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),

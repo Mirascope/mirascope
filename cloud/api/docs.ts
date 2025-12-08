@@ -1,6 +1,6 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema, Effect } from "effect";
-import { generateOpenApiSpec } from "./generate-openapi";
+import { generateOpenApiSpec } from "@/api/generate-openapi";
 
 // ============================================================================
 // Schemas
@@ -26,7 +26,8 @@ export class DocsApi extends HttpApiGroup.make("docs").add(
 // Handler Effects
 // ============================================================================
 
-export const getOpenApiSpecHandler = Effect.gen(function* () {
+export const getOpenApiSpecHandler = Effect.sync(() => {
   const spec = generateOpenApiSpec();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return spec as OpenApiSpec;
 });
