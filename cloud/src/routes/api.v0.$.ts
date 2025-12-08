@@ -1,28 +1,15 @@
-import { OpenAPIHandler } from "@orpc/openapi/fetch";
-import { CORSPlugin } from "@orpc/server/plugins";
 import { createFileRoute } from "@tanstack/react-router";
-import { onError } from "@orpc/server";
-import { router } from "@/api/router";
+import { handleRequest } from "@/api/handler";
 
-const handler = new OpenAPIHandler(router, {
-  plugins: [new CORSPlugin()],
-  interceptors: [
-    onError((error) => {
-      console.error(error);
-    }),
-  ],
-});
-
+// Effect Platform API route handler
 // TODO: discuss API versioning/naming strategy before release
 export const Route = createFileRoute("/api/v0/$")({
   server: {
     handlers: {
       ANY: async ({ request }: { request: Request }) => {
-        const { matched, response } = await handler.handle(request, {
+        const { matched, response } = await handleRequest(request, {
           prefix: "/api/v0",
-          context: {
-            environment: process.env.ENVIRONMENT || "development",
-          },
+          environment: process.env.ENVIRONMENT || "development",
         });
 
         if (matched) {

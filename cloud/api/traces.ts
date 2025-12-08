@@ -1,136 +1,147 @@
-import { os } from "@orpc/server";
-import { z } from "zod";
+import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
+import { Schema, Effect } from "effect";
 
-// Zod schemas for oRPC (using standard zod instead of @hono/zod-openapi)
-const KeyValueSchema = z.object({
-  key: z.string(),
-  value: z.object({
-    stringValue: z.string().optional(),
-    intValue: z.string().optional(),
-    doubleValue: z.number().optional(),
-    boolValue: z.boolean().optional(),
-    arrayValue: z
-      .object({
-        values: z.array(z.any()),
-      })
-      .optional(),
-    kvlistValue: z
-      .object({
-        values: z.array(
-          z.object({
-            key: z.string(),
-            value: z.any(),
+// ============================================================================
+// Schemas
+// ============================================================================
+
+export const KeyValueSchema = Schema.Struct({
+  key: Schema.String,
+  value: Schema.Struct({
+    stringValue: Schema.optional(Schema.String),
+    intValue: Schema.optional(Schema.String),
+    doubleValue: Schema.optional(Schema.Number),
+    boolValue: Schema.optional(Schema.Boolean),
+    arrayValue: Schema.optional(
+      Schema.Struct({
+        values: Schema.Array(Schema.Any),
+      }),
+    ),
+    kvlistValue: Schema.optional(
+      Schema.Struct({
+        values: Schema.Array(
+          Schema.Struct({
+            key: Schema.String,
+            value: Schema.Any,
           }),
         ),
-      })
-      .optional(),
+      }),
+    ),
   }),
 });
 
-const ResourceSchema = z.object({
-  attributes: z.array(KeyValueSchema).optional(),
-  droppedAttributesCount: z.number().optional(),
+export type KeyValue = typeof KeyValueSchema.Type;
+
+export const ResourceSchema = Schema.Struct({
+  attributes: Schema.optional(Schema.Array(KeyValueSchema)),
+  droppedAttributesCount: Schema.optional(Schema.Number),
 });
 
-const SpanStatusSchema = z.object({
-  code: z.number().optional(),
-  message: z.string().optional(),
+export type Resource = typeof ResourceSchema.Type;
+
+export const SpanStatusSchema = Schema.Struct({
+  code: Schema.optional(Schema.Number),
+  message: Schema.optional(Schema.String),
 });
 
-const SpanSchema = z.object({
-  traceId: z.string(),
-  spanId: z.string(),
-  parentSpanId: z.string().optional(),
-  name: z.string(),
-  kind: z.number().optional(),
-  startTimeUnixNano: z.string(),
-  endTimeUnixNano: z.string(),
-  attributes: z.array(KeyValueSchema).optional(),
-  droppedAttributesCount: z.number().optional(),
-  events: z.array(z.any()).optional(),
-  droppedEventsCount: z.number().optional(),
-  status: SpanStatusSchema.optional(),
-  links: z.array(z.any()).optional(),
-  droppedLinksCount: z.number().optional(),
+export type SpanStatus = typeof SpanStatusSchema.Type;
+
+export const SpanSchema = Schema.Struct({
+  traceId: Schema.String,
+  spanId: Schema.String,
+  parentSpanId: Schema.optional(Schema.String),
+  name: Schema.String,
+  kind: Schema.optional(Schema.Number),
+  startTimeUnixNano: Schema.String,
+  endTimeUnixNano: Schema.String,
+  attributes: Schema.optional(Schema.Array(KeyValueSchema)),
+  droppedAttributesCount: Schema.optional(Schema.Number),
+  events: Schema.optional(Schema.Array(Schema.Unknown)),
+  droppedEventsCount: Schema.optional(Schema.Number),
+  status: Schema.optional(SpanStatusSchema),
+  links: Schema.optional(Schema.Array(Schema.Unknown)),
+  droppedLinksCount: Schema.optional(Schema.Number),
 });
 
-const InstrumentationScopeSchema = z.object({
-  name: z.string(),
-  version: z.string().optional(),
-  attributes: z.array(KeyValueSchema).optional(),
-  droppedAttributesCount: z.number().optional(),
+export type Span = typeof SpanSchema.Type;
+
+export const InstrumentationScopeSchema = Schema.Struct({
+  name: Schema.String,
+  version: Schema.optional(Schema.String),
+  attributes: Schema.optional(Schema.Array(KeyValueSchema)),
+  droppedAttributesCount: Schema.optional(Schema.Number),
 });
 
-const ScopeSpansSchema = z.object({
-  scope: InstrumentationScopeSchema.optional(),
-  spans: z.array(SpanSchema),
-  schemaUrl: z.string().optional(),
+export type InstrumentationScope = typeof InstrumentationScopeSchema.Type;
+
+export const ScopeSpansSchema = Schema.Struct({
+  scope: Schema.optional(InstrumentationScopeSchema),
+  spans: Schema.Array(SpanSchema),
+  schemaUrl: Schema.optional(Schema.String),
 });
 
-const ResourceSpansSchema = z.object({
-  resource: ResourceSchema.optional(),
-  scopeSpans: z.array(ScopeSpansSchema),
-  schemaUrl: z.string().optional(),
+export type ScopeSpans = typeof ScopeSpansSchema.Type;
+
+export const ResourceSpansSchema = Schema.Struct({
+  resource: Schema.optional(ResourceSchema),
+  scopeSpans: Schema.Array(ScopeSpansSchema),
+  schemaUrl: Schema.optional(Schema.String),
 });
 
-const CreateTraceRequestSchema = z.object({
-  resourceSpans: z.array(ResourceSpansSchema),
+export type ResourceSpans = typeof ResourceSpansSchema.Type;
+
+export const CreateTraceRequestSchema = Schema.Struct({
+  resourceSpans: Schema.Array(ResourceSpansSchema),
 });
 
-const CreateTraceResponseSchema = z.object({
-  partialSuccess: z
-    .object({
-      rejectedSpans: z.number().optional(),
-      errorMessage: z.string().optional(),
-    })
-    .optional(),
+export type CreateTraceRequest = typeof CreateTraceRequestSchema.Type;
+
+export const CreateTraceResponseSchema = Schema.Struct({
+  partialSuccess: Schema.optional(
+    Schema.Struct({
+      rejectedSpans: Schema.optional(Schema.Number),
+      errorMessage: Schema.optional(Schema.String),
+    }),
+  ),
 });
 
-// Type exports
-export type KeyValue = z.infer<typeof KeyValueSchema>;
-export type Resource = z.infer<typeof ResourceSchema>;
-export type SpanStatus = z.infer<typeof SpanStatusSchema>;
-export type Span = z.infer<typeof SpanSchema>;
-export type InstrumentationScope = z.infer<typeof InstrumentationScopeSchema>;
-export type ScopeSpans = z.infer<typeof ScopeSpansSchema>;
-export type ResourceSpans = z.infer<typeof ResourceSpansSchema>;
-export type CreateTraceRequest = z.infer<typeof CreateTraceRequestSchema>;
-export type CreateTraceResponse = z.infer<typeof CreateTraceResponseSchema>;
+export type CreateTraceResponse = typeof CreateTraceResponseSchema.Type;
 
-export const createTrace = os
-  .route({ method: "POST", path: "/traces" })
-  .input(CreateTraceRequestSchema)
-  .output(CreateTraceResponseSchema)
-  .handler(
-    async ({
-      input,
-    }: {
-      input: CreateTraceRequest;
-    }): Promise<CreateTraceResponse> => {
-      const serviceName =
-        input.resourceSpans?.[0]?.resource?.attributes?.find(
-          (attr) => attr.key === "service.name",
-        )?.value?.stringValue || "unknown";
+// ============================================================================
+// API Group
+// ============================================================================
 
-      let totalSpans = 0;
-      input.resourceSpans?.forEach((rs) => {
-        rs.scopeSpans?.forEach((ss) => {
-          totalSpans += ss.spans?.length || 0;
-        });
+export class TracesApi extends HttpApiGroup.make("traces").add(
+  HttpApiEndpoint.post("create", "/traces")
+    .setPayload(CreateTraceRequestSchema)
+    .addSuccess(CreateTraceResponseSchema),
+) {}
+
+// ============================================================================
+// Handler Effect Factory
+// ============================================================================
+
+export const createTraceHandler = (payload: CreateTraceRequest) =>
+  Effect.gen(function* () {
+    const serviceName =
+      payload.resourceSpans?.[0]?.resource?.attributes?.find(
+        (attr: KeyValue) => attr.key === "service.name",
+      )?.value?.stringValue || "unknown";
+
+    let totalSpans = 0;
+    payload.resourceSpans?.forEach((rs: ResourceSpans) => {
+      rs.scopeSpans?.forEach((ss: ScopeSpans) => {
+        totalSpans += ss.spans?.length || 0;
       });
+    });
 
-      console.log(
-        `[TRACE DEBUG] Received ${totalSpans} spans from service: ${serviceName}`,
-      );
-      console.log(
-        "[TRACE DEBUG] Full trace data:",
-        JSON.stringify(input, null, 2),
-      );
+    yield* Effect.log(
+      `[TRACE DEBUG] Received ${totalSpans} spans from service: ${serviceName}`,
+    );
+    yield* Effect.log(
+      `[TRACE DEBUG] Full trace data: ${JSON.stringify(payload, null, 2)}`,
+    );
 
-      return { partialSuccess: {} };
-    },
-  );
-
-export const router = os.tag("traces").router({
-  create: createTrace,
-});
+    const response: CreateTraceResponse = { partialSuccess: {} };
+    return response;
+  });

@@ -4,13 +4,17 @@ import typing
 
 import pydantic
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .health_check_response_status import HealthCheckResponseStatus
+from .traces_create_request_resource_spans_item_scope_spans_item_scope_attributes_item_value_kvlist_value_values_item import (
+    TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem,
+)
 
 
-class HealthCheckResponse(UniversalBaseModel):
-    status: HealthCheckResponseStatus
-    timestamp: str
-    environment: str
+class TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue(
+    UniversalBaseModel
+):
+    values: typing.List[
+        TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem
+    ]
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(
