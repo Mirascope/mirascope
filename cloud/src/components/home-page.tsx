@@ -1,5 +1,6 @@
 import { Button } from "@/src/components/ui/button";
 import { useAuth } from "@/src/contexts/auth";
+import { Link } from "@tanstack/react-router";
 
 export function HomePage() {
   const { user, isLoading, logout } = useAuth();
@@ -29,9 +30,14 @@ export function HomePage() {
           </h1>
           <div className="text-muted-foreground">{user.email}</div>
         </div>
-        <Button variant="outline" onClick={() => void logout()}>
-          Logout
-        </Button>
+        <div className="flex gap-3">
+          <Link to="/organizations">
+            <Button>Organizations</Button>
+          </Link>
+          <Button variant="outline" onClick={() => void logout()}>
+            Logout
+          </Button>
+        </div>
       </div>
     </div>
   );
