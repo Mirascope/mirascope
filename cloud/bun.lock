@@ -15,6 +15,7 @@
         "dotenv": "^17.2.3",
         "drizzle-orm": "^0.45.0",
         "effect": "^3.19.6",
+        "effect-query": "^0.2.1",
         "postgres": "^3.4.7",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
@@ -648,6 +649,8 @@
     "eastasianwidth": ["eastasianwidth@0.2.0", "", {}, "sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA=="],
 
     "effect": ["effect@3.19.9", "", { "dependencies": { "@standard-schema/spec": "^1.0.0", "fast-check": "^3.23.1" } }, "sha512-taMXnfG/p+j7AmMOHHQaCHvjqwu9QBO3cxuZqL2dMG/yWcEMw0ZHruHe9B49OxtfKH/vKKDDKRhZ+1GJ2p5R5w=="],
+
+    "effect-query": ["effect-query@0.2.1", "", { "peerDependencies": { "@tanstack/react-query": "^5.90.5", "effect": "^3.18.4", "react": ">=18.2.0" } }, "sha512-liGFK5I9FgfaVLlGkax6tqsecuJQHuv9E4Fi5Ur+6y+AQf1SnZwmRZH6A/av9hWFNhLAGmwAIRX/f3ohtVfcEA=="],
 
     "electron-to-chromium": ["electron-to-chromium@1.5.267", "", {}, "sha512-0Drusm6MVRXSOJpGbaSVgcQsuB4hEkMpHXaVstcPmhu5LIedxs1xNK/nIxmQIU/RPC0+1/o0AVZfBTkTNJOdUw=="],
 
