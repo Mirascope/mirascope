@@ -6,15 +6,11 @@ Includes setting up VCR for HTTP recording/playback.
 from __future__ import annotations
 
 import sys
-from collections.abc import Generator
-from pathlib import Path
-from typing import TypedDict, cast, get_args
+from typing import TypedDict, get_args
 
 import pytest
 
 from mirascope import llm
-
-from .mlx_lm_cassette import RecordMode, record_mlx_lm
 
 E2E_MODEL_IDS: list[llm.ModelId] = [
     "anthropic/claude-sonnet-4-0",
@@ -25,6 +21,10 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
 
 # NOTE: MLX is only available on macOS (Apple Silicon)
 if sys.platform == "darwin":
+    from .mlx_lm_cassette import (
+        mlx_cassette_fixture,  # noqa: F401 # pyright: ignore[reportUnusedImport]
+    )
+
     E2E_MODEL_IDS.append("mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
 
 
@@ -173,74 +173,3 @@ SNAPSHOT_IMPORT_SYMBOLS = [
     "URLImageSource",
     "UserMessage",
 ]
-
-
-def _is_mlx_provider(request: pytest.FixtureRequest) -> bool:
-    """Check if the current test is using the MLX provider.
-
-    Args:
-        request: The pytest fixture request object.
-
-    Returns:
-        True if the test is using the MLX provider, False otherwise.
-    """
-    model_id_param: llm.ModelId | None = None
-    if "model_id" in request.fixturenames:
-        try:
-            model_id_fixture = request.getfixturevalue("model_id")
-            if isinstance(model_id_fixture, str):
-                model_id_param = model_id_fixture
-        except Exception:
-            pass
-
-    if model_id_param is None:
-        return False
-
-    return model_id_param.startswith("mlx/")
-
-
-def _get_mlx_cassette_path(request: pytest.FixtureRequest) -> Path:
-    """Get the path to the MLX cassette for the current test."""
-    test_file_path = Path(request.node.fspath)
-    sanitized_test_name = (
-        request.node.name.replace("/", "_")
-        .replace(" ", "_")
-        .replace("[", "_")
-        .replace("]", "_")
-        .replace(",", "_")
-    )
-    return test_file_path.parent / "mlx_lm_cassettes" / f"{sanitized_test_name}.yaml"
-
-
-@pytest.fixture(autouse=True)
-def mlx_cassette_fixture(
-    request: pytest.FixtureRequest,
-) -> Generator[None, None, None]:
-    """Automatically mock MLX operations when testing MLX provider.
-
-    TODO: Currently we have a dedicated cassette fixture for MLX because
-      inference results can't be cached with VCR.py (as inference runs locally).
-      In the future, we may want to generalize this solution to support new
-      providers that require similar treatment, such as Grok which uses gRPC.
-
-    This fixture:
-    - Detects when a test is using the MLX provider
-    - Mocks mlx_lm.load() to avoid downloading models
-    - Patches MLX generation methods to use cassettes
-    - Manages cassette lifecycle (load, record, save)
-    """
-    if not _is_mlx_provider(request):
-        # If not using MLX provider, return an empty generator
-        yield
-        return
-
-    cassette_path = _get_mlx_cassette_path(request)
-    record_mode = request.config.getoption("--vcr-record-mode")
-    record_mode = request.config.getoption("--vcr-record") or record_mode
-    record_mode = record_mode or "none"
-
-    if record_mode not in ["once", "new_episodes", "all", "none"]:
-        raise ValueError(f"Invalid VCR record_mode: {record_mode}")
-
-    with record_mlx_lm(cassette_path, cast(RecordMode, record_mode)):
-        yield

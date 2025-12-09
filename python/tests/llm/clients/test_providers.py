@@ -1,6 +1,7 @@
 """Tests for provider get_client functions."""
 
 import os
+import sys
 
 import pytest
 
@@ -47,6 +48,7 @@ def test_get_client_openai_responses() -> None:
     assert client1.client.api_key == os.getenv("OPENAI_API_KEY")
 
 
+@pytest.mark.skipif(sys.platform == "darwin", reason="MLX is only available on macOS")
 def test_get_client_mlx() -> None:
     """Test that get_client('mlx') returns same instance on multiple calls."""
     client1 = llm.get_client("mlx")

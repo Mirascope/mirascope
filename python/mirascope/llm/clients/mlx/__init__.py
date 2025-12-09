@@ -1,7 +1,21 @@
 """MLX client implementation."""
 
-from .clients import MLXClient, client, get_client
-from .model_ids import MLXModelId
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .clients import MLXClient, client, get_client
+    from .model_ids import MLXModelId
+else:
+    try:
+        from .clients import MLXClient, client, get_client
+        from .model_ids import MLXModelId
+    except ImportError:  # pragma: no cover
+        from .._missing_import_stubs import create_client_stub, create_import_error_stub
+
+        MLXClient = create_client_stub("mlx", "MLXClient")
+        MLXModelId = str
+        client = create_import_error_stub("mlx", "MLXClient")
+        get_client = create_import_error_stub("mlx", "MLXClient")
 
 __all__ = [
     "MLXClient",
