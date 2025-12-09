@@ -14,6 +14,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o",
+            "provider_model_id": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -40,6 +41,7 @@ sync_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -89,6 +91,7 @@ The secrets associated with the passwords are as follows:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message={
                         "content": """\
 The secrets associated with the passwords are as follows:
@@ -131,6 +134,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai",
             "model_id": "openai/gpt-4o",
+            "provider_model_id": "gpt-4o:completions",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -157,6 +161,7 @@ async_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message={
                         "role": "assistant",
                         "annotations": [],
@@ -207,6 +212,7 @@ Here are the secrets associated with the passwords:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message={
                         "content": """\
 Here are the secrets associated with the passwords:
@@ -275,6 +281,7 @@ stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message=None,
                 ),
                 UserMessage(
@@ -302,6 +309,7 @@ The secret for the password "radiance" is: "Life before Death"\
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],
@@ -362,6 +370,7 @@ async_stream_snapshot = snapshot(
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message=None,
                 ),
                 UserMessage(
@@ -391,6 +400,7 @@ Here are the secrets associated with the provided passwords:
                     ],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id="gpt-4o:completions",
                     raw_message=None,
                 ),
             ],

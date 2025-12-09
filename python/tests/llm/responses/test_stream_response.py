@@ -23,6 +23,7 @@ def create_sync_stream_response(
     response = llm.StreamResponse(
         provider="openai",
         model_id="openai/gpt-5-mini",
+        provider_model_id="gpt-5-mini",
         params={},
         input_messages=[llm.messages.user("Test")],
         chunk_iterator=iterator,
@@ -44,6 +45,7 @@ def create_async_stream_response(
     response = llm.AsyncStreamResponse(
         provider="openai",
         model_id="openai/gpt-5-mini",
+        provider_model_id="gpt-5-mini",
         params={},
         input_messages=[llm.messages.user("Test")],
         chunk_iterator=iterator,
@@ -950,6 +952,7 @@ class TestRawChunkTracking:
         stream_response = llm.StreamResponse(
             provider="openai",
             model_id="openai/gpt-5-mini",
+            provider_model_id="gpt-5-mini",
             params={},
             input_messages=[llm.messages.user("Test")],
             chunk_iterator=chunk_iterator(),
@@ -980,6 +983,7 @@ class TestRawChunkTracking:
         stream_response = llm.AsyncStreamResponse(
             provider="openai",
             model_id="openai/gpt-5-mini",
+            provider_model_id="gpt-5-mini",
             params={},
             input_messages=[llm.messages.user("Test")],
             chunk_iterator=chunk_iterator(),
@@ -1320,6 +1324,7 @@ def test_stream_response_execute_tools() -> None:
     stream_response = llm.StreamResponse(
         provider="openai",
         model_id="openai/gpt-5-mini",
+        provider_model_id="gpt-5-mini",
         params={},
         tools=[tool_one, tool_two],
         input_messages=[],
@@ -1362,6 +1367,7 @@ async def test_async_stream_response_execute_tools() -> None:
     stream_response = llm.AsyncStreamResponse(
         provider="openai",
         model_id="openai/gpt-5-mini",
+        provider_model_id="gpt-5-mini",
         params={},
         tools=[tool_one, tool_two],
         input_messages=[],
@@ -1386,6 +1392,7 @@ def test_response_toolkit_initialization() -> None:
     response = llm.StreamResponse(
         provider="openai",
         model_id="openai/gpt-5-mini",
+        provider_model_id="gpt-5-mini",
         params={},
         input_messages=[],
         chunk_iterator=chunk_iter(),
@@ -1395,6 +1402,7 @@ def test_response_toolkit_initialization() -> None:
     response = llm.AsyncStreamResponse(
         provider="openai",
         model_id="openai/gpt-5-mini",
+        provider_model_id="gpt-5-mini",
         params={},
         input_messages=[],
         chunk_iterator=async_chunk_iter(),
@@ -1404,6 +1412,7 @@ def test_response_toolkit_initialization() -> None:
     response = llm.ContextStreamResponse(
         provider="openai",
         model_id="openai/gpt-5-mini",
+        provider_model_id="gpt-5-mini",
         params={},
         input_messages=[],
         chunk_iterator=chunk_iter(),
@@ -1413,6 +1422,7 @@ def test_response_toolkit_initialization() -> None:
     response = llm.AsyncContextStreamResponse(
         provider="openai",
         model_id="openai/gpt-5-mini",
+        provider_model_id="gpt-5-mini",
         params={},
         input_messages=[],
         chunk_iterator=async_chunk_iter(),

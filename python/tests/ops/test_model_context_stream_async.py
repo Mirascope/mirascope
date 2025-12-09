@@ -172,6 +172,7 @@ async def test_model_context_stream_async_records_error_on_chunk_failure(
         return AsyncContextStreamResponse(
             provider="openai:responses",
             model_id="openai:responses/gpt-4o-mini",
+            provider_model_id="gpt-4o-mini:responses",
             params={},
             tools=None,
             format=None,

@@ -57,6 +57,9 @@ class AssistantMessage:
     model_id: ModelId | None
     """The model identifier of the LLM that generated this assistant message, if available."""
 
+    provider_model_id: str | None
+    """The provider-specific model identifier (e.g. "gpt-5:responses"), if available."""
+
     raw_message: Jsonable | None
     """The provider-specific raw representation of this assistant message, if available.
 
@@ -150,6 +153,7 @@ def assistant(
     content: AssistantContent,
     *,
     model_id: ModelId | None,
+    provider_model_id: str | None = None,
     raw_message: Jsonable | None = None,
     name: str | None = None,
 ) -> AssistantMessage:
@@ -160,6 +164,7 @@ def assistant(
             or a sequence of assistant content pieces.
         provider: Optional identifier of the provider that produced this message.
         model_id: Optional id of the model that produced this message.
+        provider_model_id: Optional provider-specific model identifier (e.g. "gpt-5:responses").
         raw_message: Optional Jsonable object that contains the provider-specific
             "raw" data representation of the content for this assistant message.
         name: Optional name to identify a specific assistant in multi-party conversations.
@@ -179,6 +184,7 @@ def assistant(
         content=promoted_content,
         provider=provider,
         model_id=model_id,
+        provider_model_id=provider_model_id,
         raw_message=raw_message,
         name=name,
     )

@@ -35,6 +35,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
+        provider_model_id: str,
         params: "Params",
         tools: Sequence[Tool] | Toolkit | None = None,
         format: Format[FormattableT] | None = None,
@@ -48,6 +49,7 @@ class Response(BaseResponse[Toolkit, FormattableT]):
             raw=raw,
             provider=provider,
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             toolkit=toolkit,
             format=format,
@@ -104,6 +106,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
+        provider_model_id: str,
         params: "Params",
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: Format[FormattableT] | None = None,
@@ -119,6 +122,7 @@ class AsyncResponse(BaseResponse[AsyncToolkit, FormattableT]):
             raw=raw,
             provider=provider,
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             toolkit=toolkit,
             format=format,
@@ -182,6 +186,7 @@ class ContextResponse(
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
+        provider_model_id: str,
         params: "Params",
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -199,6 +204,7 @@ class ContextResponse(
             raw=raw,
             provider=provider,
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             toolkit=toolkit,
             format=format,
@@ -268,6 +274,7 @@ class AsyncContextResponse(
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
+        provider_model_id: str,
         params: "Params",
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -287,6 +294,7 @@ class AsyncContextResponse(
             raw=raw,
             provider=provider,
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             toolkit=toolkit,
             format=format,

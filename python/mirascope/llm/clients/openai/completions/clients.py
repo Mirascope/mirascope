@@ -169,11 +169,13 @@ class OpenAICompletionsClient(
         assistant_message, finish_reason = _utils.decode_response(
             openai_response, model_id
         )
+        provider_model_id = _utils.get_provider_model_id(model_id)
 
         return Response(
             raw=openai_response,
             provider="openai",
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -268,11 +270,13 @@ class OpenAICompletionsClient(
         assistant_message, finish_reason = _utils.decode_response(
             openai_response, model_id
         )
+        provider_model_id = _utils.get_provider_model_id(model_id)
 
         return ContextResponse(
             raw=openai_response,
             provider="openai",
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -355,11 +359,13 @@ class OpenAICompletionsClient(
         assistant_message, finish_reason = _utils.decode_response(
             openai_response, model_id
         )
+        provider_model_id = _utils.get_provider_model_id(model_id)
 
         return AsyncResponse(
             raw=openai_response,
             provider="openai",
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -454,11 +460,13 @@ class OpenAICompletionsClient(
         assistant_message, finish_reason = _utils.decode_response(
             openai_response, model_id
         )
+        provider_model_id = _utils.get_provider_model_id(model_id)
 
         return AsyncContextResponse(
             raw=openai_response,
             provider="openai",
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -541,10 +549,12 @@ class OpenAICompletionsClient(
         )
 
         chunk_iterator = _utils.decode_stream(openai_stream)
+        provider_model_id = _utils.get_provider_model_id(model_id)
 
         return StreamResponse(
             provider="openai",
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -639,10 +649,12 @@ class OpenAICompletionsClient(
         )
 
         chunk_iterator = _utils.decode_stream(openai_stream)
+        provider_model_id = _utils.get_provider_model_id(model_id)
 
         return ContextStreamResponse(
             provider="openai",
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -725,10 +737,12 @@ class OpenAICompletionsClient(
         )
 
         chunk_iterator = _utils.decode_async_stream(openai_stream)
+        provider_model_id = _utils.get_provider_model_id(model_id)
 
         return AsyncStreamResponse(
             provider="openai",
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             tools=tools,
             input_messages=input_messages,
@@ -829,10 +843,12 @@ class OpenAICompletionsClient(
         )
 
         chunk_iterator = _utils.decode_async_stream(openai_stream)
+        provider_model_id = _utils.get_provider_model_id(model_id)
 
         return AsyncContextStreamResponse(
             provider="openai",
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             tools=tools,
             input_messages=input_messages,

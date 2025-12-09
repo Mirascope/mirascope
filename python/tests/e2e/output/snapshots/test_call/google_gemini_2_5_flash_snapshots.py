@@ -11,6 +11,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
+            "provider_model_id": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -36,18 +37,16 @@ So, 4200 + 42 = **4242**.\
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 To calculate 4200 + 42:
 
@@ -62,6 +61,9 @@ Adding them together:
 
 So, 4200 + 42 = **4242**.\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -78,6 +80,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "google",
             "model_id": "google/gemini-2.5-flash",
+            "provider_model_id": "gemini-2.5-flash",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -99,18 +102,16 @@ So, 4200 + 42 = **4242**.\
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 To find the sum of 4200 and 42, we add them together:
 
@@ -121,6 +122,9 @@ To find the sum of 4200 and 42, we add them together:
 
 So, 4200 + 42 = **4242**.\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",
@@ -157,18 +161,16 @@ So, 4200 + 42 = **4242**.\
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": """\
 To find the sum of 4200 + 42, we can align the numbers by their place values:
 
@@ -179,18 +181,21 @@ To find the sum of 4200 + 42, we can align the numbers by their place values:
 
 So, 42\
 """,
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": "00 + 42 = **4242**.",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             },
                         ],
                         "role": "model",
@@ -215,19 +220,20 @@ async_stream_snapshot = snapshot(
                     content=[Text(text="4200 + 42 = **4242**")],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
-                                "video_metadata": None,
-                                "thought": None,
-                                "inline_data": None,
-                                "file_data": None,
-                                "thought_signature": None,
+                                "function_call": None,
                                 "code_execution_result": None,
                                 "executable_code": None,
-                                "function_call": None,
+                                "file_data": None,
                                 "function_response": None,
+                                "inline_data": None,
                                 "text": "4200 + 42 = **4242**",
+                                "thought": None,
+                                "thought_signature": None,
+                                "video_metadata": None,
                             }
                         ],
                         "role": "model",

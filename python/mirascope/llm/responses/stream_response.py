@@ -96,6 +96,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
         *,
         provider: "Provider",
         model_id: "ModelId",
+        provider_model_id: str,
         params: "Params",
         tools: Sequence[Tool] | Toolkit | None = None,
         format: Format[FormattableT] | None = None,
@@ -107,6 +108,7 @@ class StreamResponse(BaseSyncStreamResponse[Toolkit, FormattableT]):
         super().__init__(
             provider=provider,
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             toolkit=toolkit,
             format=format,
@@ -221,6 +223,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
         *,
         provider: "Provider",
         model_id: "ModelId",
+        provider_model_id: str,
         params: "Params",
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: Format[FormattableT] | None = None,
@@ -234,6 +237,7 @@ class AsyncStreamResponse(BaseAsyncStreamResponse[AsyncToolkit, FormattableT]):
         super().__init__(
             provider=provider,
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             toolkit=toolkit,
             format=format,
@@ -355,6 +359,7 @@ class ContextStreamResponse(
         *,
         provider: "Provider",
         model_id: "ModelId",
+        provider_model_id: str,
         params: "Params",
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -370,6 +375,7 @@ class ContextStreamResponse(
         super().__init__(
             provider=provider,
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             toolkit=toolkit,
             format=format,
@@ -497,6 +503,7 @@ class AsyncContextStreamResponse(
         *,
         provider: "Provider",
         model_id: "ModelId",
+        provider_model_id: str,
         params: "Params",
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -514,6 +521,7 @@ class AsyncContextStreamResponse(
         super().__init__(
             provider=provider,
             model_id=model_id,
+            provider_model_id=provider_model_id,
             params=params,
             toolkit=toolkit,
             format=format,

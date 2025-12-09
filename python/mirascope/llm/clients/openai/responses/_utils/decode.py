@@ -38,6 +38,19 @@ INCOMPLETE_DETAILS_TO_FINISH_REASON = {
 }
 
 
+def get_provider_model_id(model_id: OpenAIResponsesModelId) -> str:
+    """Extract the provider-specific model ID from a full model ID.
+
+    Args:
+        model_id: Full model ID (e.g. "openai:responses/gpt-4o")
+
+    Returns:
+        Provider-specific model ID with API suffix (e.g. "gpt-4o:responses")
+    """
+    model_name = model_id.removeprefix("openai:responses/")
+    return f"{model_name}:responses"
+
+
 def _serialize_output_item(
     item: openai_types.ResponseOutputItem,
 ) -> dict[str, Any]:
@@ -93,6 +106,7 @@ def decode_response(
         content=parts,
         provider="openai:responses",
         model_id=model_id,
+        provider_model_id=get_provider_model_id(model_id),
         raw_message=[
             _serialize_output_item(output_item) for output_item in response.output
         ],

@@ -11,6 +11,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai:responses",
             "model_id": "openai:responses/gpt-4o",
+            "provider_model_id": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -19,6 +20,7 @@ sync_snapshot = snapshot(
                     content=[Text(text="4200 + 42 equals 4242.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0bee99a5de5b12910068f966a1fb3c819587e157227fc327ff",
@@ -47,6 +49,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai:responses",
             "model_id": "openai:responses/gpt-4o",
+            "provider_model_id": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -55,6 +58,7 @@ async_snapshot = snapshot(
                     content=[Text(text="4200 + 42 equals 4242.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_03b14221ccca5c620068f966a3948881958dafb416da3a7122",
@@ -90,6 +94,7 @@ stream_snapshot = snapshot(
                     content=[Text(text="4200 + 42 equals 4242.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0360bd45725b0a010068f966a601b081958e95c4085b086532",
@@ -126,6 +131,7 @@ async_stream_snapshot = snapshot(
                     content=[Text(text="4200 + 42 equals 4242.")],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_05aee6862dd20adc0068f966a7b06481939ce80dfccd63051e",

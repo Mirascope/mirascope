@@ -12,6 +12,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "openai:responses",
             "model_id": "openai:responses/gpt-4o",
+            "provider_model_id": "gpt-4o:responses",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -36,6 +37,7 @@ Sure! Here is a list of all 50 U.S. states:
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_043a58ea47ac058e0068f966c13978819797bd165a2ecefb31",
@@ -76,6 +78,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "openai:responses",
             "model_id": "openai:responses/gpt-4o",
+            "provider_model_id": "gpt-4o:responses",
             "params": {"max_tokens": 50},
             "finish_reason": FinishReason.MAX_TOKENS,
             "messages": [
@@ -101,6 +104,7 @@ Sure! Here are all the U.S. states:
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0d9a87a8899d31be0068f966c376e481948b002160f58809be",
@@ -165,6 +169,7 @@ Sure! Here is a list of all 50 U.S. states:
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=None,
                 ),
             ],
@@ -203,6 +208,7 @@ Here is a list of all U.S. states:
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=None,
                 ),
             ],

@@ -12,6 +12,7 @@ test_snapshot = snapshot(
             {
                 "provider": "google",
                 "model_id": "google/gemini-2.5-flash",
+                "provider_model_id": "gemini-2.5-flash",
                 "params": {
                     "temperature": 0.7,
                     "max_tokens": 500,
@@ -39,18 +40,16 @@ To calculate 4200 + 42, you can add the numbers together:
                         ],
                         provider="google",
                         model_id="google/gemini-2.5-flash",
+                        provider_model_id="gemini-2.5-flash",
                         raw_message={
                             "parts": [
                                 {
-                                    "video_metadata": None,
-                                    "thought": None,
-                                    "inline_data": None,
-                                    "file_data": None,
-                                    "thought_signature": None,
+                                    "function_call": None,
                                     "code_execution_result": None,
                                     "executable_code": None,
-                                    "function_call": None,
+                                    "file_data": None,
                                     "function_response": None,
+                                    "inline_data": None,
                                     "text": """\
 To calculate 4200 + 42, you can add the numbers together:
 
@@ -58,6 +57,9 @@ To calculate 4200 + 42, you can add the numbers together:
 + 42
 -----
 """,
+                                    "thought": None,
+                                    "thought_signature": None,
+                                    "video_metadata": None,
                                 }
                             ],
                             "role": "model",

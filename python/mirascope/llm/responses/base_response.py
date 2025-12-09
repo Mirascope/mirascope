@@ -23,6 +23,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         raw: Any,  # noqa: ANN401
         provider: "Provider",
         model_id: "ModelId",
+        provider_model_id: str,
         params: "Params",
         toolkit: ToolkitT,
         format: Format[FormattableT] | None = None,
@@ -36,6 +37,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
             raw: The raw response from the LLM.
             provider: The provider name (e.g. "anthropic", "openai").
             model_id: The model identifier that generated the response.
+            provider_model_id: The provider-specific model identifier (e.g. "gpt-5:responses").
             params: The params used to generate the response (or None).
             toolkit: Toolkit containing all the tools used to generate the response.
             format: The `Format` for the expected structured output format (or None).
@@ -46,6 +48,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
         self.raw = raw
         self.provider = provider
         self.model_id = model_id
+        self.provider_model_id = provider_model_id
         self.params = params
         self.toolkit = toolkit
         self.finish_reason = finish_reason
@@ -86,6 +89,7 @@ class BaseResponse(RootResponse[ToolkitT, FormattableT]):
                 name=assistant_message.name,
                 provider=assistant_message.provider,
                 model_id=assistant_message.model_id,
+                provider_model_id=assistant_message.provider_model_id,
                 raw_message=assistant_message.raw_message,
             )
         self.messages = list(input_messages) + [assistant_message]

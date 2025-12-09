@@ -11,6 +11,7 @@ test_snapshot = snapshot(
         "response": {
             "provider": "openai:responses",
             "model_id": "openai:responses/gpt-4o",
+            "provider_model_id": "gpt-4o:responses",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -21,6 +22,7 @@ test_snapshot = snapshot(
                     ],
                     provider="google",
                     model_id="google/gemini-2.5-flash",
+                    provider_model_id="gemini-2.5-flash",
                     raw_message={
                         "parts": [
                             {
@@ -46,6 +48,7 @@ test_snapshot = snapshot(
                     ],
                     provider="openai:responses",
                     model_id="openai:responses/gpt-4o",
+                    provider_model_id="gpt-4o:responses",
                     raw_message=[
                         {
                             "id": "msg_0bfe8406dc3caad9006916132acf1081939919a9196577f367",

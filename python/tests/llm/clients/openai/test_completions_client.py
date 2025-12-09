@@ -69,6 +69,7 @@ def test_prepare_message_multiple_assistant_text_parts() -> None:
                     content=[llm.Text(text="General "), llm.Text(text="Kenobi")],
                     provider="openai",
                     model_id="openai/gpt-4o",
+                    provider_model_id=None,
                     raw_message=None,
                 ),
             ],

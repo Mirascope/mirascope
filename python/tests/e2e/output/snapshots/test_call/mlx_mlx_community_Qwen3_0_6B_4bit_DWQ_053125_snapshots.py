@@ -11,6 +11,7 @@ sync_snapshot = snapshot(
         "response": {
             "provider": "mlx",
             "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "provider_model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -47,6 +48,7 @@ $$\
                     ],
                     provider="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    provider_model_id=None,
                     raw_message=None,
                 ),
             ],
@@ -60,6 +62,7 @@ async_snapshot = snapshot(
         "response": {
             "provider": "mlx",
             "model_id": "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+            "provider_model_id": "mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
             "params": {},
             "finish_reason": None,
             "messages": [
@@ -96,6 +99,7 @@ $$\
                     ],
                     provider="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    provider_model_id=None,
                     raw_message=None,
                 ),
             ],
@@ -144,6 +148,7 @@ $$\
                     ],
                     provider="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    provider_model_id="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     raw_message=None,
                 ),
             ],
@@ -193,6 +198,7 @@ $$\
                     ],
                     provider="mlx",
                     model_id="mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
+                    provider_model_id="mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
                     raw_message=None,
                 ),
             ],
