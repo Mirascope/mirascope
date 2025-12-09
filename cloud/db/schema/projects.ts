@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { users } from "./users";
 import { organizations } from "./organizations";
+import { projectMemberships } from "@/db/schema/project-memberships";
 
 export const projects = pgTable("projects", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -16,7 +17,7 @@ export const projects = pgTable("projects", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const projectsRelations = relations(projects, ({ one }) => ({
+export const projectsRelations = relations(projects, ({ one, many }) => ({
   createdBy: one(users, {
     fields: [projects.createdByUserId],
     references: [users.id],
@@ -25,6 +26,7 @@ export const projectsRelations = relations(projects, ({ one }) => ({
     fields: [projects.organizationId],
     references: [organizations.id],
   }),
+  memberships: many(projectMemberships),
 }));
 
 // Internal types

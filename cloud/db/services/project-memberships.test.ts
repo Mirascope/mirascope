@@ -25,7 +25,7 @@ describe("ProjectMembershipService", () => {
         const db = yield* DatabaseService;
 
         expect(
-          yield* db.projectMemberships.getRole({
+          yield* db.organizations.projects.memberships.getRole({
             userId: owner.id,
             organizationId: org.id,
             projectId: project.id,
@@ -40,7 +40,7 @@ describe("ProjectMembershipService", () => {
         const db = yield* DatabaseService;
 
         expect(
-          yield* db.projectMemberships.getRole({
+          yield* db.organizations.projects.memberships.getRole({
             userId: admin.id,
             organizationId: org.id,
             projectId: project.id,
@@ -55,7 +55,7 @@ describe("ProjectMembershipService", () => {
         const db = yield* DatabaseService;
 
         expect(
-          yield* db.projectMemberships.getRole({
+          yield* db.organizations.projects.memberships.getRole({
             userId: projectDeveloper.id,
             organizationId: org.id,
             projectId: project.id,
@@ -71,7 +71,7 @@ describe("ProjectMembershipService", () => {
           const { org, owner } = yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.organizations.projects.memberships
             .getRole({
               userId: owner.id,
               organizationId: org.id,
@@ -91,7 +91,7 @@ describe("ProjectMembershipService", () => {
           const { project, org, member } = yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.organizations.projects.memberships
             .getRole({
               userId: member.id,
               organizationId: org.id,
@@ -113,7 +113,7 @@ describe("ProjectMembershipService", () => {
           .select(new Error("Database connection failed"))
           .build();
 
-        const result = yield* db.projectMemberships
+        const result = yield* db.organizations.projects.memberships
           .getRole({
             userId: "user-id",
             organizationId: "org-id",
@@ -137,7 +137,7 @@ describe("ProjectMembershipService", () => {
             .select(new Error("Database connection failed"))
             .build();
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.organizations.projects.memberships
             .getRole({
               userId: "user-id",
               organizationId: "org-id",
@@ -161,15 +161,17 @@ describe("ProjectMembershipService", () => {
         const { project, org, owner } = yield* TestProjectFixture;
         const db = yield* DatabaseService;
 
-        const memberships = yield* db.projectMemberships.findAll({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-        });
+        const memberships =
+          yield* db.organizations.projects.memberships.findAll({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+          });
 
-        // Fixture creates 4 explicit project members
-        expect(memberships).toHaveLength(4);
+        // Fixture creates 4 explicit project members + the creator (auto project ADMIN)
+        expect(memberships).toHaveLength(5);
         expect(memberships.map((m) => m.role).sort()).toEqual([
+          "ADMIN",
           "ADMIN",
           "ANNOTATOR",
           "DEVELOPER",
@@ -185,7 +187,7 @@ describe("ProjectMembershipService", () => {
           const { project, org, member } = yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.organizations.projects.memberships
             .findAll({
               userId: member.id,
               organizationId: org.id,
@@ -209,7 +211,7 @@ describe("ProjectMembershipService", () => {
           .select(new Error("Database connection failed"))
           .build();
 
-        const result = yield* db.projectMemberships
+        const result = yield* db.organizations.projects.memberships
           .findAll({
             userId: "owner-id",
             organizationId: "org-id",
@@ -234,12 +236,13 @@ describe("ProjectMembershipService", () => {
           yield* TestProjectFixture;
         const db = yield* DatabaseService;
 
-        const membership = yield* db.projectMemberships.findById({
-          userId: owner.id,
-          organizationId: org.id,
-          projectId: project.id,
-          memberId: projectDeveloper.id,
-        });
+        const membership =
+          yield* db.organizations.projects.memberships.findById({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            memberId: projectDeveloper.id,
+          });
 
         expect(membership.role).toBe("DEVELOPER");
       }).pipe(Effect.provide(TestDatabase)),
@@ -250,7 +253,7 @@ describe("ProjectMembershipService", () => {
         const { project, org, owner, member } = yield* TestProjectFixture;
         const db = yield* DatabaseService;
 
-        const result = yield* db.projectMemberships
+        const result = yield* db.organizations.projects.memberships
           .findById({
             userId: owner.id,
             organizationId: org.id,
@@ -272,7 +275,7 @@ describe("ProjectMembershipService", () => {
           yield* TestProjectFixture;
         const db = yield* DatabaseService;
 
-        const result = yield* db.projectMemberships
+        const result = yield* db.organizations.projects.memberships
           .findById({
             userId: member.id, // no project access
             organizationId: org.id,
@@ -297,7 +300,7 @@ describe("ProjectMembershipService", () => {
           .select(new Error("Database connection failed"))
           .build();
 
-        const result = yield* db.projectMemberships
+        const result = yield* db.organizations.projects.memberships
           .findById({
             userId: "owner-id",
             organizationId: "org-id",
@@ -336,12 +339,13 @@ describe("ProjectMembershipService", () => {
             data: { memberId: newOrgMember.id, role: "MEMBER" },
           });
 
-          const membership = yield* db.projectMemberships.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            data: { memberId: newOrgMember.id, role: "VIEWER" },
-          });
+          const membership =
+            yield* db.organizations.projects.memberships.create({
+              userId: owner.id,
+              organizationId: org.id,
+              projectId: project.id,
+              data: { memberId: newOrgMember.id, role: "VIEWER" },
+            });
 
           expect(membership).toMatchObject({
             projectId: project.id,
@@ -349,11 +353,12 @@ describe("ProjectMembershipService", () => {
             role: "VIEWER",
           } satisfies Partial<PublicProjectMembership>);
 
-          const audits = yield* db.projectMemberships.audits.findAll({
-            organizationId: org.id,
-            projectId: project.id,
-            memberId: newOrgMember.id,
-          });
+          const audits =
+            yield* db.organizations.projects.memberships.audits.findAll({
+              organizationId: org.id,
+              projectId: project.id,
+              memberId: newOrgMember.id,
+            });
           const grants = audits.filter((a) => a.action === "GRANT");
           expect(grants).toHaveLength(1);
           expect(grants[0]).toMatchObject({
@@ -377,7 +382,7 @@ describe("ProjectMembershipService", () => {
             data: { email: "outsider@example.com", name: "Outsider" },
           });
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.organizations.projects.memberships
             .create({
               userId: owner.id,
               organizationId: org.id,
@@ -413,7 +418,7 @@ describe("ProjectMembershipService", () => {
             data: { memberId: anotherOrgMember.id, role: "MEMBER" },
           });
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.organizations.projects.memberships
             .create({
               userId: projectDeveloper.id, // DEVELOPER role (read-only)
               organizationId: org.id,
@@ -437,7 +442,7 @@ describe("ProjectMembershipService", () => {
             yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.organizations.projects.memberships
             .create({
               userId: owner.id,
               organizationId: org.id,
@@ -458,7 +463,7 @@ describe("ProjectMembershipService", () => {
         const { org, owner, projectDeveloper } = yield* TestProjectFixture;
         const db = yield* DatabaseService;
 
-        const result = yield* db.projectMemberships
+        const result = yield* db.organizations.projects.memberships
           .create({
             userId: owner.id,
             organizationId: org.id,
@@ -485,7 +490,7 @@ describe("ProjectMembershipService", () => {
           .insert(new Error("Database connection failed"))
           .build();
 
-        const result = yield* db.projectMemberships
+        const result = yield* db.organizations.projects.memberships
           .create({
             userId: "owner-id",
             organizationId: "org-id",
@@ -511,7 +516,7 @@ describe("ProjectMembershipService", () => {
           yield* TestProjectFixture;
         const db = yield* DatabaseService;
 
-        const updated = yield* db.projectMemberships.update({
+        const updated = yield* db.projects.memberships.update({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
@@ -521,7 +526,7 @@ describe("ProjectMembershipService", () => {
 
         expect(updated.role).toBe("ANNOTATOR");
 
-        const audits = yield* db.projectMemberships.audits.findAll({
+        const audits = yield* db.projects.memberships.audits.findAll({
           organizationId: org.id,
           projectId: project.id,
           memberId: projectDeveloper.id,
@@ -545,7 +550,7 @@ describe("ProjectMembershipService", () => {
           const { project, org, projectAdmin } = yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.projects.memberships
             .update({
               userId: projectAdmin.id,
               organizationId: org.id,
@@ -568,7 +573,7 @@ describe("ProjectMembershipService", () => {
             yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.projects.memberships
             .update({
               userId: projectDeveloper.id, // read-only role
               organizationId: org.id,
@@ -592,7 +597,7 @@ describe("ProjectMembershipService", () => {
           const { project, org, owner, member } = yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.projects.memberships
             .update({
               userId: owner.id,
               organizationId: org.id,
@@ -622,7 +627,7 @@ describe("ProjectMembershipService", () => {
           .update(new Error("Database connection failed"))
           .build();
 
-        const result = yield* db.projectMemberships
+        const result = yield* db.projects.memberships
           .update({
             userId: "owner-id",
             organizationId: "org-id",
@@ -649,14 +654,14 @@ describe("ProjectMembershipService", () => {
           yield* TestProjectFixture;
         const db = yield* DatabaseService;
 
-        yield* db.projectMemberships.delete({
+        yield* db.projects.memberships.delete({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
           memberId: projectDeveloper.id,
         });
 
-        const audits = yield* db.projectMemberships.audits.findAll({
+        const audits = yield* db.projects.memberships.audits.findAll({
           organizationId: org.id,
           projectId: project.id,
           memberId: projectDeveloper.id,
@@ -680,7 +685,7 @@ describe("ProjectMembershipService", () => {
           const { project, org, projectAdmin } = yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.projects.memberships
             .delete({
               userId: projectAdmin.id,
               organizationId: org.id,
@@ -702,7 +707,7 @@ describe("ProjectMembershipService", () => {
             yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.projects.memberships
             .delete({
               userId: projectDeveloper.id, // read-only role
               organizationId: org.id,
@@ -725,7 +730,7 @@ describe("ProjectMembershipService", () => {
           const { project, org, owner, member } = yield* TestProjectFixture;
           const db = yield* DatabaseService;
 
-          const result = yield* db.projectMemberships
+          const result = yield* db.projects.memberships
             .delete({
               userId: owner.id,
               organizationId: org.id,
@@ -754,7 +759,7 @@ describe("ProjectMembershipService", () => {
           .delete(new Error("Database connection failed"))
           .build();
 
-        const result = yield* db.projectMemberships
+        const result = yield* db.projects.memberships
           .delete({
             userId: "owner-id",
             organizationId: "org-id",
@@ -781,7 +786,7 @@ describe("ProjectMembershipService", () => {
         const db = yield* DatabaseService;
 
         // Trigger a CHANGE audit entry
-        yield* db.projectMemberships.update({
+        yield* db.projects.memberships.update({
           userId: owner.id,
           organizationId: org.id,
           projectId: project.id,
@@ -789,7 +794,7 @@ describe("ProjectMembershipService", () => {
           data: { role: "ANNOTATOR" },
         });
 
-        const audits = yield* db.projectMemberships.audits.findAll({
+        const audits = yield* db.projects.memberships.audits.findAll({
           organizationId: org.id,
           projectId: project.id,
           memberId: projectDeveloper.id,
@@ -797,7 +802,7 @@ describe("ProjectMembershipService", () => {
         const change = audits.find((a) => a.action === "CHANGE");
         expect(change).toBeDefined();
 
-        const byId = yield* db.projectMemberships.audits.findById({
+        const byId = yield* db.projects.memberships.audits.findById({
           organizationId: org.id,
           projectId: project.id,
           memberId: projectDeveloper.id,
@@ -815,7 +820,7 @@ describe("ProjectMembershipService", () => {
         const db = yield* DatabaseService;
 
         const missingId = "00000000-0000-0000-0000-000000000000";
-        const result = yield* db.projectMemberships.audits
+        const result = yield* db.projects.memberships.audits
           .findById({
             organizationId: org.id,
             projectId: project.id,
