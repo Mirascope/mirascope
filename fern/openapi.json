@@ -1450,6 +1450,357 @@
           }
         }
       }
+    },
+    "/organizations/{organizationId}/projects/{projectId}/environments": {
+      "get": {
+        "tags": [
+          "environments"
+        ],
+        "operationId": "environments.list",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "projectId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "name",
+                      "projectId"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "projectId": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "PermissionDeniedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PermissionDeniedError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "environments"
+        ],
+        "operationId": "environments.create",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "projectId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "name",
+                    "projectId"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "projectId": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "AlreadyExistsError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AlreadyExistsError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PermissionDeniedError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/organizations/{organizationId}/projects/{projectId}/environments/{environmentId}": {
+      "get": {
+        "tags": [
+          "environments"
+        ],
+        "operationId": "environments.get",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "projectId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "environmentId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "name",
+                    "projectId"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "projectId": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/NotFoundError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PermissionDeniedError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "environments"
+        ],
+        "operationId": "environments.delete",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "projectId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "environmentId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "security": [],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "The request did not match the expected schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpApiDecodeError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/NotFoundError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PermissionDeniedError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatabaseError"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1656,6 +2007,9 @@
     },
     {
       "name": "projects"
+    },
+    {
+      "name": "environments"
     }
   ],
   "servers": [
