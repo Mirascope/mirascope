@@ -167,6 +167,7 @@ include = ["mirascope", "tests", "examples"]
 exclude = [".venv", "mirascope/api/_generated", "mirascope/llm/mcp"]
 venvPath = "."
 venv = ".venv"
+stubPath = "typings"
 reportMatchNotExhaustive = "error"
 reportMissingParameterType = "error"
 reportMissingTypeArgument = "error"
