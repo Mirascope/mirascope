@@ -367,7 +367,14 @@
                                       "type": "string"
                                     },
                                     "parentSpanId": {
-                                      "type": "string"
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
                                     },
                                     "name": {
                                       "type": "string"
