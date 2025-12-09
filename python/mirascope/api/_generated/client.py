@@ -4,6 +4,7 @@ import typing
 
 import httpx
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from .docs.client import AsyncDocsClient, DocsClient
 from .environment import MirascopeEnvironment
 from .health.client import AsyncHealthClient, HealthClient
 from .traces.client import AsyncTracesClient, TracesClient
@@ -70,8 +71,9 @@ class Mirascope:
             else httpx.Client(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.traces = TracesClient(client_wrapper=self._client_wrapper)
         self.health = HealthClient(client_wrapper=self._client_wrapper)
+        self.traces = TracesClient(client_wrapper=self._client_wrapper)
+        self.docs = DocsClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncMirascope:
@@ -135,8 +137,9 @@ class AsyncMirascope:
             else httpx.AsyncClient(timeout=_defaulted_timeout),
             timeout=_defaulted_timeout,
         )
-        self.traces = AsyncTracesClient(client_wrapper=self._client_wrapper)
         self.health = AsyncHealthClient(client_wrapper=self._client_wrapper)
+        self.traces = AsyncTracesClient(client_wrapper=self._client_wrapper)
+        self.docs = AsyncDocsClient(client_wrapper=self._client_wrapper)
 
 
 def _get_base_url(

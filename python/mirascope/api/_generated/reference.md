@@ -1,5 +1,50 @@
 # Reference
-## Traces
+## health
+<details><summary><code>client.health.<a href="src/mirascope/health/client.py">check</a>()</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from mirascope.api._generated import Mirascope
+
+client = Mirascope()
+client.health.check()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## traces
 <details><summary><code>client.traces.<a href="src/mirascope/traces/client.py">create</a>(...)</code></summary>
 <dl>
 <dd>
@@ -75,8 +120,8 @@ client.traces.create(
 </dl>
 </details>
 
-## Health
-<details><summary><code>client.health.<a href="src/mirascope/health/client.py">check</a>()</code></summary>
+## docs
+<details><summary><code>client.docs.<a href="src/mirascope/docs/client.py">openapi</a>()</code></summary>
 <dl>
 <dd>
 
@@ -92,7 +137,7 @@ client.traces.create(
 from mirascope.api._generated import Mirascope
 
 client = Mirascope()
-client.health.check()
+client.docs.openapi()
 
 ```
 </dd>

@@ -35,7 +35,7 @@ class HealthClient:
         Returns
         -------
         HealthCheckResponse
-            OK
+            Success
 
         Examples
         --------
@@ -75,7 +75,7 @@ class AsyncHealthClient:
         Returns
         -------
         HealthCheckResponse
-            OK
+            Success
 
         Examples
         --------

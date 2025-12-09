@@ -1,7 +1,55 @@
-import { router as healthRouter } from "./health";
-import { router as tracesRouter } from "./traces";
+import { HttpApiBuilder } from "@effect/platform";
+import { Layer } from "effect";
+import { checkHealthHandler } from "@/api/health.handlers";
+import { createTraceHandler } from "@/api/traces.handlers";
+import { getOpenApiSpecHandler } from "@/api/docs.handlers";
+import {
+  listOrganizationsHandler,
+  createOrganizationHandler,
+  getOrganizationHandler,
+  updateOrganizationHandler,
+  deleteOrganizationHandler,
+} from "@/api/organizations.handlers";
+import { MirascopeCloudApi } from "@/api/api";
 
-export const router = {
-  traces: tracesRouter,
-  health: healthRouter,
-};
+export { MirascopeCloudApi };
+
+const HealthHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "health",
+  (handlers) => handlers.handle("check", () => checkHealthHandler),
+);
+
+const TracesHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "traces",
+  (handlers) =>
+    handlers.handle("create", ({ payload }) => createTraceHandler(payload)),
+);
+
+const DocsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "docs",
+  (handlers) => handlers.handle("openapi", () => getOpenApiSpecHandler),
+);
+
+const OrganizationsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "organizations",
+  (handlers) =>
+    handlers
+      .handle("list", () => listOrganizationsHandler)
+      .handle("create", ({ payload }) => createOrganizationHandler(payload))
+      .handle("get", ({ path }) => getOrganizationHandler(path.id))
+      .handle("update", ({ path, payload }) =>
+        updateOrganizationHandler(path.id, payload),
+      )
+      .handle("delete", ({ path }) => deleteOrganizationHandler(path.id)),
+);
+
+export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
+  Layer.provide(HealthHandlersLive),
+  Layer.provide(TracesHandlersLive),
+  Layer.provide(DocsHandlersLive),
+  Layer.provide(OrganizationsHandlersLive),
+);

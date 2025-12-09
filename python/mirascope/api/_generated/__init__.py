@@ -2,7 +2,17 @@
 
 # isort: skip_file
 
-from . import health, traces
+from .types import (
+    HttpApiDecodeError,
+    HttpApiDecodeErrorTag,
+    Issue,
+    IssueTag,
+    PropertyKey,
+    PropertyKeyTag,
+    PropertyKeyTagTag,
+)
+from .errors import BadRequestError
+from . import docs, health, traces
 from .client import AsyncMirascope, Mirascope
 from .environment import MirascopeEnvironment
 from .health import HealthCheckResponse, HealthCheckResponseStatus
@@ -11,13 +21,22 @@ from .traces import (
     TracesCreateRequestResourceSpansItemResource,
     TracesCreateRequestResourceSpansItemResourceAttributesItem,
     TracesCreateRequestResourceSpansItemResourceAttributesItemValue,
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue,
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue,
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValueValuesItem,
     TracesCreateRequestResourceSpansItemScopeSpansItem,
     TracesCreateRequestResourceSpansItemScopeSpansItemScope,
     TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItem,
     TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem,
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem,
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem,
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue,
+    TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValueValuesItem,
     TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus,
     TracesCreateResponse,
     TracesCreateResponsePartialSuccess,
@@ -25,24 +44,42 @@ from .traces import (
 
 __all__ = [
     "AsyncMirascope",
+    "BadRequestError",
     "HealthCheckResponse",
     "HealthCheckResponseStatus",
+    "HttpApiDecodeError",
+    "HttpApiDecodeErrorTag",
+    "Issue",
+    "IssueTag",
     "Mirascope",
     "MirascopeEnvironment",
+    "PropertyKey",
+    "PropertyKeyTag",
+    "PropertyKeyTagTag",
     "TracesCreateRequestResourceSpansItem",
     "TracesCreateRequestResourceSpansItemResource",
     "TracesCreateRequestResourceSpansItemResourceAttributesItem",
     "TracesCreateRequestResourceSpansItemResourceAttributesItemValue",
+    "TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue",
+    "TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue",
+    "TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValueValuesItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemScope",
     "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueArrayValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemScopeAttributesItemValueKvlistValueValuesItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueArrayValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValue",
+    "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemAttributesItemValueKvlistValueValuesItem",
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus",
     "TracesCreateResponse",
     "TracesCreateResponsePartialSuccess",
+    "docs",
     "health",
     "traces",
 ]

@@ -4,6 +4,6 @@ import enum
 
 
 class MirascopeEnvironment(enum.Enum):
-    PRODUCTION = "https://v2.mirascope.com"
-    STAGING = "https://staging.mirascope.com"
-    LOCAL = "http://localhost:3000"
+    PRODUCTION = "https://v2.mirascope.com/api/v0"
+    STAGING = "https://staging.mirascope.com/api/v0"
+    LOCAL = "http://localhost:3000/api/v0"

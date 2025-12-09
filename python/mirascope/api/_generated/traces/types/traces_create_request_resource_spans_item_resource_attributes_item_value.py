@@ -6,6 +6,12 @@ import pydantic
 import typing_extensions
 from ...core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ...core.serialization import FieldMetadata
+from .traces_create_request_resource_spans_item_resource_attributes_item_value_array_value import (
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue,
+)
+from .traces_create_request_resource_spans_item_resource_attributes_item_value_kvlist_value import (
+    TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue,
+)
 
 
 class TracesCreateRequestResourceSpansItemResourceAttributesItemValue(
@@ -24,10 +30,16 @@ class TracesCreateRequestResourceSpansItemResourceAttributesItemValue(
         typing.Optional[bool], FieldMetadata(alias="boolValue")
     ] = None
     array_value: typing_extensions.Annotated[
-        typing.Optional[typing.Optional[typing.Any]], FieldMetadata(alias="arrayValue")
+        typing.Optional[
+            TracesCreateRequestResourceSpansItemResourceAttributesItemValueArrayValue
+        ],
+        FieldMetadata(alias="arrayValue"),
     ] = None
     kvlist_value: typing_extensions.Annotated[
-        typing.Optional[typing.Optional[typing.Any]], FieldMetadata(alias="kvlistValue")
+        typing.Optional[
+            TracesCreateRequestResourceSpansItemResourceAttributesItemValueKvlistValue
+        ],
+        FieldMetadata(alias="kvlistValue"),
     ] = None
 
     if IS_PYDANTIC_V2:

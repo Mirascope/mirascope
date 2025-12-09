@@ -1,5 +1,5 @@
 import { createRouter } from "@tanstack/react-router";
-import { routeTree } from "./routeTree.gen";
+import { routeTree } from "@/src/routeTree.gen";
 import { DefaultCatchBoundary } from "@/src/components/default-catch-boundary";
 import { NotFound } from "@/src/components/not-found";
 
@@ -9,8 +9,7 @@ export function getRouter() {
     defaultPreload: "intent",
     defaultErrorComponent: DefaultCatchBoundary,
     defaultNotFoundComponent: () => <NotFound />,
-    // TODO: figure out the hydration issue here
-    // scrollRestoration: true,
+    scrollRestoration: true,
   });
 
   return router;
