@@ -23,6 +23,12 @@ import {
   getEnvironmentHandler,
   deleteEnvironmentHandler,
 } from "@/api/environments.handlers";
+import {
+  listApiKeysHandler,
+  createApiKeyHandler,
+  getApiKeyHandler,
+  deleteApiKeyHandler,
+} from "@/api/api-keys.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
 export { MirascopeCloudApi };
@@ -89,6 +95,19 @@ const EnvironmentsHandlersLive = HttpApiBuilder.group(
       ),
 );
 
+const ApiKeysHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "apiKeys",
+  (handlers) =>
+    handlers
+      .handle("list", ({ path }) => listApiKeysHandler(path.environmentId))
+      .handle("create", ({ path, payload }) =>
+        createApiKeyHandler(path.environmentId, payload),
+      )
+      .handle("get", ({ path }) => getApiKeyHandler(path.apiKeyId))
+      .handle("delete", ({ path }) => deleteApiKeyHandler(path.apiKeyId)),
+);
+
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
@@ -96,4 +115,5 @@ export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(OrganizationsHandlersLive),
   Layer.provide(ProjectsHandlersLive),
   Layer.provide(EnvironmentsHandlersLive),
+  Layer.provide(ApiKeysHandlersLive),
 );
