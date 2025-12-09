@@ -1,0 +1,89 @@
+import { Effect } from "effect";
+import { EffectDatabase } from "@/db";
+import { AuthenticatedUser } from "@/auth";
+import type {
+  CreateEnvironmentRequest,
+  UpdateEnvironmentRequest,
+} from "@/api/environments.schemas";
+
+export * from "@/api/environments.schemas";
+
+export const listEnvironmentsHandler = (
+  organizationId: string,
+  projectId: string,
+) =>
+  Effect.gen(function* () {
+    const db = yield* EffectDatabase;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.projects.environments.findAll({
+      userId: user.id,
+      organizationId,
+      projectId,
+    });
+  });
+
+export const createEnvironmentHandler = (
+  organizationId: string,
+  projectId: string,
+  payload: CreateEnvironmentRequest,
+) =>
+  Effect.gen(function* () {
+    const db = yield* EffectDatabase;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.projects.environments.create({
+      userId: user.id,
+      organizationId,
+      projectId,
+      data: { name: payload.name },
+    });
+  });
+
+export const getEnvironmentHandler = (
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+) =>
+  Effect.gen(function* () {
+    const db = yield* EffectDatabase;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.projects.environments.findById({
+      userId: user.id,
+      organizationId,
+      projectId,
+      environmentId,
+    });
+  });
+
+export const updateEnvironmentHandler = (
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+  payload: UpdateEnvironmentRequest,
+) =>
+  Effect.gen(function* () {
+    const db = yield* EffectDatabase;
+    const user = yield* AuthenticatedUser;
+    return yield* db.organizations.projects.environments.update({
+      userId: user.id,
+      organizationId,
+      projectId,
+      environmentId,
+      data: payload,
+    });
+  });
+
+export const deleteEnvironmentHandler = (
+  organizationId: string,
+  projectId: string,
+  environmentId: string,
+) =>
+  Effect.gen(function* () {
+    const db = yield* EffectDatabase;
+    const user = yield* AuthenticatedUser;
+    yield* db.organizations.projects.environments.delete({
+      userId: user.id,
+      organizationId,
+      projectId,
+      environmentId,
+    });
+  });
