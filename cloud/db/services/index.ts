@@ -3,6 +3,7 @@ export * from "@/db/services/users";
 export * from "@/db/services/sessions";
 export * from "@/db/services/organizations";
 export * from "@/db/services/projects";
+export * from "@/db/services/environments";
 
 import { Context } from "effect";
 import { drizzle } from "drizzle-orm/postgres-js";
@@ -13,12 +14,14 @@ import { UserService } from "@/db/services/users";
 import { SessionService } from "@/db/services/sessions";
 import { OrganizationService } from "@/db/services/organizations";
 import { ProjectService } from "@/db/services/projects";
+import { EnvironmentService } from "@/db/services/environments";
 
 export type Database = {
   readonly users: UserService;
   readonly sessions: SessionService;
   readonly organizations: OrganizationService;
   readonly projects: ProjectService;
+  readonly environments: EnvironmentService;
   readonly close: () => Promise<void>;
 };
 
@@ -47,12 +50,14 @@ export function getDatabase(
   const sessions = new SessionService(client);
   const organizations = new OrganizationService(client);
   const projects = new ProjectService(client);
+  const environments = new EnvironmentService(client, projects);
 
   return {
     users,
     sessions,
     organizations,
     projects,
+    environments,
     close: async () => {
       if (sql) {
         await sql.end();

@@ -311,12 +311,23 @@ export class MockDatabase {
     };
 
     // Create a terminal promise handler that works for all chain patterns
+    // Promise is created lazily to avoid unhandled rejection warnings
     const createTerminal = (results: MockResult[], getIndex: () => number) => {
-      const promise = makePromise(results, getIndex());
+      let promise: Promise<unknown[]> | null = null;
+      const getPromise = () => {
+        if (!promise) {
+          promise = makePromise(results, getIndex());
+        }
+        return promise;
+      };
       return {
-        limit: () => promise,
-        then: promise.then.bind(promise),
-        catch: promise.catch.bind(promise),
+        limit: () => getPromise(),
+        then: (
+          onFulfilled?: (value: unknown[]) => unknown,
+          onRejected?: (reason: unknown) => unknown,
+        ) => getPromise().then(onFulfilled, onRejected),
+        catch: (onRejected?: (reason: unknown) => unknown) =>
+          getPromise().catch(onRejected),
       };
     };
 
@@ -562,4 +573,24 @@ export const TestProjectFixture = Effect.gen(function* () {
   });
 
   return { project, owner, admin, developer, annotator, nonMember };
+});
+
+/**
+ * Creates a test environment within a project.
+ *
+ * Returns { environment, project, org, owner, nonMember } - same as TestProjectFixture
+ * but with an environment named "Test Environment" already created by the owner.
+ *
+ * Handy for tests that need to find, update, or delete an existing environment.
+ */
+export const TestEnvironmentFixture = Effect.gen(function* () {
+  const { project, org, owner, nonMember } = yield* TestProjectFixture;
+
+  const db = yield* DatabaseService;
+  const environment = yield* db.environments.create({
+    data: { name: "Test Environment", projectId: project.id },
+    userId: owner.id,
+  });
+
+  return { environment, project, org, owner, nonMember };
 });
