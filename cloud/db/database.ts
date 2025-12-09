@@ -48,14 +48,17 @@ import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
+import { Traces } from "@/db/traces";
 
 /**
- * Type definition for the environments service with nested API keys.
+ * Type definition for the environments service with nested API keys and traces.
  *
  * Access pattern: `db.organizations.projects.environments.apiKeys.create(...)`
+ * Traces: `db.organizations.projects.environments.traces.create(...)`
  */
 export interface EnvironmentsService extends Ready<Environments> {
   readonly apiKeys: Ready<ApiKeys>;
+  readonly traces: Ready<Traces>;
 }
 
 /**
@@ -137,6 +140,10 @@ export class Database extends Context.Tag("Database")<
       const environmentsService = new Environments(projectMemberships);
       const apiKeysService = new ApiKeys(projectMemberships);
 
+      const tracesService = new Traces(projectMemberships);
+
+      const readyTraces = makeReady(client, tracesService);
+
       return {
         users: makeReady(client, new Users()),
         sessions: makeReady(client, new Sessions()),
@@ -149,6 +156,7 @@ export class Database extends Context.Tag("Database")<
             environments: {
               ...makeReady(client, environmentsService),
               apiKeys: makeReady(client, apiKeysService),
+              traces: readyTraces,
             },
           },
         },
