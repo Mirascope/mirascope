@@ -1,0 +1,266 @@
+---
+title: Why Mirascope?
+description: Why use Mirascope for your LLM applications
+---
+
+# Why Mirascope?
+
+Trusted by founders and engineers building the next generation of AI-native applications:
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+  <div className="border rounded-md p-4 bg-accent/20 border-primary">
+    <p className="font-bold">Jake Duth</p>
+    <p className="text-sm text-muted-foreground">Co-Founder & CTO / Reddy</p>
+    <p className="mt-2 italic">"Mirascope's simplicity made it the natural next step from OpenAI's API — all without fighting the unnecessary complexity of tools like LangChain. We have all the bells and whistles we need for production while maintaining exceptional ease of use."</p>
+  </div>
+  
+  <div className="border rounded-md p-4 bg-accent/20 border-primary">
+    <p className="font-bold">Vince Trost</p>
+    <p className="text-sm text-muted-foreground">Co-Founder / Plastic Labs</p>
+    <p className="mt-2 italic">"The Pydantic inspired LLM toolkit the space has been missing. Simple, modular, extensible...helps where you need it, stays out of your way when you don't."</p>
+  </div>
+
+  <div className="border rounded-md p-4 bg-accent/20 border-primary">
+    <p className="font-bold">Skylar Payne</p>
+    <p className="text-sm text-muted-foreground">VP of Engineering & DS / Health Rhythms</p>
+    <p className="mt-2 italic">"Mirascope's 'abstractions that aren't obstructions' tagline rings true – I was up and running in minutes, with seamless switching between AI providers. The type system catches any schema issues while I iterate, letting me focus entirely on crafting the perfect prompts."</p>
+  </div>
+
+  <div className="border rounded-md p-4 bg-accent/20 border-primary">
+    <p className="font-bold">Off Sornsoontorn</p>
+    <p className="text-sm text-muted-foreground">Senior AI & ML Engineer / Six Atomic</p>
+    <p className="mt-2 italic">"LangChain required learning many concepts and its rigid abstractions made LLM behavior hard to customize. Mirascope lets us easily adapt LLM behaviors to any UI/UX design, so we can focus on innovation rather than working around limitations."</p>
+  </div>
+
+  <div className="border rounded-md p-4 bg-accent/20 border-primary">
+    <p className="font-bold">William Profit</p>
+    <p className="text-sm text-muted-foreground">Co-Founder / Callisto</p>
+    <p className="mt-2 italic">"After trying many alternatives, we chose Mirascope for our large project and haven't looked back. It's simple, lean, and gets the job done without getting in the way. The team & community are super responsive, making building even easier."</p>
+  </div>
+
+  <div className="border rounded-md p-4 bg-accent/20 border-primary">
+    <p className="font-bold">Rami Awar</p>
+    <p className="text-sm text-muted-foreground">Founder / DataLine</p>
+    <p className="mt-2 italic">"Migrating DataLine to Mirascope feels like I was rid of a pebble in my shoe that I never knew existed. This is what good design should feel like. Well done."</p>
+  </div>
+</div>
+
+## Abstractions That Aren't Obstructions
+
+Mirascope provides powerful abstractions that simplify LLM interactions without hiding the underlying mechanics. This approach gives you the convenience of high-level APIs while maintaining full control and transparency.
+
+### Everything Beyond The Prompt Is Boilerplate
+
+By eliminating boilerplate, Mirascope allows you to focus on what matters most: your prompt.
+
+Let's compare structured outputs using Mirascope vs. the official SDKs:
+
+#### Mirascope API
+
+<TabbedSection showLogo={true}>
+<Tab value="Messages">
+```python
+from mirascope import llm
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    """An extracted book."""
+ 
+    title: str
+    author: str
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", response_model=Book) # [!code highlight]
+def extract_book(text: str) -> str:
+    return f"Extract {text}"
+
+
+book: Book = extract_book("The Name of the Wind by Patrick Rothfuss")
+print(book)
+# Output: title='The Name of the Wind' author='Patrick Rothfuss' # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", response_model=Book) # [!code highlight]
+@prompt_template("Extract {text}")
+def extract_book(text: str): ...
+
+
+book: Book = extract_book("The Name of the Wind by Patrick Rothfuss")
+print(book)
+# Output: title='The Name of the Wind' author='Patrick Rothfuss' # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+#### Provider SDK Equivalent
+
+<Info title="Official SDK" collapsible={false}>
+<ProviderCodeBlock examplePath="mirascope/getting-started/quickstart/sdk" />
+</Info>
+
+Reducing this boilerplate becomes increasingly important as the number and complexity of your calls grows beyond a single basic example. Furthermore, the Mirascope interface works across all of our various supported providers, so you don't need to learn the intricacies of each provider to use them the same way.
+
+### Functional, Modular Design
+
+Mirascope's functional approach promotes modularity and reusability. You can easily compose and chain LLM calls, creating complex workflows with simple, readable code.
+
+<TabbedSection>
+<Tab value="Separate Calls">
+```python
+from mirascope import llm
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL")
+def summarize(text: str) -> str: # [!code highlight]
+    return f"Summarize this text: {text}"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL")
+def translate(text: str, language: str) -> str: # [!code highlight]
+    return f"Translate this text to {language}: {text}"
+
+
+summary = summarize("Long English text here...") # [!code highlight]
+translation = translate(summary.content, "french") # [!code highlight]
+print(translation.content)
+```
+</Tab>
+<Tab value="Nested Calls">
+```python
+from mirascope import llm
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL")
+def summarize(text: str) -> str: # [!code highlight]
+    return f"Summarize this text: {text}"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL")
+def summarize_and_translate(text: str, language: str) -> str:
+    summary = summarize(text) # [!code highlight]
+    return f"Translate this text to {language}: {summary.content}" # [!code highlight]
+
+
+response = summarize_and_translate("Long English text here...", "french") # [!code highlight]
+print(response.content)
+```
+</Tab>
+</TabbedSection>
+
+The goal of our design approach is to remain **Pythonic** so you can **build your way**.
+
+### Provider-Agnostic When Wanted, Specific When Needed
+
+We understand the desire for easily switching between various LLM providers. We also understand the (common) need to engineer a prompt for a specific provider (and model).
+
+By implementing our LLM API call functionality as decorators, Mirascope makes implementing any and all of these paths straightforward and easy:
+
+<TabbedSection>
+<Tab value="Provider Specific">
+```python
+from mirascope.core import anthropic, openai
+
+
+@openai.call("gpt-4o-mini") # [!code highlight]
+def openai_recommend_book(genre: str) -> str: # [!code highlight]
+    return f"Recommend a {genre} book"
+
+
+@anthropic.call("claude-3-5-sonnet-latest") # [!code highlight]
+def anthropic_recommend_book(genre: str) -> str: # [!code highlight]
+    return f"Recommend a {genre} book"
+
+
+openai_response = openai_recommend_book("fantasy") # [!code highlight]
+print(openai_response.content)
+
+anthropic_response = anthropic_recommend_book("fantasy") # [!code highlight]
+print(anthropic_response.content)
+```
+</Tab>
+<Tab value="Provider Agnostic">
+```python
+from mirascope.core import anthropic, openai, prompt_template
+
+
+@prompt_template() # [!code highlight]
+def recommend_book_prompt(genre: str) -> str: # [!code highlight]
+    return f"Recommend a {genre} book"
+
+
+# OpenAI
+openai_model = "gpt-4o-mini"
+openai_recommend_book = openai.call(openai_model)(recommend_book_prompt) # [!code highlight]
+openai_response = openai_recommend_book("fantasy") # [!code highlight]
+print(openai_response.content)
+
+# Anthropic
+anthropic_model = "claude-3-5-sonnet-latest"
+anthropic_recommend_book = anthropic.call(anthropic_model)(recommend_book_prompt) # [!code highlight]
+anthropic_response = anthropic_recommend_book("fantasy") # [!code highlight]
+print(anthropic_response.content)
+```
+</Tab>
+</TabbedSection>
+
+### Type Hints & Editor Support
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+  <div className="border rounded-md p-4 bg-muted">
+    <p className="font-bold">🛡️ Type Safety</p>
+    <p>Catch errors before runtime during lint</p>
+  </div>
+  
+  <div className="border rounded-md p-4 bg-muted">
+    <p className="font-bold">💡 Editor Support</p>
+    <p>Rich autocomplete and inline documentation</p>
+  </div>
+</div>
+
+<video 
+  src="https://github.com/user-attachments/assets/174acc23-a026-4754-afd3-c4ca570a9dde" 
+  controls="controls" 
+  style={{maxWidth: "730px", marginTop: "2rem", marginBottom: "2rem"}}
+  className="rounded-md shadow-md"
+></video>
+
+## Who Should Use Mirascope?
+
+Mirascope is **designed for everyone** to use!
+
+However, we believe that the value of Mirascope will shine in particular for:
+
+- **Professional Developers**: Who need fine-grained control and transparency in their LLM interactions.
+- **AI Application Builders**: Looking for a tool that can grow with their project from prototype to production.
+- **Teams**: Who value clean, maintainable code and want to avoid the "black box" problem of many AI frameworks.
+- **Researchers and Experimenters**: Who need the flexibility to quickly try out new ideas without fighting their tools.
+
+## Getting Started
+
+<div className="flex flex-col md:flex-row justify-center items-center gap-4 my-8 w-full px-4">
+  <ButtonLink href="/docs/mirascope/guides/getting-started/quickstart" className="w-full md:w-1/3 justify-center">
+    <Icon name="rocket" className="size-3.5" aria-hidden="true" /> Quick Start
+  </ButtonLink>
+  <ButtonLink href="/docs/mirascope/learn" className="w-full md:w-1/3 justify-center">
+    <Icon name="book-open" className="size-3.5" aria-hidden="true" /> Learn More
+  </ButtonLink>
+  <ButtonLink href="https://mirascope.com/discord-invite" className="w-full md:w-1/3 justify-center">
+    <Icon name="users" className="size-3.5" aria-hidden="true" /> Join Our Community
+  </ButtonLink>
+</div>
+
+By choosing Mirascope, you're opting for a tool that respects your expertise as a developer while providing the conveniences you need to work efficiently and effectively with LLMs.
+
+We believe the best tools get out of your way and let you focus on building great applications.

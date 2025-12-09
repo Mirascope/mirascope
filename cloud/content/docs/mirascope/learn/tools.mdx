@@ -1,0 +1,1754 @@
+---
+title: Tools
+description: Learn how to define, use, and chain together LLM-powered tools in Mirascope to extend model capabilities with external functions, data sources, and system interactions.
+---
+
+# Tools
+
+<Note>
+  If you haven't already, we recommend first reading the section on [Calls](/docs/mirascope/learn/calls)
+</Note>
+
+Tools are user-defined functions that an LLM (Large Language Model) can ask the user to invoke on its behalf. This greatly enhances the capabilities of LLMs by enabling them to perform specific tasks, access external data, interact with other systems, and more.
+
+Mirascope enables defining tools in a provider-agnostic way, which can be used across all supported LLM providers without modification.
+
+<Info title="Diagram illustrating how tools are called" collapsible={true} defaultOpen={false}>
+  When an LLM decides to use a tool, it indicates the tool name and argument values in its response. It's important to note that the LLM doesn't actually execute the function; instead, you are responsible for calling the tool and (optionally) providing the output back to the LLM in a subsequent interaction. For more details on such iterative tool-use flows, check out the [Tool Message Parameters](#tool-message-parameters) section below as well as the section on [Agents](/docs/mirascope/learn/agents).
+
+  ```mermaid
+  sequenceDiagram
+      participant YC as Your Code
+      participant LLM
+
+      YC->>LLM: Call with prompt and function definitions
+      loop Tool Calls
+          LLM->>LLM: Decide to respond or call functions
+          LLM->>YC: Respond with function to call and arguments
+          YC->>YC: Execute function with given arguments
+          YC->>LLM: Call with prompt and function result
+      end
+      LLM->>YC: Final response
+  ```
+</Info>
+
+## Basic Usage and Syntax
+
+<Callout type="api">
+  [`mirascope.llm.tool`](/docs/mirascope/api)
+</Callout>
+
+There are two ways of defining tools in Mirascope: `BaseTool` and functions.
+
+You can consider the functional definitions a shorthand form of writing the `BaseTool` version of the same tool. Under the hood, tools defined as functions will get converted automatically into their corresponding `BaseTool`.
+
+Let's take a look at a basic example of each:
+
+
+<TabbedSection showLogo={true}>
+<Tab value="BaseTool">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseTool, llm
+from pydantic import Field
+
+# [!code highlight:13]
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor]) # [!code highlight]
+def identify_author(book: str) -> str:
+    return f"Who wrote {book}?"
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool: # [!code highlight]
+    print(tool.call()) # [!code highlight]
+    # Output: Patrick Rothfuss # [!code highlight]
+else:
+    print(response.content)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseTool, llm, prompt_template
+from pydantic import Field
+
+# [!code highlight:13]
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor]) # [!code highlight]
+@prompt_template("Who wrote {book}?")
+def identify_author(book: str): ...
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool: # [!code highlight]
+    print(tool.call()) # [!code highlight]
+    # Output: Patrick Rothfuss # [!code highlight]
+else:
+    print(response.content)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="Function">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+# [!code highlight:13]
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author]) # [!code highlight]
+def identify_author(book: str) -> str:
+    return f"Who wrote {book}?"
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool: # [!code highlight]
+    print(tool.call()) # [!code highlight]
+    # Output: Patrick Rothfuss # [!code highlight]
+else:
+    print(response.content)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+# [!code highlight:13]
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author]) # [!code highlight]
+@prompt_template("Who wrote {book}?")
+def identify_author(book: str): ...
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool: # [!code highlight]
+    print(tool.call()) # [!code highlight]
+    # Output: Patrick Rothfuss # [!code highlight]
+else:
+    print(response.content)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+<Info collapsible={true} title={"Official SDK"}>
+<ProviderCodeBlock examplePath="mirascope/learn/tools/basic_usage/sdk"/>
+</Info>
+
+In this example we:
+
+1. Define the `GetBookAuthor`/`get_book_author` tool (a dummy method for the example)
+2. Set the `tools` argument in the `call` decorator to give the LLM access to the tool.
+3. We call `identify_author`, which automatically generates the corresponding provider-specific tool schema under the hood.
+4. Check if the response from `identify_author` contains a tool, which is the `BaseTool` instance constructed from the underlying tool call
+    - If yes, we call the constructed tool's `call` method and print its output. This calls the tool with the arguments provided by the LLM.
+    - If no, we print the content of the response (assuming no tool was called).
+
+The core idea to understand here is that the LLM is asking us to call the tool on its behalf with arguments that it has provided. In the above example, the LLM chooses to call the tool to get the author rather than relying on its world knowledge.
+
+This is particularly important for buildling applications with access to live information and external systems.
+
+For the purposes of this example we are showing just a single tool call. Generally, you would then give the tool call's output back to the LLM and make another call so the LLM can generate a response based on the output of the tool. We cover this in more detail in the section on [Agents](/docs/mirascope/learn/agents)
+
+### Accessing Original Tool Call
+
+The `BaseTool` instances have a `tool_call` property for accessing the original LLM tool call.
+
+<TabbedSection>
+<Tab value="BaseTool">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseTool, llm
+from pydantic import Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+def identify_author(book: str) -> str:
+    return f"Who wrote {book}?"
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool:
+    print(tool.call())
+    # Output: Patrick Rothfuss
+    print(f"Original tool call: {tool.tool_call}") # [!code highlight]
+else:
+    print(response.content)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseTool, llm, prompt_template
+from pydantic import Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+@prompt_template("Who wrote {book}?")
+def identify_author(book: str): ...
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool:
+    print(tool.call())
+    # Output: Patrick Rothfuss
+    print(f"Original tool call: {tool.tool_call}") # [!code highlight]
+else:
+    print(response.content)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="Function">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+def identify_author(book: str) -> str:
+    return f"Who wrote {book}?"
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool:
+    print(tool.call())
+    # Output: Patrick Rothfuss
+    print(f"Original tool call: {tool.tool_call}") # [!code highlight]
+else:
+    print(response.content)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+@prompt_template("Who wrote {book}?")
+def identify_author(book: str): ...
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool:
+    print(tool.call())
+    # Output: Patrick Rothfuss
+    print(f"Original tool call: {tool.tool_call}") # [!code highlight]
+else:
+    print(response.content)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+## Supported Field Types
+
+While Mirascope provides a consistent interface, type support varies among providers:
+
+|     Type      | OpenAI | Anthropic | Google | Groq | xAI | Mistral | Cohere |
+|---------------|:--------:|:-----------:|:--------:|:------:|:-----:|:---------:|:--------:|
+|     str       | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|     int       | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|    float      | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|     bool      | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|     bytes     | ✓      | ✓         | —      | ✓    | ✓   | ✓       | ✓      |
+|     list      | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|     set       | ✓      | ✓         | —      | ✓    | ✓   | ✓       | ✓      |
+|     tuple     | —      | ✓         | —      | ✓    | —   | ✓       | ✓      |
+|     dict      | —      | ✓         | ✓      | ✓    | —   | ✓       | ✓      |
+|  Literal/Enum | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | ✓      |
+|   BaseModel   | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | —      |
+| Nested ($def) | ✓      | ✓         | ✓      | ✓    | ✓   | ✓       | —      |
+
+*Legend: ✓ (Supported), — (Not Supported)*
+
+Consider provider-specific capabilities when working with advanced type structures. Even for supported types, LLM outputs may sometimes be incorrect or of the wrong type. In such cases, prompt engineering or error handling (like [retries](/docs/mirascope/learn/retries) and [reinserting validation errors](/docs/mirascope/learn/retries#error-reinsertion)) may be necessary.
+
+## Parallel Tool Calls
+
+In certain cases the LLM will ask to call multiple tools in the same response. Mirascope makes calling all such tools simple:
+
+<TabbedSection>
+<Tab value="BaseTool">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseTool, llm
+from pydantic import Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+def identify_authors(books: list[str]) -> str:
+    return f"Who wrote {books}?"
+
+
+# [!code highlight:5]
+response = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+if tools := response.tools:
+    for tool in tools:
+        print(tool.call())
+else:
+    print(response.content)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseTool, llm, prompt_template
+from pydantic import Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+@prompt_template("Who wrote {books}?")
+def identify_authors(books: list[str]): ...
+
+
+# [!code highlight:5]
+response = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+if tools := response.tools:
+    for tool in tools:
+        print(tool.call())
+else:
+    print(response.content)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="Function">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+def identify_authors(books: list[str]) -> str:
+    return f"Who wrote {books}?"
+
+
+# [!code highlight:5]
+response = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+if tools := response.tools:
+    for tool in tools:
+        print(tool.call())
+else:
+    print(response.content)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+@prompt_template("Who wrote {books}?")
+def identify_authors(books: list[str]): ...
+
+
+# [!code highlight:5]
+response = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+if tools := response.tools:
+    for tool in tools:
+        print(tool.call())
+else:
+    print(response.content)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+If your tool calls are I/O-bound, it's often worth writing [async tools](/docs/mirascope/learn/async#async-tools) so that you can run all of the tools calls [in parallel](/docs/mirascope/learn/async#parallel-async-calls) for better efficiency.
+
+## Streaming Tools
+
+Mirascope supports streaming responses with tools, which is useful for long-running tasks or real-time updates:
+
+<TabbedSection>
+<Tab value="BaseTool">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseTool, llm
+from pydantic import Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor], stream=True) # [!code highlight]
+def identify_authors(books: list[str]) -> str:
+    return f"Who wrote {books}?"
+
+
+stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+for chunk, tool in stream: # [!code highlight]
+    if tool: # [!code highlight]
+        print(tool.call()) # [!code highlight]
+    else:
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseTool, llm, prompt_template
+from pydantic import Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor], stream=True) # [!code highlight]
+@prompt_template("Who wrote {books}?")
+def identify_authors(books: list[str]): ...
+
+
+stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+for chunk, tool in stream: # [!code highlight]
+    if tool: # [!code highlight]
+        print(tool.call()) # [!code highlight]
+    else:
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="Function">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author], stream=True) # [!code highlight]
+def identify_authors(books: list[str]) -> str:
+    return f"Who wrote {books}?"
+
+
+stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+for chunk, tool in stream: # [!code highlight]
+    if tool: # [!code highlight]
+        print(tool.call()) # [!code highlight]
+    else:
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author], stream=True) # [!code highlight]
+@prompt_template("Who wrote {books}?")
+def identify_authors(books: list[str]): ...
+
+
+stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+for chunk, tool in stream: # [!code highlight]
+    if tool: # [!code highlight]
+        print(tool.call()) # [!code highlight]
+    else:
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+<Note title="When are tools returned?">
+  When we identify that a tool is being streamed, we will internally reconstruct the tool from the streamed response. This means that the tool won't be returned until the full tool has been streamed and reconstructed on your behalf.
+</Note>
+
+<Warning title="Not all providers support streaming tools">
+  Currently only OpenAI, Anthropic, Mistral, and Groq support streaming tools. All other providers will always return `None` for tools.
+  
+  If you think we're missing any, let us know!
+</Warning>
+
+### Streaming Partial Tools
+
+You can also stream intermediate partial tools and their deltas (rather than just the fully constructed tool) by setting `stream={"partial_tools": True}`:
+
+<TabbedSection>
+<Tab value="BaseTool">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseTool, llm
+from pydantic import Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(
+    provider="$PROVIDER",
+    model="$MODEL",
+    tools=[GetBookAuthor],
+    stream={"partial_tools": True}, # [!code highlight]
+)
+def identify_authors(books: list[str]) -> str:
+    return f"Who wrote {books}?"
+
+
+stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+for chunk, tool in stream:
+    if tool: # [!code highlight]
+        if tool.delta is not None:  # partial tool
+            print(tool.delta)
+        else:
+            print(tool.call())
+    else:
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseTool, llm, prompt_template
+from pydantic import Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(..., description="The title of the book.")
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(
+    provider="$PROVIDER",
+    model="$MODEL",
+    tools=[GetBookAuthor],
+    stream={"partial_tools": True}, # [!code highlight]
+)
+@prompt_template("Who wrote {books}?")
+def identify_authors(books: list[str]): ...
+
+
+stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+for chunk, tool in stream:
+    if tool: # [!code highlight]
+        if tool.delta is not None:  # partial tool
+            print(tool.delta)
+        else:
+            print(tool.call())
+    else:
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="Function">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(
+    provider="$PROVIDER",
+    model="$MODEL",
+    tools=[get_book_author],
+    stream={"partial_tools": True}, # [!code highlight]
+)
+def identify_authors(books: list[str]) -> str:
+    return f"Who wrote {books}?"
+
+
+stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+for chunk, tool in stream:
+    if tool: # [!code highlight]
+        if tool.delta is not None:  # partial tool
+            print(tool.delta)
+        else:
+            print(tool.call())
+    else:
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+
+def get_book_author(title: str) -> str:
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(
+    provider="$PROVIDER",
+    model="$MODEL",
+    tools=[get_book_author],
+    stream={"partial_tools": True}, # [!code highlight]
+)
+@prompt_template("Who wrote {books}?")
+def identify_authors(books: list[str]): ...
+
+
+stream = identify_authors(["The Name of the Wind", "Mistborn: The Final Empire"])
+for chunk, tool in stream:
+    if tool: # [!code highlight]
+        if tool.delta is not None:  # partial tool
+            print(tool.delta)
+        else:
+            print(tool.call())
+    else:
+        print(chunk.content, end="", flush=True)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+## Tool Message Parameters
+
+<Note>
+  Calling tools and inserting their outputs into subsequent LLM API calls in a loop in the most basic form of an agent. While we cover this briefly here, we recommend reading the section on [Agents](/docs/mirascope/learn/agents) for more details and examples.
+</Note>
+
+Generally the next step after the LLM returns a tool call is for you to call the tool on its behalf and supply the output in a subsequent call.
+
+Let's take a look at a basic example of this:
+
+<TabbedSection>
+<Tab value="BaseTool">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseMessageParam, BaseTool, Messages, llm
+
+
+class GetBookAuthor(BaseTool):
+    title: str
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+def identify_author(book: str, history: list[BaseMessageParam]) -> Messages.Type:
+    messages = [*history] # [!code highlight]
+    if book:
+        messages.append(Messages.User(f"Who wrote {book}?")) # [!code highlight]
+    return messages
+
+
+history = []
+response = identify_author("The Name of the Wind", history)
+history += [response.user_message_param, response.message_param]
+while tool := response.tool:
+    tools_and_outputs = [(tool, tool.call())]
+    history += response.tool_message_params(tools_and_outputs)
+    response = identify_author("", history) # [!code highlight]
+    history.append(response.message_param) # [!code highlight]
+print(response.content) # [!code highlight]
+# Output: The Name of the Wind was written by Patrick Rothfuss.
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseDynamicConfig, BaseMessageParam, BaseTool, llm, prompt_template
+
+
+class GetBookAuthor(BaseTool):
+    title: str
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+@prompt_template(
+    """
+    MESSAGES: {history} # [!code highlight]
+    USER: {query}
+    """
+)
+def identify_author(book: str, history: list[BaseMessageParam]) -> BaseDynamicConfig:
+    return {"computed_fields": {"query": f"Who wrote {book}" if book else ""}} # [!code highlight]
+
+
+history = []
+response = identify_author("The Name of the Wind", history)
+history += [response.user_message_param, response.message_param]
+while tool := response.tool:
+    tools_and_outputs = [(tool, tool.call())]
+    history += response.tool_message_params(tools_and_outputs)
+    response = identify_author("", history) # [!code highlight]
+    history.append(response.message_param) # [!code highlight]
+print(response.content) # [!code highlight]
+# Output: The Name of the Wind was written by Patrick Rothfuss.
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="Function">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseMessageParam, Messages, llm
+
+
+def get_book_author(title: str) -> str:
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+def identify_author(book: str, history: list[BaseMessageParam]) -> Messages.Type:
+    messages = [*history] # [!code highlight]
+    if book:
+        messages.append(Messages.User(f"Who wrote {book}?")) # [!code highlight]
+    return messages
+
+
+history = []
+response = identify_author("The Name of the Wind", history)
+history += [response.user_message_param, response.message_param]
+while tool := response.tool:
+    tools_and_outputs = [(tool, tool.call())]
+    history += response.tool_message_params(tools_and_outputs)
+    response = identify_author("", history) # [!code highlight]
+    history.append(response.message_param) # [!code highlight]
+print(response.content) # [!code highlight]
+# Output: The Name of the Wind was written by Patrick Rothfuss.
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseMessageParam, BaseDynamicConfig, llm, prompt_template
+
+
+def get_book_author(title: str) -> str:
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+@prompt_template(
+    """
+    MESSAGES: {history} # [!code highlight]
+    USER: {query}
+    """
+)
+def identify_author(book: str, history: list[BaseMessageParam]) -> BaseDynamicConfig:
+    return {"computed_fields": {"query": f"Who wrote {book}" if book else ""}} # [!code highlight]
+
+
+history = []
+response = identify_author("The Name of the Wind", history)
+history += [response.user_message_param, response.message_param]
+while tool := response.tool:
+    tools_and_outputs = [(tool, tool.call())]
+    history += response.tool_message_params(tools_and_outputs)
+    response = identify_author("", history) # [!code highlight]
+    history.append(response.message_param) # [!code highlight]
+print(response.content) # [!code highlight]
+# Output: The Name of the Wind was written by Patrick Rothfuss.
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+In this example we:
+
+1. Add `history` to maintain the messages across multiple calls to the LLM.
+2. Loop until the response no longer has tools calls.
+3. While there are tool calls, call the tools, append their corresponding message parameters to the history, and make a subsequent call with an empty query and updated history. We use an empty query because the original user message is already included in the history.
+4. Print the final response content once the LLM is done calling tools.
+
+## Validation and Error Handling
+
+Since `BaseTool` is a subclass of Pydantic's [`BaseModel`](https://docs.pydantic.dev/latest/usage/models/), they are validated on construction, so it's important that you handle potential `ValidationError`'s for building more robust applications:
+
+<TabbedSection>
+<Tab value="BaseTool">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from typing import Annotated
+
+from mirascope import BaseTool, llm
+from pydantic import AfterValidator, Field, ValidationError
+
+
+def is_upper(v: str) -> str:
+    assert v.isupper(), "Must be uppercase"
+    return v
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: Annotated[str, AfterValidator(is_upper)] = Field( # [!code highlight]
+        ..., description="The title of the book."
+    )
+
+    def call(self) -> str:
+        if self.title == "THE NAME OF THE WIND":
+            return "Patrick Rothfuss"
+        elif self.title == "MISTBORN: THE FINAL EMPIRE":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+def identify_author(book: str) -> str:
+    return f"Who wrote {book}?"
+
+
+response = identify_author("The Name of the Wind")
+try: # [!code highlight]
+    if tool := response.tool:
+        print(tool.call())
+    else:
+        print(response.content)
+except ValidationError as e: # [!code highlight]
+    print(e)
+    # > 1 validation error for GetBookAuthor
+    #   title
+    #     Assertion failed, Must be uppercase [type=assertion_error, input_value='The Name of the Wind', input_type=str]
+    #       For further information visit https://errors.pydantic.dev/2.8/v/assertion_error
+```
+</Tab>
+<Tab value="Template">
+```python
+from typing import Annotated
+
+from mirascope import BaseTool, llm, prompt_template
+from pydantic import AfterValidator, Field, ValidationError
+
+
+def is_upper(v: str) -> str:
+    assert v.isupper(), "Must be uppercase"
+    return v
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: Annotated[str, AfterValidator(is_upper)] = Field( # [!code highlight]
+        ..., description="The title of the book."
+    )
+
+    def call(self) -> str:
+        if self.title == "THE NAME OF THE WIND":
+            return "Patrick Rothfuss"
+        elif self.title == "MISTBORN: THE FINAL EMPIRE":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+@prompt_template("Who wrote {book}?")
+def identify_author(book: str): ...
+
+
+response = identify_author("The Name of the Wind")
+try: # [!code highlight]
+    if tool := response.tool:
+        print(tool.call())
+    else:
+        print(response.content)
+except ValidationError as e: # [!code highlight]
+    print(e)
+    # > 1 validation error for GetBookAuthor
+    #   title
+    #     Assertion failed, Must be uppercase [type=assertion_error, input_value='The Name of the Wind', input_type=str]
+    #       For further information visit https://errors.pydantic.dev/2.8/v/assertion_error
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="Function">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from typing import Annotated
+
+from mirascope import llm
+from pydantic import AfterValidator, ValidationError
+
+
+def is_upper(v: str) -> str:
+    assert v.isupper(), "Must be uppercase"
+    return v
+
+
+def get_book_author(title: Annotated[str, AfterValidator(is_upper)]) -> str: # [!code highlight]
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "THE NAME OF THE WIND":
+        return "Patrick Rothfuss"
+    elif title == "MISTBORN: THE FINAL EMPIRE":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+def identify_author(book: str) -> str:
+    return f"Who wrote {book}?"
+
+
+response = identify_author("The Name of the Wind")
+try: # [!code highlight]
+    if tool := response.tool:
+        print(tool.call())
+    else:
+        print(response.content)
+except ValidationError as e: # [!code highlight]
+    print(e)
+    # > 1 validation error for GetBookAuthor
+    #   title
+    #     Assertion failed, Must be uppercase [type=assertion_error, input_value='The Name of the Wind', input_type=str]
+    #       For further information visit https://errors.pydantic.dev/2.8/v/assertion_error
+```
+</Tab>
+<Tab value="Template">
+```python
+from typing import Annotated
+
+from mirascope import llm, prompt_template
+from pydantic import AfterValidator, ValidationError
+
+
+def is_upper(v: str) -> str:
+    assert v.isupper(), "Must be uppercase"
+    return v
+
+
+def get_book_author(title: Annotated[str, AfterValidator(is_upper)]) -> str: # [!code highlight]
+    """Returns the author of the book with the given title
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "THE NAME OF THE WIND":
+        return "Patrick Rothfuss"
+    elif title == "MISTBORN: THE FINAL EMPIRE":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+@prompt_template("Who wrote {book}?")
+def identify_author(book: str): ...
+
+
+response = identify_author("The Name of the Wind")
+try: # [!code highlight]
+    if tool := response.tool:
+        print(tool.call())
+    else:
+        print(response.content)
+except ValidationError as e: # [!code highlight]
+    print(e)
+    # > 1 validation error for GetBookAuthor
+    #   title
+    #     Assertion failed, Must be uppercase [type=assertion_error, input_value='The Name of the Wind', input_type=str]
+    #       For further information visit https://errors.pydantic.dev/2.8/v/assertion_error
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+In this example we've added additional validation, but it's important that you still handle `ValidationError`'s even with standard tools since they are still `BaseModel` instances and will validate the field types regardless.
+
+## Few-Shot Examples
+
+Just like with [Response Models](/docs/mirascope/learn/response_models#few-shot-examples), you can add few-shot examples to your tools:
+
+<TabbedSection>
+<Tab value="BaseTool">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import BaseTool, llm
+from pydantic import ConfigDict, Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(
+        ...,
+        description="The title of the book.",
+        examples=["The Name of the Wind"], # [!code highlight]
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={"examples": [{"title": "The Name of the Wind"}]} # [!code highlight]
+    )
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+def identify_author(book: str) -> str:
+    return f"Who wrote {book}?"
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool:
+    print(tool.call())
+else:
+    print(response.content)
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import BaseTool, llm, prompt_template
+from pydantic import ConfigDict, Field
+
+
+class GetBookAuthor(BaseTool):
+    """Returns the author of the book with the given title."""
+
+    title: str = Field(
+        ...,
+        description="The title of the book.",
+        examples=["The Name of the Wind"], # [!code highlight]
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={"examples": [{"title": "The Name of the Wind"}]} # [!code highlight]
+    )
+
+    def call(self) -> str:
+        if self.title == "The Name of the Wind":
+            return "Patrick Rothfuss"
+        elif self.title == "Mistborn: The Final Empire":
+            return "Brandon Sanderson"
+        else:
+            return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[GetBookAuthor])
+@prompt_template("Who wrote {book}?")
+def identify_author(book: str): ...
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool:
+    print(tool.call())
+else:
+    print(response.content)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="Function">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from typing import Annotated
+
+from pydantic import Field
+
+from mirascope import llm
+
+
+def get_book_author(
+    title: Annotated[
+        str,
+        Field(
+            ...,
+            description="The title of the book.",
+            examples=["The Name of the Wind"], # [!code highlight]
+        ),
+    ],
+) -> str:
+    """Returns the author of the book with the given title
+
+    Example: # [!code highlight]
+        {"title": "The Name of the Wind"} # [!code highlight]
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+def identify_author(book: str) -> str:
+    return f"Who wrote {book}?"
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool:
+    print(tool.call())
+else:
+    print(response.content)
+```
+</Tab>
+<Tab value="Template">
+```python
+from typing import Annotated
+
+from pydantic import Field
+
+from mirascope import llm, prompt_template
+
+
+def get_book_author(
+    title: Annotated[
+        str,
+        Field(
+            ...,
+            description="The title of the book.",
+            examples=["The Name of the Wind"], # [!code highlight]
+        ),
+    ],
+) -> str:
+    """Returns the author of the book with the given title
+
+    Example: # [!code highlight]
+        {"title": "The Name of the Wind"} # [!code highlight]
+
+    Args:
+        title: The title of the book.
+    """
+    if title == "The Name of the Wind":
+        return "Patrick Rothfuss"
+    elif title == "Mistborn: The Final Empire":
+        return "Brandon Sanderson"
+    else:
+        return "Unknown"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[get_book_author])
+@prompt_template("Who wrote {book}?")
+def identify_author(book: str): ...
+
+
+response = identify_author("The Name of the Wind")
+if tool := response.tool:
+    print(tool.call())
+else:
+    print(response.content)
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+Both approaches will result in the same tool schema with examples included. The function approach gets automatically converted to use Pydantic fields internally, making both methods equivalent in terms of functionality.
+
+<Info title="Field level examples in both styles" collapsible={true} defaultOpen={false}>
+  Both `BaseTool` and function-style definitions support field level examples through Pydantic's `Field`. When using function-style definitions, you'll need to wrap the type with `Annotated` to use `Field`.
+</Info>
+
+## ToolKit
+
+<Callout type="api">
+  [`mirascope.llm.toolkit`](/docs/mirascope/api)
+</Callout>
+
+The `BaseToolKit` class enables:
+
+- Organiziation of a group of tools under a single namespace.
+    - This can be useful for making it clear to the LLM when to use certain tools over others. For example, you could namespace a set of tools under "file_system" to indicate that those tools are specifically for interacting with the file system.
+- Dynamic tool definitions.
+    - This can be useful for generating tool definitions that are dependent on some input or state. For example, you may want to update the description of tools based on an argument of the call being made.
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import (
+    BaseDynamicConfig,
+    BaseToolKit,
+    Messages,
+    llm,
+)
+from mirascope.core import toolkit_tool
+
+
+class BookTools(BaseToolKit): # [!code highlight]
+    __namespace__ = "book_tools" # [!code highlight]
+
+    reading_level: str # [!code highlight]
+
+    @toolkit_tool # [!code highlight]
+    def suggest_author(self, author: str) -> str:
+        """Suggests an author for the user to read based on their reading level.
+
+        User reading level: {self.reading_level} # [!code highlight]
+        Author you suggest must be appropriate for the user's reading level.
+        """
+        return f"I would suggest you read some books by {author}"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL")
+def recommend_author(genre: str, reading_level: str) -> BaseDynamicConfig:
+    toolkit = BookTools(reading_level=reading_level) # [!code highlight]
+    return {
+        "tools": toolkit.create_tools(), # [!code highlight]
+        "messages": [Messages.User(f"What {genre} author should I read?")],
+    }
+
+
+response = recommend_author("fantasy", "beginner") # [!code highlight]
+if tool := response.tool:
+    print(tool.call())
+    # Output: I would suggest you read some books by J.K. Rowling # [!code highlight]
+
+response = recommend_author("fantasy", "advanced") # [!code highlight]
+if tool := response.tool:
+    print(tool.call())
+    # Output: I would suggest you read some books by Brandon Sanderson # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import (
+    BaseDynamicConfig,
+    BaseToolKit,
+    llm,
+    prompt_template,
+)
+from mirascope.core import toolkit_tool
+
+
+class BookTools(BaseToolKit): # [!code highlight]
+    __namespace__ = "book_tools" # [!code highlight]
+
+    reading_level: str # [!code highlight]
+
+    @toolkit_tool # [!code highlight]
+    def suggest_author(self, author: str) -> str:
+        """Suggests an author for the user to read based on their reading level.
+
+        User reading level: {self.reading_level} # [!code highlight]
+        Author you suggest must be appropriate for the user's reading level.
+        """
+        return f"I would suggest you read some books by {author}"
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL")
+@prompt_template("What {genre} author should I read?")
+def recommend_author(genre: str, reading_level: str) -> BaseDynamicConfig:
+    toolkit = BookTools(reading_level=reading_level) # [!code highlight]
+    return {"tools": toolkit.create_tools()} # [!code highlight]
+
+
+
+response = recommend_author("fantasy", "beginner") # [!code highlight]
+if tool := response.tool:
+    print(tool.call())
+    # Output: I would suggest you read some books by J.K. Rowling # [!code highlight]
+
+response = recommend_author("fantasy", "advanced") # [!code highlight]
+if tool := response.tool:
+    print(tool.call())
+    # Output: I would suggest you read some books by Brandon Sanderson # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+In this example we:
+
+1. Create a `BookTools` toolkit
+2. We set `__namespace__` equal to "book_tools"
+3. We define the `reading_level` state of the toolkit
+4. We define the `suggest_author` tool and mark it with `@toolkit_tool` to identify the method as a tool of the toolkit
+5. We use the `{self.reading_level}` template variable in the description of the tool.
+6. We create the toolkit with the `reading_level` argument.
+7. We call `create_tools` to generate the toolkit's tools. This will generate the tools on every call, ensuring that the description correctly includes the provided reading level.
+8. We call `recommend_author` with a "beginner" reading level, and the LLM calls the `suggest_author` tool with its suggested author.
+9. We call `recommend_author` again but with "advanced" reading level, and again the LLM calls the `suggest_author` tool with its suggested author.
+
+The core concept to understand here is that the `suggest_author` tool's description is dynamically generated on each call to `recommend_author` through the toolkit.
+
+This is why the "beginner" recommendation and "advanced" recommendations call the `suggest_author` tool with authors befitting the reading level of each call.
+
+## Pre-Made Tools and ToolKits
+
+Mirascope provides several pre-made tools and toolkits to help you get started quickly:
+
+<Warning>
+  Pre-made tools and toolkits require installing the dependencies listed in the "Dependencies" column for each tool/toolkit. 
+  
+  For example:
+  ```bash
+  pip install httpx  # For HTTPX tool
+  pip install requests  # For Requests tool
+  ```
+</Warning>
+
+### Pre-Made Tools
+
+<Callout type="api">
+  - [`mirascope.tools.web.DuckDuckGoSearch`](/docs/mirascope/api/tools/web/duckduckgo)
+  - [`mirascope.tools.web.HTTPX`](/docs/mirascope/api/tools/web/httpx)
+  - [`mirascope.tools.web.ParseURLContent`](/docs/mirascope/api/tools/web/parse_url_content)
+  - [`mirascope.tools.web.Requests`](/docs/mirascope/api/tools/web/requests)
+</Callout>
+
+| Tool                                                                    | Primary Use            | Dependencies                                                                                             | Key Features                                                                                                                  | Characteristics                                                                                                      |
+|------                                                                   |-------------           |--------------                                                                                            |--------------                                                                                                                 |-----------------                                                                                                     |
+| [`DuckDuckGoSearch`](/docs/mirascope/api/tools/web/duckduckgo)       | Web Searching          | [`duckduckgo-search`](https://pypi.org/project/duckduckgo-search/)                                       | • Multiple query support<br/>• Title/URL/snippet extraction<br/>• Result count control<br/>• Automated formatting                | • Privacy-focused search<br/>• Async support (AsyncDuckDuckGoSearch)<br/>• Automatic filtering<br/>• Structured results |
+| [`HTTPX`](/docs/mirascope/api/tools/web/httpx)                       | Advanced HTTP Requests | [`httpx`](https://pypi.org/project/httpx/)                                                               | • Full HTTP method support (GET/POST/PUT/DELETE)<br/>• Custom header support<br/>• File upload/download<br/>• Form data handling | • Async support (AsyncHTTPX)<br/>• Configurable timeouts<br/>• Comprehensive error handling<br/>• Redirect control      |
+| [`ParseURLContent`](/docs/mirascope/api/tools/web/parse_url_content) | Web Content Extraction | [`beautifulsoup4`](https://pypi.org/project/beautifulsoup4/), [`httpx`](https://pypi.org/project/httpx/) | • HTML content fetching<br/>• Main content extraction<br/>• Element filtering<br/>• Text normalization                           | • Automatic cleaning<br/>• Configurable parser<br/>• Timeout settings<br/>• Error handling                              |
+| [`Requests`](/docs/mirascope/api/tools/web/requests)                 | Simple HTTP Requests   | [`requests`](https://pypi.org/project/requests/)                                                         | • Basic HTTP methods<br/>• Simple API<br/>• Response text retrieval<br/>• Basic authentication                                   | • Minimal configuration<br/>• Intuitive interface<br/>• Basic error handling<br/>• Lightweight implementation           |
+
+Example using DuckDuckGoSearch:
+
+<TabbedSection>
+<Tab value="Basic Usage">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+from mirascope.tools import DuckDuckGoSearch # [!code highlight]
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[DuckDuckGoSearch]) # [!code highlight]
+def research(genre: str) -> str:
+    return f"Recommend a {genre} book and summarize the story"
+
+
+response = research("fantasy")
+if tool := response.tool:
+    print(tool.call())
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+from mirascope.tools import DuckDuckGoSearch # [!code highlight]
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[DuckDuckGoSearch]) # [!code highlight]
+@prompt_template("Recommend a {genre} book and summarize the story")
+def research(genre: str): ...
+
+
+response = research("fantasy")
+if tool := response.tool:
+    print(tool.call())
+```
+</Tab>
+</TabbedSection>
+</Tab>
+<Tab value="Custom Config">
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+from mirascope.tools import DuckDuckGoSearch, DuckDuckGoSearchConfig # [!code highlight]
+
+config = DuckDuckGoSearchConfig(max_results_per_query=5) # [!code highlight]
+CustomSearch = DuckDuckGoSearch.from_config(config) # [!code highlight]
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[CustomSearch]) # [!code highlight]
+def research(genre: str) -> str:
+    return f"Recommend a {genre} book and summarize the story"
+
+
+response = research("fantasy")
+if tool := response.tool:
+    print(tool.call())
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+from mirascope.tools import DuckDuckGoSearch, DuckDuckGoSearchConfig # [!code highlight]
+
+config = DuckDuckGoSearchConfig(max_results_per_query=5) # [!code highlight]
+CustomSearch = DuckDuckGoSearch.from_config(config) # [!code highlight]
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", tools=[CustomSearch]) # [!code highlight]
+@prompt_template("Recommend a {genre} book and summarize the story")
+def research(genre: str): ...
+
+
+response = research("fantasy")
+if tool := response.tool:
+    print(tool.call())
+```
+</Tab>
+</TabbedSection>
+</Tab>
+</TabbedSection>
+
+### Pre-Made ToolKits
+
+<Callout type="api">
+  - [`mirascope.tools.system.FileSystemToolKit`](/docs/mirascope/api/tools/system/file_system)
+  - [`mirascope.tools.system.DockerOperationToolKit`](/docs/mirascope/api/tools/system/docker_operation)
+</Callout>
+
+| ToolKit                                                             | Primary Use              | Dependencies                                                                                             | Tools and Features                                                                                                                                                                 | Characteristics                                                                                                                          |
+|---------                                                            |--------------------------|-------------------------------------------------------------------                                       |-------------------                                                                                                                                                                 |-----------------                                                                                                                         |
+| [`FileSystemToolKit`](/docs/mirascope/api/tools/system/file_system)           | File System Operations   | None                                                                                                     | • ReadFile: File content reading<br/>• WriteFile: Content writing<br/>• ListDirectory: Directory listing<br/>• CreateDirectory: Directory creation<br/>• DeleteFile: File deletion | • Path traversal protection<br/>• File size limits<br/>• Extension validation<br/>• Robust error handling<br/>• Base directory isolation |
+| [`DockerOperationToolKit`](/docs/mirascope/api/tools/system/docker_operation) | Code & Command Execution | [`docker`](https://pypi.org/project/docker/), [`docker engine`](https://docs.docker.com/engine/install/) | • ExecutePython: Python code execution with optional package installation<br/>• ExecuteShell: Shell command execution                                                              | • Docker container isolation<br/>• Memory limits<br/>• Network control<br/>• Security restrictions<br/>• Resource cleanup                |
+
+
+Example using FileSystemToolKit:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from pathlib import Path
+
+from mirascope import BaseDynamicConfig, Messages, llm
+from mirascope.tools import FileSystemToolKit # [!code highlight]
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL")
+def write_blog_post(topic: str, output_file: Path) -> BaseDynamicConfig:
+    toolkit = FileSystemToolKit(base_directory=output_file.parent) # [!code highlight]
+    return {
+        "messages": [
+            Messages.User(
+                content=f"Write a blog post about '{topic}' as a '{output_file.name}'."
+            )
+        ],
+        "tools": toolkit.create_tools(), # [!code highlight]
+    }
+
+
+response = write_blog_post("machine learning", Path("introduction.html"))
+if tool := response.tool:
+    result = tool.call()
+    print(result)
+```
+</Tab>
+<Tab value="Template">
+```python
+from pathlib import Path
+
+from mirascope import BaseDynamicConfig, Messages, llm, prompt_template
+from mirascope.tools import FileSystemToolKit # [!code highlight]
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL")
+@prompt_template("Write a blog post about '{topic}' as a '{output_file.name}'.")
+def write_blog_post(topic: str, output_file: Path) -> BaseDynamicConfig:
+    toolkit = FileSystemToolKit(base_directory=output_file.parent) # [!code highlight]
+    return {
+        "messages": [
+            Messages.User(
+                content="Write a blog post about '{topic}' as a '{output_file.name}'."
+            )
+        ],
+        "tools": toolkit.create_tools(), # [!code highlight]
+    }
+
+
+response = write_blog_post("machine learning", Path("introduction.html"))
+if tool := response.tool:
+    result = tool.call()
+    print(result)
+```
+</Tab>
+</TabbedSection>
+
+## Next Steps
+
+Tools can significantly extend LLM capabilities, enabling more interactive and dynamic applications. We encourage you to explore and experiment with tools to enhance your projects and the find the best fit for your specific needs.
+
+Mirascope hopes to provide a simple and clean interface that is both easy to learn and easy to use; however, we understand that LLM tools can be a difficult concept regardless of the supporting tooling.
+
+Next, we recommend learning about how to build [Agents](/docs/mirascope/learn/agents) that take advantage of these tools.

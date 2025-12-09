@@ -1,0 +1,98 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: mirascope.tools.web._parse_url_content
+description: API documentation for mirascope.tools.web._parse_url_content
+---
+
+# mirascope.tools.web._parse_url_content
+
+## <ApiType type="Module" path="tools/web/parse_url_content" symbolName="_parse_url_content" /> _parse_url_content
+
+## <ApiType type="Class" path="tools/web/parse_url_content" symbolName="ParseURLConfig" /> ParseURLConfig
+
+Configuration for URL content parsing
+
+**Bases:** 
+<TypeLink type={{"type_str": "_ConfigurableToolConfig", "description": null, "kind": "simple", "doc_identifier": "_ConfigurableToolConfig"}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "parser",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  },
+  {
+    "name": "timeout",
+    "type_info": {
+      "type_str": "int",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/functions.html#int"
+    }
+  }
+]}
+/>
+
+
+## <ApiType type="Class" path="tools/web/parse_url_content" symbolName="ParseURLContent" /> ParseURLContent
+
+Tool for parsing and extracting main content from URLs.
+
+Fetches content from URL, removes unnecessary elements like scripts, styles, navigation, etc.,
+and returns clean text content from the webpage's main body.
+
+**Bases:** 
+<TypeLink type={{"type_str": "ConfigurableTool[ParseURLConfig]", "description": null, "kind": "generic", "base_type": {"type_str": "ConfigurableTool", "description": null, "kind": "simple", "doc_identifier": "ConfigurableTool"}, "parameters": [{"type_str": "ParseURLConfig", "description": null, "kind": "simple", "doc_url": "/docs/mirascope/api/tools/web/parse_url_content#parseurlconfig"}]}} />
+
+<AttributesTable
+  attributes={[
+  {
+    "name": "url",
+    "type_info": {
+      "type_str": "str",
+      "description": null,
+      "kind": "simple",
+      "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+    }
+  }
+]}
+/>
+
+## <ApiType type="Function" path="tools/web/parse_url_content" symbolName="call" /> call
+
+Fetch and parse content from the URL.
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "self",
+    "type_info": {
+      "type_str": "Any",
+      "description": null,
+      "kind": "simple",
+      "doc_identifier": null
+    }
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "str",
+    "description": null,
+    "kind": "simple",
+    "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+  },
+  "description": "Cleaned text content from the URL if successful, error message if parsing fails"
+}}
+/>
+
+
+
+

@@ -1,0 +1,90 @@
+# Cloudflare Pages redirects file
+# Format: [old-path] [new-path] [status-code]
+
+# Documentation redirects
+/WELCOME              /docs/mirascope                              301
+/WHY                  /docs/mirascope/getting-started/why          301
+/HELP                 /docs/mirascope/getting-started/help         301
+/MIGRATE              /docs/mirascope/getting-started/migration    301
+/CONTRIBUTING         /docs/mirascope/getting-started/contributing 301
+/learn                /docs/mirascope/learn                        301
+
+/discord-invite https://discord.gg/gZMNYR4zEs 301
+/slack-invite /discord-invite 302
+
+# Legacy from moving quickstart around
+/docs/mirascope/getting-started/quickstart /docs/mirascope/guides/getting-started/quickstart 301
+
+# Special redirects for routes that had underscores
+/tutorials/agents/blog_writing_agent*                                   /docs/mirascope/guides/agents/blog-writing-agent                                     301
+/tutorials/agents/documentation_agent*                                  /docs/mirascope/guides/agents/documentation-agent                                    301
+/tutorials/agents/local_chat_with_codebase*                             /docs/mirascope/guides/agents/local-chat-with-codebase                               301
+/tutorials/agents/localized_agent*                                      /docs/mirascope/guides/agents/localized-agent                                        301
+/tutorials/agents/qwant_search_agent_with_sources*                      /docs/mirascope/guides/agents/qwant-search-agent-with-sources                        301
+/tutorials/agents/sql_agent*                                            /docs/mirascope/guides/agents/sql-agent                                              301
+/tutorials/agents/web_search_agent*                                     /docs/mirascope/guides/agents/web-search-agent                                       301
+/tutorials/evals/evaluating_documentation_agent*                        /docs/mirascope/guides/evals/evaluating-documentation-agent                          301
+/tutorials/evals/evaluating_sql_agent*                                  /docs/mirascope/guides/evals/evaluating-sql-agent                                    301
+/tutorials/evals/evaluating_web_search_agent*                           /docs/mirascope/guides/evals/evaluating-web-search-agent                             301
+/tutorials/getting_started/dynamic_configuration_and_chaining*          /docs/mirascope/guides/getting-started/dynamic-configuration-and-chaining            301
+/tutorials/getting_started/structured_outputs*                          /docs/mirascope/guides/getting-started/structured-outputs                            301
+/tutorials/getting_started/tools_and_agents*                            /docs/mirascope/guides/getting-started/tools-and-agents                              301
+/tutorials/langgraph_vs_mirascope/quickstart*                           /docs/mirascope/guides/langgraph-vs-mirascope/quickstart                             301
+/tutorials/more_advanced/code_generation_and_execution*                 /docs/mirascope/guides/more-advanced/code-generation-and-execution                   301
+/tutorials/more_advanced/document_segmentation*                         /docs/mirascope/guides/more-advanced/document-segmentation                           301
+/tutorials/more_advanced/extract_from_pdf*                              /docs/mirascope/guides/more-advanced/extract-from-pdf                                301
+/tutorials/more_advanced/extraction_using_vision*                       /docs/mirascope/guides/more-advanced/extraction-using-vision                         301
+/tutorials/more_advanced/generating_captions*                           /docs/mirascope/guides/more-advanced/generating-captions                             301
+/tutorials/more_advanced/generating_synthetic_data*                     /docs/mirascope/guides/more-advanced/generating-synthetic-data                       301
+/tutorials/more_advanced/knowledge_graph*                               /docs/mirascope/guides/more-advanced/knowledge-graph                                 301
+/tutorials/more_advanced/llm_validation_with_retries*                   /docs/mirascope/guides/more-advanced/llm-validation-with-retries                     301
+/tutorials/more_advanced/named_entity_recognition*                      /docs/mirascope/guides/more-advanced/named-entity-recognition                        301
+/tutorials/more_advanced/o1_style_thinking*                             /docs/mirascope/guides/more-advanced/o1-style-thinking                               301
+/tutorials/more_advanced/pii_scrubbing*                                 /docs/mirascope/guides/more-advanced/pii-scrubbing                                   301
+/tutorials/more_advanced/query_plan*                                    /docs/mirascope/guides/more-advanced/query-plan                                      301
+/tutorials/more_advanced/removing_semantic_duplicates*                  /docs/mirascope/guides/more-advanced/removing-semantic-duplicates                    301
+/tutorials/more_advanced/search_with_sources*                           /docs/mirascope/guides/more-advanced/search-with-sources                             301
+/tutorials/more_advanced/speech_transcription*                          /docs/mirascope/guides/more-advanced/speech-transcription                            301
+/tutorials/more_advanced/support_ticket_routing*                        /docs/mirascope/guides/more-advanced/support-ticket-routing                          301
+/tutorials/more_advanced/text_classification*                           /docs/mirascope/guides/more-advanced/text-classification                             301
+/tutorials/more_advanced/text_summarization*                            /docs/mirascope/guides/more-advanced/text-summarization                              301
+/tutorials/more_advanced/text_translation*                              /docs/mirascope/guides/more-advanced/text-translation                                301
+/tutorials/prompt_engineering/chaining_based/chain_of_verification*     /docs/mirascope/guides/prompt-engineering/chaining-based/chain-of-verification       301
+/tutorials/prompt_engineering/chaining_based/decomposed_prompting*      /docs/mirascope/guides/prompt-engineering/chaining-based/decomposed-prompting        301
+/tutorials/prompt_engineering/chaining_based/demonstration_ensembling*  /docs/mirascope/guides/prompt-engineering/chaining-based/demonstration-ensembling    301
+/tutorials/prompt_engineering/chaining_based/diverse*                   /docs/mirascope/guides/prompt-engineering/chaining-based/diverse                     301
+/tutorials/prompt_engineering/chaining_based/least_to_most*             /docs/mirascope/guides/prompt-engineering/chaining-based/least-to-most               301
+/tutorials/prompt_engineering/chaining_based/mixture_of_reasoning*      /docs/mirascope/guides/prompt-engineering/chaining-based/mixture-of-reasoning        301
+/tutorials/prompt_engineering/chaining_based/prompt_paraphrasing*       /docs/mirascope/guides/prompt-engineering/chaining-based/prompt-paraphrasing         301
+/tutorials/prompt_engineering/chaining_based/reverse_chain_of_thought*  /docs/mirascope/guides/prompt-engineering/chaining-based/reverse-chain-of-thought    301
+/tutorials/prompt_engineering/chaining_based/self_consistency*          /docs/mirascope/guides/prompt-engineering/chaining-based/self-consistency            301
+/tutorials/prompt_engineering/chaining_based/self_refine*               /docs/mirascope/guides/prompt-engineering/chaining-based/self-refine                 301
+/tutorials/prompt_engineering/chaining_based/sim_to_m*                  /docs/mirascope/guides/prompt-engineering/chaining-based/sim-to-m                    301
+/tutorials/prompt_engineering/chaining_based/skeleton_of_thought*       /docs/mirascope/guides/prompt-engineering/chaining-based/skeleton-of-thought         301
+/tutorials/prompt_engineering/chaining_based/step_back*                 /docs/mirascope/guides/prompt-engineering/chaining-based/step-back                   301
+/tutorials/prompt_engineering/chaining_based/system_to_attention*       /docs/mirascope/guides/prompt-engineering/chaining-based/system-to-attention         301
+/tutorials/prompt_engineering/text_based/chain_of_thought*              /docs/mirascope/guides/prompt-engineering/text-based/chain-of-thought                301
+/tutorials/prompt_engineering/text_based/common_phrases*                /docs/mirascope/guides/prompt-engineering/text-based/common-phrases                  301
+/tutorials/prompt_engineering/text_based/contrastive_chain_of_thought*  /docs/mirascope/guides/prompt-engineering/text-based/contrastive-chain-of-thought    301
+/tutorials/prompt_engineering/text_based/emotion_prompting*             /docs/mirascope/guides/prompt-engineering/text-based/emotion-prompting               301
+/tutorials/prompt_engineering/text_based/plan_and_solve*                /docs/mirascope/guides/prompt-engineering/text-based/plan-and-solve                  301
+/tutorials/prompt_engineering/text_based/rephrase_and_respond*          /docs/mirascope/guides/prompt-engineering/text-based/rephrase-and-respond            301
+/tutorials/prompt_engineering/text_based/rereading*                     /docs/mirascope/guides/prompt-engineering/text-based/rereading                       301
+/tutorials/prompt_engineering/text_based/role_prompting*                /docs/mirascope/guides/prompt-engineering/text-based/role-prompting                  301
+/tutorials/prompt_engineering/text_based/self_ask*                      /docs/mirascope/guides/prompt-engineering/text-based/self-ask                        301
+/tutorials/prompt_engineering/text_based/tabular_chain_of_thought*      /docs/mirascope/guides/prompt-engineering/text-based/tabular-chain-of-thought        301
+/tutorials/prompt_engineering/text_based/thread_of_thought*             /docs/mirascope/guides/prompt-engineering/text-based/thread-of-thought               301
+/learn/provider_specific/anthropic*                                     /docs/mirascope/learn/provider-specific/anthropic                                    301
+/learn/provider_specific/openai*                                        /docs/mirascope/learn/provider-specific/openai                                       301
+
+# Integrations docs and API reference goes to legacy
+/integrations/*       https://legacy.mirascope.com/integrations/:splat     301
+/api/integrations/*   https://legacy.mirascope.com/api/integrations/:splat 301
+
+# Section redirects - these use splats to handle variable paths
+/learn/*              /docs/mirascope/learn/:splat        301
+/tutorials/*          /docs/mirascope/guides/:splat       301
+/api/*                /docs/mirascope/api/:splat          301
+
+# Old blog paths
+/post/*               /blog/:splat                       301

@@ -1,0 +1,174 @@
+/* Landing page specific styles */
+
+/* Watercolor background - iOS Safari compatible fixed version */
+.watercolor-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh; /* Fallback */
+  height: 100dvh; /* Dynamic viewport height for iOS */
+  min-height: 100vh; /* Ensures it's at least as tall as viewport */
+  background-image: url("/assets/backgrounds/light.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  z-index: -1;
+  pointer-events: none;
+  transition: background-image 0.2s ease-in-out;
+  -webkit-transition: background-image 0.2s ease-in-out;
+  /* Add extra space to ensure coverage when scrolling */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Responsive backgrounds for smaller screens */
+@media (max-width: 1200px) {
+  .watercolor-bg {
+    background-image: url("/assets/backgrounds/light-medium.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+@media (max-width: 800px) {
+  .watercolor-bg {
+    background-image: url("/assets/backgrounds/light-small.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+.dark .watercolor-bg {
+  background-image: url("/assets/backgrounds/dark.webp");
+  transition: background-image 0.3s ease;
+  -webkit-transition: background-image 0.3s ease;
+}
+
+/* Responsive dark backgrounds for smaller screens */
+@media (max-width: 1200px) {
+  .dark .watercolor-bg {
+    background-image: url("/assets/backgrounds/dark-medium.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+@media (max-width: 800px) {
+  .dark .watercolor-bg {
+    background-image: url("/assets/backgrounds/dark-small.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+/* Apply sunset background during sunset time */
+.sunset-time .watercolor-bg {
+  background-image: url("/assets/backgrounds/sunset.webp");
+  transition: background-image 0.3s ease;
+  -webkit-transition: background-image 0.3s ease;
+}
+
+/* Responsive sunset backgrounds for smaller screens */
+@media (max-width: 1200px) {
+  .sunset-time .watercolor-bg {
+    background-image: url("/assets/backgrounds/sunset-medium.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+@media (max-width: 800px) {
+  .sunset-time .watercolor-bg {
+    background-image: url("/assets/backgrounds/sunset-small.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+/* Landing page box shadows */
+.landing-page-box-shadow {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.landing-page-box-shadow-hover:hover {
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.landing-page-text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-medium {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Torn paper effect */
+.torn-paper-effect {
+  clip-path: polygon(
+    0% 4%,
+    10% 0%,
+    20% 2%,
+    30% 0%,
+    40% 3%,
+    50% 0%,
+    60% 2%,
+    70% 0%,
+    80% 3%,
+    90% 0%,
+    100% 4%,
+    99% 20%,
+    100% 35%,
+    98% 50%,
+    100% 65%,
+    99% 80%,
+    100% 96%,
+    90% 100%,
+    80% 97%,
+    70% 100%,
+    60% 98%,
+    50% 100%,
+    40% 97%,
+    30% 100%,
+    20% 98%,
+    10% 100%,
+    0% 96%,
+    1% 80%,
+    0% 65%,
+    2% 50%,
+    0% 35%,
+    1% 20%
+  );
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: scale(1.08);
+}
+
+.textured-bg {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(0, 0, 0, 0.03) 10px,
+    rgba(0, 0, 0, 0.03) 20px
+  );
+}
+
+.font-handwriting {
+  font-family: "Williams Handwriting", cursive;
+}
+
+.text-mirascope-purple {
+  color: #7c3aed;
+}
+
+.text-lilypad-green {
+  color: #10b981;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

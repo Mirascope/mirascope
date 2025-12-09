@@ -3,14 +3,18 @@ import { routeTree } from "@/src/routeTree.gen";
 import { DefaultCatchBoundary } from "@/src/components/default-catch-boundary";
 import { NotFound } from "@/src/components/not-found";
 
-export function getRouter() {
-  const router = createRouter({
-    routeTree,
-    defaultPreload: "intent",
-    defaultErrorComponent: DefaultCatchBoundary,
-    defaultNotFoundComponent: () => <NotFound />,
-    scrollRestoration: true,
-  });
+let routerInstance: ReturnType<typeof createRouter> | null = null;
 
-  return router;
+export function getRouter() {
+  if (!routerInstance) {
+    routerInstance = createRouter({
+      routeTree,
+      defaultPreload: "intent",
+      defaultErrorComponent: DefaultCatchBoundary,
+      defaultNotFoundComponent: () => <NotFound />,
+      scrollRestoration: true,
+    });
+  }
+
+  return routerInstance;
 }

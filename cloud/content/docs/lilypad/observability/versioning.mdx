@@ -1,0 +1,99 @@
+---
+title: Versioning
+description: Track versions of your LLM functions
+---
+
+# Versioning
+
+> If you haven't already, we recommend reading [Traces](/docs/lilypad/observability/traces) first.
+
+When working with non-determinism (cough cough LLMs), it's extremely important that we take a snapshot of the exact version of the code that was used to produce an output. This reproducibility is necessary for proper evaluation.
+
+## Automatic Versioning
+
+Setting `versioning="automatic"` will tell Lilypad to automatically version the decorated function every time it's executed:
+
+```python
+from google.genai import Client
+import lilypad
+
+lilypad.configure(auto_llm=True)
+client = Client()
+    
+@lilypad.trace(versioning="automatic")  # [!code highlight]
+def answer_question(question: str) -> str | None:
+    response = client.models.generate_content(
+        model="gemini-2.0-flash-001",
+        contents=f"Answer this question: {question}",
+    )
+    return response.text
+    
+response = answer_question("What is the capital of France?")  # automatically versioned
+print(response)
+# > The capital of France is Paris.
+```
+
+<Note title="The version is the 'runnable closure' snapshot" collapsible={true} defaultOpen={false}>
+Whenever you run a `trace`-decorated function with `versioning="automatic"`, we compute the entire code execution graph necessary to reproduce the current execution of the function.
+
+_This is what we use to determine the version._
+
+This means that changing the code to an existing version will automatically attach the trace to that version.
+
+It also means that changes to anything that would change how the function is executed will be captured:
+
+```python
+import lilypad
+from google.genai import Client
+
+client = Client()
+
+# This function will be included in the version and any changes
+# to it will result in a new version of `answer_question`
+def answer_question_prompt(question: str) -> str:  # [!code highlight]
+    return f"Answer this question: {question}"  # [!code highlight]
+
+@lilypad.trace(name="Answer Question", versioning="automatic") 
+def answer_question(question: str) -> str | None:
+    response = client.models.generate_content(
+        model="gemini-2.0-flash-001",
+        contents=answer_question_prompt(question),  # [!code highlight]
+    )
+    return response.text
+```
+</Note>
+
+![Versioned Function](/assets/docs/lilypad/observability/versioning/basic-version.webp)
+
+## Version Override
+
+Since a function's version is a snapshot, we can re-run the exact code for a given version.
+
+First, generate type-safe stubs for all available versions:
+
+```bash
+lilypad sync
+```
+
+This ensures that the `.version` method return type-safe function signatures matching the expected arguments for that version, which you can then run in a sandbox:
+
+```python-snippet-concat
+response = answer_question.version(1)("What is the capital of France?")
+```
+
+<Info>
+  The `.version` method will have proper type hints when the function is imported but not if used in the same file.
+  This is due to the way that `.pyi` files work in Python.
+</Info>
+
+## A/B Testing
+
+You can use the `.version` method to run different versions of the same function easily. This makes A/B testing quite easy — just run each version for a subset of users and evaluate which one is better.
+
+## Remote Deployment
+
+<Warning>
+  Environments are currently under active development during the beta period.
+
+  If remote deployment is important to you, please reach out to us on Slack or via email.
+</Warning>

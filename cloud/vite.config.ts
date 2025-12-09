@@ -10,6 +10,9 @@ export default defineConfig(() => {
   return {
     server: {
       port: 3000,
+      fs: {
+        strict: false,
+      },
     },
     plugins: [
       tsConfigPaths({
@@ -24,6 +27,21 @@ export default defineConfig(() => {
       alias: {
         "@": path.resolve(__dirname, "./"),
       },
+      // Ensure content directory can be resolved
+      conditions: ["import", "module", "browser", "default"],
+    },
+    // Add node-specific configuration for fs and path
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          global: "globalThis",
+        },
+      },
+      exclude: ["content"],
+    },
+    // Keeping the default build configuration
+    build: {
+      assetsInlineLimit: 4096, // Default inline limit
     },
   };
 });

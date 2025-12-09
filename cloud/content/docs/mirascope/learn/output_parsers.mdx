@@ -1,0 +1,197 @@
+---
+title: Output Parsers
+description: Learn how to process and structure raw LLM outputs into usable formats using Mirascope's flexible output parsers for more reliable and application-ready results.
+---
+
+# Output Parsers
+
+<Note>
+  If you haven't already, we recommend first reading the section on [Calls](/docs/mirascope/learn/calls)
+</Note>
+
+Output Parsers in Mirascope provide a flexible way to process and structure the raw output from Large Language Models (LLMs). They allow you to transform the LLM's response into a more usable format, enabling easier integration with your application logic and improving the overall reliability of your LLM-powered features.
+
+## Basic Usage and Syntax
+
+<Callout type="api">
+  [`mirascope.llm.call.output_parser`](/docs/mirascope/api/llm/call)
+</Callout>
+
+Output Parsers are functions that take the call response object as input and return an output of a specified type. When you supply an output parser to a `call` decorator, it modifies the return type of the decorated function to match the output type of the parser.
+
+Let's take a look at a basic example:
+
+<TabbedSection>
+<Tab value="Shorthand">
+```python
+from mirascope import llm
+
+
+def parse_recommendation(response: llm.CallResponse) -> tuple[str, str]:
+    title, author = response.content.split(" by ")
+    return (title, author)
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", output_parser=parse_recommendation) # [!code highlight]
+def recommend_book(genre: str) -> str:
+    return f"Recommend a {genre} book. Output only Title by Author"
+
+
+print(recommend_book("fantasy"))
+# Output: ('"The Name of the Wind"', 'Patrick Rothfuss') # [!code highlight]
+```
+</Tab>
+<Tab value="Template">
+```python
+from mirascope import llm, prompt_template
+
+
+def parse_recommendation(response: llm.CallResponse) -> tuple[str, str]:
+    title, author = response.content.split(" by ")
+    return (title, author)
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", output_parser=parse_recommendation) # [!code highlight]
+@prompt_template("Recommend a {genre} book. Output only Title by Author")
+def recommend_book(genre: str): ...
+
+
+print(recommend_book("fantasy"))
+# Output: ('"The Name of the Wind"', 'Patrick Rothfuss') # [!code highlight]
+```
+</Tab>
+</TabbedSection>
+
+## Additional Examples
+
+There are many different ways to structure and parse LLM outputs, ranging from XML parsing to using regular expressions.
+
+Here are a few examples:
+
+<TabbedSection>
+<Tab value="Regular Expression">
+```python
+import re
+
+from mirascope import llm, prompt_template
+
+
+def parse_cot(response: llm.CallResponse) -> str:
+    pattern = r"<thinking>.*?</thinking>.*?<o>(.*?)</o>" # [!code highlight]
+    match = re.search(pattern, response.content, re.DOTALL)
+    if not match:
+        return response.content
+    return match.group(1).strip()
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", output_parser=parse_cot) # [!code highlight]
+@prompt_template(
+    """
+    First, output your thought process in <thinking> tags. # [!code highlight]
+    Then, provide your final output in <o> tags. # [!code highlight]
+
+    Question: {question}
+    """
+)
+def chain_of_thought(question: str): ...
+
+
+question = "Roger has 5 tennis balls. He buys 2 cans of 3. How many does he have now?"
+output = chain_of_thought(question)
+print(output)
+```
+</Tab>
+<Tab value="XML">
+```python
+import xml.etree.ElementTree as ET
+
+from mirascope import llm, prompt_template
+from pydantic import BaseModel
+
+
+class Book(BaseModel):
+    title: str
+    author: str
+    year: int
+    summary: str
+
+# [!code highlight:16]
+def parse_book_xml(response: llm.CallResponse) -> Book | None:
+    try:
+        root = ET.fromstring(response.content)
+        if (node := root.find("title")) is None or not (title := node.text):
+            raise ValueError("Missing title")
+        if (node := root.find("author")) is None or not (author := node.text):
+            raise ValueError("Missing author")
+        if (node := root.find("year")) is None or not (year := node.text):
+            raise ValueError("Missing year")
+        if (node := root.find("summary")) is None or not (summary := node.text):
+            raise ValueError("Missing summary")
+        return Book(title=title, author=author, year=int(year), summary=summary)
+    except (ET.ParseError, ValueError) as e:
+        print(f"Error parsing XML: {e}")
+        return None
+
+
+@llm.call(provider="$PROVIDER", model="$MODEL", output_parser=parse_book_xml) # [!code highlight]
+@prompt_template(
+    """
+    Recommend a {genre} book. Provide the information in the following XML format:
+    # [!code highlight:7]
+    <book>
+        <title>Book Title</title>
+        <author>Author Name</author>
+        <year>Publication Year</year>
+        <summary>Brief summary of the book</summary>
+    </book>
+                 
+    Output ONLY the XML and no other text.
+    """
+)
+def recommend_book(genre: str): ...
+
+
+book = recommend_book("science fiction")
+if book:
+    print(f"Title: {book.title}")
+    print(f"Author: {book.author}")
+    print(f"Year: {book.year}")
+    print(f"Summary: {book.summary}")
+else:
+    print("Failed to parse the recommendation.")
+```
+</Tab>
+<Tab value="JSON Mode">
+```python
+import json
+
+from mirascope import llm
+
+
+def only_json(response: llm.CallResponse) -> str:
+    json_start = response.content.index("{") # [!code highlight]
+    json_end = response.content.rfind("}") # [!code highlight]
+    return response.content[json_start : json_end + 1] # [!code highlight]
+
+
+@llm.call( # [!code highlight]
+    provider="$PROVIDER", model="$MODEL", json_mode=True, output_parser=only_json # [!code highlight]
+) # [!code highlight]
+def json_extraction(text: str, fields: list[str]) -> str:
+    return f"Extract {fields} from the following text: {text}"
+
+
+json_response = json_extraction(
+    text="The capital of France is Paris",
+    fields=["capital", "country"],
+)
+print(json.loads(json_response))
+```
+</Tab>
+</TabbedSection>
+
+## Next Steps
+
+By leveraging Output Parsers effectively, you can create more robust and reliable LLM-powered applications, ensuring that the raw model outputs are transformed into structured data that's easy to work with in your application logic.
+
+Next, we recommend taking a look at the section on [Tools](/docs/mirascope/learn/tools) to learn how to extend the capabilities of LLMs with custom functions.

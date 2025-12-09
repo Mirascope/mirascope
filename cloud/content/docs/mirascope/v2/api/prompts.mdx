@@ -1,0 +1,427 @@
+---
+# AUTO-GENERATED API DOCUMENTATION - DO NOT EDIT
+title: prompts
+description: API documentation for prompts
+---
+
+# prompts
+
+## <ApiType type="Class" slug="async-context-prompt" symbolName="AsyncContextPrompt" /> AsyncContextPrompt
+
+Protocol for an `AsyncContextPrompt`, which returns `list[Message]`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="async-context-promptable" symbolName="AsyncContextPromptable" /> AsyncContextPromptable
+
+Protocol for an `AsyncContextPromptable` that returns `UserContent` or `list[Message]`.
+
+May be converted by the `prompt` decorator into an `AsyncContextPrompt`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="async-prompt" symbolName="AsyncPrompt" /> AsyncPrompt
+
+Protocol for an `AsyncPrompt`, which returns `list[Message]`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="async-promptable" symbolName="AsyncPromptable" /> AsyncPromptable
+
+Protocol for an `AsyncPromptable` that returns `UserContent` or `list[Message]`.
+
+May be converted by the `prompt` decorator into an `AsyncPrompt`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="context-prompt" symbolName="ContextPrompt" /> ContextPrompt
+
+Protocol for a `ContextPrompt`, which returns `list[Message]`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="context-promptable" symbolName="ContextPromptable" /> ContextPromptable
+
+Protocol for a `ContextPromptable` that returns `UserContent` or `list[Message]`.
+
+May be converted by the `prompt` decorator into a `ContextPrompt`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P, DepsT]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}, {"type_str": "DepsT", "description": null, "kind": "simple", "symbol_name": "DepsT", "doc_url": null}], "doc_url": null}} />
+
+
+## <ApiType type="Class" slug="prompt_cls" symbolName="Prompt" /> Prompt
+
+Protocol for a `Prompt`, which returns `list[Message]`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}], "doc_url": null}} />
+
+
+## <ApiType type="Attribute" slug="prompt-t" symbolName="PromptT" /> PromptT
+
+**Type:** <TypeLink type={{"type_str": "TypeVar('PromptT', bound='Prompt | AsyncPrompt | ContextPrompt | AsyncContextPrompt')", "description": null, "kind": "simple", "symbol_name": null, "doc_url": null}} />
+
+Type variable for prompt types.
+
+This type var represents a resolved prompt, i.e. one that returns a list of messages.
+
+
+## <ApiType type="Class" slug="promptable" symbolName="Promptable" /> Promptable
+
+Protocol for a `Promptable` that returns `UserContent` or `list[Message]`.
+
+May be be converted by the `prompt` decorator into a `Prompt`.
+
+**Bases:** 
+<TypeLink type={{"type_str": "Protocol[P]", "description": null, "kind": "generic", "base_type": {"type_str": "Protocol", "description": null, "kind": "simple", "symbol_name": "Protocol", "doc_url": "https://docs.python.org/3/library/typing.html#typing.Protocol"}, "parameters": [{"type_str": "P", "description": null, "kind": "simple", "symbol_name": "P", "doc_url": "/docs/mirascope/v2/api/types#p"}], "doc_url": null}} />
+
+
+## <ApiType type="Function" slug="prompt" symbolName="prompt" /> prompt
+
+Prompt decorator for turning functions (or "Prompts") into prompts.
+
+This decorator transforms a function into a Prompt, i.e. a function that
+returns `list[llm.Message]`. Its behavior depends on whether it's called with a spec
+string.
+
+If the first parameter is named 'ctx' or typed as `llm.Context[T]`, it creates
+a ContextPrompt. Otherwise, it creates a regular Prompt.
+
+With a template string, it returns a PromptTemplateDecorator, in which case it uses
+the provided template to decorate an function with an empty body, and uses arguments
+to the function for variable substitution in the template. The resulting PromptTemplate
+returns messages based on the template.
+
+Without a template string, it returns a PromptFunctionalDecorator, which
+transforms a Prompt (a function returning either message content, or messages) into
+a PromptTemplate. The resulting prompt template either promotes the content into a
+list containing a single user message, or passes along the messages returned by the
+decorated function.
+
+Spec substitution rules:
+- [USER], [ASSISTANT], [SYSTEM] demarcate the start of a new message with that role
+- [MESSAGES] indicates the next variable contains a list of messages to include
+- `{{ variable }}` injects the variable as a string, unless annotated
+- Annotations: `{{ variable:annotation }}` where annotation is one of:
+    image, images, audio, audios, document, documents
+- Single content annotations (image, audio, document) expect a file path,
+    URL, base64 string, or bytes, which becomes a content part with inferred mime-type
+- Multiple content annotations (images, audios, documents) expect a list
+    of strings or bytes, each becoming a content part with inferred mime-type
+
+<ParametersTable
+  parameters={[
+  {
+    "name": "__fn",
+    "type_info": {
+      "type_str": "ContextPromptable[P, DepsT] | AsyncContextPromptable[P, DepsT] | Promptable[P] | AsyncPromptable[P] | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "ContextPromptable[P, DepsT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "ContextPromptable",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "ContextPromptable",
+            "doc_url": "/docs/mirascope/v2/api/prompts#context-promptable"
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": "/docs/mirascope/v2/api/types#p"
+            },
+            {
+              "type_str": "DepsT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "DepsT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncContextPromptable[P, DepsT]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncContextPromptable",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncContextPromptable",
+            "doc_url": "/docs/mirascope/v2/api/prompts#async-context-promptable"
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": "/docs/mirascope/v2/api/types#p"
+            },
+            {
+              "type_str": "DepsT",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "DepsT",
+              "doc_url": null
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "Promptable[P]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "Promptable",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "Promptable",
+            "doc_url": "/docs/mirascope/v2/api/prompts#promptable"
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": "/docs/mirascope/v2/api/types#p"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "AsyncPromptable[P]",
+          "description": null,
+          "kind": "generic",
+          "base_type": {
+            "type_str": "AsyncPromptable",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "AsyncPromptable",
+            "doc_url": "/docs/mirascope/v2/api/prompts#async-promptable"
+          },
+          "parameters": [
+            {
+              "type_str": "P",
+              "description": null,
+              "kind": "simple",
+              "symbol_name": "P",
+              "doc_url": "/docs/mirascope/v2/api/types#p"
+            }
+          ],
+          "doc_url": null
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None"
+  },
+  {
+    "name": "template",
+    "type_info": {
+      "type_str": "str | None",
+      "description": null,
+      "kind": "union",
+      "base_type": {
+        "type_str": "Union",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "Union",
+        "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+      },
+      "parameters": [
+        {
+          "type_str": "str",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "str",
+          "doc_url": "https://docs.python.org/3/library/stdtypes.html#str"
+        },
+        {
+          "type_str": "None",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "None",
+          "doc_url": "https://docs.python.org/3/library/constants.html#None"
+        }
+      ],
+      "doc_url": null
+    },
+    "default": "None",
+    "description": "A string template with placeholders using `{{ variable_name }}`\nand optional role markers like [SYSTEM], [USER], and [ASSISTANT]."
+  }
+]}
+/>
+
+<ReturnTable
+  returnType={{
+  "type_info": {
+    "type_str": "ContextPrompt[P, DepsT] | AsyncContextPrompt[P, DepsT] | Prompt[P] | AsyncPrompt[P] | PromptDecorator | PromptTemplateDecorator",
+    "description": null,
+    "kind": "union",
+    "base_type": {
+      "type_str": "Union",
+      "description": null,
+      "kind": "simple",
+      "symbol_name": "Union",
+      "doc_url": "https://docs.python.org/3/library/typing.html#typing.Union"
+    },
+    "parameters": [
+      {
+        "type_str": "ContextPrompt[P, DepsT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "ContextPrompt",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "ContextPrompt",
+          "doc_url": "/docs/mirascope/v2/api/prompts#context-prompt"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": "/docs/mirascope/v2/api/types#p"
+          },
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncContextPrompt[P, DepsT]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncContextPrompt",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncContextPrompt",
+          "doc_url": "/docs/mirascope/v2/api/prompts#async-context-prompt"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": "/docs/mirascope/v2/api/types#p"
+          },
+          {
+            "type_str": "DepsT",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "DepsT",
+            "doc_url": null
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "Prompt[P]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "Prompt",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "Prompt",
+          "doc_url": "/docs/mirascope/v2/api/prompts#prompt_cls"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": "/docs/mirascope/v2/api/types#p"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "AsyncPrompt[P]",
+        "description": null,
+        "kind": "generic",
+        "base_type": {
+          "type_str": "AsyncPrompt",
+          "description": null,
+          "kind": "simple",
+          "symbol_name": "AsyncPrompt",
+          "doc_url": "/docs/mirascope/v2/api/prompts#async-prompt"
+        },
+        "parameters": [
+          {
+            "type_str": "P",
+            "description": null,
+            "kind": "simple",
+            "symbol_name": "P",
+            "doc_url": "/docs/mirascope/v2/api/types#p"
+          }
+        ],
+        "doc_url": null
+      },
+      {
+        "type_str": "PromptDecorator",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "PromptDecorator",
+        "doc_url": null
+      },
+      {
+        "type_str": "PromptTemplateDecorator",
+        "description": null,
+        "kind": "simple",
+        "symbol_name": "PromptTemplateDecorator",
+        "doc_url": null
+      }
+    ],
+    "doc_url": null
+  },
+  "description": "A PromptTemplateDecorator or PromptFunctionalDecorator that converts\nthe decorated function into a prompt."
+}}
+/>
+
+

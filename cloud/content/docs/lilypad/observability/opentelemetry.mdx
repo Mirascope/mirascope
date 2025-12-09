@@ -1,0 +1,53 @@
+---
+title: OpenTelemetry
+description: Observability made easy
+---
+
+# OpenTelemetry
+
+Lilypad instruments everything using [OpenTelemetry](https://opentelemetry.io/).
+
+This also means that any code that has already been instrumented with OpenTelemetry will already work with Lilypad — no changes necessary.
+
+```python
+import lilypad
+
+# configure Lilypad's `TraceProvider`
+lilypad.configure()
+```
+
+## Your Code Will Always Execute
+
+<Warning>
+    _This is important, so if you ever find that it's not the case, please let us know asap!_
+</Warning>
+
+Barring user errors that are supposed to throw errors during development, Lilypad will never crash your code. If there's ever an issue connecting to Lilypad or pulling information, your code will run as-written as though Lilypad was not there.
+
+## Automatically Monitor LLM API Calls
+
+One additional benefit of Lilypad is that any call made to an LLM can be traced automatically in adherence with the [OpenTelemetry Gen AI Spec](https://opentelemetry.io/docs/specs/semconv/registry/attributes/gen-ai/).
+
+You only need to call `configure`. No other code change necessary!
+
+For example, if you make a call to Google's Gemini API as in the example below, that call will show up in your Lilypad project as a detailed [span](/docs/lilypad/observability/spans).
+
+```python
+from google.genai import Client
+import lilypad
+
+lilypad.configure(auto_llm=True) # [!code highlight]
+client = Client()
+
+question = "What is the capital of France?"
+response = client.models.generate_content(
+    model="gemini-2.0-flash-001",
+    contents=f"Answer this question: {question}",
+)
+print(response.text)
+# > The capital of France is Paris.
+```
+
+Follow the link to see the trace (or navigate to your project's home page).
+
+![Liypad Auto LLM Setting](/assets/docs/lilypad/observability/open-telemetry/auto-llm.webp)

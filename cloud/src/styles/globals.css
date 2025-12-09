@@ -1,9 +1,58 @@
+/* Google Fonts Import */
+@import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Import theme files */
+@import "./themes.css";
+@import "./paper-texture.css";
+@import "./nav.css";
+@import "../components/ui/code-block/code-block.css";
+
+/* Configure plugins */
+@plugin "tailwindcss-animate";
+
 @custom-variant dark (&:is(.dark *));
 
+/* Williams Handwriting Font Import - All styles */
+@font-face {
+  font-family: "Williams Handwriting";
+  src: url("/fonts/Williams-Handwriting-Regular-v1.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  descent-override: normal;
+}
+
+@font-face {
+  font-family: "Williams Handwriting Descent";
+  src: url("/fonts/Williams-Handwriting-Regular-v1.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  descent-override: 10%;
+}
+
 :root {
+  /* Layout & sizing variables */
+  --header-height-base: 86px; /* Standard header without selector (measured) */
+  --header-height-with-selector: 126px; /* Header with product selector (measured) */
+  --header-height: var(--header-height-base); /* Default value */
+  --footer-height: 52px;
+
+  /* Font stacks */
+  --font-sans:
+    "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
+  --font-mono:
+    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --font-fun: "Williams Handwriting", cursive;
+  --font-handwriting: "Williams Handwriting", cursive;
+  --font-handwriting-descent: "Williams Handwriting Descent", cursive;
+
+  /* Cloud theme variables (preserved) */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -113,6 +162,149 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+body {
+  @apply m-0;
+  font-family: var(--font-handwriting);
+  font-weight: 400; /* Normal weight */
+  letter-spacing: 0.01em; /* Slight letter spacing */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Code element styling with responsive sizes */
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-code) !important;
+}
+
+/* Font mode class definitions */
+.font-sans {
+  font-family: var(--font-sans) !important;
+}
+
+.font-fun {
+  font-family: var(--font-fun) !important;
+}
+
+.font-handwriting {
+  font-family: var(--font-handwriting) !important;
+}
+
+.font-handwriting-descent {
+  font-family: var(--font-handwriting-descent) !important;
+}
+
+/* Medium text shadow - create a utility class for medium-sized text */
+.text-shadow-medium {
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 2px 7px rgba(0, 0, 0, 0.15);
+}
+
+/* Landing page hover text shadow - lighter for accent color text */
+.hover\:landing-page-text-shadow:hover {
+  text-shadow:
+    0 2px 10px rgba(255, 255, 255, 0.3),
+    0 4px 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Ensure inline code stands out from text */
+p code,
+li code,
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+  border-radius: 0.2rem;
+  padding: 0.1rem 0.3rem;
+}
+
+/* Watercolor background - iOS Safari compatible fixed version */
+.watercolor-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh; /* Fallback */
+  height: 100dvh; /* Dynamic viewport height for iOS */
+  min-height: 100vh; /* Ensures it's at least as tall as viewport */
+  background-image: url("/assets/backgrounds/light.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+  z-index: -1;
+  pointer-events: none;
+  transition: background-image 0.2s ease-in-out;
+  -webkit-transition: background-image 0.2s ease-in-out;
+  /* Add extra space to ensure coverage when scrolling */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Responsive backgrounds for smaller screens */
+@media (max-width: 1200px) {
+  .watercolor-bg {
+    background-image: url("/assets/backgrounds/light-medium.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+@media (max-width: 800px) {
+  .watercolor-bg {
+    background-image: url("/assets/backgrounds/light-small.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+.dark .watercolor-bg {
+  background-image: url("/assets/backgrounds/dark.webp");
+  transition: background-image 0.3s ease;
+  -webkit-transition: background-image 0.3s ease;
+}
+
+/* Responsive dark backgrounds for smaller screens */
+@media (max-width: 1200px) {
+  .dark .watercolor-bg {
+    background-image: url("/assets/backgrounds/dark-medium.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+@media (max-width: 800px) {
+  .dark .watercolor-bg {
+    background-image: url("/assets/backgrounds/dark-small.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+/* Apply sunset background during sunset time */
+.sunset-time .watercolor-bg {
+  background-image: url("/assets/backgrounds/sunset.webp");
+  transition: background-image 0.3s ease;
+  -webkit-transition: background-image 0.3s ease;
+}
+
+/* Responsive sunset backgrounds for smaller screens */
+@media (max-width: 1200px) {
+  .sunset-time .watercolor-bg {
+    background-image: url("/assets/backgrounds/sunset-medium.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
+@media (max-width: 800px) {
+  .sunset-time .watercolor-bg {
+    background-image: url("/assets/backgrounds/sunset-small.webp");
+    height: 100dvh; /* Ensure dynamic viewport height at this breakpoint */
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -120,4 +312,228 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Homepage headings styling */
+.text-[2\.5rem],
+.text-[3\.5rem],
+.text-[4\.5rem],
+.text-[5\.5rem] {
+  font-weight: 500 !important;
+}
+
+/* Pricing table adjustments */
+.grid.grid-cols-3 {
+  min-width: 800px;
+}
+
+.mdx-content {
+  font-family: var(--font-sans);
+}
+
+/* Table container with horizontal scrolling */
+.mdx-content .table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+/* Blog post headers styling - base styles */
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+  font-weight: 500 !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 0.8em !important;
+}
+
+/* Hide the first h1 heading in blog content since it's already shown in the page header */
+.blog-content > h1:first-of-type {
+  display: none !important;
+}
+
+/* Torn paper effect */
+.torn-paper-effect {
+  clip-path: polygon(
+    0% 4%,
+    10% 0%,
+    20% 2%,
+    30% 0%,
+    40% 3%,
+    50% 0%,
+    60% 2%,
+    70% 0%,
+    80% 3%,
+    90% 0%,
+    100% 4%,
+    99% 20%,
+    100% 35%,
+    98% 50%,
+    100% 65%,
+    99% 80%,
+    100% 96%,
+    90% 100%,
+    80% 97%,
+    70% 100%,
+    60% 98%,
+    50% 100%,
+    40% 97%,
+    30% 100%,
+    20% 98%,
+    10% 100%,
+    0% 96%,
+    1% 80%,
+    0% 65%,
+    2% 50%,
+    0% 35%,
+    1% 20%
+  );
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: scale(1.08);
+}
+
+/* Badge container for docs and usage info */
+.badge-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.badge-container a {
+  display: inline-block;
+  width: auto;
+  flex: 0 0 auto;
+}
+
+/* Remove top margin from first child and bottom margin from last child in callouts */
+.callout-content > *:first-child {
+  margin-top: 0 !important;
+}
+
+.callout-content > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Word highlighting */
+.word {
+  background-color: rgba(200, 200, 255, 0.15);
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.2rem;
+}
+
+/* Pagefind search result highlighting */
+mark,
+.search-results mark,
+[data-pagefind-body] mark {
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 600;
+  padding: 0;
+}
+
+/* Fade-in animation for search results */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Headings and links use handwriting font */
+h1 {
+  font-family: var(--font-handwriting) !important;
+  @apply text-4xl;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-handwriting) !important;
+}
+
+/* Additional list styling */
+.mdx-content ul li:last-child,
+.mdx-content ol li:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Fix for ordered lists with double-digit numbers */
+.mdx-content ol {
+  padding-left: 2rem !important; /* Increase padding to accommodate double digits */
+}
+
+/* Ensure proper indentation for nested lists */
+.mdx-content ol ol {
+  padding-left: 2rem !important;
+}
+
+/* Code block styling */
+.mdx-content pre {
+  padding: 0.5rem !important;
+  overflow-x: auto !important;
+}
+
+/* Code block styling */
+.mdx-content pre.shiki {
+  background-color: var(--color-code-background) !important;
+}
+
+/* Hide scrollbar but maintain scrolling functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Global scrollbar styling */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-muted) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-muted);
+  border-radius: 6px;
+  max-width: 6px;
+  min-width: 6px;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Override hover behavior */
+::-webkit-scrollbar:hover {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary);
+  max-width: 6px;
+  min-width: 6px;
+}
+
+/* Extra styling to override browser defaults */
+* {
+  scrollbar-width: thin;
 }
