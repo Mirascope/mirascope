@@ -85,6 +85,20 @@
       "when": 1766463987042,
       "tag": "0011_glossy_phantom_reporter",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1766550000000,
+      "tag": "0012_slow_black_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1766550000001,
+      "tag": "0013_melted_viper",
+      "breakpoints": true
     }
   ]
 }
