@@ -490,3 +490,34 @@ export const TestEffectProjectFixture = Effect.gen(function* () {
     projectAnnotator,
   };
 });
+
+/**
+ * Effect-native test fixture for environments.
+ *
+ * Creates a test environment within a project using the Effect-native
+ * `EffectDatabase` service.
+ *
+ * Reuses `TestEffectProjectFixture` to set up the organization and project.
+ *
+ * Returns all properties from TestEffectProjectFixture plus:
+ * - environment: the created environment
+ *
+ * Requires EffectDatabase - call `yield* EffectDatabase` in your test
+ * if you need to perform additional database operations.
+ */
+export const TestEffectEnvironmentFixture = Effect.gen(function* () {
+  const projectFixture = yield* TestEffectProjectFixture;
+  const db = yield* EffectDatabase;
+
+  const environment = yield* db.organizations.projects.environments.create({
+    userId: projectFixture.owner.id,
+    organizationId: projectFixture.org.id,
+    projectId: projectFixture.project.id,
+    data: { name: "development" },
+  });
+
+  return {
+    ...projectFixture,
+    environment,
+  };
+});

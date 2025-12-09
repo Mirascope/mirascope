@@ -71,6 +71,13 @@
       "when": 1766098002547,
       "tag": "0009_blushing_blonde_phantom",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1766439294563,
+      "tag": "0010_sticky_champions",
+      "breakpoints": true
     }
   ]
 }
