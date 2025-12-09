@@ -5,6 +5,7 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
+import sys
 from typing import TypedDict, get_args
 
 import pytest
@@ -17,6 +18,14 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
     "openai/gpt-4o",
     "openai:responses/gpt-4o",
 ]
+
+# NOTE: MLX is only available on macOS (Apple Silicon)
+if sys.platform == "darwin":
+    from .mlx_lm_cassette import (
+        mlx_cassette_fixture,  # noqa: F401 # pyright: ignore[reportUnusedImport]
+    )
+
+    E2E_MODEL_IDS.append("mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
 
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (

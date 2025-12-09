@@ -7,6 +7,7 @@ from .anthropic import (
 from .base import BaseClient, ClientT, Params
 from .get_client import client, get_client
 from .google import GoogleClient, GoogleModelId
+from .mlx import MLXClient, MLXModelId
 from .openai import (
     OpenAICompletionsClient,
     OpenAICompletionsModelId,
@@ -23,6 +24,8 @@ __all__ = [
     "ClientT",
     "GoogleClient",
     "GoogleModelId",
+    "MLXClient",
+    "MLXModelId",
     "ModelId",
     "OpenAICompletionsClient",
     "OpenAICompletionsModelId",

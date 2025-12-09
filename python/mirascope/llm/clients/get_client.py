@@ -10,6 +10,11 @@ from .google import (
     client as google_client,
     get_client as get_google_client,
 )
+from .mlx import (
+    MLXClient,
+    client as mlx_client,
+    get_client as get_mlx_client,
+)
 from .openai import (
     OpenAICompletionsClient,
     OpenAIResponsesClient,
@@ -47,9 +52,21 @@ def get_client(
     ...
 
 
+@overload
+def get_client(provider: Literal["mlx"]) -> MLXClient:
+    """Get an MLX client instance."""
+    ...
+
+
 def get_client(
     provider: Provider,
-) -> AnthropicClient | GoogleClient | OpenAICompletionsClient | OpenAIResponsesClient:
+) -> (
+    AnthropicClient
+    | GoogleClient
+    | OpenAICompletionsClient
+    | OpenAIResponsesClient
+    | MLXClient
+):
     """Get a client instance for the specified provider.
 
     Args:
@@ -78,6 +95,8 @@ def get_client(
             return get_openai_completions_client()
         case "openai:responses":
             return get_openai_responses_client()
+        case "mlx":  # pragma: no cover (MLX is only available on macOS)
+            return get_mlx_client()
         case _:
             raise ValueError(f"Unknown provider: {provider}")
 
@@ -126,9 +145,21 @@ def client(
     ...
 
 
+@overload
+def client(provider: Literal["mlx"]) -> MLXClient:
+    """Create a cached MLX client."""
+    ...
+
+
 def client(
     provider: Provider, *, api_key: str | None = None, base_url: str | None = None
-) -> AnthropicClient | GoogleClient | OpenAICompletionsClient | OpenAIResponsesClient:
+) -> (
+    AnthropicClient
+    | GoogleClient
+    | OpenAICompletionsClient
+    | OpenAIResponsesClient
+    | MLXClient
+):
     """Create a cached client instance for the specified provider.
 
     Args:
@@ -151,5 +182,7 @@ def client(
             return openai_completions_client(api_key=api_key, base_url=base_url)
         case "openai:responses":
             return openai_responses_client(api_key=api_key, base_url=base_url)
+        case "mlx":  # pragma: no cover (MLX is only available on macOS)
+            return mlx_client()
         case _:  # pragma: no cover
             raise ValueError(f"Unknown provider: {provider}")
