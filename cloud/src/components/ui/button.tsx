@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/src/lib/utils";
 
 export type ButtonProps = React.ComponentProps<"button"> & {
-  variant?: "default" | "outline" | "ghost";
+  variant?: "default" | "outline" | "ghost" | "destructive";
   size?: "default" | "sm" | "lg";
 };
 
@@ -20,6 +20,8 @@ export function Button({
     outline:
       "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
     ghost: "hover:bg-accent hover:text-accent-foreground",
+    destructive:
+      "bg-destructive text-destructive-foreground hover:bg-destructive/90",
   };
 
   const sizes = {
