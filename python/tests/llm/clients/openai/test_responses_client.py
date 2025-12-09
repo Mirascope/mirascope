@@ -65,29 +65,6 @@ def test_prepare_message_multiple_system_messages() -> None:
     )
 
 
-def test_context_manager() -> None:
-    """Test nested context manager behavior and get_client() integration."""
-
-    global_client = llm.get_client("openai:responses")
-
-    client1 = llm.client("openai:responses", api_key="key1")
-    client2 = llm.client("openai:responses", api_key="key2")
-
-    assert llm.get_client("openai:responses") is global_client
-
-    with client1 as ctx1:
-        assert ctx1 is client1
-        assert llm.get_client("openai:responses") is client1
-
-        with client2 as ctx2:
-            assert ctx2 is client2
-            assert llm.get_client("openai:responses") is client2
-
-        assert llm.get_client("openai:responses") is client1
-
-    assert llm.get_client("openai:responses") is global_client
-
-
 def test_client_caching() -> None:
     """Test that client() returns cached instances for identical parameters."""
     client1 = llm.client(
@@ -113,5 +90,5 @@ def test_client_caching() -> None:
     assert client1 is not client4
 
     client5 = llm.client("openai:responses", api_key=None, base_url=None)
-    client6 = llm.get_client("openai:responses")
+    client6 = llm.client("openai:responses")
     assert client5 is client6

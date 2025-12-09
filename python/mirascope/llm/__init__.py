@@ -27,7 +27,7 @@ from . import (
 with suppress(ImportError):
     from . import mcp
 from .calls import AsyncCall, AsyncContextCall, Call, CallDecorator, ContextCall, call
-from .clients import ModelId, Params, Provider, client, get_client
+from .clients import ModelId, Params, Provider, client
 from .content import (
     AssistantContentChunk,
     AssistantContentPart,
@@ -220,7 +220,6 @@ __all__ = [
     "exceptions",
     "format",
     "formatting",
-    "get_client",
     "mcp",
     "messages",
     "model",

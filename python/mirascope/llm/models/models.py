@@ -8,7 +8,7 @@ from contextvars import ContextVar
 from typing import TYPE_CHECKING, overload
 from typing_extensions import Unpack
 
-from ..clients import get_client, model_id_to_provider
+from ..clients import client, model_id_to_provider
 from ..context import Context, DepsT
 from ..formatting import Format, FormattableT
 from ..messages import Message, UserContent
@@ -162,7 +162,7 @@ class Model:
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        return get_client(self.provider).call(
+        return client(self.provider).call(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
@@ -220,7 +220,7 @@ class Model:
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        return await get_client(self.provider).call_async(
+        return await client(self.provider).call_async(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
@@ -278,7 +278,7 @@ class Model:
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        return get_client(self.provider).stream(
+        return client(self.provider).stream(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
@@ -336,7 +336,7 @@ class Model:
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        return await get_client(self.provider).stream_async(
+        return await client(self.provider).stream_async(
             model_id=self.model_id,
             messages=messages,
             tools=tools,
@@ -407,7 +407,7 @@ class Model:
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        return get_client(self.provider).context_call(
+        return client(self.provider).context_call(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -479,7 +479,7 @@ class Model:
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        return await get_client(self.provider).context_call_async(
+        return await client(self.provider).context_call_async(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -555,7 +555,7 @@ class Model:
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        return get_client(self.provider).context_stream(
+        return client(self.provider).context_stream(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -633,7 +633,7 @@ class Model:
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        return await get_client(self.provider).context_stream_async(
+        return await client(self.provider).context_stream_async(
             ctx=ctx,
             model_id=self.model_id,
             messages=messages,
@@ -693,7 +693,7 @@ class Model:
         Returns:
             A new `llm.Response` object containing the extended conversation.
         """
-        return get_client(self.provider).resume(
+        return client(self.provider).resume(
             model_id=self.model_id,
             response=response,
             content=content,
@@ -751,7 +751,7 @@ class Model:
         Returns:
             A new `llm.AsyncResponse` object containing the extended conversation.
         """
-        return await get_client(self.provider).resume_async(
+        return await client(self.provider).resume_async(
             model_id=self.model_id,
             response=response,
             content=content,
@@ -814,7 +814,7 @@ class Model:
         Returns:
             A new `llm.ContextResponse` object containing the extended conversation.
         """
-        return get_client(self.provider).context_resume(
+        return client(self.provider).context_resume(
             ctx=ctx,
             model_id=self.model_id,
             response=response,
@@ -880,7 +880,7 @@ class Model:
         Returns:
             A new `llm.AsyncContextResponse` object containing the extended conversation.
         """
-        return await get_client(self.provider).context_resume_async(
+        return await client(self.provider).context_resume_async(
             ctx=ctx,
             model_id=self.model_id,
             response=response,
@@ -939,7 +939,7 @@ class Model:
         Returns:
             A new `llm.StreamResponse` object for streaming the extended conversation.
         """
-        return get_client(self.provider).resume_stream(
+        return client(self.provider).resume_stream(
             model_id=self.model_id,
             response=response,
             content=content,
@@ -997,7 +997,7 @@ class Model:
         Returns:
             A new `llm.AsyncStreamResponse` object for asynchronously streaming the extended conversation.
         """
-        return await get_client(self.provider).resume_stream_async(
+        return await client(self.provider).resume_stream_async(
             model_id=self.model_id,
             response=response,
             content=content,
@@ -1066,7 +1066,7 @@ class Model:
         Returns:
             A new `llm.ContextStreamResponse` object for streaming the extended conversation.
         """
-        return get_client(self.provider).context_resume_stream(
+        return client(self.provider).context_resume_stream(
             ctx=ctx,
             model_id=self.model_id,
             response=response,
@@ -1138,7 +1138,7 @@ class Model:
         Returns:
             A new `llm.AsyncContextStreamResponse` object for asynchronously streaming the extended conversation.
         """
-        return await get_client(self.provider).context_resume_stream_async(
+        return await client(self.provider).context_resume_stream_async(
             ctx=ctx,
             model_id=self.model_id,
             response=response,

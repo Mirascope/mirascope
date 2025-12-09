@@ -2,7 +2,6 @@
 
 import os
 from collections.abc import Sequence
-from contextvars import ContextVar
 from functools import lru_cache
 from typing import overload
 from typing_extensions import Unpack
@@ -36,10 +35,6 @@ from ..base import BaseClient, Params
 from . import _utils
 from .model_ids import AnthropicModelId
 
-ANTHROPIC_CLIENT_CONTEXT: ContextVar["AnthropicClient"] = ContextVar(
-    "ANTHROPIC_CLIENT_CONTEXT"
-)
-
 
 @lru_cache(maxsize=256)
 def _anthropic_singleton(
@@ -69,23 +64,8 @@ def client(
     return _anthropic_singleton(api_key, base_url)
 
 
-def get_client() -> "AnthropicClient":
-    """Retrieve the current Anthropic client from context, or a global default.
-
-    Returns:
-        The current Anthropic client from context if available, otherwise
-        a global default client based on environment variables.
-    """
-    ctx_client = ANTHROPIC_CLIENT_CONTEXT.get(None)
-    return ctx_client or client()
-
-
-class AnthropicClient(BaseClient[AnthropicModelId, Anthropic, "AnthropicClient"]):
+class AnthropicClient(BaseClient[AnthropicModelId, Anthropic]):
     """The client for the Anthropic LLM model."""
-
-    @property
-    def _context_var(self) -> ContextVar["AnthropicClient"]:
-        return ANTHROPIC_CLIENT_CONTEXT
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None

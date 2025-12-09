@@ -1,5 +1,4 @@
 from collections.abc import Sequence
-from contextvars import ContextVar
 from functools import cache, lru_cache
 from typing import cast, overload
 from typing_extensions import Unpack
@@ -37,8 +36,6 @@ from .encoding import TransformersEncoder
 from .mlx import MLX
 from .model_ids import MLXModelId
 
-MLX_CLIENT_CONTEXT: ContextVar["MLXClient"] = ContextVar("MLX_CLIENT_CONTEXT")
-
 
 @cache
 def _mlx_client_singleton() -> "MLXClient":
@@ -51,14 +48,16 @@ def client() -> "MLXClient":
     return _mlx_client_singleton()
 
 
-def get_client() -> "MLXClient":
-    """Get the current MLX client from context or the singleton.
+def _get_provider_model_id(model_id: MLXModelId) -> str:
+    """Extract the provider-specific model ID from a full model ID.
+
+    Args:
+        model_id: Full model ID (e.g. "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
 
     Returns:
-        The context-specific client if set, otherwise the singleton instance.
+        Provider-specific model ID (e.g. "mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
     """
-    ctx_client = MLX_CLIENT_CONTEXT.get(None)
-    return ctx_client or client()
+    return model_id.removeprefix("mlx/")
 
 
 @lru_cache(maxsize=16)
@@ -77,29 +76,13 @@ def _get_mlx(model_id: MLXModelId) -> MLX:
     )
 
 
-def _get_provider_model_id(model_id: MLXModelId) -> str:
-    """Extract the provider-specific model ID from a full model ID.
-
-    Args:
-        model_id: Full model ID (e.g. "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
-
-    Returns:
-        Provider-specific model ID (e.g. "mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
-    """
-    return model_id.removeprefix("mlx/")
-
-
-class MLXClient(BaseClient[MLXModelId, None, "MLXClient"]):
+class MLXClient(BaseClient[MLXModelId, None]):
     """Client for interacting with MLX language models.
 
     This client provides methods for generating responses from MLX models,
     supporting both synchronous and asynchronous operations, as well as
     streaming responses.
     """
-
-    @property
-    def _context_var(self) -> ContextVar["MLXClient"]:
-        return MLX_CLIENT_CONTEXT
 
     @overload
     def call(

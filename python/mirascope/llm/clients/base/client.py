@@ -4,10 +4,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from contextvars import ContextVar, Token
-from types import TracebackType
-from typing import Any, Generic, cast, overload
-from typing_extensions import Self, TypeVar, Unpack
+from typing import Generic, overload
+from typing_extensions import TypeVar, Unpack
 
 from ...context import Context, DepsT
 from ...formatting import Format, FormattableT
@@ -37,11 +35,8 @@ from .params import Params
 ModelIdT = TypeVar("ModelIdT", bound=str)
 ProviderClientT = TypeVar("ProviderClientT")
 
-ClientT = TypeVar("ClientT", bound="BaseClient[str, Any, Any]")
-"""Type variable for an LLM client."""
 
-
-class BaseClient(Generic[ModelIdT, ProviderClientT, ClientT], ABC):
+class BaseClient(Generic[ModelIdT, ProviderClientT], ABC):
     """Base abstract client for provider-specific implementations.
 
     This class defines explicit methods for each type of call, eliminating
@@ -49,29 +44,6 @@ class BaseClient(Generic[ModelIdT, ProviderClientT, ClientT], ABC):
     """
 
     client: ProviderClientT
-    _token: Token[ClientT] | None = None
-
-    @property
-    @abstractmethod
-    def _context_var(self) -> ContextVar[ClientT]:
-        """The ContextVar for this client type."""
-        ...
-
-    def __enter__(self) -> Self:
-        """Sets the client context and stores the token."""
-        self._token = self._context_var.set(cast(ClientT, self))
-        return self
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> None:
-        """Restores the client context to the token from the last setting."""
-        if self._token is not None:
-            self._context_var.reset(self._token)
-            self._token = None
 
     @overload
     @abstractmethod

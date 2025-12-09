@@ -2,7 +2,6 @@
 
 import os
 from collections.abc import Sequence
-from contextvars import ContextVar
 from functools import lru_cache
 from typing import overload
 from typing_extensions import Unpack
@@ -36,10 +35,6 @@ from ...base import BaseClient, Params
 from . import _utils
 from .model_ids import OpenAICompletionsModelId
 
-OPENAI_COMPLETIONS_CLIENT_CONTEXT: ContextVar["OpenAICompletionsClient"] = ContextVar(
-    "OPENAI_COMPLETIONS_CLIENT_CONTEXT"
-)
-
 
 @lru_cache(maxsize=256)
 def _openai_singleton(
@@ -69,25 +64,8 @@ def client(
     return _openai_singleton(api_key, base_url)
 
 
-def get_client() -> "OpenAICompletionsClient":
-    """Retrieve the current OpenAI client from context, or a global default.
-
-    Returns:
-        The current OpenAI client from context if available, otherwise
-        a global default client based on environment variables.
-    """
-    ctx_client = OPENAI_COMPLETIONS_CLIENT_CONTEXT.get(None)
-    return ctx_client or client()
-
-
-class OpenAICompletionsClient(
-    BaseClient[OpenAICompletionsModelId, OpenAI, "OpenAICompletionsClient"]
-):
+class OpenAICompletionsClient(BaseClient[OpenAICompletionsModelId, OpenAI]):
     """The client for the OpenAI LLM model."""
-
-    @property
-    def _context_var(self) -> ContextVar["OpenAICompletionsClient"]:
-        return OPENAI_COMPLETIONS_CLIENT_CONTEXT
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None

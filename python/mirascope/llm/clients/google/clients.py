@@ -2,7 +2,6 @@
 
 import os
 from collections.abc import Sequence
-from contextvars import ContextVar
 from functools import lru_cache
 from typing import overload
 from typing_extensions import Unpack
@@ -37,8 +36,6 @@ from ..base import BaseClient, Params
 from . import _utils
 from .model_ids import GoogleModelId
 
-GOOGLE_CLIENT_CONTEXT: ContextVar["GoogleClient"] = ContextVar("GOOGLE_CLIENT_CONTEXT")
-
 
 @lru_cache(maxsize=256)
 def _google_singleton(api_key: str | None, base_url: str | None) -> "GoogleClient":
@@ -66,23 +63,8 @@ def client(
     return _google_singleton(api_key, base_url)
 
 
-def get_client() -> "GoogleClient":
-    """Retrieve the current Google client from context, or a global default.
-
-    Returns:
-        The current Google client from context if available, otherwise
-        a global default client based on environment variables.
-    """
-    ctx_client = GOOGLE_CLIENT_CONTEXT.get(None)
-    return ctx_client or client()
-
-
-class GoogleClient(BaseClient[GoogleModelId, Client, "GoogleClient"]):
+class GoogleClient(BaseClient[GoogleModelId, Client]):
     """The client for the Google LLM model."""
-
-    @property
-    def _context_var(self) -> ContextVar["GoogleClient"]:
-        return GOOGLE_CLIENT_CONTEXT
 
     def __init__(
         self, *, api_key: str | None = None, base_url: str | None = None
