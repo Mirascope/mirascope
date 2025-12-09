@@ -15,6 +15,13 @@
       "when": 1765435304808,
       "tag": "0001_unknown_junta",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1765249823861,
+      "tag": "0003_fresh_grey_gargoyle",
+      "breakpoints": true
     }
   ]
 }
