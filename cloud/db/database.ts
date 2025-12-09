@@ -48,6 +48,7 @@ import { Projects } from "@/db/projects";
 import { ProjectMemberships } from "@/db/project-memberships";
 import { Environments } from "@/db/environments";
 import { ApiKeys } from "@/db/api-keys";
+import { Traces } from "@/db/traces";
 
 /**
  * Type definition for the environments service with nested API keys.
@@ -111,6 +112,7 @@ export class Database extends Context.Tag("Database")<
     readonly users: Ready<Users>;
     readonly sessions: Ready<Sessions>;
     readonly organizations: OrganizationsService;
+    readonly traces: Ready<Traces>;
   }
 >() {
   /**
@@ -152,6 +154,7 @@ export class Database extends Context.Tag("Database")<
             },
           },
         },
+        traces: makeReady(client, new Traces(projectMemberships)),
       };
     }),
   );
