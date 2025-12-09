@@ -8,6 +8,11 @@ omit =
     mirascope/llm/mcp/client.py
     mirascope/llm/formatting/partial.py
 
+    # NOTE: MLX modules are excluded because the `mlx` package is macOS-only (Apple Silicon).
+    # CI runs on Linux where `mlx` is not available, so these modules cannot be tested there.
+    # TODO: Add a macOS CI job to run MLX tests and restore coverage for these modules.
+    mirascope/llm/clients/mlx/*
+
     # Exclude Fern generated code
     mirascope/api/_generated/*
 

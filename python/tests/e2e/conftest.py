@@ -5,6 +5,7 @@ Includes setting up VCR for HTTP recording/playback.
 
 from __future__ import annotations
 
+import sys
 from collections.abc import Generator
 from pathlib import Path
 from typing import TypedDict, cast, get_args
@@ -20,8 +21,11 @@ E2E_MODEL_IDS: list[llm.ModelId] = [
     "google/gemini-2.5-flash",
     "openai/gpt-4o",
     "openai:responses/gpt-4o",
-    "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125",
 ]
+
+# NOTE: MLX is only available on macOS (Apple Silicon)
+if sys.platform == "darwin":
+    E2E_MODEL_IDS.append("mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
 
 
 FORMATTING_MODES: tuple[llm.FormattingMode | None] = get_args(llm.FormattingMode) + (
