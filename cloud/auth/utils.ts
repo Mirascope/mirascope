@@ -1,8 +1,9 @@
 import { Effect } from "effect";
 import { Database } from "@/db";
 import { UnauthorizedError } from "@/errors";
-import type { PublicUser, ApiKeyInfo } from "@/db/schema";
+import type { ApiKeyInfo } from "@/db/schema";
 import { getApiKeyFromRequest } from "@/auth/api-key";
+import type { AuthResult } from "@/auth/context";
 
 function isSecure(): boolean {
   return (
@@ -169,27 +170,11 @@ export const validateApiKey = (
     return apiKeyInfo;
   });
 
-/**
- * Gets the authenticated user from a request.
- *
- * Supports two authentication methods (checked in order):
- * 1. API Key (X-API-Key header or Authorization: Bearer)
- * 2. Session cookie
- *
- * For API keys, returns the user who owns the API key (from getApiKeyInfo).
- * For sessions, returns the user associated with the session.
- *
- * When path parameters are provided and API key authentication is used,
- * validates that the API key belongs to the specified environment/project/organization.
- * This prevents an API key from one environment being used to access another.
- *
- * @param request - The HTTP request
- * @param pathParams - Optional path parameters to validate against API key scope
- */
-export const getAuthenticatedUser = (
+/** Authenticate with API key or session and return user + optional ApiKeyInfo. */
+export const authenticate = (
   request: Request,
   pathParams?: PathParameters,
-): Effect.Effect<PublicUser, UnauthorizedError, Database> =>
+): Effect.Effect<AuthResult, UnauthorizedError, Database> =>
   Effect.gen(function* () {
     const db = yield* Database;
 
@@ -199,13 +184,15 @@ export const getAuthenticatedUser = (
       // Validate the API key against path parameters and get complete info
       const apiKeyInfo = yield* validateApiKey(apiKey, pathParams);
 
-      // Return the owner as the authenticated user
-      // All owner fields come from the inner join in getApiKeyInfo
+      // Return both user and API key info
       return {
-        id: apiKeyInfo.ownerId,
-        email: apiKeyInfo.ownerEmail,
-        name: apiKeyInfo.ownerName,
-        deletedAt: apiKeyInfo.ownerDeletedAt,
+        user: {
+          id: apiKeyInfo.ownerId,
+          email: apiKeyInfo.ownerEmail,
+          name: apiKeyInfo.ownerName,
+          deletedAt: apiKeyInfo.ownerDeletedAt,
+        },
+        apiKeyInfo,
       };
     }
 
@@ -219,7 +206,7 @@ export const getAuthenticatedUser = (
       );
     }
 
-    return yield* db.sessions.findUserBySessionId(sessionId).pipe(
+    const user = yield* db.sessions.findUserBySessionId(sessionId).pipe(
       Effect.catchAll(() =>
         Effect.fail(
           new UnauthorizedError({
@@ -228,4 +215,6 @@ export const getAuthenticatedUser = (
         ),
       ),
     );
+
+    return { user };
   });

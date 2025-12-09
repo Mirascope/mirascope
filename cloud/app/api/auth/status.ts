@@ -1,8 +1,9 @@
+import { Effect } from "effect";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { getAuthenticatedUser } from "@/auth";
+import { authenticate } from "@/auth";
 import { runEffect } from "@/app/lib/effect";
 import type { Result } from "@/app/lib/types";
 import type { PublicUser } from "@/db/schema";
@@ -16,7 +17,9 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
       return { success: true, data: null };
     }
 
-    return await runEffect(getAuthenticatedUser(request));
+    return await runEffect(
+      authenticate(request).pipe(Effect.map((result) => result.user)),
+    );
   },
 );
 

@@ -1,11 +1,41 @@
-import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { TestApiClient, TestClient } from "@/tests/api";
+import { describe, expect, TestApiContext, createApiClient } from "@/tests/api";
+import type { PublicProject, PublicEnvironment } from "@/db/schema";
+import { TEST_DATABASE_URL } from "@/tests/db";
 
-describe("Traces API", () => {
-  it.effect("POST /traces", () =>
+describe.sequential("Traces API", (it) => {
+  let project: PublicProject;
+  let environment: PublicEnvironment;
+
+  it.effect(
+    "POST /organizations/:orgId/projects - create project for traces test",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        project = yield* client.projects.create({
+          path: { organizationId: org.id },
+          payload: { name: "Traces Test Project", slug: "traces-test-project" },
+        });
+        expect(project.id).toBeDefined();
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:orgId/projects/:projId/environments - create environment for traces test",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        environment = yield* client.environments.create({
+          path: { organizationId: org.id, projectId: project.id },
+          payload: { name: "Traces Test Environment", slug: "traces-test-env" },
+        });
+        expect(environment.id).toBeDefined();
+      }),
+  );
+
+  it.effect("POST /traces - creates trace", () =>
     Effect.gen(function* () {
-      const client = yield* TestApiClient;
+      const { org, owner } = yield* TestApiContext;
       const payload = {
         resourceSpans: [
           {
@@ -40,25 +70,44 @@ describe("Traces API", () => {
         ],
       };
 
-      const result = yield* client.traces.create({ payload });
-      expect(result).toMatchObject({
-        partialSuccess: expect.any(Object) as unknown,
-      });
-    }).pipe(Effect.provide(TestClient.Default)),
+      const apiKeyInfo = {
+        apiKeyId: "test-api-key-id",
+        organizationId: org.id,
+        projectId: project.id,
+        environmentId: environment.id,
+        ownerId: owner.id,
+        ownerEmail: owner.email,
+        ownerName: owner.name,
+        ownerDeletedAt: owner.deletedAt,
+      };
+
+      const { client: apiKeyClient, dispose } = yield* Effect.promise(() =>
+        createApiClient(TEST_DATABASE_URL, owner, apiKeyInfo),
+      );
+
+      let result;
+      try {
+        result = yield* apiKeyClient.traces.create({ payload });
+      } finally {
+        yield* Effect.promise(dispose);
+      }
+
+      expect(result.partialSuccess).toBeDefined();
+    }),
   );
 
-  it.effect("POST /traces - missing service.name and spans", () =>
+  it.effect("POST /traces - returns partialSuccess on rejected spans", () =>
     Effect.gen(function* () {
-      const client = yield* TestApiClient;
+      const { org, owner } = yield* TestApiContext;
       const payload = {
         resourceSpans: [
           {
             resource: {
               attributes: [
                 {
-                  key: "other.attribute",
+                  key: "service.name",
                   value: {
-                    stringValue: "other-value",
+                    stringValue: "duplicate-span-service",
                   },
                 },
               ],
@@ -67,18 +116,54 @@ describe("Traces API", () => {
               {
                 scope: {
                   name: "test-scope",
+                  version: "1.0.0",
                 },
-                spans: [],
+                spans: [
+                  {
+                    traceId: "duplicate-trace-id",
+                    spanId: "duplicate-span-id",
+                    name: "duplicate-span",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                  {
+                    traceId: "duplicate-trace-id",
+                    spanId: "duplicate-span-id",
+                    name: "duplicate-span",
+                    startTimeUnixNano: "1000000000",
+                    endTimeUnixNano: "2000000000",
+                  },
+                ],
               },
             ],
           },
         ],
       };
 
-      const result = yield* client.traces.create({ payload });
-      expect(result).toMatchObject({
-        partialSuccess: expect.any(Object) as unknown,
-      });
-    }).pipe(Effect.provide(TestClient.Default)),
+      const apiKeyInfo = {
+        apiKeyId: "test-api-key-id",
+        organizationId: org.id,
+        projectId: project.id,
+        environmentId: environment.id,
+        ownerId: owner.id,
+        ownerEmail: owner.email,
+        ownerName: owner.name,
+        ownerDeletedAt: owner.deletedAt,
+      };
+
+      const { client: apiKeyClient, dispose } = yield* Effect.promise(() =>
+        createApiClient(TEST_DATABASE_URL, owner, apiKeyInfo),
+      );
+
+      let result;
+      try {
+        result = yield* apiKeyClient.traces.create({ payload });
+      } finally {
+        yield* Effect.promise(dispose);
+      }
+
+      expect(result.partialSuccess?.rejectedSpans).toBe(1);
+      expect(result.partialSuccess?.errorMessage).toContain("1 spans");
+    }),
   );
 });

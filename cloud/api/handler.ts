@@ -5,34 +5,40 @@ import { HandlerError } from "@/errors";
 import { SettingsService } from "@/settings";
 import { Database } from "@/db";
 import { Payments } from "@/payments";
-import { AuthenticatedUser } from "@/auth";
-import type { PublicUser } from "@/db/schema";
+import { AuthenticatedUser, Authentication } from "@/auth";
+import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 export type HandleRequestOptions = {
   prefix?: string;
-  authenticatedUser: PublicUser;
+  user: PublicUser;
+  apiKeyInfo?: ApiKeyInfo;
   environment: string;
 };
 
 type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
   payments: Context.Tag.Service<Payments>;
-  authenticatedUser: PublicUser;
+  user: PublicUser;
+  apiKeyInfo?: ApiKeyInfo;
   environment: string;
 };
 
 function createWebHandler(options: WebHandlerOptions) {
   const services = Layer.mergeAll(
     Layer.succeed(SettingsService, { env: options.environment }),
-    Layer.succeed(AuthenticatedUser, options.authenticatedUser),
+    Layer.succeed(AuthenticatedUser, options.user),
+    Layer.succeed(Authentication, {
+      user: options.user,
+      apiKeyInfo: options.apiKeyInfo,
+    }),
     Layer.succeed(Database, options.db),
     Layer.succeed(Payments, options.payments),
   );
 
-  const ApiWithDependencies = Layer.mergeAll(
+  const ApiWithDependencies = Layer.merge(
     HttpServer.layerContext,
-    ApiLive.pipe(Layer.provide(services)),
-  );
+    ApiLive,
+  ).pipe(Layer.provide(services));
 
   return HttpApiBuilder.toWebHandler(ApiWithDependencies);
 }
@@ -62,7 +68,8 @@ export const handleRequest = (
     const webHandler = createWebHandler({
       db,
       payments,
-      authenticatedUser: options.authenticatedUser,
+      user: options.user,
+      apiKeyInfo: options.apiKeyInfo,
       environment: options.environment,
     });
 
@@ -74,20 +81,35 @@ export const handleRequest = (
           const pathWithoutPrefix =
             url.pathname.slice(options.prefix.length) || "/";
           const newUrl = new URL(pathWithoutPrefix + url.search, url.origin);
+          const hasBody = request.body !== null;
           modifiedRequest = new Request(newUrl.toString(), {
             method: request.method,
             headers: request.headers,
             body: request.body,
             redirect: request.redirect,
             signal: request.signal,
+            ...(hasBody ? ({ duplex: "half" } as RequestInit) : {}),
           });
         }
 
-        const response = await webHandler.handler(modifiedRequest);
+        let response = await webHandler.handler(modifiedRequest);
         const contentType = response.headers.get("content-type") || "";
         const isJsonResponse = contentType
           .toLowerCase()
           .includes("application/json");
+
+        if (isJsonResponse && response.status >= 400) {
+          const body = await response.clone().text();
+          if (body.includes('"_tag"')) {
+            const transformedBody = body.replace(/"_tag":/g, '"tag":');
+            response = new Response(transformedBody, {
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers,
+            });
+          }
+        }
+
         const matched = response.status !== 404 || isJsonResponse;
         return { matched, response };
       },

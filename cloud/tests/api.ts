@@ -20,8 +20,9 @@ import { SettingsService } from "@/settings";
 import { Database } from "@/db";
 import { DrizzleORM } from "@/db/client";
 import { Payments } from "@/payments";
-import { AuthenticatedUser } from "@/auth";
-import type { PublicUser, PublicOrganization } from "@/db/schema";
+import { AuthenticatedUser, Authentication } from "@/auth";
+import type { AuthResult } from "@/auth/context";
+import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { TEST_DATABASE_URL, DefaultMockPayments } from "@/tests/db";
 
 // Re-export expect from vitest
@@ -111,18 +112,20 @@ type ApiClient = Effect.Effect.Success<typeof makeClient>;
 
 function createTestWebHandler(
   databaseUrl: string,
-  authenticatedUser: PublicUser,
+  user: PublicUser,
+  apiKeyInfo?: ApiKeyInfo,
 ) {
   const services = Layer.mergeAll(
     Layer.succeed(SettingsService, { env: "test" }),
-    Layer.succeed(AuthenticatedUser, authenticatedUser),
+    Layer.succeed(AuthenticatedUser, user),
+    Layer.succeed(Authentication, { user, apiKeyInfo }),
     createTestDatabaseLayer(databaseUrl),
   );
 
-  const ApiWithDependencies = Layer.mergeAll(
+  const ApiWithDependencies = Layer.merge(
     HttpServer.layerContext,
-    ApiLive.pipe(Layer.provide(services)),
-  );
+    ApiLive,
+  ).pipe(Layer.provide(services));
 
   return HttpApiBuilder.toWebHandler(ApiWithDependencies);
 }
@@ -152,11 +155,12 @@ function createHandlerHttpClient(
   );
 }
 
-async function createApiClient(
+export async function createApiClient(
   databaseUrl: string,
-  authenticatedUser: PublicUser,
+  user: PublicUser,
+  apiKeyInfo?: ApiKeyInfo,
 ): Promise<{ client: ApiClient; dispose: () => Promise<void> }> {
-  const webHandler = createTestWebHandler(databaseUrl, authenticatedUser);
+  const webHandler = createTestWebHandler(databaseUrl, user, apiKeyInfo);
   const HandlerHttpClient = createHandlerHttpClient(webHandler);
   const HandlerHttpClientLayer = Layer.succeed(
     HttpClient.HttpClient,
@@ -373,25 +377,21 @@ export class TestApiClient extends Context.Tag("TestApiClient")<
  */
 function createSimpleTestWebHandler() {
   const databaseUrl = TEST_DATABASE_URL;
+  const authResult: AuthResult = { user: mockUser };
 
-  // Simple services
-  const simpleServices = Layer.mergeAll(
+  const services = Layer.mergeAll(
     Layer.succeed(SettingsService, { env: "test" }),
     Layer.succeed(AuthenticatedUser, mockUser),
+    Layer.succeed(Authentication, authResult),
+    createTestDatabaseLayer(databaseUrl).pipe(Layer.orDie),
   );
-
-  // Database layer
-  const dbLayer = createTestDatabaseLayer(databaseUrl).pipe(Layer.orDie);
-
-  const allServices = Layer.merge(simpleServices, dbLayer);
 
   const ApiWithDependencies = Layer.mergeAll(
     HttpServer.layerContext,
-    ApiLive.pipe(Layer.provide(allServices)),
+    ApiLive.pipe(Layer.provide(services)),
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
-  return HttpApiBuilder.toWebHandler(ApiWithDependencies as any);
+  return HttpApiBuilder.toWebHandler(ApiWithDependencies);
 }
 
 /**

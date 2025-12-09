@@ -8,7 +8,7 @@ import {
   clearSessionCookie,
   setOAuthStateCookie,
   clearOAuthStateCookie,
-  getAuthenticatedUser,
+  authenticate,
   type PathParameters,
 } from "@/auth/utils";
 import { UnauthorizedError } from "@/errors";
@@ -172,7 +172,7 @@ describe("clearOAuthStateCookie", () => {
   });
 });
 
-describe("getAuthenticatedUser - path parameter validation", () => {
+describe("authenticate - path parameter validation", () => {
   it.effect(
     "should authenticate with valid API key and matching environmentId",
     () =>
@@ -189,10 +189,11 @@ describe("getAuthenticatedUser - path parameter validation", () => {
           environmentId: environment.id,
         };
 
-        const user = yield* getAuthenticatedUser(request, pathParams);
+        const result = yield* authenticate(request, pathParams);
 
-        expect(user).not.toBeNull();
-        expect(user.id).toBe(owner.id);
+        expect(result.user).not.toBeNull();
+        expect(result.user.id).toBe(owner.id);
+        expect(result.apiKeyInfo).toBeDefined();
       }),
   );
 
@@ -210,9 +211,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
         environmentId: otherEnvironment.id, // Different environment!
       };
 
-      const result = yield* getAuthenticatedUser(request, pathParams).pipe(
-        Effect.flip,
-      );
+      const result = yield* authenticate(request, pathParams).pipe(Effect.flip);
 
       expect(result).toBeInstanceOf(UnauthorizedError);
       expect(result.message).toBe(
@@ -237,10 +236,10 @@ describe("getAuthenticatedUser - path parameter validation", () => {
           projectId: project.id,
         };
 
-        const user = yield* getAuthenticatedUser(request, pathParams);
+        const result = yield* authenticate(request, pathParams);
 
-        expect(user).not.toBeNull();
-        expect(user.id).toBe(owner.id);
+        expect(result.user).not.toBeNull();
+        expect(result.user.id).toBe(owner.id);
       }),
   );
 
@@ -258,9 +257,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
         projectId: "00000000-0000-0000-0000-000000000000", // Wrong project
       };
 
-      const result = yield* getAuthenticatedUser(request, pathParams).pipe(
-        Effect.flip,
-      );
+      const result = yield* authenticate(request, pathParams).pipe(Effect.flip);
 
       expect(result).toBeInstanceOf(UnauthorizedError);
       expect(result.message).toBe(
@@ -285,10 +282,10 @@ describe("getAuthenticatedUser - path parameter validation", () => {
           organizationId: org.id,
         };
 
-        const user = yield* getAuthenticatedUser(request, pathParams);
+        const result = yield* authenticate(request, pathParams);
 
-        expect(user).not.toBeNull();
-        expect(user.id).toBe(owner.id);
+        expect(result.user).not.toBeNull();
+        expect(result.user.id).toBe(owner.id);
       }),
   );
 
@@ -306,9 +303,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
         organizationId: "00000000-0000-0000-0000-000000000000", // Wrong org
       };
 
-      const result = yield* getAuthenticatedUser(request, pathParams).pipe(
-        Effect.flip,
-      );
+      const result = yield* authenticate(request, pathParams).pipe(Effect.flip);
 
       expect(result).toBeInstanceOf(UnauthorizedError);
       expect(result.message).toBe(
@@ -336,10 +331,10 @@ describe("getAuthenticatedUser - path parameter validation", () => {
           environmentId: environment.id,
         };
 
-        const user = yield* getAuthenticatedUser(request, pathParams);
+        const result = yield* authenticate(request, pathParams);
 
-        expect(user).not.toBeNull();
-        expect(user.id).toBe(owner.id);
+        expect(result.user).not.toBeNull();
+        expect(result.user.id).toBe(owner.id);
       }),
   );
 
@@ -360,9 +355,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
         environmentId: otherEnvironment.id,
       };
 
-      const result = yield* getAuthenticatedUser(request, pathParams).pipe(
-        Effect.flip,
-      );
+      const result = yield* authenticate(request, pathParams).pipe(Effect.flip);
 
       expect(result).toBeInstanceOf(UnauthorizedError);
       expect(result.message).toBe(
@@ -383,10 +376,10 @@ describe("getAuthenticatedUser - path parameter validation", () => {
           },
         });
 
-        const user = yield* getAuthenticatedUser(request, undefined);
+        const result = yield* authenticate(request, undefined);
 
-        expect(user).not.toBeNull();
-        expect(user.id).toBe(owner.id);
+        expect(result.user).not.toBeNull();
+        expect(result.user.id).toBe(owner.id);
       }),
   );
 
@@ -404,10 +397,10 @@ describe("getAuthenticatedUser - path parameter validation", () => {
         environmentId: environment.id,
       };
 
-      const user = yield* getAuthenticatedUser(request, pathParams);
+      const result = yield* authenticate(request, pathParams);
 
-      expect(user).not.toBeNull();
-      expect(user.id).toBe(owner.id);
+      expect(result.user).not.toBeNull();
+      expect(result.user.id).toBe(owner.id);
     }),
   );
 
@@ -419,7 +412,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
         },
       });
 
-      const result = yield* getAuthenticatedUser(request).pipe(Effect.flip);
+      const result = yield* authenticate(request).pipe(Effect.flip);
 
       expect(result).toBeInstanceOf(UnauthorizedError);
       expect(result.message).toBe("Invalid API key");
@@ -430,7 +423,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
     Effect.gen(function* () {
       const request = new Request("https://example.com/api/test");
 
-      const result = yield* getAuthenticatedUser(request).pipe(Effect.flip);
+      const result = yield* authenticate(request).pipe(Effect.flip);
 
       expect(result).toBeInstanceOf(UnauthorizedError);
       expect(result.message).toBe("Authentication required");
@@ -445,7 +438,7 @@ describe("getAuthenticatedUser - path parameter validation", () => {
         },
       });
 
-      const result = yield* getAuthenticatedUser(request).pipe(Effect.flip);
+      const result = yield* authenticate(request).pipe(Effect.flip);
 
       expect(result).toBeInstanceOf(UnauthorizedError);
       expect(result.message).toBe("Invalid session");
@@ -470,10 +463,11 @@ describe("getAuthenticatedUser - path parameter validation", () => {
         },
       });
 
-      const user = yield* getAuthenticatedUser(request);
+      const result = yield* authenticate(request);
 
-      expect(user).not.toBeNull();
-      expect(user.id).toBe(owner.id);
+      expect(result.user).not.toBeNull();
+      expect(result.user.id).toBe(owner.id);
+      expect(result.apiKeyInfo).toBeUndefined();
     }),
   );
 
@@ -497,10 +491,87 @@ describe("getAuthenticatedUser - path parameter validation", () => {
         },
       });
 
-      const result = yield* getAuthenticatedUser(request);
+      const result = yield* authenticate(request);
 
       // Should return the API key owner, not the session user
-      expect(result.id).toBe(owner.id);
+      expect(result.user.id).toBe(owner.id);
+      expect(result.apiKeyInfo).toBeDefined();
+    }),
+  );
+});
+
+describe("authenticate - API key", () => {
+  it.effect("returns user and apiKeyInfo when API key is valid", () =>
+    Effect.gen(function* () {
+      const { owner, environment, apiKey } = yield* TestAuthFixture;
+
+      const request = new Request("https://example.com/api/test", {
+        headers: {
+          "X-API-Key": apiKey,
+        },
+      });
+
+      const pathParams: PathParameters = {
+        environmentId: environment.id,
+      };
+
+      const result = yield* authenticate(request, pathParams);
+
+      expect(result.user.id).toBe(owner.id);
+      expect(result.apiKeyInfo).toBeDefined();
+      expect(result.apiKeyInfo?.environmentId).toBe(environment.id);
+    }),
+  );
+
+  it.effect(
+    "returns user with undefined apiKeyInfo when session cookie is valid",
+    () =>
+      Effect.gen(function* () {
+        const { owner } = yield* TestAuthFixture;
+        const db = yield* Database;
+
+        const expiresAt = new Date(Date.now() + 1000 * 60 * 60);
+        const session = yield* db.sessions.create({
+          userId: owner.id,
+          data: { userId: owner.id, expiresAt },
+        });
+
+        const request = new Request("https://example.com/api/test", {
+          headers: {
+            Cookie: `session=${session.id}`,
+          },
+        });
+
+        const result = yield* authenticate(request);
+
+        expect(result.user.id).toBe(owner.id);
+        expect(result.apiKeyInfo).toBeUndefined();
+      }),
+  );
+
+  it.effect("returns UnauthorizedError when no API key or session cookie", () =>
+    Effect.gen(function* () {
+      const request = new Request("https://example.com/api/test");
+
+      const result = yield* authenticate(request).pipe(Effect.flip);
+
+      expect(result).toBeInstanceOf(UnauthorizedError);
+      expect(result.message).toBe("Authentication required");
+    }),
+  );
+
+  it.effect("returns UnauthorizedError when session is invalid", () =>
+    Effect.gen(function* () {
+      const request = new Request("https://example.com/api/test", {
+        headers: {
+          Cookie: "session=invalid-session",
+        },
+      });
+
+      const result = yield* authenticate(request).pipe(Effect.flip);
+
+      expect(result).toBeInstanceOf(UnauthorizedError);
+      expect(result.message).toBe("Invalid session");
     }),
   );
 });

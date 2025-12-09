@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import { handleRequest } from "@/api/handler";
 import { handleErrors, handleDefects } from "@/api/utils";
 import { NotFoundError, InternalError } from "@/errors";
-import { getAuthenticatedUser, type PathParameters } from "@/auth";
+import { authenticate, type PathParameters } from "@/auth";
 import { Database } from "@/db";
 
 /**
@@ -58,18 +58,13 @@ export const Route = createFileRoute("/api/v0/$")({
             });
           }
 
-          // Extract path parameters from TanStack Router's splat for API key validation
           const pathParams = extractPathParameters(params["*"]);
-
-          // getAuthenticatedUser now returns UnauthorizedError if authentication fails
-          const authenticatedUser = yield* getAuthenticatedUser(
-            request,
-            pathParams,
-          );
+          const authResult = yield* authenticate(request, pathParams);
 
           const result = yield* handleRequest(request, {
             prefix: "/api/v0",
-            authenticatedUser,
+            user: authResult.user,
+            apiKeyInfo: authResult.apiKeyInfo,
             environment: process.env.ENVIRONMENT || "development",
           });
 
