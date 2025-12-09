@@ -1,35 +1,53 @@
 import { Effect } from "effect";
+import { Database } from "@/db";
 import {
-  type KeyValue,
-  type ResourceSpans,
-  type ScopeSpans,
+  UnauthorizedError,
+  NotFoundError,
+  PermissionDeniedError,
+  DatabaseError,
+  AlreadyExistsError,
+} from "@/errors";
+import { requireApiKeyAuth } from "@/auth";
+import {
   type CreateTraceRequest,
   type CreateTraceResponse,
 } from "@/api/traces.schemas";
 
 export * from "@/api/traces.schemas";
 
-export const createTraceHandler = (payload: CreateTraceRequest) =>
+export const createTraceHandler = (
+  payload: CreateTraceRequest,
+): Effect.Effect<
+  CreateTraceResponse,
+  | UnauthorizedError
+  | NotFoundError
+  | PermissionDeniedError
+  | DatabaseError
+  | AlreadyExistsError,
+  Database
+> =>
   Effect.gen(function* () {
-    const serviceName =
-      payload.resourceSpans?.[0]?.resource?.attributes?.find(
-        (attr: KeyValue) => attr.key === "service.name",
-      )?.value?.stringValue || "unknown";
+    const apiKeyInfo = yield* requireApiKeyAuth;
+    const db = yield* Database;
 
-    let totalSpans = 0;
-    payload.resourceSpans?.forEach((rs: ResourceSpans) => {
-      rs.scopeSpans?.forEach((ss: ScopeSpans) => {
-        totalSpans += ss.spans?.length || 0;
-      });
+    // Use the API key owner's userId for authorization
+    const result = yield* db.traces.create({
+      userId: apiKeyInfo.ownerId,
+      organizationId: apiKeyInfo.organizationId,
+      projectId: apiKeyInfo.projectId,
+      environmentId: apiKeyInfo.environmentId,
+      data: { resourceSpans: payload.resourceSpans },
     });
 
-    yield* Effect.log(
-      `[TRACE DEBUG] Received ${totalSpans} spans from service: ${serviceName}`,
-    );
-    yield* Effect.log(
-      `[TRACE DEBUG] Full trace data: ${JSON.stringify(payload, null, 2)}`,
-    );
+    const response: CreateTraceResponse = {
+      partialSuccess:
+        result.rejectedSpans > 0
+          ? {
+              rejectedSpans: result.rejectedSpans,
+              errorMessage: `${result.rejectedSpans} spans were rejected due to errors`,
+            }
+          : {},
+    };
 
-    const response: CreateTraceResponse = { partialSuccess: {} };
     return response;
   });

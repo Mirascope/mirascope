@@ -103,6 +103,56 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "UnauthorizedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "PermissionDeniedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionDeniedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "AlreadyExistsError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlreadyExistsError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "DatabaseError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabaseError"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2744,7 +2794,7 @@
           }
         ]
       },
-      "DatabaseError": {
+      "UnauthorizedError": {
         "type": "object",
         "required": [
           "message",
@@ -2754,36 +2804,10 @@
           "message": {
             "type": "string"
           },
-          "cause": {
-            "$id": "/schemas/unknown",
-            "title": "unknown"
-          },
           "tag": {
             "type": "string",
             "enum": [
-              "DatabaseError"
-            ]
-          }
-        },
-        "additionalProperties": false
-      },
-      "AlreadyExistsError": {
-        "type": "object",
-        "required": [
-          "message",
-          "tag"
-        ],
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "resource": {
-            "type": "string"
-          },
-          "tag": {
-            "type": "string",
-            "enum": [
-              "AlreadyExistsError"
+              "UnauthorizedError"
             ]
           }
         },
@@ -2828,6 +2852,51 @@
             "type": "string",
             "enum": [
               "PermissionDeniedError"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "DatabaseError": {
+        "type": "object",
+        "required": [
+          "message",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "cause": {
+            "$id": "/schemas/unknown",
+            "title": "unknown"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "DatabaseError"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "AlreadyExistsError": {
+        "type": "object",
+        "required": [
+          "message",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "AlreadyExistsError"
             ]
           }
         },

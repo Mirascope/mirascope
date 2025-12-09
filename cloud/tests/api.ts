@@ -112,7 +112,7 @@ function createTestWebHandler(
     Database.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
   );
 
-  const ApiWithDependencies = Layer.mergeAll(
+  const ApiWithDependencies = Layer.merge(
     HttpServer.layerContext,
     ApiLive.pipe(Layer.provide(services)),
   );

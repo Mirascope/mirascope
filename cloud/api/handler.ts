@@ -4,29 +4,39 @@ import { ApiLive } from "@/api/router";
 import { HandlerError } from "@/errors";
 import { SettingsService } from "@/settings";
 import { Database } from "@/db";
-import { AuthenticatedUser } from "@/auth";
-import type { PublicUser } from "@/db/schema";
+import { AuthenticatedUser, AuthenticatedApiKey } from "@/auth";
+import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 export type HandleRequestOptions = {
   prefix?: string;
   authenticatedUser: PublicUser;
+  authenticatedApiKey?: ApiKeyInfo | null;
   environment: string;
 };
 
 type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
   authenticatedUser: PublicUser;
+  authenticatedApiKey?: ApiKeyInfo | null;
   environment: string;
 };
 
 function createWebHandler(options: WebHandlerOptions) {
-  const services = Layer.mergeAll(
+  const baseServices = Layer.mergeAll(
     Layer.succeed(SettingsService, { env: options.environment }),
     Layer.succeed(AuthenticatedUser, options.authenticatedUser),
     Layer.succeed(Database, options.db),
   );
 
-  const ApiWithDependencies = Layer.mergeAll(
+  // Provide AuthenticatedApiKey context if API key authentication was used
+  const services = options.authenticatedApiKey
+    ? Layer.merge(
+        baseServices,
+        Layer.succeed(AuthenticatedApiKey, options.authenticatedApiKey),
+      )
+    : baseServices;
+
+  const ApiWithDependencies = Layer.merge(
     HttpServer.layerContext,
     ApiLive.pipe(Layer.provide(services)),
   );
@@ -58,6 +68,7 @@ export const handleRequest = (
     const webHandler = createWebHandler({
       db,
       authenticatedUser: options.authenticatedUser,
+      authenticatedApiKey: options.authenticatedApiKey,
       environment: options.environment,
     });
 

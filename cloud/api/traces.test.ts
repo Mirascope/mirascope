@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import { TestApiClient, TestClient } from "@/tests/api";
 
 describe("Traces API", () => {
-  it.effect("POST /traces", () =>
+  it.effect("POST /traces - requires API key auth", () =>
     Effect.gen(function* () {
       const client = yield* TestApiClient;
       const payload = {
@@ -40,45 +40,8 @@ describe("Traces API", () => {
         ],
       };
 
-      const result = yield* client.traces.create({ payload });
-      expect(result).toMatchObject({
-        partialSuccess: expect.any(Object) as unknown,
-      });
-    }).pipe(Effect.provide(TestClient.Default)),
-  );
-
-  it.effect("POST /traces - missing service.name and spans", () =>
-    Effect.gen(function* () {
-      const client = yield* TestApiClient;
-      const payload = {
-        resourceSpans: [
-          {
-            resource: {
-              attributes: [
-                {
-                  key: "other.attribute",
-                  value: {
-                    stringValue: "other-value",
-                  },
-                },
-              ],
-            },
-            scopeSpans: [
-              {
-                scope: {
-                  name: "test-scope",
-                },
-                spans: [],
-              },
-            ],
-          },
-        ],
-      };
-
-      const result = yield* client.traces.create({ payload });
-      expect(result).toMatchObject({
-        partialSuccess: expect.any(Object) as unknown,
-      });
+      const result = yield* Effect.either(client.traces.create({ payload }));
+      expect(result._tag).toBe("Left");
     }).pipe(Effect.provide(TestClient.Default)),
   );
 });
