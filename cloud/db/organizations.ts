@@ -148,7 +148,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
    * @throws NotFoundError - If the user is not a member (hides org existence)
    * @throws DatabaseError - If the database query fails
    */
-  protected getRole({
+  getRole({
     userId,
     organizationId,
   }: {
@@ -159,14 +159,7 @@ export class Organizations extends BaseAuthenticatedEffectService<
     NotFoundError | PermissionDeniedError | DatabaseError,
     DrizzleORM
   > {
-    return Effect.gen(this, function* () {
-      const { role } = yield* this.memberships.findById({
-        userId,
-        organizationId,
-        memberId: userId,
-      });
-      return role;
-    });
+    return this.memberships.getRole({ userId, organizationId });
   }
 
   // ---------------------------------------------------------------------------

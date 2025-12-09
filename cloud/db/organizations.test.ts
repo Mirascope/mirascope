@@ -310,17 +310,7 @@ describe("Organizations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // authorize -> getRole -> memberships.findById
-            //   -> authorize -> getRole -> getMembership
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "user-id",
-                createdAt: new Date(),
-              },
-            ])
-            //   -> findById actual query
+            // authorize -> getRole -> getMembership
             .select([
               {
                 role: "OWNER",
@@ -351,17 +341,7 @@ describe("Organizations", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // authorize -> getRole -> memberships.findById
-            //   -> authorize -> getRole -> getMembership
-            .select([
-              {
-                role: "OWNER",
-                organizationId: "org-id",
-                memberId: "user-id",
-                createdAt: new Date(),
-              },
-            ])
-            //   -> findById actual query
+            // authorize -> getRole -> getMembership
             .select([
               {
                 role: "OWNER",

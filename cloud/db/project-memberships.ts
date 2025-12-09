@@ -292,7 +292,7 @@ export class ProjectMemberships extends BaseAuthenticatedEffectService<
    * @throws NotFoundError - If the user has no access
    * @throws DatabaseError - If the database query fails
    */
-  protected getRole({
+  getRole({
     userId,
     organizationId,
     projectId,
