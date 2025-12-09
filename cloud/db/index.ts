@@ -5,3 +5,4 @@ export type {
   ProjectsService,
   EnvironmentsService,
 } from "@/db/database";
+export type { EnvironmentContext, IngestResult } from "@/db/traces";
