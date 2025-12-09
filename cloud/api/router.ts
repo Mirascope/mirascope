@@ -3,6 +3,13 @@ import { Layer } from "effect";
 import { checkHealthHandler } from "@/api/health.handlers";
 import { createTraceHandler } from "@/api/traces.handlers";
 import { getOpenApiSpecHandler } from "@/api/docs.handlers";
+import {
+  listOrganizationsHandler,
+  createOrganizationHandler,
+  getOrganizationHandler,
+  updateOrganizationHandler,
+  deleteOrganizationHandler,
+} from "@/api/organizations.handlers";
 import { MirascopeCloudApi } from "@/api/api";
 
 export { MirascopeCloudApi };
@@ -26,8 +33,23 @@ const DocsHandlersLive = HttpApiBuilder.group(
   (handlers) => handlers.handle("openapi", () => getOpenApiSpecHandler),
 );
 
+const OrganizationsHandlersLive = HttpApiBuilder.group(
+  MirascopeCloudApi,
+  "organizations",
+  (handlers) =>
+    handlers
+      .handle("list", () => listOrganizationsHandler)
+      .handle("create", ({ payload }) => createOrganizationHandler(payload))
+      .handle("get", ({ path }) => getOrganizationHandler(path.id))
+      .handle("update", ({ path, payload }) =>
+        updateOrganizationHandler(path.id, payload),
+      )
+      .handle("delete", ({ path }) => deleteOrganizationHandler(path.id)),
+);
+
 export const ApiLive = HttpApiBuilder.api(MirascopeCloudApi).pipe(
   Layer.provide(HealthHandlersLive),
   Layer.provide(TracesHandlersLive),
   Layer.provide(DocsHandlersLive),
+  Layer.provide(OrganizationsHandlersLive),
 );

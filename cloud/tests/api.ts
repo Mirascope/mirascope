@@ -1,5 +1,8 @@
+import * as dotenv from "dotenv";
 import { Effect, Layer } from "effect";
 import { beforeAll, afterAll } from "vitest";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { MirascopeCloudApi, ApiLive } from "@/api/router";
 import {
   HttpClient,
@@ -13,7 +16,10 @@ import { EnvironmentService } from "@/environment";
 import { DatabaseService, getDatabase, type Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type { App } from "@/api/handler";
+import * as schema from "@/db/schema";
 import type { PublicUser } from "@/db/schema";
+
+dotenv.config({ path: ".env.local", override: true });
 
 const mockUser: PublicUser = {
   id: "test-user-id",
@@ -143,5 +149,61 @@ export const withTestClient = (
         },
       }),
     );
+  };
+};
+
+export const withTestClientDb = (
+  testFn: (client: TestClient) => void | Promise<void>,
+) => {
+  return async () => {
+    const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL;
+    if (!TEST_DATABASE_URL) {
+      throw new Error(
+        "TEST_DATABASE_URL environment variable is required for database tests",
+      );
+    }
+
+    const sql = postgres(TEST_DATABASE_URL, { max: 5, fetch_types: false });
+    const db = drizzle(sql, { schema });
+
+    try {
+      await db
+        .transaction(async (tx) => {
+          const txDb = getDatabase(tx);
+
+          const [user] = await tx
+            .insert(schema.users)
+            .values({ email: "api-test@example.com", name: "API Test User" })
+            .returning({
+              id: schema.users.id,
+              email: schema.users.email,
+              name: schema.users.name,
+            });
+
+          const { client, cleanup } = createTestClient({
+            database: txDb,
+            authenticatedUser: user,
+          });
+
+          try {
+            await testFn(client);
+          } finally {
+            await cleanup();
+          }
+          throw new Error("__ROLLBACK_TEST_DB__");
+        })
+        .catch((err: unknown) => {
+          if (
+            err &&
+            typeof err === "object" &&
+            "message" in err &&
+            err.message !== "__ROLLBACK_TEST_DB__"
+          ) {
+            throw err;
+          }
+        });
+    } finally {
+      await sql.end();
+    }
   };
 };

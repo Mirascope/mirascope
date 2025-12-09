@@ -20,15 +20,30 @@ function createTestApp(user: PublicUser = mockUser): App {
 }
 
 describe("handleRequest", () => {
-  it("should return matched=false and 404 for a non-existing route", async () => {
+  it("should return 404 for non-existing routes", async () => {
+    const req = new Request(
+      "http://localhost/api/v0/this-route-does-not-exist",
+      { method: "GET" },
+    );
+    const { matched, response } = await handleRequest(req, {
+      app: createTestApp(),
+      prefix: "/api/v0",
+    });
+
+    expect(response.status).toBe(404);
+    expect(matched).toBe(false);
+  });
+
+  it("should return 404 when pathname exactly matches prefix (no route)", async () => {
     const req = new Request("http://localhost/api/v0", { method: "GET" });
     const { matched, response } = await handleRequest(req, {
       app: createTestApp(),
       prefix: "/api/v0",
     });
 
-    expect(matched).toBe(false);
+    // The path becomes "/" after stripping prefix, which doesn't match any route
     expect(response.status).toBe(404);
+    expect(matched).toBe(false);
   });
 
   it("should return 500 and matched=false for a request that triggers an exception", async () => {

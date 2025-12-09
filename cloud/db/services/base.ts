@@ -272,6 +272,8 @@ export abstract class BaseAuthenticatedService<
     userId: string,
   ): Effect.Effect<TPublic[], PermissionDeniedError | DatabaseError>;
 
+  // TODO: include in coverage once we have a service that doesn't override this
+  /* v8 ignore start */
   findById(
     id: TId,
     userId: string,
@@ -283,6 +285,7 @@ export abstract class BaseAuthenticatedService<
       Effect.andThen(this.baseService.findById(id)),
     );
   }
+  /* v8 ignore end */
 
   update(
     id: TId,

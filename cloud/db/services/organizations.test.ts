@@ -186,6 +186,32 @@ describe("OrganizationService", () => {
         }),
       ),
     );
+
+    it(
+      "should return NotFoundError when organization does not exist",
+      withTestDatabase((db) =>
+        Effect.gen(function* () {
+          const user = yield* db.users.create({
+            email: "test@example.com",
+            name: "Test User",
+          });
+
+          const result = yield* Effect.either(
+            db.organizations.update(
+              "00000000-0000-0000-0000-000000000000",
+              { name: "Should Fail" },
+              user.id,
+            ),
+          );
+
+          expect(result._tag).toBe("Left");
+          if (result._tag === "Left") {
+            expect(result.left).toBeInstanceOf(NotFoundError);
+            expect(result.left.message).toContain("not found");
+          }
+        }),
+      ),
+    );
   });
 
   describe("delete", () => {
@@ -405,6 +431,91 @@ describe("OrganizationService", () => {
       ),
     );
 
+    it("findById returns DatabaseError when database query fails", () => {
+      return Effect.gen(function* () {
+        let selectCallCount = 0;
+        const mockDb = createPartialMockDatabase({
+          select: () => {
+            selectCallCount++;
+            if (selectCallCount === 1) {
+              // First call: membership check - pass
+              return {
+                from: () => ({
+                  where: () => ({
+                    limit: () => Promise.resolve([{ role: "OWNER" }]),
+                  }),
+                }),
+              };
+            }
+            // Second call: organization fetch - fail
+            return {
+              from: () => ({
+                innerJoin: () => ({
+                  where: () => ({
+                    limit: () =>
+                      Promise.reject(new Error("Database connection failed")),
+                  }),
+                }),
+              }),
+            };
+          },
+        });
+
+        const service = new OrganizationService(mockDb);
+
+        const result = yield* Effect.either(
+          service.findById("test-org-id", "test-user-id"),
+        );
+        expect(result._tag).toBe("Left");
+        if (result._tag === "Left") {
+          expect(result.left).toBeInstanceOf(DatabaseError);
+          expect(result.left.message).toContain("Failed to find organization");
+        }
+      }).pipe(Effect.runPromise);
+    });
+
+    it("findById returns NotFoundError when organization not found", () => {
+      return Effect.gen(function* () {
+        let selectCallCount = 0;
+        const mockDb = createPartialMockDatabase({
+          select: () => {
+            selectCallCount++;
+            if (selectCallCount === 1) {
+              // First call: membership check - pass
+              return {
+                from: () => ({
+                  where: () => ({
+                    limit: () => Promise.resolve([{ role: "OWNER" }]),
+                  }),
+                }),
+              };
+            }
+            // Second call: organization fetch - return empty
+            return {
+              from: () => ({
+                innerJoin: () => ({
+                  where: () => ({
+                    limit: () => Promise.resolve([]),
+                  }),
+                }),
+              }),
+            };
+          },
+        });
+
+        const service = new OrganizationService(mockDb);
+
+        const result = yield* Effect.either(
+          service.findById("test-org-id", "test-user-id"),
+        );
+        expect(result._tag).toBe("Left");
+        if (result._tag === "Left") {
+          expect(result.left).toBeInstanceOf(NotFoundError);
+          expect(result.left.message).toContain("not found");
+        }
+      }).pipe(Effect.runPromise);
+    });
+
     it("findAll returns DatabaseError on database query failure", () => {
       return Effect.gen(function* () {
         const mockDb = createPartialMockDatabase({
@@ -569,6 +680,133 @@ describe("OrganizationService", () => {
           expect(result.left.message).toContain(
             "Failed to delete organization",
           );
+        }
+      }).pipe(Effect.runPromise);
+    });
+
+    it("update returns DatabaseError when update query fails", () => {
+      return Effect.gen(function* () {
+        let selectCallCount = 0;
+        const mockDb = createPartialMockDatabase({
+          select: () => {
+            selectCallCount++;
+            if (selectCallCount === 1) {
+              // First call: organization check - return existing org
+              return {
+                from: () => ({
+                  where: () => ({
+                    limit: () => Promise.resolve([{ id: "test-org-id" }]),
+                  }),
+                }),
+              };
+            }
+            // Second call: membership check - return ADMIN membership
+            return {
+              from: () => ({
+                where: () => ({
+                  limit: () => Promise.resolve([{ role: "ADMIN" }]),
+                }),
+              }),
+            };
+          },
+          update: () => ({
+            set: () => ({
+              where: () => ({
+                returning: () =>
+                  Promise.reject(new Error("Database connection failed")),
+              }),
+            }),
+          }),
+        });
+
+        const service = new OrganizationService(mockDb);
+
+        const result = yield* Effect.either(
+          service.update("test-org-id", { name: "New Name" }, "test-user-id"),
+        );
+        expect(result._tag).toBe("Left");
+        if (result._tag === "Left") {
+          expect(result.left).toBeInstanceOf(DatabaseError);
+          expect(result.left.message).toContain(
+            "Failed to update organization",
+          );
+        }
+      }).pipe(Effect.runPromise);
+    });
+
+    it(
+      "update returns DatabaseError when initial organization fetch fails",
+      withErroringService(OrganizationService, (service) =>
+        Effect.gen(function* () {
+          const result = yield* Effect.either(
+            service.update("test-org-id", { name: "New Name" }, "test-user-id"),
+          );
+          expect(result._tag).toBe("Left");
+          if (result._tag === "Left") {
+            expect(result.left).toBeInstanceOf(DatabaseError);
+            expect(result.left.message).toContain(
+              "Failed to find organization",
+            );
+          }
+        }),
+      ),
+    );
+
+    it("update returns DatabaseError when fetching membership fails", () => {
+      return Effect.gen(function* () {
+        let selectCallCount = 0;
+        const mockDb = createPartialMockDatabase({
+          select: () => {
+            selectCallCount++;
+            if (selectCallCount === 1) {
+              // First call: organization check - return existing org
+              return {
+                from: () => ({
+                  where: () => ({
+                    limit: () => Promise.resolve([{ id: "test-org-id" }]),
+                  }),
+                }),
+              };
+            }
+            if (selectCallCount === 2) {
+              // Second call: permission check membership - return ADMIN
+              return {
+                from: () => ({
+                  where: () => ({
+                    limit: () => Promise.resolve([{ role: "ADMIN" }]),
+                  }),
+                }),
+              };
+            }
+            // Third call: fetching membership after update - fail
+            return {
+              from: () => ({
+                where: () => ({
+                  limit: () =>
+                    Promise.reject(new Error("Database connection failed")),
+                }),
+              }),
+            };
+          },
+          update: () => ({
+            set: () => ({
+              where: () => ({
+                returning: () =>
+                  Promise.resolve([{ id: "test-org-id", name: "New Name" }]),
+              }),
+            }),
+          }),
+        });
+
+        const service = new OrganizationService(mockDb);
+
+        const result = yield* Effect.either(
+          service.update("test-org-id", { name: "New Name" }, "test-user-id"),
+        );
+        expect(result._tag).toBe("Left");
+        if (result._tag === "Left") {
+          expect(result.left).toBeInstanceOf(DatabaseError);
+          expect(result.left.message).toContain("Failed to fetch membership");
         }
       }).pipe(Effect.runPromise);
     });
