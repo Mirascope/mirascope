@@ -705,6 +705,7 @@ async def test_async_response_execute_tools() -> None:
 
 
 def test_response_tools_initialization() -> None:
+    """Initialize `Response` and `AsyncResponse` with tools."""
     assistant_message = llm.messages.assistant("oh hi", model_id="openai/gpt-5-mini")
 
     response = llm.Response(

@@ -43,6 +43,8 @@ _T = TypeVar("_T", bound=Callable[..., Any])
 
 
 def test_decorator(param: str | None = None) -> Callable[[_T], _T]:
+    """A decorator that adds a test parameter to the function."""
+
     def decorator(func: _T) -> _T:
         func._test_param = param  # type: ignore[attr-defined]
         return func
@@ -51,6 +53,7 @@ def test_decorator(param: str | None = None) -> Callable[[_T], _T]:
 
 
 def cache_result(func: Callable[..., Any]) -> Callable[..., Any]:
+    """A decorator that caches the result of the function."""
     from functools import wraps
 
     cache: dict[str, Any] = {}
