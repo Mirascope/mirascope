@@ -153,7 +153,10 @@ export const withTestClient = (
 };
 
 export const withTestClientDb = (
-  testFn: (client: TestClient) => void | Promise<void>,
+  testFn: (
+    client: TestClient,
+    context: { user: PublicUser },
+  ) => void | Promise<void>,
 ) => {
   return async () => {
     const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL;
@@ -186,7 +189,7 @@ export const withTestClientDb = (
           });
 
           try {
-            await testFn(client);
+            await testFn(client, { user });
           } finally {
             await cleanup();
           }
