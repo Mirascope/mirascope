@@ -160,8 +160,11 @@ python/
 ├── scripts/              # Build and utility scripts
 │   ├── example_generator.ts
 │   ├── regenerate_examples.ts
-│   ├── update_openai_completions_model_features.py
-│   └── update_openai_responses_model_features.py
+│   └── model_features/   # Model feature testing and code generation
+│       ├── codegen_openai.py
+│       ├── test_openai.py
+│       └── data/
+│           └── openai.yaml
 ├── pyproject.toml        # Python package configuration
 ├── uv.lock               # Dependency lock file
 └── README.md             # Python SDK README

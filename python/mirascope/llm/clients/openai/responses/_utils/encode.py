@@ -39,10 +39,9 @@ from .....formatting import (
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
-from ...model_info import OpenAIModelId
+from ...model_info import NON_REASONING_MODELS, OpenAIModelId
 from ...shared import _utils as _shared_utils
 from .decode import get_provider_model_id
-from .model_features import NON_REASONING_MODELS
 
 
 class ResponseCreateKwargs(TypedDict, total=False):
