@@ -95,7 +95,7 @@ def get_client(
             return get_openai_completions_client()
         case "openai:responses":
             return get_openai_responses_client()
-        case "mlx":
+        case "mlx":  # pragma: no cover (MLX is only available on macOS)
             return get_mlx_client()
         case _:
             raise ValueError(f"Unknown provider: {provider}")
