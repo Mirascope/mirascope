@@ -51,7 +51,7 @@ export type SpanStatus = typeof SpanStatusSchema.Type;
 export const SpanSchema = Schema.Struct({
   traceId: Schema.String,
   spanId: Schema.String,
-  parentSpanId: Schema.optional(Schema.String),
+  parentSpanId: Schema.optional(Schema.NullOr(Schema.String)),
   name: Schema.String,
   kind: Schema.optional(Schema.Number),
   startTimeUnixNano: Schema.String,

@@ -93,17 +93,7 @@ export type PathParameters = {
   environmentId?: string;
 };
 
-/**
- * Validates an API key against path parameters and retrieves complete API key information.
- *
- * Gets the API key info (including owner details) and ensures it has access to the specified
- * environment, project, or organization from the request path.
- *
- * @param apiKey - The API key to validate
- * @param pathParams - Optional path parameters to validate against
- * @returns Effect containing the complete API key info with owner details
- * @throws UnauthorizedError - If the API key is invalid, owner doesn't exist, or doesn't match path parameters
- */
+/** Validate an API key and optional path scope. */
 export const validateApiKey = (
   apiKey: string,
   pathParams?: PathParameters,
@@ -111,7 +101,6 @@ export const validateApiKey = (
   Effect.gen(function* () {
     const db = yield* Database;
 
-    // Get the API key info (verifies key and ensures owner exists)
     const apiKeyInfo = yield* db.organizations.projects.environments.apiKeys
       .getApiKeyInfo(apiKey)
       .pipe(
@@ -124,9 +113,7 @@ export const validateApiKey = (
         ),
       );
 
-    // If path parameters are provided, validate that the API key matches them
     if (pathParams) {
-      // Validate environmentId if provided
       if (
         pathParams.environmentId &&
         pathParams.environmentId !== apiKeyInfo.environmentId
@@ -139,7 +126,6 @@ export const validateApiKey = (
         );
       }
 
-      // Validate projectId if provided
       if (
         pathParams.projectId &&
         pathParams.projectId !== apiKeyInfo.projectId
@@ -152,7 +138,6 @@ export const validateApiKey = (
         );
       }
 
-      // Validate organizationId if provided
       if (
         pathParams.organizationId &&
         pathParams.organizationId !== apiKeyInfo.organizationId
@@ -183,13 +168,10 @@ export const authenticate = (
   Effect.gen(function* () {
     const db = yield* Database;
 
-    // 1. Try API key authentication first
     const apiKey = getApiKeyFromRequest(request);
     if (apiKey) {
-      // Validate the API key against path parameters and get complete info
       const apiKeyInfo = yield* validateApiKey(apiKey, pathParams);
 
-      // Return both user and API key info
       return {
         user: {
           id: apiKeyInfo.ownerId,
@@ -201,7 +183,6 @@ export const authenticate = (
       };
     }
 
-    // 2. Fall back to session-based authentication
     const sessionId = getSessionIdFromCookie(request);
     if (!sessionId) {
       return yield* Effect.fail(

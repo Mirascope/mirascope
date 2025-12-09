@@ -42,16 +42,7 @@ function createWebHandler(options: WebHandlerOptions) {
   return HttpApiBuilder.toWebHandler(ApiWithDependencies as any);
 }
 
-/**
- * Handle an API request using the Effect HTTP API.
- *
- * This is an Effect that depends on `Database` to share the database
- * connection with authentication and API handlers.
- *
- * @param request - The incoming HTTP request
- * @param options - Configuration including prefix, authenticated user, and environment
- * @returns An Effect that resolves to the matched status and response
- */
+/** Handle an API request using the Effect HTTP API. */
 export const handleRequest = (
   request: Request,
   options: HandleRequestOptions,

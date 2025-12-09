@@ -13,7 +13,6 @@ function extractPathParameters(
 
   const pathParts = splat.split("/").filter(Boolean);
 
-  // API v0 routes follow pattern: organizations/:id/projects/:id/environments/:id/...
   const pathParams: PathParameters = {};
   let hasParams = false;
 
