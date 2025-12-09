@@ -33,38 +33,42 @@ export const Route = createFileRoute("/dashboard/settings")({
   component: SettingsPage,
 });
 
-function SettingsPage() {
+function SettingsContent() {
   const { selectedOrganization } = useOrganization();
   const { selectedProject } = useProject();
   const { selectedEnvironment } = useEnvironment();
 
   return (
+    <div className="p-6 max-w-4xl">
+      <h1 className="text-2xl font-semibold mb-6">Settings</h1>
+
+      <div className="space-y-6">
+        <OrganizationSection
+          organizationId={selectedOrganization?.id ?? null}
+        />
+
+        <ProjectsSection organizationId={selectedOrganization?.id ?? null} />
+
+        <EnvironmentsSection
+          organizationId={selectedOrganization?.id ?? null}
+          projectId={selectedProject?.id ?? null}
+        />
+
+        <ApiKeysSection
+          organizationId={selectedOrganization?.id ?? null}
+          projectId={selectedProject?.id ?? null}
+          environmentId={selectedEnvironment?.id ?? null}
+        />
+      </div>
+    </div>
+  );
+}
+
+function SettingsPage() {
+  return (
     <Protected>
       <DashboardLayout>
-        <div className="p-6 max-w-4xl">
-          <h1 className="text-2xl font-semibold mb-6">Settings</h1>
-
-          <div className="space-y-6">
-            <OrganizationSection
-              organizationId={selectedOrganization?.id ?? null}
-            />
-
-            <ProjectsSection
-              organizationId={selectedOrganization?.id ?? null}
-            />
-
-            <EnvironmentsSection
-              organizationId={selectedOrganization?.id ?? null}
-              projectId={selectedProject?.id ?? null}
-            />
-
-            <ApiKeysSection
-              organizationId={selectedOrganization?.id ?? null}
-              projectId={selectedProject?.id ?? null}
-              environmentId={selectedEnvironment?.id ?? null}
-            />
-          </div>
-        </div>
+        <SettingsContent />
       </DashboardLayout>
     </Protected>
   );
