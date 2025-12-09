@@ -43,10 +43,6 @@ function SettingsContent() {
       <h1 className="text-2xl font-semibold mb-6">Settings</h1>
 
       <div className="space-y-6">
-        <OrganizationSection
-          organizationId={selectedOrganization?.id ?? null}
-        />
-
         <ProjectsSection organizationId={selectedOrganization?.id ?? null} />
 
         <EnvironmentsSection
@@ -58,6 +54,10 @@ function SettingsContent() {
           organizationId={selectedOrganization?.id ?? null}
           projectId={selectedProject?.id ?? null}
           environmentId={selectedEnvironment?.id ?? null}
+        />
+
+        <OrganizationSection
+          organizationId={selectedOrganization?.id ?? null}
         />
       </div>
     </div>
@@ -384,6 +384,7 @@ function ApiKeysSection({
 }) {
   const [newKeyName, setNewKeyName] = useState("");
   const [createdKey, setCreatedKey] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const { data: apiKeys, isLoading } = useApiKeys(
     organizationId,
@@ -426,6 +427,8 @@ function ApiKeysSection({
 
   const copyToClipboard = (text: string) => {
     void navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (!organizationId || !projectId || !environmentId) {
@@ -479,7 +482,7 @@ function ApiKeysSection({
                 size="sm"
                 onClick={() => copyToClipboard(createdKey)}
               >
-                Copy
+                {copied ? "Copied!" : "Copy"}
               </Button>
               <Button
                 variant="ghost"
