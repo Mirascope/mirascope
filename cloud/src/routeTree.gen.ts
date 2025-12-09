@@ -13,6 +13,8 @@ import { Route as rootRouteImport } from "./routes/__root";
 import { Route as OrganizationsRouteImport } from "./routes/organizations";
 import { Route as LoginRouteImport } from "./routes/login";
 import { Route as IndexRouteImport } from "./routes/index";
+import { Route as DashboardIndexRouteImport } from "./routes/dashboard/index";
+import { Route as DashboardSettingsRouteImport } from "./routes/dashboard/settings";
 import { Route as AuthMeRouteImport } from "./routes/auth/me";
 import { Route as AuthGoogleRouteImport } from "./routes/auth/google";
 import { Route as AuthGithubRouteImport } from "./routes/auth/github";
@@ -37,6 +39,16 @@ const LoginRoute = LoginRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: "/",
   path: "/",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: "/dashboard/",
+  path: "/dashboard/",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: "/dashboard/settings",
+  path: "/dashboard/settings",
   getParentRoute: () => rootRouteImport,
 } as any);
 const AuthMeRoute = AuthMeRouteImport.update({
@@ -97,6 +109,8 @@ export interface FileRoutesByFullPath {
   "/auth/github": typeof AuthGithubRouteWithChildren;
   "/auth/google": typeof AuthGoogleRouteWithChildren;
   "/auth/me": typeof AuthMeRoute;
+  "/dashboard/settings": typeof DashboardSettingsRoute;
+  "/dashboard": typeof DashboardIndexRoute;
   "/api/v0/$": typeof ApiV0SplatRoute;
   "/api/v0/docs": typeof ApiV0DocsRoute;
   "/api/v0/health": typeof ApiV0HealthRoute;
@@ -112,6 +126,8 @@ export interface FileRoutesByTo {
   "/auth/github": typeof AuthGithubRouteWithChildren;
   "/auth/google": typeof AuthGoogleRouteWithChildren;
   "/auth/me": typeof AuthMeRoute;
+  "/dashboard/settings": typeof DashboardSettingsRoute;
+  "/dashboard": typeof DashboardIndexRoute;
   "/api/v0/$": typeof ApiV0SplatRoute;
   "/api/v0/docs": typeof ApiV0DocsRoute;
   "/api/v0/health": typeof ApiV0HealthRoute;
@@ -128,6 +144,8 @@ export interface FileRoutesById {
   "/auth/github": typeof AuthGithubRouteWithChildren;
   "/auth/google": typeof AuthGoogleRouteWithChildren;
   "/auth/me": typeof AuthMeRoute;
+  "/dashboard/settings": typeof DashboardSettingsRoute;
+  "/dashboard/": typeof DashboardIndexRoute;
   "/api/v0/$": typeof ApiV0SplatRoute;
   "/api/v0/docs": typeof ApiV0DocsRoute;
   "/api/v0/health": typeof ApiV0HealthRoute;
@@ -145,6 +163,8 @@ export interface FileRouteTypes {
     | "/auth/github"
     | "/auth/google"
     | "/auth/me"
+    | "/dashboard/settings"
+    | "/dashboard"
     | "/api/v0/$"
     | "/api/v0/docs"
     | "/api/v0/health"
@@ -160,6 +180,8 @@ export interface FileRouteTypes {
     | "/auth/github"
     | "/auth/google"
     | "/auth/me"
+    | "/dashboard/settings"
+    | "/dashboard"
     | "/api/v0/$"
     | "/api/v0/docs"
     | "/api/v0/health"
@@ -175,6 +197,8 @@ export interface FileRouteTypes {
     | "/auth/github"
     | "/auth/google"
     | "/auth/me"
+    | "/dashboard/settings"
+    | "/dashboard/"
     | "/api/v0/$"
     | "/api/v0/docs"
     | "/api/v0/health"
@@ -191,6 +215,8 @@ export interface RootRouteChildren {
   AuthGithubRoute: typeof AuthGithubRouteWithChildren;
   AuthGoogleRoute: typeof AuthGoogleRouteWithChildren;
   AuthMeRoute: typeof AuthMeRoute;
+  DashboardSettingsRoute: typeof DashboardSettingsRoute;
+  DashboardIndexRoute: typeof DashboardIndexRoute;
   ApiV0SplatRoute: typeof ApiV0SplatRoute;
   ApiV0DocsRoute: typeof ApiV0DocsRoute;
   ApiV0HealthRoute: typeof ApiV0HealthRoute;
@@ -217,6 +243,20 @@ declare module "@tanstack/react-router" {
       path: "/";
       fullPath: "/";
       preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/dashboard/": {
+      id: "/dashboard/";
+      path: "/dashboard";
+      fullPath: "/dashboard";
+      preLoaderRoute: typeof DashboardIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/dashboard/settings": {
+      id: "/dashboard/settings";
+      path: "/dashboard/settings";
+      fullPath: "/dashboard/settings";
+      preLoaderRoute: typeof DashboardSettingsRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     "/auth/me": {
@@ -327,6 +367,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthGithubRoute: AuthGithubRouteWithChildren,
   AuthGoogleRoute: AuthGoogleRouteWithChildren,
   AuthMeRoute: AuthMeRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
   ApiV0SplatRoute: ApiV0SplatRoute,
   ApiV0DocsRoute: ApiV0DocsRoute,
   ApiV0HealthRoute: ApiV0HealthRoute,

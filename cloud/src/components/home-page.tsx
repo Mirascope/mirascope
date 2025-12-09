@@ -31,10 +31,13 @@ export function HomePage() {
           <div className="text-muted-foreground">{user.email}</div>
         </div>
         <div className="flex gap-3">
-          <Link to="/organizations">
-            <Button>Organizations</Button>
+          <Link to="/dashboard">
+            <Button>Dashboard</Button>
           </Link>
-          <Button variant="outline" onClick={() => void logout()}>
+          <Link to="/organizations">
+            <Button variant="outline">Organizations</Button>
+          </Link>
+          <Button variant="ghost" onClick={() => void logout()}>
             Logout
           </Button>
         </div>
