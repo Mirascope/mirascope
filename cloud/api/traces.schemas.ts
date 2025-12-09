@@ -1,9 +1,5 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
-import { Schema, Effect } from "effect";
-
-// ============================================================================
-// Schemas
-// ============================================================================
+import { Schema } from "effect";
 
 export const KeyValueSchema = Schema.Struct({
   key: Schema.String,
@@ -107,41 +103,8 @@ export const CreateTraceResponseSchema = Schema.Struct({
 
 export type CreateTraceResponse = typeof CreateTraceResponseSchema.Type;
 
-// ============================================================================
-// API Group
-// ============================================================================
-
 export class TracesApi extends HttpApiGroup.make("traces").add(
   HttpApiEndpoint.post("create", "/traces")
     .setPayload(CreateTraceRequestSchema)
     .addSuccess(CreateTraceResponseSchema),
 ) {}
-
-// ============================================================================
-// Handler Effect Factory
-// ============================================================================
-
-export const createTraceHandler = (payload: CreateTraceRequest) =>
-  Effect.gen(function* () {
-    const serviceName =
-      payload.resourceSpans?.[0]?.resource?.attributes?.find(
-        (attr: KeyValue) => attr.key === "service.name",
-      )?.value?.stringValue || "unknown";
-
-    let totalSpans = 0;
-    payload.resourceSpans?.forEach((rs: ResourceSpans) => {
-      rs.scopeSpans?.forEach((ss: ScopeSpans) => {
-        totalSpans += ss.spans?.length || 0;
-      });
-    });
-
-    yield* Effect.log(
-      `[TRACE DEBUG] Received ${totalSpans} spans from service: ${serviceName}`,
-    );
-    yield* Effect.log(
-      `[TRACE DEBUG] Full trace data: ${JSON.stringify(payload, null, 2)}`,
-    );
-
-    const response: CreateTraceResponse = { partialSuccess: {} };
-    return response;
-  });
