@@ -1,20 +1,72 @@
 """Feature test runner with incremental testing support."""
 
-from abc import ABC, abstractmethod
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterable
 from datetime import datetime
-from typing import Generic, TypeVar
+from typing import Generic
 
 from .models import FeatureTestResult, ModelInfo, TestStatus
 from .registry import ModelFeatureRegistry
 from .testing import ClientT, FeatureTest
 
-# Type aliases (defined early for forward references)
-ModelFilterFn = Callable[[ModelInfo], bool]
-ResultCallback = Callable[[str, str, FeatureTestResult], None]
 
-# TypeVar for ModelDiscovery
-_DiscoveryClientT = TypeVar("_DiscoveryClientT")
+def topological_sort_tests(
+    tests: list[tuple[str, str]], feature_tests: dict[str, FeatureTest[ClientT]]
+) -> list[tuple[str, str]]:
+    """Sort tests so dependencies are run before dependent tests.
+
+    Args:
+        tests: List of (model_id, feature) tuples
+        feature_tests: Dictionary of feature name to FeatureTest
+
+    Returns:
+        Sorted list where dependencies come first
+    """
+    # Group tests by model
+    tests_by_model: dict[str, list[str]] = {}
+    for model_id, feature in tests:
+        if model_id not in tests_by_model:
+            tests_by_model[model_id] = []
+        tests_by_model[model_id].append(feature)
+
+    # Sort features for each model using topological sort
+    sorted_tests: list[tuple[str, str]] = []
+    for model_id, features in tests_by_model.items():
+        # Build dependency graph
+        in_degree: dict[str, int] = dict.fromkeys(features, 0)
+        adjacency: dict[str, list[str]] = {f: [] for f in features}
+
+        for feature in features:
+            test = feature_tests.get(feature)
+            if test and test.dependencies:
+                for dep in test.dependencies:
+                    if dep in in_degree:  # Only consider deps in our test set
+                        adjacency[dep].append(feature)
+                        in_degree[feature] += 1
+
+        # Kahn's algorithm for topological sort
+        queue = [f for f in features if in_degree[f] == 0]
+        sorted_features: list[str] = []
+
+        while queue:
+            # Sort queue for deterministic ordering
+            queue.sort()
+            current = queue.pop(0)
+            sorted_features.append(current)
+
+            for neighbor in adjacency[current]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    queue.append(neighbor)
+
+        # Add sorted tests for this model
+        for feature in sorted_features:
+            sorted_tests.append((model_id, feature))
+
+    return sorted_tests
+
+
+# Type aliases
+ResultCallback = Callable[[str, str, FeatureTestResult], None]
 
 
 class TestRunSummary:
@@ -63,33 +115,22 @@ class TestRunSummary:
         return " | ".join(parts)
 
 
-class ModelDiscovery(ABC, Generic[_DiscoveryClientT]):
-    """Abstract base for discovering models from a provider API."""
-
-    @abstractmethod
-    def discover_models(self, client: _DiscoveryClientT) -> Iterator[ModelInfo]:
-        """Yield ModelInfo for each model discovered from the API."""
-        ...
-
-
 class FeatureTestRunner(Generic[ClientT]):
-    """Orchestrates model discovery and feature testing.
+    """Orchestrates feature testing for models.
 
     Supports:
     - Incremental testing (only test new model/feature combinations)
     - Resumable runs (progress saved after each test)
     - Multiple feature tests
-    - Filtering models by various criteria
+    - Dependency-aware test ordering
     """
 
     def __init__(
         self,
         registry: ModelFeatureRegistry,
-        discovery: ModelDiscovery[ClientT],
         client: ClientT,
     ) -> None:
         self.registry = registry
-        self.discovery = discovery
         self.client = client
         self._feature_tests: dict[str, FeatureTest[ClientT]] = {}
 
@@ -122,30 +163,24 @@ class FeatureTestRunner(Generic[ClientT]):
                 TestStatus.UNAVAILABLE,
                 TestStatus.ERROR,
                 TestStatus.NOT_SUPPORTED,
+                TestStatus.SKIPPED,
             ):
                 failed_deps.append(dep)
-
         return (len(failed_deps) == 0, failed_deps)
 
-    def discover_models(
-        self,
-        filter_fn: "ModelFilterFn | None" = None,
-    ) -> int:
-        """Discover models from the provider API.
+    def add_models(self, models: Iterable[ModelInfo]) -> int:
+        """Add discovered models to the registry.
 
         Args:
-            filter_fn: Optional function to filter which models to include
+            models: Iterable of ModelInfo objects to add
 
         Returns:
-            Number of new models discovered
+            Number of new models added
         """
         new_count = 0
         existing_ids = self.registry.get_all_model_ids()
 
-        for model_info in self.discovery.discover_models(self.client):
-            if filter_fn and not filter_fn(model_info):
-                continue
-
+        for model_info in models:
             if model_info.id not in existing_ids:
                 self.registry.add_model(model_info)
                 new_count += 1
@@ -196,7 +231,7 @@ class FeatureTestRunner(Generic[ClientT]):
                     == TestStatus.SKIPPED  # Always retry skipped tests
                     or (include_errors and existing.status == TestStatus.ERROR)
                     or (
-                        max_age_days
+                        max_age_days is not None
                         and (datetime.now() - existing.tested_at).days > max_age_days
                     )
                 ):
@@ -223,6 +258,9 @@ class FeatureTestRunner(Generic[ClientT]):
         if pending is None:
             pending = self.get_pending_tests()
 
+        # Sort tests to run dependencies first
+        pending = topological_sort_tests(pending, self._feature_tests)
+
         summary = TestRunSummary()
         tests_since_save = 0
 
@@ -231,11 +269,26 @@ class FeatureTestRunner(Generic[ClientT]):
             if test is None:
                 continue
 
-            print(f"  Testing {model_id} / {feature}...", end=" ", flush=True)
-
             # Check dependencies first
             deps_met, failed_deps = self._check_dependencies(model_id, feature)
             if not deps_met:
+                # Check if this was already skipped with same dependencies
+                model_matrix = self.registry.registry.get_model(model_id)
+                existing = model_matrix.features.get(feature) if model_matrix else None
+
+                if (
+                    existing
+                    and existing.status == TestStatus.SKIPPED
+                    and existing.metadata.get("reason") == "unmet_dependencies"
+                    and set(existing.metadata.get("failed_dependencies", []))
+                    == set(failed_deps)
+                ):
+                    # Still skipped with same reason - skip silently
+                    summary.record(TestStatus.SKIPPED)
+                    continue
+
+                # New skip or skip reason changed
+                print(f"  Testing {model_id} / {feature}...", end=" ", flush=True)
                 result = FeatureTestResult(
                     status=TestStatus.SKIPPED,
                     metadata={
@@ -255,6 +308,8 @@ class FeatureTestRunner(Generic[ClientT]):
                     self.registry.save()
                     tests_since_save = 0
                 continue
+
+            print(f"  Testing {model_id} / {feature}...", end=" ", flush=True)
 
             try:
                 result = test.test(model_id, self.client)

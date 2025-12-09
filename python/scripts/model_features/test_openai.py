@@ -42,10 +42,8 @@ from .core import (
     FeatureTest,
     FeatureTestResult,
     FeatureTestRunner,
-    ModelDiscovery,
     ModelFeatureRegistry,
     ModelInfo,
-    ProviderConfig,
     TestStatus,
 )
 
@@ -55,11 +53,7 @@ load_dotenv()
 # OpenAI Provider Configuration
 # ============================================================================
 
-OPENAI_PROVIDER_CONFIG = ProviderConfig(
-    name="openai",
-    api_base_url="https://api.openai.com/v1",
-    env_var_name="OPENAI_API_KEY",
-)
+OPENAI_PROVIDER = "openai"
 
 
 # ============================================================================
@@ -67,32 +61,25 @@ OPENAI_PROVIDER_CONFIG = ProviderConfig(
 # ============================================================================
 
 
-class OpenAIModelDiscovery(ModelDiscovery[OpenAI]):
-    """Discover models from OpenAI's /v1/models endpoint."""
+def discover_openai_models(client: OpenAI) -> Iterator[ModelInfo]:
+    """Discover models from OpenAI's /v1/models endpoint.
 
-    def discover_models(self, client: OpenAI) -> Iterator[ModelInfo]:
-        """Fetch all models from OpenAI API."""
-        models = client.models.list()
-
-        for model in models.data:
-            yield ModelInfo(
-                id=model.id,
-                owned_by=model.owned_by,
-                created=datetime.fromtimestamp(model.created)
-                if model.created
-                else None,
-                discovered_at=datetime.now(),
-            )
-
-
-def openai_system_model_filter(model: ModelInfo) -> bool:
-    """Filter to only include models owned by 'system' or 'openai-internal'.
-
+    Only yields models owned by 'system', 'openai-internal', or 'openai'.
     This filters out user fine-tuned models and other non-standard models.
     """
-    if model.owned_by is None:
-        return False
-    return model.owned_by in ("system", "openai-internal", "openai")
+    models = client.models.list()
+
+    for model in models.data:
+        # Filter to only system/openai-owned models
+        if model.owned_by not in ("system", "openai-internal", "openai"):
+            continue
+
+        yield ModelInfo(
+            id=model.id,
+            owned_by=model.owned_by,
+            created=datetime.fromtimestamp(model.created) if model.created else None,
+            discovered_at=datetime.now(),
+        )
 
 
 # ============================================================================
@@ -403,6 +390,7 @@ def _show_summary(registry: ModelFeatureRegistry) -> None:
 
 
 def main() -> int:
+    # TODO(dandelion): Consider refactoring to use typer when we support more providers
     parser = argparse.ArgumentParser(
         description="Test OpenAI model features incrementally"
     )
@@ -461,7 +449,7 @@ def main() -> int:
         return 1
 
     # Initialize registry
-    registry = ModelFeatureRegistry(output_path, OPENAI_PROVIDER_CONFIG)
+    registry = ModelFeatureRegistry(output_path, OPENAI_PROVIDER)
 
     # List features
     if args.list_features:
@@ -492,8 +480,7 @@ def main() -> int:
 
     # Initialize client and runner
     client = OpenAI(api_key=api_key)
-    discovery = OpenAIModelDiscovery()
-    runner = FeatureTestRunner(registry, discovery, client)
+    runner = FeatureTestRunner(registry, client)
 
     # Register feature tests
     feature_tests = get_all_openai_feature_tests()
@@ -513,7 +500,7 @@ def main() -> int:
     # Discover models
     if not args.test_only:
         print("Discovering models from OpenAI API...")
-        new_count = runner.discover_models(filter_fn=openai_system_model_filter)
+        new_count = runner.add_models(discover_openai_models(client))
         print(f"  Found {new_count} new models")
         total = len(registry.get_all_model_ids())
         print(f"  Total models in registry: {total}")

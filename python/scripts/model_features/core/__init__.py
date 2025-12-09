@@ -4,11 +4,10 @@ from .models import (
     FeatureTestResult,
     ModelFeatureMatrix,
     ModelInfo,
-    ProviderConfig,
     TestStatus,
 )
 from .registry import ModelFeatureRegistry
-from .runner import FeatureTestRunner, ModelDiscovery
+from .runner import FeatureTestRunner
 from .testing import ClientT, FeatureTest
 
 __all__ = [
@@ -16,10 +15,8 @@ __all__ = [
     "FeatureTest",
     "FeatureTestResult",
     "FeatureTestRunner",
-    "ModelDiscovery",
     "ModelFeatureMatrix",
     "ModelFeatureRegistry",
     "ModelInfo",
-    "ProviderConfig",
     "TestStatus",
 ]

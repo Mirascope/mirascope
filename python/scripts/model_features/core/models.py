@@ -4,17 +4,22 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TestStatus(str, Enum):
     """Status of a feature test for a model."""
 
     SUPPORTED = "supported"
+    """Feature is supported for this model."""
     NOT_SUPPORTED = "not_supported"
+    """Feature is not supported for this model."""
     ERROR = "error"
-    UNAVAILABLE = "unavailable"  # Model doesn't exist or is deprecated
-    SKIPPED = "skipped"  # Test skipped due to unmet dependencies
+    """Error during testing."""
+    UNAVAILABLE = "unavailable"
+    """Model doesn't exist or is deprecated."""
+    SKIPPED = "skipped"
+    """Test skipped due to unmet dependencies."""
 
 
 class FeatureTestResult(BaseModel):
@@ -72,24 +77,15 @@ class ModelFeatureMatrix(BaseModel):
         return False
 
 
-class ProviderConfig(BaseModel):
-    """Configuration for a model provider."""
-
-    name: str
-    api_base_url: str | None = None
-    env_var_name: str  # Name of the env var containing the API key
-
-
 class ProviderRegistry(BaseModel):
     """Complete registry of models and their feature test results for a provider."""
 
-    provider: ProviderConfig
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    provider: str
     models: dict[str, ModelFeatureMatrix] = Field(default_factory=dict)
     last_discovery: datetime | None = None
     known_features: set[str] = Field(default_factory=set)
-
-    class Config:
-        arbitrary_types_allowed = True
 
     def get_model(self, model_id: str) -> ModelFeatureMatrix | None:
         """Get feature matrix for a model, or None if not found."""

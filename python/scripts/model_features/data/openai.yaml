@@ -1,7 +1,4 @@
-provider:
-  name: openai
-  env_var_name: OPENAI_API_KEY
-  api_base_url: https://api.openai.com/v1
+provider: openai
 known_features:
 - audio_input
 - completions_api
@@ -54,12 +51,8 @@ models:
     discovered_at: '2025-12-09T10:41:37.926149'
     features:
       audio_input:
-        status: skipped
-        tested_at: '2025-12-09T10:54:05.813288'
-        metadata:
-          reason: unmet_dependencies
-          failed_dependencies:
-          - completions_api
+        status: not_supported
+        tested_at: '2025-12-10T18:06:51.742883'
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:06.473021'
@@ -363,12 +356,8 @@ models:
     discovered_at: '2025-12-09T10:41:37.926787'
     features:
       audio_input:
-        status: skipped
-        tested_at: '2025-12-09T10:54:17.944701'
-        metadata:
-          reason: unmet_dependencies
-          failed_dependencies:
-          - completions_api
+        status: not_supported
+        tested_at: '2025-12-10T18:06:53.417634'
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:18.402420'
@@ -642,12 +631,8 @@ models:
     discovered_at: '2025-12-09T10:41:37.926394'
     features:
       audio_input:
-        status: skipped
-        tested_at: '2025-12-09T10:54:02.615860'
-        metadata:
-          reason: unmet_dependencies
-          failed_dependencies:
-          - completions_api
+        status: not_supported
+        tested_at: '2025-12-10T18:06:52.048125'
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:03.242872'
@@ -688,12 +673,8 @@ models:
     discovered_at: '2025-12-09T10:41:37.926408'
     features:
       audio_input:
-        status: skipped
-        tested_at: '2025-12-09T10:54:16.185455'
-        metadata:
-          reason: unmet_dependencies
-          failed_dependencies:
-          - completions_api
+        status: not_supported
+        tested_at: '2025-12-10T18:06:53.617985'
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:16.917510'
@@ -818,12 +799,8 @@ models:
     discovered_at: '2025-12-09T10:41:37.926285'
     features:
       audio_input:
-        status: skipped
-        tested_at: '2025-12-09T10:54:08.828655'
-        metadata:
-          reason: unmet_dependencies
-          failed_dependencies:
-          - completions_api
+        status: not_supported
+        tested_at: '2025-12-10T18:06:53.177278'
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:09.558161'
@@ -1159,12 +1136,8 @@ models:
     discovered_at: '2025-12-09T10:41:37.926313'
     features:
       audio_input:
-        status: skipped
-        tested_at: '2025-12-09T10:54:20.352859'
-        metadata:
-          reason: unmet_dependencies
-          failed_dependencies:
-          - completions_api
+        status: not_supported
+        tested_at: '2025-12-10T18:06:52.360691'
       completions_api:
         status: supported
         tested_at: '2025-12-09T10:54:21.732283'
@@ -3253,4 +3226,4 @@ models:
           reason: unmet_dependencies
           failed_dependencies:
           - completions_api
-last_discovery: '2025-12-09T10:53:59.696502'
+last_discovery: '2025-12-10T18:06:51.264997'

@@ -10,7 +10,6 @@ from .models import (
     FeatureTestResult,
     ModelFeatureMatrix,
     ModelInfo,
-    ProviderConfig,
     ProviderRegistry,
     TestStatus,
 )
@@ -22,7 +21,7 @@ class ModelFeatureRegistry:
     Uses YAML format for human-readable storage with Pydantic for validation.
     """
 
-    def __init__(self, storage_path: Path, provider: ProviderConfig) -> None:
+    def __init__(self, storage_path: Path, provider: str) -> None:
         self.storage_path = storage_path
         self.provider = provider
         self._registry: ProviderRegistry | None = None
@@ -49,7 +48,7 @@ class ModelFeatureRegistry:
 
     def _deserialize(self, data: dict[str, Any]) -> ProviderRegistry:
         """Deserialize YAML data into ProviderRegistry."""
-        provider = ProviderConfig(**data.get("provider", {}))
+        provider = data.get("provider", "unknown")
 
         models: dict[str, ModelFeatureMatrix] = {}
         for model_id, model_data in data.get("models", {}).items():
@@ -114,15 +113,10 @@ class ModelFeatureRegistry:
             models_data[model_id] = model_data
 
         result: dict[str, Any] = {
-            "provider": {
-                "name": registry.provider.name,
-                "env_var_name": registry.provider.env_var_name,
-            },
+            "provider": registry.provider,
             "known_features": sorted(registry.known_features),
             "models": models_data,
         }
-        if registry.provider.api_base_url:
-            result["provider"]["api_base_url"] = registry.provider.api_base_url
         if registry.last_discovery:
             result["last_discovery"] = registry.last_discovery.isoformat()
 

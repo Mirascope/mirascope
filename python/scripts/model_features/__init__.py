@@ -20,11 +20,9 @@ from .core import (
     FeatureTest,
     FeatureTestResult,
     FeatureTestRunner,
-    ModelDiscovery,
     ModelFeatureMatrix,
     ModelFeatureRegistry,
     ModelInfo,
-    ProviderConfig,
     TestStatus,
 )
 
@@ -33,10 +31,8 @@ __all__ = [
     "FeatureTest",
     "FeatureTestResult",
     "FeatureTestRunner",
-    "ModelDiscovery",
     "ModelFeatureMatrix",
     "ModelFeatureRegistry",
     "ModelInfo",
-    "ProviderConfig",
     "TestStatus",
 ]
