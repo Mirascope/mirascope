@@ -4,34 +4,42 @@ import { ApiLive } from "@/api/router";
 import { HandlerError } from "@/errors";
 import { SettingsService } from "@/settings";
 import { Database } from "@/db";
-import { AuthenticatedUser } from "@/auth";
-import type { PublicUser } from "@/db/schema";
+import { AuthenticatedUser, AuthenticatedApiKey } from "@/auth";
+import type { PublicUser, ApiKeyInfo } from "@/db/schema";
 
 export type HandleRequestOptions = {
   prefix?: string;
   authenticatedUser: PublicUser;
+  authenticatedApiKey?: ApiKeyInfo | null;
   environment: string;
 };
 
 type WebHandlerOptions = {
   db: Context.Tag.Service<Database>;
   authenticatedUser: PublicUser;
+  authenticatedApiKey?: ApiKeyInfo | null;
   environment: string;
 };
 
 function createWebHandler(options: WebHandlerOptions) {
-  const services = Layer.mergeAll(
+  const baseServices = Layer.mergeAll(
     Layer.succeed(SettingsService, { env: options.environment }),
     Layer.succeed(AuthenticatedUser, options.authenticatedUser),
     Layer.succeed(Database, options.db),
   );
 
-  const ApiWithDependencies = Layer.mergeAll(
-    HttpServer.layerContext,
-    ApiLive.pipe(Layer.provide(services)),
-  );
+  const apiKeyLayer = options.authenticatedApiKey
+    ? Layer.succeed(AuthenticatedApiKey, options.authenticatedApiKey)
+    : Layer.empty;
+  const services = Layer.merge(baseServices, apiKeyLayer);
 
-  return HttpApiBuilder.toWebHandler(ApiWithDependencies);
+  const ApiWithDependencies = Layer.merge(
+    HttpServer.layerContext,
+    ApiLive,
+  ).pipe(Layer.provide(services));
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+  return HttpApiBuilder.toWebHandler(ApiWithDependencies as any);
 }
 
 /**
@@ -58,6 +66,7 @@ export const handleRequest = (
     const webHandler = createWebHandler({
       db,
       authenticatedUser: options.authenticatedUser,
+      authenticatedApiKey: options.authenticatedApiKey,
       environment: options.environment,
     });
 
@@ -69,20 +78,35 @@ export const handleRequest = (
           const pathWithoutPrefix =
             url.pathname.slice(options.prefix.length) || "/";
           const newUrl = new URL(pathWithoutPrefix + url.search, url.origin);
+          const hasBody = request.body !== null;
           modifiedRequest = new Request(newUrl.toString(), {
             method: request.method,
             headers: request.headers,
             body: request.body,
             redirect: request.redirect,
             signal: request.signal,
+            ...(hasBody ? ({ duplex: "half" } as RequestInit) : {}),
           });
         }
 
-        const response = await webHandler.handler(modifiedRequest);
+        let response = await webHandler.handler(modifiedRequest);
         const contentType = response.headers.get("content-type") || "";
         const isJsonResponse = contentType
           .toLowerCase()
           .includes("application/json");
+
+        if (isJsonResponse && response.status >= 400) {
+          const body = await response.clone().text();
+          if (body.includes('"_tag"')) {
+            const transformedBody = body.replace(/"_tag":/g, '"tag":');
+            response = new Response(transformedBody, {
+              status: response.status,
+              statusText: response.statusText,
+              headers: response.headers,
+            });
+          }
+        }
+
         const matched = response.status !== 404 || isJsonResponse;
         return { matched, response };
       },

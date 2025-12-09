@@ -17,8 +17,8 @@ import {
 } from "@effect/platform";
 import { SettingsService } from "@/settings";
 import { Database } from "@/db";
-import { AuthenticatedUser } from "@/auth";
-import type { PublicUser, PublicOrganization } from "@/db/schema";
+import { AuthenticatedUser, AuthenticatedApiKey } from "@/auth";
+import type { PublicUser, PublicOrganization, ApiKeyInfo } from "@/db/schema";
 import { TEST_DATABASE_URL } from "@/tests/db";
 
 // Re-export expect from vitest
@@ -105,19 +105,25 @@ type ApiClient = Effect.Effect.Success<typeof makeClient>;
 function createTestWebHandler(
   databaseUrl: string,
   authenticatedUser: PublicUser,
+  authenticatedApiKey?: ApiKeyInfo,
 ) {
-  const services = Layer.mergeAll(
+  const baseServices = Layer.mergeAll(
     Layer.succeed(SettingsService, { env: "test" }),
     Layer.succeed(AuthenticatedUser, authenticatedUser),
     Database.Live({ connectionString: databaseUrl }).pipe(Layer.orDie),
   );
+  const apiKeyLayer = authenticatedApiKey
+    ? Layer.succeed(AuthenticatedApiKey, authenticatedApiKey)
+    : Layer.empty;
+  const services = Layer.merge(baseServices, apiKeyLayer);
 
-  const ApiWithDependencies = Layer.mergeAll(
+  const ApiWithDependencies = Layer.merge(
     HttpServer.layerContext,
-    ApiLive.pipe(Layer.provide(services)),
-  );
+    ApiLive,
+  ).pipe(Layer.provide(services));
 
-  return HttpApiBuilder.toWebHandler(ApiWithDependencies);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+  return HttpApiBuilder.toWebHandler(ApiWithDependencies as any);
 }
 
 function createHandlerHttpClient(
@@ -145,11 +151,16 @@ function createHandlerHttpClient(
   );
 }
 
-async function createApiClient(
+export async function createApiClient(
   databaseUrl: string,
   authenticatedUser: PublicUser,
+  authenticatedApiKey?: ApiKeyInfo,
 ): Promise<{ client: ApiClient; dispose: () => Promise<void> }> {
-  const webHandler = createTestWebHandler(databaseUrl, authenticatedUser);
+  const webHandler = createTestWebHandler(
+    databaseUrl,
+    authenticatedUser,
+    authenticatedApiKey,
+  );
   const HandlerHttpClient = createHandlerHttpClient(webHandler);
   const HandlerHttpClientLayer = Layer.succeed(
     HttpClient.HttpClient,
