@@ -103,6 +103,36 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "UnauthorizedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "NotFoundError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "DatabaseError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabaseError"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2744,6 +2774,47 @@
           }
         ]
       },
+      "UnauthorizedError": {
+        "type": "object",
+        "required": [
+          "message",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "UnauthorizedError"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "NotFoundError": {
+        "type": "object",
+        "required": [
+          "message",
+          "tag"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string",
+            "enum": [
+              "NotFoundError"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
       "DatabaseError": {
         "type": "object",
         "required": [
@@ -2784,28 +2855,6 @@
             "type": "string",
             "enum": [
               "AlreadyExistsError"
-            ]
-          }
-        },
-        "additionalProperties": false
-      },
-      "NotFoundError": {
-        "type": "object",
-        "required": [
-          "message",
-          "tag"
-        ],
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "resource": {
-            "type": "string"
-          },
-          "tag": {
-            "type": "string",
-            "enum": [
-              "NotFoundError"
             ]
           }
         },

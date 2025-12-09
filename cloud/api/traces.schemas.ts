@@ -1,5 +1,6 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
+import { UnauthorizedError, NotFoundError, DatabaseError } from "@/errors";
 
 export const KeyValueSchema = Schema.Struct({
   key: Schema.String,
@@ -106,5 +107,8 @@ export type CreateTraceResponse = typeof CreateTraceResponseSchema.Type;
 export class TracesApi extends HttpApiGroup.make("traces").add(
   HttpApiEndpoint.post("create", "/traces")
     .setPayload(CreateTraceRequestSchema)
-    .addSuccess(CreateTraceResponseSchema),
+    .addSuccess(CreateTraceResponseSchema)
+    .addError(UnauthorizedError, { status: UnauthorizedError.status })
+    .addError(NotFoundError, { status: NotFoundError.status })
+    .addError(DatabaseError, { status: DatabaseError.status }),
 ) {}
