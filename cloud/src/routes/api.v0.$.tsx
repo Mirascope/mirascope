@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Effect, Layer } from "effect";
 import { handleRequest, type App } from "@/api/handler";
-import { getAuthenticatedUser } from "@/auth";
+import { getAuthenticatedUser, authenticateApiKeyWithUser } from "@/auth";
 import { DatabaseService, getDatabase } from "@/db";
 import { UnauthorizedError } from "@/db/errors";
 
@@ -19,9 +19,22 @@ export const Route = createFileRoute("/api/v0/$")({
         try {
           const databaseLayer = Layer.succeed(DatabaseService, database);
 
-          const authenticatedUser = await Effect.runPromise(
-            getAuthenticatedUser(request).pipe(Effect.provide(databaseLayer)),
+          // Try API key authentication first
+          const apiKeyResult = await Effect.runPromise(
+            authenticateApiKeyWithUser(request).pipe(
+              Effect.provide(databaseLayer),
+              Effect.catchAll(() => Effect.succeed(null)),
+            ),
           );
+
+          let authenticatedUser = apiKeyResult?.user ?? null;
+
+          // Fall back to session authentication if no API key
+          if (!authenticatedUser) {
+            authenticatedUser = await Effect.runPromise(
+              getAuthenticatedUser(request).pipe(Effect.provide(databaseLayer)),
+            );
+          }
 
           if (!authenticatedUser) {
             return Response.json(

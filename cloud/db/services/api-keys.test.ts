@@ -500,6 +500,60 @@ describe("ApiKeyService", () => {
     );
   });
 
+  describe("getUserForEnvironment", () => {
+    it(
+      "should return user with access to environment",
+      withTestDatabase((db) =>
+        Effect.gen(function* () {
+          const user = yield* db.users.create({
+            email: "test@example.com",
+            name: "Test User",
+          });
+
+          const org = yield* db.organizations.create(
+            { name: "Test Org" },
+            user.id,
+          );
+
+          const project = yield* db.projects.create(
+            { name: "Test Project", organizationId: org.id },
+            user.id,
+          );
+
+          const envs = yield* db.environments.findByProject(
+            project.id,
+            user.id,
+          );
+          const devEnv = envs.find((e) => e.name === "development")!;
+
+          const result = yield* db.apiKeys.getUserForEnvironment(devEnv.id);
+
+          expect(result.id).toBe(user.id);
+          expect(result.email).toBe("test@example.com");
+          expect(result.name).toBe("Test User");
+        }),
+      ),
+    );
+
+    it(
+      "should fail with NotFoundError for non-existent environment",
+      withTestDatabase((db) =>
+        Effect.gen(function* () {
+          const result = yield* Effect.either(
+            db.apiKeys.getUserForEnvironment(
+              "00000000-0000-0000-0000-000000000000",
+            ),
+          );
+
+          expect(result._tag).toBe("Left");
+          if (result._tag === "Left") {
+            expect(result.left).toBeInstanceOf(NotFoundError);
+          }
+        }),
+      ),
+    );
+  });
+
   describe("database errors", () => {
     it("should fail with DatabaseError on environment lookup error", async () => {
       const mockDb = {
@@ -1220,6 +1274,72 @@ describe("ApiKeyService", () => {
       await Effect.gen(function* () {
         const result = yield* Effect.either(
           service.findById("key-id", "user-id"),
+        );
+        expect(result._tag).toBe("Left");
+        if (result._tag === "Left") {
+          expect(result.left).toBeInstanceOf(DatabaseError);
+          expect(result.left.message).toContain("Unknown error");
+        }
+      }).pipe(Effect.runPromise);
+    });
+
+    it("should fail with DatabaseError on getUserForEnvironment query error", async () => {
+      const mockDb = {
+        select: vi.fn().mockReturnValue({
+          from: vi.fn().mockReturnValue({
+            innerJoin: vi.fn().mockReturnValue({
+              innerJoin: vi.fn().mockReturnValue({
+                innerJoin: vi.fn().mockReturnValue({
+                  where: vi.fn().mockReturnValue({
+                    limit: vi.fn().mockRejectedValue(new Error("DB error")),
+                  }),
+                }),
+              }),
+            }),
+          }),
+        }),
+      } as unknown as PostgresJsDatabase<typeof schema>;
+
+      const service = new ApiKeyService(mockDb);
+
+      await Effect.gen(function* () {
+        const result = yield* Effect.either(
+          service.getUserForEnvironment("env-id"),
+        );
+        expect(result._tag).toBe("Left");
+        if (result._tag === "Left") {
+          expect(result.left).toBeInstanceOf(DatabaseError);
+          expect(result.left.message).toContain(
+            "Failed to get user for environment",
+          );
+        }
+      }).pipe(Effect.runPromise);
+    });
+
+    it("should handle non-Error thrown on getUserForEnvironment query", async () => {
+      // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+      const nonErrorRejection = () => Promise.reject("string error");
+      const mockDb = {
+        select: vi.fn().mockReturnValue({
+          from: vi.fn().mockReturnValue({
+            innerJoin: vi.fn().mockReturnValue({
+              innerJoin: vi.fn().mockReturnValue({
+                innerJoin: vi.fn().mockReturnValue({
+                  where: vi.fn().mockReturnValue({
+                    limit: vi.fn().mockImplementation(nonErrorRejection),
+                  }),
+                }),
+              }),
+            }),
+          }),
+        }),
+      } as unknown as PostgresJsDatabase<typeof schema>;
+
+      const service = new ApiKeyService(mockDb);
+
+      await Effect.gen(function* () {
+        const result = yield* Effect.either(
+          service.getUserForEnvironment("env-id"),
         );
         expect(result._tag).toBe("Left");
         if (result._tag === "Left") {

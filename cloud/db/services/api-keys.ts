@@ -481,4 +481,65 @@ export class ApiKeyService extends BaseAuthenticatedService<
       return { apiKeyId: result.id, environmentId: result.environmentId };
     });
   }
+
+  /**
+   * Get a user with access to the environment's organization.
+   * Returns the first owner/admin found for the organization.
+   */
+  getUserForEnvironment(
+    environmentId: string,
+  ): Effect.Effect<
+    { id: string; email: string; name: string | null },
+    NotFoundError | DatabaseError
+  > {
+    return Effect.gen(this, function* () {
+      const result = yield* Effect.tryPromise({
+        try: async () => {
+          // Query to find a user with access to this environment's organization
+          // environment -> project -> organization -> membership -> user
+          const rows = await this.db
+            .select({
+              userId: organizationMemberships.userId,
+              email: schema.users.email,
+              name: schema.users.name,
+            })
+            .from(environments)
+            .innerJoin(projects, eq(environments.projectId, projects.id))
+            .innerJoin(
+              organizationMemberships,
+              eq(
+                projects.orgOwnerId,
+                organizationMemberships.organizationId,
+              ),
+            )
+            .innerJoin(
+              schema.users,
+              eq(organizationMemberships.userId, schema.users.id),
+            )
+            .where(eq(environments.id, environmentId))
+            .limit(1);
+
+          return rows[0] || null;
+        },
+        catch: (error) =>
+          new DatabaseError({
+            message: `Failed to get user for environment: ${error instanceof Error ? error.message : "Unknown error"}`,
+          }),
+      });
+
+      if (!result) {
+        return yield* Effect.fail(
+          new NotFoundError({
+            message: "No user found with access to this environment",
+          }),
+        );
+      }
+
+      return {
+        id: result.userId,
+        email: result.email,
+        name: result.name,
+      };
+    });
+  }
 }
