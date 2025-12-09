@@ -1,5 +1,6 @@
 import io
 from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
 from typing import Literal, cast
 from typing_extensions import TypedDict
 
@@ -12,12 +13,14 @@ from ....messages import AssistantContent, Message
 from ....responses import ChunkIterator, FinishReasonChunk, RawStreamEventChunk
 from ....tools import AnyToolSchema, BaseToolkit
 from .. import _utils
-from .base import BaseEncoder, EncodedPrompt
+from .base import BaseEncoder, TokenIds
 
 HFRole = Literal["system", "user", "assistant"] | str
 
 
 class TransformersMessage(TypedDict):
+    """Message in Transformers format."""
+
     role: HFRole
     content: str
 
@@ -62,16 +65,20 @@ def _encode_message(message: Message) -> TransformersMessage:
         raise ValueError(f"Unsupported message type: {type(message)}")
 
 
+@dataclass(frozen=True)
 class TransformersEncoder(BaseEncoder):
-    def __init__(self, tokenizer: PreTrainedTokenizer) -> None:
-        self._tokenizer = tokenizer
+    """Encoder for Transformers models."""
+
+    tokenizer: PreTrainedTokenizer
+    """The tokenizer to use for encoding."""
 
     def encode_request(
         self,
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
         format: type[FormattableT] | Format[FormattableT] | None,
-    ) -> tuple[Sequence[Message], Format[FormattableT] | None, EncodedPrompt]:
+    ) -> tuple[Sequence[Message], Format[FormattableT] | None, TokenIds]:
+        """Encode a request into a format suitable for the model."""
         tool_schemas = tools.tools if isinstance(tools, BaseToolkit) else tools or []
         if len(tool_schemas) > 0:
             raise NotImplementedError("Tool usage is not supported.")
@@ -83,7 +90,7 @@ class TransformersEncoder(BaseEncoder):
         ]
         prompt_text = cast(
             str,
-            self._tokenizer.apply_chat_template(  # pyright: ignore[reportUnknownMemberType]
+            self.tokenizer.apply_chat_template(  # pyright: ignore[reportUnknownMemberType]
                 cast(list[dict[str, str]], hf_messages),
                 tokenize=False,
                 add_generation_prompt=True,
@@ -92,12 +99,13 @@ class TransformersEncoder(BaseEncoder):
         return (
             messages,
             format,
-            self._tokenizer.encode(prompt_text, add_special_tokens=False),  # pyright: ignore[reportUnknownMemberType]
+            self.tokenizer.encode(prompt_text, add_special_tokens=False),  # pyright: ignore[reportUnknownMemberType]
         )
 
     def decode_response(
         self, stream: Iterable[GenerationResponse]
     ) -> tuple[AssistantContent, GenerationResponse | None]:
+        """Decode a response into a format suitable for the model."""
         with io.StringIO() as buffer:
             last_response: GenerationResponse | None = None
             for response in stream:
@@ -107,6 +115,7 @@ class TransformersEncoder(BaseEncoder):
             return buffer.getvalue(), last_response
 
     def decode_stream(self, stream: Iterable[GenerationResponse]) -> ChunkIterator:
+        """Decode a stream of responses into a format suitable for the model."""
         yield TextStartChunk()
 
         response: GenerationResponse | None = None

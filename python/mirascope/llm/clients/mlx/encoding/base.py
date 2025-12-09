@@ -11,7 +11,7 @@ from ....messages import AssistantContent, Message
 from ....responses import ChunkIterator
 from ....tools import AnyToolSchema, BaseToolkit
 
-EncodedPrompt: TypeAlias = list[int]
+TokenIds: TypeAlias = list[int]
 
 
 class BaseEncoder(abc.ABC):
@@ -23,7 +23,7 @@ class BaseEncoder(abc.ABC):
         messages: Sequence[Message],
         tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
         format: type[FormattableT] | Format[FormattableT] | None,
-    ) -> tuple[Sequence[Message], Format[FormattableT] | None, EncodedPrompt]:
+    ) -> tuple[Sequence[Message], Format[FormattableT] | None, TokenIds]:
         """Encode the request messages into a format suitable for the model.
 
         Args:

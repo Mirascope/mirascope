@@ -25,7 +25,8 @@ class MLXCassetteResponse:
     finish_reason: str | None = None
 
 
-Recording: TypeAlias = dict[str, list[MLXCassetteResponse]]
+MLXRecording: TypeAlias = dict[str, list[MLXCassetteResponse]]
+"""Dictionary of prompt hashes to list of responses."""
 
 
 class MLXRecorder:
@@ -38,7 +39,7 @@ class MLXRecorder:
             mode: The recording mode to use.
         """
         self.mode = mode
-        self.interactions: Recording = {}
+        self.interactions: MLXRecording = {}
 
     def record(self, prompt_hash: str, responses: list[MLXCassetteResponse]) -> None:
         """Record an interaction.
@@ -66,8 +67,8 @@ class MLXCassette:
         self.path = path
         self.record_mode: RecordMode = record_mode
 
-        self.file_recording: Recording = {}
-        self.new_recording: Recording = {}
+        self.file_recording: MLXRecording = {}
+        self.new_recording: MLXRecording = {}
 
         if path.is_file():
             with open(path) as f:
@@ -89,7 +90,7 @@ class MLXCassette:
         """
         self.new_recording[prompt_hash] = responses
 
-    def _save_file(self, interactions: Recording) -> None:
+    def _save_file(self, interactions: MLXRecording) -> None:
         """Save interactions to the cassette file.
 
         Args:
@@ -225,7 +226,6 @@ def record_mlx_lm(cassette_path: Path, mode: RecordMode) -> Generator[None, None
     """
     # TODO: Right now, we only patch the MLX client. However, at some point we'll
     # need to generalize it to other clients as well, such as Grok which uses gRPC.
-
     with ExitStack() as stack:
         cassette = MLXCassette(cassette_path, mode)
         if cassette.record_mode == "none":

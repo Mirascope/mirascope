@@ -1,8 +1,8 @@
-from .base import BaseEncoder, EncodedPrompt
+from .base import BaseEncoder, TokenIds
 from .transformers import TransformersEncoder
 
 __all__ = [
     "BaseEncoder",
-    "EncodedPrompt",
+    "TokenIds",
     "TransformersEncoder",
 ]

@@ -1,5 +1,8 @@
 from typing import TypeAlias
 
+# TODO: Add more explicit literals
+# TODO: Ensure automatic model downloads are supported.
+# TODO: Ensure instructions are clear for examples that run as copied
 MLXModelId: TypeAlias = str
 """The identifier of the MLX model to be loaded by the MLX client.
 

@@ -48,6 +48,7 @@ def test_get_client_openai_responses() -> None:
 
 
 def test_get_client_mlx() -> None:
+    """Test that get_client('mlx') returns same instance on multiple calls."""
     client1 = llm.get_client("mlx")
     client2 = llm.get_client("mlx")
     assert isinstance(client1, llm.clients.MLXClient)

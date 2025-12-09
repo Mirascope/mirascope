@@ -1,6 +1,7 @@
 import asyncio
 import threading
 from collections.abc import Iterable, Sequence
+from dataclasses import dataclass, field
 from typing_extensions import Unpack
 
 import mlx.core as mx
@@ -15,7 +16,7 @@ from ...responses import AsyncChunkIterator, ChunkIterator, StreamResponseChunk
 from ...tools import AnyToolSchema, BaseToolkit
 from ..base import Params
 from . import _utils
-from .encoding import BaseEncoder, EncodedPrompt
+from .encoding import BaseEncoder, TokenIds
 from .model_ids import MLXModelId
 
 
@@ -40,6 +41,7 @@ def _consume_sync_stream_into_queue(
     asyncio.run_coroutine_threadsafe(queue.put(None), loop)
 
 
+@dataclass(frozen=True)
 class MLX:
     """MLX model wrapper for synchronous and asynchronous generation.
 
@@ -50,22 +52,24 @@ class MLX:
         encoder: The encoder for prompts and responses.
     """
 
-    def __init__(
-        self,
-        model_id: MLXModelId,
-        model: nn.Module,
-        tokenizer: PreTrainedTokenizer,
-        encoder: BaseEncoder,
-    ) -> None:
-        self._model_id = model_id
-        self._model = model
-        self._tokenizer = tokenizer
-        self._encoder = encoder
-        self._lock = threading.Lock()
+    model_id: MLXModelId
+    """The MLX model identifier."""
+
+    model: nn.Module
+    """The underlying MLX model."""
+
+    tokenizer: PreTrainedTokenizer
+    """The tokenizer for the model."""
+
+    encoder: BaseEncoder
+    """The encoder for prompts and responses."""
+
+    _lock: threading.Lock = field(default_factory=threading.Lock)
+    """The lock for thread-safety."""
 
     def _stream_generate(
         self,
-        prompt: EncodedPrompt,
+        prompt: TokenIds,
         seed: int | None,
         **kwargs: Unpack[_utils.StreamGenerateKwargs],
     ) -> Iterable[GenerationResponse]:
@@ -74,21 +78,20 @@ class MLX:
         Using this generator instead of calling stream_generate directly ensures
         thread-safety when using the model in a multi-threaded context.
         """
-
         with self._lock:
             if seed is not None:
                 mx.random.seed(seed)
 
             return stream_generate(
-                self._model,
-                self._tokenizer,
+                self.model,
+                self.tokenizer,
                 prompt,
                 **kwargs,
             )
 
     async def _stream_generate_async(
         self,
-        prompt: EncodedPrompt,
+        prompt: TokenIds,
         seed: int | None,
         **kwargs: Unpack[_utils.StreamGenerateKwargs],
     ) -> AsyncChunkIterator:
@@ -105,7 +108,7 @@ class MLX:
             asyncio.Queue()
         )
 
-        sync_stream = self._encoder.decode_stream(
+        sync_stream = self.encoder.decode_stream(
             self._stream_generate(
                 prompt,
                 seed,
@@ -143,11 +146,11 @@ class MLX:
         Returns:
             Tuple of messages, format, and chunk iterator.
         """
-        messages, format, prompt = self._encoder.encode_request(messages, tools, format)
+        messages, format, prompt = self.encoder.encode_request(messages, tools, format)
         seed, kwargs = _utils.encode_params(params)
 
         stream = self._stream_generate(prompt, seed, **kwargs)
-        return messages, format, self._encoder.decode_stream(stream)
+        return messages, format, self.encoder.decode_stream(stream)
 
     async def stream_async(
         self,
@@ -166,7 +169,7 @@ class MLX:
             Tuple of messages, format, and async chunk iterator.
         """
         messages, format, prompt = await asyncio.to_thread(
-            self._encoder.encode_request, messages, tools, format
+            self.encoder.encode_request, messages, tools, format
         )
         seed, kwargs = _utils.encode_params(params)
 
@@ -195,14 +198,14 @@ class MLX:
         Returns:
             Tuple of messages, format, assistant message, and last generation response.
         """
-        messages, format, prompt = self._encoder.encode_request(messages, tools, format)
+        messages, format, prompt = self.encoder.encode_request(messages, tools, format)
         seed, kwargs = _utils.encode_params(params)
 
         stream = self._stream_generate(prompt, seed, **kwargs)
-        assistant_content, last_response = self._encoder.decode_response(stream)
+        assistant_content, last_response = self.encoder.decode_response(stream)
         assistant_message = assistant(
             content=assistant_content,
-            model_id=self._model_id,
+            model_id=self.model_id,
             raw_message=None,
             name=None,
         )

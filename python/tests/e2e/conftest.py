@@ -196,6 +196,7 @@ def _is_mlx_provider(request: pytest.FixtureRequest) -> bool:
 
 
 def _get_mlx_cassette_path(request: pytest.FixtureRequest) -> Path:
+    """Get the path to the MLX cassette for the current test."""
     test_file_path = Path(request.node.fspath)
     sanitized_test_name = (
         request.node.name.replace("/", "_")
