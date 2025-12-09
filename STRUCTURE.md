@@ -184,54 +184,125 @@ The TypeScript SDK's development is currently paused. We plan to resume developm
 
 ## Cloud Application (`cloud/`)
 
-The full-stack cloud application built with React and Cloudflare Workers.
+The full-stack cloud application built with React, Effect TypeScript, and Cloudflare Workers.
 
 ```text
 cloud/
+├── api/                   # Effect-based REST API
+│   ├── api.ts               # API definition (MirascopeCloudApi)
+│   ├── router.ts            # Handler registration and routing
+│   ├── handler.ts           # Request handling utilities
+│   ├── generate-openapi.ts  # OpenAPI spec generation
+│   ├── health.*.ts          # Health check endpoint
+│   ├── organizations.*.ts   # Organizations CRUD
+│   ├── projects.*.ts        # Projects CRUD (nested under orgs)
+│   ├── environments.*.ts    # Environments CRUD (nested under projects)
+│   ├── api-keys.*.ts        # API keys CRUD (nested under environments)
+│   ├── traces.*.ts          # Traces endpoint
+│   └── docs.*.ts            # API documentation endpoint
+├── auth/                  # Authentication
+│   ├── index.ts             # Auth module exports
+│   ├── oauth.ts             # OAuth (GitHub, Google) handlers
+│   ├── api-key.ts           # API key authentication
+│   ├── context.ts           # AuthenticatedUser context
+│   ├── service.ts           # Auth service layer
+│   └── errors.ts            # Auth error types
+├── db/                    # Database layer (Drizzle ORM + PostgreSQL)
+│   ├── index.ts             # Database exports and connection
+│   ├── errors.ts            # Database error types
+│   ├── utils.ts             # Database utilities
+│   ├── schema/              # Drizzle table schemas
+│   │   ├── index.ts           # Schema exports
+│   │   ├── users.ts           # Users table
+│   │   ├── sessions.ts        # Sessions table
+│   │   ├── organizations.ts   # Organizations table
+│   │   ├── organization-memberships.ts  # Org membership (roles)
+│   │   ├── projects.ts        # Projects table
+│   │   ├── environments.ts    # Environments table
+│   │   └── api-keys.ts        # API keys table (hashed)
+│   ├── services/            # Database service classes
+│   │   ├── index.ts           # Service exports (DatabaseService)
+│   │   ├── base.ts            # BaseService, BaseAuthenticatedService
+│   │   ├── users.ts           # UserService
+│   │   ├── sessions.ts        # SessionService
+│   │   ├── organizations.ts   # OrganizationService
+│   │   ├── projects.ts        # ProjectService
+│   │   ├── environments.ts    # EnvironmentService
+│   │   └── api-keys.ts        # ApiKeyService
+│   └── migrations/          # SQL migrations
 ├── src/                   # Frontend React application
+│   ├── api/                 # React Query hooks for API
+│   │   ├── client.ts          # Effect-based API client
+│   │   ├── organizations.ts   # Organization hooks
+│   │   ├── projects.ts        # Project hooks
+│   │   ├── environments.ts    # Environment hooks
+│   │   ├── api-keys.ts        # API key hooks
+│   │   └── auth/              # Auth API hooks
 │   ├── components/          # React components
-│   │   ├── home-page.tsx      # Component for the home page of the application
+│   │   ├── sidebar.tsx        # Navigation sidebar
+│   │   ├── dashboard-layout.tsx  # Dashboard wrapper
+│   │   ├── protected.tsx      # Auth-protected wrapper
 │   │   └── ui/                # UI component library
+│   ├── contexts/            # React contexts
+│   │   ├── auth.tsx           # Authentication context
+│   │   ├── organization.tsx   # Selected organization
+│   │   ├── project.tsx        # Selected project
+│   │   └── environment.tsx    # Selected environment
 │   ├── lib/                 # Shared utilities
-│   │   └── utils.ts
+│   │   ├── effect.ts          # Effect runtime helpers
+│   │   ├── types.ts           # Shared types
+│   │   └── utils.ts           # General utilities
 │   ├── routes/              # TanStack Router pages
 │   │   ├── __root.tsx         # Root layout
-│   │   └── index.tsx          # Home page route
+│   │   ├── index.tsx          # Home page
+│   │   ├── login.tsx          # Login page
+│   │   ├── api.v0.$.tsx       # API proxy route
+│   │   ├── auth/              # OAuth callback routes
+│   │   └── dashboard/         # Dashboard routes
 │   ├── styles/              # CSS and styling
 │   │   └── globals.css
-│   ├── main.tsx             # React app entry point
-│   ├── reportWebVitals.ts   # Performance monitoring
+│   ├── router.tsx           # Router configuration
 │   └── routeTree.gen.ts     # Auto-generated route tree
-├── worker/                # Backend Cloudflare Workers
-│   ├── api/                 # API route handlers
-│   ├── health/              # Health check endpoints
-│   ├── app.ts               # Hono app configuration
-│   ├── environment.ts       # Environment type definitions
-│   └── index.ts             # Worker entry point
+├── tests/                 # Test utilities
+│   ├── api.ts               # API test client helpers
+│   └── db.ts                # Database test helpers
 ├── public/                # Static assets
 │   ├── fonts/               # Custom fonts
 │   ├── icons/               # App icons and favicons
 │   ├── manifest.json        # PWA manifest
 │   └── robots.txt           # SEO configuration
-├── .example.dev.vars      # Example Cloudflare env settings
-├── .example.env.local     # Example local env settings
+├── docker/                # Local development
+│   └── compose.yml          # PostgreSQL for local dev
+├── settings.ts            # Environment configuration
+├── drizzle.config.ts      # Drizzle ORM configuration
 ├── package.json           # Dependencies and scripts
 ├── tsconfig.json          # TypeScript configuration
 ├── vite.config.ts         # Vite build configuration
 ├── vitest.config.ts       # Test runner configuration
 ├── wrangler.jsonc         # Cloudflare Workers deployment config
-├── eslint.config.ts       # ESLint configuration
-└── index.html             # HTML entry point
+└── eslint.config.ts       # ESLint configuration
 ```
 
 **Tooling Choices**:
 
+- **Effect**: Functional programming with dependency injection and typed errors
 - **React 19**: Modern React features and performance improvements
 - **TanStack Router**: File-based routing with type-safe navigation
+- **TanStack Query**: Data fetching and caching
+- **Drizzle ORM**: Type-safe SQL with PostgreSQL
 - **Vite**: Fast build tool and dev server
 - **Tailwind CSS v4**: Utility-first CSS
 - **Cloudflare Workers**: Serverless edge deployment
-- **Vitest**: Fast test runner
+- **Vitest**: Fast test runner with 100% coverage requirement
+
+**API Structure**:
+
+Each API resource follows a consistent pattern with three files:
+- `*.schemas.ts` - Effect Schema definitions and HttpApiGroup
+- `*.handlers.ts` - Effect-based request handlers
+- `*.test.ts` - API integration tests
+
+Resources are nested: `organizations → projects → environments → api-keys`
 
 ## Documentation (`docs/`)
 
