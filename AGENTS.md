@@ -46,9 +46,127 @@ When making changes to the codebase:
 - **Linting**: `ruff` (Python), `eslint` (TypeScript)
 - **Type Checking**: `pyright` (Python), `tsc` (TypeScript)
 
+## Cloud Application Development
+
+The `cloud/` package uses specific patterns and technologies that differ from typical TypeScript projects:
+
+### Effect TypeScript
+
+The cloud application uses [Effect](https://effect.website/) for functional programming:
+
+- **Services**: Use `Effect.gen` generators with `yield*` for dependency injection
+- **Error Handling**: Use `Effect.either` in tests to assert specific error types
+- **Layers**: Compose services using `Layer.provide` and `Layer.merge`
+
+```typescript
+// Example: Effect-based service call
+Effect.gen(function* () {
+  const db = yield* DatabaseService;
+  const user = yield* AuthenticatedUser;
+  return yield* db.organizations.findAll(user.id);
+})
+```
+
+### Database Services (`cloud/db/services/`)
+
+- Services extend `BaseService` or `BaseAuthenticatedService` for CRUD operations
+- `BaseAuthenticatedService` includes built-in permission checks
+- Error types: `DatabaseError`, `NotFoundError`, `AlreadyExistsError`, `PermissionDeniedError`
+
+### Error Handling (`cloud/db/errors.ts`)
+
+Error types have a static `status` property for HTTP status codes:
+
+```typescript
+// Errors define their own HTTP status
+export class NotFoundError extends Schema.TaggedError<NotFoundError>()(...) {
+  static readonly status = 404 as const;
+}
+
+// Use in API schemas - always reference the static property
+HttpApiEndpoint.get("get", "/resource/:id")
+  .addError(NotFoundError, { status: NotFoundError.status })
+  .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+  .addError(DatabaseError, { status: DatabaseError.status })
+```
+
+Status code mappings:
+| Error | Status |
+|-------|--------|
+| `NotFoundError` | 404 |
+| `PermissionDeniedError` | 403 |
+| `AlreadyExistsError` | 409 |
+| `UnauthorizedError` | 401 |
+| `InvalidSessionError` | 401 |
+| `DatabaseError` | 500 |
+
+### API Design (`cloud/api/`)
+
+- Uses `@effect/platform` HttpApi for type-safe API definitions
+- RESTful nested resources: organizations → projects → environments → api-keys
+- Schemas use Effect's `Schema` module for validation
+- Use full paths in endpoint definitions (e.g., `/organizations/:id`) not `.prefix()`
+
+```typescript
+// String validation pattern
+Schema.String.pipe(Schema.nonEmpty(), Schema.maxLength(100))
+```
+
+### Frontend (`cloud/src/`)
+
+- **TanStack Router**: File-based routing; run `bun run dev` to regenerate `routeTree.gen.ts` after route changes
+- **TanStack Query**: Data fetching with React Query hooks
+- **Server Functions**: Use `createServerFn` with only `GET` (reads) or `POST` (mutations) - not REST verbs like DELETE/PUT
+
+### Testing Requirements
+
+- **100% test coverage required** (branches, statements, functions, lines)
+- Run `bun run test:coverage` to verify
+- Use `/* v8 ignore next */` or `/* v8 ignore start/stop */` for defensive code that can't be tested
+- Use `Effect.either` to test error cases and assert specific error types
+- Resource cleanup: use `beforeAll`/`afterAll` hooks in test helpers
+
+### Common Commands (from `cloud/`)
+
+```bash
+bun run typecheck      # TypeScript type checking
+bun run lint:eslint    # ESLint
+bun run test:coverage  # Run tests with coverage report
+bun run test <file>    # Run specific test file
+bun run dev            # Start dev server (also regenerates TanStack Router routes)
+```
+
+### OpenAPI & SDK Generation
+
+- OpenAPI spec: `bun run api/generate-openapi.ts > ../fern/openapi.json`
+- Python SDK: `bun run cloud:python-sdk:generate` (from repo root)
+- Note: Effect's `_tag` discriminator is renamed to `tag` for Fern SDK compatibility
+
+## Git Workflow with Graphite
+
+The repository uses [Graphite](https://graphite.dev/) (`gt`) for stacked PRs:
+
+```bash
+gt create ENG-{NUM} -m "{MESSAGE}"  # Create a new branch/PR
+gt modify -a                         # Amend current PR with staged changes
+gt checkout <branch>                 # Switch to a branch in the stack
+gt up / gt down                      # Navigate up/down the stack
+gt submit                            # Push all PRs in the stack
+```
+
+### PR Checklist
+
+Before submitting changes, ensure:
+
+1. `bun run typecheck` passes
+2. `bun run lint:eslint` passes  
+3. `bun run test:coverage` shows 100% coverage
+4. OpenAPI spec regenerated if API changed
+
 ## Getting Help
 
 If you need more context about:
+
 - **Specific modules or features**: Check the relevant package's README or documentation
 - **Architecture decisions**: See `STRUCTURE.md` "Key Design Decisions" section
 - **Development workflow**: See `README.md` for CI, testing, and build instructions
