@@ -1,5 +1,11 @@
 import { HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "effect";
+import {
+  NotFoundError,
+  PermissionDeniedError,
+  DatabaseError,
+  AlreadyExistsError,
+} from "@/errors";
 
 export const KeyValueSchema = Schema.Struct({
   key: Schema.String,
@@ -104,7 +110,21 @@ export const CreateTraceResponseSchema = Schema.Struct({
 export type CreateTraceResponse = typeof CreateTraceResponseSchema.Type;
 
 export class TracesApi extends HttpApiGroup.make("traces").add(
-  HttpApiEndpoint.post("create", "/traces")
+  HttpApiEndpoint.post(
+    "create",
+    "/organizations/:organizationId/projects/:projectId/environments/:environmentId/traces",
+  )
+    .setPath(
+      Schema.Struct({
+        organizationId: Schema.String,
+        projectId: Schema.String,
+        environmentId: Schema.String,
+      }),
+    )
     .setPayload(CreateTraceRequestSchema)
-    .addSuccess(CreateTraceResponseSchema),
+    .addSuccess(CreateTraceResponseSchema)
+    .addError(NotFoundError, { status: NotFoundError.status })
+    .addError(PermissionDeniedError, { status: PermissionDeniedError.status })
+    .addError(DatabaseError, { status: DatabaseError.status })
+    .addError(AlreadyExistsError, { status: AlreadyExistsError.status }),
 ) {}

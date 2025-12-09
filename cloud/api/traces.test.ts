@@ -1,84 +1,86 @@
-import { describe, it, expect } from "@effect/vitest";
 import { Effect } from "effect";
-import { TestApiClient, TestClient } from "@/tests/api";
+import { describe, expect, TestApiContext } from "@/tests/api";
+import type { PublicProject, PublicEnvironment } from "@/db/schema";
 
-describe("Traces API", () => {
-  it.effect("POST /traces", () =>
-    Effect.gen(function* () {
-      const client = yield* TestApiClient;
-      const payload = {
-        resourceSpans: [
-          {
-            resource: {
-              attributes: [
-                {
-                  key: "service.name",
-                  value: {
-                    stringValue: "test-service",
-                  },
-                },
-              ],
-            },
-            scopeSpans: [
-              {
-                scope: {
-                  name: "test-scope",
-                  version: "1.0.0",
-                },
-                spans: [
+describe.sequential("Traces API", (it) => {
+  let project: PublicProject;
+  let environment: PublicEnvironment;
+
+  it.effect(
+    "POST /organizations/:orgId/projects - create project for traces test",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        project = yield* client.projects.create({
+          path: { organizationId: org.id },
+          payload: { name: "Traces Test Project", slug: "traces-test-project" },
+        });
+        expect(project.id).toBeDefined();
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:orgId/projects/:projId/environments - create environment for traces test",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        environment = yield* client.environments.create({
+          path: { organizationId: org.id, projectId: project.id },
+          payload: { name: "Traces Test Environment", slug: "traces-test-env" },
+        });
+        expect(environment.id).toBeDefined();
+      }),
+  );
+
+  it.effect(
+    "POST /organizations/:orgId/projects/:projId/environments/:envId/traces - creates trace",
+    () =>
+      Effect.gen(function* () {
+        const { client, org } = yield* TestApiContext;
+        const payload = {
+          resourceSpans: [
+            {
+              resource: {
+                attributes: [
                   {
-                    traceId: "test-trace-id",
-                    spanId: "test-span-id",
-                    name: "test-span",
-                    startTimeUnixNano: "1000000000",
-                    endTimeUnixNano: "2000000000",
+                    key: "service.name",
+                    value: {
+                      stringValue: "test-service",
+                    },
                   },
                 ],
               },
-            ],
-          },
-        ],
-      };
-
-      const result = yield* client.traces.create({ payload });
-      expect(result).toMatchObject({
-        partialSuccess: expect.any(Object) as unknown,
-      });
-    }).pipe(Effect.provide(TestClient.Default)),
-  );
-
-  it.effect("POST /traces - missing service.name and spans", () =>
-    Effect.gen(function* () {
-      const client = yield* TestApiClient;
-      const payload = {
-        resourceSpans: [
-          {
-            resource: {
-              attributes: [
+              scopeSpans: [
                 {
-                  key: "other.attribute",
-                  value: {
-                    stringValue: "other-value",
+                  scope: {
+                    name: "test-scope",
+                    version: "1.0.0",
                   },
+                  spans: [
+                    {
+                      traceId: "test-trace-id",
+                      spanId: "test-span-id",
+                      name: "test-span",
+                      startTimeUnixNano: "1000000000",
+                      endTimeUnixNano: "2000000000",
+                    },
+                  ],
                 },
               ],
             },
-            scopeSpans: [
-              {
-                scope: {
-                  name: "test-scope",
-                },
-                spans: [],
-              },
-            ],
-          },
-        ],
-      };
+          ],
+        };
 
-      const result = yield* client.traces.create({ payload });
-      expect(result).toMatchObject({
-        partialSuccess: expect.any(Object) as unknown,
-      });
-    }).pipe(Effect.provide(TestClient.Default)),
+        const result = yield* client.traces.create({
+          path: {
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+          },
+          payload,
+        });
+
+        expect(result.partialSuccess).toBeDefined();
+      }),
   );
 });

@@ -170,6 +170,75 @@ export const validateApiKey = (
   });
 
 /**
+ * Result of authentication including both user info and optional API key info.
+ */
+export type AuthenticationResult = {
+  user: PublicUser;
+  apiKeyInfo: ApiKeyInfo | null;
+};
+
+/**
+ * Authenticates a request and returns both user and API key info.
+ *
+ * Supports two authentication methods (checked in order):
+ * 1. API Key (X-API-Key header or Authorization: Bearer)
+ * 2. Session cookie
+ *
+ * For API keys, returns both the owner as user AND the full ApiKeyInfo.
+ * For sessions, returns only the user (apiKeyInfo is null).
+ *
+ * @param request - The HTTP request
+ * @param pathParams - Optional path parameters to validate against API key scope
+ */
+export const authenticate = (
+  request: Request,
+  pathParams?: PathParameters,
+): Effect.Effect<AuthenticationResult, UnauthorizedError, Database> =>
+  Effect.gen(function* () {
+    const db = yield* Database;
+
+    // 1. Try API key authentication first
+    const apiKey = getApiKeyFromRequest(request);
+    if (apiKey) {
+      // Validate the API key against path parameters and get complete info
+      const apiKeyInfo = yield* validateApiKey(apiKey, pathParams);
+
+      // Return both user and API key info
+      return {
+        user: {
+          id: apiKeyInfo.ownerId,
+          email: apiKeyInfo.ownerEmail,
+          name: apiKeyInfo.ownerName,
+          deletedAt: apiKeyInfo.ownerDeletedAt,
+        },
+        apiKeyInfo,
+      };
+    }
+
+    // 2. Fall back to session-based authentication
+    const sessionId = getSessionIdFromCookie(request);
+    if (!sessionId) {
+      return yield* Effect.fail(
+        new UnauthorizedError({
+          message: "Authentication required",
+        }),
+      );
+    }
+
+    const user = yield* db.sessions.findUserBySessionId(sessionId).pipe(
+      Effect.catchAll(() =>
+        Effect.fail(
+          new UnauthorizedError({
+            message: "Invalid session",
+          }),
+        ),
+      ),
+    );
+
+    return { user, apiKeyInfo: null };
+  });
+
+/**
  * Gets the authenticated user from a request.
  *
  * Supports two authentication methods (checked in order):
@@ -190,42 +259,4 @@ export const getAuthenticatedUser = (
   request: Request,
   pathParams?: PathParameters,
 ): Effect.Effect<PublicUser, UnauthorizedError, Database> =>
-  Effect.gen(function* () {
-    const db = yield* Database;
-
-    // 1. Try API key authentication first
-    const apiKey = getApiKeyFromRequest(request);
-    if (apiKey) {
-      // Validate the API key against path parameters and get complete info
-      const apiKeyInfo = yield* validateApiKey(apiKey, pathParams);
-
-      // Return the owner as the authenticated user
-      // All owner fields come from the inner join in getApiKeyInfo
-      return {
-        id: apiKeyInfo.ownerId,
-        email: apiKeyInfo.ownerEmail,
-        name: apiKeyInfo.ownerName,
-        deletedAt: apiKeyInfo.ownerDeletedAt,
-      };
-    }
-
-    // 2. Fall back to session-based authentication
-    const sessionId = getSessionIdFromCookie(request);
-    if (!sessionId) {
-      return yield* Effect.fail(
-        new UnauthorizedError({
-          message: "Authentication required",
-        }),
-      );
-    }
-
-    return yield* db.sessions.findUserBySessionId(sessionId).pipe(
-      Effect.catchAll(() =>
-        Effect.fail(
-          new UnauthorizedError({
-            message: "Invalid session",
-          }),
-        ),
-      ),
-    );
-  });
+  authenticate(request, pathParams).pipe(Effect.map((result) => result.user));

@@ -44,7 +44,14 @@ const TracesHandlersLive = HttpApiBuilder.group(
   MirascopeCloudApi,
   "traces",
   (handlers) =>
-    handlers.handle("create", ({ payload }) => createTraceHandler(payload)),
+    handlers.handle("create", ({ path, payload }) =>
+      createTraceHandler(
+        path.organizationId,
+        path.projectId,
+        path.environmentId,
+        payload,
+      ),
+    ),
 );
 
 const DocsHandlersLive = HttpApiBuilder.group(
