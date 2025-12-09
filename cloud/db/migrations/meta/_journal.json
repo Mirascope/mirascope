@@ -22,6 +22,13 @@
       "when": 1765249823861,
       "tag": "0003_fresh_grey_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765250958360,
+      "tag": "0004_friendly_red_skull",
+      "breakpoints": true
     }
   ]
 }

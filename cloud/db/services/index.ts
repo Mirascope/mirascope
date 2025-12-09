@@ -4,6 +4,7 @@ export * from "@/db/services/sessions";
 export * from "@/db/services/organizations";
 export * from "@/db/services/projects";
 export * from "@/db/services/environments";
+export * from "@/db/services/api-keys";
 
 import { Context } from "effect";
 import { drizzle } from "drizzle-orm/postgres-js";
@@ -15,6 +16,7 @@ import { SessionService } from "@/db/services/sessions";
 import { OrganizationService } from "@/db/services/organizations";
 import { ProjectService } from "@/db/services/projects";
 import { EnvironmentService } from "@/db/services/environments";
+import { ApiKeyService } from "@/db/services/api-keys";
 
 export type Database = {
   readonly users: UserService;
@@ -22,6 +24,7 @@ export type Database = {
   readonly organizations: OrganizationService;
   readonly projects: ProjectService;
   readonly environments: EnvironmentService;
+  readonly apiKeys: ApiKeyService;
   readonly close: () => Promise<void>;
 };
 
@@ -51,6 +54,7 @@ export function getDatabase(
   const organizations = new OrganizationService(client);
   const projects = new ProjectService(client);
   const environments = new EnvironmentService(client, projects);
+  const apiKeysService = new ApiKeyService(client);
 
   return {
     users,
@@ -58,6 +62,7 @@ export function getDatabase(
     organizations,
     projects,
     environments,
+    apiKeys: apiKeysService,
     close: async () => {
       if (sql) {
         await sql.end();
