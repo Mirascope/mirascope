@@ -1,16 +1,16 @@
 import { Effect } from "effect";
-import { EnvironmentService } from "@/environment";
+import { SettingsService } from "@/settings";
 import { type CheckHealthResponse } from "@/api/health.schemas";
 
 export * from "@/api/health.schemas";
 
 export const checkHealthHandler = Effect.gen(function* () {
-  const environment = yield* EnvironmentService;
+  const settings = yield* SettingsService;
 
   const response: CheckHealthResponse = {
     status: "ok",
     timestamp: new Date().toISOString(),
-    environment: environment.env,
+    environment: settings.env,
   };
 
   return response;

@@ -12,7 +12,7 @@ import {
   HttpApiBuilder,
   HttpServer,
 } from "@effect/platform";
-import { EnvironmentService } from "@/environment";
+import { SettingsService } from "@/settings";
 import { DatabaseService, getDatabase, type Database } from "@/db";
 import { AuthenticatedUser } from "@/auth";
 import type { App } from "@/api/handler";
@@ -31,7 +31,7 @@ const testDatabaseUrl = "postgresql://test:test@localhost/test";
 
 function createTestWebHandler(app: App) {
   const services = Layer.mergeAll(
-    Layer.succeed(EnvironmentService, { env: app.environment }),
+    Layer.succeed(SettingsService, { env: app.environment }),
     Layer.succeed(DatabaseService, app.database),
     Layer.succeed(AuthenticatedUser, app.authenticatedUser),
   );

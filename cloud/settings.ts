@@ -1,6 +1,6 @@
 import { Context } from "effect";
 
-export type Environment = {
+export type Settings = {
   readonly env: string;
   readonly DATABASE_URL?: string;
   readonly GOOGLE_CLIENT_ID?: string;
@@ -12,12 +12,12 @@ export type Environment = {
   readonly SITE_URL?: string;
 };
 
-export class EnvironmentService extends Context.Tag("EnvironmentService")<
-  EnvironmentService,
-  Environment
+export class SettingsService extends Context.Tag("SettingsService")<
+  SettingsService,
+  Settings
 >() {}
 
-export function getEnvironment(): Environment {
+export function getSettings(): Settings {
   return {
     env: process.env.ENVIRONMENT || "local",
     DATABASE_URL: process.env.DATABASE_URL,
