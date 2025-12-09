@@ -58,6 +58,12 @@ export const spans = pgTable(
       foreignColumns: [traces.id, traces.traceId, traces.environmentId],
       name: "spans_trace_consistency_fk",
     }).onDelete("cascade"),
+    // Composite foreign key to ensure project_id and organization_id match the referenced trace
+    traceOrgConsistencyFk: foreignKey({
+      columns: [table.traceDbId, table.projectId, table.organizationId],
+      foreignColumns: [traces.id, traces.projectId, traces.organizationId],
+      name: "spans_trace_org_consistency_fk",
+    }).onDelete("cascade"),
     envCreatedAtIdx: index("spans_env_created_at_idx").on(
       table.environmentId,
       table.createdAt,
