@@ -3,18 +3,20 @@ import { useServerFn } from "@tanstack/react-start";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { getAuthenticatedUser } from "@/auth";
-import { runHandler } from "@/src/lib/effect";
+import { runEffect } from "@/src/lib/effect";
+import type { Result } from "@/src/lib/types";
+import type { PublicUser } from "@/db/schema";
 
 const AUTH_STALE_TIME = 5 * 60 * 1000; // 5 minutes
 
 export const getCurrentUser = createServerFn({ method: "GET" }).handler(
-  async () => {
+  async (): Promise<Result<PublicUser | null>> => {
     const request = getRequest();
     if (!request) {
-      return null;
+      return { success: true, data: null };
     }
 
-    return await runHandler(getAuthenticatedUser(request));
+    return await runEffect(getAuthenticatedUser(request));
   },
 );
 
@@ -24,12 +26,11 @@ export const useAuthStatus = () => {
   return useQuery({
     queryKey: ["auth", "me"],
     queryFn: async () => {
-      try {
-        return await getCurrentUserFn();
-      } catch {
-        // Server function returns null for unauthenticated users
+      const result = await getCurrentUserFn();
+      if (!result.success) {
         return null;
       }
+      return result.data;
     },
     retry: false,
     staleTime: AUTH_STALE_TIME,

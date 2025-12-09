@@ -4,11 +4,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { Effect } from "effect";
 import { DatabaseService } from "@/db";
-import { runHandler } from "@/src/lib/effect";
+import { runEffectResponse } from "@/src/lib/effect";
 import { getSessionIdFromCookie, clearSessionCookie } from "@/auth/utils";
 
 export const logout = createServerFn({ method: "POST" }).handler(async () => {
-  return await runHandler(
+  return await runEffectResponse(
     Effect.gen(function* () {
       const request = getRequest();
 
