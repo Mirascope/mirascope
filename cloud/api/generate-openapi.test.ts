@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { generateOpenApiSpec } from "@/api/generate-openapi";
 import { execSync } from "child_process";
+import { readFileSync, unlinkSync } from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 
 describe("generateOpenApiSpec", () => {
   it("should generate OpenAPI spec with correct structure", () => {
@@ -78,15 +81,26 @@ describe("generateOpenApiSpec", () => {
 
 describe("generate-openapi script execution", () => {
   it("should output JSON when executed as a script", () => {
-    const output = execSync("bun generate-openapi.ts", {
-      cwd: __dirname, // optional
-      encoding: "utf-8",
-    });
+    const tmpFile = join(tmpdir(), `openapi-test-${Date.now()}.json`);
 
-    const parsed_stdout = JSON.parse(output) as {
-      info?: { title?: string };
-    };
-    expect(parsed_stdout).toHaveProperty("info");
-    expect(parsed_stdout.info).toHaveProperty("title", "Mirascope Cloud API");
+    try {
+      // Write output to temp file to avoid buffer issues
+      execSync(`bun generate-openapi.ts > "${tmpFile}"`, {
+        cwd: __dirname,
+      });
+
+      const output = readFileSync(tmpFile, "utf-8");
+      const parsed_stdout = JSON.parse(output) as {
+        info?: { title?: string };
+      };
+      expect(parsed_stdout).toHaveProperty("info");
+      expect(parsed_stdout.info).toHaveProperty("title", "Mirascope Cloud API");
+    } finally {
+      try {
+        unlinkSync(tmpFile);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
   });
 });
