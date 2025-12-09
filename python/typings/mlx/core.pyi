@@ -1,6 +1,5 @@
 """Type stubs for mlx.core module."""
 
-
 class array:
     """MLX array type stub."""
 
@@ -11,4 +10,3 @@ class random:
 
     @staticmethod
     def seed(seed: int) -> None: ...
-

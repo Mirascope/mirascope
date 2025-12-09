@@ -4,4 +4,3 @@ class Module:
     """MLX neural network module type stub."""
 
     ...
-
