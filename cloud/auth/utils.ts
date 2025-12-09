@@ -184,7 +184,8 @@ export const authenticate = (
       // Validate the API key against path parameters and get complete info
       const apiKeyInfo = yield* validateApiKey(apiKey, pathParams);
 
-      // Return both user and API key info
+      // Return the owner as the authenticated user
+      // All owner fields come from the inner join in getApiKeyInfo
       return {
         user: {
           id: apiKeyInfo.ownerId,
