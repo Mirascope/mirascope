@@ -44,7 +44,7 @@ def test_model_stream_exports_genai_span(
 ) -> None:
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.instrument_llm()
-    model = llm.Model(model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai/gpt-4o")
 
     response = model.stream(messages=_math_messages())
     response.finish()
@@ -64,7 +64,7 @@ def test_model_stream_with_tools(span_exporter: InMemorySpanExporter) -> None:
 
         return f"Retrieved secret for {password}"
 
-    model = llm.Model(model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai/gpt-4o")
     messages = [
         llm.messages.system("Use parallel tool calling."),
         llm.messages.user(
@@ -80,16 +80,16 @@ def test_model_stream_with_tools(span_exporter: InMemorySpanExporter) -> None:
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o",
+            "name": "chat openai/gpt-4o",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o",
                 "gen_ai.output.type": "text",
                 "gen_ai.tool.definitions": '[{"name":"secret_retrieval_tool","description":"A tool that requires a password to retrieve a secret.","strict":false,"parameters":{"properties":{"password":{"title":"Password","type":"string"}},"required":["password"],"additionalProperties":false,"$defs":null}}]',
-                "gen_ai.response.model": "openai:responses/gpt-4o",
+                "gen_ai.response.model": "openai/gpt-4o",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.system_instructions": '[{"type":"text","content":"Use parallel tool calling."}]',
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Please retrieve the secrets associated with each of these passwords: mellon,radiance"}]}]',
@@ -119,7 +119,7 @@ def test_model_stream_with_json_format(
         rating: int = Field(description="For testing purposes, the rating should be 7")
 
     ops.instrument_llm()
-    model = llm.Model(model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai/gpt-4o")
     messages = [
         llm.messages.system(
             "Always respond to the user's query using the __mirascope_formatted_output_tool__ tool for structured output."
@@ -136,16 +136,16 @@ def test_model_stream_with_json_format(
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o",
+            "name": "chat openai/gpt-4o",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o",
                 "gen_ai.output.type": "json",
                 "gen_ai.tool.definitions": '[{"name":"__mirascope_formatted_output_tool__","description":"Use this tool to extract data in Book format for a final response.\\nA book with a rating. The title should be in all caps!","strict":true,"parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"$ref":"#/$defs/Author"},"rating":{"description":"For testing purposes, the rating should be 7","title":"Rating","type":"integer"}},"required":["title","author","rating"],"additionalProperties":false,"$defs":{"Author":{"description":"The author of a book.","properties":{"first_name":{"title":"First Name","type":"string"},"last_name":{"title":"Last Name","type":"string"}},"required":["first_name","last_name"],"title":"Author","type":"object"}}}}]',
-                "gen_ai.response.model": "openai:responses/gpt-4o",
+                "gen_ai.response.model": "openai/gpt-4o",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.system_instructions": '[{"type":"text","content":"Always respond to the user\'s query using the __mirascope_formatted_output_tool__ tool for structured output."}]',
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Please recommend the most popular book by Patrick Rothfuss"}]}]',
@@ -200,7 +200,7 @@ def test_model_stream_records_untracked_params_event(
         "bad_str": _BadStr(),
     }
     model = llm.Model(
-        model_id="openai:responses/gpt-4o",
+        model_id="openai/gpt-4o",
         **extra_params,
     )
 
@@ -243,7 +243,7 @@ def test_model_stream_with_none_parameters(
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.instrument_llm()
     model = llm.Model(
-        model_id="openai:responses/gpt-4o",
+        model_id="openai/gpt-4o",
         temperature=None,  # type: ignore[arg-type]
         max_tokens=64,
         top_p=None,  # type: ignore[arg-type]
@@ -257,16 +257,16 @@ def test_model_stream_with_none_parameters(
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o",
+            "name": "chat openai/gpt-4o",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o",
                 "gen_ai.output.type": "text",
                 "gen_ai.request.max_tokens": 64,
-                "gen_ai.response.model": "openai:responses/gpt-4o",
+                "gen_ai.response.model": "openai/gpt-4o",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What is 4200 + 42?"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"4200 + 42 = 4242"}],"finish_reason":"stop"}]',
@@ -281,7 +281,7 @@ def test_model_stream_records_response_id(
 ) -> None:
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.instrument_llm()
-    model = llm.Model(model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai/gpt-4o")
 
     response = model.stream(messages=_math_messages())
     response.finish()
@@ -293,15 +293,15 @@ def test_model_stream_records_response_id(
     first_span_dict = span_snapshot(spans[0])
     assert first_span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o",
+            "name": "chat openai/gpt-4o",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o",
                 "gen_ai.output.type": "text",
-                "gen_ai.response.model": "openai:responses/gpt-4o",
+                "gen_ai.response.model": "openai/gpt-4o",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What is 4200 + 42?"}]}]',
                 "gen_ai.output.messages": '[{"role":"assistant","parts":[{"type":"text","content":"4200 + 42 equals 4242."}],"finish_reason":"stop"}]',
@@ -317,7 +317,7 @@ def test_model_stream_without_instrumentation(
     """Test that streaming a model call exports the correct OpenTelemetry span."""
     ops.uninstrument_llm()
 
-    model = llm.Model(model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai/gpt-4o")
     response = model.stream(messages=_math_messages())
     response.finish()
 
@@ -332,7 +332,7 @@ def test_model_stream_with_tracer_set_to_none(
     ops.instrument_llm()
     set_tracer(None)
 
-    model = llm.Model(model_id="openai:responses/gpt-4o")
+    model = llm.Model(model_id="openai/gpt-4o")
     response = model.stream(messages=_math_messages())
     response.finish()
 
@@ -352,7 +352,7 @@ def test_model_stream_with_error(span_exporter: InMemorySpanExporter) -> None:
     )
 
     with patch("mirascope.llm.models.models.client", return_value=mock_client):
-        model = llm.Model(model_id="openai:responses/gpt-4o")
+        model = llm.Model(model_id="openai/gpt-4o")
         with pytest.raises(openai.APIError):
             model.stream(messages=_math_messages())
 
@@ -361,13 +361,13 @@ def test_model_stream_with_error(span_exporter: InMemorySpanExporter) -> None:
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o",
+            "name": "chat openai/gpt-4o",
             "kind": "CLIENT",
             "status": "ERROR",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o",
                 "gen_ai.output.type": "text",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What is 4200 + 42?"}]}]',
                 "error.type": "APIError",
@@ -391,8 +391,8 @@ def test_model_stream_iterator_error_records_exception(
 
     mock_client = Mock()
     mock_client.stream.return_value = StreamResponse(
-        provider="openai:responses",
-        model_id="openai:responses/gpt-4o",
+        provider="openai",
+        model_id="openai/gpt-4o",
         provider_model_id="gpt-4o:responses",
         params={},
         tools=None,
@@ -402,7 +402,7 @@ def test_model_stream_iterator_error_records_exception(
     )
 
     with patch("mirascope.llm.models.models.client", return_value=mock_client):
-        model = llm.Model(model_id="openai:responses/gpt-4o")
+        model = llm.Model(model_id="openai/gpt-4o")
         response = model.stream(messages=_math_messages())
         with pytest.raises(RuntimeError):
             response.finish()

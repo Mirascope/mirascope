@@ -32,8 +32,8 @@ from ....tools import (
     Toolkit,
 )
 from ...base import BaseClient, Params
+from ..model_info import OpenAIModelId
 from . import _utils
-from .model_ids import OpenAIResponsesModelId
 
 
 @lru_cache(maxsize=256)
@@ -53,7 +53,7 @@ def client(
     return _openai_responses_singleton(api_key, base_url)
 
 
-class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
+class OpenAIResponsesClient(BaseClient[OpenAIModelId, OpenAI]):
     """The client for the OpenAI Responses API."""
 
     def __init__(
@@ -67,7 +67,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     def call(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
@@ -80,7 +80,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     def call(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -93,7 +93,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     def call(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -105,7 +105,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     def call(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -140,7 +140,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return Response(
             raw=openai_response,
-            provider="openai:responses",
+            provider="openai",
             model_id=model_id,
             provider_model_id=provider_model_id,
             params=params,
@@ -155,7 +155,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     async def call_async(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
@@ -168,7 +168,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     async def call_async(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -181,7 +181,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     async def call_async(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -193,7 +193,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     async def call_async(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -228,7 +228,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return AsyncResponse(
             raw=openai_response,
-            provider="openai:responses",
+            provider="openai",
             model_id=model_id,
             provider_model_id=provider_model_id,
             params=params,
@@ -243,7 +243,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     def stream(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: None = None,
@@ -256,7 +256,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     def stream(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -269,7 +269,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     def stream(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -281,7 +281,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     def stream(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool] | Toolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -318,7 +318,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         provider_model_id = _utils.get_provider_model_id(model_id)
 
         return StreamResponse(
-            provider="openai:responses",
+            provider="openai",
             model_id=model_id,
             provider_model_id=provider_model_id,
             params=params,
@@ -332,7 +332,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     async def stream_async(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: None = None,
@@ -345,7 +345,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     async def stream_async(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT],
@@ -358,7 +358,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     async def stream_async(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -370,7 +370,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
     async def stream_async(
         self,
         *,
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool] | AsyncToolkit | None = None,
         format: type[FormattableT] | Format[FormattableT] | None = None,
@@ -407,7 +407,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         provider_model_id = _utils.get_provider_model_id(model_id)
 
         return AsyncStreamResponse(
-            provider="openai:responses",
+            provider="openai",
             model_id=model_id,
             provider_model_id=provider_model_id,
             params=params,
@@ -422,7 +422,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -438,7 +438,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -454,7 +454,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -469,7 +469,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -507,7 +507,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return ContextResponse(
             raw=openai_response,
-            provider="openai:responses",
+            provider="openai",
             model_id=model_id,
             provider_model_id=provider_model_id,
             params=params,
@@ -523,7 +523,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -539,7 +539,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -555,7 +555,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -570,7 +570,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -608,7 +608,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
 
         return AsyncContextResponse(
             raw=openai_response,
-            provider="openai:responses",
+            provider="openai",
             model_id=model_id,
             provider_model_id=provider_model_id,
             params=params,
@@ -624,7 +624,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -640,7 +640,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -656,7 +656,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -671,7 +671,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[Tool | ContextTool[DepsT]]
         | ContextToolkit[DepsT]
@@ -711,7 +711,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         provider_model_id = _utils.get_provider_model_id(model_id)
 
         return ContextStreamResponse(
-            provider="openai:responses",
+            provider="openai",
             model_id=model_id,
             provider_model_id=provider_model_id,
             params=params,
@@ -726,7 +726,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -742,7 +742,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -758,7 +758,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -776,7 +776,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         self,
         *,
         ctx: Context[DepsT],
-        model_id: OpenAIResponsesModelId,
+        model_id: OpenAIModelId,
         messages: Sequence[Message],
         tools: Sequence[AsyncTool | AsyncContextTool[DepsT]]
         | AsyncContextToolkit[DepsT]
@@ -819,7 +819,7 @@ class OpenAIResponsesClient(BaseClient[OpenAIResponsesModelId, OpenAI]):
         provider_model_id = _utils.get_provider_model_id(model_id)
 
         return AsyncContextStreamResponse(
-            provider="openai:responses",
+            provider="openai",
             model_id=model_id,
             provider_model_id=provider_model_id,
             params=params,

@@ -691,7 +691,7 @@ def test_versioned_call_closure_and_version_info() -> None:
         tags=["production"],
         metadata={"team": "ml"},
     )
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         """Recommends books based on genre"""
         return f"Recommend a {genre} book."
@@ -706,7 +706,7 @@ from mirascope import llm, ops
     tags=["production"],
     metadata={"team": "ml"},
 )
-@llm.call("openai:responses/gpt-4o-mini")
+@llm.call("openai/gpt-4o-mini")
 def recommend(genre: str) -> str:
     return f"Recommend a {genre} book."
 """)
@@ -716,8 +716,8 @@ def recommend(genre: str) -> str:
     assert info == snapshot(
         VersionInfo(
             uuid=None,
-            hash="3ba35acfae95c3a990d742cc453e5268812341b6370755c0f35a78cc5a3a09ec",
-            signature_hash="6fd5080b5db72599be6c032dd7ce7da4d300a91b2306630ecb50acc499aa7490",
+            hash="e1f15d277a7d1660f1114323ca62776c66595e5c71cd4e03b80f5a68ab762887",
+            signature_hash="b150356b913e618ee78d5e70c96d5077bbabd67bcfc1dcdd567c89ea5f3c6fa4",
             name="book_recommender",
             description="Recommends books based on genre",
             version="1.0",
@@ -732,7 +732,7 @@ def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
     """Test @ops.version on @llm.call creates VersionedCall and returns Response directly."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -760,8 +760,8 @@ def test_versioned_call_sync(span_exporter: InMemorySpanExporter) -> None:
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["fantasy"],"kwargs":{}}',
-                "mirascope.version.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
-                "mirascope.version.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.hash": "76a7b11e288b2363ec592d668f67ad432a10a0b914c311a4848b6be707d4d38d",
+                "mirascope.version.signature_hash": "b85dbb2d72f8337e8096866160b19224be513ed1806d27a65dc03663b61b22b8",
                 "mirascope.version.version": "1.0",
                 "mirascope.trace.output": "I highly recommend **\"The Name of the Wind\" by Patrick Rothfuss**. It's the first book in the Kingkiller Chronicle series and follows the story of Kvothe, a gifted young man who becomes a legendary figure. The narrative weaves together magic, music, and adventure, all told in Kvothe's own voice as he recounts his life's journey. The writing is beautiful, and the world-building is rich and immersive. Enjoy your reading!",
             },
@@ -776,7 +776,7 @@ def test_versioned_call_wrapped_method(span_exporter: InMemorySpanExporter) -> N
     """Test VersionedCall.wrapped() returns VersionedResult."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -803,8 +803,8 @@ def test_versioned_call_wrapped_method(span_exporter: InMemorySpanExporter) -> N
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["mystery"],"kwargs":{}}',
-                "mirascope.version.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
-                "mirascope.version.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.hash": "76a7b11e288b2363ec592d668f67ad432a10a0b914c311a4848b6be707d4d38d",
+                "mirascope.version.signature_hash": "b85dbb2d72f8337e8096866160b19224be513ed1806d27a65dc03663b61b22b8",
                 "mirascope.version.version": "1.0",
                 "mirascope.trace.output": "I recommend **\"The No. 1 Ladies' Detective Agency\"** by Alexander McCall Smith. It's a charming mystery set in Botswana, featuring the clever and resourceful Precious Ramotswe as she solves various cases with a unique blend of humor and insight. The book combines an engaging storyline with rich cultural details, making it both an enjoyable read and a delightful introduction to the series.",
             },
@@ -819,7 +819,7 @@ def test_versioned_call_call_method(span_exporter: InMemorySpanExporter) -> None
     """Test VersionedCall.call() returns Response directly and creates span."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -845,8 +845,8 @@ def test_versioned_call_call_method(span_exporter: InMemorySpanExporter) -> None
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["fantasy"],"kwargs":{}}',
-                "mirascope.version.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
-                "mirascope.version.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.hash": "76a7b11e288b2363ec592d668f67ad432a10a0b914c311a4848b6be707d4d38d",
+                "mirascope.version.signature_hash": "b85dbb2d72f8337e8096866160b19224be513ed1806d27a65dc03663b61b22b8",
                 "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I recommend **"The Name of the Wind" by Patrick Rothfuss**. It’s the first book in the *The Kingkiller Chronicle* series and follows the story of Kvothe, a gifted young man who grows to become a legendary figure. The narrative weaves magic, music, and adventure in a richly detailed world. Its lyrical prose and deep character development make it a captivating read for fantasy lovers. Enjoy!',
             },
@@ -861,7 +861,7 @@ def test_versioned_call_stream_method(span_exporter: InMemorySpanExporter) -> No
     """Test VersionedCall.stream() returns StreamResponse directly."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -875,7 +875,7 @@ def test_versioned_call_wrapped_stream(span_exporter: InMemorySpanExporter) -> N
     """Test VersionedCall.wrapped_stream() returns VersionedResult[StreamResponse]."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -903,8 +903,8 @@ def test_versioned_call_wrapped_stream(span_exporter: InMemorySpanExporter) -> N
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["adventure"],"kwargs":{}}',
-                "mirascope.version.hash": "21cdb5fc35fc73f4e4293c66306045ace35a4f9dc04186dc0fac4c15cf61c628",
-                "mirascope.version.signature_hash": "2c583fb90c0f1c2635781012747f825affcac79e2035352c519fa90fc4a579c0",
+                "mirascope.version.hash": "76a7b11e288b2363ec592d668f67ad432a10a0b914c311a4848b6be707d4d38d",
+                "mirascope.version.signature_hash": "b85dbb2d72f8337e8096866160b19224be513ed1806d27a65dc03663b61b22b8",
                 "mirascope.version.version": "1.0",
                 "mirascope.trace.output": "**[No Content]**",
             },
@@ -920,7 +920,7 @@ async def test_versioned_async_call(span_exporter: InMemorySpanExporter) -> None
     """Test @ops.version on async @llm.call creates VersionedAsyncCall."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -948,8 +948,8 @@ async def test_versioned_async_call(span_exporter: InMemorySpanExporter) -> None
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["horror"],"kwargs":{}}',
-                "mirascope.version.hash": "877be74e6c1e96bad72247c09c06adc1d029dbab276d4898f54b85e6854804b1",
-                "mirascope.version.signature_hash": "a4c2e83f886b409631d5a84a91ae8dfbe015862f824b867d684f5f30975310cf",
+                "mirascope.version.hash": "5e8d200470c1ca96f0d9898bc7fb3582dd376bd5fc1f931d4694f1ca16d81791",
+                "mirascope.version.signature_hash": "5e70c3fd765650ffaf302c8281a5cfae52c45a760aa7724c249dcf8d238c8765",
                 "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I recommend **"The Haunting of Hill House" by Shirley Jackson**. This classic novel explores the eerie and unsettling experiences of a group of people staying in a supposedly haunted mansion. Jackson\'s atmospheric writing and psychological tension create a chilling experience, making it a must-read for horror fans. If you\'re looking for something more contemporary, consider **"Mexican Gothic" by Silvia Moreno-Garcia**, which combines elements of gothic horror with a rich cultural backdrop. Both books offer unique and compelling takes on the genre!',
             },
@@ -967,7 +967,7 @@ async def test_versioned_async_call_call_method(
     """Test VersionedAsyncCall.call() returns AsyncResponse directly."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -993,8 +993,8 @@ async def test_versioned_async_call_call_method(
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["horror"],"kwargs":{}}',
-                "mirascope.version.hash": "877be74e6c1e96bad72247c09c06adc1d029dbab276d4898f54b85e6854804b1",
-                "mirascope.version.signature_hash": "a4c2e83f886b409631d5a84a91ae8dfbe015862f824b867d684f5f30975310cf",
+                "mirascope.version.hash": "5e8d200470c1ca96f0d9898bc7fb3582dd376bd5fc1f931d4694f1ca16d81791",
+                "mirascope.version.signature_hash": "5e70c3fd765650ffaf302c8281a5cfae52c45a760aa7724c249dcf8d238c8765",
                 "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I recommend "The Haunting of Hill House" by Shirley Jackson. It\'s a classic in the horror genre, exploring themes of fear, isolation, and psychological disturbance. The story follows a group of people who gather at a supposedly haunted mansion, and the eerie atmosphere and character dynamics make it both chilling and thought-provoking. Enjoy!',
             },
@@ -1012,7 +1012,7 @@ async def test_versioned_async_call_stream_method(
     """Test VersionedAsyncCall.stream() returns AsyncStreamResponse directly."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -1026,7 +1026,7 @@ def test_versioned_context_call(span_exporter: InMemorySpanExporter) -> None:
     """Test @ops.version on @llm.call with context creates VersionedContextCall."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1055,8 +1055,8 @@ def test_versioned_context_call(span_exporter: InMemorySpanExporter) -> None:
                 "mirascope.fn.is_async": False,
                 "mirascope.trace.arg_types": '{"ctx":"Context","args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"args":["fantasy"],"kwargs":{}}',
-                "mirascope.version.hash": "8e98056ad87b75ae8554b3a1883f0ffbe00402e97abf57e5d6131c3b72e4ccda",
-                "mirascope.version.signature_hash": "7b86c8c72d035c510c504f0078ee874178156efe81827c251300ce3cfe36ebcc",
+                "mirascope.version.hash": "d4e3376a2b4f08c3f0913f581a4902c3208dfc00c66297f4caf718d19aa0612d",
+                "mirascope.version.signature_hash": "705465be5837caf8c33b7319e7f0fd0b6a81dcd7a89cb099e4fa6e76fc2880f8",
                 "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I highly recommend **"The Name of the Wind" by Patrick Rothfuss**. This novel is the first book in the *Kingkiller Chronicle* series and follows the story of Kvothe, a gifted young man who grows up to become a legendary figure. The narrative combines rich world-building, a unique magic system, and its protagonist\'s journey through love, loss, and the pursuit of knowledge. The prose is lyrical, making it a joy to read while exploring themes of storytelling and identity. Perfect for fans of intricate plots and character-driven tales!',
             },
@@ -1073,7 +1073,7 @@ def test_versioned_context_call_call_method(
     """Test VersionedContextCall.call() returns ContextResponse directly."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1089,7 +1089,7 @@ def test_versioned_context_call_stream_method(
     """Test VersionedContextCall.stream() returns ContextStreamResponse."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1107,7 +1107,7 @@ async def test_versioned_async_context_call(
     """Test @ops.version on async @llm.call with context creates VersionedAsyncContextCall."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1136,8 +1136,8 @@ async def test_versioned_async_context_call(
                 "mirascope.fn.is_async": True,
                 "mirascope.trace.arg_types": '{"ctx":"Context","args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"ctx":{"deps":"As a librarian,"},"args":["mystery"],"kwargs":{}}',
-                "mirascope.version.hash": "8d8785a934ce3621350788d6feb001669beb09443631797bacee2b88a510b965",
-                "mirascope.version.signature_hash": "a8c6d85888f29277558d3deea2d3acdf36ee8801ab5398d0df3d44f7a20a0770",
+                "mirascope.version.hash": "50b2b4f589367939f530073654e53599b461083c656b1e17effaea958c3610f1",
+                "mirascope.version.signature_hash": "bc0660ba28abdfb06a4f855865d1bb4e306f8c4c223360a1e5ade287fc443f8f",
                 "mirascope.version.version": "1.0",
                 "mirascope.trace.output": 'I recommend **"The Guest List" by Lucy Foley**. This gripping mystery unfolds during a lavish wedding celebration on a remote Irish island. As the guests gather, tensions rise, and secrets begin to surface, culminating in a shocking murder. The narrative shifts between multiple perspectives, keeping you guessing until the very end. It\'s a fantastic blend of suspense, rich character development, and atmospheric setting—perfect for fans of psychological thrillers!',
             },
@@ -1155,7 +1155,7 @@ async def test_versioned_async_context_call_call_method(
     """Test VersionedAsyncContextCall.call() returns AsyncContextResponse."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1172,7 +1172,7 @@ async def test_versioned_async_context_call_stream_method(
     """Test VersionedAsyncContextCall.stream() returns AsyncContextStreamResponse."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1187,7 +1187,7 @@ def test_versioned_call_with_tags(span_exporter: InMemorySpanExporter) -> None:
     """Test @ops.version(tags=[...]) passes tags to VersionedCall."""
 
     @ops.version(tags=["production", "recommendations"])
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -1214,8 +1214,8 @@ def test_versioned_call_with_tags(span_exporter: InMemorySpanExporter) -> None:
                 "mirascope.trace.arg_types": '{"args":"P.args","kwargs":"P.kwargs"}',
                 "mirascope.trace.arg_values": '{"args":["romance"],"kwargs":{}}',
                 "mirascope.trace.tags": ("production", "recommendations"),
-                "mirascope.version.hash": "bc24237317563e580054a46c60be691fad1b2983e23dc7ec435d6773d628fa29",
-                "mirascope.version.signature_hash": "13ab92f4821a17b58b435ac860306b3103bd7aecd820265b13db85c7bc8f7ef3",
+                "mirascope.version.hash": "550eeecde161f3c6629e208e1bc41fa2eb5ddb75381c8c6cf2592aea25d323e7",
+                "mirascope.version.signature_hash": "6d70fb16697482fb44090153b4b6f1f1a32f84d25b8c74269945a99677c5b50e",
                 "mirascope.version.version": "1.0",
                 "mirascope.version.tags": ("production", "recommendations"),
                 "mirascope.trace.output": "I recommend **\"The Kiss Quotient\" by Helen Hoang**. It’s a refreshing story about Stella Lane, a successful woman with Asperger's, who decides to hire an escort to help her gain more experience in relationships. The book beautifully explores themes of love, acceptance, and self-discovery, with a charming romance that unfolds between Stella and the escort, Michael. It's both sweet and steamy, making it a wonderful read for romance lovers!",
@@ -1234,7 +1234,7 @@ def test_versioned_call_closure_extraction_failure() -> None:
     ):
 
         @ops.version
-        @llm.call("openai:responses/gpt-4o-mini")
+        @llm.call("openai/gpt-4o-mini")
         def recommend(genre: str) -> str:
             return f"Recommend a {genre} book."
 
@@ -1250,7 +1250,7 @@ def test_versioned_async_call_closure_extraction_failure() -> None:
     ):
 
         @ops.version
-        @llm.call("openai:responses/gpt-4o-mini")
+        @llm.call("openai/gpt-4o-mini")
         async def recommend(genre: str) -> str:
             return f"Recommend a {genre} book."
 
@@ -1266,7 +1266,7 @@ def test_versioned_context_call_closure_extraction_failure() -> None:
     ):
 
         @ops.version
-        @llm.call("openai:responses/gpt-4o-mini")
+        @llm.call("openai/gpt-4o-mini")
         def recommend(ctx: llm.Context[str], genre: str) -> str:
             return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1282,7 +1282,7 @@ def test_versioned_async_context_call_closure_extraction_failure() -> None:
     ):
 
         @ops.version
-        @llm.call("openai:responses/gpt-4o-mini")
+        @llm.call("openai/gpt-4o-mini")
         async def recommend(ctx: llm.Context[str], genre: str) -> str:
             return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1298,7 +1298,7 @@ async def test_versioned_async_call_wrapped_method(
     """Test VersionedAsyncCall.wrapped() returns AsyncVersionedResult."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -1315,7 +1315,7 @@ async def test_versioned_async_call_wrapped_stream_method(
     """Test VersionedAsyncCall.wrapped_stream() returns AsyncVersionedResult."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(genre: str) -> str:
         return f"Recommend a {genre} book."
 
@@ -1332,7 +1332,7 @@ def test_versioned_context_call_wrapped_method(
     """Test VersionedContextCall.wrapped() returns VersionedResult."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1349,7 +1349,7 @@ def test_versioned_context_call_wrapped_stream_method(
     """Test VersionedContextCall.wrapped_stream() returns VersionedResult."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1368,7 +1368,7 @@ async def test_versioned_async_context_call_wrapped_method(
     """Test VersionedAsyncContextCall.wrapped() returns AsyncVersionedResult."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 
@@ -1386,7 +1386,7 @@ async def test_versioned_async_context_call_wrapped_stream_method(
     """Test VersionedAsyncContextCall.wrapped_stream() returns AsyncVersionedResult."""
 
     @ops.version
-    @llm.call("openai:responses/gpt-4o-mini")
+    @llm.call("openai/gpt-4o-mini")
     async def recommend(ctx: llm.Context[str], genre: str) -> str:
         return f"{ctx.deps} Recommend a {genre} book."
 

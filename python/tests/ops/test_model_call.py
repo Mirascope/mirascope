@@ -50,7 +50,7 @@ def initialize() -> Generator[None, None, None]:
 @pytest.mark.vcr()
 def test_model_call_exports_genai_span(span_exporter: InMemorySpanExporter) -> None:
     """Test OpenTelemetry instrumentation with basic model call."""
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [
         llm.messages.system("You are a concise assistant."),
         llm.messages.user("Say hello to the user named Kai."),
@@ -64,15 +64,15 @@ def test_model_call_exports_genai_span(span_exporter: InMemorySpanExporter) -> N
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_07cda32f3bb965f500691448c25b8481939254851481fbd88e",
                 "gen_ai.system_instructions": '[{"type":"text","content":"You are a concise assistant."}]',
@@ -92,7 +92,7 @@ def test_model_call_with_tools(span_exporter: InMemorySpanExporter) -> None:
         """Get the current weather in a given location."""
         return f"Weather in {location}: 72°{unit[0].upper()}, sunny"
 
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("What's the weather like in San Francisco?")]
 
     model.call(messages=messages, tools=[get_current_weather])
@@ -102,16 +102,16 @@ def test_model_call_with_tools(span_exporter: InMemorySpanExporter) -> None:
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
                 "gen_ai.tool.definitions": '[{"name":"get_current_weather","description":"Get the current weather in a given location.","strict":false,"parameters":{"properties":{"location":{"title":"Location","type":"string"},"unit":{"default":"fahrenheit","title":"Unit","type":"string"}},"required":["location"],"additionalProperties":false,"$defs":null}}]',
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_01a49b3ee0a2578500691448c3d8b88194b5a7507bef965031",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What\'s the weather like in San Francisco?"}]}]',
@@ -132,7 +132,7 @@ def test_model_call_with_parameters(span_exporter: InMemorySpanExporter) -> None
         "presence_penalty": 0.1,
     }
     model = llm.Model(
-        model_id="openai:responses/gpt-4o-mini",
+        model_id="openai/gpt-4o-mini",
         **model_params,
     )
     messages = [llm.messages.user("Count from 1 to 5")]
@@ -144,20 +144,20 @@ def test_model_call_with_parameters(span_exporter: InMemorySpanExporter) -> None
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
                 "gen_ai.request.temperature": 0.5,
                 "gen_ai.request.max_tokens": 50,
                 "gen_ai.request.top_p": 0.8,
                 "gen_ai.request.frequency_penalty": 0.2,
                 "gen_ai.request.presence_penalty": 0.1,
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_040cbfa7241e8c2e00691448c521408194a985acda1297a136",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Count from 1 to 5"}]}]',
@@ -177,7 +177,7 @@ def test_model_call_with_json_format(span_exporter: InMemorySpanExporter) -> Non
         age: int
 
     ops.instrument_llm()
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [
         llm.messages.user("Return a person named Alice who is 30 years old as JSON")
     ]
@@ -189,15 +189,15 @@ def test_model_call_with_json_format(span_exporter: InMemorySpanExporter) -> Non
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "json",
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_034d6a18f8f9b04d00691448c897908190bc7902109227fbd1",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Return a person named Alice who is 30 years old as JSON"}]}]',
@@ -210,7 +210,7 @@ def test_model_call_with_json_format(span_exporter: InMemorySpanExporter) -> Non
 @pytest.mark.vcr()
 def test_model_call_with_image(span_exporter: InMemorySpanExporter) -> None:
     """Test OpenTelemetry instrumentation with image content."""
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
     messages = [
         llm.messages.user(
@@ -228,15 +228,15 @@ def test_model_call_with_image(span_exporter: InMemorySpanExporter) -> None:
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_059298961709406100691448ca3f9c8195b58fedfa1e53ddae",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What\'s in this image?"},{"type":"uri","modality":"image","uri":"https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"}]}]',
@@ -256,7 +256,7 @@ def test_model_call_with_error(span_exporter: InMemorySpanExporter) -> None:
     )
 
     with patch("mirascope.llm.models.models.client", return_value=mock_client):
-        model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+        model = llm.Model(model_id="openai/gpt-4o-mini")
         messages = [llm.messages.user("Hello")]
 
         with pytest.raises(openai.APIError):
@@ -267,13 +267,13 @@ def test_model_call_with_error(span_exporter: InMemorySpanExporter) -> None:
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "ERROR",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Hello"}]}]',
                 "error.type": "APIError",
@@ -307,7 +307,7 @@ def test_model_call_records_untracked_params_event(
         },
     )
     model = llm.Model(
-        model_id="openai:responses/gpt-4o-mini",
+        model_id="openai/gpt-4o-mini",
         **cast(Any, extra_params),
     )
     messages = [
@@ -354,7 +354,7 @@ def test_model_call_with_none_parameters(
 ) -> None:
     """Test that None parameter values are skipped in span attributes."""
     model = llm.Model(
-        model_id="openai:responses/gpt-4o-mini",
+        model_id="openai/gpt-4o-mini",
         temperature=None,  # type: ignore
         max_tokens=50,
         top_p=None,  # type: ignore
@@ -368,16 +368,16 @@ def test_model_call_with_none_parameters(
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
                 "gen_ai.request.max_tokens": 50,
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_0d7415c9c4354f3d00691448d730348190949080c88fea1ed2",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Say hello"}]}]',
@@ -393,7 +393,7 @@ def test_model_call_with_base64_image(
 ) -> None:
     """Test OpenTelemetry instrumentation with base64-encoded image content."""
     ops.instrument_llm()
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     # 1x1 red pixel PNG
     base64_image = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg=="
     messages = [
@@ -419,15 +419,15 @@ def test_model_call_with_base64_image(
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_0f873f56169b6cf2006915837c2d6c81949f5b0dced4f89e59",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What color is this pixel?"},{"type":"blob","modality":"image","mime_type":"image/png","content":"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg=="}]}]',
@@ -460,7 +460,7 @@ def test_model_call_with_tool_outputs(
         """Get the current weather for a location."""
         return f"Weather in {location}: 72°F, sunny"
 
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("What's the weather in Tokyo?")]
     response1 = model.call(messages=messages, tools=[get_weather])
     tool_outputs = response1.execute_tools()
@@ -472,16 +472,16 @@ def test_model_call_with_tool_outputs(
     second_span_dict = span_snapshot(spans[1])
     assert second_span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
                 "gen_ai.tool.definitions": '[{"name":"get_weather","description":"Get the current weather for a location.","strict":false,"parameters":{"properties":{"location":{"title":"Location","type":"string"}},"required":["location"],"additionalProperties":false,"$defs":null}}]',
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_078dc246495066dd0069159645dfa08190b52fc7846f8b790d",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What\'s the weather in Tokyo?"}]},{"role":"assistant","parts":[{"type":"tool_call","id":"call_W4leLhMeS7Jo9ahswUPYo2Cd","name":"get_weather","arguments":{"location":"Tokyo"}}]},{"role":"user","parts":[{"type":"tool_call_response","id":"call_W4leLhMeS7Jo9ahswUPYo2Cd","response":"Weather in Tokyo: 72°F, sunny"}]}]',
@@ -581,7 +581,7 @@ def test_model_call_with_stop_string(
 ) -> None:
     """Test OpenTelemetry instrumentation with stop as a string (not list)."""
     model = llm.Model(
-        model_id="openai/gpt-4o-mini",
+        model_id="openai/gpt-4o-mini:completions",
         stop="END",  # pyright: ignore [reportCallIssue]
     )
     messages = [llm.messages.user("Say hello")]
@@ -593,16 +593,16 @@ def test_model_call_with_stop_string(
     first_span_dict = span_snapshot(spans[0])
     assert first_span_dict == snapshot(
         {
-            "name": "chat openai/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini:completions",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
                 "gen_ai.provider.name": "openai",
-                "gen_ai.request.model": "openai/gpt-4o-mini",
+                "gen_ai.request.model": "openai/gpt-4o-mini:completions",
                 "gen_ai.output.type": "text",
                 "gen_ai.request.stop_sequences": ["END"],
-                "gen_ai.response.model": "openai/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini:completions",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "chatcmpl-CbPJmygYNvzYcJeStNI1mOCFZRPN5",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Say hello"}]}]',
@@ -619,7 +619,7 @@ def test_model_call_without_instrumentation(
     """Test that model.call works without instrumentation (no spans created)."""
     ops.uninstrument_llm()
 
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("Hello")]
 
     response = model.call(messages=messages)
@@ -636,7 +636,7 @@ def test_model_call_with_tracer_set_to_none(
     """Test that span() returns None when tracer is explicitly set to None."""
     set_tracer(None)
 
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("Test with None tracer")]
 
     response = model.call(messages=messages)
@@ -651,7 +651,7 @@ def test_model_call_records_response_id(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test that response_id is extracted and recorded in span attributes."""
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("Say hello")]
 
     response = model.call(messages=messages)
@@ -663,15 +663,15 @@ def test_model_call_records_response_id(
     first_span_dict = span_snapshot(spans[0])
     assert first_span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_07823e07fc5e11d7006915bf7b0e4c81949d25229918fa7c9c",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Say hello"}]}]',
@@ -686,7 +686,7 @@ def test_model_call_with_message_name(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test that message name field is serialized in GenAI span attributes."""
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
 
     user_msg = llm.messages.UserMessage(
         content=[Text(text="What is 1+1?")], name="calculator_user"
@@ -701,15 +701,15 @@ def test_model_call_with_message_name(
     first_span_dict = span_snapshot(spans[0])
     assert first_span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.response.id": "resp_0727bc32da4ffb69006915caaf3f3c81969c5045f4b078be93",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"What is 1+1?"}],"name":"calculator_user"}]',
@@ -727,7 +727,7 @@ def test_model_call_with_format_tool_finish_reason(
     assert book_format is not None
 
     class _FormatToolClient:
-        provider = "openai:responses"
+        provider = "openai"
 
         def call(
             self,
@@ -758,7 +758,7 @@ def test_model_call_with_format_tool_finish_reason(
 
     with patch("mirascope.llm.models.models.client", return_value=_FormatToolClient()):
         model = llm.Model(
-            model_id="openai:responses/gpt-4o-mini",
+            model_id="openai/gpt-4o-mini",
             max_tokens=5,
         )
         messages = [llm.messages.user("Return a book recommendation.")]
@@ -771,17 +771,17 @@ def test_model_call_with_format_tool_finish_reason(
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "json",
                 "gen_ai.request.max_tokens": 5,
                 "gen_ai.tool.definitions": '[{"name":"__mirascope_formatted_output_tool__","description":"Use this tool to extract data in Book format for a final response.\\nA book with title and author.","strict":true,"parameters":{"properties":{"title":{"title":"Title","type":"string"},"author":{"title":"Author","type":"string"}},"required":["title","author"],"additionalProperties":false,"$defs":null}}]',
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["length"],
                 "gen_ai.response.id": "resp_format_tool_finish",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Return a book recommendation."}]}]',
@@ -813,7 +813,7 @@ def test_tracer_context_with_model_call(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test that tracer_context works with model calls."""
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     messages = [llm.messages.user("Say hello")]
 
     with ops.tracer_context(None):

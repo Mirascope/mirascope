@@ -15,8 +15,8 @@ from mirascope import llm
 E2E_MODEL_IDS: list[llm.ModelId] = [
     "anthropic/claude-sonnet-4-0",
     "google/gemini-2.5-flash",
-    "openai/gpt-4o",
-    "openai:responses/gpt-4o",
+    "openai/gpt-4o:completions",
+    "openai/gpt-4o:responses",
 ]
 
 # NOTE: MLX is only available on macOS (Apple Silicon)

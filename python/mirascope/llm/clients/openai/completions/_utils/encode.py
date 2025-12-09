@@ -21,8 +21,9 @@ from .....formatting import (
 from .....messages import AssistantMessage, Message, UserMessage
 from .....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ....base import Params, _utils as _base_utils
+from ...model_info import OpenAIModelId
 from ...shared import _utils as _shared_utils
-from ..model_ids import OpenAICompletionsModelId
+from .decode import get_provider_model_id
 from .model_features import MODEL_FEATURES
 
 
@@ -49,7 +50,7 @@ class ChatCompletionCreateKwargs(TypedDict, total=False):
 
 def _encode_user_message(
     message: UserMessage,
-    model_id: OpenAICompletionsModelId,
+    model_id: OpenAIModelId,
 ) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert Mirascope `UserMessage` to a list of OpenAI `ChatCompletionMessageParam`.
 
@@ -98,7 +99,9 @@ def _encode_user_message(
             )
             current_content.append(content)
         elif part.type == "audio":
-            model_status = MODEL_FEATURES.get(model_id.removeprefix("openai/"))
+            model_status = MODEL_FEATURES.get(
+                model_id.removeprefix("openai/").removesuffix(":completions")
+            )
             if model_status == "no_audio_support":
                 raise FeatureNotSupportedError(
                     feature="Audio inputs",
@@ -141,13 +144,13 @@ def _encode_user_message(
 
 
 def _encode_assistant_message(
-    message: AssistantMessage, model_id: OpenAICompletionsModelId, encode_thoughts: bool
+    message: AssistantMessage, model_id: OpenAIModelId, encode_thoughts: bool
 ) -> openai_types.ChatCompletionAssistantMessageParam:
     """Convert Mirascope `AssistantMessage` to OpenAI `ChatCompletionAssistantMessageParam`."""
 
     if (
         message.provider == "openai"
-        and message.model_id == model_id
+        and message.provider_model_id == get_provider_model_id(model_id=model_id)
         and message.raw_message
         and not encode_thoughts
     ):
@@ -199,7 +202,7 @@ def _encode_assistant_message(
 
 
 def _encode_message(
-    message: Message, model_id: OpenAICompletionsModelId, encode_thoughts: bool
+    message: Message, model_id: OpenAIModelId, encode_thoughts: bool
 ) -> list[openai_types.ChatCompletionMessageParam]:
     """Convert a Mirascope `Message` to OpenAI `ChatCompletionMessageParam` format.
 
@@ -274,7 +277,7 @@ def _create_strict_response_format(
 
 def encode_request(
     *,
-    model_id: OpenAICompletionsModelId,
+    model_id: OpenAIModelId,
     messages: Sequence[Message],
     tools: Sequence[AnyToolSchema] | BaseToolkit[AnyToolSchema] | None,
     format: type[FormattableT] | Format[FormattableT] | None,
@@ -283,7 +286,11 @@ def encode_request(
     """Prepares a request for the `OpenAI.chat.completions.create` method."""
     if not model_id.startswith("openai/"):  # pragma: no cover
         raise ValueError(f"Model ID must start with 'openai/' prefix, got: {model_id}")
-    model_name = model_id.removeprefix("openai/")
+    if model_id.endswith(":responses"):  # pragma: no cover
+        raise ValueError(
+            f"Can't use completions client for responses model: {model_id}"
+        )
+    model_name = model_id.removeprefix("openai/").removesuffix(":completions")
 
     kwargs: ChatCompletionCreateKwargs = ChatCompletionCreateKwargs(
         {

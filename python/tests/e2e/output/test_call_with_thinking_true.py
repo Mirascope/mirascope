@@ -9,7 +9,7 @@ from tests.utils import (
 )
 
 E2E_MODEL_IDS: list[llm.ModelId] = [
-    "openai:responses/gpt-5",
+    "openai/gpt-5:responses",
     "anthropic/claude-sonnet-4-0",
     "google/gemini-2.5-flash",
 ]

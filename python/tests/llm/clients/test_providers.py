@@ -38,16 +38,6 @@ def test_client_openai() -> None:
     assert client1.client.api_key == os.getenv("OPENAI_API_KEY")
 
 
-def test_client_openai_responses() -> None:
-    """Test that client('openai:responses') returns same instance on multiple calls."""
-    client1 = llm.client("openai:responses")
-    client2 = llm.client("openai:responses")
-
-    assert isinstance(client1, llm.clients.OpenAIClient)
-    assert client1 is client2
-    assert client1.client.api_key == os.getenv("OPENAI_API_KEY")
-
-
 @pytest.mark.skipif(sys.platform != "darwin", reason="MLX is only available on macOS")
 def test_get_client_mlx() -> None:
     """Test that get_client('mlx') returns same instance on multiple calls."""

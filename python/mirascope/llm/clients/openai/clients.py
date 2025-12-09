@@ -3,7 +3,7 @@
 import os
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import overload
+from typing import get_args, overload
 from typing_extensions import Unpack
 
 from openai import OpenAI
@@ -33,8 +33,64 @@ from ...tools import (
 )
 from ..base import BaseClient, Params
 from .completions import OpenAICompletionsClient, client as completions_client
-from .model_ids import OpenAIModelId
+from .model_info import OpenAIModelId
 from .responses import OpenAIResponsesClient, client as responses_client
+
+
+def _has_audio_content(messages: Sequence[Message]) -> bool:
+    """Returns whether a sequence of messages contains any audio content."""
+    for message in messages:
+        if message.role == "system":
+            continue
+        for content in message.content:
+            if content.type == "audio":
+                return True
+    return False
+
+
+def choose_api_mode(model_id: OpenAIModelId, messages: Sequence[Message]) -> str:
+    """Choose between 'responses' or 'completions' API based on model_id and messages.
+
+    Args:
+        model_id: The model identifier.
+        messages: The messages to send to the LLM.
+
+    Returns:
+        Either "responses" or "completions" depending on the model and message content.
+
+    If the user manually specified an api mode (by appending it as a suffix to the model
+    id), then we use it.
+
+    Otherwise, we prefer the responses API where supported (because it has better
+    reasoning support and better prompt caching). However we will use the :completions api
+    if the messages contain any audio content, as audio content is not yet supported in
+    the responses API.
+    """
+    if model_id.endswith(":completions"):
+        return "completions"
+    if model_id.endswith(":responses"):
+        return "responses"
+
+    if _has_audio_content(messages):
+        return "completions"
+
+    # Check if the model supports responses API by checking if model_id + ":responses" exists
+    # OpenAIModelId is Literal[...] | str, so get_args returns (Literal[...], str)
+    # We need to get the args of the first element (the Literal)
+    model_id_args = get_args(OpenAIModelId)
+    known_models = get_args(model_id_args[0])
+    if f"{model_id}:responses" in known_models:
+        # Prefer responses api when we know it is available
+        return "responses"
+
+    if f"{model_id}:completions" in known_models:
+        # If we know from testing that the completions api is available, and
+        # (per case above) that responses wasn't, then we should use completions
+        return "completions"
+
+    # We haven't tested this model. It is probably a new one, in which case we should use
+    # responses API.
+    return "responses"
 
 
 @lru_cache(maxsize=256)
@@ -78,18 +134,19 @@ class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
         self.client = self._completions_client.client
 
     def _choose_subclient(
-        self, model_id: OpenAIModelId
+        self, model_id: OpenAIModelId, messages: Sequence[Message]
     ) -> OpenAICompletionsClient | OpenAIResponsesClient:
-        """Choose the appropriate subclient based on model_id prefix.
+        """Choose the appropriate subclient based on model_id and messages.
 
         Args:
             model_id: The model identifier.
+            messages: The messages to send to the LLM.
 
         Returns:
-            The responses client if model_id starts with "openai:responses/",
-            otherwise the completions client.
+            The responses or completions subclient.
         """
-        if model_id.startswith("openai:responses/"):
+        api_mode = choose_api_mode(model_id, messages)
+        if api_mode == "responses":
             return self._responses_client
         return self._completions_client
 
@@ -153,7 +210,8 @@ class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
         Returns:
             An `llm.Response` object containing the LLM-generated content.
         """
-        return self._choose_subclient(model_id).call(
+        client = self._choose_subclient(model_id, messages)
+        return client.call(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -234,7 +292,8 @@ class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
         Returns:
             An `llm.ContextResponse` object containing the LLM-generated content.
         """
-        return self._choose_subclient(model_id).context_call(
+        client = self._choose_subclient(model_id, messages)
+        return client.context_call(
             ctx=ctx,
             model_id=model_id,
             messages=messages,
@@ -303,7 +362,7 @@ class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
         Returns:
             An `llm.AsyncResponse` object containing the LLM-generated content.
         """
-        return await self._choose_subclient(model_id).call_async(
+        return await self._choose_subclient(model_id, messages).call_async(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -384,7 +443,7 @@ class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
         Returns:
             An `llm.AsyncContextResponse` object containing the LLM-generated content.
         """
-        return await self._choose_subclient(model_id).context_call_async(
+        return await self._choose_subclient(model_id, messages).context_call_async(
             ctx=ctx,
             model_id=model_id,
             messages=messages,
@@ -453,7 +512,8 @@ class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
         Returns:
             An `llm.StreamResponse` object for iterating over the LLM-generated content.
         """
-        return self._choose_subclient(model_id).stream(
+        client = self._choose_subclient(model_id, messages)
+        return client.stream(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -534,7 +594,8 @@ class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
         Returns:
             An `llm.ContextStreamResponse` object for iterating over the LLM-generated content.
         """
-        return self._choose_subclient(model_id).context_stream(
+        client = self._choose_subclient(model_id, messages)
+        return client.context_stream(
             ctx=ctx,
             model_id=model_id,
             messages=messages,
@@ -603,7 +664,7 @@ class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
         Returns:
             An `llm.AsyncStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        return await self._choose_subclient(model_id).stream_async(
+        return await self._choose_subclient(model_id, messages).stream_async(
             model_id=model_id,
             messages=messages,
             tools=tools,
@@ -690,7 +751,7 @@ class OpenAIClient(BaseClient[OpenAIModelId, OpenAI]):
         Returns:
             An `llm.AsyncContextStreamResponse` object for asynchronously iterating over the LLM-generated content.
         """
-        return await self._choose_subclient(model_id).context_stream_async(
+        return await self._choose_subclient(model_id, messages).context_stream_async(
             ctx=ctx,
             model_id=model_id,
             messages=messages,

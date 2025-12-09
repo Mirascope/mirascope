@@ -30,7 +30,7 @@ from .....responses import (
     RawMessageChunk,
     RawStreamEventChunk,
 )
-from ..model_ids import OpenAIResponsesModelId
+from ...model_info import OpenAIModelId
 
 INCOMPLETE_DETAILS_TO_FINISH_REASON = {
     "max_output_tokens": FinishReason.MAX_TOKENS,
@@ -38,16 +38,16 @@ INCOMPLETE_DETAILS_TO_FINISH_REASON = {
 }
 
 
-def get_provider_model_id(model_id: OpenAIResponsesModelId) -> str:
+def get_provider_model_id(model_id: OpenAIModelId) -> str:
     """Extract the provider-specific model ID from a full model ID.
 
     Args:
-        model_id: Full model ID (e.g. "openai:responses/gpt-4o")
+        model_id: Full model ID (e.g. "openai/gpt-4o")
 
     Returns:
         Provider-specific model ID with API suffix (e.g. "gpt-4o:responses")
     """
-    model_name = model_id.removeprefix("openai:responses/")
+    model_name = model_id.removeprefix("openai/").removesuffix(":responses")
     return f"{model_name}:responses"
 
 
@@ -60,7 +60,7 @@ def _serialize_output_item(
 
 def decode_response(
     response: openai_types.Response,
-    model_id: OpenAIResponsesModelId,
+    model_id: OpenAIModelId,
 ) -> tuple[AssistantMessage, FinishReason | None]:
     """Convert OpenAI Responses Response to mirascope AssistantMessage."""
     parts: list[AssistantContentPart] = []
@@ -104,7 +104,7 @@ def decode_response(
 
     assistant_message = AssistantMessage(
         content=parts,
-        provider="openai:responses",
+        provider="openai",
         model_id=model_id,
         provider_model_id=get_provider_model_id(model_id),
         raw_message=[

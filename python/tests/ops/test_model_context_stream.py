@@ -31,7 +31,7 @@ def test_model_context_stream_exports_genai_span(
     span_exporter: InMemorySpanExporter,
 ) -> None:
     """Test that streaming a model call exports the correct OpenTelemetry span."""
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     ctx = llm.Context(deps={"tenant": "kai"})
     messages = [
         llm.messages.system("You are a concise assistant."),
@@ -46,15 +46,15 @@ def test_model_context_stream_exports_genai_span(
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "UNSET",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
-                "gen_ai.response.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.response.model": "openai/gpt-4o-mini",
                 "gen_ai.response.finish_reasons": ["stop"],
                 "gen_ai.system_instructions": '[{"type":"text","content":"You are a concise assistant."}]',
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"Say hello to the user named Kai."}]}]',
@@ -85,7 +85,7 @@ def test_model_context_stream_without_tracer_returns_response(
         instrument_module, "_ORIGINAL_MODEL_CONTEXT_STREAM", _fake_context_stream
     )
 
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     ctx = llm.Context(deps={})
     messages = [llm.messages.user("hi")]
 
@@ -114,7 +114,7 @@ def test_model_context_stream_records_error_on_exception(
         instrument_module, "_ORIGINAL_MODEL_CONTEXT_STREAM", _failing_context_stream
     )
 
-    model = llm.Model(model_id="openai:responses/gpt-4o-mini")
+    model = llm.Model(model_id="openai/gpt-4o-mini")
     ctx = llm.Context(deps={})
     messages = [llm.messages.user("hi")]
 
@@ -126,13 +126,13 @@ def test_model_context_stream_records_error_on_exception(
     span_dict = span_snapshot(spans[0])
     assert span_dict == snapshot(
         {
-            "name": "chat openai:responses/gpt-4o-mini",
+            "name": "chat openai/gpt-4o-mini",
             "kind": "CLIENT",
             "status": "ERROR",
             "attributes": {
                 "gen_ai.operation.name": "chat",
-                "gen_ai.provider.name": "openai:responses",
-                "gen_ai.request.model": "openai:responses/gpt-4o-mini",
+                "gen_ai.provider.name": "openai",
+                "gen_ai.request.model": "openai/gpt-4o-mini",
                 "gen_ai.output.type": "text",
                 "gen_ai.input.messages": '[{"role":"user","parts":[{"type":"text","content":"hi"}]}]',
                 "error.type": "ValueError",

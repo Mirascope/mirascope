@@ -37,7 +37,7 @@ def client(
             return anthropic_client(api_key=api_key, base_url=base_url)
         case "google":
             return google_client(api_key=api_key, base_url=base_url)
-        case "openai" | "openai:responses":
+        case "openai":
             return openai_client(api_key=api_key, base_url=base_url)
         case "mlx":  # pragma: no cover (MLX is only available on macOS)
             return mlx_client()
