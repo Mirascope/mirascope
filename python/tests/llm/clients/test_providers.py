@@ -33,7 +33,7 @@ def test_client_openai() -> None:
     client1 = llm.client("openai")
     client2 = llm.client("openai")
 
-    assert isinstance(client1, llm.clients.OpenAICompletionsClient)
+    assert isinstance(client1, llm.clients.OpenAIClient)
     assert client1 is client2
     assert client1.client.api_key == os.getenv("OPENAI_API_KEY")
 
@@ -43,7 +43,7 @@ def test_client_openai_responses() -> None:
     client1 = llm.client("openai:responses")
     client2 = llm.client("openai:responses")
 
-    assert isinstance(client1, llm.clients.OpenAIResponsesClient)
+    assert isinstance(client1, llm.clients.OpenAIClient)
     assert client1 is client2
     assert client1.client.api_key == os.getenv("OPENAI_API_KEY")
 

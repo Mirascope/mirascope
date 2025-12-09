@@ -11,8 +11,7 @@ from .mlx import (
     client as mlx_client,
 )
 from .openai import (
-    completions_client as openai_completions_client,
-    responses_client as openai_responses_client,
+    client as openai_client,
 )
 from .providers import Provider
 
@@ -38,10 +37,8 @@ def client(
             return anthropic_client(api_key=api_key, base_url=base_url)
         case "google":
             return google_client(api_key=api_key, base_url=base_url)
-        case "openai":
-            return openai_completions_client(api_key=api_key, base_url=base_url)
-        case "openai:responses":
-            return openai_responses_client(api_key=api_key, base_url=base_url)
+        case "openai" | "openai:responses":
+            return openai_client(api_key=api_key, base_url=base_url)
         case "mlx":  # pragma: no cover (MLX is only available on macOS)
             return mlx_client()
         case _:  # pragma: no cover
