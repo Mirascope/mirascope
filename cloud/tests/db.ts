@@ -161,18 +161,27 @@ const wrapEffectTest =
  * );
  * ```
  */
-export const it = {
-  ...vitestIt,
-  effect: Object.assign(wrapEffectTest(vitestIt.effect), {
-    skip: wrapEffectTest(vitestIt.effect.skip),
-    only: wrapEffectTest(vitestIt.effect.only),
-    fails: wrapEffectTest(vitestIt.effect.fails),
-    skipIf: (condition: unknown) =>
-      wrapEffectTest(vitestIt.effect.skipIf(condition)),
-    runIf: (condition: unknown) =>
-      wrapEffectTest(vitestIt.effect.runIf(condition)),
-  }),
-};
+// Create a callable `it` that works as both:
+// - it("test name", () => { ... }) for regular tests
+// - it.effect("test name", () => Effect.gen(...)) for Effect tests
+export const it = Object.assign(
+  // Base callable function for regular tests
+  ((name: string, fn: () => void) => vitestIt(name, fn)) as typeof vitestIt,
+  {
+    // Spread all properties from vitestIt (skip, only, etc.)
+    ...vitestIt,
+    // Override effect with our wrapped version
+    effect: Object.assign(wrapEffectTest(vitestIt.effect), {
+      skip: wrapEffectTest(vitestIt.effect.skip),
+      only: wrapEffectTest(vitestIt.effect.only),
+      fails: wrapEffectTest(vitestIt.effect.fails),
+      skipIf: (condition: unknown) =>
+        wrapEffectTest(vitestIt.effect.skipIf(condition)),
+      runIf: (condition: unknown) =>
+        wrapEffectTest(vitestIt.effect.runIf(condition)),
+    }),
+  },
+);
 
 // ============================================================================
 // Mock database builder

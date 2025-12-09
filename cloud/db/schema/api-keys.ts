@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import { pgTable, text, timestamp, uuid, unique } from "drizzle-orm/pg-core";
 import { environments } from "./environments";
-import { users } from "./users";
+import { users, type PublicUser } from "./users";
 
 export const apiKeys = pgTable(
   "api_keys",
@@ -59,3 +59,30 @@ export type PublicApiKey = Pick<
 export type ApiKeyCreateResponse = PublicApiKey & {
   key: string;
 };
+
+// Type for verified API key with full resource hierarchy
+export type VerifiedApiKey = {
+  apiKeyId: string;
+  environmentId: string;
+  projectId: string;
+  organizationId: string;
+};
+
+// Helper type to capitalize the first letter of a string
+type Capitalize<S extends string> = S extends `${infer First}${infer Rest}`
+  ? `${Uppercase<First>}${Rest}`
+  : S;
+
+// Helper type to prefix PublicUser fields with "owner" and capitalize
+type OwnerFields<T> = {
+  [K in keyof T as `owner${Capitalize<string & K>}`]: T[K];
+};
+
+// Type for complete API key information including owner details
+// Uses mapped type to automatically derive owner fields from PublicUser
+export type ApiKeyInfo = {
+  apiKeyId: string;
+  environmentId: string;
+  projectId: string;
+  organizationId: string;
+} & OwnerFields<PublicUser>;

@@ -44,13 +44,13 @@
  *   data: { name: "production-key" },
  * });
  *
- * // Verify an API key for authentication
- * const result = yield* db.organizations.projects.environments.apiKeys.verifyApiKey(key);
+ * // Get API key info for authentication (includes owner details)
+ * const apiKeyInfo = yield* db.organizations.projects.environments.apiKeys.getApiKeyInfo(key);
  * ```
  */
 
 import { Effect } from "effect";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import {
   BaseAuthenticatedEffectService,
   type PermissionTable,
@@ -67,10 +67,12 @@ import { isUniqueConstraintError } from "@/db/utils";
 import {
   apiKeys,
   users,
+  environments,
+  projects,
   type NewApiKey,
   type PublicApiKey,
-  type PublicUser,
   type ApiKeyCreateResponse,
+  type ApiKeyInfo,
   type ProjectRole,
 } from "@/db/schema";
 import * as crypto from "crypto";
@@ -653,55 +655,64 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
   // ---------------------------------------------------------------------------
 
   /**
-   * Verifies an API key and returns its metadata.
+   * Gets complete API key information including owner details.
    *
    * This method is used for API key authentication. It:
    * 1. Hashes the provided key
-   * 2. Looks up the hash in the database
+   * 2. Looks up the hash in the database with an inner join on users
    * 3. Updates the lastUsedAt timestamp
-   * 4. Returns the API key ID and environment ID
+   * 4. Returns the API key ID, full resource hierarchy, and owner information
+   *
+   * If the user associated with the API key doesn't exist, this returns a NotFoundError.
+   * This ensures that we only proceed with authentication if there is a valid user for the API key.
    *
    * Note: This method does NOT require authentication - it IS the authentication.
    *
    * @param key - The plaintext API key to verify
-   * @returns The API key ID and environment ID
-   * @throws NotFoundError - If the API key is invalid
+   * @returns Complete API key information including owner details
+   * @throws NotFoundError - If the API key is invalid or the owner doesn't exist
    * @throws DatabaseError - If the database operation fails
    */
-  verifyApiKey(
+  getApiKeyInfo(
     key: string,
-  ): Effect.Effect<
-    { apiKeyId: string; environmentId: string },
-    NotFoundError | DatabaseError,
-    DrizzleORM
-  > {
+  ): Effect.Effect<ApiKeyInfo, NotFoundError | DatabaseError, DrizzleORM> {
     return Effect.gen(this, function* () {
       const client = yield* DrizzleORM;
       const keyHash = hashApiKey(key);
 
-      // Look up the API key by hash
-      const [apiKey] = yield* client
+      // Look up the API key by hash and join to get the full hierarchy and owner info
+      // Only include API keys whose owner has not been deleted
+      const [apiKeyInfo] = yield* client
         .select({
-          id: apiKeys.id,
+          apiKeyId: apiKeys.id,
           environmentId: apiKeys.environmentId,
+          projectId: environments.projectId,
+          organizationId: projects.organizationId,
+          ownerId: users.id,
+          ownerEmail: users.email,
+          ownerName: users.name,
+          ownerDeletedAt: users.deletedAt,
         })
         .from(apiKeys)
-        .where(eq(apiKeys.keyHash, keyHash))
+        .innerJoin(environments, eq(apiKeys.environmentId, environments.id))
+        .innerJoin(projects, eq(environments.projectId, projects.id))
+        .innerJoin(users, eq(apiKeys.ownerId, users.id))
+        .where(and(eq(apiKeys.keyHash, keyHash), isNull(users.deletedAt)))
         .limit(1)
         .pipe(
           Effect.mapError(
             (e) =>
               new DatabaseError({
-                message: "Failed to verify API key",
+                message: "Failed to get API key info",
                 cause: e,
               }),
           ),
         );
 
-      if (!apiKey) {
+      if (!apiKeyInfo) {
         return yield* Effect.fail(
           new NotFoundError({
-            message: "Invalid API key",
+            message: "Invalid API key or owner not found",
             resource: this.getResourceName(),
           }),
         );
@@ -711,7 +722,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
       yield* client
         .update(apiKeys)
         .set({ lastUsedAt: new Date() })
-        .where(eq(apiKeys.id, apiKey.id))
+        .where(eq(apiKeys.id, apiKeyInfo.apiKeyId))
         .pipe(
           Effect.mapError(
             (e) =>
@@ -722,62 +733,7 @@ export class ApiKeys extends BaseAuthenticatedEffectService<
           ),
         );
 
-      return { apiKeyId: apiKey.id, environmentId: apiKey.environmentId };
-    });
-  }
-
-  /**
-   * Gets the user who created an API key.
-   *
-   * This method is used after API key verification to get the user context
-   * for authorization and audit purposes. The API key's creator determines
-   * what permissions the API key has - it can only do what that user can do.
-   *
-   * Note: This method does NOT require authentication - it's called after
-   * API key verification to establish user context for the request.
-   *
-   * @param apiKeyId - The API key ID (from verifyApiKey result)
-   * @returns The user who created the API key
-   * @throws NotFoundError - If the API key or user is not found
-   * @throws DatabaseError - If the database operation fails
-   */
-  getCreator(
-    apiKeyId: string,
-  ): Effect.Effect<PublicUser, NotFoundError | DatabaseError, DrizzleORM> {
-    return Effect.gen(this, function* () {
-      const client = yield* DrizzleORM;
-
-      const [creator] = yield* client
-        .select({
-          id: users.id,
-          email: users.email,
-          name: users.name,
-          deletedAt: users.deletedAt,
-        })
-        .from(apiKeys)
-        .innerJoin(users, eq(apiKeys.ownerId, users.id))
-        .where(eq(apiKeys.id, apiKeyId))
-        .limit(1)
-        .pipe(
-          Effect.mapError(
-            (e) =>
-              new DatabaseError({
-                message: "Failed to get API key creator",
-                cause: e,
-              }),
-          ),
-        );
-
-      if (!creator) {
-        return yield* Effect.fail(
-          new NotFoundError({
-            message: `API key ${apiKeyId} not found`,
-            resource: this.getResourceName(),
-          }),
-        );
-      }
-
-      return creator;
+      return apiKeyInfo;
     });
   }
 }

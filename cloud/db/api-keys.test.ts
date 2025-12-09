@@ -1241,11 +1241,11 @@ describe("ApiKeys", () => {
   });
 
   // ===========================================================================
-  // verifyApiKey
+  // getApiKeyInfo
   // ===========================================================================
 
-  describe("verifyApiKey", () => {
-    it.effect("verifies a valid API key", () =>
+  describe("getApiKeyInfo", () => {
+    it.effect("gets complete API key info including owner details", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
           yield* TestEffectEnvironmentFixture;
@@ -1257,20 +1257,26 @@ describe("ApiKeys", () => {
             organizationId: org.id,
             projectId: project.id,
             environmentId: environment.id,
-            data: { name: "verify-test-key" },
+            data: { name: "info-test-key" },
           });
 
         const result =
-          yield* db.organizations.projects.environments.apiKeys.verifyApiKey(
+          yield* db.organizations.projects.environments.apiKeys.getApiKeyInfo(
             created.key,
           );
 
         expect(result.apiKeyId).toBe(created.id);
         expect(result.environmentId).toBe(environment.id);
+        expect(result.projectId).toBe(project.id);
+        expect(result.organizationId).toBe(org.id);
+        expect(result.ownerId).toBe(owner.id);
+        expect(result.ownerEmail).toBe(owner.email);
+        expect(result.ownerName).toBe(owner.name);
+        expect(result.ownerDeletedAt).toBe(owner.deletedAt);
       }),
     );
 
-    it.effect("updates lastUsedAt timestamp on verification", () =>
+    it.effect("updates lastUsedAt timestamp when getting info", () =>
       Effect.gen(function* () {
         const { org, project, environment, owner } =
           yield* TestEffectEnvironmentFixture;
@@ -1285,8 +1291,8 @@ describe("ApiKeys", () => {
             data: { name: "timestamp-test-key" },
           });
 
-        // Verify the key
-        yield* db.organizations.projects.environments.apiKeys.verifyApiKey(
+        // Get the API key info
+        yield* db.organizations.projects.environments.apiKeys.getApiKeyInfo(
           created.key,
         );
 
@@ -1320,28 +1326,57 @@ describe("ApiKeys", () => {
         });
 
         const result = yield* db.organizations.projects.environments.apiKeys
-          .verifyApiKey("mk_invalid_key_that_does_not_exist")
+          .getApiKeyInfo("mk_invalid_key_that_does_not_exist")
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe("Invalid API key");
+        expect(result.message).toBe("Invalid API key or owner not found");
       }),
     );
 
-    it.effect("returns `DatabaseError` when verification query fails", () =>
+    it.effect("returns `NotFoundError` when owner doesn't exist", () =>
+      Effect.gen(function* () {
+        const { org, project, environment, owner } =
+          yield* TestEffectEnvironmentFixture;
+        const db = yield* EffectDatabase;
+
+        // Create an API key
+        const created =
+          yield* db.organizations.projects.environments.apiKeys.create({
+            userId: owner.id,
+            organizationId: org.id,
+            projectId: project.id,
+            environmentId: environment.id,
+            data: { name: "orphan-key" },
+          });
+
+        // Delete the owner user (simulate deleted user)
+        yield* db.users.delete({ userId: owner.id });
+
+        // Try to get API key info - should fail because owner doesn't exist
+        const result = yield* db.organizations.projects.environments.apiKeys
+          .getApiKeyInfo(created.key)
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe("Invalid API key or owner not found");
+      }),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
       Effect.gen(function* () {
         const db = yield* EffectDatabase;
 
         const result = yield* db.organizations.projects.environments.apiKeys
-          .verifyApiKey("mk_test_key")
+          .getApiKeyInfo("mk_test_key")
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to verify API key");
+        expect(result.message).toBe("Failed to get API key info");
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // verifyApiKey query fails
+            // getApiKeyInfo query fails
             .select(new Error("Database connection failed"))
             .build(),
         ),
@@ -1353,7 +1388,7 @@ describe("ApiKeys", () => {
         const db = yield* EffectDatabase;
 
         const result = yield* db.organizations.projects.environments.apiKeys
-          .verifyApiKey("mk_test_key")
+          .getApiKeyInfo("mk_test_key")
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
@@ -1363,8 +1398,17 @@ describe("ApiKeys", () => {
       }).pipe(
         Effect.provide(
           new MockDrizzleORM()
-            // verifyApiKey query succeeds
-            .select([{ id: "key-id", environmentId: "env-id" }])
+            // getApiKeyInfo query succeeds
+            .select([
+              {
+                apiKeyId: "key-id",
+                environmentId: "env-id",
+                projectId: "proj-id",
+                organizationId: "org-id",
+                ownerId: "owner-id",
+                ownerName: "Owner Name",
+              },
+            ])
             // lastUsedAt update fails
             .update(new Error("Database connection failed"))
             .build(),
@@ -1373,104 +1417,6 @@ describe("ApiKeys", () => {
     );
   });
 
-  // ===========================================================================
-  // getCreator
-  // ===========================================================================
-
-  describe("getCreator", () => {
-    it.effect("returns the user who created the API key (org OWNER)", () =>
-      Effect.gen(function* () {
-        const { org, project, environment, owner } =
-          yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
-
-        // Create an API key as owner
-        const apiKey =
-          yield* db.organizations.projects.environments.apiKeys.create({
-            userId: owner.id,
-            organizationId: org.id,
-            projectId: project.id,
-            environmentId: environment.id,
-            data: { name: "owner-key" },
-          });
-
-        // Get the creator
-        const creator =
-          yield* db.organizations.projects.environments.apiKeys.getCreator(
-            apiKey.id,
-          );
-
-        expect(creator.id).toBe(owner.id);
-        expect(creator.email).toBe(owner.email);
-        expect(creator.name).toBe(owner.name);
-      }),
-    );
-
-    it.effect(
-      "returns the user who created the API key (project DEVELOPER)",
-      () =>
-        Effect.gen(function* () {
-          const { org, project, environment, projectDeveloper } =
-            yield* TestEffectEnvironmentFixture;
-          const db = yield* EffectDatabase;
-
-          // Create an API key as developer
-          const apiKey =
-            yield* db.organizations.projects.environments.apiKeys.create({
-              userId: projectDeveloper.id,
-              organizationId: org.id,
-              projectId: project.id,
-              environmentId: environment.id,
-              data: { name: "developer-key" },
-            });
-
-          // Get the creator
-          const creator =
-            yield* db.organizations.projects.environments.apiKeys.getCreator(
-              apiKey.id,
-            );
-
-          expect(creator.id).toBe(projectDeveloper.id);
-          expect(creator.email).toBe(projectDeveloper.email);
-          expect(creator.name).toBe(projectDeveloper.name);
-        }),
-    );
-
-    it.effect("returns `NotFoundError` for non-existent API key", () =>
-      Effect.gen(function* () {
-        yield* TestEffectEnvironmentFixture;
-        const db = yield* EffectDatabase;
-
-        // Use a valid UUID format that doesn't exist
-        const nonExistentId = "00000000-0000-0000-0000-000000000000";
-        const result = yield* db.organizations.projects.environments.apiKeys
-          .getCreator(nonExistentId)
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(NotFoundError);
-        expect(result.message).toBe(`API key ${nonExistentId} not found`);
-      }),
-    );
-
-    it.effect("returns `DatabaseError` when query fails", () =>
-      Effect.gen(function* () {
-        const db = yield* EffectDatabase;
-
-        const result = yield* db.organizations.projects.environments.apiKeys
-          .getCreator("some-key-id")
-          .pipe(Effect.flip);
-
-        expect(result).toBeInstanceOf(DatabaseError);
-        expect(result.message).toBe("Failed to get API key creator");
-      }).pipe(
-        Effect.provide(
-          new MockDrizzleORM()
-            .select(new Error("Database connection failed"))
-            .build(),
-        ),
-      ),
-    );
-  });
 
   // ===========================================================================
   // getRole (delegation to project memberships)
