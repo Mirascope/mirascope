@@ -182,7 +182,7 @@ def client(
             return openai_completions_client(api_key=api_key, base_url=base_url)
         case "openai:responses":
             return openai_responses_client(api_key=api_key, base_url=base_url)
-        case "mlx":
+        case "mlx":  # pragma: no cover (MLX is only available on macOS)
             return mlx_client()
         case _:  # pragma: no cover
             raise ValueError(f"Unknown provider: {provider}")
