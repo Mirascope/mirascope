@@ -410,3 +410,53 @@ export const TestOrganizationFixture = Effect.gen(function* () {
 
   return { org, owner, nonMember };
 });
+
+/**
+ * Creates a test organization with a project owned by it.
+ *
+ * Returns { project, org, owner, nonMember } where:
+ * - project: a project owned by the organization, with the owner as a project member
+ * - org: the organization that owns the project
+ * - owner: the user who created both and is a member of the project
+ * - nonMember: a user who is NOT a member of the project
+ */
+export const TestOrganizationProjectFixture = Effect.gen(function* () {
+  const { org, owner, nonMember } = yield* TestOrganizationFixture;
+
+  const db = yield* DatabaseService;
+  const project = yield* db.projects.create({
+    data: { name: "Test Project", orgOwnerId: org.id },
+    userId: owner.id,
+  });
+
+  return { project, org, owner, nonMember };
+});
+
+/**
+ * Creates a test project owned by a user.
+ *
+ * Returns { project, owner, nonMember } where:
+ * - project: a project owned by the user
+ * - owner: the user who owns the project and is a member with OWNER role
+ * - nonMember: a user who is NOT a member of the project
+ */
+export const TestProjectFixture = Effect.gen(function* () {
+  const db = yield* DatabaseService;
+
+  const owner = yield* db.users.create({
+    email: "projectowner@example.com",
+    name: "Project Owner",
+  });
+
+  const project = yield* db.projects.create({
+    data: { name: "Test Project", userOwnerId: owner.id },
+    userId: owner.id,
+  });
+
+  const nonMember = yield* db.users.create({
+    email: "nonmember@example.com",
+    name: "Non Member",
+  });
+
+  return { project, owner, nonMember };
+});

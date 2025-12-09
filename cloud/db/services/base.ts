@@ -263,6 +263,14 @@ export abstract class BaseAuthenticatedService<
   protected abstract getPermissionTable(): PermissionTable<TRole>;
 
   /**
+   * Returns the role of a user for a given entity.
+   */
+  abstract getRole(args: {
+    id: string;
+    userId: string;
+  }): Effect.Effect<TRole, NotFoundError | DatabaseError>;
+
+  /**
    * Verify that a role has permission to perform an action.
    */
   protected verifyPermission(
@@ -283,12 +291,34 @@ export abstract class BaseAuthenticatedService<
     return Effect.succeed(undefined);
   }
 
+  /**
+   * Authorize a user to perform an action on an entity.
+   */
+  protected authorize({
+    id,
+    userId,
+    action,
+  }: {
+    id: string;
+    userId: string;
+    action: PermissionAction;
+  }): Effect.Effect<
+    TRole,
+    NotFoundError | PermissionDeniedError | DatabaseError
+  > {
+    return Effect.gen(this, function* () {
+      const role = yield* this.getRole({ id, userId });
+      yield* this.verifyPermission(role, action);
+      return role;
+    });
+  }
+
   abstract create(args: {
     data: TInsert;
     userId: string;
   }): Effect.Effect<
     TPublic,
-    AlreadyExistsError | PermissionDeniedError | DatabaseError
+    AlreadyExistsError | NotFoundError | PermissionDeniedError | DatabaseError
   >;
 
   abstract findAll(args: {

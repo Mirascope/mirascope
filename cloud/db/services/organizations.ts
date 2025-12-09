@@ -67,10 +67,10 @@ export class OrganizationService extends BaseAuthenticatedService<
    * Returns NotFoundError if user is not a member (hides org existence from non-members).
    */
   getRole({
-    organizationId,
+    id,
     userId,
   }: {
-    organizationId: string;
+    id: string;
     userId: string;
   }): Effect.Effect<Role, NotFoundError | DatabaseError> {
     return Effect.gen(this, function* () {
@@ -82,7 +82,7 @@ export class OrganizationService extends BaseAuthenticatedService<
             .where(
               and(
                 eq(organizationMemberships.userId, userId),
-                eq(organizationMemberships.organizationId, organizationId),
+                eq(organizationMemberships.organizationId, id),
               ),
             )
             .limit(1);
@@ -181,7 +181,7 @@ export class OrganizationService extends BaseAuthenticatedService<
     });
   }
 
-  findById({
+  override findById({
     id,
     userId,
   }: {
@@ -192,14 +192,13 @@ export class OrganizationService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const role = yield* this.getRole({ organizationId: id, userId });
-      yield* this.verifyPermission(role, "read");
+      const role = yield* this.authorize({ id, userId, action: "read" });
       const organization = yield* this.baseService.findById({ id });
       return { ...organization, role };
     });
   }
 
-  update({
+  override update({
     id,
     data,
     userId,
@@ -212,14 +211,13 @@ export class OrganizationService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const role = yield* this.getRole({ organizationId: id, userId });
-      yield* this.verifyPermission(role, "update");
+      const role = yield* this.authorize({ id, userId, action: "update" });
       const organization = yield* this.baseService.update({ id, data });
       return { ...organization, role };
     });
   }
 
-  delete({
+  override delete({
     id,
     userId,
   }: {
@@ -230,8 +228,7 @@ export class OrganizationService extends BaseAuthenticatedService<
     NotFoundError | PermissionDeniedError | DatabaseError
   > {
     return Effect.gen(this, function* () {
-      const role = yield* this.getRole({ organizationId: id, userId });
-      yield* this.verifyPermission(role, "delete");
+      yield* this.authorize({ id, userId, action: "delete" });
       yield* Effect.tryPromise({
         try: async () => {
           await this.db.transaction(async (tx) => {

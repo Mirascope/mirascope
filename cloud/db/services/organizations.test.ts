@@ -22,7 +22,7 @@ describe("OrganizationService", () => {
         const db = yield* DatabaseService;
 
         const role = yield* db.organizations.getRole({
-          organizationId: org.id,
+          id: org.id,
           userId: owner.id,
         });
 
@@ -36,7 +36,7 @@ describe("OrganizationService", () => {
         const db = yield* DatabaseService;
 
         const result = yield* db.organizations
-          .getRole({ organizationId: org.id, userId: nonMember.id })
+          .getRole({ id: org.id, userId: nonMember.id })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(NotFoundError);
@@ -51,7 +51,7 @@ describe("OrganizationService", () => {
           .build();
 
         const result = yield* db.organizations
-          .getRole({ organizationId: "org-id", userId: "user-id" })
+          .getRole({ id: "org-id", userId: "user-id" })
           .pipe(Effect.flip);
 
         expect(result).toBeInstanceOf(DatabaseError);
