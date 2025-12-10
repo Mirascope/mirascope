@@ -11,57 +11,78 @@ from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..errors.bad_request_error import BadRequestError
 from ..errors.conflict_error import ConflictError
-from ..errors.forbidden_error import ForbiddenError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
+from ..errors.unauthorized_error import UnauthorizedError
 from ..types.already_exists_error import AlreadyExistsError
 from ..types.database_error import DatabaseError
 from ..types.http_api_decode_error import HttpApiDecodeError
 from ..types.not_found_error_body import NotFoundErrorBody
-from ..types.permission_denied_error import PermissionDeniedError
-from .types.projects_create_response import ProjectsCreateResponse
-from .types.projects_get_response import ProjectsGetResponse
-from .types.projects_list_response_item import ProjectsListResponseItem
-from .types.projects_update_response import ProjectsUpdateResponse
+from ..types.number_from_string import NumberFromString
+from ..types.unauthorized_error_body import UnauthorizedErrorBody
+from .types.annotations_create_response import AnnotationsCreateResponse
+from .types.annotations_delete_response import AnnotationsDeleteResponse
+from .types.annotations_get_response import AnnotationsGetResponse
+from .types.annotations_list_response import AnnotationsListResponse
+from .types.annotations_update_response import AnnotationsUpdateResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawProjectsClient:
+class RawAnnotationsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def list(
         self,
-        organization_id: str,
         *,
+        trace_id: typing.Optional[str] = None,
+        span_id: typing.Optional[str] = None,
+        label: typing.Optional[str] = None,
+        limit: typing.Optional[NumberFromString] = None,
+        offset: typing.Optional[NumberFromString] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[typing.List[ProjectsListResponseItem]]:
+    ) -> HttpResponse[AnnotationsListResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        label : typing.Optional[str]
+
+        limit : typing.Optional[NumberFromString]
+
+        offset : typing.Optional[NumberFromString]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[typing.List[ProjectsListResponseItem]]
+        HttpResponse[AnnotationsListResponse]
             Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects",
+            "annotations",
             method="GET",
+            params={
+                "traceId": trace_id,
+                "spanId": span_id,
+                "label": label,
+                "limit": limit,
+                "offset": offset,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ProjectsListResponseItem],
+                    AnnotationsListResponse,
                     parse_obj_as(
-                        type_=typing.List[ProjectsListResponseItem],  # type: ignore
+                        type_=AnnotationsListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -77,13 +98,13 @@ class RawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -125,37 +146,44 @@ class RawProjectsClient:
 
     def create(
         self,
-        organization_id: str,
         *,
-        name: str,
-        slug: str,
+        span_id: str,
+        trace_id: str,
+        label: typing.Optional[str] = OMIT,
+        reasoning: typing.Optional[str] = OMIT,
+        data: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ProjectsCreateResponse]:
+    ) -> HttpResponse[AnnotationsCreateResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        span_id : str
 
-        name : str
-            a string at most 100 character(s) long
+        trace_id : str
 
-        slug : str
-            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+        label : typing.Optional[str]
+
+        reasoning : typing.Optional[str]
+
+        data : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ProjectsCreateResponse]
+        HttpResponse[AnnotationsCreateResponse]
             Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects",
+            "annotations",
             method="POST",
             json={
-                "name": name,
-                "slug": slug,
+                "spanId": span_id,
+                "traceId": trace_id,
+                "label": label,
+                "reasoning": reasoning,
+                "data": data,
             },
             headers={
                 "content-type": "application/json",
@@ -166,9 +194,9 @@ class RawProjectsClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsCreateResponse,
+                    AnnotationsCreateResponse,
                     parse_obj_as(
-                        type_=ProjectsCreateResponse,  # type: ignore
+                        type_=AnnotationsCreateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -184,13 +212,13 @@ class RawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -242,38 +270,32 @@ class RawProjectsClient:
         )
 
     def get(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ProjectsGetResponse]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[AnnotationsGetResponse]:
         """
         Parameters
         ----------
-        organization_id : str
-
-        project_id : str
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ProjectsGetResponse]
+        HttpResponse[AnnotationsGetResponse]
             Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
+            f"annotations/{jsonable_encoder(id)}",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsGetResponse,
+                    AnnotationsGetResponse,
                     parse_obj_as(
-                        type_=ProjectsGetResponse,  # type: ignore
+                        type_=AnnotationsGetResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -289,13 +311,13 @@ class RawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -337,40 +359,39 @@ class RawProjectsClient:
 
     def update(
         self,
-        organization_id: str,
-        project_id: str,
+        id: str,
         *,
-        name: typing.Optional[str] = OMIT,
-        slug: typing.Optional[str] = OMIT,
+        label: typing.Optional[str] = OMIT,
+        reasoning: typing.Optional[str] = OMIT,
+        data: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ProjectsUpdateResponse]:
+    ) -> HttpResponse[AnnotationsUpdateResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        id : str
 
-        project_id : str
+        label : typing.Optional[str]
 
-        name : typing.Optional[str]
-            a string at most 100 character(s) long
+        reasoning : typing.Optional[str]
 
-        slug : typing.Optional[str]
-            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+        data : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ProjectsUpdateResponse]
+        HttpResponse[AnnotationsUpdateResponse]
             Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
+            f"annotations/{jsonable_encoder(id)}",
             method="PUT",
             json={
-                "name": name,
-                "slug": slug,
+                "label": label,
+                "reasoning": reasoning,
+                "data": data,
             },
             headers={
                 "content-type": "application/json",
@@ -381,9 +402,9 @@ class RawProjectsClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsUpdateResponse,
+                    AnnotationsUpdateResponse,
                     parse_obj_as(
-                        type_=ProjectsUpdateResponse,  # type: ignore
+                        type_=AnnotationsUpdateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -399,13 +420,13 @@ class RawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -417,17 +438,6 @@ class RawProjectsClient:
                         NotFoundErrorBody,
                         parse_obj_as(
                             type_=NotFoundErrorBody,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        AlreadyExistsError,
-                        parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -457,34 +467,36 @@ class RawProjectsClient:
         )
 
     def delete(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[None]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[AnnotationsDeleteResponse]:
         """
         Parameters
         ----------
-        organization_id : str
-
-        project_id : str
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[None]
+        HttpResponse[AnnotationsDeleteResponse]
+            Success
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
+            f"annotations/{jsonable_encoder(id)}",
             method="DELETE",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                return HttpResponse(response=_response, data=None)
+                _data = typing.cast(
+                    AnnotationsDeleteResponse,
+                    parse_obj_as(
+                        type_=AnnotationsDeleteResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
@@ -496,13 +508,13 @@ class RawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -543,40 +555,59 @@ class RawProjectsClient:
         )
 
 
-class AsyncRawProjectsClient:
+class AsyncRawAnnotationsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def list(
         self,
-        organization_id: str,
         *,
+        trace_id: typing.Optional[str] = None,
+        span_id: typing.Optional[str] = None,
+        label: typing.Optional[str] = None,
+        limit: typing.Optional[NumberFromString] = None,
+        offset: typing.Optional[NumberFromString] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[typing.List[ProjectsListResponseItem]]:
+    ) -> AsyncHttpResponse[AnnotationsListResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        trace_id : typing.Optional[str]
+
+        span_id : typing.Optional[str]
+
+        label : typing.Optional[str]
+
+        limit : typing.Optional[NumberFromString]
+
+        offset : typing.Optional[NumberFromString]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[typing.List[ProjectsListResponseItem]]
+        AsyncHttpResponse[AnnotationsListResponse]
             Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects",
+            "annotations",
             method="GET",
+            params={
+                "traceId": trace_id,
+                "spanId": span_id,
+                "label": label,
+                "limit": limit,
+                "offset": offset,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    typing.List[ProjectsListResponseItem],
+                    AnnotationsListResponse,
                     parse_obj_as(
-                        type_=typing.List[ProjectsListResponseItem],  # type: ignore
+                        type_=AnnotationsListResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -592,13 +623,13 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -640,37 +671,44 @@ class AsyncRawProjectsClient:
 
     async def create(
         self,
-        organization_id: str,
         *,
-        name: str,
-        slug: str,
+        span_id: str,
+        trace_id: str,
+        label: typing.Optional[str] = OMIT,
+        reasoning: typing.Optional[str] = OMIT,
+        data: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ProjectsCreateResponse]:
+    ) -> AsyncHttpResponse[AnnotationsCreateResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        span_id : str
 
-        name : str
-            a string at most 100 character(s) long
+        trace_id : str
 
-        slug : str
-            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+        label : typing.Optional[str]
+
+        reasoning : typing.Optional[str]
+
+        data : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ProjectsCreateResponse]
+        AsyncHttpResponse[AnnotationsCreateResponse]
             Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects",
+            "annotations",
             method="POST",
             json={
-                "name": name,
-                "slug": slug,
+                "spanId": span_id,
+                "traceId": trace_id,
+                "label": label,
+                "reasoning": reasoning,
+                "data": data,
             },
             headers={
                 "content-type": "application/json",
@@ -681,9 +719,9 @@ class AsyncRawProjectsClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsCreateResponse,
+                    AnnotationsCreateResponse,
                     parse_obj_as(
-                        type_=ProjectsCreateResponse,  # type: ignore
+                        type_=AnnotationsCreateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -699,13 +737,13 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -757,38 +795,32 @@ class AsyncRawProjectsClient:
         )
 
     async def get(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ProjectsGetResponse]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[AnnotationsGetResponse]:
         """
         Parameters
         ----------
-        organization_id : str
-
-        project_id : str
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ProjectsGetResponse]
+        AsyncHttpResponse[AnnotationsGetResponse]
             Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
+            f"annotations/{jsonable_encoder(id)}",
             method="GET",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsGetResponse,
+                    AnnotationsGetResponse,
                     parse_obj_as(
-                        type_=ProjectsGetResponse,  # type: ignore
+                        type_=AnnotationsGetResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -804,13 +836,13 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -852,40 +884,39 @@ class AsyncRawProjectsClient:
 
     async def update(
         self,
-        organization_id: str,
-        project_id: str,
+        id: str,
         *,
-        name: typing.Optional[str] = OMIT,
-        slug: typing.Optional[str] = OMIT,
+        label: typing.Optional[str] = OMIT,
+        reasoning: typing.Optional[str] = OMIT,
+        data: typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ProjectsUpdateResponse]:
+    ) -> AsyncHttpResponse[AnnotationsUpdateResponse]:
         """
         Parameters
         ----------
-        organization_id : str
+        id : str
 
-        project_id : str
+        label : typing.Optional[str]
 
-        name : typing.Optional[str]
-            a string at most 100 character(s) long
+        reasoning : typing.Optional[str]
 
-        slug : typing.Optional[str]
-            a string matching the pattern ^[a-z0-9][a-z0-9_-]*[a-z0-9]$
+        data : typing.Optional[typing.Dict[str, typing.Optional[typing.Any]]]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ProjectsUpdateResponse]
+        AsyncHttpResponse[AnnotationsUpdateResponse]
             Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
+            f"annotations/{jsonable_encoder(id)}",
             method="PUT",
             json={
-                "name": name,
-                "slug": slug,
+                "label": label,
+                "reasoning": reasoning,
+                "data": data,
             },
             headers={
                 "content-type": "application/json",
@@ -896,9 +927,9 @@ class AsyncRawProjectsClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ProjectsUpdateResponse,
+                    AnnotationsUpdateResponse,
                     parse_obj_as(
-                        type_=ProjectsUpdateResponse,  # type: ignore
+                        type_=AnnotationsUpdateResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -914,13 +945,13 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -932,17 +963,6 @@ class AsyncRawProjectsClient:
                         NotFoundErrorBody,
                         parse_obj_as(
                             type_=NotFoundErrorBody,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 409:
-                raise ConflictError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        AlreadyExistsError,
-                        parse_obj_as(
-                            type_=AlreadyExistsError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -972,34 +992,36 @@ class AsyncRawProjectsClient:
         )
 
     async def delete(
-        self,
-        organization_id: str,
-        project_id: str,
-        *,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[None]:
+        self, id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[AnnotationsDeleteResponse]:
         """
         Parameters
         ----------
-        organization_id : str
-
-        project_id : str
+        id : str
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[None]
+        AsyncHttpResponse[AnnotationsDeleteResponse]
+            Success
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"organizations/{jsonable_encoder(organization_id)}/projects/{jsonable_encoder(project_id)}",
+            f"annotations/{jsonable_encoder(id)}",
             method="DELETE",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                return AsyncHttpResponse(response=_response, data=None)
+                _data = typing.cast(
+                    AnnotationsDeleteResponse,
+                    parse_obj_as(
+                        type_=AnnotationsDeleteResponse,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
@@ -1011,13 +1033,13 @@ class AsyncRawProjectsClient:
                         ),
                     ),
                 )
-            if _response.status_code == 403:
-                raise ForbiddenError(
+            if _response.status_code == 401:
+                raise UnauthorizedError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        PermissionDeniedError,
+                        UnauthorizedErrorBody,
                         parse_obj_as(
-                            type_=PermissionDeniedError,  # type: ignore
+                            type_=UnauthorizedErrorBody,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

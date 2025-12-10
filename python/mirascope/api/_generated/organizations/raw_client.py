@@ -15,6 +15,7 @@ from ..errors.forbidden_error import ForbiddenError
 from ..errors.internal_server_error import InternalServerError
 from ..errors.not_found_error import NotFoundError
 from ..types.already_exists_error import AlreadyExistsError
+from ..types.database_error import DatabaseError
 from ..types.http_api_decode_error import HttpApiDecodeError
 from ..types.not_found_error_body import NotFoundErrorBody
 from ..types.permission_denied_error import PermissionDeniedError
@@ -75,9 +76,9 @@ class RawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -168,9 +169,9 @@ class RawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -256,9 +257,9 @@ class RawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -363,9 +364,9 @@ class RawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -443,9 +444,9 @@ class RawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -512,9 +513,9 @@ class AsyncRawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -605,9 +606,9 @@ class AsyncRawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -693,9 +694,9 @@ class AsyncRawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -800,9 +801,9 @@ class AsyncRawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -880,9 +881,9 @@ class AsyncRawOrganizationsClient:
                 raise InternalServerError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        typing.Optional[typing.Any],
+                        DatabaseError,
                         parse_obj_as(
-                            type_=typing.Optional[typing.Any],  # type: ignore
+                            type_=DatabaseError,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

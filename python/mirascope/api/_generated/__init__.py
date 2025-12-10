@@ -13,11 +13,14 @@ from .types import (
     IssueTag,
     NotFoundErrorBody,
     NotFoundErrorTag,
+    NumberFromString,
     PermissionDeniedError,
     PermissionDeniedErrorTag,
     PropertyKey,
     PropertyKeyKey,
     PropertyKeyKeyTag,
+    UnauthorizedErrorBody,
+    UnauthorizedErrorTag,
 )
 from .errors import (
     BadRequestError,
@@ -25,8 +28,27 @@ from .errors import (
     ForbiddenError,
     InternalServerError,
     NotFoundError,
+    UnauthorizedError,
 )
-from . import api_keys, docs, environments, health, organizations, projects, traces
+from . import (
+    annotations,
+    api_keys,
+    docs,
+    environments,
+    functions,
+    health,
+    organizations,
+    projects,
+    traces,
+)
+from .annotations import (
+    AnnotationsCreateResponse,
+    AnnotationsDeleteResponse,
+    AnnotationsGetResponse,
+    AnnotationsListResponse,
+    AnnotationsListResponseAnnotationsItem,
+    AnnotationsUpdateResponse,
+)
 from .api_keys import ApiKeysCreateResponse, ApiKeysGetResponse, ApiKeysListResponseItem
 from .client import AsyncMirascope, Mirascope
 from .environment import MirascopeEnvironment
@@ -35,6 +57,18 @@ from .environments import (
     EnvironmentsGetResponse,
     EnvironmentsListResponseItem,
     EnvironmentsUpdateResponse,
+)
+from .functions import (
+    FunctionsGetByHashResponse,
+    FunctionsGetByHashResponseDependenciesValue,
+    FunctionsGetResponse,
+    FunctionsGetResponseDependenciesValue,
+    FunctionsListResponse,
+    FunctionsListResponseFunctionsItem,
+    FunctionsListResponseFunctionsItemDependenciesValue,
+    FunctionsRegisterRequestDependenciesValue,
+    FunctionsRegisterResponse,
+    FunctionsRegisterResponseDependenciesValue,
 )
 from .health import HealthCheckResponse, HealthCheckResponseStatus
 from .organizations import (
@@ -82,6 +116,12 @@ from .traces import (
 __all__ = [
     "AlreadyExistsError",
     "AlreadyExistsErrorTag",
+    "AnnotationsCreateResponse",
+    "AnnotationsDeleteResponse",
+    "AnnotationsGetResponse",
+    "AnnotationsListResponse",
+    "AnnotationsListResponseAnnotationsItem",
+    "AnnotationsUpdateResponse",
     "ApiKeysCreateResponse",
     "ApiKeysGetResponse",
     "ApiKeysListResponseItem",
@@ -95,6 +135,16 @@ __all__ = [
     "EnvironmentsListResponseItem",
     "EnvironmentsUpdateResponse",
     "ForbiddenError",
+    "FunctionsGetByHashResponse",
+    "FunctionsGetByHashResponseDependenciesValue",
+    "FunctionsGetResponse",
+    "FunctionsGetResponseDependenciesValue",
+    "FunctionsListResponse",
+    "FunctionsListResponseFunctionsItem",
+    "FunctionsListResponseFunctionsItemDependenciesValue",
+    "FunctionsRegisterRequestDependenciesValue",
+    "FunctionsRegisterResponse",
+    "FunctionsRegisterResponseDependenciesValue",
     "HealthCheckResponse",
     "HealthCheckResponseStatus",
     "HttpApiDecodeError",
@@ -107,6 +157,7 @@ __all__ = [
     "NotFoundError",
     "NotFoundErrorBody",
     "NotFoundErrorTag",
+    "NumberFromString",
     "OrganizationsCreateResponse",
     "OrganizationsCreateResponseRole",
     "OrganizationsGetResponse",
@@ -147,9 +198,14 @@ __all__ = [
     "TracesCreateRequestResourceSpansItemScopeSpansItemSpansItemStatus",
     "TracesCreateResponse",
     "TracesCreateResponsePartialSuccess",
+    "UnauthorizedError",
+    "UnauthorizedErrorBody",
+    "UnauthorizedErrorTag",
+    "annotations",
     "api_keys",
     "docs",
     "environments",
+    "functions",
     "health",
     "organizations",
     "projects",
