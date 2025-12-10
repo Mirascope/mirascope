@@ -1,75 +1,58 @@
-import { describe, it, expect } from "vitest";
-import { withTestDatabase, withErroringService } from "@/tests/db";
+import { describe, it, expect } from "@effect/vitest";
+import { MockDatabase, TestDatabase } from "@/tests/db";
 import { Effect } from "effect";
-import { DatabaseError, InvalidSessionError } from "@/db/errors";
-import { SessionService } from "@/db/services/sessions";
+import { type PublicSession } from "@/db/schema";
+import { type PublicUser } from "@/db/schema/users";
+import { DatabaseError, NotFoundError, InvalidSessionError } from "@/db/errors";
+import { DatabaseService } from "@/db/services";
 
 describe("SessionService", () => {
-  it(
-    "should support basic CRUD",
-    withTestDatabase((db) =>
+  describe("create", () => {
+    it.effect("creates a session", () =>
       Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
         const user = yield* db.users.create({
           email: "test@example.com",
           name: "Test User",
         });
 
         const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
-
-        const created = yield* db.sessions.create({
+        const session = yield* db.sessions.create({
           userId: user.id,
           expiresAt,
         });
-        expect(created).toBeDefined();
-        expect(created.id).toBeDefined();
-        expect(created.expiresAt).toBeInstanceOf(Date);
 
-        const sessionId = created.id;
+        expect(session).toEqual({
+          id: session.id,
+          expiresAt,
+        } satisfies PublicSession);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
 
-        const found = yield* db.sessions.findById(sessionId);
-        expect(found).toBeDefined();
-        expect(found?.id).toBe(sessionId);
-        expect(found?.expiresAt.getTime()).toBe(expiresAt.getTime());
-
-        const all = yield* db.sessions.findAll();
-        expect(Array.isArray(all)).toBe(true);
-        expect(all.find((s) => s.id === sessionId)).toBeDefined();
-
-        const newExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 48);
-
-        const updated = yield* db.sessions.update(sessionId, {
-          expiresAt: newExpiresAt,
-        });
-        expect(updated).toBeDefined();
-        expect(updated?.id).toBe(sessionId);
-        expect(updated?.expiresAt.getTime()).toBe(newExpiresAt.getTime());
-
-        const afterUpdate = yield* db.sessions.findById(sessionId);
-        expect(afterUpdate).toBeDefined();
-        expect(afterUpdate?.expiresAt.getTime()).toBe(newExpiresAt.getTime());
-
-        yield* db.sessions.delete(sessionId);
-
-        const afterDeleteResult = yield* Effect.either(
-          db.sessions.findById(sessionId),
-        );
-        expect(afterDeleteResult._tag).toBe("Left");
-        if (afterDeleteResult._tag === "Left") {
-          expect(afterDeleteResult.left._tag).toBe("NotFoundError");
-        }
-
-        const afterDeleteAll = yield* db.sessions.findAll();
-        expect(afterDeleteAll.find((s) => s.id === sessionId)).toBeUndefined();
-      }),
-    ),
-  );
-
-  it(
-    "findUserBySessionId should return user for valid session",
-    withTestDatabase((db) =>
+    it.effect("returns `DatabaseError` when insert fails", () =>
       Effect.gen(function* () {
+        const db = new MockDatabase()
+          .insert(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.sessions
+          .create({ userId: "user-id", expiresAt: new Date() })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to create session");
+      }),
+    );
+  });
+
+  describe("findById", () => {
+    it.effect("finds a session by id", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
         const user = yield* db.users.create({
-          email: "finduser@example.com",
+          email: "find@example.com",
           name: "Find User",
         });
 
@@ -79,39 +62,307 @@ describe("SessionService", () => {
           expiresAt,
         });
 
-        const foundUser = yield* db.sessions.findUserBySessionId(session.id);
-        expect(foundUser).toBeDefined();
-        expect(foundUser.id).toBe(user.id);
-        expect(foundUser.email).toBe("finduser@example.com");
-        expect(foundUser.name).toBe("Find User");
-      }),
-    ),
-  );
+        const found = yield* db.sessions.findById(session.id);
 
-  it(
-    "findUserBySessionId should fail for non-existent session",
-    withTestDatabase((db) =>
-      Effect.gen(function* () {
-        const result = yield* Effect.either(
-          db.sessions.findUserBySessionId(
-            "00000000-0000-0000-0000-000000000000",
-          ),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left._tag).toBe("NotFoundError");
-        }
-      }),
-    ),
-  );
+        expect(found).toEqual(session);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
 
-  it(
-    "findUserBySessionId should fail with InvalidSessionError for expired session",
-    withTestDatabase((db) =>
+    it.effect("returns `NotFoundError` when session does not exist", () =>
       Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.sessions.findById(badId).pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(`session with id ${badId} not found`);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .select(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.sessions
+          .findById("session-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to find session");
+      }),
+    );
+  });
+
+  describe("findAll", () => {
+    it.effect("finds all sessions", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
         const user = yield* db.users.create({
-          email: "expiredfind@example.com",
-          name: "Expired Find User",
+          email: "findall@example.com",
+          name: "Find All User",
+        });
+
+        const expiresAt1 = new Date(Date.now() + 1000 * 60 * 60 * 24);
+        const expiresAt2 = new Date(Date.now() + 1000 * 60 * 60 * 48);
+
+        const session1 = yield* db.sessions.create({
+          userId: user.id,
+          expiresAt: expiresAt1,
+        });
+        const session2 = yield* db.sessions.create({
+          userId: user.id,
+          expiresAt: expiresAt2,
+        });
+
+        const all = yield* db.sessions.findAll();
+
+        expect(all).toEqual([session1, session2] satisfies PublicSession[]);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .select(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.sessions.findAll().pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to find all sessions");
+      }),
+    );
+  });
+
+  describe("update", () => {
+    it.effect("updates a session", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.create({
+          email: "update@example.com",
+          name: "Update User",
+        });
+
+        const originalExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
+        const session = yield* db.sessions.create({
+          userId: user.id,
+          expiresAt: originalExpiresAt,
+        });
+
+        const newExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 48);
+        const updated = yield* db.sessions.update(session.id, {
+          expiresAt: newExpiresAt,
+        });
+
+        expect(updated).toEqual({
+          id: session.id,
+          expiresAt: newExpiresAt,
+        } satisfies PublicSession);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("persists updates correctly", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.create({
+          email: "persist@example.com",
+          name: "Persist User",
+        });
+
+        const originalExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
+        const session = yield* db.sessions.create({
+          userId: user.id,
+          expiresAt: originalExpiresAt,
+        });
+
+        const newExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 48);
+        yield* db.sessions.update(session.id, { expiresAt: newExpiresAt });
+
+        const found = yield* db.sessions.findById(session.id);
+
+        expect(found.expiresAt.getTime()).toBe(newExpiresAt.getTime());
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when session does not exist", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.sessions
+          .update(badId, { expiresAt: new Date() })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(`session with id ${badId} not found`);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .update(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.sessions
+          .update("session-id", { expiresAt: new Date() })
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to update session");
+      }),
+    );
+  });
+
+  describe("delete", () => {
+    it.effect("deletes a session", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.create({
+          email: "delete@example.com",
+          name: "Delete User",
+        });
+
+        const session = yield* db.sessions.create({
+          userId: user.id,
+          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        });
+
+        yield* db.sessions.delete(session.id);
+
+        const result = yield* db.sessions
+          .findById(session.id)
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("removes session from findAll results", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.create({
+          email: "deleteall@example.com",
+          name: "Delete All User",
+        });
+
+        const session = yield* db.sessions.create({
+          userId: user.id,
+          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        });
+
+        yield* db.sessions.delete(session.id);
+
+        const all = yield* db.sessions.findAll();
+
+        expect(all.find((s) => s.id === session.id)).toBeUndefined();
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `NotFoundError` when session does not exist", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.sessions.delete(badId).pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(`session with id ${badId} not found`);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .delete(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.sessions
+          .delete("session-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to delete session");
+      }),
+    );
+  });
+
+  describe("findUserBySessionId", () => {
+    /**
+     * findUserBySessionId flow:
+     * 1. fetchSessionWithUser (select join)
+     * 2. handleEmptyResult (NotFoundError if no rows)
+     * 3. handleExpiredSession (delete + InvalidSessionError if expired)
+     * 4. transformToPublicUser (return user)
+     */
+
+    it.effect("returns user for valid session", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const email = "finduser@example.com";
+        const name = "Find User";
+        const user = yield* db.users.create({ email, name });
+
+        const session = yield* db.sessions.create({
+          userId: user.id,
+          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        });
+
+        const foundUser = yield* db.sessions.findUserBySessionId(session.id);
+
+        expect(foundUser).toEqual({
+          id: user.id,
+          email,
+          name,
+        } satisfies PublicUser);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `DatabaseError` when query fails", () =>
+      Effect.gen(function* () {
+        const db = new MockDatabase()
+          .select(new Error("Database connection failed"))
+          .build();
+
+        const result = yield* db.sessions
+          .findUserBySessionId("session-id")
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(DatabaseError);
+        expect(result.message).toBe("Failed to find session");
+      }),
+    );
+
+    it.effect("returns `NotFoundError` when session does not exist", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const badId = "00000000-0000-0000-0000-000000000000";
+        const result = yield* db.sessions
+          .findUserBySessionId(badId)
+          .pipe(Effect.flip);
+
+        expect(result).toBeInstanceOf(NotFoundError);
+        expect(result.message).toBe(`Session with id ${badId} not found`);
+      }).pipe(Effect.provide(TestDatabase)),
+    );
+
+    it.effect("returns `InvalidSessionError` for expired session", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.create({
+          email: "expired@example.com",
+          name: "Expired User",
         });
 
         const expiredAt = new Date(Date.now() - 1000);
@@ -120,39 +371,40 @@ describe("SessionService", () => {
           expiresAt: expiredAt,
         });
 
-        const result = yield* Effect.either(
-          db.sessions.findUserBySessionId(session.id),
-        );
-        expect(result._tag).toBe("Left");
-        if (result._tag === "Left") {
-          expect(result.left).toBeInstanceOf(InvalidSessionError);
-          expect(result.left.message).toBe("Session expired");
-        }
+        const result = yield* db.sessions
+          .findUserBySessionId(session.id)
+          .pipe(Effect.flip);
 
-        // Verify expired session was deleted
-        const findResult = yield* Effect.either(
-          db.sessions.findById(session.id),
-        );
-        expect(findResult._tag).toBe("Left");
-      }),
-    ),
-  );
+        expect(result).toBeInstanceOf(InvalidSessionError);
+        expect(result.message).toBe("Session expired");
+      }).pipe(Effect.provide(TestDatabase)),
+    );
 
-  describe("Error handling", () => {
-    it(
-      "findUserBySessionId returns DatabaseError on database query failure",
-      withErroringService(SessionService, (service) =>
-        Effect.gen(function* () {
-          const result = yield* Effect.either(
-            service.findUserBySessionId("test-session-id"),
-          );
-          expect(result._tag).toBe("Left");
-          if (result._tag === "Left") {
-            expect(result.left).toBeInstanceOf(DatabaseError);
-            expect(result.left.message).toContain("Failed to find session");
-          }
-        }),
-      ),
+    it.effect("deletes expired session when returning error", () =>
+      Effect.gen(function* () {
+        const db = yield* DatabaseService;
+
+        const user = yield* db.users.create({
+          email: "expireddelete@example.com",
+          name: "Expired Delete User",
+        });
+
+        const expiredAt = new Date(Date.now() - 1000);
+        const session = yield* db.sessions.create({
+          userId: user.id,
+          expiresAt: expiredAt,
+        });
+
+        // This should fail and delete the session
+        yield* db.sessions.findUserBySessionId(session.id).pipe(Effect.flip);
+
+        // Verify the session was deleted
+        const findResult = yield* db.sessions
+          .findById(session.id)
+          .pipe(Effect.flip);
+
+        expect(findResult).toBeInstanceOf(NotFoundError);
+      }).pipe(Effect.provide(TestDatabase)),
     );
   });
 });
