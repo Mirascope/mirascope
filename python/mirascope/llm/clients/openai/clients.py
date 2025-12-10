@@ -3,7 +3,7 @@
 import os
 from collections.abc import Sequence
 from functools import lru_cache
-from typing import get_args, overload
+from typing import overload
 from typing_extensions import Unpack
 
 from openai import OpenAI
@@ -33,7 +33,7 @@ from ...tools import (
 )
 from ..base import BaseClient, Params
 from .completions import OpenAICompletionsClient, client as completions_client
-from .model_info import OpenAIModelId
+from .model_id import OPENAI_KNOWN_MODELS, OpenAIModelId
 from .responses import OpenAIResponsesClient, client as responses_client
 
 
@@ -68,28 +68,23 @@ def choose_api_mode(model_id: OpenAIModelId, messages: Sequence[Message]) -> str
     """
     if model_id.endswith(":completions"):
         return "completions"
-    if model_id.endswith(":responses"):
+    elif model_id.endswith(":responses"):
         return "responses"
 
     if _has_audio_content(messages):
         return "completions"
 
-    # Check if the model supports responses API by checking if model_id + ":responses" exists
-    # OpenAIModelId is Literal[...] | str, so get_args returns (Literal[...], str)
-    # We need to get the args of the first element (the Literal)
-    model_id_args = get_args(OpenAIModelId)
-    known_models = get_args(model_id_args[0])
-    if f"{model_id}:responses" in known_models:
+    if f"{model_id}:responses" in OPENAI_KNOWN_MODELS:
         # Prefer responses api when we know it is available
         return "responses"
-
-    if f"{model_id}:completions" in known_models:
+    elif f"{model_id}:completions" in OPENAI_KNOWN_MODELS:
         # If we know from testing that the completions api is available, and
-        # (per case above) that responses wasn't, then we should use completions
+        # (implied by above) that responses wasn't, then we should use completions
         return "completions"
 
-    # We haven't tested this model. It is probably a new one, in which case we should use
-    # responses API.
+    # If we don't have either :responses or :completions in the known_models, it's
+    # likely that this is a new model we haven't tested. We default to responses api for
+    # new models
     return "responses"
 
 

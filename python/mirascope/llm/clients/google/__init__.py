@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .clients import GoogleClient, client
-    from .model_ids import GoogleModelId
+    from .model_id import GoogleModelId
 else:
     try:
         from .clients import GoogleClient, client
-        from .model_ids import GoogleModelId
+        from .model_id import GoogleModelId
     except ImportError:  # pragma: no cover
         from .._missing_import_stubs import create_client_stub, create_import_error_stub
 

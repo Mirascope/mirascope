@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .clients import MLXClient, client
-    from .model_ids import MLXModelId
+    from .model_id import MLXModelId
 else:
     try:
         from .clients import MLXClient, client
-        from .model_ids import MLXModelId
+        from .model_id import MLXModelId
     except ImportError:  # pragma: no cover
         from .._missing_import_stubs import create_client_stub, create_import_error_stub
 

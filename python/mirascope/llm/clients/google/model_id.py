@@ -16,8 +16,8 @@ GoogleModelId: TypeAlias = (
 """The Google model ids registered with Mirascope."""
 
 
-def get_provider_model_id(model_id: GoogleModelId) -> str:
-    """Extract the provider-specific model ID from a full model ID.
+def model_name(model_id: GoogleModelId) -> str:
+    """Extract the google model name from a full model ID.
 
     Args:
         model_id: Full model ID (e.g. "google/gemini-2.5-flash")

@@ -19,7 +19,7 @@ from ....formatting import (
 from ....messages import AssistantMessage, Message, UserMessage
 from ....tools import FORMAT_TOOL_NAME, AnyToolSchema, BaseToolkit
 from ...base import Params, _utils as _base_utils
-from ..model_ids import AnthropicModelId
+from ..model_id import AnthropicModelId, model_name
 
 DEFAULT_MAX_TOKENS = 16000
 
@@ -192,7 +192,7 @@ def encode_request(
 
     kwargs: MessageCreateKwargs = MessageCreateKwargs(
         {
-            "model": model_id.removeprefix("anthropic/"),
+            "model": model_name(model_id),
             "max_tokens": DEFAULT_MAX_TOKENS,
         }
     )

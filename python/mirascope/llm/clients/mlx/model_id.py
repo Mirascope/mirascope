@@ -15,3 +15,15 @@ For more details, see:
  - https://github.com/ml-explore/mlx-lm/?tab=readme-ov-file#supported-models
  - https://huggingface.co/mlx-community
 """
+
+
+def model_name(model_id: MLXModelId) -> str:
+    """Extract the mlx model name from the ModelId
+
+    Args:
+        model_id: Full model ID (e.g. "mlx/mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
+
+    Returns:
+        Provider-specific model ID (e.g. "mlx-community/Qwen3-0.6B-4bit-DWQ-053125")
+    """
+    return model_id.removeprefix("mlx/")
