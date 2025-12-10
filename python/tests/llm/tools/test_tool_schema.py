@@ -393,6 +393,8 @@ def test_cannot_use_reserved_names() -> None:
 
 
 def test_context_tool_equivalence() -> None:
+    """Make non-context and context tool schemas equivalent."""
+
     def make_non_context() -> llm.tools.AnyToolSchema:
         @llm.tool
         def example(arg: str) -> str:

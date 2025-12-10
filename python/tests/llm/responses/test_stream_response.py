@@ -1377,6 +1377,8 @@ async def test_async_stream_response_execute_tools() -> None:
 
 
 def test_response_toolkit_initialization() -> None:
+    """Initialize `StreamResponse` and `AsyncStreamResponse` with tools."""
+
     def chunk_iter() -> llm.ChunkIterator: ...
 
     def async_chunk_iter() -> llm.AsyncChunkIterator: ...

@@ -11,12 +11,14 @@ def test_extract_finish_reason_none() -> None:
 
 
 def test_extract_finish_reason_length() -> None:
+    """Extract finish reason from length response."""
     finish_reason = MagicMock()
     finish_reason.finish_reason = "length"
     assert extract_finish_reason(finish_reason) == FinishReason.MAX_TOKENS
 
 
 def test_extract_finish_reason_stop() -> None:
+    """Extract finish reason from stop response."""
     finish_reason = MagicMock()
     finish_reason.finish_reason = "stop"
     assert extract_finish_reason(finish_reason) is None
