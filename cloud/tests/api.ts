@@ -5,7 +5,7 @@ import {
   afterAll,
 } from "vitest";
 import { it as vitestIt } from "@effect/vitest";
-import { Context, Effect, Layer } from "effect";
+import { Context, Effect, Layer, Option } from "effect";
 import { MirascopeCloudApi, ApiLive } from "@/api/router";
 import {
   HttpClient,
@@ -131,7 +131,10 @@ function createHandlerHttpClient(
 ) {
   return HttpClient.make((request: HttpClientRequest.HttpClientRequest) =>
     Effect.gen(function* () {
-      const url = new URL(request.url);
+      const url = Option.getOrElse(
+        HttpClientRequest.toUrl(request),
+        () => new URL(request.url),
+      );
       const method = request.method.toUpperCase();
       const options: RequestInit = {
         method: request.method,

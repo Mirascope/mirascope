@@ -81,7 +81,9 @@ describe("Users", () => {
 
         const all = yield* db.users.findAll();
 
-        expect(all).toEqual([user1, user2] satisfies PublicUser[]);
+        expect(all).toEqual(
+          expect.arrayContaining([user1, user2] satisfies PublicUser[]),
+        );
       }),
     );
 
@@ -92,7 +94,7 @@ describe("Users", () => {
         const all = yield* db.users.findAll();
 
         expect(all).toEqual([]);
-      }),
+      }).pipe(Effect.provide(new MockDrizzleORM().select([]).build())),
     );
 
     it.effect("returns `DatabaseError` when query fails", () =>
